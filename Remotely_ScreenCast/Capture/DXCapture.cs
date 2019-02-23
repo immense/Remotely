@@ -1,4 +1,5 @@
-﻿using SharpDX;
+﻿using Remotely_ScreenCapture.Utilities;
+using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
@@ -14,7 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Win32;
 
-namespace Remotely_ScreenCast
+namespace Remotely_ScreenCast.Capture
 {
     public class DXCapture : ICapturer
     {
@@ -22,10 +23,17 @@ namespace Remotely_ScreenCast
 		{
 			Init();
 		}
-		
         public Bitmap PreviousFrame { get; set; }
         public Bitmap CurrentFrame { get; set; }
+        public Size CurrentScreenSize
+        {
+            get
+            {
+                return new Size(width, height);
+            }
+        }
         public bool CaptureFullscreen { get; set; } = true;
+        public EventHandler<Size> ScreenChanged { get; set; }
         public int SelectedScreen
         {
             get
@@ -34,6 +42,10 @@ namespace Remotely_ScreenCast
             }
             set
             {
+                if (value == selectedScreen)
+                {
+                    return;
+                }
                 if (adapter == null)
                 {
                     selectedScreen = 0;
@@ -48,8 +60,8 @@ namespace Remotely_ScreenCast
                     {
                         selectedScreen = 0;
                     }
-                    NeedsInit = true;
                 }
+                NeedsInit = true;
             }
         }
         public bool NeedsInit { get; set; }
@@ -86,8 +98,14 @@ namespace Remotely_ScreenCast
 			output1 = output.QueryInterface<Output1>();
 
 			// Width/Height of desktop to capture
-			width = output.Description.DesktopBounds.Right - output.Description.DesktopBounds.Left;
-			height = output.Description.DesktopBounds.Bottom - output.Description.DesktopBounds.Top;
+			var newWidth = output.Description.DesktopBounds.Right - output.Description.DesktopBounds.Left;
+			var newHeight = output.Description.DesktopBounds.Bottom - output.Description.DesktopBounds.Top;
+            if (newWidth != width || newHeight != height)
+            {
+                ScreenChanged(this, new Size(newWidth, newHeight));
+            }
+            width = newWidth;
+            height = newHeight;
 
             CurrentFrame = new Bitmap(width, height);
             PreviousFrame = new Bitmap(width, height);
@@ -128,7 +146,7 @@ namespace Remotely_ScreenCast
 					var inputDesktop = Win32Interop.OpenInputDesktop();
 					var success = User32.SetThreadDesktop(inputDesktop);
 					User32.CloseDesktop(inputDesktop);
-					Console.WriteLine($"Set thread desktop: {success}");
+					Logger.Write($"Set thread desktop: {success}");
                     return;
 				}
 
@@ -185,16 +203,14 @@ namespace Remotely_ScreenCast
 			{
 				if (e.ResultCode.Code != SharpDX.DXGI.ResultCode.WaitTimeout.Result.Code)
 				{
-					Trace.TraceError(e.Message);
-					Trace.TraceError(e.StackTrace);
-					Console.WriteLine($"Error: {e.Message}{Environment.NewLine}{e.StackTrace}");
+                    Logger.Write(e);
 					Init();
 					Capture();
 				}
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine($"Error: {e.Message}{Environment.NewLine}{e.StackTrace}");
+                Logger.Write(e);
 				Init();
 				Capture();
 			}

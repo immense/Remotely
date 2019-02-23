@@ -26,12 +26,7 @@ namespace Remotely_Agent.Services
             ConnectionInfo = Utilities.GetConnectionInfo();
 
             HubConnection = new HubConnectionBuilder()
-                .WithUrl(ConnectionInfo.Host + "/DeviceHub", options=> {
-                    if (!string.IsNullOrWhiteSpace(ConnectionInfo.ProxyUrl))
-                    {
-                        options.Proxy = new WebProxy(ConnectionInfo.ProxyUrl, ConnectionInfo.ProxyPort);
-                    }
-                })
+                .WithUrl(ConnectionInfo.Host + "/DeviceHub")
                 .Build();
             HubConnection.Closed += HubConn_Closed;
 
@@ -160,7 +155,7 @@ namespace Remotely_Agent.Services
                         return;
                     }
                     // Cleanup old files.
-                    foreach (var file in Directory.GetFiles(Path.GetTempPath(), "Remotely_ScreenCast"))
+                    foreach (var file in Directory.GetFiles(Path.GetTempPath(), "Remotely_ScreenCast*"))
                     {
                         try
                         {
@@ -192,7 +187,7 @@ namespace Remotely_Agent.Services
                     if (OSUtils.IsWindows)
                     {
 #if DEBUG
-                        Process.Start(filePath);
+                        Process.Start(filePath, $"-mode unattended -requester {requesterID} -serviceid {serviceID} -hostname {Utilities.GetConnectionInfo().Host.Split("//").Last()}");
 #else
                         var procInfo = new ADVAPI32.PROCESS_INFORMATION();
                         var result = Win32Interop.OpenInteractiveProcess(filePath + $" -mode unattended -requester {requesterID} -serviceid {serviceID} -hostname {Utilities.GetConnectionInfo().Host.Split("//").Last()}", "default", true, out procInfo);

@@ -9,7 +9,7 @@ using System.Timers;
 using System.Windows.Forms;
 using Win32;
 
-namespace Remotely_ScreenCast
+namespace Remotely_ScreenCast.Capture
 {
     /// <summary>
     /// A class that can be used to watch for cursor icon changes.
