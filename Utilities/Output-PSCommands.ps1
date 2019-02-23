@@ -1,0 +1,2 @@
+Start-Process -FilePath "powershell.exe" -ArgumentList "-f C:\Users\Typic\Source\Repos\DoXM\Utilities\Get-PSCommands.ps1"
+Start-Process -FilePath "C:\Program Files\PowerShell\6.0.4\pwsh.exe" -ArgumentList "-f C:\Users\Typic\Source\Repos\DoXM\Utilities\Get-PSCommands.ps1"

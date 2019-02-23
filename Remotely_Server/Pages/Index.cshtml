@@ -1,0 +1,15 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+@if (!User.Identity.IsAuthenticated)
+{
+    <partial name="_IndexNotLoggedIn" model="Model" />
+}
+else
+{
+    <partial name="_LoadingWheel" model="Model" />
+    <partial name="_IndexLoggedIn" model="Model" />
+}
