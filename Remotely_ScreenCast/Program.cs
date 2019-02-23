@@ -1,88 +1,98 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Remotely_ScreenCapture;
+using Remotely_ScreenCapture.Capture;
+using Remotely_ScreenCapture.Sockets;
+using Remotely_ScreenCapture.Utilities;
+using Remotely_ScreenCast.Capture;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Win32;
 
 namespace Remotely_ScreenCast
 {
-	class Program
+	public class Program
 	{
-        static Stopwatch stopwatch;
-        static CaptureMode captureMode;
+        public static ICapturer Capturer { get; set; }
+        public static CaptureMode CaptureMode { get; set; }
+        public static bool DisconnectRequested { get; set; }
+        public static string Mode { get; set; }
+        public static string RequesterID { get; set; }
+        public static string HostName { get; set; }
+        public static HubConnection Connection { get; set; }
+        private static OutgoingMessages OutgoingMessages { get; set; }
+
         static void Main(string[] args)
         {
             var argDict = ProcessArgs(args);
-            var mode = argDict["mode"];
-            var requesterID = argDict["requester"];
-            var hostname = argDict["hostname"];
+            Mode = argDict["mode"];
+            RequesterID = argDict["requester"];
+            HostName = argDict["hostname"];
 
-            var hubConnection = new HubConnectionBuilder()
-                .WithUrl($"https://{argDict["hostname"]}/DeviceHub")
+            Connection = new HubConnectionBuilder()
+                .WithUrl($"http://{HostName}/RCDeviceHub")
                 .Build();
 
-            hubConnection.Closed += (ex) =>
-            {
-                Logger.Write($"Error: {ex.Message}");
-                return Task.CompletedTask;
-            };
+            MessageHandlers.ApplyConnectionHandlers(Connection);
 
-            hubConnection.StartAsync().Wait();
+            Connection.StartAsync().Wait();
 
-            var screenshotPath = $@"{Path.GetTempPath()}Screens\";
-            if (!Directory.Exists(screenshotPath))
-            {
-                Directory.CreateDirectory(screenshotPath);
-            }
+            OutgoingMessages = new OutgoingMessages(Connection);
 
-
-            ICapturer capturer;
             try
             {
-                capturer = new DXCapture();
-                captureMode = CaptureMode.DirectX;
+                Capturer = new DXCapture();
+                CaptureMode = CaptureMode.DirectX;
             }
             catch
             {
-                capturer = new BitBltCapture();
-                captureMode = CaptureMode.BitBtl;
+                Capturer = new BitBltCapture();
+                CaptureMode = CaptureMode.BitBtl;
             }
 
-            while (true)
+
+            OutgoingMessages.SendScreenCount(
+                Screen.AllScreens.ToList().IndexOf(Screen.PrimaryScreen), 
+                Screen.AllScreens.Length, 
+                RequesterID).Wait();
+
+            Capturer.ScreenChanged += HandleScreenChanged;
+
+            OutgoingMessages.SendScreenSize(Capturer.CurrentScreenSize.Width, Capturer.CurrentScreenSize.Height).Wait();
+
+            while (!DisconnectRequested)
             {
                 try
                 {
-                    capturer.Capture();
-                    var newImage = ImageDiff.GetImageDiff(capturer.CurrentFrame, capturer.PreviousFrame, capturer.CaptureFullscreen);
+                    Capturer.Capture();
+                    var newImage = ImageDiff.GetImageDiff(Capturer.CurrentFrame, Capturer.PreviousFrame, Capturer.CaptureFullscreen);
                     var img = ImageDiff.EncodeBitmap(newImage);
-                    if (capturer.CaptureFullscreen)
+                    if (Capturer.CaptureFullscreen)
                     {
-                        capturer.CaptureFullscreen = false;
+                        Capturer.CaptureFullscreen = false;
                     }
                     if (img?.Length > 0)
                     {
-                        File.WriteAllBytes($@"{screenshotPath}{Path.GetRandomFileName()}.png", img);
+                        OutgoingMessages.SendScreenCapture(img).Wait();
                     }
                 }
                 catch (Exception ex)
                 {
                     Logger.Write($"Outer Error: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
                 }
-                System.Threading.Thread.Sleep(3000);
             }
-
         }
 
-        enum CaptureMode
+        private static async void HandleScreenChanged(object sender, Size size)
         {
-            BitBtl,
-            DirectX
+            await OutgoingMessages.SendScreenSize(size.Width, size.Height);
         }
 
         private static Dictionary<string, string> ProcessArgs(string[] args)
@@ -105,5 +115,7 @@ namespace Remotely_ScreenCast
             }
             return argDict;
         }
+
+    
     }
 }

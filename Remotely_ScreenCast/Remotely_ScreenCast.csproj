@@ -140,12 +140,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BitBltCapture.cs" />
-    <Compile Include="CursorIconWatcher.cs" />
-    <Compile Include="DXCapture.cs" />
-    <Compile Include="ICapturer.cs" />
-    <Compile Include="ImageDiff.cs" />
-    <Compile Include="Logger.cs" />
+    <Compile Include="Capture\BitBltCapture.cs" />
+    <Compile Include="Capture\CaptureMode.cs" />
+    <Compile Include="Capture\CursorIconWatcher.cs" />
+    <Compile Include="Capture\DXCapture.cs" />
+    <Compile Include="Capture\ICapturer.cs" />
+    <Compile Include="Capture\ImageDiff.cs" />
+    <Compile Include="Sockets\MessageHandlers.cs" />
+    <Compile Include="Sockets\OutgoingMessages.cs" />
+    <Compile Include="Utilities\Logger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Win32\ADVAPI32.cs" />
@@ -162,6 +165,7 @@
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

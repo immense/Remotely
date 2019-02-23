@@ -12,16 +12,25 @@ using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Diagnostics;
 using System.Runtime.Serialization.Formatters.Binary;
+using Remotely_ScreenCapture.Utilities;
 
-namespace Remotely_ScreenCast
+namespace Remotely_ScreenCast.Capture
 {
     public class BitBltCapture : ICapturer
     {
         public Bitmap CurrentFrame { get; set; }
+        public Size CurrentScreenSize
+        {
+            get
+            {
+                return CurrentBounds.Size;
+            }
+        }
         public Bitmap PreviousFrame { get; set; }
         public bool IsCapturing { get; set; }
         public bool CaptureFullscreen { get; set; } = true;
         public int PauseForMilliseconds { get; set; }
+        public EventHandler<Size> ScreenChanged { get; set; }
         public int SelectedScreen
         {
             get
@@ -30,6 +39,10 @@ namespace Remotely_ScreenCast
             }
             set
             {
+                if (value == selectedScreen)
+                {
+                    return;
+                }
                 if (Screen.AllScreens.Length >= value + 1)
                 {
                     selectedScreen = value;
@@ -39,6 +52,7 @@ namespace Remotely_ScreenCast
                     selectedScreen = 0;
                 }
                 CurrentBounds = Screen.AllScreens[selectedScreen].Bounds;
+                ScreenChanged(this, CurrentBounds.Size);
             }
         }
         public Rectangle CurrentBounds { get; set; } = Screen.PrimaryScreen.Bounds;
@@ -80,7 +94,7 @@ namespace Remotely_ScreenCast
 
         public void Capture()
         {
-			Console.WriteLine($"Using Capturer.");
+			Console.WriteLine($"Using BitBlt Capturer.");
 			var currentDesktop = Win32Interop.GetCurrentDesktop();
             Console.WriteLine($"Current Desktop: {currentDesktop}");
             if (currentDesktop != desktopName)
@@ -89,7 +103,7 @@ namespace Remotely_ScreenCast
                 var inputDesktop = Win32Interop.OpenInputDesktop();
                 var success = User32.SetThreadDesktop(inputDesktop);
                 User32.CloseDesktop(inputDesktop);
-                Console.WriteLine($"Set thread desktop: {success}");
+                Logger.Write($"Set thread desktop: {success}");
             }
 
 
@@ -101,7 +115,7 @@ namespace Remotely_ScreenCast
             }
             catch (Exception ex)
             {
-                //Utilities.WriteToLog(ex);
+                Logger.Write(ex);
             }
         }
 

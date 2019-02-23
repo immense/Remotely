@@ -9,7 +9,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely_ScreenCast
+namespace Remotely_ScreenCast.Capture
 {
     public class ImageDiff
     {

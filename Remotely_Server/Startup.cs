@@ -116,6 +116,12 @@ namespace Remotely_Server
             
             app.UseCookiePolicy();
 
+            // Uncomment to run .NET Core behind a reverse proxy.
+            //app.UseForwardedHeaders(new ForwardedHeadersOptions
+            //{
+            //    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            //});
+
             app.UseAuthentication();
 
             app.UseSignalR(routes =>
