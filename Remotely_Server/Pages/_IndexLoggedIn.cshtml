@@ -1,0 +1,81 @@
+﻿@model IndexModel
+
+<div class="work-area hidden">
+    <ul class="nav nav-tabs">
+        <li class="nav-item"><a class="nav-link active show" href="#consoleFrame" data-toggle="tab">Console</a></li>
+        <li class="nav-item"><a class="nav-link" href="#dataGridFrame" data-toggle="tab">Grid</a></li>
+    </ul>
+    <div id="tabContentWrapper">
+        <div class="tab-content">
+            <div id="consoleFrame" class="console tab-pane fade active show in">
+                <div id="consoleOutputDiv">
+                    <div class="console-block">
+                        <div class="console-prompt">@Model.DefaultPrompt</div>
+                        <div class="console-output">Authentication successful.</div>
+                    </div>
+                </div>
+
+                <div class="console-block">
+                    <div class="console-input-prompt">@Model.DefaultPrompt</div>
+                    <div>
+                        <textarea id="consoleTextArea" spellcheck="false" maxlength="100000"></textarea>
+                    </div>
+                </div>
+                <div id="commandCompletionWrapper">
+                    <div id="commandCompletionDiv" class="hidden">
+
+                    </div>
+                    <div id="commandInfoDiv" class="hidden">
+
+                    </div>
+                </div>
+            </div>
+            <partial name="_DataGrid" />
+        </div>
+    </div>
+
+   
+
+    <div id="consoleStatusDiv">
+        <div class="col-sm-6">
+            <span>
+                Command Mode:
+            </span>
+            <select id="commandModeSelect" class="console-status-value" title="Command Modes: Remotely interface, Windows PowerShell, PowerShell Core, Windows CMD Command Line, Linux BASH">
+                <option value="Web">Web</option>
+                <option value="PSCore">PSCore</option>
+                <option value="WinPS">WinPS</option>
+                <option value="CMD">CMD</option>
+                <option value="Bash">Bash</option>
+            </select>
+        </div>
+        <div class="col-sm-6">
+            <span>
+                Machines Selected:
+            </span>
+            <span id="machinesSelectedSpan" class="console-status-value">
+                0
+            </span>
+        </div>
+        <div class="clearfix"></div>
+        <div class="col-sm-6">
+            <span>
+                Online Machines:
+            </span>
+            <span id="onlineMachinesSpan" class="console-status-value">
+                0
+            </span>
+        </div>
+        <div class="col-sm-6">
+            <span>
+                Total Machines:
+            </span>
+            <span id="totalMachinesSpan" class="console-status-value">
+                0
+            </span>
+        </div>
+    </div>
+
+</div>
+
+<script src="~/scripts/Main.js" type="module"></script>

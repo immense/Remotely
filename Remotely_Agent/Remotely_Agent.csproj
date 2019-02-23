@@ -1,0 +1,76 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Copyright>Copyright ©  2018 Translucency Software</Copyright>
+    <Description>Background service that maintains a connection to the DoXM server.  The service is used for remote support and maintenance by this computer's administrators.</Description>
+    <PackageLicenseUrl>https://doxm.app/EULA</PackageLicenseUrl>
+    <Authors>Jared Goodwin</Authors>
+    <Product>DoXM Client</Product>
+    <Company>Translucency Software</Company>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <PackageProjectUrl>https://doxm.app</PackageProjectUrl>
+    <Platforms>AnyCPU;x86;x64</Platforms>
+    <AssemblyName>Remotely_Agent</AssemblyName>
+    <RootNamespace>Remotely_Agent</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\Remotely_ScreenCapture.exe" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Remotely_ScreenCapture.exe" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Management.Infrastructure" Version="1.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="1.1.0" />
+    <PackageReference Include="Microsoft.PowerShell.Commands.Diagnostics" Version="6.1.3" />
+    <PackageReference Include="Microsoft.PowerShell.Commands.Management" Version="6.1.3" />
+    <PackageReference Include="Microsoft.PowerShell.Commands.Utility" Version="6.1.3" />
+    <PackageReference Include="Microsoft.PowerShell.CoreCLR.Eventing" Version="6.1.3" />
+    <PackageReference Include="Microsoft.PowerShell.SDK" Version="6.1.3" />
+    <PackageReference Include="Microsoft.PowerShell.Security" Version="6.1.3" />
+    <PackageReference Include="Microsoft.WSMan.Management" Version="6.1.3" />
+    <PackageReference Include="Microsoft.WSMan.Runtime" Version="6.1.3" />
+    <PackageReference Include="NETStandard.Library" Version="2.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="System.Management.Automation" Version="6.1.3" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System">
+      <HintPath>System</HintPath>
+    </Reference>
+    <Reference Include="System.Data">
+      <HintPath>System.Data</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceProcess">
+      <HintPath>System.ServiceProcess</HintPath>
+    </Reference>
+    <Reference Include="System.Xml">
+      <HintPath>System.Xml</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Services\WindowsService.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Build.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Remotely_Library\Remotely_Library.csproj" />
+  </ItemGroup>
+
+</Project>

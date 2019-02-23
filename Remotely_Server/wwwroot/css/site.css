@@ -1,0 +1,217 @@
+/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand {
+    white-space: normal;
+    word-break: break-all;
+}
+
+.hidden {
+    display:none !important;
+}
+
+/* QR code generator */
+#qrCode {
+    margin: 15px;
+}
+
+
+.logo-subtitle {
+    font-size: .5em;
+}
+
+.login-frame {
+    display: inline-block;
+    margin-bottom: 150px;
+}
+
+.login-button {
+    width: 100%;
+}
+
+.work-area {
+    display: grid;
+    grid-template-rows: min-content auto min-content;
+    grid-row-gap: 15px;
+    height: calc(100vh - 150px);
+    overflow-y: hidden;
+    margin-top: 10px
+}
+
+#dataGridFrame {
+    max-height: calc(100vh - 250px);
+}
+
+.record-row {
+    cursor: pointer;
+}
+
+#tabContentWrapper {
+    overflow: auto;
+}
+#gridControlsWrapper {
+    text-align: right;
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
+
+#gridControlsWrapper span {
+    margin-right: 10px;
+}
+#gridControlsWrapper button {
+    margin-right: 10px;
+}
+
+.console {
+    font-family: Consolas, 'Lucida Console', Courier New, Courier, monospace;
+    overflow-y: auto;
+}
+
+#consoleStatusDiv select {
+    border: none;
+}
+
+.console-block {
+    display: grid;
+    width: 100%;
+    grid-column-gap: 7px;
+    grid-template-columns: min-content auto;
+}
+
+#qrCode img {
+    border-width: 3px;
+    border-style: solid;
+}
+.help-wrapper {
+    font-size: .9em;
+}
+
+
+.help-syntax-text {
+    font-style: italic;
+}
+
+.console-prompt {
+    text-align: right;
+}
+
+.console-input-prompt {
+    text-align: right;
+}
+
+.console-input-prompt select {
+    border: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.console-input-prompt select::-ms-expand {
+    display: none;
+}
+
+.console-block textarea {
+    border: none;
+    width: 100%;
+    height: 22px;
+    resize: none;
+}
+
+#commandCompletionWrapper {
+    position: absolute;
+    z-index: 1;
+}
+#commandCompletionDiv {
+    display: inline-block;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 200px;
+    max-width: 400px;
+    vertical-align: top;
+}
+#commandInfoDiv {
+    display: inline-block;
+    overflow-y: auto;
+    max-height: 200px;
+    margin-left: 5px;
+    vertical-align: top;
+    padding: 5px 10px;
+    max-width: 500px;
+}
+
+.command-completion-item {
+    cursor: pointer;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    padding: 5px 10px;
+    padding: 3px 20px 3px 10px;
+}
+
+.command-completion-item:hover {
+    transition: .3s all linear;
+}
+
+span.label.code {
+    font-weight: normal;
+    font-size: 1em;
+    white-space: normal;
+}
+
+.command-result-output {
+    margin-left: 30px;
+    overflow-wrap: break-word;
+}
+
+.footer-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    font-size: .9em;
+}
+
+.help-list {
+    display: grid;
+    grid-template-columns: min-content 1fr;
+    grid-column-gap: 20px;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.middle-aligned {
+    vertical-align: middle !important;
+}
+.float-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px;
+    font-size: 1.25em;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, .75);
+    opacity: 1;
+    color: white;
+    z-index: 4;
+    border-radius: 5px;
+    user-select: none;
+    pointer-events: none;
+    animation-name: float-message;
+    animation-delay: 1s;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease-in;
+}
+
+@keyframes float-message {
+    from {
+        opacity: 1;
+        top: 50%;
+    }
+
+    to {
+        opacity: 0;
+        top: 0;
+    }
+}

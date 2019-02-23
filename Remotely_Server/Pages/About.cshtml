@@ -1,0 +1,22 @@
+﻿@page
+@model AboutModel
+@{
+    ViewData["Title"] = "About";
+}
+<h3>@ViewData["Title"] Remotely</h3>
+
+<p>
+    Website: <a href="https://remotely.lucency.co">https://remotely.lucency.co</a>
+</p>
+<p>
+    Contact:  <a href="https://remotely.lucency.co/Contact">https://remotely.lucency.co/Contact</a>
+</p>
+<p>
+    Privacy Policy: <a asp-page="/Privacy">@Request.Scheme://@Request.Host/Privacy</a>
+</p>
+<p>
+    Open-Source Licenses: <a asp-page="/Credits">@Request.Scheme://@Request.Host/Credits</a>
+</p>
+<p>
+    Version: @System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()
+</p>

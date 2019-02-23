@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <Platforms>AnyCPU;x86;x64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="Models\Machine.d.ts">
+      <DependentUpon>Machine.cs</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </None>
+    <None Include="Models\PSCoreCommandResult.d.ts">
+      <DependentUpon>PSCoreCommandResult.cs</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Management.Infrastructure" Version="1.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="System.Management.Automation" Version="6.1.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Models\CommandContext.cs">
+      <LastGenOutput>CommandContext.cs.d.ts</LastGenOutput>
+      <Generator>DtsGenerator</Generator>
+    </Compile>
+    <Compile Update="Models\RemotelyUserOptions.cs">
+      <LastGenOutput>DoXMUserOptions.cs.d.ts</LastGenOutput>
+      <Generator>DtsGenerator</Generator>
+    </Compile>
+    <Compile Update="Models\GenericCommandResult.cs">
+      <LastGenOutput>GenericCommandResult.cs.d.ts</LastGenOutput>
+      <Generator>DtsGenerator</Generator>
+    </Compile>
+    <Compile Update="Models\Machine.cs">
+      <LastGenOutput>Machine.cs.d.ts</LastGenOutput>
+      <Generator>DtsGenerator</Generator>
+    </Compile>
+    <Compile Update="Models\PSCoreCommandResult.cs">
+      <LastGenOutput>PSCoreCommandResult.cs.d.ts</LastGenOutput>
+      <Generator>DtsGenerator</Generator>
+    </Compile>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,29 @@
+﻿.loading-frame {
+    margin-top: 150px;
+    margin-bottom: 200px;
+    text-align: center;
+}
+
+.loading-wheel {
+    height: 75px;
+    width: 75px;
+    animation-name: loading-spin;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease;
+}
+
+.loading-header {
+    color:white;
+}
+
+
+@keyframes loading-spin {
+    from {
+        transform: rotateZ(0deg);
+    }
+
+    to {
+        transform: rotateZ(360deg);
+    }
+}
