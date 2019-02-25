@@ -20,7 +20,12 @@ namespace Remotely_Agent.Services
 {
     public static class ClientSocket
     {
+        public static Timer HeartbeatTimer { get; private set; }
         public static bool IsServerVerified { get; set; }
+        private static ConnectionInfo ConnectionInfo { get; set; }
+
+        private static HubConnection HubConnection { get; set; }
+
         public static async void Connect()
         {
             ConnectionInfo = Utilities.GetConnectionInfo();
@@ -58,6 +63,109 @@ namespace Remotely_Agent.Services
             HeartbeatTimer = new Timer(300000);
             HeartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
             HeartbeatTimer.Start();
+        }
+
+        public static void SendHeartbeat()
+        {
+            var currentInfo = Machine.Create(ConnectionInfo);
+            HubConnection.InvokeAsync("MachineHeartbeat", currentInfo);
+        }
+
+        private static async Task ExecuteCommand(string mode, string command, string commandID, string senderConnectionID)
+        {
+            if (!IsServerVerified)
+            {
+                Logger.Write($"Command attempted before server was verified.  Mode: {mode}.  Command: {command}.  Sender: {senderConnectionID}");
+                Uninstaller.UninstallClient();
+                return;
+            }
+            try
+            {
+                switch (mode.ToLower())
+                {
+                    case "pscore":
+                        {
+                            var psCoreResult = PSCore.GetCurrent(senderConnectionID).WriteInput(command, commandID);
+                            var serializedResult = JsonConvert.SerializeObject(psCoreResult);
+                            if (Encoding.UTF8.GetBytes(serializedResult).Length > 400000)
+                            {
+                                SendResultsViaAjax("PSCore", psCoreResult);
+                                await HubConnection.InvokeAsync("PSCoreResultViaAjax", commandID);
+                            }
+                            else
+                            {
+                                await HubConnection.InvokeAsync("PSCoreResult", psCoreResult);
+                            }
+                            break;
+                        }
+
+                    case "winps":
+                        if (OSUtils.IsWindows)
+                        {
+                            var result = WindowsPS.GetCurrent(senderConnectionID).WriteInput(command, commandID);
+                            var serializedResult = JsonConvert.SerializeObject(result);
+                            if (Encoding.UTF8.GetBytes(serializedResult).Length > 400000)
+                            {
+                                SendResultsViaAjax("WinPS", result);
+                                await HubConnection.InvokeAsync("WinPSResultViaAjax", commandID);
+                            }
+                            else
+                            {
+                                await HubConnection.InvokeAsync("CommandResult", result);
+                            }
+                        }
+                        break;
+                    case "cmd":
+                        if (OSUtils.IsWindows)
+                        {
+                            var result = CMD.GetCurrent(senderConnectionID).WriteInput(command, commandID);
+                            var serializedResult = JsonConvert.SerializeObject(result);
+                            if (Encoding.UTF8.GetBytes(serializedResult).Length > 400000)
+                            {
+                                SendResultsViaAjax("CMD", result);
+                                await HubConnection.InvokeAsync("CMDResultViaAjax", commandID);
+                            }
+                            else
+                            {
+                                await HubConnection.InvokeAsync("CommandResult", result);
+                            }
+                        }
+                        break;
+                    case "bash":
+                        if (OSUtils.IsLinux)
+                        {
+                            var result = Bash.GetCurrent(senderConnectionID).WriteInput(command, commandID);
+                            var serializedResult = JsonConvert.SerializeObject(result);
+                            if (Encoding.UTF8.GetBytes(serializedResult).Length > 400000)
+                            {
+                                SendResultsViaAjax("Bash", result);
+                            }
+                            else
+                            {
+                                await HubConnection.InvokeAsync("CommandResult", result);
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+                await HubConnection.InvokeAsync("DisplayConsoleMessage", $"There was an error executing the command.  It has been logged on the client machine.", senderConnectionID);
+            }
+        }
+
+        private static void HeartbeatTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            SendHeartbeat();
+        }
+
+        private static async Task HubConn_Closed(Exception arg)
+        {
+            await Task.Delay(new Random().Next(5000, 30000));
+            Connect();
         }
 
         private static void RegisterMessageHandlers(HubConnection hubConnection)
@@ -186,16 +294,21 @@ namespace Remotely_Agent.Services
                     await hubConnection.InvokeAsync("DisplayConsoleMessage", $"Starting remote control...", requesterID);
                     if (OSUtils.IsWindows)
                     {
-#if DEBUG
-                        Process.Start(filePath, $"-mode unattended -requester {requesterID} -serviceid {serviceID} -hostname {Utilities.GetConnectionInfo().Host.Split("//").Last()}");
-#else
-                        var procInfo = new ADVAPI32.PROCESS_INFORMATION();
-                        var result = Win32Interop.OpenInteractiveProcess(filePath + $" -mode unattended -requester {requesterID} -serviceid {serviceID} -hostname {Utilities.GetConnectionInfo().Host.Split("//").Last()}", "default", true, out procInfo);
-                        if (!result)
+
+                        if (Program.IsDebug)
                         {
-                            await hubConnection.InvokeAsync("DisplayConsoleMessage", "Remote control failed to download or start on target machine.", requesterID);
+                            Process.Start(filePath, $"-mode unattended -requester {requesterID} -serviceid {serviceID} -hostname {Utilities.GetConnectionInfo().Host.Split("//").Last()}");
                         }
-#endif
+                        else
+                        {
+                            var procInfo = new ADVAPI32.PROCESS_INFORMATION();
+                            var result = Win32Interop.OpenInteractiveProcess(filePath + $" -mode unattended -requester {requesterID} -serviceid {serviceID} -hostname {Utilities.GetConnectionInfo().Host.Split("//").Last()}", "default", true, out procInfo);
+                            if (!result)
+                            {
+                                await hubConnection.InvokeAsync("DisplayConsoleMessage", "Remote control failed to download or start on target machine.", requesterID);
+                            }
+                        }
+
                     }
                     //else if (OSUtils.IsLinux)
                     //{
@@ -231,93 +344,6 @@ namespace Remotely_Agent.Services
                 }
             });
         }
-
-        private static async Task ExecuteCommand(string mode, string command, string commandID, string senderConnectionID)
-        {
-            if (!IsServerVerified)
-            {
-                Logger.Write($"Command attempted before server was verified.  Mode: {mode}.  Command: {command}.  Sender: {senderConnectionID}");
-                Uninstaller.UninstallClient();
-                return;
-            }
-            try
-            {
-                switch (mode.ToLower())
-                {
-                    case "pscore":
-                        {
-                            var psCoreResult = PSCore.GetCurrent(senderConnectionID).WriteInput(command, commandID);
-                            var serializedResult = JsonConvert.SerializeObject(psCoreResult);
-                            if (Encoding.UTF8.GetBytes(serializedResult).Length > 400000)
-                            {
-                                SendResultsViaAjax("PSCore", psCoreResult);
-                                await HubConnection.InvokeAsync("PSCoreResultViaAjax", commandID);
-                            }
-                            else
-                            {
-                                await HubConnection.InvokeAsync("PSCoreResult", psCoreResult);
-                            }
-                            break;
-                        }
-
-                    case "winps":
-                        if (OSUtils.IsWindows)
-                        {
-                            var result = WindowsPS.GetCurrent(senderConnectionID).WriteInput(command, commandID);
-                            var serializedResult = JsonConvert.SerializeObject(result);
-                            if (Encoding.UTF8.GetBytes(serializedResult).Length > 400000)
-                            {
-                                SendResultsViaAjax("WinPS", result);
-                                await HubConnection.InvokeAsync("WinPSResultViaAjax", commandID);
-                            }
-                            else
-                            {
-                                await HubConnection.InvokeAsync("CommandResult", result);
-                            }
-                        }
-                        break;
-                    case "cmd":
-                        if (OSUtils.IsWindows)
-                        {
-                            var result = CMD.GetCurrent(senderConnectionID).WriteInput(command, commandID);
-                            var serializedResult = JsonConvert.SerializeObject(result);
-                            if (Encoding.UTF8.GetBytes(serializedResult).Length > 400000)
-                            {
-                                SendResultsViaAjax("CMD", result);
-                                await HubConnection.InvokeAsync("CMDResultViaAjax", commandID);
-                            }
-                            else
-                            {
-                                await HubConnection.InvokeAsync("CommandResult", result);
-                            }
-                        }
-                        break;
-                    case "bash":
-                        if (OSUtils.IsLinux)
-                        {
-                            var result = Bash.GetCurrent(senderConnectionID).WriteInput(command, commandID);
-                            var serializedResult = JsonConvert.SerializeObject(result);
-                            if (Encoding.UTF8.GetBytes(serializedResult).Length > 400000)
-                            {
-                                SendResultsViaAjax("Bash", result);
-                            }
-                            else
-                            {
-                                await HubConnection.InvokeAsync("CommandResult", result);
-                            }
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
-                await HubConnection.InvokeAsync("DisplayConsoleMessage", $"There was an error executing the command.  It has been logged on the client machine.", senderConnectionID);
-            }
-        }
-
         private static void SendResultsViaAjax(string resultType, object result)
         {
             var targetURL = Utilities.GetConnectionInfo().Host + $"/API/Commands/{resultType}";
@@ -330,25 +356,5 @@ namespace Remotely_Agent.Services
             }
             webRequest.GetResponse();
         }
-
-        private static void HeartbeatTimer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            SendHeartbeat();
-        }
-
-        public static void SendHeartbeat()
-        {
-            var currentInfo = Machine.Create(ConnectionInfo);
-            HubConnection.InvokeAsync("MachineHeartbeat", currentInfo);
-        }
-        private static async Task HubConn_Closed(Exception arg)
-        {
-            await Task.Delay(new Random().Next(5000, 30000));
-            Connect();
-        }
-        private static HubConnection HubConnection { get; set; }
-
-        private static ConnectionInfo ConnectionInfo { get; set; }
-        public static Timer HeartbeatTimer { get; private set; }
     }
 }

@@ -16,6 +16,7 @@ namespace Remotely_Agent
 {
     public class Program
     {
+        public static bool IsDebug { get; set; }
         static void Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
@@ -42,6 +43,7 @@ namespace Remotely_Agent
             if (OSUtils.IsWindows)
             {
 #if DEBUG
+                IsDebug = true;
                 ClientSocket.Connect();
 #else
                 ServiceBase.Run(new WindowsService());
@@ -55,6 +57,20 @@ namespace Remotely_Agent
             while (true)
             {
                 Console.Read();
+            }
+        }
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Logger.Write(e.ExceptionObject as Exception);
+            if (OSUtils.IsWindows)
+            {
+                // Remove Secure Attention Sequence policy to allow app to simulate Ctrl + Alt + Del.
+                var subkey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", true);
+                if (subkey.GetValue("SoftwareSASGeneration") != null)
+                {
+                    subkey.DeleteValue("SoftwareSASGeneration");
+                }
             }
         }
 
@@ -84,20 +100,6 @@ namespace Remotely_Agent
             var assemblyPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
             var assemblyDir = Path.GetDirectoryName(assemblyPath);
             Directory.SetCurrentDirectory(assemblyDir);
-        }
-
-        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            Logger.Write(e.ExceptionObject as Exception);
-            if (OSUtils.IsWindows)
-            {
-                // Remove Secure Attention Sequence policy to allow app to simulate Ctrl + Alt + Del.
-                var subkey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", true);
-                if (subkey.GetValue("SoftwareSASGeneration") != null)
-                {
-                    subkey.DeleteValue("SoftwareSASGeneration");
-                }
-            }
         }
     }
 }

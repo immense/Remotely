@@ -13,7 +13,12 @@ namespace Remotely_Library.Models
 {
     public class Machine
     {
-        public List<Drive> Drives { get; set; }
+        public string CurrentUser { get; set; }
+        public virtual List<Drive> Drives { get; set; }
+
+        public double FreeMemory { get; set; }
+
+        public double FreeStorage { get; set; }
 
         [Key]
         public string ID { get; set; }
@@ -26,31 +31,22 @@ namespace Remotely_Library.Models
 
         public string MachineName { get; set; }
 
+        public virtual Organization Organization { get; set; }
         public string OrganizationID { get; set; }
-        public Organization Organization { get; set; }
-
         public Architecture OSArchitecture { get; set; }
 
         public string OSDescription { get; set; }
 
+        public List<PermissionGroup> PermissionGroups { get; set; } = new List<PermissionGroup>();
         public string Platform { get; set; }
 
         public int ProcessorCount { get; set; }
-        public double TotalMemory { get; set; }
-
-        public double FreeStorage { get; set; }
-
-        public double TotalStorage { get; set; }
-
-        public double FreeMemory { get; set; }
-
-        public string CurrentUser { get; set; }
-        public List<PermissionGroup> PermissionGroups { get; set; } = new List<PermissionGroup>();
-
+        public string ServerVerificationToken { get; set; }
         [StringLength(200)]
         public string Tags { get; set; } = "";
-        public string ServerVerificationToken { get; set; }
 
+        public double TotalMemory { get; set; }
+        public double TotalStorage { get; set; }
         public static Machine Create(ConnectionInfo connectionInfo)
         {
             OSPlatform platform = OSUtils.GetPlatform();
@@ -151,24 +147,6 @@ namespace Remotely_Library.Models
             }
         }
 
-        private static Tuple<double, double> GetWinMemoryInGB()
-        {
-            try
-            {
-                var session = CimSession.Create(null);
-                var cimOS = session.EnumerateInstances("root\\cimv2", "CIM_OperatingSystem");
-                var free = (ulong)(cimOS.FirstOrDefault()?.CimInstanceProperties["FreePhysicalMemory"]?.Value ?? 0);
-                var freeGB = Math.Round(((double)free / 1024 / 1024), 2);
-                var total = (ulong)(cimOS.FirstOrDefault()?.CimInstanceProperties["TotalVisibleMemorySize"]?.Value ?? 0);
-                var totalGB = Math.Round(((double)total / 1024 / 1024), 2);
-
-                return new Tuple<double, double>(freeGB, totalGB);
-            }
-            catch
-            {
-                return new Tuple<double, double>(0, 0);
-            }
-        }
         private static Tuple<double, double> GetLinxMemoryInGB()
         {
             try
@@ -193,6 +171,25 @@ namespace Remotely_Library.Models
 
                 var freeGB = Math.Round((double.Parse(freeKB) / 1024 / 1024), 2);
                 var totalGB = Math.Round((double.Parse(totalKB) / 1024 / 1024), 2);
+
+                return new Tuple<double, double>(freeGB, totalGB);
+            }
+            catch
+            {
+                return new Tuple<double, double>(0, 0);
+            }
+        }
+
+        private static Tuple<double, double> GetWinMemoryInGB()
+        {
+            try
+            {
+                var session = CimSession.Create(null);
+                var cimOS = session.EnumerateInstances("root\\cimv2", "CIM_OperatingSystem");
+                var free = (ulong)(cimOS.FirstOrDefault()?.CimInstanceProperties["FreePhysicalMemory"]?.Value ?? 0);
+                var freeGB = Math.Round(((double)free / 1024 / 1024), 2);
+                var total = (ulong)(cimOS.FirstOrDefault()?.CimInstanceProperties["TotalVisibleMemorySize"]?.Value ?? 0);
+                var totalGB = Math.Round(((double)total / 1024 / 1024), 2);
 
                 return new Tuple<double, double>(freeGB, totalGB);
             }

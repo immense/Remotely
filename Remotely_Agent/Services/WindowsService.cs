@@ -45,11 +45,11 @@ namespace Remotely_Agent.Services
                 if (OSUtils.IsWindows)
                 {
                     // Remove Secure Attention Sequence policy to allow app to simulate Ctrl + Alt + Del.
-                    //var subkey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", true);
-                    //if (subkey.GetValue("SoftwareSASGeneration") != null)
-                    //{
-                    //    subkey.DeleteValue("SoftwareSASGeneration");
-                    //}
+                    var subkey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", true);
+                    if (subkey.GetValue("SoftwareSASGeneration") != null)
+                    {
+                        subkey.DeleteValue("SoftwareSASGeneration");
+                    }
                 }
             }
             catch (Exception ex)

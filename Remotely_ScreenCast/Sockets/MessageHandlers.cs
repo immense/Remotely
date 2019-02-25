@@ -26,6 +26,7 @@ namespace Remotely_ScreenCapture.Sockets
 
             hubConnection.On("GetScreenCast", (string viewerID, string requesterName) =>
             {
+                Program.ViewerID = viewerID;
                 outgoingMessages.SendScreenCount(
                    Screen.AllScreens.ToList().IndexOf(Screen.PrimaryScreen),
                    Screen.AllScreens.Length,
