@@ -106,9 +106,15 @@ export class RCBrowserSockets {
             UI.ScreenViewer.height = height;
         });
         hubConnection.on("ScreenCapture", (buffer) => {
-            window["test"] = buffer;
-            window["test2"] = atob(buffer);
-            //UI.Screen2DContext.putImageData(new ImageData(array, UI.ScreenViewer.width, UI.ScreenViewer.height), 0, 0);
+            var decodedString = window.atob(buffer);
+            var len = decodedString.length;
+            var bytes = new Uint8ClampedArray(len);
+            for (var i = 0; i < len; i++) {
+                bytes[i] = decodedString.charCodeAt(i);
+            }
+            ;
+            var imageData = new ImageData(bytes, UI.ScreenViewer.width, UI.ScreenViewer.height);
+            UI.Screen2DContext.putImageData(imageData, 0, 0);
             //var url = window.URL.createObjectURL(new Blob([buffer]));
             //var img = document.createElement("img");
             //img.onload = function () {
