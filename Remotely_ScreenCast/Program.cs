@@ -27,6 +27,7 @@ namespace Remotely_ScreenCast
         public static object LockObject { get; } = new object();
         public static string Mode { get; private set; }
         public static string RequesterID { get; private set; }
+        public static string ViewerID { get; set; }
         public static string HostName { get; private set; }
         public static HubConnection Connection { get; private set; }
         public static OutgoingMessages OutgoingMessages { get; private set; }
@@ -71,7 +72,10 @@ namespace Remotely_ScreenCast
 
         private static async void HandleScreenChanged(object sender, Size size)
         {
-            await OutgoingMessages.SendScreenSize(size.Width, size.Height);
+            if (!string.IsNullOrWhiteSpace(ViewerID))
+            {
+                await OutgoingMessages.SendScreenSize(size.Width, size.Height, ViewerID);
+            }
         }
 
         private static Dictionary<string, string> ProcessArgs(string[] args)
