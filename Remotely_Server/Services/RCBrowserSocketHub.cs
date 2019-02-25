@@ -66,7 +66,7 @@ namespace Remotely_Server.Services
             }
             await RCDeviceHub.Clients.Client(clientID).SendAsync("IceCandidate", candidate, Context.ConnectionId);
         }
-        public async Task SendOfferRequestToDevice(string clientID, string requesterName, string clientType)
+        public async Task SendScreenCastRequestToDevice(string clientID, string requesterName, string clientType)
         {
             if (clientType == "Normal")
             {
@@ -90,7 +90,7 @@ namespace Remotely_Server.Services
             Context.Items["ClientID"] = clientID;
             Context.Items["ClientType"] = clientType;
             Context.Items["RequesterName"] = requesterName;
-            await RCDeviceHub.Clients.Client(clientID).SendAsync("GetOfferRequest", Context.ConnectionId, requesterName);
+            await RCDeviceHub.Clients.Client(clientID).SendAsync("GetScreenCast", Context.ConnectionId, requesterName);
         }
         public async Task SelectScreen(int screenIndex)
         {

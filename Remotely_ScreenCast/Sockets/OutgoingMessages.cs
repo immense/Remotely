@@ -15,19 +15,24 @@ namespace Remotely_ScreenCapture.Sockets
         }
 
         private HubConnection Connection { get; }
-        public async Task SendScreenSize(int width, int height)
+        public async Task SendScreenSize(int width, int height, string viewerID)
         {
-            await Connection.SendAsync("ScreenSize", width, height);
+            await Connection.SendAsync("SendScreenSize", width, height, viewerID);
         }
 
-        public async Task SendScreenCapture(byte[] captureBytes)
+        public async Task SendScreenCapture(byte[] captureBytes, string viewerID)
         {
-            await Connection.SendAsync("ScreenCapture", captureBytes);
+            await Connection.SendAsync("SendScreenCapture", captureBytes, viewerID);
         }
 
-        internal async Task SendScreenCount(int primaryScreenIndex, int screenCount, string requesterID)
+        internal async Task SendScreenCount(int primaryScreenIndex, int screenCount, string viewerID)
         {
-            await Connection.SendAsync("SendScreenCountToBrowser", primaryScreenIndex, screenCount, requesterID);
+            await Connection.SendAsync("SendScreenCountToBrowser", primaryScreenIndex, screenCount, viewerID);
+        }
+
+        public async Task NotifyRequesterUnattendedReady(string requesterID)
+        {
+            await Connection.SendAsync("UnattendedSessionReady", requesterID);
         }
     }
 }
