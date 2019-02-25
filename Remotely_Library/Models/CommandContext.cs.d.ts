@@ -4,7 +4,7 @@
 		CommandText: string;
 		SenderUserID: string;
 		SenderConnectionID: string;
-		TargetMachineIDs: string[];
+		TargetDeviceIDs: string[];
 		PSCoreResults: any[];
 		CommandResults: any[];
 		TimeStamp: Date;

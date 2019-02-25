@@ -34,6 +34,7 @@ namespace Remotely_ScreenCast
 
         static void Main(string[] args)
         {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             var argDict = ProcessArgs(args);
             Mode = argDict["mode"];
             RequesterID = argDict["requester"];
@@ -52,8 +53,9 @@ namespace Remotely_ScreenCast
                 Capturer = new DXCapture();
                 CaptureMode = CaptureMode.DirectX;
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.Write(ex);
                 Capturer = new BitBltCapture();
                 CaptureMode = CaptureMode.BitBtl;
             }
@@ -63,11 +65,13 @@ namespace Remotely_ScreenCast
             MessageHandlers.ApplyConnectionHandlers(Connection, OutgoingMessages, Capturer);
 
             OutgoingMessages.NotifyRequesterUnattendedReady(RequesterID).Wait();
+
+            Console.ReadKey();
         }
 
-        internal static void BeginCapturing()
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            
+            Logger.Write((Exception)e.ExceptionObject);
         }
 
         private static async void HandleScreenChanged(object sender, Size size)

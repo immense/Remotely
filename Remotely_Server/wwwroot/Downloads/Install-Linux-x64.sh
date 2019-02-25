@@ -29,7 +29,7 @@ chmod +x ./Remotely_Agent
 
 cat > ./ConnectionInfo.json << EOL
 {
-	"MachineID":"$GUID", 
+	"DeviceID":"$GUID", 
 	"Host":"$HostName",
 	"OrganizationID": "$Organization",
 	"ServerVerificationToken":""

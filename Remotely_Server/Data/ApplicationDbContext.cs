@@ -20,7 +20,7 @@ namespace Remotely_Server.Data
 
         public DbSet<Drive> Drives { get; set; }
 
-        public DbSet<Machine> Machines { get; set; }
+        public DbSet<Device> Devices { get; set; }
 
         public DbSet<Organization> Organizations { get; set; }
 
@@ -34,7 +34,7 @@ namespace Remotely_Server.Data
 
         public DbSet<PermissionGroup> PermissionGroups { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+		protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
             
@@ -42,7 +42,7 @@ namespace Remotely_Server.Data
             builder.Entity<RemotelyUser>().ToTable("RemotelyUsers");
 
             builder.Entity<Organization>()
-                .HasMany(x => x.Machines)
+                .HasMany(x => x.Devices)
                 .WithOne(x=>x.Organization);
             builder.Entity<Organization>()
                 .HasMany(x => x.RemotelyUsers)
@@ -65,7 +65,7 @@ namespace Remotely_Server.Data
 
 
             builder.Entity<CommandContext>()
-                .Property(x=>x.TargetMachineIDs)
+                .Property(x=>x.TargetDeviceIDs)
                 .HasConversion(
                     x => JsonConvert.SerializeObject(x),
                     x => JsonConvert.DeserializeObject<string[]>(x));
@@ -80,28 +80,25 @@ namespace Remotely_Server.Data
                     x => JsonConvert.SerializeObject(x),
                     x => JsonConvert.DeserializeObject<List<GenericCommandResult>>(x));
 
-            builder.Entity<RemotelyUser>()
-                .Property(x => x.UserOptions)
-                .HasConversion(
-                    x => JsonConvert.SerializeObject(x),
-                    x => JsonConvert.DeserializeObject<Remotely_Library.Models.RemotelyUserOptions>(x));
-            builder.Entity<RemotelyUser>()
-                .Property(x => x.PermissionGroups)
-                .HasConversion(
-                    x => JsonConvert.SerializeObject(x),
-                    x => JsonConvert.DeserializeObject<List<PermissionGroup>>(x)
-                );
-            builder.Entity<RemotelyUser>()
+
+			builder.Entity<RemotelyUser>()
+				.HasMany(x => x.PermissionGroups);
+
+			builder.Entity<Device>()
+				.HasMany(x => x.PermissionGroups);
+
+			builder.Entity<PermissionGroup>()
+				.HasMany(x => x.RemotelyUsers);
+
+			builder.Entity<PermissionGroup>()
+				.HasMany(x => x.Devices);
+
+			builder.Entity<RemotelyUser>()
                .HasOne(x => x.Organization);
 
-            builder.Entity<Machine>()
+            builder.Entity<Device>()
                 .HasMany(x => x.Drives);
-            builder.Entity<RemotelyUser>()
-               .Property(x => x.PermissionGroups)
-               .HasConversion(
-                   x => JsonConvert.SerializeObject(x),
-                   x => JsonConvert.DeserializeObject<List<PermissionGroup>>(x)
-               );
+
         }
     }
 }

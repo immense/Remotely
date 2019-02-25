@@ -1,6 +1,6 @@
 ﻿import * as UI from "./UI.js";
 import * as DataGrid from "./DataGrid.js";
-import { Machine } from "./Models/Machine.js";
+import { Device } from "./Models/Device.js";
 import { PSCoreCommandResult } from "./Models/PSCoreCommandResult.js";
 import { GenericCommandResult } from "./Models/GenericCommandResult.js";
 import { CommandContext } from "./Models/CommandContext.js";
@@ -53,17 +53,17 @@ function applyMessageHandlers(hubConnection) {
         location.assign("/Identity/Account/Lockout");
     });
 
-    hubConnection.on("MachineCameOnline", (machine:Machine) => {
-        DataGrid.AddOrUpdateMachine(machine);
+    hubConnection.on("DeviceCameOnline", (device:Device) => {
+        DataGrid.AddOrUpdateDevice(device);
     });
-    hubConnection.on("MachineWentOffline", (machine: Machine) => {
-        DataGrid.AddOrUpdateMachine(machine);
+    hubConnection.on("DeviceWentOffline", (device: Device) => {
+        DataGrid.AddOrUpdateDevice(device);
     });
-    hubConnection.on("MachineHeartbeat", (machine: Machine) => {
-        DataGrid.AddOrUpdateMachine(machine);
+    hubConnection.on("DeviceHeartbeat", (device: Device) => {
+        DataGrid.AddOrUpdateDevice(device);
     });
 
-    hubConnection.on("RefreshMachineList", () => {
+    hubConnection.on("RefreshDeviceList", () => {
         DataGrid.RefreshGrid();
     });
 
@@ -86,8 +86,8 @@ function applyMessageHandlers(hubConnection) {
         var count = parseInt(completedWrapper.innerHTML);
         completedWrapper.innerHTML = (count + 1).toString();
     })
-    hubConnection.on("PSCoreResultViaAjax", (commandID: string, machineID: string) => {
-        var targetURL = `${location.origin}/API/Commands/PSCoreResult/${commandID}/${machineID}`;
+    hubConnection.on("PSCoreResultViaAjax", (commandID: string, deviceID: string) => {
+        var targetURL = `${location.origin}/API/Commands/PSCoreResult/${commandID}/${deviceID}`;
         var xhr = new XMLHttpRequest();
         xhr.open("get", targetURL);
         xhr.onload = function () {
@@ -98,8 +98,8 @@ function applyMessageHandlers(hubConnection) {
         };
         xhr.send();
     });
-    hubConnection.on("WinPSResultViaAjax", (commandID: string, machineID: string) => {
-        var targetURL = `${location.origin}/API/Commands/WinPSResult/${commandID}/${machineID}`;
+    hubConnection.on("WinPSResultViaAjax", (commandID: string, deviceID: string) => {
+        var targetURL = `${location.origin}/API/Commands/WinPSResult/${commandID}/${deviceID}`;
         var xhr = new XMLHttpRequest();
         xhr.open("get", targetURL);
         xhr.onload = function () {
@@ -110,8 +110,8 @@ function applyMessageHandlers(hubConnection) {
         };
         xhr.send();
     });
-    hubConnection.on("CMDResultViaAjax", (commandID: string, machineID: string) => {
-        var targetURL = `${location.origin}/API/Commands/PSCoreResult/${commandID}/${machineID}`;
+    hubConnection.on("CMDResultViaAjax", (commandID: string, deviceID: string) => {
+        var targetURL = `${location.origin}/API/Commands/PSCoreResult/${commandID}/${deviceID}`;
         var xhr = new XMLHttpRequest();
         xhr.open("get", targetURL);
         xhr.onload = function () {
@@ -122,8 +122,8 @@ function applyMessageHandlers(hubConnection) {
         };
         xhr.send();
     });
-    hubConnection.on("BashResultViaAjax", (commandID: string, machineID: string) => {
-        var targetURL = `${location.origin}/API/Commands/PSCoreResult/${commandID}/${machineID}`;
+    hubConnection.on("BashResultViaAjax", (commandID: string, deviceID: string) => {
+        var targetURL = `${location.origin}/API/Commands/PSCoreResult/${commandID}/${deviceID}`;
         var xhr = new XMLHttpRequest();
         xhr.open("get", targetURL);
         xhr.onload = function () {

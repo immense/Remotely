@@ -78,7 +78,7 @@ namespace Remotely_Agent.Services
             return new PSCoreCommandResult()
             {
                 CommandContextID = commandID,
-                MachineID = Utilities.GetConnectionInfo().MachineID,
+                DeviceID = Utilities.GetConnectionInfo().DeviceID,
                 DebugOutput = debugOut,
                 ErrorOutput = errorOut,
                 VerboseOutput = verboseOut,

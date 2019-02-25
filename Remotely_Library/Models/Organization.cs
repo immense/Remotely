@@ -12,12 +12,12 @@ namespace Remotely_Library.Models
 
         [StringLength(25)]
         public string OrganizationName { get; set; }
-        public List<RemotelyUser> RemotelyUsers { get; set; }
-        public List<Machine> Machines { get; set; }
-        public List<CommandContext> CommandContexts { get; set; }
-        public List<EventLog> EventLogs { get; set; }
-        public List<PermissionGroup> PermissionGroups { get; set; } = new List<PermissionGroup>();
-        public List<InviteLink> InviteLinks { get; set; }
-        public List<SharedFile> SharedFiles { get; set; }
+        public virtual List<RemotelyUser> RemotelyUsers { get; set; }
+        public virtual List<Device> Devices { get; set; }
+        public virtual List<CommandContext> CommandContexts { get; set; }
+        public virtual List<EventLog> EventLogs { get; set; }
+        public virtual List<PermissionGroup> PermissionGroups { get; set; } = new List<PermissionGroup>();
+        public virtual List<InviteLink> InviteLinks { get; set; }
+        public virtual List<SharedFile> SharedFiles { get; set; }
     }
 }

@@ -14,8 +14,8 @@ namespace Remotely_ScreenCapture.Sockets
     public class MessageHandlers
     {
         public static void ApplyConnectionHandlers(HubConnection hubConnection, 
-            OutgoingMessages outgoingMessages, 
-            ICapturer capturer)
+                                                    OutgoingMessages outgoingMessages, 
+                                                    ICapturer capturer)
         {
             hubConnection.Closed += (ex) =>
             {

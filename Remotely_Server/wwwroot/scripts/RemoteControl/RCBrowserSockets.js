@@ -13,6 +13,10 @@ export class RCBrowserSockets {
             console.log("Connection closed.");
         }).then(() => {
             this.SendScreenCastRequestToDevice();
+            UI.ConnectButton.removeAttribute("disabled");
+            UI.ConnectBox.style.display = "none";
+            UI.ScreenViewer.removeAttribute("hidden");
+            UI.StatusMessage.innerHTML = "";
         });
         this.Connection.closedCallbacks.push((ev) => {
             console.log("Connection closed.");
@@ -77,21 +81,6 @@ export class RCBrowserSockets {
         this.Connection.invoke("SendSharedFileIDs", JSON.parse(fileIDs));
     }
     ApplyMessageHandlers(hubConnection) {
-        hubConnection.on("IceConfiguration", (iceConfiguration) => {
-            RemoteControl.BrowserRTC.IceConfiguration = iceConfiguration;
-            RemoteControl.BrowserRTC.Init();
-            this.SendScreenCastRequestToDevice();
-        });
-        hubConnection.on("RTCSession", (description) => {
-            UI.ConnectButton.removeAttribute("disabled");
-            UI.ConnectBox.style.display = "none";
-            UI.ScreenViewer.removeAttribute("hidden");
-            UI.StatusMessage.innerHTML = "";
-            RemoteControl.BrowserRTC.ReceiveRTCSession(description);
-        });
-        hubConnection.on("IceCandidate", (candidate) => {
-            RemoteControl.BrowserRTC.ReceiveCandidate(candidate);
-        });
         hubConnection.on("ScreenCount", (primaryScreenIndex, screenCount) => {
             document.querySelector("#screenSelectBar").innerHTML = "";
             for (let i = 0; i < screenCount; i++) {
@@ -110,6 +99,23 @@ export class RCBrowserSockets {
                     ev.currentTarget.classList.add("toggled");
                 };
             }
+        });
+        hubConnection.on("ScreenSize", (width, height) => {
+            console.log("Screen size received. Width " + width + ".  Height " + height);
+            UI.ScreenViewer.width = width;
+            UI.ScreenViewer.height = height;
+        });
+        hubConnection.on("ScreenCapture", (buffer) => {
+            window["test"] = buffer;
+            window["test2"] = atob(buffer);
+            //UI.Screen2DContext.putImageData(new ImageData(array, UI.ScreenViewer.width, UI.ScreenViewer.height), 0, 0);
+            //var url = window.URL.createObjectURL(new Blob([buffer]));
+            //var img = document.createElement("img");
+            //img.onload = function () {
+            //    UI.Screen2DContext.drawImage(img, 0, 0, UI.ScreenViewer.width, UI.ScreenViewer.height);
+            //    window.URL.revokeObjectURL(url);
+            //};
+            //img.src = url;
         });
         hubConnection.on("ConnectionFailed", () => {
             UI.ConnectButton.removeAttribute("disabled");

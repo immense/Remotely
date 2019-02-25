@@ -12,6 +12,6 @@ namespace Remotely_Library.Models
         public string InvitedUser { get; set; }
         public bool IsAdmin { get; set; }
         public DateTime DateSent { get; set; }
-        public Organization Organization { get; set; }
+        public virtual Organization Organization { get; set; }
     }
 }

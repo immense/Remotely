@@ -13,6 +13,6 @@ namespace Remotely_Library.Models
         public string ContentType { get; set; }
         public byte[] FileContents { get; set; }
         public DateTime Timestamp { get; set; } = DateTime.Now;
-        public Organization Organization { get; set; }
+        public virtual Organization Organization { get; set; }
     }
 }

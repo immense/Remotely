@@ -81,11 +81,11 @@ namespace Remotely_Server.API
         }
 
         // GET api/<controller>/5
-        [HttpGet("PSCoreResult/{commandID}/{machineID}")]
+        [HttpGet("PSCoreResult/{commandID}/{deviceID}")]
         [Authorize]
-        public PSCoreCommandResult PSCoreResult(string commandID, string machineID)
+        public PSCoreCommandResult PSCoreResult(string commandID, string deviceID)
         {
-            return DataService.GetCommandContext(commandID, User.Identity.Name).PSCoreResults.Find(x => x.MachineID == machineID);
+            return DataService.GetCommandContext(commandID, User.Identity.Name).PSCoreResults.Find(x => x.DeviceID == deviceID);
         }
 
         // POST api/<controller>

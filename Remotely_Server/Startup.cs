@@ -136,11 +136,19 @@ namespace Remotely_Server
                     options.ApplicationMaxBufferSize = 500000;
                     options.TransportMaxBufferSize = 500000;
                 });
-                routes.MapHub<RCDeviceSocketHub>("/RCDeviceHub");
-                routes.MapHub<RCBrowserSocketHub>("/RCBrowserHub");
+                routes.MapHub<RCDeviceSocketHub>("/RCDeviceHub", options =>
+                {
+                    options.ApplicationMaxBufferSize = 1000000;
+                    options.TransportMaxBufferSize = 1000000;
+                });
+                routes.MapHub<RCBrowserSocketHub>("/RCBrowserHub", options =>
+                {
+                    options.ApplicationMaxBufferSize = 1000000;
+                    options.TransportMaxBufferSize = 1000000;
+                });
             });
             app.UseMvcWithDefaultRoute();
-            dataService.SetAllMachinesNotOnline();
+            dataService.SetAllDevicesNotOnline();
             dataService.CleanupEmptyOrganizations();
             dataService.CleanupOldRecords();
         }

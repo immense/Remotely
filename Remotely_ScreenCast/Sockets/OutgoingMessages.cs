@@ -32,7 +32,7 @@ namespace Remotely_ScreenCapture.Sockets
 
         public async Task NotifyRequesterUnattendedReady(string requesterID)
         {
-            await Connection.SendAsync("UnattendedSessionReady", requesterID);
+            await Connection.SendAsync("NotifyRequesterUnattendedReady", requesterID);
         }
     }
 }

@@ -6,7 +6,7 @@ namespace Remotely_Library.Models
 {
     public class GenericCommandResult
     {
-        public string MachineID { get; set; }
+        public string DeviceID { get; set; }
         public string CommandContextID { get; set; }
         public string CommandType { get; set; }
         public string StandardOutput { get; set; }

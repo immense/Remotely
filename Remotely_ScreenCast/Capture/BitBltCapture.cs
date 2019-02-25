@@ -73,20 +73,6 @@ namespace Remotely_ScreenCast.Capture
 			desktopName = Win32Interop.GetCurrentDesktop();
         }
 
-        public async void BeginCapturing(string participantID)
-        {
-            CursorIconWatcher.Current.OnChange += CursorIcon_OnChange;
-            while (IsCapturing)
-            {
-                Capture();
-
-        
-                await Task.Delay(PauseForMilliseconds);
-                PauseForMilliseconds = 1;
-            }
-            CursorIconWatcher.Current.OnChange -= CursorIcon_OnChange;
-        }
-
         private void CursorIcon_OnChange(object sender, int e)
         {
             //AditClient.SocketMessageHandler.SendIconUpdate(e);

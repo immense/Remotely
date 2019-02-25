@@ -17,6 +17,6 @@ namespace Remotely_Library.Models
         public double FreeSpace { get; internal set; }
         public double TotalSize { get; internal set; }
         public string VolumeLabel { get; internal set; }
-        public string MachineID { get; set; }
+        public string DeviceID { get; set; }
     }
 }

@@ -12,6 +12,8 @@ namespace Remotely_Library.Models
         public string ID { get; set; } = Guid.NewGuid().ToString();
         [StringLength(100)]
         public string Name { get; set; }
-        public Organization Organization { get; set; }
-    }
+        public virtual Organization Organization { get; set; }
+		public virtual List<Device> Devices { get; set; }
+		public virtual List<RemotelyUser> RemotelyUsers { get; set; }
+	}
 }

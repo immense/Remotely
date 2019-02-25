@@ -19,10 +19,6 @@ namespace Remotely_ScreenCast.Capture
 {
     public class DXCapture : ICapturer
     {
-		public DXCapture()
-		{
-			Init();
-		}
         public Bitmap PreviousFrame { get; set; }
         public Bitmap CurrentFrame { get; set; }
         public Size CurrentScreenSize
@@ -64,7 +60,7 @@ namespace Remotely_ScreenCast.Capture
                 NeedsInit = true;
             }
         }
-        public bool NeedsInit { get; set; }
+        public bool NeedsInit { get; set; } = true;
 
         private string desktopName;
 		private Factory1 factory;
@@ -102,7 +98,10 @@ namespace Remotely_ScreenCast.Capture
 			var newHeight = output.Description.DesktopBounds.Bottom - output.Description.DesktopBounds.Top;
             if (newWidth != width || newHeight != height)
             {
-                ScreenChanged(this, new Size(newWidth, newHeight));
+                if (ScreenChanged != null)
+                {
+                    ScreenChanged(this, new Size(newWidth, newHeight));
+                }
             }
             width = newWidth;
             height = newHeight;

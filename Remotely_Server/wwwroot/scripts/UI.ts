@@ -12,7 +12,7 @@ import { CommandContext } from "./Models/CommandContext.js";
 import * as DataGrid from "./DataGrid.js";
 import { CreateCommandHarness, AddPSCoreResultsHarness, UpdateResultsCount, AddCommandResultsHarness } from "./ResultsParser.js";
 import { GenericCommandResult } from "./Models/GenericCommandResult.js";
-import { GetSelectedMachines } from "./DataGrid.js";
+import { GetSelectedDevices } from "./DataGrid.js";
 
 
 export var CommandCompletionDiv = document.querySelector("#commandCompletionDiv") as HTMLDivElement;
@@ -20,10 +20,10 @@ export var CommandInfoDiv = document.querySelector("#commandInfoDiv") as HTMLDiv
 export var CommandModeSelect = document.querySelector("#commandModeSelect") as HTMLSelectElement;
 export var ConsoleOutputDiv = document.querySelector("#consoleOutputDiv") as HTMLDivElement;
 export var ConsoleTextArea = document.querySelector("#consoleTextArea") as HTMLTextAreaElement;
-export var MachineGrid = document.querySelector("#machineGrid") as HTMLTableElement;
-export var MachinesSelectedCount = document.querySelector("#machinesSelectedSpan") as HTMLSpanElement;
-export var OnlineMachinesCount = document.querySelector("#onlineMachinesSpan") as HTMLSpanElement;
-export var TotalMachinesCount = document.querySelector("#totalMachinesSpan") as HTMLSpanElement;
+export var DeviceGrid = document.querySelector("#deviceGrid") as HTMLTableElement;
+export var DevicesSelectedCount = document.querySelector("#devicesSelectedSpan") as HTMLSpanElement;
+export var OnlineDevicesCount = document.querySelector("#onlineDevicesSpan") as HTMLSpanElement;
+export var TotalDevicesCount = document.querySelector("#totalDevicesSpan") as HTMLSpanElement;
 export var MeasurementCanvas = document.createElement("canvas");
 export var MeasurementContext = MeasurementCanvas.getContext("2d");
 export var TabContentWrapper = document.getElementById("tabContentWrapper") as HTMLDivElement;
@@ -55,15 +55,15 @@ export function AddConsoleHTML(html: string) {
 
     TabContentWrapper.scrollTop = TabContentWrapper.scrollHeight;
 }
-export function AddTransferHarness(transferID: string, totalMachines:number) {
-    GetSelectedMachines()
+export function AddTransferHarness(transferID: string, totalDevices:number) {
+    GetSelectedDevices()
     var transferHarness = document.createElement("div");
     transferHarness.id = transferID;
     transferHarness.classList.add("command-harness");
     transferHarness.innerHTML = `
         <div class="command-harness-title">
             File Transfer Status  |  
-            Total Machines: ${totalMachines} |  
+            Total Devices: ${totalDevices} |  
             Completed: <span id="${transferID}-completed">0</span>
         </div>`;
     AddConsoleHTML(transferHarness.outerHTML);

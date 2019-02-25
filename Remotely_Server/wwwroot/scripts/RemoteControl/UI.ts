@@ -8,7 +8,8 @@ export var SessionIDInput = document.querySelector("#sessionIDInput") as HTMLInp
 export var ConnectButton = document.querySelector("#connectButton") as HTMLButtonElement;
 export var RequesterNameInput = document.querySelector("#nameInput") as HTMLInputElement;
 export var StatusMessage = document.querySelector("#statusMessage") as HTMLDivElement;
-export var ScreenViewer = document.querySelector("#screenViewer") as HTMLVideoElement;
+export var ScreenViewer = document.querySelector("#screenViewer") as HTMLCanvasElement;
+export var Screen2DContext = ScreenViewer.getContext("2d");
 export var HorizontalBars = document.querySelectorAll(".horizontal-button-bar");
 export var ConnectBox = document.getElementById("connectBox") as HTMLDivElement;
 export var ScreenSelectBar = document.querySelector("#screenSelectBar") as HTMLDivElement;
@@ -255,9 +256,7 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets, rtc: BrowserRTC) {
         var key = e.key.toLowerCase();
         sockets.SendKeyUp(key);
     });
-    window.addEventListener("click", function (e) {
-        ScreenViewer.muted = false;
-    });
+
     window.ondragover = function (e) {
         e.preventDefault();
         e.dataTransfer.dropEffect = "copy";

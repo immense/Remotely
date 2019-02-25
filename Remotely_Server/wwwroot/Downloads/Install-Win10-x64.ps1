@@ -35,7 +35,7 @@ function Is-Administrator() {
 
 function Run-StartupChecks {
 	if ([System.Environment]::Is64BitOperatingSystem -eq $false){
-		Write-Log -Message "This script is for 64-bit operating systems.  Use the x86 (32-bit) install script on this machine."
+		Write-Log -Message "This script is for 64-bit operating systems.  Use the x86 (32-bit) install script on this device."
 		Do-Exit
 	}
 	if ([System.Environment]::Is64BitProcess -eq $false) {
@@ -83,7 +83,7 @@ function Install-Remotely {
 
 	if ($ConnectionInfo -eq $null) {
 		$ConnectionInfo = @{
-			MachineID = (New-Guid).ToString();
+			DeviceID = (New-Guid).ToString();
 			Host = $HostName;
 			OrganizationID = $Organization;
 			ServerVerificationToken = "";

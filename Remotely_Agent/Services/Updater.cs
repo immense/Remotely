@@ -54,7 +54,7 @@ namespace Remotely_Agent.Services
 
                 var wc = new WebClient();
                 var latestVersion = wc.DownloadString(Utilities.GetConnectionInfo().Host + $"/API/CoreVersion/{platform}");
-                var thisVersion = FileVersionInfo.GetVersionInfo("Remote_Agent.dll").FileVersion.ToString();
+                var thisVersion = FileVersionInfo.GetVersionInfo("Remotely_Agent.dll").FileVersion.ToString();
                 if (thisVersion != latestVersion)
                 {
                     Logger.Write($"Service Updater: Downloading update.  Current Version: {thisVersion}.  Latest Version: {latestVersion}.");

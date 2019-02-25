@@ -14,12 +14,12 @@ namespace Remotely_Library.Models
             UserOptions = new RemotelyUserOptions();
             Organization = new Organization();
         }
-        public RemotelyUserOptions UserOptions { get; set; }
+        public virtual RemotelyUserOptions UserOptions { get; set; }
 
-        public Organization Organization { get; set; }
+        public virtual Organization Organization { get; set; }
         public string OrganizationID { get; set; }
 
-        public List<PermissionGroup> PermissionGroups { get; set; } = new List<PermissionGroup>();
+        public virtual List<PermissionGroup> PermissionGroups { get; set; } = new List<PermissionGroup>();
 
         public bool IsAdministrator { get; set; } = true;
     }

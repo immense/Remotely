@@ -39,9 +39,9 @@ namespace Remotely_Agent.Services
 
             await HubConnection.StartAsync();
 
-            var machine = Machine.Create(ConnectionInfo);
+            var device = Device.Create(ConnectionInfo);
 
-            await HubConnection.InvokeAsync("MachineCameOnline", machine);
+            await HubConnection.InvokeAsync("DeviceCameOnline", device);
 
             if (string.IsNullOrWhiteSpace(ConnectionInfo.ServerVerificationToken))
             {
@@ -67,8 +67,8 @@ namespace Remotely_Agent.Services
 
         public static void SendHeartbeat()
         {
-            var currentInfo = Machine.Create(ConnectionInfo);
-            HubConnection.InvokeAsync("MachineHeartbeat", currentInfo);
+            var currentInfo = Device.Create(ConnectionInfo);
+            HubConnection.InvokeAsync("DeviceHeartbeat", currentInfo);
         }
 
         private static async Task ExecuteCommand(string mode, string command, string commandID, string senderConnectionID)
@@ -153,7 +153,7 @@ namespace Remotely_Agent.Services
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                await HubConnection.InvokeAsync("DisplayConsoleMessage", $"There was an error executing the command.  It has been logged on the client machine.", senderConnectionID);
+                await HubConnection.InvokeAsync("DisplayConsoleMessage", $"There was an error executing the command.  It has been logged on the client device.", senderConnectionID);
             }
         }
 
@@ -305,7 +305,7 @@ namespace Remotely_Agent.Services
                             var result = Win32Interop.OpenInteractiveProcess(filePath + $" -mode unattended -requester {requesterID} -serviceid {serviceID} -hostname {Utilities.GetConnectionInfo().Host.Split("//").Last()}", "default", true, out procInfo);
                             if (!result)
                             {
-                                await hubConnection.InvokeAsync("DisplayConsoleMessage", "Remote control failed to download or start on target machine.", requesterID);
+                                await hubConnection.InvokeAsync("DisplayConsoleMessage", "Remote control failed to start on target device.", requesterID);
                             }
                         }
 
@@ -320,7 +320,7 @@ namespace Remotely_Agent.Services
                 }
                 catch
                 {
-                    await hubConnection.InvokeAsync("DisplayConsoleMessage", "Remote control failed to download or start on target machine.", requesterID);
+                    await hubConnection.InvokeAsync("DisplayConsoleMessage", "Remote control failed to start on target device.", requesterID);
                     throw;
                 }
             });

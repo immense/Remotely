@@ -38,7 +38,7 @@ export function EvaluateCurrentCommandText() {
         switch (UI.CommandModeSelect.value) {
             case "PSCore":
             case "WinPS":
-            case "Remotely":
+            case "Web":
                 var parameters = ExtractParameters(UI.ConsoleTextArea.value);
                 DisplayParameterCompletions(matchingCommands[0], parameters, relevantText);
                 break;
@@ -141,25 +141,25 @@ export function ProcessCommand() {
         case "WinPS":
         case "CMD":
         case "Bash":
-            var allMachines = Main.DataGrid.GetSelectedMachines();
-            var windowsMachines = allMachines.filter(x => x.Platform.toLowerCase() == "windows");
-            var linuxMachines = allMachines.filter(x => x.Platform.toLowerCase() == "linux");
+            var allDevices = Main.DataGrid.GetSelectedDevices();
+            var windowsDevices = allDevices.filter(x => x.Platform.toLowerCase() == "windows");
+            var linuxDevices = allDevices.filter(x => x.Platform.toLowerCase() == "linux");
 
-            if (commandMode == "CMD" && linuxMachines.length > 0) {
-                UI.AddConsoleOutput("Linux machines will be excluded from CMD command.");
-                allMachines = windowsMachines;
+            if (commandMode == "CMD" && linuxDevices.length > 0) {
+                UI.AddConsoleOutput("Linux devices will be excluded from CMD command.");
+                allDevices = windowsDevices;
             }
-            if (commandMode == "Bash" && windowsMachines.length > 0) {
-                UI.AddConsoleOutput("Windows machines will be excluded from Bash command.");
-                allMachines = linuxMachines;
+            if (commandMode == "Bash" && windowsDevices.length > 0) {
+                UI.AddConsoleOutput("Windows devices will be excluded from Bash command.");
+                allDevices = linuxDevices;
             }
 
-            if (allMachines.length == 0) {
-                UI.AddConsoleOutput("At least one machine must be selected to send commands.");
+            if (allDevices.length == 0) {
+                UI.AddConsoleOutput("At least one device must be selected to send commands.");
                 return;
             }
-            var machineIDs = allMachines.map(value => value.ID);
-            Connection.invoke("ExecuteCommandOnClient", commandMode, commandText, machineIDs );
+            var deviceIDs = allDevices.map(value => value.ID);
+            Connection.invoke("ExecuteCommandOnClient", commandMode, commandText, deviceIDs );
             break;
         default:
             break;

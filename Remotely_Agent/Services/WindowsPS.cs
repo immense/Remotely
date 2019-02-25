@@ -125,7 +125,7 @@ namespace Remotely_Agent.Services
             var partialResult = new GenericCommandResult()
             {
                 CommandContextID = LastInputID,
-                MachineID = Utilities.GetConnectionInfo().MachineID,
+                DeviceID = Utilities.GetConnectionInfo().DeviceID,
                 CommandType = "WinPS",
                 StandardOutput = StandardOut,
                 ErrorOutput = "WARNING: The command execution froze and was forced to return before finishing.  " +
@@ -141,7 +141,7 @@ namespace Remotely_Agent.Services
             return new GenericCommandResult()
             {
                 CommandContextID = LastInputID,
-                MachineID = Utilities.GetConnectionInfo().MachineID,
+                DeviceID = Utilities.GetConnectionInfo().DeviceID,
                 CommandType = "WinPS",
                 StandardOutput = StandardOut,
                 ErrorOutput = ErrorOut
