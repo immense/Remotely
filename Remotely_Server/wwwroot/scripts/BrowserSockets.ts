@@ -140,7 +140,7 @@ function applyMessageHandlers(hubConnection) {
     hubConnection.on("ServiceID", (serviceID: string) => {
         ServiceID = serviceID;
     });
-    hubConnection.on("UnattendedRTCReady", (rcConnectionID: string) => {
+    hubConnection.on("UnattendedSessionReady", (rcConnectionID: string) => {
         window.open(`/RemoteControl?clientID=${rcConnectionID}&serviceID=${ServiceID}`, "_blank");
     });
 }

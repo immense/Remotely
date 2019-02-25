@@ -51,10 +51,29 @@ namespace Remotely_Server.Services
             }
         }
 
-        public async Task SendScreenCountToBrowser(int primaryScreenIndex, int screenCount, string browserHubConnectionID)
+        public async Task SendScreenCountToBrowser(int primaryScreenIndex, int screenCount, string rcBrowserHubConnectionID)
         {
-            await RCBrowserHub.Clients.Client(browserHubConnectionID).SendAsync("ScreenCount", primaryScreenIndex, screenCount);
+            await RCBrowserHub.Clients.Client(rcBrowserHubConnectionID).SendAsync("ScreenCount", primaryScreenIndex, screenCount);
         }
+        public async Task SendScreenSize(int width, int height, string rcBrowserHubConnectionID)
+        {
+            await RCBrowserHub.Clients.Client(rcBrowserHubConnectionID).SendAsync("ScreenSize", width, height);
+        }
+        public async Task SendScreenCapture(byte[] captureBytes, string rcBrowserHubConnectionID)
+        {
+            await RCBrowserHub.Clients.Client(rcBrowserHubConnectionID).SendAsync("ScreenCapture", captureBytes, rcBrowserHubConnectionID);
+        }
+        public async Task NotifyRequesterUnattendedReady(string browserHubConnectionID)
+        {
+            await BrowserHub.Clients.Client(browserHubConnectionID).SendAsync("UnattendedSessionReady", Context.ConnectionId);
+        }
+        public async Task SendConnectionFailedToBrowser(string browserHubConnectionID)
+        {
+            await RCBrowserHub.Clients.Client(browserHubConnectionID).SendAsync("ConnectionFailed");
+        }
+
+
+
         public async Task SendRTCSessionToBrowser(object offer, string browserHubConnectionID)
         {
             await RCBrowserHub.Clients.Client(browserHubConnectionID).SendAsync("RTCSession", offer);
@@ -63,15 +82,7 @@ namespace Remotely_Server.Services
         {
             await RCBrowserHub.Clients.Client(browserHubConnectionID).SendAsync("IceCandidate", candidate);
         }
-        public async Task SendConnectionFailedToBrowser(string browserHubConnectionID)
-        {
-            await RCBrowserHub.Clients.Client(browserHubConnectionID).SendAsync("ConnectionFailed");
-        }
-
-        public async Task NotifyConsoleRequesterUnattendedReady(string browserHubConnectionID)
-        {
-            await BrowserHub.Clients.Client(browserHubConnectionID).SendAsync("UnattendedRTCReady", Context.ConnectionId);
-        }
+        
 
         public async Task NotifyViewerDesktopSwitching(string viewerID)
         {

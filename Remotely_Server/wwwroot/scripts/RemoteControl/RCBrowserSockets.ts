@@ -21,7 +21,7 @@ export class RCBrowserSockets {
             console.error(err.toString());
             console.log("Connection closed.");
         }).then(() => {
-            this.Connection.invoke("GetIceConfiguration");
+            this.SendScreenCastRequestToDevice();
         })
         this.Connection.closedCallbacks.push((ev) => {
             console.log("Connection closed.");
@@ -30,8 +30,8 @@ export class RCBrowserSockets {
             UI.ConnectBox.style.removeProperty("display");
         });
     };
-    SendOfferRequestToDevice() {
-        return this.Connection.invoke("SendOfferRequestToDevice", RemoteControl.ClientID, RemoteControl.RequesterName, RemoteControl.Mode);
+    SendScreenCastRequestToDevice() {
+        return this.Connection.invoke("SendScreenCastRequestToDevice", RemoteControl.ClientID, RemoteControl.RequesterName, RemoteControl.Mode);
     }
     SendIceCandidate(candidate: RTCIceCandidate) {
         return this.Connection.invoke("SendIceCandidateToDevice", candidate, RemoteControl.Mode, RemoteControl.ClientID);
@@ -89,7 +89,7 @@ export class RCBrowserSockets {
         hubConnection.on("IceConfiguration", (iceConfiguration: any) => {
             RemoteControl.BrowserRTC.IceConfiguration = iceConfiguration;
             RemoteControl.BrowserRTC.Init();
-            this.SendOfferRequestToDevice();
+            this.SendScreenCastRequestToDevice();
         });
         hubConnection.on("RTCSession", (description: RTCSessionDescription) => {
             UI.ConnectButton.removeAttribute("disabled");
@@ -140,7 +140,7 @@ export class RCBrowserSockets {
             RemoteControl.ClientID = newClientID;
             RemoteControl.BrowserRTC.PeerConnection.close();
             RemoteControl.BrowserRTC.Init();
-            this.SendOfferRequestToDevice();
+            this.SendScreenCastRequestToDevice();
         });
         hubConnection.on("DesktopSwitchFailed", () => {
             UI.ShowMessage("Desktop switch failed.  Please reconnect.");

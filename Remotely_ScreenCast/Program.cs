@@ -20,14 +20,16 @@ namespace Remotely_ScreenCast
 {
 	public class Program
 	{
-        public static ICapturer Capturer { get; set; }
-        public static CaptureMode CaptureMode { get; set; }
+        public static ICapturer Capturer { get; private set; }
+        public static CaptureMode CaptureMode { get; private set; }
         public static bool DisconnectRequested { get; set; }
-        public static string Mode { get; set; }
-        public static string RequesterID { get; set; }
-        public static string HostName { get; set; }
-        public static HubConnection Connection { get; set; }
-        private static OutgoingMessages OutgoingMessages { get; set; }
+        public static bool IsCapturing { get; set; }
+        public static object LockObject { get; } = new object();
+        public static string Mode { get; private set; }
+        public static string RequesterID { get; private set; }
+        public static string HostName { get; private set; }
+        public static HubConnection Connection { get; private set; }
+        public static OutgoingMessages OutgoingMessages { get; private set; }
 
         static void Main(string[] args)
         {
@@ -40,10 +42,8 @@ namespace Remotely_ScreenCast
                 .WithUrl($"http://{HostName}/RCDeviceHub")
                 .Build();
 
-            MessageHandlers.ApplyConnectionHandlers(Connection);
-
             Connection.StartAsync().Wait();
-
+           
             OutgoingMessages = new OutgoingMessages(Connection);
 
             try
@@ -57,37 +57,16 @@ namespace Remotely_ScreenCast
                 CaptureMode = CaptureMode.BitBtl;
             }
 
-
-            OutgoingMessages.SendScreenCount(
-                Screen.AllScreens.ToList().IndexOf(Screen.PrimaryScreen), 
-                Screen.AllScreens.Length, 
-                RequesterID).Wait();
-
             Capturer.ScreenChanged += HandleScreenChanged;
 
-            OutgoingMessages.SendScreenSize(Capturer.CurrentScreenSize.Width, Capturer.CurrentScreenSize.Height).Wait();
+            MessageHandlers.ApplyConnectionHandlers(Connection, OutgoingMessages, Capturer);
 
-            while (!DisconnectRequested)
-            {
-                try
-                {
-                    Capturer.Capture();
-                    var newImage = ImageDiff.GetImageDiff(Capturer.CurrentFrame, Capturer.PreviousFrame, Capturer.CaptureFullscreen);
-                    var img = ImageDiff.EncodeBitmap(newImage);
-                    if (Capturer.CaptureFullscreen)
-                    {
-                        Capturer.CaptureFullscreen = false;
-                    }
-                    if (img?.Length > 0)
-                    {
-                        OutgoingMessages.SendScreenCapture(img).Wait();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.Write($"Outer Error: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
-                }
-            }
+            OutgoingMessages.NotifyRequesterUnattendedReady(RequesterID).Wait();
+        }
+
+        internal static void BeginCapturing()
+        {
+            
         }
 
         private static async void HandleScreenChanged(object sender, Size size)
