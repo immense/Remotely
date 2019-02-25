@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 
 namespace Remotely_Library.Models
 {
-    public class Machine
+    public class Device
     {
         public string CurrentUser { get; set; }
         public virtual List<Drive> Drives { get; set; }
@@ -29,7 +29,7 @@ namespace Remotely_Library.Models
 
         public DateTime LastOnline { get; set; }
 
-        public string MachineName { get; set; }
+        public string DeviceName { get; set; }
 
         public virtual Organization Organization { get; set; }
         public string OrganizationID { get; set; }
@@ -37,7 +37,7 @@ namespace Remotely_Library.Models
 
         public string OSDescription { get; set; }
 
-        public List<PermissionGroup> PermissionGroups { get; set; } = new List<PermissionGroup>();
+        public virtual List<PermissionGroup> PermissionGroups { get; set; } = new List<PermissionGroup>();
         public string Platform { get; set; }
 
         public int ProcessorCount { get; set; }
@@ -47,7 +47,7 @@ namespace Remotely_Library.Models
 
         public double TotalMemory { get; set; }
         public double TotalStorage { get; set; }
-        public static Machine Create(ConnectionInfo connectionInfo)
+        public static Device Create(ConnectionInfo connectionInfo)
         {
             OSPlatform platform = OSUtils.GetPlatform();
             DriveInfo systemDrive;
@@ -67,10 +67,10 @@ namespace Remotely_Library.Models
                     x.RootDirectory.FullName == Path.GetPathRoot(Environment.CurrentDirectory));
             }
 
-            var machine = new Machine()
+            var device = new Device()
             {
-                ID = connectionInfo.MachineID,
-                MachineName = Environment.MachineName,
+                ID = connectionInfo.DeviceID,
+                DeviceName = Environment.MachineName,
                 Platform = platform.ToString(),
                 ProcessorCount = Environment.ProcessorCount,
                 OSArchitecture = RuntimeInformation.OSArchitecture,
@@ -92,9 +92,9 @@ namespace Remotely_Library.Models
 
             if (systemDrive != null && systemDrive.TotalSize > 0 && systemDrive.TotalFreeSpace > 0)
             {
-                machine.TotalStorage = Math.Round((double)(systemDrive.TotalSize / 1024 / 1024 / 1024), 2);
+                device.TotalStorage = Math.Round((double)(systemDrive.TotalSize / 1024 / 1024 / 1024), 2);
                 var freeStorage = Math.Round((double)(systemDrive.TotalFreeSpace / 1024 / 1024 / 1024), 2);
-                machine.FreeStorage = freeStorage / machine.TotalStorage;
+                device.FreeStorage = freeStorage / device.TotalStorage;
             }
 
             Tuple<double, double> totalMemory = new Tuple<double, double>(0, 0);
@@ -110,15 +110,15 @@ namespace Remotely_Library.Models
           
             if (totalMemory.Item2 > 0)
             {
-                machine.FreeMemory = totalMemory.Item1 / totalMemory.Item2;
+                device.FreeMemory = totalMemory.Item1 / totalMemory.Item2;
             }
             else
             {
-                machine.FreeMemory = 0;
+                device.FreeMemory = 0;
             }
-            machine.TotalMemory = totalMemory.Item2;
+            device.TotalMemory = totalMemory.Item2;
 
-            return machine;
+            return device;
         }
 
 

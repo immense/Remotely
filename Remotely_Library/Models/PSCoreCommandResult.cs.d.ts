@@ -1,6 +1,6 @@
 	interface PSCoreCommandResult {
 		CommandContextID: string;
-		MachineID: string;
+		DeviceID: string;
 		VerboseOutput: string[];
 		DebugOutput: string[];
 		ErrorOutput: string[];

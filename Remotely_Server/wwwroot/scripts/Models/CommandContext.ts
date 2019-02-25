@@ -4,7 +4,7 @@ export interface CommandContext {
     CommandText: string;
     SenderUserID: string;
     SenderConnectionID: string;
-    TargetMachineIDs: string[];
+    TargetDeviceIDs: string[];
     PSCoreResults: any[];
     CMDResults: any[];
     WinPSResults: any[];

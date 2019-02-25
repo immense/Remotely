@@ -1,13 +1,13 @@
 ﻿import { ConsoleCommand } from "../Models/ConsoleCommand.js"
 import { Parameter } from "../Models/Parameter.js";
-import { Machine } from "../Models/Machine.js";
+import { Device } from "../Models/Device.js";
 import * as UI from "../UI.js";
 import * as BrowserSockets from "../BrowserSockets.js";
 import { CommandLineParameter } from "../Models/CommandLineParameter.js";
 import { Main } from "../Main.js";
 import * as DataGrid from "../DataGrid.js";
 import { AddConsoleHTML, AddConsoleOutput } from "../UI.js";
-import { GetSelectedMachines } from "../DataGrid.js";
+import { GetSelectedDevices } from "../DataGrid.js";
 
 
 var commands: Array<ConsoleCommand> = [
@@ -17,19 +17,19 @@ var commands: Array<ConsoleCommand> = [
             new Parameter("group", "The group name to add.", "String")
         ],
         "Adds a permission group to the selected computer(s).",
-        "AddGroup -group Lab Machines",
+        "AddGroup -group Lab Devices",
         "",
         (parameters, paramDictionary) => {
-            var selectedMachines = Main.DataGrid.GetSelectedMachines();
-            if (selectedMachines.length == 0) {
-                AddConsoleOutput("No machines are selected.");
+            var selectedDevices = Main.DataGrid.GetSelectedDevices();
+            if (selectedDevices.length == 0) {
+                AddConsoleOutput("No devices are selected.");
                 return;
             };
             if (!paramDictionary["group"]) {
                 AddConsoleOutput("A group name is required.");
                 return;
             }
-            BrowserSockets.Connection.invoke("AddGroup", selectedMachines.map(x=>x.ID), paramDictionary["group"]);
+            BrowserSockets.Connection.invoke("AddGroup", selectedDevices.map(x=>x.ID), paramDictionary["group"]);
         }
     ),
     new ConsoleCommand(
@@ -40,7 +40,7 @@ var commands: Array<ConsoleCommand> = [
             new Parameter("cmd", "Indicates that script should be run with Windows CMD.", "Switch"),
             new Parameter("bash", "Indicates that script should be run with Bash.", "Switch")
         ],
-        "Deploy and run a script on the selected machine(s).  Note: Only one switch argument can be used.",
+        "Deploy and run a script on the selected device(s).  Note: Only one switch argument can be used.",
         "deployscript -pscore",
         "",
         (parameters, parameterDict) => {
@@ -48,9 +48,9 @@ var commands: Array<ConsoleCommand> = [
                 AddConsoleOutput("There should be exactly 1 argument to indicate the script type.");
                 return;
             }
-            var selectedMachines = Main.DataGrid.GetSelectedMachines();
-            if (selectedMachines.length == 0) {
-                AddConsoleOutput("No machines are selected.");
+            var selectedDevices = Main.DataGrid.GetSelectedDevices();
+            if (selectedDevices.length == 0) {
+                AddConsoleOutput("No devices are selected.");
                 return;
             }
             var fileInput = document.createElement("input");
@@ -59,7 +59,7 @@ var commands: Array<ConsoleCommand> = [
             document.body.appendChild(fileInput);
             fileInput.onchange = () => {
                 uploadFiles(fileInput.files).then(value => {
-                    BrowserSockets.Connection.invoke("DeployScript", value[0], parameters[0].Name, selectedMachines.map(x => x.ID));
+                    BrowserSockets.Connection.invoke("DeployScript", value[0], parameters[0].Name, selectedDevices.map(x => x.ID));
                     fileInput.remove();
                 });
             }
@@ -72,19 +72,19 @@ var commands: Array<ConsoleCommand> = [
             new Parameter("group", "The group name to remove.", "String")
         ],
         "Removes a permission group to the selected computer(s).",
-        "RemoveGroup -group Lab Machines",
+        "RemoveGroup -group Lab Devices",
         "",
         (parameters, paramDictionary) => {
-            var selectedMachines = Main.DataGrid.GetSelectedMachines();
-            if (selectedMachines.length == 0) {
-                AddConsoleOutput("No machines are selected.");
+            var selectedDevices = Main.DataGrid.GetSelectedDevices();
+            if (selectedDevices.length == 0) {
+                AddConsoleOutput("No devices are selected.");
                 return;
             };
             if (!paramDictionary["group"]) {
                 AddConsoleOutput("A group name is required.");
                 return;
             }
-            BrowserSockets.Connection.invoke("RemoveGroup", selectedMachines.map(x => x.ID), paramDictionary["group"]);
+            BrowserSockets.Connection.invoke("RemoveGroup", selectedDevices.map(x => x.ID), paramDictionary["group"]);
         }
     ),
     new ConsoleCommand(
@@ -181,28 +181,28 @@ var commands: Array<ConsoleCommand> = [
     new ConsoleCommand(
         "List",
         [],
-        "Displays a list of the currently-selected machines.",
+        "Displays a list of the currently-selected devices.",
         "list",
         "",
         () => {
-            var selectedMachines = Main.DataGrid.GetSelectedMachines();
+            var selectedDevices = Main.DataGrid.GetSelectedDevices();
 
-            if (selectedMachines.length == 0) {
-                UI.AddConsoleOutput("No machines selected.");
+            if (selectedDevices.length == 0) {
+                UI.AddConsoleOutput("No devices are selected.");
                 return;
             }
-            var output = `<div>Selected Machines:</div>
-                            <table class="console-machine-table table table-responsive">
+            var output = `<div>Selected Devices:</div>
+                            <table class="console-device-table table table-responsive">
                             <thead><tr>
-                            <th>Online</th><th>Machine Name</th><th>Current User</th><th>Last Online</th><th>Platform</th><th>OS Description</th><th>Free Storage</th><th>Total Storage (GB)</th><th>Free Memory</th><th>Total Memory (GB)</th><th>Tags</th>
+                            <th>Online</th><th>Device Name</th><th>Current User</th><th>Last Online</th><th>Platform</th><th>OS Description</th><th>Free Storage</th><th>Total Storage (GB)</th><th>Free Memory</th><th>Total Memory (GB)</th><th>Tags</th>
                             </tr></thead>`;
             
-            var machineList = selectedMachines.map(x => {
+            var deviceList = selectedDevices.map(x => {
                 return `<tr>
                         <td>${String(x.IsOnline)
                                 .replace("true", "<span class='fa fa-check-circle'></span>")
                                 .replace("false", "<span class='fa fa-times'></span>")}</td>
-                        <td>${x.MachineName}</td>
+                        <td>${x.DeviceName}</td>
                         <td>${x.CurrentUser}</td>
                         <td>${new Date(x.LastOnline).toLocaleString()}</td>
                         <td>${x.Platform}</td>
@@ -214,7 +214,7 @@ var commands: Array<ConsoleCommand> = [
                         <td>${x.Tags}</td>
                         </tr>`
             });
-            output += machineList.join("");
+            output += deviceList.join("");
             UI.AddConsoleOutput(output);
         }
     ),
@@ -223,35 +223,35 @@ var commands: Array<ConsoleCommand> = [
         [
 
         ],
-        "Removes the selected machines from the database.  (Note: This does not attempt to uninstall the client.  Use Uninstall.)",
+        "Removes the selected devices from the database.  (Note: This does not attempt to uninstall the client.  Use Uninstall.)",
         "remove",
         "",
         (parameters) => {
-            var machines = DataGrid.GetSelectedMachines();
-            if (machines.length == 0) {
-                UI.AddConsoleOutput("No machines selected.");
+            var devices = DataGrid.GetSelectedDevices();
+            if (devices.length == 0) {
+                UI.AddConsoleOutput("No devices are selected.");
             }
             else {
-                BrowserSockets.Connection.invoke("RemoveMachines", machines.map(x=>x.ID));
+                BrowserSockets.Connection.invoke("RemoveDevices", devices.map(x=>x.ID));
             }
         }
     ),
     new ConsoleCommand(
         "Select",
         [
-            new Parameter("all", "If specified, all machines will be selected.", "Switch"),
-            new Parameter("none", "If specified, no machines will be selected.", "Switch"),
-            new Parameter("online", "If specified, selects the machines that are currently online.", "Switch"),
+            new Parameter("all", "If specified, all devices will be selected.", "Switch"),
+            new Parameter("none", "If specified, no devices will be selected.", "Switch"),
+            new Parameter("online", "If specified, selects the devices that are currently online.", "Switch"),
             new Parameter("filter", "A comma-separated list of search filters (spaces are optional).  See the help article for more details.", "String"),
-            new Parameter("append", "If specified, selected machines will be added list of computers already selected (if any).", "Switch"),
+            new Parameter("append", "If specified, selected devices will be added list of computers already selected (if any).", "Switch"),
         ],
-        "Selects machines based on a supplied filter.",
-        "select -filter isonline=true, machinename*Rig, freestorage<50",
-        `The filter contains a comma-separated list of fields to search, and machines that match all filters will be selected.
+        "Selects devices based on a supplied filter.",
+        "select -filter isonline=true, devicename*Rig, freestorage<50",
+        `The filter contains a comma-separated list of fields to search, and devices that match all filters will be selected.
             There are multiple operator types, and they can be used on any of the fields on the grid (plus some extra hidden ones).<br><br>
             Operators:<br>
             <ul style="list-style:none">
-                <li>=&nbsp;&nbsp;&nbsp;  Exactly equal to. "machinename=myrig" would match "MyRig", but not "MyRig2"</li>
+                <li>=&nbsp;&nbsp;&nbsp;  Exactly equal to. "devicename=myrig" would match "MyRig", but not "MyRig2"</li>
                 <li>*&nbsp;&nbsp;&nbsp;  Like. "currentuser*bus" would match "Business" and "A_Busy_User"</li>
                 <li>!=&nbsp;&nbsp;       Not equal to. "currentuser!=jon" would match every user except "Jon"</li>
                 <li>!*&nbsp;&nbsp;       Not like. "currentuser!*jon" would match "Jon", "Jonathan", and "SuperJon"</li>
@@ -262,7 +262,7 @@ var commands: Array<ConsoleCommand> = [
             Fields:<br>
                 <ul style="list-style:none">
                     <li>IsOnline (true or false)</li>
-                    <li>MachineName (text)</li>
+                    <li>DeviceName (text)</li>
                     <li>CurrentUser (text)</li>
                     <li>LastOnline (date or date+time</li>
                     <li>Is64Bit (true or false)</li>
@@ -280,19 +280,19 @@ var commands: Array<ConsoleCommand> = [
                 Main.DataGrid.DataSource.forEach(x => {
                     document.getElementById(x.ID).classList.add("row-selected");
                 })
-                UI.AddConsoleOutput(`${GetSelectedMachines().length} machines selected.`);
+                UI.AddConsoleOutput(`${GetSelectedDevices().length} devices selected.`);
             }
             if (typeof paramDictionary["none"] != "undefined") {
-                Main.UI.MachineGrid.querySelectorAll(".row-selected").forEach(x => {
+                Main.UI.DeviceGrid.querySelectorAll(".row-selected").forEach(x => {
                     x.classList.remove("row-selected");
                 });
-                UI.AddConsoleOutput(`${GetSelectedMachines().length} machines selected.`);
+                UI.AddConsoleOutput(`${GetSelectedDevices().length} devices selected.`);
             }
             if (typeof paramDictionary["online"] != "undefined") {
                 Main.DataGrid.DataSource.filter(x => x.IsOnline).forEach(x => {
                     document.getElementById(x.ID).classList.add("row-selected");
                 });
-                UI.AddConsoleOutput(`${GetSelectedMachines().length} machines selected.`);
+                UI.AddConsoleOutput(`${GetSelectedDevices().length} devices selected.`);
             }
             if (typeof paramDictionary["filter"] != "undefined") {
                 try {
@@ -358,18 +358,18 @@ var commands: Array<ConsoleCommand> = [
                 }
                 lambda = lambda.slice(0, lambda.lastIndexOf(" &&"));
                 if (paramDictionary["append"] != "true") {
-                    Main.UI.MachineGrid.querySelectorAll(".row-selected").forEach(x => {
+                    Main.UI.DeviceGrid.querySelectorAll(".row-selected").forEach(x => {
                         x.classList.remove("row-selected");
                     });
                 }
-                var selectedMachines = Main.DataGrid.DataSource.filter(x => eval(lambda));
-                selectedMachines.forEach(x => {
+                var selectedDevices = Main.DataGrid.DataSource.filter(x => eval(lambda));
+                selectedDevices.forEach(x => {
                     document.getElementById(x.ID).classList.add("row-selected");
                 });
-                UI.AddConsoleOutput(`${GetSelectedMachines().length} machines selected.`);
+                UI.AddConsoleOutput(`${GetSelectedDevices().length} devices selected.`);
             }
 
-            Main.DataGrid.UpdateMachineCounts();
+            Main.DataGrid.UpdateDeviceCounts();
         }
     ),
     new ConsoleCommand(
@@ -379,51 +379,51 @@ var commands: Array<ConsoleCommand> = [
         "list",
         "",
         () => {
-            var selectedMachines = Main.DataGrid.GetSelectedMachines();
-            if (selectedMachines.length == 0) {
-                UI.AddConsoleOutput("You must select a machine first.");
+            var selectedDevices = Main.DataGrid.GetSelectedDevices();
+            if (selectedDevices.length == 0) {
+                UI.AddConsoleOutput("You must select a device first.");
                 return;
             }
-            if (selectedMachines.length > 1) {
-                UI.AddConsoleOutput("You can only initiate remote control on one machine at a time.");
+            if (selectedDevices.length > 1) {
+                UI.AddConsoleOutput("You can only initiate remote control on one device at a time.");
                 return;
             }
-            UI.AddConsoleOutput("Launching remote control on client machine...");
-            BrowserSockets.Connection.invoke("RemoteControl", selectedMachines[0].ID);
+            UI.AddConsoleOutput("Launching remote control on client device...");
+            BrowserSockets.Connection.invoke("RemoteControl", selectedDevices[0].ID);
         }
     ),
     new ConsoleCommand("Uninstall",
         [],
-        "Uninstalls the Remotely client from the selected machines.  Warning: This can't be undone from the web portal.  You would need to redeploy the client.",
+        "Uninstalls the Remotely client from the selected devices.  Warning: This can't be undone from the web portal.  You would need to redeploy the client.",
         "uninstall",
         "",
         (parameters, parameterDict) => {
-            var selectedMachines = DataGrid.GetSelectedMachines();
-            BrowserSockets.Connection.invoke("UninstallClients", selectedMachines.map(x=>x.ID));
+            var selectedDevices = DataGrid.GetSelectedDevices();
+            BrowserSockets.Connection.invoke("UninstallClients", selectedDevices.map(x=>x.ID));
         }
     ),
     new ConsoleCommand(
         "SetTags",
         [
-            new Parameter("Tags", "The tags to set for the machine. Max length is 200 characters.", "String"),
+            new Parameter("Tags", "The tags to set for the device. Max length is 200 characters.", "String"),
             new Parameter("Append", "Append the tags to any existing ones.", "Switch")   
         ],
-        "Set the tag/description for the selected machines.  Max length is 200 characters.",
+        "Set the tag/description for the selected devices.  Max length is 200 characters.",
         "SetTags -tags John's computer, Portland office, desktop",
         "",
         (parameters, parameterDict) => {
-            var selectedMachines = Main.DataGrid.GetSelectedMachines();
-            if (selectedMachines.length == 0) {
-                AddConsoleOutput("No machines are selected.");
+            var selectedDevices = Main.DataGrid.GetSelectedDevices();
+            if (selectedDevices.length == 0) {
+                AddConsoleOutput("No devices are selected.");
                 return;
             }
-            selectedMachines.forEach(x => {
+            selectedDevices.forEach(x => {
                 if (typeof parameterDict["append"] != 'undefined') {
                     var separator = x.Tags.trim().endsWith(",") ? " " : ", ";
                     parameterDict["tags"] = x.Tags.trim() + separator + parameterDict["tags"]
                 }
                 DataGrid.DataSource.find(y => y.ID == x.ID).Tags = parameterDict["tags"];
-                (document.getElementById(x.ID).querySelector(".machine-tag") as HTMLInputElement).value = parameterDict["tags"];
+                (document.getElementById(x.ID).querySelector(".device-tag") as HTMLInputElement).value = parameterDict["tags"];
                 BrowserSockets.Connection.invoke("UpdateTags", x.ID, parameterDict["tags"]);
             });
         }
@@ -432,17 +432,17 @@ var commands: Array<ConsoleCommand> = [
         "TransferFiles",
         [
         ],
-        "Transfer file(s) to the selected machines.",
+        "Transfer file(s) to the selected devices.",
         "transferfiles",
         "",
         (parameters, parameterDict) => {
-            var selectedMachines = Main.DataGrid.GetSelectedMachines();
-            if (selectedMachines.length == 0) {
-                AddConsoleOutput("No machines are selected.");
+            var selectedDevices = Main.DataGrid.GetSelectedDevices();
+            if (selectedDevices.length == 0) {
+                AddConsoleOutput("No devices are selected.");
                 return;
             }
             var transferID = Main.Utilities.CreateGUID();
-            UI.AddTransferHarness(transferID, selectedMachines.length);
+            UI.AddTransferHarness(transferID, selectedDevices.length);
             var fileInput = document.createElement("input");
             fileInput.type = "file";
             fileInput.hidden = true;
@@ -450,7 +450,7 @@ var commands: Array<ConsoleCommand> = [
             document.body.appendChild(fileInput);
             fileInput.onchange = () => {
                 uploadFiles(fileInput.files).then(value => {
-                    BrowserSockets.Connection.invoke("TransferFiles", value, transferID, selectedMachines.map(x => x.ID));
+                    BrowserSockets.Connection.invoke("TransferFiles", value, transferID, selectedDevices.map(x => x.ID));
                     fileInput.remove();
                 });
             }

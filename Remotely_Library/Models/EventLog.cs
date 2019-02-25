@@ -17,7 +17,7 @@ namespace Remotely_Library.Models
         public string OrganizationID { get; set; }
         public DateTime TimeStamp { get; set; } = DateTime.Now;
         [JsonIgnore]
-        public Organization Organization { get; set; }
+        public virtual Organization Organization { get; set; }
     }
     public enum EventTypes
     {

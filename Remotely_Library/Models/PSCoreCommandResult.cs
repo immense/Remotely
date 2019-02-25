@@ -8,7 +8,7 @@ namespace Remotely_Library.Models
     public class PSCoreCommandResult
     {
         public string CommandContextID { get; set; }
-        public string MachineID { get; set; }
+        public string DeviceID { get; set; }
         public List<string> VerboseOutput { get; set; }
         public List<string> DebugOutput { get; set; }
         public List<string> ErrorOutput { get; set; }

@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Copyright>Copyright ©  2018 Translucency Software</Copyright>
+    <Copyright>Copyright ©  2019 Translucency Software</Copyright>
     <Description>Background service that maintains a connection to the DoXM server.  The service is used for remote support and maintenance by this computer's administrators.</Description>
     <PackageLicenseUrl>https://doxm.app/EULA</PackageLicenseUrl>
     <Authors>Jared Goodwin</Authors>

@@ -1,116 +1,116 @@
 ﻿import * as UI from "./UI.js";
-import { Machine } from "./Models/Machine.js";
+import { Device } from "./Models/Device.js";
 import { Main } from "./Main.js";
-import { MachineGrid } from "./UI.js";
+import { DeviceGrid } from "./UI.js";
 import * as BrowserSockets from "./BrowserSockets.js";
 
-export var DataSource: Array<Machine> = new Array<Machine>();
+export var DataSource: Array<Device> = new Array<Device>();
 
-export function AddOrUpdateMachines(machines: Array<Machine>) {
-    machines.forEach(x => {
-        AddOrUpdateMachine(x);
+export function AddOrUpdateDevices(devices: Array<Device>) {
+    devices.forEach(x => {
+        AddOrUpdateDevice(x);
     });
 }
-export function AddOrUpdateMachine(machine: Machine) {
-    var existingIndex = DataSource.findIndex(x => x.ID == machine.ID);
+export function AddOrUpdateDevice(device: Device) {
+    var existingIndex = DataSource.findIndex(x => x.ID == device.ID);
     if (existingIndex > -1) {
-        DataSource[existingIndex] = machine;
+        DataSource[existingIndex] = device;
     }
     else {
-        DataSource.push(machine);
+        DataSource.push(device);
     }
 
-    var tableBody = document.querySelector("#" + Main.UI.MachineGrid.id + " tbody");
-    var recordRow = document.getElementById(machine.ID);
+    var tableBody = document.querySelector("#" + Main.UI.DeviceGrid.id + " tbody");
+    var recordRow = document.getElementById(device.ID);
     if (recordRow == null) {
         recordRow = document.createElement("tr");
         recordRow.classList.add("record-row");
-        recordRow.id = machine.ID;
+        recordRow.id = device.ID;
         tableBody.appendChild(recordRow);
         recordRow.addEventListener("click", (e) => {
             (e.currentTarget as HTMLElement).classList.toggle("row-selected");
-            UpdateMachineCounts();
+            UpdateDeviceCounts();
         });
     }
     recordRow.innerHTML = `
-                    <td>${String(machine.IsOnline)
+                    <td>${String(device.IsOnline)
                             .replace("true", "<span class='fa fa-check-circle'></span>")
                             .replace("false", "<span class='fa fa-times'></span>")}</td>
-                    <td>${machine.MachineName}</td>
-                    <td>${machine.CurrentUser}</td>
-                    <td>${new Date(machine.LastOnline).toLocaleString()}</td>
-                    <td>${machine.Platform}</td>
-                    <td>${machine.OSDescription}</td>
-                    <td>${Math.round(machine.FreeStorage * 100)}%</td>
-                    <td>${machine.TotalStorage.toLocaleString()}</td>
-                    <td>${Math.round(machine.FreeMemory * 100)}%</td>
-                    <td>${machine.TotalMemory.toLocaleString()}</td>
-                    <td><input type="text" class="machine-tag" value="${machine.Tags}" /></td>`;
+                    <td>${device.DeviceName}</td>
+                    <td>${device.CurrentUser}</td>
+                    <td>${new Date(device.LastOnline).toLocaleString()}</td>
+                    <td>${device.Platform}</td>
+                    <td>${device.OSDescription}</td>
+                    <td>${Math.round(device.FreeStorage * 100)}%</td>
+                    <td>${device.TotalStorage.toLocaleString()}</td>
+                    <td>${Math.round(device.FreeMemory * 100)}%</td>
+                    <td>${device.TotalMemory.toLocaleString()}</td>
+                    <td><input type="text" class="device-tag" value="${device.Tags}" /></td>`;
 
 
-    (recordRow.querySelector(".machine-tag") as HTMLInputElement).onchange = (ev) => {
+    (recordRow.querySelector(".device-tag") as HTMLInputElement).onchange = (ev) => {
         var newTag = (ev.currentTarget as HTMLInputElement).value;
-        DataSource.find(x => x.ID == machine.ID).Tags = newTag;
-        BrowserSockets.Connection.invoke("UpdateTags", machine.ID, newTag);
+        DataSource.find(x => x.ID == device.ID).Tags = newTag;
+        BrowserSockets.Connection.invoke("UpdateTags", device.ID, newTag);
     };
-    UpdateMachineCounts();
+    UpdateDeviceCounts();
 }
-export function GetSelectedMachines(): Machine[] {
-    var machines = new Array<Machine>();
-    MachineGrid.querySelectorAll(".row-selected").forEach(row => {
-        machines.push(DataSource.find(x => x.ID == row.id));
+export function GetSelectedDevices(): Device[] {
+    var devices = new Array<Device>();
+    DeviceGrid.querySelectorAll(".row-selected").forEach(row => {
+        devices.push(DataSource.find(x => x.ID == row.id));
     });
-    return machines;
+    return devices;
 };
 export function ClearAllData() {
     DataSource.splice(0, DataSource.length);
-    UI.MachineGrid.querySelectorAll(".record-row").forEach(row => {
+    UI.DeviceGrid.querySelectorAll(".record-row").forEach(row => {
         row.remove();
     });
-    UpdateMachineCounts();
+    UpdateDeviceCounts();
 }
 export function RefreshGrid() {
     ClearAllData();
     var xhr = new XMLHttpRequest();
-    xhr.open("get", "/API/Machines");
+    xhr.open("get", "/API/Devices");
     xhr.onerror = () => {
-        UI.ShowModal("Request Failure", "Failed to retrieve machine data.  Please refresh your connection or contact support.");
+        UI.ShowModal("Request Failure", "Failed to retrieve device data.  Please refresh your connection or contact support.");
     };
     xhr.onload = (e) => {
         if (xhr.status == 200) {
-            var machines = JSON.parse(xhr.responseText);
-            if (machines.length == 0) {
-                UI.AddConsoleOutput("It looks like you don't have the Remotely service installed on any machines.  You can get the install script from the Client Downloads page.");
+            var devices = JSON.parse(xhr.responseText);
+            if (devices.length == 0) {
+                UI.AddConsoleOutput("It looks like you don't have the Remotely service installed on any devices.  You can get the install script from the Client Downloads page.");
             }
             else {
 
             }
-            AddOrUpdateMachines(machines);
+            AddOrUpdateDevices(devices);
         }
         else {
-            UI.ShowModal("Request Failure", "Failed to retrieve machine data.  Please refresh your connection or contact support.");
+            UI.ShowModal("Request Failure", "Failed to retrieve device data.  Please refresh your connection or contact support.");
         }
     }
     xhr.send();
 }
 export function ToggleSelectAll() {
-    var currentlySelected = MachineGrid.querySelectorAll(".row-selected:not(.hidden)");
+    var currentlySelected = DeviceGrid.querySelectorAll(".row-selected:not(.hidden)");
     if (currentlySelected.length > 0) {
         currentlySelected.forEach(elem => {
             elem.classList.remove("row-selected");
         });
     }
     else {
-        MachineGrid.querySelectorAll(".record-row:not(.hidden)").forEach(elem => {
+        DeviceGrid.querySelectorAll(".record-row:not(.hidden)").forEach(elem => {
             elem.classList.add("row-selected");
         })
     }
-    UpdateMachineCounts();
+    UpdateDeviceCounts();
 }
-export function UpdateMachineCounts() {
-    UI.MachinesSelectedCount.innerText = UI.MachineGrid.querySelectorAll(".row-selected").length.toString();
-    UI.OnlineMachinesCount.innerText = DataSource.filter(x => x.IsOnline).length.toString();
-    UI.TotalMachinesCount.innerText = DataSource.length.toString();
+export function UpdateDeviceCounts() {
+    UI.DevicesSelectedCount.innerText = UI.DeviceGrid.querySelectorAll(".row-selected").length.toString();
+    UI.OnlineDevicesCount.innerText = DataSource.filter(x => x.IsOnline).length.toString();
+    UI.TotalDevicesCount.innerText = DataSource.length.toString();
     if (
         DataSource.some(x =>
         x.IsOnline == false &&

@@ -1,5 +1,5 @@
 export interface PSCoreCommandResult {
-    MachineID: string;
+    DeviceID: string;
     CommandContextID: string;
     VerboseOutput: string[];
     DebugOutput: string[];

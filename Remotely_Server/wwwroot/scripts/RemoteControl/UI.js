@@ -6,6 +6,7 @@ export var ConnectButton = document.querySelector("#connectButton");
 export var RequesterNameInput = document.querySelector("#nameInput");
 export var StatusMessage = document.querySelector("#statusMessage");
 export var ScreenViewer = document.querySelector("#screenViewer");
+export var Screen2DContext = ScreenViewer.getContext("2d");
 export var HorizontalBars = document.querySelectorAll(".horizontal-button-bar");
 export var ConnectBox = document.getElementById("connectBox");
 export var ScreenSelectBar = document.querySelector("#screenSelectBar");
@@ -239,9 +240,6 @@ export function ApplyInputHandlers(sockets, rtc) {
         e.preventDefault();
         var key = e.key.toLowerCase();
         sockets.SendKeyUp(key);
-    });
-    window.addEventListener("click", function (e) {
-        ScreenViewer.muted = false;
     });
     window.ondragover = function (e) {
         e.preventDefault();

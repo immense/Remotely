@@ -10,11 +10,11 @@ export class BrowserRTC {
     Init() {
         this.PeerConnection = new RTCPeerConnection(this.IceConfiguration);
         UI.ScreenViewer.onloadedmetadata = (ev) => {
-            UI.ScreenViewer.play();
+            //UI.ScreenViewer.play();
         }
         this.PeerConnection.ontrack = (event) => {
             event.streams.forEach(x => {
-                UI.ScreenViewer.srcObject = x;
+                //UI.ScreenViewer.srcObject = x;
             });
         };
         this.PeerConnection.onconnectionstatechange = function (ev) {
@@ -24,7 +24,7 @@ export class BrowserRTC {
                 case "failed":
                     UI.ConnectBox.style.removeProperty("display");
                     UI.ConnectButton.removeAttribute("disabled");
-                    UI.ScreenViewer.srcObject = null;
+                    //UI.ScreenViewer.srcObject = null;
                     UI.StatusMessage.innerHTML = "Connection closed.";
                     break;
                 default:
@@ -38,7 +38,7 @@ export class BrowserRTC {
                 case "failed":
                     UI.ConnectBox.style.removeProperty("display");
                     UI.ConnectButton.removeAttribute("disabled");
-                    UI.ScreenViewer.srcObject = null;
+                    UI.Screen2DContext.clearRect(0, 0, UI.ScreenViewer.width, UI.ScreenViewer.height);
                     UI.StatusMessage.innerHTML = "Connection closed.";
                     break;
                 default:

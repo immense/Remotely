@@ -142,7 +142,7 @@ export function PositionCommandCompletionWindow() {
     var computedStyle = window.getComputedStyle(UI.ConsoleTextArea);
     UI.MeasurementContext.font = computedStyle.fontSize + " " + computedStyle.fontFamily;
     var width = UI.MeasurementContext.measureText(UI.ConsoleTextArea.value).width;
-    UI.CommandCompletionDiv.style.marginLeft = String(width) + "px";
+    UI.CommandCompletionDiv.style.marginLeft = String(width + 10) + "px";
 
     var wrapper = document.querySelector("#commandCompletionWrapper") as HTMLDivElement;
     var inputRect = UI.ConsoleTextArea.getBoundingClientRect();

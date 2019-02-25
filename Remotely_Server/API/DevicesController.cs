@@ -15,10 +15,10 @@ namespace Remotely_Server.API
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class MachinesController : Controller
+    public class DevicesController : Controller
     {
    
-        public MachinesController(DataService dataService, UserManager<RemotelyUser> userManager)
+        public DevicesController(DataService dataService, UserManager<RemotelyUser> userManager)
         {
             this.DataService = dataService;
             this.UserManager = userManager;
@@ -28,19 +28,19 @@ namespace Remotely_Server.API
 
         // GET: api/<controller>
         [HttpGet]
-        public async Task<IEnumerable<Machine>> Get()
+        public async Task<IEnumerable<Device>> Get()
         {
             var user = await UserManager.GetUserAsync(User);
-            var machines = DataService.GetAllMachines(user.Id);
-            return machines;
+            var devices = DataService.GetAllDevicesForUser(user.Id);
+            return devices;
         }
 
         // GET api/<controller>/5
         [HttpGet("{id}")]
-        public async Task<Machine> Get(string id)
+        public async Task<Device> Get(string id)
         {
             var user = await UserManager.GetUserAsync(User);
-            return DataService.GetMachine(user.Id, id);
+            return DataService.GetDeviceForUser(user.Id, id);
         }
     }
 }

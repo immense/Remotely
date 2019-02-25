@@ -10,7 +10,7 @@ export function ApplyInputEventHandlers() {
     keyDownOnInputTextArea();
     inputOnCommandTextArea();
     inputOnFilterTextBox();
-    clickToggleAllMachines();
+    clickToggleAllDevices();
     clickStartRemoteControlButton();
     window.addEventListener("resize", ev => {
         PositionCommandCompletionWindow();
@@ -139,7 +139,7 @@ function inputOnCommandTextArea() {
 function inputOnFilterTextBox() {
     document.querySelector("#gridFilter").addEventListener("input", (e) => {
         var currentText = e.currentTarget.value.toLowerCase();
-        UI.MachineGrid.querySelectorAll("tbody tr").forEach((row) => {
+        UI.DeviceGrid.querySelectorAll("tbody tr").forEach((row) => {
             if (row.innerHTML.toLowerCase().indexOf(currentText) == -1) {
                 row.classList.add("hidden");
             }
@@ -149,19 +149,19 @@ function inputOnFilterTextBox() {
         });
     });
 }
-function clickToggleAllMachines() {
-    document.getElementById("toggleAllMachines").addEventListener("click", function (e) {
+function clickToggleAllDevices() {
+    document.getElementById("toggleAllDevices").addEventListener("click", function (e) {
         DataGrid.ToggleSelectAll();
     });
 }
 function clickStartRemoteControlButton() {
     document.getElementById("startRemoteControlButton").addEventListener("click", function (e) {
-        var selectedMachines = DataGrid.GetSelectedMachines();
-        if (selectedMachines.length == 0) {
-            UI.FloatMessage("You must select a machine first.");
+        var selectedDevices = DataGrid.GetSelectedDevices();
+        if (selectedDevices.length == 0) {
+            UI.FloatMessage("You must select a device first.");
         }
-        else if (selectedMachines.length > 1) {
-            UI.FloatMessage("You must select only one machine to control.");
+        else if (selectedDevices.length > 1) {
+            UI.FloatMessage("You must select only one device to control.");
         }
         else {
             UI.FloatMessage("Starting remote control...");

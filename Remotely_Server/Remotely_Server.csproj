@@ -33,8 +33,8 @@
     <Content Remove="wwwroot\scripts\Models\CommandContext.ts" />
     <Content Remove="wwwroot\scripts\Models\CommandLineParameter.ts" />
     <Content Remove="wwwroot\scripts\Models\ConsoleCommand.ts" />
+    <Content Remove="wwwroot\scripts\Models\Device.ts" />
     <Content Remove="wwwroot\scripts\Models\GenericCommandResult.ts" />
-    <Content Remove="wwwroot\scripts\Models\Machine.ts" />
     <Content Remove="wwwroot\scripts\Models\Parameter.ts" />
     <Content Remove="wwwroot\scripts\Models\UserOptions.ts" />
     <Content Remove="wwwroot\scripts\Pages\OrganizationManagement.ts" />
@@ -1661,7 +1661,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\Models\CommandLineParameter.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\ConsoleCommand.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\UserOptions.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Models\Machine.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Models\Device.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\Parameter.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Pages\OrganizationManagement.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RemoteControl.ts" />

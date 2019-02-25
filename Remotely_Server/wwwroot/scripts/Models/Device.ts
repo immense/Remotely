@@ -1,10 +1,10 @@
-﻿export interface Machine {
+﻿export interface Device {
     Drives: any[];
     ID: string;
     Is64Bit: boolean;
     IsOnline: boolean;
     LastOnline: Date;
-    MachineName: string;
+    DeviceName: string;
     OrganizationID: string;
     OSArchitecture: any;
     OSDescription: string;

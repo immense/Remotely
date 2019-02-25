@@ -75,12 +75,8 @@ button.navbar-toggler:hover {
 .echo-input {
     color:gray;
 }
-.machine-tag {
+.device-tag {
     color: black;
-}
-
-.console-output table.console-machine-table {
-    color: limegreen;
 }
 
 #commandCompletionDiv {

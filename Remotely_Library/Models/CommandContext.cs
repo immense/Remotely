@@ -14,12 +14,12 @@ namespace Remotely_Library.Models
         public string CommandText { get; set; }
         public string SenderUserID { get; set; }
         public string SenderConnectionID { get; set; }
-        public string[] TargetMachineIDs { get; set; }
+        public string[] TargetDeviceIDs { get; set; }
         public List<PSCoreCommandResult> PSCoreResults { get; set; } = new List<PSCoreCommandResult>();
         public List<GenericCommandResult> CommandResults { get; set; } = new List<GenericCommandResult>();
         public DateTime TimeStamp { get; set; } = DateTime.Now;
         [IgnoreDataMember]
-        public Organization Organization { get; set; }
+        public virtual Organization Organization { get; set; }
         public string OrganizationID { get; set; }
     }
 }

@@ -1,5 +1,5 @@
 export interface GenericCommandResult {
-    MachineID: string;
+    DeviceID: string;
     CommandContextID: string;
     CommandType: string;
     StandardOutput: string;

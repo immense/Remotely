@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="Models\Machine.d.ts">
-      <DependentUpon>Machine.cs</DependentUpon>
+    <None Include="Models\Device.d.ts">
+      <DependentUpon>Device.cs</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </None>
@@ -39,7 +39,7 @@
       <LastGenOutput>GenericCommandResult.cs.d.ts</LastGenOutput>
       <Generator>DtsGenerator</Generator>
     </Compile>
-    <Compile Update="Models\Machine.cs">
+    <Compile Update="Models\Device.cs">
       <LastGenOutput>Machine.cs.d.ts</LastGenOutput>
       <Generator>DtsGenerator</Generator>
     </Compile>

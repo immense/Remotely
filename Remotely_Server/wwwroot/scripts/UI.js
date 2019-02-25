@@ -1,15 +1,15 @@
 import { UserSettings } from "./UserSettings.js";
 import * as Utilities from "./Utilities.js";
-import { GetSelectedMachines } from "./DataGrid.js";
+import { GetSelectedDevices } from "./DataGrid.js";
 export var CommandCompletionDiv = document.querySelector("#commandCompletionDiv");
 export var CommandInfoDiv = document.querySelector("#commandInfoDiv");
 export var CommandModeSelect = document.querySelector("#commandModeSelect");
 export var ConsoleOutputDiv = document.querySelector("#consoleOutputDiv");
 export var ConsoleTextArea = document.querySelector("#consoleTextArea");
-export var MachineGrid = document.querySelector("#machineGrid");
-export var MachinesSelectedCount = document.querySelector("#machinesSelectedSpan");
-export var OnlineMachinesCount = document.querySelector("#onlineMachinesSpan");
-export var TotalMachinesCount = document.querySelector("#totalMachinesSpan");
+export var DeviceGrid = document.querySelector("#deviceGrid");
+export var DevicesSelectedCount = document.querySelector("#devicesSelectedSpan");
+export var OnlineDevicesCount = document.querySelector("#onlineDevicesSpan");
+export var TotalDevicesCount = document.querySelector("#totalDevicesSpan");
 export var MeasurementCanvas = document.createElement("canvas");
 export var MeasurementContext = MeasurementCanvas.getContext("2d");
 export var TabContentWrapper = document.getElementById("tabContentWrapper");
@@ -33,15 +33,15 @@ export function AddConsoleHTML(html) {
     ConsoleOutputDiv.appendChild(contentWrapper);
     TabContentWrapper.scrollTop = TabContentWrapper.scrollHeight;
 }
-export function AddTransferHarness(transferID, totalMachines) {
-    GetSelectedMachines();
+export function AddTransferHarness(transferID, totalDevices) {
+    GetSelectedDevices();
     var transferHarness = document.createElement("div");
     transferHarness.id = transferID;
     transferHarness.classList.add("command-harness");
     transferHarness.innerHTML = `
         <div class="command-harness-title">
             File Transfer Status  |  
-            Total Machines: ${totalMachines} |  
+            Total Devices: ${totalDevices} |  
             Completed: <span id="${transferID}-completed">0</span>
         </div>`;
     AddConsoleHTML(transferHarness.outerHTML);
