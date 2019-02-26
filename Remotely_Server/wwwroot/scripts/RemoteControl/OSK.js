@@ -14,14 +14,14 @@ window.addEventListener("load", (ev) => {
             if (key.id == "shiftKey" || key.id == "ctrlKey" || key.id == "altKey") {
                 key.classList.toggle("toggled");
                 if (key.classList.contains("toggled")) {
-                    RemoteControl.RCBrowserSockets.SendKeyDown(key.innerHTML.toLowerCase());
+                    RemoteControl.RCBrowserSockets.SendKeyDown(Number(key.getAttribute("keycode")));
                 }
                 else {
-                    RemoteControl.RCBrowserSockets.SendKeyUp(key.innerHTML.toLowerCase());
+                    RemoteControl.RCBrowserSockets.SendKeyUp(Number(key.getAttribute("keycode")));
                 }
             }
             else {
-                RemoteControl.RCBrowserSockets.SendKeyPress(key.innerHTML.toLowerCase());
+                RemoteControl.RCBrowserSockets.SendKeyPress(Number(key.getAttribute("keycode")));
             }
         });
     });

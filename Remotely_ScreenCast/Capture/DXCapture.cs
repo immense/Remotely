@@ -98,10 +98,7 @@ namespace Remotely_ScreenCast.Capture
 			var newHeight = output.Description.DesktopBounds.Bottom - output.Description.DesktopBounds.Top;
             if (newWidth != width || newHeight != height)
             {
-                if (ScreenChanged != null)
-                {
-                    ScreenChanged(this, new Size(newWidth, newHeight));
-                }
+                ScreenChanged?.Invoke(this, new Size(newWidth, newHeight));
             }
             width = newWidth;
             height = newHeight;
