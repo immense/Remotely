@@ -103,10 +103,6 @@ namespace Remotely_Server.Services
         {
             await RCBrowserHub.Clients.Client(rcBrowserConnectionID).SendAsync("DesktopSwitchFailed");
         }
-        public async Task GetIceConfiguration()
-        {
-            //await Clients.Caller.SendAsync("IceConfiguration", AppConfig.IceConfiguration);
-        }
         public async Task GetSessionID()
         {
             var random = new Random();

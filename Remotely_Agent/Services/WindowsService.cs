@@ -29,7 +29,7 @@ namespace Remotely_Agent.Services
                     var subkey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", true);
                     subkey.SetValue("SoftwareSASGeneration", "3", Microsoft.Win32.RegistryValueKind.DWord);
                 }
-                ClientSocket.Connect();
+                DeviceSocket.Connect();
             }
             catch (Exception ex)
             {
