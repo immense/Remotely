@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2000
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28606.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remotely_Agent", "Remotely_Agent\Remotely_Agent.csproj", "{98A8DF30-0993-4B49-822E-244A70AB8C4D}"
 	ProjectSection(ProjectDependencies) = postProject

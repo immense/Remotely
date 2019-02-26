@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Remotely_Server.Pages
 {
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class ErrorModel : PageModel
     {
         public ErrorModel(DataService dataService)
@@ -23,7 +24,6 @@ namespace Remotely_Server.Pages
 
         private DataService DataService { get; }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public void OnGet()
         {
             RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;

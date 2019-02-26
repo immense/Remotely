@@ -5,7 +5,7 @@ import { GenericCommandResult } from "./Models/GenericCommandResult.js";
 import { ConsoleOutputDiv, TabContentWrapper } from "./UI.js";
 
 export function CreateCommandHarness(context: CommandContext): HTMLDivElement {
-    var collapseClass = context.TargetDeviceIDs.length > 1 ? "collapse" : "collapse in";
+    var collapseClass = context.TargetDeviceIDs.length > 1 ? "collapse" : "collapse show";
     var commandHarness = document.createElement("div");
     commandHarness.id = context.ID;
     commandHarness.classList.add("command-harness");
@@ -28,7 +28,7 @@ export function AddPSCoreResultsHarness(result: PSCoreCommandResult) {
     var deviceName = DataGrid.DataSource.find(x => x.ID == result.DeviceID).DeviceName;
     var resultsWrapper = document.getElementById(result.CommandContextID + "-results");
     var totalDevices = parseInt(document.getElementById(result.CommandContextID + "-totaldevices").innerText);
-    var collapseClass = totalDevices > 1 ? "collapse" : "collapse in";
+    var collapseClass = totalDevices > 1 ? "collapse" : "collapse show";
     
     var resultDiv = document.createElement("div");
     resultDiv.innerHTML = `

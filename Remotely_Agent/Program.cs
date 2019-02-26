@@ -44,14 +44,14 @@ namespace Remotely_Agent
             {
 #if DEBUG
                 IsDebug = true;
-                ClientSocket.Connect();
+                DeviceSocket.Connect();
 #else
                 ServiceBase.Run(new WindowsService());
 #endif
             }
             else
             {
-                ClientSocket.Connect();
+                DeviceSocket.Connect();
             }
            
             while (true)

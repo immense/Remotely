@@ -18,7 +18,7 @@ using System.Reflection;
 
 namespace Remotely_Agent.Services
 {
-    public static class ClientSocket
+    public static class DeviceSocket
     {
         public static Timer HeartbeatTimer { get; private set; }
         public static bool IsServerVerified { get; set; }
