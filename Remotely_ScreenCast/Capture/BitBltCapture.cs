@@ -52,7 +52,7 @@ namespace Remotely_ScreenCast.Capture
                     selectedScreen = 0;
                 }
                 CurrentBounds = Screen.AllScreens[selectedScreen].Bounds;
-                ScreenChanged(this, CurrentBounds.Size);
+                ScreenChanged?.Invoke(this, CurrentBounds.Size);
             }
         }
         public Rectangle CurrentBounds { get; set; } = Screen.PrimaryScreen.Bounds;

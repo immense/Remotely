@@ -65,14 +65,14 @@ export class RCBrowserSockets {
     SendMouseWheel(deltaX, deltaY) {
         this.Connection.invoke("MouseWheel", deltaX, deltaY);
     }
-    SendKeyDown(key) {
-        this.Connection.invoke("KeyDown", key);
+    SendKeyDown(keyCode) {
+        this.Connection.invoke("KeyDown", keyCode);
     }
-    SendKeyUp(key) {
-        this.Connection.invoke("KeyUp", key);
+    SendKeyUp(keyCode) {
+        this.Connection.invoke("KeyUp", keyCode);
     }
-    SendKeyPress(key) {
-        this.Connection.invoke("KeyPress", key);
+    SendKeyPress(keyCode) {
+        this.Connection.invoke("KeyPress", keyCode);
     }
     SendCtrlAltDel() {
         this.Connection.invoke("CtrlAltDel", RemoteControl.ServiceID);
@@ -101,7 +101,6 @@ export class RCBrowserSockets {
             }
         });
         hubConnection.on("ScreenSize", (width, height) => {
-            console.log("Screen size received. Width " + width + ".  Height " + height);
             UI.ScreenViewer.width = width;
             UI.ScreenViewer.height = height;
         });

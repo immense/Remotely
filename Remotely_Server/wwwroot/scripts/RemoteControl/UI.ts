@@ -245,16 +245,14 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets, rtc: BrowserRTC) {
             return;
         }
         e.preventDefault();
-        var key = e.key.toLowerCase();
-        sockets.SendKeyDown(key);
+        sockets.SendKeyDown(e.keyCode);
     });
     window.addEventListener("keyup", function (e) {
         if (document.querySelector("input:focus")) {
             return;
         }
         e.preventDefault();
-        var key = e.key.toLowerCase();
-        sockets.SendKeyUp(key);
+        sockets.SendKeyUp(e.keyCode);
     });
 
     window.ondragover = function (e) {
