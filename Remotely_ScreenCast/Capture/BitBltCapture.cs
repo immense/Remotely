@@ -19,18 +19,11 @@ namespace Remotely_ScreenCast.Capture
     public class BitBltCapture : ICapturer
     {
         public Bitmap CurrentFrame { get; set; }
-        public Size CurrentScreenSize
-        {
-            get
-            {
-                return CurrentBounds.Size;
-            }
-        }
         public Bitmap PreviousFrame { get; set; }
         public bool IsCapturing { get; set; }
         public bool CaptureFullscreen { get; set; } = true;
         public int PauseForMilliseconds { get; set; }
-        public EventHandler<Size> ScreenChanged { get; set; }
+        public EventHandler<Rectangle> ScreenChanged { get; set; }
         public int SelectedScreen
         {
             get
@@ -51,38 +44,27 @@ namespace Remotely_ScreenCast.Capture
                 {
                     selectedScreen = 0;
                 }
-                CurrentBounds = Screen.AllScreens[selectedScreen].Bounds;
-                ScreenChanged?.Invoke(this, CurrentBounds.Size);
+                CurrentScreenBounds = Screen.AllScreens[selectedScreen].Bounds;
+                ScreenChanged?.Invoke(this, CurrentScreenBounds);
             }
         }
-        public Rectangle CurrentBounds { get; set; } = Screen.PrimaryScreen.Bounds;
+        public Rectangle CurrentScreenBounds { get; set; } = Screen.PrimaryScreen.Bounds;
         private int selectedScreen = 0;
-
-        // Offsets are the left and top edge of the screen, in case multiple monitor setups
-        // create a situation where the edge of a monitor is in the negative.  This must
-        // be converted to a 0-based max left/top to render images on the canvas properly.
         private Graphics graphic;
         private string desktopName;
 
 
         public BitBltCapture()
         {
-            CurrentFrame = new Bitmap(CurrentBounds.Width, CurrentBounds.Height, PixelFormat.Format32bppArgb);
-            PreviousFrame = new Bitmap(CurrentBounds.Width, CurrentBounds.Height, PixelFormat.Format32bppArgb);
+            CurrentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
+            PreviousFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
             graphic = Graphics.FromImage(CurrentFrame);
 			desktopName = Win32Interop.GetCurrentDesktop();
         }
 
-        private void CursorIcon_OnChange(object sender, int e)
-        {
-            //AditClient.SocketMessageHandler.SendIconUpdate(e);
-        }
-
         public void Capture()
         {
-			Console.WriteLine($"Using BitBlt Capturer.");
 			var currentDesktop = Win32Interop.GetCurrentDesktop();
-            Console.WriteLine($"Current Desktop: {currentDesktop}");
             if (currentDesktop != desktopName)
             {
                 desktopName = currentDesktop;
@@ -97,7 +79,7 @@ namespace Remotely_ScreenCast.Capture
 
             try
             {
-                graphic.CopyFromScreen(0 + CurrentBounds.Left, 0 + CurrentBounds.Top, 0, 0, new Size(CurrentBounds.Width, CurrentBounds.Height));
+                graphic.CopyFromScreen(0 + CurrentScreenBounds.Left, 0 + CurrentScreenBounds.Top, 0, 0, new Size(CurrentScreenBounds.Width, CurrentScreenBounds.Height));
             }
             catch (Exception ex)
             {
@@ -105,5 +87,11 @@ namespace Remotely_ScreenCast.Capture
             }
         }
 
-	}
+        public Point GetAbsoluteScreenCoordinatesFromPercentages(decimal percentX, decimal percentY)
+        {
+            var absoluteX = (CurrentScreenBounds.Width * percentX) + CurrentScreenBounds.Left;
+            var absoluteY = (CurrentScreenBounds.Height * percentY) + CurrentScreenBounds.Top;
+            return new Point((int)absoluteX, (int)absoluteY);
+        }
+    }
 }

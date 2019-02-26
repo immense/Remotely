@@ -105,22 +105,11 @@ export class RCBrowserSockets {
             UI.ScreenViewer.height = height;
         });
         hubConnection.on("ScreenCapture", (buffer) => {
-            var decodedString = window.atob(buffer);
-            var len = decodedString.length;
-            var bytes = new Uint8ClampedArray(len);
-            for (var i = 0; i < len; i++) {
-                bytes[i] = decodedString.charCodeAt(i);
-            }
-            ;
-            var imageData = new ImageData(bytes, UI.ScreenViewer.width, UI.ScreenViewer.height);
-            UI.Screen2DContext.putImageData(imageData, 0, 0);
-            //var url = window.URL.createObjectURL(new Blob([buffer]));
-            //var img = document.createElement("img");
-            //img.onload = function () {
-            //    UI.Screen2DContext.drawImage(img, 0, 0, UI.ScreenViewer.width, UI.ScreenViewer.height);
-            //    window.URL.revokeObjectURL(url);
-            //};
-            //img.src = url;
+            var img = new Image();
+            img.onload = () => {
+                UI.Screen2DContext.drawImage(img, 0, 0);
+            };
+            img.src = "data:image/png;base64," + buffer;
         });
         hubConnection.on("ConnectionFailed", () => {
             UI.ConnectButton.removeAttribute("disabled");

@@ -21,15 +21,9 @@ namespace Remotely_ScreenCast.Capture
     {
         public Bitmap PreviousFrame { get; set; }
         public Bitmap CurrentFrame { get; set; }
-        public Size CurrentScreenSize
-        {
-            get
-            {
-                return new Size(width, height);
-            }
-        }
+        public Rectangle CurrentScreenBounds { get; private set; }
         public bool CaptureFullscreen { get; set; } = true;
-        public EventHandler<Size> ScreenChanged { get; set; }
+        public EventHandler<Rectangle> ScreenChanged { get; set; }
         public int SelectedScreen
         {
             get
@@ -93,12 +87,14 @@ namespace Remotely_ScreenCast.Capture
 			output = adapter.GetOutput(selectedScreen);
 			output1 = output.QueryInterface<Output1>();
 
-			// Width/Height of desktop to capture
-			var newWidth = output.Description.DesktopBounds.Right - output.Description.DesktopBounds.Left;
-			var newHeight = output.Description.DesktopBounds.Bottom - output.Description.DesktopBounds.Top;
+            // Width/Height of desktop to capture
+            var bounds = output.Description.DesktopBounds;
+			var newWidth = bounds.Right - bounds.Left;
+			var newHeight = bounds.Bottom - bounds.Top;
+            CurrentScreenBounds = new Rectangle(bounds.Left, bounds.Top, newWidth, newHeight);
             if (newWidth != width || newHeight != height)
             {
-                ScreenChanged?.Invoke(this, new Size(newWidth, newHeight));
+                ScreenChanged?.Invoke(this, CurrentScreenBounds);
             }
             width = newWidth;
             height = newHeight;
@@ -212,5 +208,11 @@ namespace Remotely_ScreenCast.Capture
 			}
 		}
 
-	}
+        public Point GetAbsoluteScreenCoordinatesFromPercentages(decimal percentX, decimal percentY)
+        {
+            var absoluteX = (CurrentScreenBounds.Width * percentX) + CurrentScreenBounds.Left;
+            var absoluteY = (CurrentScreenBounds.Height * percentY) + CurrentScreenBounds.Top;
+            return new Point((int)absoluteX, (int)absoluteY);
+        }
+    }
 }

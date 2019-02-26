@@ -14,5 +14,6 @@ namespace Remotely_ScreenCapture.Models
         public ICapturer Capturer { get; set; }
         public int CurrentScreenIndex { get; set; }
         public bool DisconnectRequested { get; set; }
+        public bool HasControl { get; set; }
     }
 }
