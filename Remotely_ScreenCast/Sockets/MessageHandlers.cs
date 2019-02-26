@@ -29,20 +29,56 @@ namespace Remotely_ScreenCapture.Sockets
                 BeginScreenCasting(hubConnection, viewerID, requesterName, outgoingMessages);
             });
 
-            hubConnection.On("KeyDown", (int keyCode) =>
+            hubConnection.On("KeyDown", (int keyCode, string viewerID) =>
             {
-                Win32Interop.SendKeyDown((User32.VirtualKeyShort)keyCode);
+                var viewer = Program.Viewers[viewerID];
+                if (viewer.HasControl)
+                {
+                    Win32Interop.SendKeyDown((User32.VirtualKeyShort)keyCode);
+                }
             });
 
-            hubConnection.On("KeyUp", (int keyCode) =>
+            hubConnection.On("KeyUp", (int keyCode, string viewerID) =>
             {
-                Win32Interop.SendKeyUp((User32.VirtualKeyShort)keyCode);
+                var viewer = Program.Viewers[viewerID];
+                if (viewer.HasControl)
+                {
+                    Win32Interop.SendKeyUp((User32.VirtualKeyShort)keyCode);
+                }
             });
 
-            hubConnection.On("KeyPress", (int keyCode) =>
+            hubConnection.On("KeyPress", (int keyCode, string viewerID) =>
             {
-                Win32Interop.SendKeyDown((User32.VirtualKeyShort)keyCode);
-                Win32Interop.SendKeyUp((User32.VirtualKeyShort)keyCode);
+                var viewer = Program.Viewers[viewerID];
+                if (viewer.HasControl)
+                {
+                    Win32Interop.SendKeyDown((User32.VirtualKeyShort)keyCode);
+                    Win32Interop.SendKeyUp((User32.VirtualKeyShort)keyCode);
+                }
+            });
+
+            hubConnection.On("MouseMove", (decimal percentX, decimal percentY, string viewerID) =>
+            {
+                var viewer = Program.Viewers[viewerID];
+                if (viewer.HasControl)
+                {
+                    var mousePoint = viewer.Capturer.GetAbsoluteScreenCoordinatesFromPercentages(percentX, percentY);
+                    Win32Interop.SendMouseMove(mousePoint.X, mousePoint.Y);
+                }
+            });
+
+            hubConnection.On("ViewerDisconnected", (string viewerID) =>
+            {
+                if (Program.Viewers.ContainsKey(viewerID))
+                {
+                    var viewer = Program.Viewers[viewerID];
+                    viewer.DisconnectRequested = true;
+                    var success = false;
+                    while (!success)
+                    {
+                        success = Program.Viewers.TryRemove(viewerID, out _);
+                    }
+                }
             });
         }
 
@@ -74,7 +110,8 @@ namespace Remotely_ScreenCapture.Sockets
                 CurrentScreenIndex = 0,
                 DisconnectRequested = false,
                 Name = requesterName,
-                ViewerConnectionID = viewerID
+                ViewerConnectionID = viewerID,
+                HasControl = Program.Mode == "unattended"
             };
 
 
@@ -89,7 +126,7 @@ namespace Remotely_ScreenCapture.Sockets
                    Screen.AllScreens.Length,
                    viewerID);
 
-            await outgoingMessages.SendScreenSize(capturer.CurrentScreenSize.Width, capturer.CurrentScreenSize.Height, viewerID);
+            await outgoingMessages.SendScreenSize(capturer.CurrentScreenBounds.Width, capturer.CurrentScreenBounds.Height, viewerID);
 
             capturer.ScreenChanged += async (sender, size) =>
             {

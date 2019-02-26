@@ -10,12 +10,13 @@ namespace Remotely_ScreenCast.Capture
 	public interface ICapturer
 	{
 		Bitmap CurrentFrame { get; set; }
-        Size CurrentScreenSize { get; }
-
+        Rectangle CurrentScreenBounds { get; }
         Bitmap PreviousFrame { get; set; }
 		bool CaptureFullscreen { get; set; }
 		void Capture();
-        EventHandler<Size> ScreenChanged { get; set; }
+        EventHandler<Rectangle> ScreenChanged { get; set; }
         int SelectedScreen { get; set; }
+
+        Point GetAbsoluteScreenCoordinatesFromPercentages(decimal percentX, decimal percentY);
     }
 }

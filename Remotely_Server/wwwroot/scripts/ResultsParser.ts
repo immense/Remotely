@@ -15,9 +15,9 @@ export function CreateCommandHarness(context: CommandContext): HTMLDivElement {
             Total Devices: <span id="${context.ID}-totaldevices">${context.TargetDeviceIDs.length}</span>  |  
             Completed: <span id="${context.ID}-completed">0%</span>  |
             Errors: <span id="${context.ID}-errors">0</span>  |  
-            <button class="btn btn-xs btn-secondary" data-toggle="collapse" data-target="#${context.ID}-results">View</button> 
-            <a class="btn btn-xs btn-secondary" target="_blank" href="${location.origin}/API/Commands/JSON/${context.ID}">JSON</a>
-            <a class="btn btn-xs btn-secondary" target="_blank" href="${location.origin}/API/Commands/XML/${context.ID}">XML</a> 
+            <button class="btn btn-sm btn-secondary" data-toggle="collapse" data-target='#${context.ID}-results'>View</button> 
+            <a class="btn btn-sm btn-secondary" target="_blank" href="${location.origin}/API/Commands/JSON/${context.ID}">JSON</a>
+            <a class="btn btn-sm btn-secondary" target="_blank" href="${location.origin}/API/Commands/XML/${context.ID}">XML</a> 
         </div>
         <div id="${context.ID}-results" class="${collapseClass}">
         </div>`;
@@ -35,9 +35,9 @@ export function AddPSCoreResultsHarness(result: PSCoreCommandResult) {
         <div class="result-header">
                 Device: ${deviceName}  |  
                 Had Errors: ${result.ErrorOutput.length > 1 ? "Yes": "No"}  |  
-                <button class="btn btn-xs btn-secondary" data-toggle="collapse" data-target="#${result.CommandContextID + result.DeviceID}-result">View</button>
+                <button class="btn btn-sm btn-secondary" data-toggle="collapse" data-target='#${result.CommandContextID + result.DeviceID}-result'>View</button>
         </div>
-        <div id="${result.CommandContextID + result.DeviceID}-result" class="command-result-output ${collapseClass}">
+        <div id='${result.CommandContextID + result.DeviceID}-result' class="command-result-output ${collapseClass}">
             <div>Host Output:<br>${result.HostOutput.replace(/\n/g, "<br>").replace(/ /g, "&nbsp;")}</div>
             <div>Debug Output:<br>${result.DebugOutput.join("<br>").replace(/ /g, "&nbsp;")}</div>
             <div>Verbose Output:<br>${result.VerboseOutput.join("<br>").replace(/ /g, "&nbsp;")}</div>
@@ -64,7 +64,7 @@ export function AddCommandResultsHarness(result: GenericCommandResult) {
         <div class="result-header">
                 Device: ${deviceName}  |  
                 Had Errors: ${result.ErrorOutput.length > 1 ? "Yes" : "No"}  |  
-                <button class="btn btn-xs btn-secondary" data-toggle="collapse" data-target="#${result.CommandContextID + result.DeviceID}-result">View</button>
+                <button class="btn btn-sm btn-secondary" data-toggle="collapse" data-target="#${result.CommandContextID + result.DeviceID}-result">View</button>
         </div>
         <div id="${result.CommandContextID + result.DeviceID}-result" class="command-result-output ${collapseClass}">
             <div>Standard Output:<br>${result.StandardOutput.replace(/\n/g, "<br>").replace(/ /g, "&nbsp;")}</div>
