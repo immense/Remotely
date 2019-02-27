@@ -58,7 +58,7 @@ function Run-StartupChecks {
 
 function Uninstall-Remotely {
 	Start-Process -FilePath "cmd.exe" -ArgumentList "/c sc delete Remotely_Service" -Wait -WindowStyle Hidden
-	Stop-Process -Name Agent -Force -ErrorAction SilentlyContinue
+	Stop-Process -Name Remotely_Agent -Force -ErrorAction SilentlyContinue
 	Remove-Item -Path $InstallPath -Force -Recurse -ErrorAction SilentlyContinue
 }
 
@@ -87,7 +87,7 @@ function Install-Remotely {
 		}
 	}
 	Start-Process -FilePath "cmd.exe" -ArgumentList "/c sc delete Remotely_Service" -Wait  -WindowStyle Hidden
-    Get-Process | Where-Object {$_.Name -like "Agent"} | Stop-Process -Force
+    Get-Process | Where-Object {$_.Name -like "Remotely_Agent"} | Stop-Process -Force
 	Get-ChildItem -Path "C:\Program Files\Remotely" | Where-Object {$_.Name -notlike "ConnectionInfo.json"} | Remove-Item -Recurse -Force
 
 	if ($HostName.EndsWith("/")) {
@@ -111,7 +111,7 @@ function Install-Remotely {
 
 	New-Item -ItemType File -Path "$InstallPath\ConnectionInfo.json" -Value (ConvertTo-Json -InputObject $ConnectionInfo) -Force
 
-	New-Service -Name "Remotely_Service" -BinaryPathName "$InstallPath\Agent.exe" -DisplayName "Remotely Service" -StartupType Automatic -Description "Background service that maintains a connection to the Remotely server.  The service is used for remote support and maintenance by this computer's administrators."
+	New-Service -Name "Remotely_Service" -BinaryPathName "$InstallPath\Remotely_Agent.exe" -DisplayName "Remotely Service" -StartupType Automatic -Description "Background service that maintains a connection to the Remotely server.  The service is used for remote support and maintenance by this computer's administrators."
 	Start-Process -FilePath "cmd.exe" -ArgumentList "/c sc.exe failure `"Remotely_Service`" reset=5 actions=restart/5000" -Wait -WindowStyle Hidden
 	Start-Service -Name Remotely_Service
 }

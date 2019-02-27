@@ -1,6 +1,7 @@
 import { GetDistanceBetween } from "../Utilities.js";
 import { ConnectToClient, RemoteControl } from "./RemoteControl.js";
 import { FloatMessage } from "../UI.js";
+import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 export var SessionIDInput = document.querySelector("#sessionIDInput");
 export var ConnectButton = document.querySelector("#connectButton");
 export var RequesterNameInput = document.querySelector("#nameInput");
@@ -23,7 +24,7 @@ var lastTouchStart = Date.now();
 var touchList = new Array();
 var longPressTimeout;
 var lastTouchDistanceMoved = 0;
-export function ApplyInputHandlers(sockets, rtc) {
+export function ApplyInputHandlers(sockets) {
     document.querySelector("#menuButton").addEventListener("click", (ev) => {
         HorizontalBars.forEach(x => {
             x.classList.remove('open');
@@ -59,7 +60,6 @@ export function ApplyInputHandlers(sockets, rtc) {
         }
     });
     document.querySelector("#disconnectButton").addEventListener("click", (ev) => {
-        rtc.Disconnect();
         ConnectButton.removeAttribute("disabled");
     });
     document.querySelector("#keyboardButton").addEventListener("click", (ev) => {
@@ -71,7 +71,7 @@ export function ApplyInputHandlers(sockets, rtc) {
     });
     document.querySelector("#inviteButton").addEventListener("click", (ev) => {
         var url = "";
-        if (RemoteControl.Mode == "Normal") {
+        if (RemoteControl.Mode == RemoteControlMode.Normal) {
             url = `${location.origin}${location.pathname}?sessionID=${RemoteControl.ClientID}`;
         }
         else {

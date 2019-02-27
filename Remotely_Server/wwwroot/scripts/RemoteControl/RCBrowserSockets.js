@@ -29,11 +29,8 @@ export class RCBrowserSockets {
     SendScreenCastRequestToDevice() {
         return this.Connection.invoke("SendScreenCastRequestToDevice", RemoteControl.ClientID, RemoteControl.RequesterName, RemoteControl.Mode);
     }
-    SendIceCandidate(candidate) {
-        return this.Connection.invoke("SendIceCandidateToDevice", candidate, RemoteControl.Mode, RemoteControl.ClientID);
-    }
-    SendRTCSession(description) {
-        return this.Connection.invoke("SendRTCSessionToDevice", description, RemoteControl.Mode, RemoteControl.ClientID);
+    SendFrameSkip(delayTime) {
+        this.Connection.invoke("SendFrameSkip", delayTime);
     }
     SendSelectScreen(index) {
         return this.Connection.invoke("SelectScreen", index);
@@ -104,9 +101,13 @@ export class RCBrowserSockets {
             UI.ScreenViewer.width = width;
             UI.ScreenViewer.height = height;
         });
-        hubConnection.on("ScreenCapture", (buffer) => {
+        hubConnection.on("ScreenCapture", (buffer, captureTime) => {
             var img = new Image();
             img.onload = () => {
+                var frameDelay = Date.now() - new Date(captureTime).getTime();
+                if (frameDelay > 1000) {
+                    this.SendFrameSkip(frameDelay * .25);
+                }
                 UI.Screen2DContext.drawImage(img, 0, 0);
             };
             img.src = "data:image/png;base64," + buffer;
@@ -128,13 +129,10 @@ export class RCBrowserSockets {
         hubConnection.on("SwitchedDesktop", (newClientID) => {
             UI.ShowMessage("Desktop switch completed.");
             RemoteControl.ClientID = newClientID;
-            RemoteControl.BrowserRTC.PeerConnection.close();
-            RemoteControl.BrowserRTC.Init();
             this.SendScreenCastRequestToDevice();
         });
         hubConnection.on("DesktopSwitchFailed", () => {
             UI.ShowMessage("Desktop switch failed.  Please reconnect.");
-            RemoteControl.BrowserRTC.PeerConnection.close();
         });
     }
 }

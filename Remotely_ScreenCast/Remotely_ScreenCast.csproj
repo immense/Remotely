@@ -7,8 +7,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{2DCEA1F5-9B64-4EDB-9CD0-4D6675D96709}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Remotely_ScreenCapture</RootNamespace>
-    <AssemblyName>Remotely_ScreenCapture</AssemblyName>
+    <RootNamespace>Remotely_ScreenCast</RootNamespace>
+    <AssemblyName>Remotely_ScreenCast</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

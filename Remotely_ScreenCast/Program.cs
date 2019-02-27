@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
-using Remotely_ScreenCapture;
-using Remotely_ScreenCapture.Capture;
-using Remotely_ScreenCapture.Models;
-using Remotely_ScreenCapture.Sockets;
-using Remotely_ScreenCapture.Utilities;
+using Remotely_ScreenCast;
+using Remotely_ScreenCast.Capture;
+using Remotely_ScreenCast.Models;
+using Remotely_ScreenCast.Sockets;
+using Remotely_ScreenCast.Utilities;
 using Remotely_ScreenCast.Capture;
 using System;
 using System.Collections.Concurrent;
@@ -27,7 +27,7 @@ namespace Remotely_ScreenCast
         public static bool DisconnectRequested { get; set; }
         public static string Mode { get; private set; }
         public static string RequesterID { get; private set; }
-        public static string HostName { get; private set; }
+        public static string Host { get; private set; }
         public static HubConnection Connection { get; private set; }
         public static OutgoingMessages OutgoingMessages { get; private set; }
         public static ConcurrentDictionary<string, Viewer> Viewers { get; } = new ConcurrentDictionary<string, Viewer>();
@@ -38,10 +38,10 @@ namespace Remotely_ScreenCast
             var argDict = ProcessArgs(args);
             Mode = argDict["mode"];
             RequesterID = argDict["requester"];
-            HostName = argDict["hostname"];
+            Host = argDict["host"];
 
             Connection = new HubConnectionBuilder()
-                .WithUrl($"http://{HostName}/RCDeviceHub")
+                .WithUrl($"{Host}/RCDeviceHub")
                 .Build();
 
             Connection.StartAsync().Wait();
@@ -52,7 +52,25 @@ namespace Remotely_ScreenCast
 
             OutgoingMessages.NotifyRequesterUnattendedReady(RequesterID).Wait();
 
-            Console.ReadKey();
+            StartWaitForViewerTimer();
+
+            Console.Read();
+        }
+
+        private static void StartWaitForViewerTimer()
+        {
+            var timer = new System.Timers.Timer(5000);
+            timer.AutoReset = false;
+            timer.Elapsed += (sender, arg) =>
+            {
+                // Shut down if no viewers have connected within 5 seconds.
+                if (Viewers.Count == 0)
+                {
+                    Logger.Write("No viewers connected after 5 seconds.  Shutting down.");
+                    Environment.Exit(0);
+                }
+            };
+            timer.Start();
         }
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

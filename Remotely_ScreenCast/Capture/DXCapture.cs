@@ -1,4 +1,4 @@
-﻿using Remotely_ScreenCapture.Utilities;
+﻿using Remotely_ScreenCast.Utilities;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
@@ -172,8 +172,8 @@ namespace Remotely_ScreenCast.Capture
 					var destPtr = mapDest.Scan0;
 					for (int y = 0; y < height; y++)
 					{
-						// Copy a single line 
-						Utilities.CopyMemory(destPtr, sourcePtr, width * 4);
+                        // Copy a single line 
+                        SharpDX.Utilities.CopyMemory(destPtr, sourcePtr, width * 4);
 
 						// Advance pointers
 						sourcePtr = IntPtr.Add(sourcePtr, mapSource.RowPitch);

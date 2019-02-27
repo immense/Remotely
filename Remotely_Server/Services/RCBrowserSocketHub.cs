@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Remotely_Library.Enums;
 
 namespace Remotely_Server.Services
 {
@@ -119,9 +120,9 @@ namespace Remotely_Server.Services
             await RCDeviceHub.Clients.Client(ClientID).SendAsync("SelectScreen", screenIndex, Context.ConnectionId);
         }
 
-        public async Task SendScreenCastRequestToDevice(string clientID, string requesterName, string clientType)
+        public async Task SendScreenCastRequestToDevice(string clientID, string requesterName, RemoteControlMode remoteControlMode)
         {
-            if (clientType == "Normal")
+            if (remoteControlMode == RemoteControlMode.Normal)
             {
                 if (!RCDeviceSocketHub.AttendedSessionList.ContainsKey(clientID))
                 {
@@ -141,9 +142,13 @@ namespace Remotely_Server.Services
                                 $"Requester IP Address: " + Context?.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString()
             });
             Context.Items["ClientID"] = clientID;
-            Context.Items["ClientType"] = clientType;
+            Context.Items["ClientType"] = remoteControlMode;
             Context.Items["RequesterName"] = requesterName;
             await RCDeviceHub.Clients.Client(clientID).SendAsync("GetScreenCast", Context.ConnectionId, requesterName);
+        }
+        public async Task SendFrameSkip(int delayTime)
+        {
+            await RCDeviceHub.Clients.Client(ClientID).SendAsync("FrameSkip", delayTime, Context.ConnectionId);
         }
         public async Task SendSharedFileIDs(List<string> fileIDs)
         {

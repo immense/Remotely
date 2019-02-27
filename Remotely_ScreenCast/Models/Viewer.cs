@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely_ScreenCapture.Models
+namespace Remotely_ScreenCast.Models
 {
     public class Viewer
     {
@@ -15,5 +15,6 @@ namespace Remotely_ScreenCapture.Models
         public int CurrentScreenIndex { get; set; }
         public bool DisconnectRequested { get; set; }
         public bool HasControl { get; set; }
+        public int NextCaptureDelay { get; internal set; }
     }
 }
