@@ -18,11 +18,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\Remotely_ScreenCapture.exe" />
+    <None Remove="Resources\Remotely_ScreenCast.exe" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Remotely_ScreenCapture.exe" />
+    <EmbeddedResource Include="Resources\Remotely_ScreenCast.exe" />
   </ItemGroup>
 
   <ItemGroup>

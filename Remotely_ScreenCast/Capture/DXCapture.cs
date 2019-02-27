@@ -24,6 +24,7 @@ namespace Remotely_ScreenCast.Capture
         public Rectangle CurrentScreenBounds { get; private set; }
         public bool CaptureFullscreen { get; set; } = true;
         public EventHandler<Rectangle> ScreenChanged { get; set; }
+        private Stopwatch FramerateTimer { get; } = Stopwatch.StartNew();
         public int SelectedScreen
         {
             get
@@ -71,9 +72,9 @@ namespace Remotely_ScreenCast.Capture
 
         private void Init()
 		{
-			desktopName = Win32Interop.GetCurrentDesktop();
+            desktopName = Win32Interop.GetCurrentDesktop();
 
-			factory = new Factory1();
+            factory = new Factory1();
 
 			//Get first adapter
 			adapter = factory.Adapters1.FirstOrDefault(x => x.Outputs.Length > 0);
@@ -119,7 +120,10 @@ namespace Remotely_ScreenCast.Capture
 			screenTexture = new Texture2D(device, textureDesc);
 			duplicatedOutput = output1.DuplicateOutput(device);
 
-		}
+            Debug.WriteLine($"Starting DXCapture.");
+            Debug.WriteLine($"Current Desktop: {desktopName}");
+
+        }
 		public void Capture()
 		{
 			try
@@ -130,20 +134,25 @@ namespace Remotely_ScreenCast.Capture
                     NeedsInit = false;
                 }
 				var currentDesktop = Win32Interop.GetCurrentDesktop();
-				Console.WriteLine($"Using DXCapture.");
-				Console.WriteLine($"Current Desktop: {currentDesktop}");
 				if (currentDesktop != desktopName)
 				{
 					desktopName = currentDesktop;
 					var inputDesktop = Win32Interop.OpenInputDesktop();
 					var success = User32.SetThreadDesktop(inputDesktop);
 					User32.CloseDesktop(inputDesktop);
-					Logger.Write($"Set thread desktop: {success}");
+					Logger.Write($"Set thread desktop to {currentDesktop}: {success}");
                     return;
 				}
 
 				SharpDX.DXGI.Resource screenResource;
 				OutputDuplicateFrameInformation duplicateFrameInformation;
+
+                // Keep framerate below 30 FPS.
+                if (FramerateTimer.Elapsed.TotalMilliseconds > 33)
+                {
+                    Thread.Sleep((int)FramerateTimer.Elapsed.TotalMilliseconds);
+                }
+                FramerateTimer.Restart();
 
 				// Try to get duplicated frame within given time is ms
 				duplicatedOutput.AcquireNextFrame(50, out duplicateFrameInformation, out screenResource);
