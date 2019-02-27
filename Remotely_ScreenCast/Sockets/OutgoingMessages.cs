@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely_ScreenCapture.Sockets
+namespace Remotely_ScreenCast.Sockets
 {
     public class OutgoingMessages
     {
@@ -20,9 +20,9 @@ namespace Remotely_ScreenCapture.Sockets
             await Connection.SendAsync("SendScreenSize", width, height, viewerID);
         }
 
-        public async Task SendScreenCapture(byte[] captureBytes, string viewerID)
+        public async Task SendScreenCapture(byte[] captureBytes, string viewerID, DateTime captureTime)
         {
-            await Connection.SendAsync("SendScreenCapture", captureBytes, viewerID);
+            await Connection.SendAsync("SendScreenCapture", captureBytes, viewerID, captureTime);
         }
 
         internal async Task SendScreenCount(int primaryScreenIndex, int screenCount, string viewerID)

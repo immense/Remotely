@@ -28,6 +28,7 @@
     <Content Remove="wwwroot\scripts\Commands\WebCommands.ts" />
     <Content Remove="wwwroot\scripts\Commands\WinPSCommands.ts" />
     <Content Remove="wwwroot\scripts\DataGrid.ts" />
+    <Content Remove="wwwroot\scripts\Enums\RemoteControlMode.ts" />
     <Content Remove="wwwroot\scripts\InputEventHandlers.ts" />
     <Content Remove="wwwroot\scripts\Main.ts" />
     <Content Remove="wwwroot\scripts\Models\CommandContext.ts" />
@@ -1655,6 +1656,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\Commands\WebCommands.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Commands\PSCoreCommands.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\DataGrid.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Enums\RemoteControlMode.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\InputEventHandlers.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Main.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\CommandProcessor.ts" />
@@ -1667,7 +1669,6 @@
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RemoteControl.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\UI.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\ResultsParser.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\BrowserRTC.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RCBrowserSockets.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Store.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\UI.ts" />

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
-using Remotely_ScreenCapture.Capture;
-using Remotely_ScreenCapture.Utilities;
+using Remotely_ScreenCast.Capture;
+using Remotely_ScreenCast.Utilities;
 using Remotely_ScreenCast;
 using Remotely_ScreenCast.Capture;
 using System;
@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Win32;
 
-namespace Remotely_ScreenCapture.Sockets
+namespace Remotely_ScreenCast.Sockets
 {
     public class MessageHandlers
     {
@@ -69,15 +69,27 @@ namespace Remotely_ScreenCapture.Sockets
 
             hubConnection.On("ViewerDisconnected", (string viewerID) =>
             {
-                if (Program.Viewers.ContainsKey(viewerID))
+                if (Program.Viewers.TryGetValue(viewerID, out var viewer))
                 {
-                    var viewer = Program.Viewers[viewerID];
                     viewer.DisconnectRequested = true;
                     var success = false;
                     while (!success)
                     {
                         success = Program.Viewers.TryRemove(viewerID, out _);
                     }
+
+                    // Close if no one is viewing.
+                    if (Program.Viewers.Count == 0)
+                    {
+                        Environment.Exit(0);
+                    }
+                }
+            });
+            hubConnection.On("FrameSkip", (int delayTime, string viewerID) =>
+            {
+                if (Program.Viewers.TryGetValue(viewerID, out var viewer))
+                {
+                    viewer.NextCaptureDelay = delayTime;
                 }
             });
         }
@@ -137,6 +149,11 @@ namespace Remotely_ScreenCapture.Sockets
             {
                 try
                 {
+                    if (viewer.NextCaptureDelay > 0)
+                    {
+                        await Task.Delay(viewer.NextCaptureDelay);
+                        viewer.NextCaptureDelay = 0;
+                    }
                     capturer.Capture();
                     var newImage = ImageDiff.GetImageDiff(capturer.CurrentFrame, capturer.PreviousFrame, capturer.CaptureFullscreen);
                     var img = ImageDiff.EncodeBitmap(newImage);
@@ -146,7 +163,7 @@ namespace Remotely_ScreenCapture.Sockets
                     }
                     if (img?.Length > 0)
                     {
-                        await outgoingMessages.SendScreenCapture(img, viewerID);
+                        await outgoingMessages.SendScreenCapture(img, viewerID, DateTime.Now);
                     }
                 }
                 catch (Exception ex)

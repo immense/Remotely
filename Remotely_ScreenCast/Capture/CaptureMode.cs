@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely_ScreenCapture.Capture
+namespace Remotely_ScreenCast.Capture
 {
     public enum CaptureMode
     {

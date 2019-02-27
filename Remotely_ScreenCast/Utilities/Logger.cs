@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely_ScreenCapture.Utilities
+namespace Remotely_ScreenCast.Utilities
 {
     public static class Logger
     {

@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Diagnostics;
 using System.Runtime.Serialization.Formatters.Binary;
-using Remotely_ScreenCapture.Utilities;
+using Remotely_ScreenCast.Utilities;
 
 namespace Remotely_ScreenCast.Capture
 {

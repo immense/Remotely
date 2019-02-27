@@ -281,7 +281,7 @@ namespace Remotely_Agent.Services
                         count++;
                     }
 
-                    // Extra ScreenCast.
+                    // Extract ScreenCast.
                     using (var mrs = Assembly.GetExecutingAssembly().GetManifestResourceStream("Remotely_Agent.Resources.Remotely_ScreenCapture.exe"))
                     {
                         using (var fs = new FileStream(filePath, FileMode.Create))
@@ -297,12 +297,12 @@ namespace Remotely_Agent.Services
 
                         if (Program.IsDebug)
                         {
-                            Process.Start(filePath, $"-mode unattended -requester {requesterID} -serviceid {serviceID} -hostname {Utilities.GetConnectionInfo().Host.Split("//").Last()}");
+                            Process.Start(filePath, $"-mode unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host}");
                         }
                         else
                         {
                             var procInfo = new ADVAPI32.PROCESS_INFORMATION();
-                            var result = Win32Interop.OpenInteractiveProcess(filePath + $" -mode unattended -requester {requesterID} -serviceid {serviceID} -hostname {Utilities.GetConnectionInfo().Host.Split("//").Last()}", "default", true, out procInfo);
+                            var result = Win32Interop.OpenInteractiveProcess(filePath + $" -mode unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host}", "default", true, out procInfo);
                             if (!result)
                             {
                                 await hubConnection.InvokeAsync("DisplayConsoleMessage", "Remote control failed to start on target device.", requesterID);
