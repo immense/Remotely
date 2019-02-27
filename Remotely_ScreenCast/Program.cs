@@ -27,6 +27,7 @@ namespace Remotely_ScreenCast
         public static bool DisconnectRequested { get; set; }
         public static string Mode { get; private set; }
         public static string RequesterID { get; private set; }
+        public static string ServiceID { get; private set; }
         public static string Host { get; private set; }
         public static HubConnection Connection { get; private set; }
         public static OutgoingMessages OutgoingMessages { get; private set; }

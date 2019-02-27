@@ -13,6 +13,7 @@ using System.Drawing.Drawing2D;
 using System.Diagnostics;
 using System.Runtime.Serialization.Formatters.Binary;
 using Remotely_ScreenCast.Utilities;
+using System.Threading;
 
 namespace Remotely_ScreenCast.Capture
 {
@@ -24,6 +25,7 @@ namespace Remotely_ScreenCast.Capture
         public bool CaptureFullscreen { get; set; } = true;
         public int PauseForMilliseconds { get; set; }
         public EventHandler<Rectangle> ScreenChanged { get; set; }
+        private Stopwatch FramerateTimer { get; } = Stopwatch.StartNew();
         public int SelectedScreen
         {
             get
@@ -60,6 +62,9 @@ namespace Remotely_ScreenCast.Capture
             PreviousFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
             graphic = Graphics.FromImage(CurrentFrame);
 			desktopName = Win32Interop.GetCurrentDesktop();
+
+            Debug.WriteLine($"Starting BitBltCapture.");
+            Debug.WriteLine($"Current Desktop: {desktopName}");
         }
 
         public void Capture()
@@ -74,6 +79,12 @@ namespace Remotely_ScreenCast.Capture
                 Logger.Write($"Set thread desktop: {success}");
             }
 
+            // Keep framerate below 30 FPS.
+            if (FramerateTimer.Elapsed.TotalMilliseconds > 33)
+            {
+                Thread.Sleep((int)FramerateTimer.Elapsed.TotalMilliseconds);
+            }
+            FramerateTimer.Restart();
 
             PreviousFrame = (Bitmap)CurrentFrame.Clone();
 

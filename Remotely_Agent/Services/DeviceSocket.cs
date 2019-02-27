@@ -282,7 +282,7 @@ namespace Remotely_Agent.Services
                     }
 
                     // Extract ScreenCast.
-                    using (var mrs = Assembly.GetExecutingAssembly().GetManifestResourceStream("Remotely_Agent.Resources.Remotely_ScreenCapture.exe"))
+                    using (var mrs = Assembly.GetExecutingAssembly().GetManifestResourceStream("Remotely_Agent.Resources.Remotely_ScreenCast.exe"))
                     {
                         using (var fs = new FileStream(filePath, FileMode.Create))
                         {
