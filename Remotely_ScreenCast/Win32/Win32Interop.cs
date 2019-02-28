@@ -138,7 +138,7 @@ namespace Win32
         }
 
         // Offsets are used in case there's a multi-monitor setup where the left-most or top-most edge of the virtual screen
-        // is not 0.  The coordinates sent from the web viewer are always zero-based, so the offset must be applied.
+        // is not 0.
         public static uint SendMouseMove(double x, double y)
         {
             // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.

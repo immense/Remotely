@@ -16,7 +16,5 @@ namespace Remotely_ScreenCast.Capture
 		void Capture();
         EventHandler<Rectangle> ScreenChanged { get; set; }
         int SelectedScreen { get; set; }
-
-        Point GetAbsoluteScreenCoordinatesFromPercentages(decimal percentX, decimal percentY);
     }
 }
