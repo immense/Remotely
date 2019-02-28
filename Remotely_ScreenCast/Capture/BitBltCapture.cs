@@ -62,9 +62,6 @@ namespace Remotely_ScreenCast.Capture
             PreviousFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
             graphic = Graphics.FromImage(CurrentFrame);
 			desktopName = Win32Interop.GetCurrentDesktop();
-
-            Debug.WriteLine($"Starting BitBltCapture.");
-            Debug.WriteLine($"Current Desktop: {desktopName}");
         }
 
         public void Capture()
@@ -96,13 +93,6 @@ namespace Remotely_ScreenCast.Capture
             {
                 Logger.Write(ex);
             }
-        }
-
-        public Point GetAbsoluteScreenCoordinatesFromPercentages(decimal percentX, decimal percentY)
-        {
-            var absoluteX = (CurrentScreenBounds.Width * percentX) + CurrentScreenBounds.Left;
-            var absoluteY = (CurrentScreenBounds.Height * percentY) + CurrentScreenBounds.Top;
-            return new Point((int)absoluteX, (int)absoluteY);
         }
     }
 }

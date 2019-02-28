@@ -146,6 +146,7 @@
     <Compile Include="Capture\DXCapture.cs" />
     <Compile Include="Capture\ICapturer.cs" />
     <Compile Include="Capture\ImageDiff.cs" />
+    <Compile Include="Capture\ScreenCaster.cs" />
     <Compile Include="Models\Viewer.cs" />
     <Compile Include="Sockets\MessageHandlers.cs" />
     <Compile Include="Sockets\OutgoingMessages.cs" />

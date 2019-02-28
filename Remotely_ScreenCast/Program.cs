@@ -4,7 +4,6 @@ using Remotely_ScreenCast.Capture;
 using Remotely_ScreenCast.Models;
 using Remotely_ScreenCast.Sockets;
 using Remotely_ScreenCast.Utilities;
-using Remotely_ScreenCast.Capture;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

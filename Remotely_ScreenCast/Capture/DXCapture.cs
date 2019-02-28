@@ -119,10 +119,6 @@ namespace Remotely_ScreenCast.Capture
 			};
 			screenTexture = new Texture2D(device, textureDesc);
 			duplicatedOutput = output1.DuplicateOutput(device);
-
-            Debug.WriteLine($"Starting DXCapture.");
-            Debug.WriteLine($"Current Desktop: {desktopName}");
-
         }
 		public void Capture()
 		{
@@ -216,12 +212,5 @@ namespace Remotely_ScreenCast.Capture
 				Capture();
 			}
 		}
-
-        public Point GetAbsoluteScreenCoordinatesFromPercentages(decimal percentX, decimal percentY)
-        {
-            var absoluteX = (CurrentScreenBounds.Width * percentX) + CurrentScreenBounds.Left;
-            var absoluteY = (CurrentScreenBounds.Height * percentY) + CurrentScreenBounds.Top;
-            return new Point((int)absoluteX, (int)absoluteY);
-        }
     }
 }
