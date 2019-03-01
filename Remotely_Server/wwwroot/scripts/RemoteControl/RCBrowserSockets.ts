@@ -128,7 +128,7 @@ export class RCBrowserSockets {
             UI.ConnectButton.removeAttribute("disabled");
             UI.StatusMessage.innerHTML = "Session ID not found.";
         });
-        hubConnection.on("RCProcessStopped", () => {
+        hubConnection.on("ScreenCasterDisconnected", () => {
             this.Connection.stop();
         });
         hubConnection.on("DesktopSwitching", () => {

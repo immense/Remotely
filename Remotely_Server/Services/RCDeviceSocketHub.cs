@@ -32,6 +32,17 @@ namespace Remotely_Server.Services
         private DataService DataService { get; }
         private IHubContext<BrowserSocketHub> BrowserHub { get; }
         private IHubContext<RCBrowserSocketHub> RCBrowserHub { get; }
+        private List<string> ViewerList
+        {
+            get
+            {
+                if (!Context.Items.ContainsKey("ViewerList"))
+                {
+                    Context.Items["ViewerList"] = new List<string>();
+                }
+                return Context.Items["ViewerList"] as List<string>;
+            }
+        }
         
         private RandomGenerator RNG { get; }
 
@@ -41,18 +52,30 @@ namespace Remotely_Server.Services
         }
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            await base.OnDisconnectedAsync(exception);
-            if (AttendedSessionList.ContainsKey(Context.Items["SessionID"].ToString())) 
+            await RCBrowserHub.Clients.Clients(ViewerList).SendAsync("ScreenCasterDisconnected");
+            if (Context.Items.ContainsKey("SessionID") && AttendedSessionList.ContainsKey(Context.Items["SessionID"].ToString())) 
             {
                 while (!AttendedSessionList.TryRemove(Context.Items["SessionID"].ToString(), out var value))
                 {
                     await Task.Delay(1000);
                 }
             }
-        }
 
+            await base.OnDisconnectedAsync(exception);
+        }
+        public void ViewerDisconnected(string viewerID)
+        {
+            lock (ViewerList)
+            {
+                ViewerList.Remove(viewerID);
+            }
+        }
         public async Task SendScreenCountToBrowser(int primaryScreenIndex, int screenCount, string rcBrowserHubConnectionID)
         {
+            lock (ViewerList)
+            {
+                ViewerList.Add(rcBrowserHubConnectionID);
+            }
             await RCBrowserHub.Clients.Client(rcBrowserHubConnectionID).SendAsync("ScreenCount", primaryScreenIndex, screenCount);
         }
 
@@ -76,33 +99,6 @@ namespace Remotely_Server.Services
         }
 
 
-
-        public async Task SendRTCSessionToBrowser(object offer, string browserHubConnectionID)
-        {
-            await RCBrowserHub.Clients.Client(browserHubConnectionID).SendAsync("RTCSession", offer);
-        }
-        public async Task SendIceCandidateToBrowser(object candidate, string browserHubConnectionID)
-        {
-            await RCBrowserHub.Clients.Client(browserHubConnectionID).SendAsync("IceCandidate", candidate);
-        }
-        
-
-        public async Task NotifyViewerDesktopSwitching(string viewerID)
-        {
-            await RCBrowserHub.Clients.Client(viewerID).SendAsync("DesktopSwitching");
-        }
-        public async Task LaunchRCInNewDesktop(string serviceID, string[] viewerIDs, string desktop)
-        {
-            await DeviceHub.Clients.Client(serviceID).SendAsync("LaunchRCInNewDesktop", viewerIDs, serviceID, desktop);
-        }
-        public async Task NotifyRequesterDesktopSwitchCompleted(string rcBrowserConnectionID)
-        {
-            await RCBrowserHub.Clients.Client(rcBrowserConnectionID).SendAsync("SwitchedDesktop", Context.ConnectionId);
-        }
-        public async Task DesktopSwitchFailed(string rcBrowserConnectionID)
-        {
-            await RCBrowserHub.Clients.Client(rcBrowserConnectionID).SendAsync("DesktopSwitchFailed");
-        }
         public async Task GetSessionID()
         {
             var random = new Random();

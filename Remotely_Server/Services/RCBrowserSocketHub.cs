@@ -152,7 +152,7 @@ namespace Remotely_Server.Services
         }
         public async Task SendSharedFileIDs(List<string> fileIDs)
         {
-            await RCDeviceHub.Clients.Client(ClientID).SendAsync("SharedFileIDs", fileIDs, Context.ConnectionId);
+            await RCDeviceHub.Clients.Client(ClientID).SendAsync("SharedFileIDs", fileIDs);
         }
 
         public async Task Tap()

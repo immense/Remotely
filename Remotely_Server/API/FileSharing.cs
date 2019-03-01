@@ -7,6 +7,7 @@ using Remotely_Server.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -32,7 +33,6 @@ namespace Remotely_Server.API
             return null;
         }
 
-        // POST api/<controller>
         [HttpPost]
         [RequestSizeLimit(500_000_000)]
         public List<string> Post()
@@ -44,6 +44,6 @@ namespace Remotely_Server.API
                 fileIDs.Add(id);
             }
             return fileIDs;
-        }       
+        }
     }
 }

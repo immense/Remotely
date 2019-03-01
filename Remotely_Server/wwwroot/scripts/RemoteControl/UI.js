@@ -115,13 +115,13 @@ export function ApplyInputHandlers(sockets) {
     });
     ScreenViewer.addEventListener("mousemove", function (e) {
         e.preventDefault();
-        if (Date.now() - lastPointerMove < 50) {
+        if (Date.now() - lastPointerMove < 25) {
             return;
         }
         lastPointerMove = Date.now();
         var percentX = e.offsetX / ScreenViewer.clientWidth;
         var percentY = e.offsetY / ScreenViewer.clientHeight;
-        sockets.SendMouseMove(percentX, percentY);
+        //sockets.SendMouseMove(percentX, percentY);
     });
     ScreenViewer.addEventListener("mousedown", function (e) {
         if (e.button != 0 && e.button != 2) {
