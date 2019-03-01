@@ -62,7 +62,7 @@ namespace Remotely_ScreenCast.Capture
             }
 
             await outgoingMessages.SendScreenCount(
-                   Screen.AllScreens.ToList().IndexOf(Screen.PrimaryScreen),
+                   viewer.CurrentScreenIndex,
                    Screen.AllScreens.Length,
                    viewerID);
 

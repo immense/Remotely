@@ -30,7 +30,17 @@ namespace Remotely_ScreenCast.Utilities
                     fi = new FileInfo(path);
                 }
             }
-            File.AppendAllText(path, JsonConvert.SerializeObject(jsoninfo) + Environment.NewLine);
+            try
+            {
+                File.AppendAllText(path, JsonConvert.SerializeObject(jsoninfo) + Environment.NewLine);
+            }
+            catch
+            {
+                Task.Delay(1000).ContinueWith((Task task) =>
+                {
+                    Write(message);
+                });
+            }
         }
 
         public static void Write(Exception ex)
