@@ -126,6 +126,7 @@ var commands: Array<ConsoleCommand> = [
         "expandresults",
         "",
         (parameters, paramDictionary) => {
+            // TODO
             $(UI.ConsoleOutputDiv).find(".command-harness").last().find(".collapse")['collapse']('show');
         }
     ),

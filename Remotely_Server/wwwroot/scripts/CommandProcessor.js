@@ -106,7 +106,7 @@ export function GetCommandMode() {
 }
 /** Processes the command input. */
 export function ProcessCommand() {
-    var commandText = UI.ConsoleTextArea.value;
+    var commandText = UI.ConsoleTextArea.value.trim();
     Store.InputHistoryItems.push(commandText);
     Store.InputHistoryPosition = Store.InputHistoryItems.length;
     UI.ConsoleTextArea.value = "";

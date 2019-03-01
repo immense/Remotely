@@ -176,13 +176,9 @@ namespace Remotely_Agent.Services
             }));
             hubConnection.On("TransferFiles", async (string transferID, List<string> fileIDs, string requesterID) =>
             {
-                Logger.Write("File transfer started.");
+                Logger.Write($"File transfer started by {requesterID}.");
                 var connectionInfo = Utilities.GetConnectionInfo();
-                var sharedFilePath = Directory.CreateDirectory(Path.Combine(
-                        Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-                        "Remotely",
-                        "SharedFiles"
-                    )).FullName;
+                var sharedFilePath = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(),"RemotelySharedFiles")).FullName;
                 
                 foreach (var fileID in fileIDs)
                 {
