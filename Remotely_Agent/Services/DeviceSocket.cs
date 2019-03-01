@@ -224,25 +224,7 @@ namespace Remotely_Agent.Services
             {
                 Uninstaller.UninstallClient();
             });
-            hubConnection.On("LaunchRCInNewDesktop", async (string[] viewerIDs, string serviceID, string desktop) =>
-            {
-                if (!IsServerVerified)
-                {
-                    Logger.Write("Remote control attempted before server was verified.");
-                    Uninstaller.UninstallClient();
-                    return;
-                }
-                var rcBinaryPath = Path.Combine(Utilities.AppDataDir, "remote_control", OSUtils.ScreenCastExecutableFileName);
-                var procInfo = new ADVAPI32.PROCESS_INFORMATION();
-                var processResult = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode desktopswitch -viewers {String.Join(",",viewerIDs)} -serviceid {serviceID} -desktop {desktop} -hostname {Utilities.GetConnectionInfo().Host.Split("//").Last()}", desktop, true, out procInfo);
-                if (!processResult)
-                {
-                    foreach (var viewer in viewerIDs)
-                    {
-                        await hubConnection.InvokeAsync("DesktopSwitchFailed", viewer);
-                    }
-                }
-            });
+          
             hubConnection.On("RemoteControl", async (string requesterID, string serviceID) =>
             {
                 if (!IsServerVerified)

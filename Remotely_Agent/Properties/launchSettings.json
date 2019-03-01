@@ -1,7 +1,8 @@
 {
   "profiles": {
     "Agent": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "nativeDebugging": true
     }
   }
 }

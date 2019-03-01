@@ -26,6 +26,7 @@ namespace Remotely_ScreenCast.Capture
         public int PauseForMilliseconds { get; set; }
         public EventHandler<Rectangle> ScreenChanged { get; set; }
         private Stopwatch FramerateTimer { get; } = Stopwatch.StartNew();
+        private object ScreenLock { get; } = new object();
         public int SelectedScreen
         {
             get
@@ -38,16 +39,21 @@ namespace Remotely_ScreenCast.Capture
                 {
                     return;
                 }
-                if (Screen.AllScreens.Length >= value + 1)
+                lock (ScreenLock)
                 {
-                    selectedScreen = value;
+                    if (Screen.AllScreens.Length >= value + 1)
+                    {
+                        selectedScreen = value;
+                    }
+                    else
+                    {
+                        selectedScreen = 0;
+                    }
+                    CurrentScreenBounds = Screen.AllScreens[selectedScreen].Bounds;
+                    CaptureFullscreen = true;
+                    Init();
+                    ScreenChanged?.Invoke(this, CurrentScreenBounds);
                 }
-                else
-                {
-                    selectedScreen = 0;
-                }
-                CurrentScreenBounds = Screen.AllScreens[selectedScreen].Bounds;
-                ScreenChanged?.Invoke(this, CurrentScreenBounds);
             }
         }
         public Rectangle CurrentScreenBounds { get; set; } = Screen.PrimaryScreen.Bounds;
@@ -58,10 +64,15 @@ namespace Remotely_ScreenCast.Capture
 
         public BitBltCapture()
         {
+            Init();
+        }
+
+        private void Init()
+        {
             CurrentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
             PreviousFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
             graphic = Graphics.FromImage(CurrentFrame);
-			desktopName = Win32Interop.GetCurrentDesktop();
+            desktopName = Win32Interop.GetCurrentDesktop();
         }
 
         public void Capture()
@@ -87,7 +98,10 @@ namespace Remotely_ScreenCast.Capture
 
             try
             {
-                graphic.CopyFromScreen(0 + CurrentScreenBounds.Left, 0 + CurrentScreenBounds.Top, 0, 0, new Size(CurrentScreenBounds.Width, CurrentScreenBounds.Height));
+                lock (ScreenLock)
+                {
+                    graphic.CopyFromScreen(0 + CurrentScreenBounds.Left, 0 + CurrentScreenBounds.Top, 0, 0, new Size(CurrentScreenBounds.Width, CurrentScreenBounds.Height));
+                }
             }
             catch (Exception ex)
             {
