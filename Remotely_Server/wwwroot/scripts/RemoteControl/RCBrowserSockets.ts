@@ -108,8 +108,9 @@ export class RCBrowserSockets {
         hubConnection.on("ScreenSize", (width: number, height: number) => {
             UI.ScreenViewer.width = width;
             UI.ScreenViewer.height = height;
+            UI.Screen2DContext.clearRect(0, 0, width, height);
         });
-        hubConnection.on("ScreenCapture", (buffer:string, captureTime:string) => {
+        hubConnection.on("ScreenCapture", (buffer: string, captureTime: string) => {
             var img = new Image();
             img.onload = () => {
                 var frameDelay = Date.now() - new Date(captureTime).getTime();

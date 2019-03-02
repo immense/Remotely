@@ -57,7 +57,7 @@ namespace Remotely_ScreenCast.Capture
             }
         }
         public Rectangle CurrentScreenBounds { get; set; } = Screen.PrimaryScreen.Bounds;
-        private int selectedScreen = 0;
+        private int selectedScreen = Screen.AllScreens.ToList().IndexOf(Screen.PrimaryScreen);
         private Graphics graphic;
         private string desktopName;
 
@@ -94,12 +94,12 @@ namespace Remotely_ScreenCast.Capture
             }
             FramerateTimer.Restart();
 
-            PreviousFrame = (Bitmap)CurrentFrame.Clone();
 
             try
             {
                 lock (ScreenLock)
                 {
+                    PreviousFrame = (Bitmap)CurrentFrame.Clone();
                     graphic.CopyFromScreen(0 + CurrentScreenBounds.Left, 0 + CurrentScreenBounds.Top, 0, 0, new Size(CurrentScreenBounds.Width, CurrentScreenBounds.Height));
                 }
             }

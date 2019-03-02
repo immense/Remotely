@@ -50,11 +50,18 @@ namespace Remotely_ScreenCast
 
             MessageHandlers.ApplyConnectionHandlers(Connection, OutgoingMessages);
 
+            CursorIconWatcher.Current.OnChange += CursorIconWatcher_OnChange;
+
             OutgoingMessages.NotifyRequesterUnattendedReady(RequesterID).Wait();
 
             StartWaitForViewerTimer();
 
             Console.Read();
+        }
+
+        private static async void CursorIconWatcher_OnChange(object sender, int cursor)
+        {
+            await OutgoingMessages.SendCursorChange(cursor, Viewers.Keys.ToList());
         }
 
         private static void StartWaitForViewerTimer()

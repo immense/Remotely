@@ -72,7 +72,6 @@ var commands = [
         UI.AddConsoleOutput(paramDictionary["message"]);
     }),
     new ConsoleCommand("ExpandResults", [], "Expands the results of the last scripting command.", "expandresults", "", (parameters, paramDictionary) => {
-        // TODO
         $(UI.ConsoleOutputDiv).find(".command-harness").last().find(".collapse")['collapse']('show');
     }),
     new ConsoleCommand("CollapseResults", [], "Collapses all scripting results.", "collapseresults", "", (parameters, paramDictionary) => {

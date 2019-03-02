@@ -127,7 +127,7 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
         lastPointerMove = Date.now();
         var percentX = e.offsetX / ScreenViewer.clientWidth;
         var percentY = e.offsetY / ScreenViewer.clientHeight;
-        //sockets.SendMouseMove(percentX, percentY);
+        sockets.SendMouseMove(percentX, percentY);
     });
     ScreenViewer.addEventListener("mousedown", function (e) {
         if (e.button != 0 && e.button != 2) {
