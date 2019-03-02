@@ -120,21 +120,41 @@ namespace Win32
         {
             return User32.OpenInputDesktop(0, false, ACCESS_MASK.GENERIC_ALL);
         }
-        public static void SendLeftMouseDown(int x, int y)
+        public static uint SendLeftMouseDown(int x, int y)
         {
-            mouse_event(MOUSEEVENTF_LEFTDOWN, (uint)x, (uint)y, 0, GetMessageExtraInfo());
+            // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
+            var normalizedX = x * (double)65535;
+            var normalizedY = y * (double)65535;
+            var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.LEFTDOWN | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = (UIntPtr)GetMessageExtraInfo() } };
+            var input = new INPUT() { type = InputType.MOUSE, U = union };
+            return SendInput(1, new INPUT[] { input }, INPUT.Size);
         }
-        public static void SendLeftMouseUp(int x, int y)
+        public static uint SendLeftMouseUp(int x, int y)
         {
-            mouse_event(MOUSEEVENTF_LEFTUP, (uint)x, (uint)y, 0, GetMessageExtraInfo());
+            // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
+            var normalizedX = x * (double)65535;
+            var normalizedY = y * (double)65535;
+            var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.LEFTUP | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = (UIntPtr)GetMessageExtraInfo() } };
+            var input = new INPUT() { type = InputType.MOUSE, U = union };
+            return SendInput(1, new INPUT[] { input }, INPUT.Size);
         }
-        public static void SendRightMouseDown(int x, int y)
+        public static uint SendRightMouseDown(int x, int y)
         {
-            mouse_event(MOUSEEVENTF_RIGHTDOWN, (uint)x, (uint)y, 0, GetMessageExtraInfo());
+            // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
+            var normalizedX = x * (double)65535;
+            var normalizedY = y * (double)65535;
+            var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.RIGHTDOWN | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = (UIntPtr)GetMessageExtraInfo() } };
+            var input = new INPUT() { type = InputType.MOUSE, U = union };
+            return SendInput(1, new INPUT[] { input }, INPUT.Size);
         }
-        public static void SendRightMouseUp(int x, int y)
+        public static uint SendRightMouseUp(int x, int y)
         {
-            mouse_event(MOUSEEVENTF_RIGHTUP, (uint)x, (uint)y, 0, GetMessageExtraInfo());
+            // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
+            var normalizedX = x * (double)65535;
+            var normalizedY = y * (double)65535;
+            var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.RIGHTUP | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = (UIntPtr)GetMessageExtraInfo() } };
+            var input = new INPUT() { type = InputType.MOUSE, U = union };
+            return SendInput(1, new INPUT[] { input }, INPUT.Size);
         }
 
         // Offsets are used in case there's a multi-monitor setup where the left-most or top-most edge of the virtual screen

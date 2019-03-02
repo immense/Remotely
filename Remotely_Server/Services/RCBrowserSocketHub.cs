@@ -73,7 +73,7 @@ namespace Remotely_Server.Services
             await RCDeviceHub.Clients.Client(ClientID).SendAsync("LongPress", Context.ConnectionId);
         }
 
-        public async Task MouseDown(string button, double percentX, double percentY)
+        public async Task MouseDown(int button, double percentX, double percentY)
         {
             await RCDeviceHub.Clients.Client(ClientID).SendAsync("MouseDown", button, percentX, percentY, Context.ConnectionId);
         }
@@ -83,7 +83,7 @@ namespace Remotely_Server.Services
             await RCDeviceHub.Clients.Client(ClientID).SendAsync("MouseMove", percentX, percentY, Context.ConnectionId);
         }
 
-        public async Task MouseUp(string button, double percentX, double percentY)
+        public async Task MouseUp(int button, double percentX, double percentY)
         {
             await RCDeviceHub.Clients.Client(ClientID).SendAsync("MouseUp", button, percentX, percentY, Context.ConnectionId);
         }

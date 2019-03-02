@@ -763,7 +763,8 @@ namespace Win32
             ///<summary>
                     ///Clear key
                     ///</summary>
-            OEM_CLEAR = 0xFE
+            OEM_CLEAR = 0xFE,
+            SEMI_COLON = 0x3b
         }
         public enum ScanCodeShort : short
         {
@@ -1126,7 +1127,7 @@ namespace Win32
 
         [DllImport("user32.dll")]
         public static extern bool EnumDesktopsA(IntPtr hwinsta, EnumDesktopsDelegate lpEnumFunc, IntPtr lParam);
-        
+
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr OpenInputDesktop(uint dwFlags, bool fInherit, ACCESS_MASK dwDesiredAccess);
 

@@ -44,6 +44,7 @@ namespace Remotely_ScreenCast.Capture
                     var currentCursor = cursorInfo.hCursor.ToInt32();
                     if (currentCursor != PreviousCursorHandle)
                     {
+                        PreviousCursorHandle = currentCursor;
                         OnChange?.Invoke(this, currentCursor);
                     }
                 }

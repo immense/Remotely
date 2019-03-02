@@ -93,9 +93,14 @@ namespace Remotely_Server.Services
         {
             await BrowserHub.Clients.Client(browserHubConnectionID).SendAsync("UnattendedSessionReady", Context.ConnectionId);
         }
-        public async Task SendConnectionFailedToBrowser(string browserHubConnectionID)
+        public async Task SendConnectionFailedToBrowser(string rcBrowserHubConnectionID)
         {
-            await RCBrowserHub.Clients.Client(browserHubConnectionID).SendAsync("ConnectionFailed");
+            await RCBrowserHub.Clients.Client(rcBrowserHubConnectionID).SendAsync("ConnectionFailed");
+        }
+
+        public async Task SendCursorChange(int cursor, List<string> viewerIDs)
+        {
+            await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("CursorChange", cursor);
         }
 
 

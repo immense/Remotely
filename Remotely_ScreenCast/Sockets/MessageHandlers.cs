@@ -51,6 +51,7 @@ namespace Remotely_ScreenCast.Sockets
             {
                 if (Program.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
+                    
                     Win32Interop.SendKeyDown((User32.VirtualKeyShort)keyCode);
                     Win32Interop.SendKeyUp((User32.VirtualKeyShort)keyCode);
                 }
@@ -60,8 +61,48 @@ namespace Remotely_ScreenCast.Sockets
             {
                 if (Program.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
-                    var mousePoint = ScreenCaster.GetAbsoluteScreenCoordinatesFromPercentages(percentX, percentY, viewer.Capturer);
+                    var mousePoint = ScreenCaster.GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
                     Win32Interop.SendMouseMove(mousePoint.Item1, mousePoint.Item2);
+                }
+            });
+
+            hubConnection.On("MouseDown", (int button, double percentX, double percentY, string viewerID) =>
+            {
+                if (Program.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                {
+                    var mousePoint = ScreenCaster.GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
+                    if (button == 0)
+                    {
+                        Win32Interop.SendLeftMouseDown((int)mousePoint.Item1, (int)mousePoint.Item2);
+                    }
+                    else if (button == 2)
+                    {
+                        Win32Interop.SendRightMouseDown((int)mousePoint.Item1, (int)mousePoint.Item2);
+                    }
+                }
+            });
+
+            hubConnection.On("MouseUp", (int button, double percentX, double percentY, string viewerID) =>
+            {
+                if (Program.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                {
+                    var mousePoint = ScreenCaster.GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
+                    if (button == 0)
+                    {
+                        Win32Interop.SendLeftMouseUp((int)mousePoint.Item1, (int)mousePoint.Item2);
+                    }
+                    else if (button == 2)
+                    {
+                        Win32Interop.SendRightMouseUp((int)mousePoint.Item1, (int)mousePoint.Item2);
+                    }
+                }
+            });
+
+            hubConnection.On("MouseWheel", (double deltaX, double deltaY, string viewerID) =>
+            {
+                if (Program.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                {
+                    Win32Interop.SendMouseWheel(-(int)deltaY);
                 }
             });
 

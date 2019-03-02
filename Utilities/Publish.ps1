@@ -46,7 +46,7 @@ if ($args.Count -eq 0){
         $ArgList.Add($option.ToLower().Trim())
     }
     if ([string]::IsNullOrWhiteSpace($HostName)) {
-        $HostName = Read-Host "Host Name"
+        $HostName = Read-Host "Host Name (e.g. my.example.com)"
     }
 
     if ($ArgList.Contains("s")){
@@ -54,7 +54,7 @@ if ($args.Count -eq 0){
             $OutDir = Read-Host "Server Out Dir"
         }
         if ([string]::IsNullOrWhiteSpace($RID)) {
-            $RID = Read-Host "Server Runtime ID"
+            $RID = Read-Host "Server Runtime ID (see comment at top of script)"
         }
     }
 }

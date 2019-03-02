@@ -56,7 +56,10 @@ namespace Remotely_ScreenCast
 
             StartWaitForViewerTimer();
 
-            Console.Read();
+            while (true)
+            {
+                Console.Read();
+            }
         }
 
         private static async void CursorIconWatcher_OnChange(object sender, int cursor)

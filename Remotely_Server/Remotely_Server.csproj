@@ -39,6 +39,7 @@
     <Content Remove="wwwroot\scripts\Models\Parameter.ts" />
     <Content Remove="wwwroot\scripts\Models\UserOptions.ts" />
     <Content Remove="wwwroot\scripts\Pages\OrganizationManagement.ts" />
+    <Content Remove="wwwroot\scripts\RemoteControl\CursorMap.ts" />
     <Content Remove="wwwroot\scripts\RemoteControl\RemoteControl.ts" />
     <Content Remove="wwwroot\scripts\RemoteControl\UI.ts" />
     <Content Remove="wwwroot\scripts\ResultsParser.ts" />
@@ -1666,6 +1667,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\Models\Device.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\Parameter.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Pages\OrganizationManagement.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\CursorMap.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RemoteControl.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\UI.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\ResultsParser.ts" />

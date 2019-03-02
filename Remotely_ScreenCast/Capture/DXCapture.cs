@@ -210,16 +210,8 @@ namespace Remotely_ScreenCast.Capture
             {
                 if (e.ResultCode.Code != SharpDX.DXGI.ResultCode.WaitTimeout.Result.Code)
                 {
-                    Logger.Write(e);
-                    Init();
-                    Capture();
+                    throw;
                 }
-            }
-            catch (Exception e)
-            {
-                Logger.Write(e);
-                Init();
-                Capture();
             }
         }
     }

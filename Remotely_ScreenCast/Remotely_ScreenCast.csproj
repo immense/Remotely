@@ -154,6 +154,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Win32\ADVAPI32.cs" />
+    <Compile Include="Win32\GDI32.cs" />
     <Compile Include="Win32\Kernel32.cs" />
     <Compile Include="Win32\SECUR32.cs" />
     <Compile Include="Win32\User32.cs" />

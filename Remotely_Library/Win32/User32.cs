@@ -763,7 +763,8 @@ namespace Remotely_Library.Win32_Classes
             ///<summary>
                     ///Clear key
                     ///</summary>
-            OEM_CLEAR = 0xFE
+            OEM_CLEAR = 0xFE,
+            SEMI_COLON = 0x3b
         }
         public enum ScanCodeShort : short
         {
