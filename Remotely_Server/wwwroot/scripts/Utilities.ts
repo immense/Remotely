@@ -61,3 +61,12 @@ export async function When(predicate: () => boolean) {
         checkCondition();
     })
 }
+
+export function ConvertBase64ToUInt8Array(base64:string) {
+    var binaryString = window.atob(base64);
+    var bytes = new Uint8ClampedArray(binaryString.length);
+    for (var i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+}

@@ -47,7 +47,7 @@ namespace Remotely_ScreenCast.Capture
             var viewer = new Models.Viewer()
             {
                 Capturer = capturer,
-                CurrentScreenIndex = 0,
+                CurrentScreenIndex = capturer.SelectedScreen,
                 DisconnectRequested = false,
                 Name = requesterName,
                 ViewerConnectionID = viewerID,
@@ -72,7 +72,7 @@ namespace Remotely_ScreenCast.Capture
             {
                 await outgoingMessages.SendScreenSize(size.Width, size.Height, viewerID);
             };
-
+            
             while (!viewer.DisconnectRequested)
             {
                 try

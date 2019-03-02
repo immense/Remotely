@@ -132,6 +132,7 @@ namespace Remotely_ScreenCast.Capture
             {
                 if (NeedsInit)
                 {
+                    duplicatedOutput?.Dispose();
                     Init();
                     NeedsInit = false;
                 }

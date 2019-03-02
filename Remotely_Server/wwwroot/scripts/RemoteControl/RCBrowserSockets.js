@@ -100,6 +100,7 @@ export class RCBrowserSockets {
         hubConnection.on("ScreenSize", (width, height) => {
             UI.ScreenViewer.width = width;
             UI.ScreenViewer.height = height;
+            UI.Screen2DContext.clearRect(0, 0, width, height);
         });
         hubConnection.on("ScreenCapture", (buffer, captureTime) => {
             var img = new Image();

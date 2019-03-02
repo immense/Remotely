@@ -13,6 +13,12 @@ namespace Remotely_ScreenCast.Capture
 {
     public class ImageDiff
     {
+        private static EncoderParameters EncoderParams { get; } = new EncoderParameters()
+        {
+            Param = new EncoderParameter[] { new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 0) }
+        };
+
+        private static ImageCodecInfo CodecInfo { get; } = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == ImageFormat.Png.Guid);
 
         public static Bitmap GetImageDiff(Bitmap currentFrame, Bitmap previousFrame, bool captureFullscreen)
         {
@@ -89,7 +95,8 @@ namespace Remotely_ScreenCast.Capture
         {
             using (var ms = new MemoryStream())
             {
-                bitmap.Save(ms, ImageFormat.Png);
+                // Byte array that indicates top left coordinates of the image.
+                bitmap.Save(ms, CodecInfo, EncoderParams);
                 // Byte array that indicates top left coordinates of the image.
                 return ms.ToArray();
             }
