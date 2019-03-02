@@ -130,12 +130,6 @@ namespace Remotely_ScreenCast.Capture
         {
             try
             {
-                if (NeedsInit)
-                {
-                    duplicatedOutput?.Dispose();
-                    Init();
-                    NeedsInit = false;
-                }
                 var currentDesktop = Win32Interop.GetCurrentDesktop();
                 if (currentDesktop != desktopName)
                 {
@@ -144,7 +138,15 @@ namespace Remotely_ScreenCast.Capture
                     var success = User32.SetThreadDesktop(inputDesktop);
                     User32.CloseDesktop(inputDesktop);
                     Logger.Write($"Set thread desktop to {currentDesktop}: {success}");
+                    NeedsInit = true;
                     return;
+                }
+
+                if (NeedsInit)
+                {
+                    duplicatedOutput?.Dispose();
+                    Init();
+                    NeedsInit = false;
                 }
 
                 SharpDX.DXGI.Resource screenResource;
@@ -210,8 +212,14 @@ namespace Remotely_ScreenCast.Capture
             {
                 if (e.ResultCode.Code != SharpDX.DXGI.ResultCode.WaitTimeout.Result.Code)
                 {
-                    throw;
+                    Logger.Write(e);
+                    NeedsInit = true;
                 }
+            }
+            catch (Exception e)
+            {
+                Logger.Write(e);
+                NeedsInit = true;
             }
         }
     }

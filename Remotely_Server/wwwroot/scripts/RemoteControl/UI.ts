@@ -65,6 +65,7 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
     })
     document.querySelector("#disconnectButton").addEventListener("click", (ev) => {
         ConnectButton.removeAttribute("disabled");
+        RemoteControl.RCBrowserSockets.Connection.stop();
     });
     document.querySelector("#keyboardButton").addEventListener("click", (ev) => {
         HorizontalBars.forEach(x => {
