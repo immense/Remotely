@@ -76,7 +76,7 @@ namespace Remotely_ScreenCast.Capture
             PreviousFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
             graphic = Graphics.FromImage(CurrentFrame);
             desktopName = Win32Interop.GetCurrentDesktop();
-            hWnd = User32.GetDesktopWindow();
+            //hWnd = User32.GetDesktopWindow();
         }
 
         public void Capture()
@@ -88,7 +88,7 @@ namespace Remotely_ScreenCast.Capture
                 var inputDesktop = Win32Interop.OpenInputDesktop();
                 var success = User32.SetThreadDesktop(inputDesktop);
                 User32.CloseDesktop(inputDesktop);
-                Logger.Write($"Set thread desktop: {success}");
+                Logger.Write($"Set thread desktop to {currentDesktop}: {success}");
             }
 
             // Keep framerate below 30 FPS.
@@ -103,13 +103,13 @@ namespace Remotely_ScreenCast.Capture
             {
                 lock (ScreenLock)
                 {
-                    hWnd = User32.GetDesktopWindow();
+                    //hWnd = User32.GetDesktopWindow();
+                    //hDC = User32.GetWindowDC(hWnd);
+                    //graphic = Graphics.FromImage(CurrentFrame);
+                    //graphDC = graphic.GetHdc();
+                    //var copyResult = GDI32.BitBlt(graphDC, 0, 0, CurrentScreenBounds.Width, CurrentScreenBounds.Height, hDC, CurrentScreenBounds.Left, CurrentScreenBounds.Top, GDI32.TernaryRasterOperations.SRCCOPY);
                     PreviousFrame = (Bitmap)CurrentFrame.Clone();
-                    hDC = User32.GetWindowDC(hWnd);
-                    graphic = Graphics.FromImage(CurrentFrame);
-                    graphDC = graphic.GetHdc();
-                    var copyResult = GDI32.BitBlt(graphDC, 0, 0, CurrentScreenBounds.Width, CurrentScreenBounds.Height, hDC, CurrentScreenBounds.Left, CurrentScreenBounds.Top, GDI32.TernaryRasterOperations.SRCCOPY);
-                    //graphic.CopyFromScreen(CurrentScreenBounds.Left, CurrentScreenBounds.Top, 0, 0, new Size(CurrentScreenBounds.Width, CurrentScreenBounds.Height));
+                    graphic.CopyFromScreen(CurrentScreenBounds.Left, CurrentScreenBounds.Top, 0, 0, new Size(CurrentScreenBounds.Width, CurrentScreenBounds.Height));
                 }
             }
             catch (Exception ex)
@@ -118,14 +118,14 @@ namespace Remotely_ScreenCast.Capture
             }
             finally
             {
-                if (graphDC != IntPtr.Zero)
-                {
-                    graphic.ReleaseHdc(graphDC);
-                }
-                if (hDC != IntPtr.Zero)
-                {
-                    User32.ReleaseDC(hWnd, hDC);
-                }
+                //if (graphDC != IntPtr.Zero)
+                //{
+                //    graphic.ReleaseHdc(graphDC);
+                //}
+                //if (hDC != IntPtr.Zero)
+                //{
+                //    User32.ReleaseDC(hWnd, hDC);
+                //}
             }
         }
     }

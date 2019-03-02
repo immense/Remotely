@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Win32;
 
 namespace Remotely_ScreenCast.Capture
 {
@@ -26,8 +27,8 @@ namespace Remotely_ScreenCast.Capture
             {
                 if (Program.Viewers.Count == 0)
                 {
-                    capturer = new BitBltCapture();
-                    captureMode = CaptureMode.BitBtl;
+                    capturer = new DXCapture();
+                    captureMode = CaptureMode.DirectX;
                 }
                 else
                 {
@@ -42,7 +43,7 @@ namespace Remotely_ScreenCast.Capture
                 captureMode = CaptureMode.BitBtl;
             }
 
-            Logger.Write($"Starting screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}. Capture Mode: {captureMode.ToString()}.");
+            Logger.Write($"Starting screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}. Capture Mode: {captureMode.ToString()}.  Desktop: {Win32Interop.GetCurrentDesktop()}");
 
             var viewer = new Models.Viewer()
             {
@@ -99,16 +100,6 @@ namespace Remotely_ScreenCast.Capture
                 catch (Exception ex)
                 {
                     Logger.Write(ex);
-                    if (captureMode == CaptureMode.DirectX)
-                    {
-                        capturer = new BitBltCapture();
-                        captureMode = CaptureMode.BitBtl;
-                        capturer.ScreenChanged += async (sender, bounds) =>
-                        {
-                            await outgoingMessages.SendScreenSize(bounds.Width, bounds.Height, viewerID);
-                        };
-                        capturer.SelectedScreen = viewer.CurrentScreenIndex;
-                    }
                 }
             }
 
