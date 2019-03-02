@@ -16,7 +16,7 @@
     "UseDomainAuthentication": false,
     "ShowMessageOfTheDay": true,
     "DataRetentionInDays": 90,
-    "RemoteControlSessionLimit": 1,
+    "RemoteControlSessionLimit": 5,
     "SmtpHost": "",
     "SmtpPort": 25,
     "SmtpUserName": "",

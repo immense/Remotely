@@ -1,5 +1,6 @@
 import * as UI from "./UI.js";
 import { RemoteControl } from "./RemoteControl.js";
+import { GetCursor } from "./CursorMap.js";
 var signalR = window["signalR"];
 export class RCBrowserSockets {
     Connect() {
@@ -134,6 +135,10 @@ export class RCBrowserSockets {
         });
         hubConnection.on("DesktopSwitchFailed", () => {
             UI.ShowMessage("Desktop switch failed.  Please reconnect.");
+        });
+        hubConnection.on("CursorChange", (cursor) => {
+            var newCursor = GetCursor(cursor);
+            UI.ScreenViewer.style.cursor = newCursor;
         });
     }
 }

@@ -26,8 +26,8 @@ namespace Remotely_ScreenCast.Capture
             {
                 if (Program.Viewers.Count == 0)
                 {
-                    capturer = new DXCapture();
-                    captureMode = CaptureMode.DirectX;
+                    capturer = new BitBltCapture();
+                    captureMode = CaptureMode.BitBtl;
                 }
                 else
                 {
@@ -68,9 +68,9 @@ namespace Remotely_ScreenCast.Capture
 
             await outgoingMessages.SendScreenSize(capturer.CurrentScreenBounds.Width, capturer.CurrentScreenBounds.Height, viewerID);
 
-            capturer.ScreenChanged += async (sender, size) =>
+            capturer.ScreenChanged += async (sender, bounds) =>
             {
-                await outgoingMessages.SendScreenSize(size.Width, size.Height, viewerID);
+                await outgoingMessages.SendScreenSize(bounds.Width, bounds.Height, viewerID);
             };
             
             while (!viewer.DisconnectRequested)
@@ -98,7 +98,17 @@ namespace Remotely_ScreenCast.Capture
                 }
                 catch (Exception ex)
                 {
-                    Logger.Write($"Outer Error: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                    Logger.Write(ex);
+                    if (captureMode == CaptureMode.DirectX)
+                    {
+                        capturer = new BitBltCapture();
+                        captureMode = CaptureMode.BitBtl;
+                        capturer.ScreenChanged += async (sender, bounds) =>
+                        {
+                            await outgoingMessages.SendScreenSize(bounds.Width, bounds.Height, viewerID);
+                        };
+                        capturer.SelectedScreen = viewer.CurrentScreenIndex;
+                    }
                 }
             }
 
@@ -109,11 +119,17 @@ namespace Remotely_ScreenCast.Capture
             }
             Logger.Write($"Ended screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}.");
         }
-        public static Tuple<double, double> GetAbsoluteScreenCoordinatesFromPercentages(double percentX, double percentY, ICapturer capturer)
+        public static Tuple<double, double> GetAbsolutePercentFromRelativePercent(double percentX, double percentY, ICapturer capturer)
         {
             var absoluteX = (capturer.CurrentScreenBounds.Width * percentX) + capturer.CurrentScreenBounds.Left;
             var absoluteY = (capturer.CurrentScreenBounds.Height * percentY) + capturer.CurrentScreenBounds.Top;
             return new Tuple<double, double>(absoluteX / SystemInformation.VirtualScreen.Width, absoluteY / SystemInformation.VirtualScreen.Height);
+        }
+        public static Tuple<double, double> GetAbsolutePointFromRelativePercent(double percentX, double percentY, ICapturer capturer)
+        {
+            var absoluteX = (capturer.CurrentScreenBounds.Width * percentX) + capturer.CurrentScreenBounds.Left;
+            var absoluteY = (capturer.CurrentScreenBounds.Height * percentY) + capturer.CurrentScreenBounds.Top;
+            return new Tuple<double, double>(absoluteX, absoluteY);
         }
     }
 }

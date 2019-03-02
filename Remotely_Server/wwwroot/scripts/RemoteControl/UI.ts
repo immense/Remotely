@@ -136,14 +136,7 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
         e.preventDefault();
         var percentX = e.offsetX / ScreenViewer.clientWidth;
         var percentY = e.offsetY / ScreenViewer.clientHeight;
-        var button: string;
-        if (e.button == 0) {
-            button = "left";
-        }
-        else if (e.button == 2) {
-            button = "right";
-        }
-        sockets.SendMouseDown(button, percentX, percentY);
+        sockets.SendMouseDown(e.button, percentX, percentY);
     });
     ScreenViewer.addEventListener("mouseup", function (e) {
         if (e.button != 0 && e.button != 2) {
@@ -152,14 +145,7 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
         e.preventDefault();
         var percentX = e.offsetX / ScreenViewer.clientWidth;
         var percentY = e.offsetY / ScreenViewer.clientHeight;
-        var button: string;
-        if (e.button == 0) {
-            button = "left";
-        }
-        else if (e.button == 2) {
-            button = "right";
-        }
-        sockets.SendMouseUp(button, percentX, percentY);
+        sockets.SendMouseUp(e.button, percentX, percentY);
     });
     ScreenViewer.addEventListener("click", function (e) {
         e.preventDefault();
