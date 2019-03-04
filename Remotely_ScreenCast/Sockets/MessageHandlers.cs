@@ -28,7 +28,14 @@ namespace Remotely_ScreenCast.Sockets
 
             hubConnection.On("GetScreenCast", (string viewerID, string requesterName) =>
             {
-                ScreenCaster.BeginScreenCasting(hubConnection, viewerID, requesterName, outgoingMessages);
+                try
+                {
+                    ScreenCaster.BeginScreenCasting(hubConnection, viewerID, requesterName, outgoingMessages);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
             });
 
             hubConnection.On("KeyDown", (int keyCode, string viewerID) =>
@@ -36,6 +43,7 @@ namespace Remotely_ScreenCast.Sockets
                 if (Program.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
                     Win32Interop.SendKeyDown((User32.VirtualKeyShort)keyCode);
+                    //User32.SendKeyDown((User32.VirtualKeyShort)KeyInterop.VirtualKeyFromKey((Key)Enum.Parse(typeof(Key), key)));
                 }
             });
 
@@ -44,6 +52,7 @@ namespace Remotely_ScreenCast.Sockets
                 if (Program.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
                     Win32Interop.SendKeyUp((User32.VirtualKeyShort)keyCode);
+                    //User32.SendKeyDown((User32.VirtualKeyShort)KeyInterop.VirtualKeyFromKey((Key)Enum.Parse(typeof(Key), key)));
                 }
             });
 

@@ -14,34 +14,41 @@ namespace Remotely_ScreenCast.Capture
 {
     public class ScreenCaster
     {
-        private static object CaptureLock { get; } = new object();
         public static async void BeginScreenCasting(HubConnection hubConnection,
                                                    string viewerID,
                                                    string requesterName,
                                                    OutgoingMessages outgoingMessages)
         {
+            var inputDesktop = Win32Interop.OpenInputDesktop();
+            var result = User32.SetThreadDesktop(inputDesktop);
+            User32.CloseDesktop(inputDesktop);
+            Logger.Write($"Set thread desktop begin screencasting to {Win32Interop.GetCurrentDesktop()}: {result}");
+
+
             ICapturer capturer;
             CaptureMode captureMode;
 
-            try
-            {
-                if (Program.Viewers.Count == 0)
-                {
-                    capturer = new DXCapture();
-                    captureMode = CaptureMode.DirectX;
-                }
-                else
-                {
-                    capturer = new BitBltCapture();
-                    captureMode = CaptureMode.BitBtl;
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
-                capturer = new BitBltCapture();
-                captureMode = CaptureMode.BitBtl;
-            }
+            capturer = new BitBltCapture();
+            captureMode = CaptureMode.BitBtl;
+            //try
+            //{
+            //    if (Program.Viewers.Count == 0)
+            //    {
+            //        capturer = new DXCapture();
+            //        captureMode = CaptureMode.DirectX;
+            //    }
+            //    else
+            //    {
+            //        capturer = new BitBltCapture();
+            //        captureMode = CaptureMode.BitBtl;
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    Logger.Write(ex);
+            //    capturer = new BitBltCapture();
+            //    captureMode = CaptureMode.BitBtl;
+            //}
 
             Logger.Write($"Starting screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}. Capture Mode: {captureMode.ToString()}.  Desktop: {Win32Interop.GetCurrentDesktop()}");
 
