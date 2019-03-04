@@ -33,7 +33,7 @@ namespace Remotely_Server.Services
             }
         }
 
-        private string ClientType
+        private string Mode
         {
             get
             {
@@ -146,7 +146,7 @@ namespace Remotely_Server.Services
                                 $"Requester IP Address: " + Context?.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString()
             });
             Context.Items["ClientID"] = clientID;
-            Context.Items["ClientType"] = remoteControlMode;
+            Context.Items["Mode"] = remoteControlMode;
             Context.Items["RequesterName"] = requesterName;
             await RCDeviceHub.Clients.Client(clientID).SendAsync("GetScreenCast", Context.ConnectionId, requesterName);
         }

@@ -53,9 +53,11 @@ namespace Remotely_ScreenCast
 
                 Connection.StartAsync().Wait();
 
-                if (Win32Interop.GetCurrentDesktop().ToLower() != CurrentDesktopName.ToLower())
+                var desktopName = Win32Interop.GetCurrentDesktop();
+                if (desktopName.ToLower() != CurrentDesktopName.ToLower())
                 {
-                    RelaunchInCurrentDesktop().Wait();
+                    RelaunchInCurrentDesktop(desktopName).Wait();
+                    Environment.Exit(0);
                 }
 
                 OutgoingMessages = new OutgoingMessages(Connection);
@@ -68,6 +70,10 @@ namespace Remotely_ScreenCast
                 {
                     var viewersString = argDict["viewers"];
                     var viewerIDs = viewersString.Split(",".ToCharArray());
+                    foreach (var id in viewerIDs)
+                    {
+                        ScreenCaster.BeginScreenCasting(Connection, id, null, OutgoingMessages);
+                    }
                     // TODO.
                 }
                 else
@@ -79,13 +85,20 @@ namespace Remotely_ScreenCast
 
                 while (true)
                 {
-                    var desktopName = Win32Interop.GetCurrentDesktop();
-                    if (desktopName.ToLower() != CurrentDesktopName.ToLower())
+                    if (Mode == AppMode.Unattended)
                     {
-                        SwitchDesktops(desktopName).Wait();
-                        Environment.Exit(0);
+                        desktopName = Win32Interop.GetCurrentDesktop();
+                        if (desktopName.ToLower() != CurrentDesktopName.ToLower())
+                        {
+                            SwitchDesktops(desktopName).Wait();
+                            Environment.Exit(0);
+                        }
+                        System.Threading.Thread.Sleep(100);
                     }
-                    System.Threading.Thread.Sleep(100);
+                    else
+                    {
+                        Console.Read();
+                    }
                 }
             }
             catch (Exception ex)
@@ -94,9 +107,9 @@ namespace Remotely_ScreenCast
             }
         }
 
-        private static async Task RelaunchInCurrentDesktop()
+        private static async Task RelaunchInCurrentDesktop(string desktopName)
         {
-            var result = Win32Interop.OpenInteractiveProcess(Environment.CommandLine, Win32Interop.GetCurrentDesktop(), true, out _);
+            var result = Win32Interop.OpenInteractiveProcess(Assembly.GetExecutingAssembly().Location + $" -mode {Mode.ToString()} -requester {RequesterID} -serviceid {ServiceID} -host {Host} -desktop {desktopName}", desktopName, true, out _);
             if (!result)
             {
                 // TODO.

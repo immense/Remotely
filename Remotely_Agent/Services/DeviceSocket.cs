@@ -279,7 +279,7 @@ namespace Remotely_Agent.Services
                         }
                         else
                         {
-                            var result = Win32Interop.OpenInteractiveProcess(filePath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host}", "default", true, out _);
+                            var result = Win32Interop.OpenInteractiveProcess(filePath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default", "default", true, out _);
                             if (!result)
                             {
                                 await hubConnection.InvokeAsync("DisplayConsoleMessage", "Remote control failed to start on target device.", requesterID);
