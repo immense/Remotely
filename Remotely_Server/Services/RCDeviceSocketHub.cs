@@ -32,6 +32,21 @@ namespace Remotely_Server.Services
         private DataService DataService { get; }
         private IHubContext<BrowserSocketHub> BrowserHub { get; }
         private IHubContext<RCBrowserSocketHub> RCBrowserHub { get; }
+        private bool IsSwitchingDesktops
+        {
+            get
+            {
+                if (!Context.Items.ContainsKey("IsSwitchingDesktops"))
+                {
+                    Context.Items["IsSwitchingDesktops"] = false;
+                }
+                return (bool)Context.Items["IsSwitchingDesktops"];
+            }
+            set
+            {
+                Context.Items["IsSwitchingDesktops"] = value;
+            }
+        }
         private List<string> ViewerList
         {
             get
@@ -52,7 +67,10 @@ namespace Remotely_Server.Services
         }
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            await RCBrowserHub.Clients.Clients(ViewerList).SendAsync("ScreenCasterDisconnected");
+            if (!IsSwitchingDesktops)
+            {
+                await RCBrowserHub.Clients.Clients(ViewerList).SendAsync("ScreenCasterDisconnected");
+            }
             if (Context.Items.ContainsKey("SessionID") && AttendedSessionList.ContainsKey(Context.Items["SessionID"].ToString())) 
             {
                 while (!AttendedSessionList.TryRemove(Context.Items["SessionID"].ToString(), out var value))
@@ -103,6 +121,10 @@ namespace Remotely_Server.Services
             await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("CursorChange", cursor);
         }
 
+        public void SwitchDesktops()
+        {
+            IsSwitchingDesktops = true;
+        }
 
         public async Task GetSessionID()
         {

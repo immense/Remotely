@@ -120,17 +120,6 @@ namespace Remotely_ScreenCast.Sockets
                 if (Program.Viewers.TryGetValue(viewerID, out var viewer))
                 {
                     viewer.DisconnectRequested = true;
-                    var success = false;
-                    while (!success)
-                    {
-                        success = Program.Viewers.TryRemove(viewerID, out _);
-                    }
-
-                    // Close if no one is viewing.
-                    if (Program.Viewers.Count == 0)
-                    {
-                        Environment.Exit(0);
-                    }
                 }
                 await hubConnection.InvokeAsync("ViewerDisconnected", viewerID);
             });

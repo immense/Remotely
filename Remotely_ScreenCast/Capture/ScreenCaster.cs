@@ -19,36 +19,28 @@ namespace Remotely_ScreenCast.Capture
                                                    string requesterName,
                                                    OutgoingMessages outgoingMessages)
         {
-            var inputDesktop = Win32Interop.OpenInputDesktop();
-            var result = User32.SetThreadDesktop(inputDesktop);
-            User32.CloseDesktop(inputDesktop);
-            Logger.Write($"Set thread desktop begin screencasting to {Win32Interop.GetCurrentDesktop()}: {result}");
-
-
             ICapturer capturer;
             CaptureMode captureMode;
 
-            capturer = new BitBltCapture();
-            captureMode = CaptureMode.BitBtl;
-            //try
-            //{
-            //    if (Program.Viewers.Count == 0)
-            //    {
-            //        capturer = new DXCapture();
-            //        captureMode = CaptureMode.DirectX;
-            //    }
-            //    else
-            //    {
-            //        capturer = new BitBltCapture();
-            //        captureMode = CaptureMode.BitBtl;
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    Logger.Write(ex);
-            //    capturer = new BitBltCapture();
-            //    captureMode = CaptureMode.BitBtl;
-            //}
+            try
+            {
+                if (Program.Viewers.Count == 0)
+                {
+                    capturer = new DXCapture();
+                    captureMode = CaptureMode.DirectX;
+                }
+                else
+                {
+                    capturer = new BitBltCapture();
+                    captureMode = CaptureMode.BitBtl;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+                capturer = new BitBltCapture();
+                captureMode = CaptureMode.BitBtl;
+            }
 
             Logger.Write($"Starting screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}. Capture Mode: {captureMode.ToString()}.  Desktop: {Win32Interop.GetCurrentDesktop()}");
 
@@ -59,7 +51,7 @@ namespace Remotely_ScreenCast.Capture
                 DisconnectRequested = false,
                 Name = requesterName,
                 ViewerConnectionID = viewerID,
-                HasControl = Program.Mode == "unattended"
+                HasControl = Program.Mode == Enums.AppMode.Unattended
             };
 
 
@@ -109,13 +101,19 @@ namespace Remotely_ScreenCast.Capture
                     Logger.Write(ex);
                 }
             }
-
+            Logger.Write($"Ended screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}.");
             success = false;
             while (!success)
             {
-                Program.Viewers.TryRemove(viewerID, out _);
+                success = Program.Viewers.TryRemove(viewerID, out _);
             }
-            Logger.Write($"Ended screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}.");
+
+            // Close if no one is viewing.
+            if (Program.Viewers.Count == 0)
+            {
+                Environment.Exit(0);
+            }
+
         }
         public static Tuple<double, double> GetAbsolutePercentFromRelativePercent(double percentX, double percentY, ICapturer capturer)
         {

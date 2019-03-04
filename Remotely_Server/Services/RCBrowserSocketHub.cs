@@ -27,6 +27,10 @@ namespace Remotely_Server.Services
             {
                 return Context.Items["ClientID"] as string;
             }
+            set
+            {
+                Context.Items["ClientID"] = value;
+            }
         }
 
         private string ClientType
@@ -145,6 +149,10 @@ namespace Remotely_Server.Services
             Context.Items["ClientType"] = remoteControlMode;
             Context.Items["RequesterName"] = requesterName;
             await RCDeviceHub.Clients.Client(clientID).SendAsync("GetScreenCast", Context.ConnectionId, requesterName);
+        }
+        public void SwitchDesktops(string newClientID)
+        {
+            ClientID = newClientID;
         }
         public async Task SendFrameSkip(int delayTime)
         {

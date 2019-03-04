@@ -80,16 +80,6 @@ namespace Remotely_ScreenCast.Capture
 
         public void Capture()
         {
-			var currentDesktop = Win32Interop.GetCurrentDesktop();
-            if (currentDesktop != desktopName)
-            {
-                desktopName = currentDesktop;
-                var inputDesktop = Win32Interop.OpenInputDesktop();
-                var success = User32.SetThreadDesktop(inputDesktop);
-                User32.CloseDesktop(inputDesktop);
-                Logger.Write($"Set thread desktop to {currentDesktop}: {success}");
-            }
-
             // Keep framerate below 30 FPS.
             if (FramerateTimer.Elapsed.TotalMilliseconds > 33)
             {
@@ -122,14 +112,14 @@ namespace Remotely_ScreenCast.Capture
             }
             finally
             {
-                if (graphDC != IntPtr.Zero)
-                {
-                    graphic.ReleaseHdc(graphDC);
-                }
-                if (hDC != IntPtr.Zero)
-                {
-                    User32.ReleaseDC(hWnd, hDC);
-                }
+                //if (graphDC != IntPtr.Zero)
+                //{
+                //    graphic.ReleaseHdc(graphDC);
+                //}
+                //if (hDC != IntPtr.Zero)
+                //{
+                //    User32.ReleaseDC(hWnd, hDC);
+                //}
             }
         }
     }
