@@ -31,34 +31,58 @@ namespace Remotely_ScreenCast
         public static HubConnection Connection { get; private set; }
         public static OutgoingMessages OutgoingMessages { get; private set; }
         public static ConcurrentDictionary<string, Viewer> Viewers { get; } = new ConcurrentDictionary<string, Viewer>();
+        private static string CurrentDesktopName { get; set; }
 
         static void Main(string[] args)
         {
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            var argDict = ProcessArgs(args);
-            Mode = argDict["mode"];
-            RequesterID = argDict["requester"];
-            Host = argDict["host"];
-
-            Connection = new HubConnectionBuilder()
-                .WithUrl($"{Host}/RCDeviceHub")
-                .Build();
-
-            Connection.StartAsync().Wait();
-
-            OutgoingMessages = new OutgoingMessages(Connection);
-
-            MessageHandlers.ApplyConnectionHandlers(Connection, OutgoingMessages);
-
-            CursorIconWatcher.Current.OnChange += CursorIconWatcher_OnChange;
-
-            OutgoingMessages.NotifyRequesterUnattendedReady(RequesterID).Wait();
-
-            StartWaitForViewerTimer();
-
-            while (true)
+            try
             {
-                Console.Read();
+                AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+                
+                var inputDesktop = Win32Interop.OpenInputDesktop();
+                var success = User32.SetThreadDesktop(inputDesktop);
+                User32.CloseDesktop(inputDesktop);
+                CurrentDesktopName = Win32Interop.GetCurrentDesktop();
+                Logger.Write($"Set thread desktop on launch to {CurrentDesktopName}: {success}");
+
+                var argDict = ProcessArgs(args);
+                Mode = argDict["mode"];
+                RequesterID = argDict["requester"];
+                Host = argDict["host"];
+
+                Connection = new HubConnectionBuilder()
+                    .WithUrl($"{Host}/RCDeviceHub")
+                    .Build();
+
+                Connection.StartAsync().Wait();
+
+                OutgoingMessages = new OutgoingMessages(Connection);
+
+                MessageHandlers.ApplyConnectionHandlers(Connection, OutgoingMessages);
+
+                CursorIconWatcher.Current.OnChange += CursorIconWatcher_OnChange;
+
+                OutgoingMessages.NotifyRequesterUnattendedReady(RequesterID).Wait();
+
+                StartWaitForViewerTimer();
+
+                while (true)
+                {
+                    var desktopName = Win32Interop.GetCurrentDesktop();
+                    if (desktopName != CurrentDesktopName)
+                    {
+                        CurrentDesktopName = desktopName;
+                        inputDesktop = Win32Interop.OpenInputDesktop();
+                        success = User32.SetThreadDesktop(inputDesktop);
+                        User32.CloseDesktop(inputDesktop);
+                        Logger.Write($"Set thread desktop on main thread to {CurrentDesktopName}: {success}");
+                    }
+                    System.Threading.Thread.Sleep(100);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
             }
         }
 

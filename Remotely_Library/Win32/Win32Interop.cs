@@ -72,7 +72,7 @@ namespace Remotely_Library.Win32
             uint dwCreationFlags;
             if (hiddenWindow)
             {
-                dwCreationFlags = NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW | DETACHED_PROCESS;
+                dwCreationFlags = NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW;
             }
             else
             {
