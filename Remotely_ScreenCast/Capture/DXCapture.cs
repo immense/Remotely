@@ -53,7 +53,6 @@ namespace Remotely_ScreenCast.Capture
         }
         public bool NeedsInit { get; set; } = true;
 
-        private string desktopName;
         private Factory1 factory;
         private Adapter1 adapter;
         private SharpDX.Direct3D11.Device device;
@@ -73,7 +72,6 @@ namespace Remotely_ScreenCast.Capture
             {
                 lock (ScreenLock)
                 {
-                    desktopName = Win32Interop.GetCurrentDesktop();
                     factory = new Factory1();
 
                     //Get first adapter
@@ -130,18 +128,6 @@ namespace Remotely_ScreenCast.Capture
         {
             try
             {
-                var currentDesktop = Win32Interop.GetCurrentDesktop();
-                if (currentDesktop != desktopName)
-                {
-                    desktopName = currentDesktop;
-                    var inputDesktop = Win32Interop.OpenInputDesktop();
-                    var success = User32.SetThreadDesktop(inputDesktop);
-                    User32.CloseDesktop(inputDesktop);
-                    Logger.Write($"Set thread desktop to {currentDesktop}: {success}");
-                    NeedsInit = true;
-                    return;
-                }
-
                 if (NeedsInit)
                 {
                     duplicatedOutput?.Dispose();
