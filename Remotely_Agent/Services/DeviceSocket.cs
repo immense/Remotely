@@ -275,12 +275,11 @@ namespace Remotely_Agent.Services
 
                         if (Program.IsDebug)
                         {
-                            Process.Start(filePath, $"-mode unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host}");
+                            Process.Start(filePath, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default");
                         }
                         else
                         {
-                            var procInfo = new ADVAPI32.PROCESS_INFORMATION();
-                            var result = Win32Interop.OpenInteractiveProcess(filePath + $" -mode unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host}", "default", true, out procInfo);
+                            var result = Win32Interop.OpenInteractiveProcess(filePath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host}", "default", true, out _);
                             if (!result)
                             {
                                 await hubConnection.InvokeAsync("DisplayConsoleMessage", "Remote control failed to start on target device.", requesterID);
@@ -293,7 +292,7 @@ namespace Remotely_Agent.Services
                     //    var users = OSUtils.StartProcessWithResults("users", "");
                     //    var username = users?.Split()?.FirstOrDefault()?.Trim();
 
-                    //    Process.Start("sudo", $"-u {username} {rcBinaryPath} -mode unattended -requester {requesterID} -serviceid {serviceID} -desktop default -hostname {Utilities.GetConnectionInfo().Host.Split("//").Last()}");
+                    //    Process.Start("sudo", $"-u {username} {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -desktop default -hostname {Utilities.GetConnectionInfo().Host.Split("//").Last()}");
                     //}
                 }
                 catch

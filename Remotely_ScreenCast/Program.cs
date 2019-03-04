@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Remotely_ScreenCast;
 using Remotely_ScreenCast.Capture;
+using Remotely_ScreenCast.Enums;
 using Remotely_ScreenCast.Models;
 using Remotely_ScreenCast.Sockets;
 using Remotely_ScreenCast.Utilities;
@@ -24,7 +25,7 @@ namespace Remotely_ScreenCast
         public static ICapturer Capturer { get; private set; }
         public static CaptureMode CaptureMode { get; private set; }
         public static bool DisconnectRequested { get; set; }
-        public static string Mode { get; private set; }
+        public static AppMode Mode { get; private set; }
         public static string RequesterID { get; private set; }
         public static string ServiceID { get; private set; }
         public static string Host { get; private set; }
@@ -38,17 +39,13 @@ namespace Remotely_ScreenCast
             try
             {
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-                
-                var inputDesktop = Win32Interop.OpenInputDesktop();
-                var success = User32.SetThreadDesktop(inputDesktop);
-                User32.CloseDesktop(inputDesktop);
-                CurrentDesktopName = Win32Interop.GetCurrentDesktop();
-                Logger.Write($"Set thread desktop on launch to {CurrentDesktopName}: {success}");
 
                 var argDict = ProcessArgs(args);
-                Mode = argDict["mode"];
+                Mode = (AppMode)Enum.Parse(typeof(AppMode), argDict["mode"]);
                 RequesterID = argDict["requester"];
                 Host = argDict["host"];
+                CurrentDesktopName = argDict["desktop"];
+                ServiceID = argDict["serviceid"];
 
                 Connection = new HubConnectionBuilder()
                     .WithUrl($"{Host}/RCDeviceHub")
@@ -56,26 +53,37 @@ namespace Remotely_ScreenCast
 
                 Connection.StartAsync().Wait();
 
+                if (Win32Interop.GetCurrentDesktop().ToLower() != CurrentDesktopName.ToLower())
+                {
+                    RelaunchInCurrentDesktop().Wait();
+                }
+
                 OutgoingMessages = new OutgoingMessages(Connection);
 
                 MessageHandlers.ApplyConnectionHandlers(Connection, OutgoingMessages);
 
                 CursorIconWatcher.Current.OnChange += CursorIconWatcher_OnChange;
 
-                OutgoingMessages.NotifyRequesterUnattendedReady(RequesterID).Wait();
+                if (argDict.ContainsKey("desktopswitch"))
+                {
+                    var viewersString = argDict["viewers"];
+                    var viewerIDs = viewersString.Split(",".ToCharArray());
+                    // TODO.
+                }
+                else
+                {
+                    OutgoingMessages.NotifyRequesterUnattendedReady(RequesterID).Wait();
+                }
 
                 StartWaitForViewerTimer();
 
                 while (true)
                 {
                     var desktopName = Win32Interop.GetCurrentDesktop();
-                    if (desktopName != CurrentDesktopName)
+                    if (desktopName.ToLower() != CurrentDesktopName.ToLower())
                     {
-                        CurrentDesktopName = desktopName;
-                        inputDesktop = Win32Interop.OpenInputDesktop();
-                        success = User32.SetThreadDesktop(inputDesktop);
-                        User32.CloseDesktop(inputDesktop);
-                        Logger.Write($"Set thread desktop on main thread to {CurrentDesktopName}: {success}");
+                        SwitchDesktops(desktopName).Wait();
+                        Environment.Exit(0);
                     }
                     System.Threading.Thread.Sleep(100);
                 }
@@ -83,6 +91,29 @@ namespace Remotely_ScreenCast
             catch (Exception ex)
             {
                 Logger.Write(ex);
+            }
+        }
+
+        private static async Task RelaunchInCurrentDesktop()
+        {
+            var result = Win32Interop.OpenInteractiveProcess(Environment.CommandLine, Win32Interop.GetCurrentDesktop(), true, out _);
+            if (!result)
+            {
+                // TODO.
+                //await Connection.InvokeAsync("DisplayMessage", "Remote control failed to start on target device.", RequesterID);
+            }
+            await Task.Delay(1);
+        }
+
+        private static async Task SwitchDesktops(string desktopName)
+        {
+            Logger.Write($"Switching desktops to {desktopName}.");
+            await Connection.InvokeAsync("SwitchDesktops");
+            var result = Win32Interop.OpenInteractiveProcess(Assembly.GetExecutingAssembly().Location + $" -mode {Mode.ToString()} -requester {RequesterID} -serviceid {ServiceID} -host {Host} -desktopswitch true -desktop {desktopName} -viewers {String.Join(",", Viewers.Keys.ToList())}", desktopName, true, out _);
+            if (!result)
+            {
+                // TODO.
+                //await Connection.InvokeAsync("DisplayMessage", "Desktop switch failed on target device.", RequesterID);
             }
         }
 
