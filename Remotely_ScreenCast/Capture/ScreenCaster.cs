@@ -42,7 +42,7 @@ namespace Remotely_ScreenCast.Capture
                 captureMode = CaptureMode.BitBtl;
             }
 
-            Logger.Write($"Starting screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}. Capture Mode: {captureMode.ToString()}.  Desktop: {Win32Interop.GetCurrentDesktop()}");
+            Logger.Write($"Starting screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}. Capture Mode: {captureMode.ToString()}.  App Mode: {Program.Mode}  Desktop: {Win32Interop.GetCurrentDesktop()}");
 
             var viewer = new Models.Viewer()
             {

@@ -22,9 +22,6 @@ namespace Remotely_ScreenCast
 {
 	public class Program
 	{
-        public static ICapturer Capturer { get; private set; }
-        public static CaptureMode CaptureMode { get; private set; }
-        public static bool DisconnectRequested { get; set; }
         public static AppMode Mode { get; private set; }
         public static string RequesterID { get; private set; }
         public static string ServiceID { get; private set; }
