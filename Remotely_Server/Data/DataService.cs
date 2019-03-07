@@ -291,6 +291,17 @@ namespace Remotely_Server.Data
             RemotelyContext.SaveChanges();
         }
 
+        public void WriteEvent(string message)
+        {
+            RemotelyContext.EventLogs.Add(new EventLog()
+            {
+                EventType = EventTypes.Info,
+                Message = message,
+                TimeStamp = DateTime.Now
+            });
+            RemotelyContext.SaveChanges();
+        }
+
         internal InviteLink AddInvite(string requesterUserName, Invite invite, string requestOrigin)
         {
             invite.InvitedUser = invite.InvitedUser.ToLower();

@@ -39,5 +39,10 @@ namespace Remotely_ScreenCast.Sockets
         {
             await Connection.SendAsync("SendCursorChange", cursor, viewerIDs);
         }
+
+        internal async Task NotifyViewersDesktopSwitchReady(string[] viewerIDs)
+        {
+            await Connection.SendAsync("NotifyViewersDesktopSwitchReady", viewerIDs);
+        }
     }
 }
