@@ -57,17 +57,17 @@ namespace Remotely_Server.Services
             await DeviceHub.Clients.Client(serviceID).SendAsync("CtrlAltDel");
         }
 
-        public async Task KeyDown(string key)
+        public async Task KeyDown(int key)
         {
             await RCDeviceHub.Clients.Client(ClientID).SendAsync("KeyDown", key, Context.ConnectionId);
         }
 
-        public async Task KeyPress(string key)
+        public async Task KeyPress(int key)
         {
             await RCDeviceHub.Clients.Client(ClientID).SendAsync("KeyPress", key, Context.ConnectionId);
         }
 
-        public async Task KeyUp(string key)
+        public async Task KeyUp(int key)
         {
             await RCDeviceHub.Clients.Client(ClientID).SendAsync("KeyUp", key, Context.ConnectionId);
         }
@@ -111,11 +111,11 @@ namespace Remotely_Server.Services
         {
             if (Context.User.Identity.IsAuthenticated)
             {
-                await RCDeviceHub.Clients.Client(ClientID).SendAsync("ViewerDisconnected", Context.ConnectionId);
                 while (!OrganizationConnectionList.TryRemove(Context.ConnectionId, out var user))
                 {
                     await Task.Delay(1000);
                 }
+                await RCDeviceHub.Clients.Client(ClientID).SendAsync("ViewerDisconnected", Context.ConnectionId);
             }
         }
 
@@ -124,9 +124,9 @@ namespace Remotely_Server.Services
             await RCDeviceHub.Clients.Client(ClientID).SendAsync("SelectScreen", screenIndex, Context.ConnectionId);
         }
 
-        public async Task SendScreenCastRequestToDevice(string clientID, string requesterName, RemoteControlMode remoteControlMode)
+        public async Task SendScreenCastRequestToDevice(string clientID, string requesterName, int remoteControlMode)
         {
-            if (remoteControlMode == RemoteControlMode.Normal)
+            if ((RemoteControlMode)remoteControlMode == RemoteControlMode.Normal)
             {
                 if (!RCDeviceSocketHub.AttendedSessionList.ContainsKey(clientID))
                 {

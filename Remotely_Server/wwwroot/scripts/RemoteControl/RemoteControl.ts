@@ -9,10 +9,10 @@ var rcBrowserSockets = new RCBrowserSockets();
 
 export const RemoteControl = new class {
     RCBrowserSockets = rcBrowserSockets;
-    ClientID = queryString["clientID"] ? decodeURIComponent(queryString["clientID"]) : undefined;
-    ServiceID = queryString["serviceID"] ? decodeURIComponent(queryString["serviceID"]) : undefined;
+    ClientID = queryString["clientID"] ? decodeURIComponent(queryString["clientID"]) : "";
+    ServiceID = queryString["serviceID"] ? decodeURIComponent(queryString["serviceID"]) : "";
     Mode: RemoteControlMode;
-    RequesterName: string;
+    RequesterName: string = "";
 }
 
 export function ConnectToClient() {

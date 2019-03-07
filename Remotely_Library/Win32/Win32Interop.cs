@@ -164,7 +164,7 @@ namespace Remotely_Library.Win32
             return SendInput(1, new User32.INPUT[] { input }, INPUT.Size);
         }
 
-        public static void SendKeyDown(VirtualKeyShort key)
+        public static void SendKeyDown(VirtualKey key)
         {
             var union = new InputUnion()
             {
@@ -179,7 +179,7 @@ namespace Remotely_Library.Win32
             var input = new INPUT() { type = InputType.KEYBOARD, U = union };
             SendInput(1, new INPUT[] { input }, INPUT.Size);
         }
-        public static void SendKeyUp(VirtualKeyShort key)
+        public static void SendKeyUp(VirtualKey key)
         {
             var union = new InputUnion()
             {
