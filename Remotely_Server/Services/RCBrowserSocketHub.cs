@@ -150,10 +150,7 @@ namespace Remotely_Server.Services
             Context.Items["RequesterName"] = requesterName;
             await RCDeviceHub.Clients.Client(clientID).SendAsync("GetScreenCast", Context.ConnectionId, requesterName);
         }
-        public void SwitchDesktops(string newClientID)
-        {
-            ClientID = newClientID;
-        }
+
         public async Task SendFrameSkip(int delayTime)
         {
             await RCDeviceHub.Clients.Client(ClientID).SendAsync("FrameSkip", delayTime, Context.ConnectionId);

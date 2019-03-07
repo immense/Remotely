@@ -14,8 +14,7 @@ namespace Remotely_ScreenCast.Capture
 {
     public class ScreenCaster
     {
-        public static async void BeginScreenCasting(HubConnection hubConnection,
-                                                   string viewerID,
+        public static async void BeginScreenCasting(string viewerID,
                                                    string requesterName,
                                                    OutgoingMessages outgoingMessages)
         {
@@ -38,8 +37,8 @@ namespace Remotely_ScreenCast.Capture
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                capturer = new BitBltCapture();
-                captureMode = CaptureMode.BitBtl;
+                capturer = new BitBltCapture();                
+                captureMode = CaptureMode.BitBtl;         
             }
 
             Logger.Write($"Starting screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}. Capture Mode: {captureMode.ToString()}.  App Mode: {Program.Mode}  Desktop: {Win32Interop.GetCurrentDesktop()}");
@@ -53,7 +52,6 @@ namespace Remotely_ScreenCast.Capture
                 ViewerConnectionID = viewerID,
                 HasControl = Program.Mode == Enums.AppMode.Unattended
             };
-
 
             var success = false;
             while (!success)
@@ -72,7 +70,9 @@ namespace Remotely_ScreenCast.Capture
             {
                 await outgoingMessages.SendScreenSize(bounds.Width, bounds.Height, viewerID);
             };
-            
+
+            await outgoingMessages.SendCursorChange(CursorIconWatcher.Current.GetCurrentCursor(), new List<string>() { viewerID });
+
             while (!viewer.DisconnectRequested)
             {
                 try

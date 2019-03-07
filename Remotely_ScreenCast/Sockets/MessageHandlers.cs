@@ -30,7 +30,7 @@ namespace Remotely_ScreenCast.Sockets
             {
                 try
                 {
-                    ScreenCaster.BeginScreenCasting(hubConnection, viewerID, requesterName, outgoingMessages);
+                    ScreenCaster.BeginScreenCasting(viewerID, requesterName, outgoingMessages);
                 }
                 catch (Exception ex)
                 {
@@ -42,8 +42,17 @@ namespace Remotely_ScreenCast.Sockets
             {
                 if (Program.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
+                    //var converter = new KeysConverter();
+                    //try
+                    //{
+                    //    var key = (Keys)converter.ConvertFromString(keyCode.ToString());
+                    //    Win32Interop.SendKeyDown(key);
+                    //}
+                    //catch
+                    //{
+                    //    Logger.Write($"Failed to convert key {keyCode}.");
+                    //}
                     Win32Interop.SendKeyDown((User32.VirtualKeyShort)keyCode);
-                    //User32.SendKeyDown((User32.VirtualKeyShort)KeyInterop.VirtualKeyFromKey((Key)Enum.Parse(typeof(Key), key)));
                 }
             });
 
@@ -51,8 +60,17 @@ namespace Remotely_ScreenCast.Sockets
             {
                 if (Program.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
+                    //var converter = new KeysConverter();
+                    //try
+                    //{
+                    //    var key = (Keys)converter.ConvertFromString(keyCode.ToString());
+                    //    Win32Interop.SendKeyDown(key);
+                    //}
+                    //catch
+                    //{
+                    //    Logger.Write($"Failed to convert key {keyCode}.");
+                    //}
                     Win32Interop.SendKeyUp((User32.VirtualKeyShort)keyCode);
-                    //User32.SendKeyDown((User32.VirtualKeyShort)KeyInterop.VirtualKeyFromKey((Key)Enum.Parse(typeof(Key), key)));
                 }
             });
 
@@ -60,7 +78,17 @@ namespace Remotely_ScreenCast.Sockets
             {
                 if (Program.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
-                    
+                    //var converter = new KeysConverter();
+                    //try
+                    //{
+                    //    var key = (Keys)converter.ConvertFromString(keyCode.ToString());
+                    //    Win32Interop.SendKeyDown(key);
+                    //    Win32Interop.SendKeyUp(key);
+                    //}
+                    //catch
+                    //{
+                    //    Logger.Write($"Failed to convert key {keyCode}.");
+                    //}
                     Win32Interop.SendKeyDown((User32.VirtualKeyShort)keyCode);
                     Win32Interop.SendKeyUp((User32.VirtualKeyShort)keyCode);
                 }

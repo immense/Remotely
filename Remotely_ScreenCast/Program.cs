@@ -50,14 +50,20 @@ namespace Remotely_ScreenCast
 
                 Connection.StartAsync().Wait();
 
+                OutgoingMessages = new OutgoingMessages(Connection);
+
                 var desktopName = Win32Interop.GetCurrentDesktop();
                 if (desktopName.ToLower() != CurrentDesktopName.ToLower())
                 {
-                    RelaunchInCurrentDesktop(desktopName).Wait();
+                    CurrentDesktopName = desktopName;
+                    Logger.Write($"Relaunching in desktop {desktopName}.");
+                    var result = Win32Interop.OpenInteractiveProcess(Assembly.GetExecutingAssembly().Location + $" -mode {Mode.ToString()} -requester {RequesterID} -serviceid {ServiceID} -host {Host} -desktop {desktopName}", desktopName, true, out _);
+                    if (!result)
+                    {
+                        Logger.Write($"Desktop relaunch to {desktopName} failed.");
+                    }
                     Environment.Exit(0);
                 }
-
-                OutgoingMessages = new OutgoingMessages(Connection);
 
                 MessageHandlers.ApplyConnectionHandlers(Connection, OutgoingMessages);
 
@@ -67,11 +73,7 @@ namespace Remotely_ScreenCast
                 {
                     var viewersString = argDict["viewers"];
                     var viewerIDs = viewersString.Split(",".ToCharArray());
-                    foreach (var id in viewerIDs)
-                    {
-                        ScreenCaster.BeginScreenCasting(Connection, id, null, OutgoingMessages);
-                    }
-                    // TODO.
+                    OutgoingMessages.NotifyViewersDesktopSwitchReady(viewerIDs).Wait();
                 }
                 else
                 {
@@ -85,10 +87,16 @@ namespace Remotely_ScreenCast
                     if (Mode == AppMode.Unattended)
                     {
                         desktopName = Win32Interop.GetCurrentDesktop();
-                        if (desktopName.ToLower() != CurrentDesktopName.ToLower())
+                        if (desktopName.ToLower() != CurrentDesktopName.ToLower() && Viewers.Count > 0)
                         {
-                            SwitchDesktops(desktopName).Wait();
-                            Environment.Exit(0);
+                            CurrentDesktopName = desktopName;
+                            Logger.Write($"Switching desktops to {desktopName}.");
+                            Connection.InvokeAsync("SwitchingDesktops", Viewers.Keys.ToList()).Wait();
+                            var result = Win32Interop.OpenInteractiveProcess(Assembly.GetExecutingAssembly().Location + $" -mode {Mode.ToString()} -requester {RequesterID} -serviceid {ServiceID} -host {Host} -desktopswitch true -desktop {desktopName} -viewers {String.Join(",", Viewers.Keys.ToList())}", desktopName, true, out _);
+                            if (!result)
+                            {
+                                Logger.Write($"Desktop switch to {desktopName} failed.");
+                            }
                         }
                         System.Threading.Thread.Sleep(100);
                     }
@@ -101,29 +109,6 @@ namespace Remotely_ScreenCast
             catch (Exception ex)
             {
                 Logger.Write(ex);
-            }
-        }
-
-        private static async Task RelaunchInCurrentDesktop(string desktopName)
-        {
-            var result = Win32Interop.OpenInteractiveProcess(Assembly.GetExecutingAssembly().Location + $" -mode {Mode.ToString()} -requester {RequesterID} -serviceid {ServiceID} -host {Host} -desktop {desktopName}", desktopName, true, out _);
-            if (!result)
-            {
-                // TODO.
-                //await Connection.InvokeAsync("DisplayMessage", "Remote control failed to start on target device.", RequesterID);
-            }
-            await Task.Delay(1);
-        }
-
-        private static async Task SwitchDesktops(string desktopName)
-        {
-            Logger.Write($"Switching desktops to {desktopName}.");
-            await Connection.InvokeAsync("SwitchDesktops");
-            var result = Win32Interop.OpenInteractiveProcess(Assembly.GetExecutingAssembly().Location + $" -mode {Mode.ToString()} -requester {RequesterID} -serviceid {ServiceID} -host {Host} -desktopswitch true -desktop {desktopName} -viewers {String.Join(",", Viewers.Keys.ToList())}", desktopName, true, out _);
-            if (!result)
-            {
-                // TODO.
-                //await Connection.InvokeAsync("DisplayMessage", "Desktop switch failed on target device.", RequesterID);
             }
         }
 

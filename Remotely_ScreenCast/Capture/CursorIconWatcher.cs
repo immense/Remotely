@@ -21,6 +21,15 @@ namespace Remotely_ScreenCast.Capture
         private System.Timers.Timer ChangeTimer { get; set; }
         private int PreviousCursorHandle { get; set; }
         private User32.CursorInfo cursorInfo;
+
+
+        public int GetCurrentCursor()
+        {
+            var ci = new User32.CursorInfo();
+            ci.cbSize = Marshal.SizeOf(ci);
+            User32.GetCursorInfo(out ci);
+            return ci.hCursor.ToInt32();
+        }
         private CursorIconWatcher()
         {
             ChangeTimer = new System.Timers.Timer(100);

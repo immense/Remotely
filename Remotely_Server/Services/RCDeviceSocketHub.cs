@@ -16,37 +16,17 @@ namespace Remotely_Server.Services
         public RCDeviceSocketHub(DataService dataService, 
             IHubContext<BrowserSocketHub> browserHub, 
             IHubContext<RCBrowserSocketHub> rcBrowserHub, 
-            IHubContext<DeviceSocketHub> deviceSocketHub,
-            ApplicationConfig appConfig,
-            RandomGenerator rng)
+            IHubContext<DeviceSocketHub> deviceSocketHub)
         {
             DataService = dataService;
             BrowserHub = browserHub;
             RCBrowserHub = rcBrowserHub;
-            AppConfig = appConfig;
             DeviceHub = deviceSocketHub;
-            RNG = rng;
         }
-        private ApplicationConfig AppConfig { get; set; }
         private IHubContext<DeviceSocketHub> DeviceHub { get; }
         private DataService DataService { get; }
         private IHubContext<BrowserSocketHub> BrowserHub { get; }
         private IHubContext<RCBrowserSocketHub> RCBrowserHub { get; }
-        private bool IsSwitchingDesktops
-        {
-            get
-            {
-                if (!Context.Items.ContainsKey("IsSwitchingDesktops"))
-                {
-                    Context.Items["IsSwitchingDesktops"] = false;
-                }
-                return (bool)Context.Items["IsSwitchingDesktops"];
-            }
-            set
-            {
-                Context.Items["IsSwitchingDesktops"] = value;
-            }
-        }
         private List<string> ViewerList
         {
             get
@@ -58,8 +38,6 @@ namespace Remotely_Server.Services
                 return Context.Items["ViewerList"] as List<string>;
             }
         }
-        
-        private RandomGenerator RNG { get; }
 
         public override Task OnConnectedAsync()
         {
@@ -67,10 +45,7 @@ namespace Remotely_Server.Services
         }
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            if (!IsSwitchingDesktops)
-            {
-                await RCBrowserHub.Clients.Clients(ViewerList).SendAsync("ScreenCasterDisconnected");
-            }
+            await RCBrowserHub.Clients.Clients(ViewerList).SendAsync("ScreenCasterDisconnected");
             if (Context.Items.ContainsKey("SessionID") && AttendedSessionList.ContainsKey(Context.Items["SessionID"].ToString())) 
             {
                 while (!AttendedSessionList.TryRemove(Context.Items["SessionID"].ToString(), out var value))
@@ -78,7 +53,7 @@ namespace Remotely_Server.Services
                     await Task.Delay(1000);
                 }
             }
-
+            DataService.WriteEvent(exception);
             await base.OnDisconnectedAsync(exception);
         }
         public void ViewerDisconnected(string viewerID)
@@ -102,14 +77,18 @@ namespace Remotely_Server.Services
             await RCBrowserHub.Clients.Client(rcBrowserHubConnectionID).SendAsync("ScreenSize", width, height);
         }
 
-        public async Task SendScreenCapture(byte[] captureBytes, string rcBrowserHubConnectionID, DateTime captureTime)
+        public Task SendScreenCapture(byte[] captureBytes, string rcBrowserHubConnectionID, DateTime captureTime)
         {
-            await RCBrowserHub.Clients.Client(rcBrowserHubConnectionID).SendAsync("ScreenCapture", captureBytes, captureTime);
+            return RCBrowserHub.Clients.Client(rcBrowserHubConnectionID).SendAsync("ScreenCapture", captureBytes, captureTime);
         }
 
         public async Task NotifyRequesterUnattendedReady(string browserHubConnectionID)
         {
             await BrowserHub.Clients.Client(browserHubConnectionID).SendAsync("UnattendedSessionReady", Context.ConnectionId);
+        }
+        public async Task NotifyViewersDesktopSwitchReady(string[] viewerIDs)
+        {
+            await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("DesktopSwitchReady", Context.ConnectionId);
         }
         public async Task SendConnectionFailedToBrowser(string rcBrowserHubConnectionID)
         {
@@ -121,9 +100,9 @@ namespace Remotely_Server.Services
             await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("CursorChange", cursor);
         }
 
-        public void SwitchDesktops()
+        public async Task SwitchingDesktops(string[] viewerIDs)
         {
-            IsSwitchingDesktops = true;
+            await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("SwitchingDesktops");
         }
 
         public async Task GetSessionID()

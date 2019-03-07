@@ -5,6 +5,7 @@ import { RemoteControl } from "./RemoteControl.js";
 import { GetCursor } from "./CursorMap.js";
 
 var signalR = window["signalR"];
+var lastFrameDelay = Date.now();
 
 export class RCBrowserSockets {
     Connection: any;
@@ -114,8 +115,9 @@ export class RCBrowserSockets {
         hubConnection.on("ScreenCapture", (buffer: string, captureTime: string) => {
             var img = new Image();
             img.onload = () => {
+                lastFrameDelay = Date.now();
                 var frameDelay = Date.now() - new Date(captureTime).getTime();
-                if (frameDelay > 1000) {
+                if (frameDelay > 2000 && Date.now() - lastFrameDelay > 2000) {
                     this.SendFrameSkip(frameDelay * .25);
                 }
                 UI.Screen2DContext.drawImage(img, 0, 0);
@@ -133,14 +135,15 @@ export class RCBrowserSockets {
         hubConnection.on("ScreenCasterDisconnected", () => {
             this.Connection.stop();
         });
-        hubConnection.on("DesktopSwitching", () => {
-            UI.ShowMessage("Desktop switching in progress...");
-        });
-        hubConnection.on("SwitchedDesktop", (newClientID: string) => {
-            UI.ShowMessage("Desktop switch completed.");
+        hubConnection.on("DesktopSwitchReady", (newClientID: string) => {
             RemoteControl.ClientID = newClientID;
-            this.SendScreenCastRequestToDevice();
+            this.Connection.stop();
+            this.Connect();
+        })
+        hubConnection.on("SwitchingDesktops", () => {
+            UI.ShowMessage("Switching desktops...");
         });
+
         hubConnection.on("DesktopSwitchFailed", () => {
             UI.ShowMessage("Desktop switch failed.  Please reconnect.");
         });
