@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
 using Remotely_ScreenCast;
 using Remotely_ScreenCast.Capture;
 using Remotely_ScreenCast.Enums;
@@ -46,6 +47,7 @@ namespace Remotely_ScreenCast
 
                 Connection = new HubConnectionBuilder()
                     .WithUrl($"{Host}/RCDeviceHub")
+                    .AddMessagePackProtocol()
                     .Build();
 
                 Connection.StartAsync().Wait();

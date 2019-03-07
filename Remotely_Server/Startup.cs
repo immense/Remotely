@@ -83,11 +83,13 @@ namespace Remotely_Server
             services.AddSignalR(options =>
                 {
                     options.EnableDetailedErrors = IsDev;
-                }
-            ).AddJsonProtocol(options =>
+                })
+                .AddJsonProtocol(options =>
                 {
                     options.PayloadSerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
-                });
+                })
+                .AddMessagePackProtocol();
+
             services.AddLogging();
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<EmailSender>();

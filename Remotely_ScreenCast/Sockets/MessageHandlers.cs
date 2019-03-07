@@ -52,7 +52,7 @@ namespace Remotely_ScreenCast.Sockets
                     //{
                     //    Logger.Write($"Failed to convert key {keyCode}.");
                     //}
-                    Win32Interop.SendKeyDown((User32.VirtualKeyShort)keyCode);
+                    Win32Interop.SendKeyDown((User32.VirtualKey)keyCode);
                 }
             });
 
@@ -70,7 +70,7 @@ namespace Remotely_ScreenCast.Sockets
                     //{
                     //    Logger.Write($"Failed to convert key {keyCode}.");
                     //}
-                    Win32Interop.SendKeyUp((User32.VirtualKeyShort)keyCode);
+                    Win32Interop.SendKeyUp((User32.VirtualKey)keyCode);
                 }
             });
 
@@ -89,8 +89,8 @@ namespace Remotely_ScreenCast.Sockets
                     //{
                     //    Logger.Write($"Failed to convert key {keyCode}.");
                     //}
-                    Win32Interop.SendKeyDown((User32.VirtualKeyShort)keyCode);
-                    Win32Interop.SendKeyUp((User32.VirtualKeyShort)keyCode);
+                    Win32Interop.SendKeyDown((User32.VirtualKey)keyCode);
+                    Win32Interop.SendKeyUp((User32.VirtualKey)keyCode);
                 }
             });
 

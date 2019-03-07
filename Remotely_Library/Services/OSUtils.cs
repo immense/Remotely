@@ -28,11 +28,11 @@ namespace Remotely_Library.Services
                 string fileExt = "";
                 if (IsWindows)
                 {
-                    fileExt = "Agent.exe";
+                    fileExt = "Remotely_Agent.exe";
                 }
                 else if (IsLinux)
                 {
-                    fileExt = "Agent";
+                    fileExt = "Remotely_Agent";
                 }
                 return fileExt;
             }

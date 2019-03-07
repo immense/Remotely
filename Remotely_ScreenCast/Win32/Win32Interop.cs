@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using static Win32.ADVAPI32;
 using static Win32.User32;
+using System.Windows.Forms;
 
 namespace Win32
 {
@@ -184,7 +185,7 @@ namespace Win32
             return SendInput(1, new User32.INPUT[] { input }, INPUT.Size);
         }
 
-        public static void SendKeyDown(VirtualKeyShort key)
+        public static void SendKeyDown(VirtualKey key)
         {
             var union = new InputUnion()
             {
@@ -199,7 +200,7 @@ namespace Win32
             var input = new INPUT() { type = InputType.KEYBOARD, U = union };
             SendInput(1, new INPUT[] { input }, INPUT.Size);
         }
-        public static void SendKeyUp(VirtualKeyShort key)
+        public static void SendKeyUp(VirtualKey key)
         {
             var union = new InputUnion()
             {

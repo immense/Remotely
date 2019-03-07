@@ -72,7 +72,7 @@ namespace Remotely_Library.Win32_Classes
             UNICODE = 0x0004
         }
 
-        public enum VirtualKeyShort : short
+        public enum VirtualKey : short
         {
             ///<summary>
                     ///Left mouse button
@@ -763,8 +763,7 @@ namespace Remotely_Library.Win32_Classes
             ///<summary>
                     ///Clear key
                     ///</summary>
-            OEM_CLEAR = 0xFE,
-            SEMI_COLON = 0x3b
+            OEM_CLEAR = 0xFE
         }
         public enum ScanCodeShort : short
         {
@@ -1059,7 +1058,7 @@ namespace Remotely_Library.Win32_Classes
         [StructLayout(LayoutKind.Sequential)]
         public struct KEYBDINPUT
         {
-            public VirtualKeyShort wVk;
+            public VirtualKey wVk;
             public ScanCodeShort wScan;
             public KEYEVENTF dwFlags;
             public int time;

@@ -13,6 +13,7 @@ export class RCBrowserSockets {
     Connect() {
         this.Connection = new signalR.HubConnectionBuilder()
             .withUrl("/RCBrowserHub")
+            .withHubProtocol(new signalR.protocols.msgpack.MessagePackHubProtocol())
             .configureLogging(signalR.LogLevel.Information)
             .build();
 
@@ -112,17 +113,24 @@ export class RCBrowserSockets {
             UI.ScreenViewer.height = height;
             UI.Screen2DContext.clearRect(0, 0, width, height);
         });
-        hubConnection.on("ScreenCapture", (buffer: string, captureTime: string) => {
-            var img = new Image();
-            img.onload = () => {
-                lastFrameDelay = Date.now();
-                var frameDelay = Date.now() - new Date(captureTime).getTime();
-                if (frameDelay > 2000 && Date.now() - lastFrameDelay > 2000) {
-                    this.SendFrameSkip(frameDelay * .25);
-                }
+        hubConnection.on("ScreenCapture", (buffer: Uint8Array, captureTime: Date) => {
+            var url = window.URL.createObjectURL(new Blob([buffer]));
+            var img = document.createElement("img");
+            img.onload = function () {
                 UI.Screen2DContext.drawImage(img, 0, 0);
-            }
-            img.src = "data:image/png;base64," + buffer;
+                window.URL.revokeObjectURL(url);
+            };
+            img.src = url;
+            //var img = new Image();
+            //img.onload = () => {
+            //    lastFrameDelay = Date.now();
+            //    var frameDelay = Date.now() - new Date(captureTime).getTime();
+            //    if (frameDelay > 2000 && Date.now() - lastFrameDelay > 2000) {
+            //        this.SendFrameSkip(frameDelay * .25);
+            //    }
+            //    UI.Screen2DContext.drawImage(img, 0, 0);
+            //}
+            //img.src = "data:image/png;base64," + buffer;
         });
         hubConnection.on("ConnectionFailed", () => {
             UI.ConnectButton.removeAttribute("disabled");
