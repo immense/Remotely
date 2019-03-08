@@ -9,7 +9,7 @@ using Remotely_Server.Data;
 namespace Remotely_Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190225192927_Initial")]
+    [Migration("20190308020719_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
