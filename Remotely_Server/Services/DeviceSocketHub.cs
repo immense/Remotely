@@ -15,15 +15,17 @@ namespace Remotely_Server.Services
 {
     public class DeviceSocketHub : Hub
     {
-        public DeviceSocketHub(DataService dataService, IHubContext<BrowserSocketHub> browserHub)
+        public DeviceSocketHub(DataService dataService, IHubContext<BrowserSocketHub> browserHub, IHubContext<RCBrowserSocketHub> rcBrowserHub)
         {
             DataService = dataService;
             BrowserHub = browserHub;
+            RCBrowserHub = rcBrowserHub;
         }
 
 		public static ConcurrentDictionary<string, Device> ServiceConnections { get; set; } = new ConcurrentDictionary<string, Device>();
 		private IHubContext<BrowserSocketHub> BrowserHub { get; }
-		private DataService DataService { get; }
+        public IHubContext<RCBrowserSocketHub> RCBrowserHub { get; }
+        private DataService DataService { get; }
 		private Device Device
 		{
 			get
@@ -154,14 +156,18 @@ namespace Remotely_Server.Services
             DataService.SetServerVerificationToken(Device.ID, verificationToken);
         }
 
-        public async void TransferCompleted(string transferID, string requesterID)
+        public async Task TransferCompleted(string transferID, string requesterID)
         {
             await BrowserHub.Clients.Client(requesterID).SendAsync("TransferCompleted", transferID);
         }
-        public async void WinPSResultViaAjax(string commandID)
+        public async Task WinPSResultViaAjax(string commandID)
         {
             var commandContext = DataService.GetCommandContext(commandID);
             await BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("WinPSResultViaAjax", commandID, Device.ID);
+        }
+        public async Task SendConnectionFailedToViewers(List<string> viewerIDs)
+        {
+            await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("ConnectionFailed");
         }
     }
 }

@@ -114,49 +114,47 @@ export class RCBrowserSockets {
             UI.Screen2DContext.clearRect(0, 0, width, height);
         });
         hubConnection.on("ScreenCapture", (buffer: Uint8Array, captureTime: Date) => {
+            //var frameDelay = Date.now() - new Date(captureTime).getTime();
+            //if (frameDelay > 3000 && Date.now() - lastFrameDelay > 3000) {
+            //    this.SendFrameSkip(frameDelay * .25);
+            //    lastFrameDelay = Date.now();
+            //}
             var url = window.URL.createObjectURL(new Blob([buffer]));
             var img = document.createElement("img");
-            img.onload = function () {
+            img.onload = () => {
                 UI.Screen2DContext.drawImage(img, 0, 0);
                 window.URL.revokeObjectURL(url);
             };
             img.src = url;
-            //var img = new Image();
-            //img.onload = () => {
-            //    lastFrameDelay = Date.now();
-            //    var frameDelay = Date.now() - new Date(captureTime).getTime();
-            //    if (frameDelay > 2000 && Date.now() - lastFrameDelay > 2000) {
-            //        this.SendFrameSkip(frameDelay * .25);
-            //    }
-            //    UI.Screen2DContext.drawImage(img, 0, 0);
-            //}
-            //img.src = "data:image/png;base64," + buffer;
         });
         hubConnection.on("ConnectionFailed", () => {
             UI.ConnectButton.removeAttribute("disabled");
             UI.StatusMessage.innerHTML = "Connection failed or was denied.";
+            UI.ShowMessage("Connection failed.  Please reconnect.");
+            this.Connection.stop();
         });
         hubConnection.on("SessionIDNotFound", () => {
             UI.ConnectButton.removeAttribute("disabled");
             UI.StatusMessage.innerHTML = "Session ID not found.";
+            this.Connection.stop();
         });
         hubConnection.on("ScreenCasterDisconnected", () => {
             this.Connection.stop();
         });
-        hubConnection.on("DesktopSwitchReady", (newClientID: string) => {
+        hubConnection.on("RelaunchedScreenCasterReady", (newClientID: string) => {
             RemoteControl.ClientID = newClientID;
             this.Connection.stop();
             this.Connect();
-        })
+        });
+      
         hubConnection.on("SwitchingDesktops", () => {
             UI.ShowMessage("Switching desktops...");
         });
-
-        hubConnection.on("DesktopSwitchFailed", () => {
-            UI.ShowMessage("Desktop switch failed.  Please reconnect.");
+        hubConnection.on("Reconnecting", () => {
+            UI.ShowMessage("Reconnecting...");
         });
 
-        hubConnection.on("CursorChange", (cursor: number) => {
+        hubConnection.on("CursorChange", (cursor: string) => {
             var newCursor = GetCursor(cursor);
             UI.ScreenViewer.style.cursor = newCursor;
         });

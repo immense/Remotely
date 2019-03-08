@@ -52,6 +52,12 @@ namespace Remotely_ScreenCast.Sockets
                     //{
                     //    Logger.Write($"Failed to convert key {keyCode}.");
                     //}
+
+                    // For colon/semicolon.
+                    if (keyCode == 59)
+                    {
+                        keyCode = 186;
+                    }
                     Win32Interop.SendKeyDown((User32.VirtualKey)keyCode);
                 }
             });
@@ -70,6 +76,12 @@ namespace Remotely_ScreenCast.Sockets
                     //{
                     //    Logger.Write($"Failed to convert key {keyCode}.");
                     //}
+
+                    // For colon/semicolon.
+                    if (keyCode == 59)
+                    {
+                        keyCode = 186;
+                    }
                     Win32Interop.SendKeyUp((User32.VirtualKey)keyCode);
                 }
             });
@@ -89,6 +101,12 @@ namespace Remotely_ScreenCast.Sockets
                     //{
                     //    Logger.Write($"Failed to convert key {keyCode}.");
                     //}
+
+                    // For colon/semicolon.
+                    if (keyCode == 59)
+                    {
+                        keyCode = 186;
+                    }
                     Win32Interop.SendKeyDown((User32.VirtualKey)keyCode);
                     Win32Interop.SendKeyUp((User32.VirtualKey)keyCode);
                 }
@@ -151,7 +169,7 @@ namespace Remotely_ScreenCast.Sockets
                 }
                 await hubConnection.InvokeAsync("ViewerDisconnected", viewerID);
             });
-            hubConnection.On("FrameSkip", (int delayTime, string viewerID) =>
+            hubConnection.On("FrameSkip", (double delayTime, string viewerID) =>
             {
                 if (Program.Viewers.TryGetValue(viewerID, out var viewer))
                 {

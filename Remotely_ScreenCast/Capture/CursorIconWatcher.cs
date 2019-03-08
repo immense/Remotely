@@ -17,18 +17,18 @@ namespace Remotely_ScreenCast.Capture
     public class CursorIconWatcher
     {
         public static CursorIconWatcher Current { get; } = new CursorIconWatcher();
-        public event EventHandler<int> OnChange;
+        public event EventHandler<string> OnChange;
         private System.Timers.Timer ChangeTimer { get; set; }
-        private int PreviousCursorHandle { get; set; }
+        private string PreviousCursorHandle { get; set; }
         private User32.CursorInfo cursorInfo;
 
 
-        public int GetCurrentCursor()
+        public string GetCurrentCursor()
         {
             var ci = new User32.CursorInfo();
             ci.cbSize = Marshal.SizeOf(ci);
             User32.GetCursorInfo(out ci);
-            return ci.hCursor.ToInt32();
+            return ci.hCursor.ToString();
         }
         private CursorIconWatcher()
         {
@@ -50,7 +50,7 @@ namespace Remotely_ScreenCast.Capture
                 User32.GetCursorInfo(out cursorInfo);
                 if (cursorInfo.flags == User32.CURSOR_SHOWING)
                 {
-                    var currentCursor = cursorInfo.hCursor.ToInt32();
+                    var currentCursor = cursorInfo.hCursor.ToString();
                     if (currentCursor != PreviousCursorHandle)
                     {
                         PreviousCursorHandle = currentCursor;

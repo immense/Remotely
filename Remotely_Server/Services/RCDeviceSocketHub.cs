@@ -27,6 +27,24 @@ namespace Remotely_Server.Services
         private DataService DataService { get; }
         private IHubContext<BrowserSocketHub> BrowserHub { get; }
         private IHubContext<RCBrowserSocketHub> RCBrowserHub { get; }
+        private string ServiceID
+        {
+            get
+            {
+                if (Context.Items.ContainsKey("ServiceID"))
+                {
+                    return Context.Items["ServiceID"] as string;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                Context.Items["ServiceID"] = value;
+            }
+        }
         private List<string> ViewerList
         {
             get
@@ -44,17 +62,28 @@ namespace Remotely_Server.Services
             return base.OnConnectedAsync();
         }
         public override async Task OnDisconnectedAsync(Exception exception)
-        {
-            await RCBrowserHub.Clients.Clients(ViewerList).SendAsync("ScreenCasterDisconnected");
+        {           
             if (Context.Items.ContainsKey("SessionID") && AttendedSessionList.ContainsKey(Context.Items["SessionID"].ToString())) 
             {
                 while (!AttendedSessionList.TryRemove(Context.Items["SessionID"].ToString(), out var value))
                 {
                     await Task.Delay(1000);
                 }
+                await RCBrowserHub.Clients.Clients(ViewerList).SendAsync("ScreenCasterDisconnected");
             }
-            DataService.WriteEvent(exception);
+            else
+            {
+                if (ViewerList.Count > 0)
+                {
+                    await RCBrowserHub.Clients.Clients(ViewerList).SendAsync("Reconnecting");
+                    await DeviceHub.Clients.Client(ServiceID).SendAsync("RestartScreenCaster", ViewerList, ServiceID, Context.ConnectionId);
+                }
+            }
             await base.OnDisconnectedAsync(exception);
+        }
+        public void ReceiveServiceID(string serviceID)
+        {
+            ServiceID = serviceID;
         }
         public void ViewerDisconnected(string viewerID)
         {
@@ -86,13 +115,13 @@ namespace Remotely_Server.Services
         {
             await BrowserHub.Clients.Client(browserHubConnectionID).SendAsync("UnattendedSessionReady", Context.ConnectionId);
         }
-        public async Task NotifyViewersDesktopSwitchReady(string[] viewerIDs)
+        public async Task NotifyViewersRelaunchedScreenCasterReady(string[] viewerIDs)
         {
-            await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("DesktopSwitchReady", Context.ConnectionId);
+            await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("RelaunchedScreenCasterReady", Context.ConnectionId);
         }
-        public async Task SendConnectionFailedToBrowser(string rcBrowserHubConnectionID)
+        public async Task SendConnectionFailedToViewers(List<string> viewerIDs)
         {
-            await RCBrowserHub.Clients.Client(rcBrowserHubConnectionID).SendAsync("ConnectionFailed");
+            await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("ConnectionFailed");
         }
 
         public async Task SendCursorChange(int cursor, List<string> viewerIDs)

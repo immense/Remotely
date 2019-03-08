@@ -54,12 +54,20 @@ namespace Remotely_ScreenCast
 
                 OutgoingMessages = new OutgoingMessages(Connection);
 
+                OutgoingMessages.SendServiceID(ServiceID).Wait();
+
                 var desktopName = Win32Interop.GetCurrentDesktop();
                 if (desktopName.ToLower() != CurrentDesktopName.ToLower())
                 {
                     CurrentDesktopName = desktopName;
                     Logger.Write($"Relaunching in desktop {desktopName}.");
-                    var result = Win32Interop.OpenInteractiveProcess(Assembly.GetExecutingAssembly().Location + $" -mode {Mode.ToString()} -requester {RequesterID} -serviceid {ServiceID} -host {Host} -desktop {desktopName}", desktopName, true, out _);
+                    argDict["desktop"] = desktopName;
+                    var openProcessString = Assembly.GetExecutingAssembly().Location;
+                    foreach (var arg in argDict)
+                    {
+                        openProcessString += $" -{arg.Key} {arg.Value}";
+                    }
+                    var result = Win32Interop.OpenInteractiveProcess(openProcessString, desktopName, true, out _);
                     if (!result)
                     {
                         Logger.Write($"Desktop relaunch to {desktopName} failed.");
@@ -71,11 +79,11 @@ namespace Remotely_ScreenCast
 
                 CursorIconWatcher.Current.OnChange += CursorIconWatcher_OnChange;
 
-                if (argDict.ContainsKey("desktopswitch"))
+                if (argDict.ContainsKey("relaunch"))
                 {
                     var viewersString = argDict["viewers"];
                     var viewerIDs = viewersString.Split(",".ToCharArray());
-                    OutgoingMessages.NotifyViewersDesktopSwitchReady(viewerIDs).Wait();
+                    OutgoingMessages.NotifyViewersRelaunchedScreenCasterReady(viewerIDs).Wait();
                 }
                 else
                 {
@@ -93,11 +101,16 @@ namespace Remotely_ScreenCast
                         {
                             CurrentDesktopName = desktopName;
                             Logger.Write($"Switching desktops to {desktopName}.");
+                            // TODO: SetThradDesktop causes issues with input after switching.
+                            //var inputDesktop = Win32Interop.OpenInputDesktop();
+                            //User32.SetThreadDesktop(inputDesktop);
+                            //User32.CloseDesktop(inputDesktop);
                             Connection.InvokeAsync("SwitchingDesktops", Viewers.Keys.ToList()).Wait();
-                            var result = Win32Interop.OpenInteractiveProcess(Assembly.GetExecutingAssembly().Location + $" -mode {Mode.ToString()} -requester {RequesterID} -serviceid {ServiceID} -host {Host} -desktopswitch true -desktop {desktopName} -viewers {String.Join(",", Viewers.Keys.ToList())}", desktopName, true, out _);
+                            var result = Win32Interop.OpenInteractiveProcess(Assembly.GetExecutingAssembly().Location + $" -mode {Mode.ToString()} -requester {RequesterID} -serviceid {ServiceID} -host {Host} -relaunch true -desktop {desktopName} -viewers {String.Join(",", Viewers.Keys.ToList())}", desktopName, true, out _);
                             if (!result)
                             {
                                 Logger.Write($"Desktop switch to {desktopName} failed.");
+                                OutgoingMessages.SendConnectionFailedToViewers(Viewers.Keys.ToList()).Wait();
                             }
                         }
                         System.Threading.Thread.Sleep(100);
@@ -114,7 +127,7 @@ namespace Remotely_ScreenCast
             }
         }
 
-        private static async void CursorIconWatcher_OnChange(object sender, int cursor)
+        private static async void CursorIconWatcher_OnChange(object sender, string cursor)
         {
             await OutgoingMessages.SendCursorChange(cursor, Viewers.Keys.ToList());
         }
