@@ -114,7 +114,7 @@ export class RCBrowserSockets {
             var url = window.URL.createObjectURL(new Blob([buffer]));
             var img = document.createElement("img");
             img.onload = () => {
-                UI.Screen2DContext.drawImage(img, 0, 0);
+                UI.Screen2DContext.drawImage(img, 0, 0, UI.ScreenViewer.width, UI.ScreenViewer.height);
                 window.URL.revokeObjectURL(url);
             };
             img.src = url;
