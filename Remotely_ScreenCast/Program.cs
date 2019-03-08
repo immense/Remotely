@@ -134,14 +134,14 @@ namespace Remotely_ScreenCast
 
         private static void StartWaitForViewerTimer()
         {
-            var timer = new System.Timers.Timer(5000);
+            var timer = new System.Timers.Timer(10000);
             timer.AutoReset = false;
             timer.Elapsed += (sender, arg) =>
             {
-                // Shut down if no viewers have connected within 5 seconds.
+                // Shut down if no viewers have connected within 10 seconds.
                 if (Viewers.Count == 0)
                 {
-                    Logger.Write("No viewers connected after 5 seconds.  Shutting down.");
+                    Logger.Write("No viewers connected after 10 seconds.  Shutting down.");
                     Environment.Exit(0);
                 }
             };

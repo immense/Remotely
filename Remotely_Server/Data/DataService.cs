@@ -263,7 +263,7 @@ namespace Remotely_Server.Data
             RemotelyContext.Devices.ForEachAsync(x =>
             {
                 x.IsOnline = false;
-            });
+            }).Wait();
             RemotelyContext.SaveChanges();
         }
 
@@ -441,21 +441,21 @@ namespace Remotely_Server.Data
                     .ForEachAsync(x =>
                     {
                         RemotelyContext.Remove(x);
-                    });
+                    }).Wait();
 
                 RemotelyContext.CommandContexts
                     .Where(x => DateTime.Now - x.TimeStamp > TimeSpan.FromDays(AppConfig.DataRetentionInDays))
                     .ForEachAsync(x =>
                     {
                         RemotelyContext.Remove(x);
-                    });
+                    }).Wait();
 
                 RemotelyContext.Devices
                     .Where(x => DateTime.Now - x.LastOnline > TimeSpan.FromDays(AppConfig.DataRetentionInDays))
                     .ForEachAsync(x =>
                     {
                         RemotelyContext.Remove(x);
-                    });
+                    }).Wait();
             }
         }
 

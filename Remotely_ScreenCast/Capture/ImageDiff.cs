@@ -15,14 +15,17 @@ namespace Remotely_ScreenCast.Capture
     {
         private static EncoderParameters EncoderParams { get; } = new EncoderParameters()
         {
-            Param = new EncoderParameter[] { new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 0) }
+            Param = new EncoderParameter[] 
+            {
+                new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 25L),
+                new EncoderParameter(System.Drawing.Imaging.Encoder.ColorDepth, 8L)
+            }
         };
 
         private static ImageCodecInfo CodecInfo { get; } = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == ImageFormat.Png.Guid);
 
         public static Bitmap GetImageDiff(Bitmap currentFrame, Bitmap previousFrame, bool captureFullscreen)
         {
-
             if (currentFrame.Height != previousFrame.Height || currentFrame.Width != previousFrame.Width)
             {
                 throw new Exception("Bitmaps are not of equal dimensions.");
@@ -95,10 +98,23 @@ namespace Remotely_ScreenCast.Capture
         {
             using (var ms = new MemoryStream())
             {
-                // Byte array that indicates top left coordinates of the image.
                 bitmap.Save(ms, CodecInfo, EncoderParams);
-                // Byte array that indicates top left coordinates of the image.
-                return ms.ToArray();
+                var bytes = ms.ToArray();
+                if (bytes.Length > 200000)
+                {
+                    var reducedBitmap = (Bitmap)bitmap.Clone();
+                    while (bytes.Length > 200000)
+                    {
+                        using (var ms2 = new MemoryStream())
+                        {
+                            reducedBitmap = new Bitmap(reducedBitmap, reducedBitmap.Width / 2, reducedBitmap.Height / 2);
+                            reducedBitmap.Save(ms2, CodecInfo, EncoderParams);
+                            bytes = ms2.ToArray();
+                        }
+                    }
+                }
+
+                return bytes;
             }
         }
 	}
