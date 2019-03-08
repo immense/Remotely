@@ -124,7 +124,7 @@ namespace Remotely_Server.Services
             await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("ConnectionFailed");
         }
 
-        public async Task SendCursorChange(int cursor, List<string> viewerIDs)
+        public async Task SendCursorChange(string cursor, List<string> viewerIDs)
         {
             await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("CursorChange", cursor);
         }
