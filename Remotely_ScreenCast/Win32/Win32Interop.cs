@@ -224,12 +224,12 @@ namespace Win32
             var success = GetUserObjectInformationW(inputDesktop, UOI_NAME, deskBytes, 256, out lenNeeded);
             if (!success)
             {
-                return "default";
+                CloseDesktop(inputDesktop);
+                return "Default";
             }
-            string deskName;
-            deskName = Encoding.Unicode.GetString(deskBytes.Take((int)lenNeeded).ToArray()).Replace("\0", "");
+            var desktopName = Encoding.Unicode.GetString(deskBytes.Take((int)lenNeeded).ToArray()).Replace("\0", "");
             CloseDesktop(inputDesktop);
-            return deskName;
+            return desktopName;
         }
         // Remove trailing empty bytes in the buffer.
         private static byte[] TrimBytes(byte[] bytes)

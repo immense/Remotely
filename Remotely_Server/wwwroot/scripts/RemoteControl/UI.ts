@@ -80,7 +80,7 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
             url = `${location.origin}${location.pathname}?sessionID=${RemoteControl.ClientID}`;
         }
         else {
-            url = location.href;
+            url = `${location.origin}${location.pathname}?clientID=${RemoteControl.ClientID}&serviceID=${RemoteControl.ServiceID}`;
         }
         var input = document.createElement("input");
         input.style.position = "fixed";

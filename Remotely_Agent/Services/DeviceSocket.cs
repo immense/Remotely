@@ -272,13 +272,59 @@ namespace Remotely_Agent.Services
                     //    Process.Start("sudo", $"-u {username} {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -desktop default -hostname {Utilities.GetConnectionInfo().Host.Split("//").Last()}");
                     //}
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Logger.Write(ex);
                     await hubConnection.InvokeAsync("DisplayConsoleMessage", "Remote control failed to start on target device.", requesterID);
                     throw;
                 }
             });
-           
+            hubConnection.On("RestartScreenCaster", async (List<string> viewerIDs, string serviceID, string requesterID) =>
+            {
+                if (!IsServerVerified)
+                {
+                    Logger.Write("Remote control attempted before server was verified.");
+                    Uninstaller.UninstallClient();
+                    return;
+                }
+                try
+                {
+                    var filePath = ExtractScreenCasterEXE();
+
+                    // Start ScreenCast.                 
+                    if (OSUtils.IsWindows)
+                    {
+
+                        if (Program.IsDebug)
+                        {
+                            Process.Start(filePath, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}");
+                        }
+                        else
+                        {
+                            var result = Win32Interop.OpenInteractiveProcess(filePath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}", "default", true, out _);
+                            if (!result)
+                            {
+                                Logger.Write("Failed to relaunch screen caster.");
+                                await hubConnection.InvokeAsync("SendConnectionFailedToViewers", viewerIDs);
+                                await hubConnection.InvokeAsync("DisplayConsoleMessage", "Remote control failed to start on target device.", requesterID);
+                            }
+                        }
+                    }
+                    //else if (OSUtils.IsLinux)
+                    //{
+                    //    var users = OSUtils.StartProcessWithResults("users", "");
+                    //    var username = users?.Split()?.FirstOrDefault()?.Trim();
+
+                    //    Process.Start("sudo", $"-u {username} {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -desktop default -hostname {Utilities.GetConnectionInfo().Host.Split("//").Last()}");
+                    //}
+                }
+                catch (Exception ex)
+                {
+                    await hubConnection.InvokeAsync("SendConnectionFailedToViewers", viewerIDs);
+                    Logger.Write(ex);
+                    throw;
+                }
+            });
             hubConnection.On("CtrlAltDel", () =>
             {
                 User32.SendSAS(false);
@@ -300,7 +346,7 @@ namespace Remotely_Agent.Services
                     Uninstaller.UninstallClient();
                     return;
                 }
-            });
+            });           
         }
 
         private static string ExtractScreenCasterEXE()

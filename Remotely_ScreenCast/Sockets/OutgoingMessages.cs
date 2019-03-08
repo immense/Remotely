@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using Remotely_ScreenCast.Models;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,14 +37,24 @@ namespace Remotely_ScreenCast.Sockets
             await Connection.SendAsync("NotifyRequesterUnattendedReady", requesterID);
         }
 
-        public async Task SendCursorChange(int cursor, List<string> viewerIDs)
+        public async Task SendCursorChange(string cursor, List<string> viewerIDs)
         {
             await Connection.SendAsync("SendCursorChange", cursor, viewerIDs);
         }
 
-        internal async Task NotifyViewersDesktopSwitchReady(string[] viewerIDs)
+        internal async Task NotifyViewersRelaunchedScreenCasterReady(string[] viewerIDs)
         {
-            await Connection.SendAsync("NotifyViewersDesktopSwitchReady", viewerIDs);
+            await Connection.SendAsync("NotifyViewersRelaunchedScreenCasterReady", viewerIDs);
+        }
+
+        internal async Task SendServiceID(string serviceID)
+        {
+            await Connection.SendAsync("ReceiveServiceID", serviceID);
+        }
+
+        internal async Task SendConnectionFailedToViewers(List<string> viewerIDs)
+        {
+            await Connection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
         }
     }
 }

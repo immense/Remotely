@@ -129,13 +129,14 @@ if ($ArgList.Contains("c")) {
 }
 
 if ($ArgList.Contains("d")) {
+<#
     # Build remote control clients.
     Push-Location -Path ".\Remotely_Desktop\"
 
     if ((Test-Path -Path ".\bin\Release\") -eq $true) {
 		Get-ChildItem -Path ".\bin\Release\" | Remove-Item -Force -Recurse
 	}
-
+#>
 }
 
 if ($ArgList.Contains("s") -and $OutDir.Length -gt 0) {

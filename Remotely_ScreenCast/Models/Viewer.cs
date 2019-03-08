@@ -15,6 +15,6 @@ namespace Remotely_ScreenCast.Models
         public int CurrentScreenIndex { get; set; }
         public bool DisconnectRequested { get; set; }
         public bool HasControl { get; set; }
-        public int NextCaptureDelay { get; internal set; }
+        public double NextCaptureDelay { get; internal set; }
     }
 }

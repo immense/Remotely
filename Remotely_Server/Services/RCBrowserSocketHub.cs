@@ -21,23 +21,27 @@ namespace Remotely_Server.Services
         }
         public static ConcurrentDictionary<string, RemotelyUser> OrganizationConnectionList { get; set; } = new ConcurrentDictionary<string, RemotelyUser>();
         private ApplicationConfig AppConfig { get; set; }
-        private string ClientID
+        private string ScreenCasterID
         {
             get
             {
-                return Context.Items["ClientID"] as string;
+                return Context.Items["ScreenCasterID"] as string;
             }
             set
             {
-                Context.Items["ClientID"] = value;
+                Context.Items["ScreenCasterID"] = value;
             }
         }
 
-        private string Mode
+        private RemoteControlMode Mode
         {
             get
             {
-                return Context.Items["ClientType"] as string;
+                return (RemoteControlMode)Context.Items["ClientType"];
+            }
+            set
+            {
+                Context.Items["Mode"] = value;
             }
         }
 
@@ -50,6 +54,10 @@ namespace Remotely_Server.Services
             {
                 return Context.Items["RequesterName"] as string;
             }
+            set
+            {
+                Context.Items["RequesterName"] = value;
+            }
         }
 
         public async Task CtrlAltDel(string serviceID)
@@ -59,42 +67,42 @@ namespace Remotely_Server.Services
 
         public async Task KeyDown(int key)
         {
-            await RCDeviceHub.Clients.Client(ClientID).SendAsync("KeyDown", key, Context.ConnectionId);
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("KeyDown", key, Context.ConnectionId);
         }
 
         public async Task KeyPress(int key)
         {
-            await RCDeviceHub.Clients.Client(ClientID).SendAsync("KeyPress", key, Context.ConnectionId);
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("KeyPress", key, Context.ConnectionId);
         }
 
         public async Task KeyUp(int key)
         {
-            await RCDeviceHub.Clients.Client(ClientID).SendAsync("KeyUp", key, Context.ConnectionId);
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("KeyUp", key, Context.ConnectionId);
         }
 
         public async Task LongPress()
         {
-            await RCDeviceHub.Clients.Client(ClientID).SendAsync("LongPress", Context.ConnectionId);
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("LongPress", Context.ConnectionId);
         }
 
         public async Task MouseDown(int button, double percentX, double percentY)
         {
-            await RCDeviceHub.Clients.Client(ClientID).SendAsync("MouseDown", button, percentX, percentY, Context.ConnectionId);
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("MouseDown", button, percentX, percentY, Context.ConnectionId);
         }
 
         public async Task MouseMove(double percentX, double percentY)
         {
-            await RCDeviceHub.Clients.Client(ClientID).SendAsync("MouseMove", percentX, percentY, Context.ConnectionId);
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("MouseMove", percentX, percentY, Context.ConnectionId);
         }
 
         public async Task MouseUp(int button, double percentX, double percentY)
         {
-            await RCDeviceHub.Clients.Client(ClientID).SendAsync("MouseUp", button, percentX, percentY, Context.ConnectionId);
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("MouseUp", button, percentX, percentY, Context.ConnectionId);
         }
 
         public async Task MouseWheel(double deltaX, double deltaY)
         {
-            await RCDeviceHub.Clients.Client(ClientID).SendAsync("MouseWheel", deltaX, deltaY, Context.ConnectionId);
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("MouseWheel", deltaX, deltaY, Context.ConnectionId);
         }
 
         public override Task OnConnectedAsync()
@@ -115,26 +123,26 @@ namespace Remotely_Server.Services
                 {
                     await Task.Delay(1000);
                 }
-                await RCDeviceHub.Clients.Client(ClientID).SendAsync("ViewerDisconnected", Context.ConnectionId);
+                await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ViewerDisconnected", Context.ConnectionId);
             }
         }
 
         public async Task SelectScreen(int screenIndex)
         {
-            await RCDeviceHub.Clients.Client(ClientID).SendAsync("SelectScreen", screenIndex, Context.ConnectionId);
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("SelectScreen", screenIndex, Context.ConnectionId);
         }
 
-        public async Task SendScreenCastRequestToDevice(string clientID, string requesterName, int remoteControlMode)
+        public async Task SendScreenCastRequestToDevice(string screenCasterID, string requesterName, int remoteControlMode)
         {
             if ((RemoteControlMode)remoteControlMode == RemoteControlMode.Normal)
             {
-                if (!RCDeviceSocketHub.AttendedSessionList.ContainsKey(clientID))
+                if (!RCDeviceSocketHub.AttendedSessionList.ContainsKey(screenCasterID))
                 {
                     await Clients.Caller.SendAsync("SessionIDNotFound");
                     return;
                 }
 
-                clientID = RCDeviceSocketHub.AttendedSessionList[clientID];
+                screenCasterID = RCDeviceSocketHub.AttendedSessionList[screenCasterID];
             }
             DataService.WriteEvent(new EventLog()
             {
@@ -145,37 +153,37 @@ namespace Remotely_Server.Services
                                 $"Login ID (if logged in): {Context?.User?.Identity?.Name}.  " +
                                 $"Requester IP Address: " + Context?.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString()
             });
-            Context.Items["ClientID"] = clientID;
-            Context.Items["Mode"] = remoteControlMode;
-            Context.Items["RequesterName"] = requesterName;
-            await RCDeviceHub.Clients.Client(clientID).SendAsync("GetScreenCast", Context.ConnectionId, requesterName);
+            ScreenCasterID = screenCasterID;
+            Mode = (RemoteControlMode)remoteControlMode;
+            RequesterName = requesterName;
+            await RCDeviceHub.Clients.Client(screenCasterID).SendAsync("GetScreenCast", Context.ConnectionId, requesterName);
         }
 
-        public async Task SendFrameSkip(int delayTime)
+        public async Task SendFrameSkip(double delayTime)
         {
-            await RCDeviceHub.Clients.Client(ClientID).SendAsync("FrameSkip", delayTime, Context.ConnectionId);
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("FrameSkip", delayTime, Context.ConnectionId);
         }
         public async Task SendSharedFileIDs(List<string> fileIDs)
         {
-            await RCDeviceHub.Clients.Client(ClientID).SendAsync("SharedFileIDs", fileIDs);
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("SharedFileIDs", fileIDs);
         }
 
         public async Task Tap()
         {
-            await RCDeviceHub.Clients.Client(ClientID).SendAsync("Tap", Context.ConnectionId);
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("Tap", Context.ConnectionId);
         }
 
         public async Task TouchDown()
         {
-            await RCDeviceHub.Clients.Client(ClientID).SendAsync("TouchDown", Context.ConnectionId);
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("TouchDown", Context.ConnectionId);
         }
         public async Task TouchMove(double moveX, double moveY)
         {
-            await RCDeviceHub.Clients.Client(ClientID).SendAsync("TouchMove", moveX, moveY, Context.ConnectionId);
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("TouchMove", moveX, moveY, Context.ConnectionId);
         }
         public async Task TouchUp()
         {
-            await RCDeviceHub.Clients.Client(ClientID).SendAsync("TouchUp", Context.ConnectionId);
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("TouchUp", Context.ConnectionId);
         }
     }
 }

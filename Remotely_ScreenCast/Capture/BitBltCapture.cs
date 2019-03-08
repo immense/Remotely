@@ -59,10 +59,6 @@ namespace Remotely_ScreenCast.Capture
         public Rectangle CurrentScreenBounds { get; set; } = Screen.PrimaryScreen.Bounds;
         private int selectedScreen = Screen.AllScreens.ToList().IndexOf(Screen.PrimaryScreen);
         private Graphics graphic;
-        private string desktopName;
-        private IntPtr hWnd;
-        private IntPtr hDC;
-        private IntPtr graphDC;
 
 
         public BitBltCapture()
@@ -74,8 +70,7 @@ namespace Remotely_ScreenCast.Capture
         {
             CurrentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
             PreviousFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
-            graphic = Graphics.FromImage(CurrentFrame);
-            desktopName = Win32Interop.GetCurrentDesktop();
+            graphic = Graphics.FromImage(CurrentFrame);     
         }
 
         public void Capture()
@@ -92,16 +87,7 @@ namespace Remotely_ScreenCast.Capture
             {
                 lock (ScreenLock)
                 {
-                    PreviousFrame = (Bitmap)CurrentFrame.Clone();
-                    //hWnd = User32.GetDesktopWindow();
-                    //hDC = User32.GetWindowDC(hWnd);
-                    //graphic = Graphics.FromImage(CurrentFrame);
-                    //graphDC = graphic.GetHdc();
-                    //var copyResult = GDI32.BitBlt(graphDC, 0, 0, CurrentScreenBounds.Width, CurrentScreenBounds.Height, hDC, CurrentScreenBounds.Left, CurrentScreenBounds.Top, GDI32.TernaryRasterOperations.SRCCOPY);
-                    //if (!copyResult)
-                    //{
-                    //    Logger.Write($"BitBlt failed on {currentDesktop}.");
-                    //}
+                    PreviousFrame = (Bitmap)CurrentFrame.Clone();                   
                     graphic.CopyFromScreen(CurrentScreenBounds.Left, CurrentScreenBounds.Top, 0, 0, new Size(CurrentScreenBounds.Width, CurrentScreenBounds.Height));
                 }
             }
@@ -109,17 +95,6 @@ namespace Remotely_ScreenCast.Capture
             {
                 Logger.Write(ex);
                 Init();
-            }
-            finally
-            {
-                //if (graphDC != IntPtr.Zero)
-                //{
-                //    graphic.ReleaseHdc(graphDC);
-                //}
-                //if (hDC != IntPtr.Zero)
-                //{
-                //    User32.ReleaseDC(hWnd, hDC);
-                //}
             }
         }
     }

@@ -73,13 +73,27 @@ namespace Remotely_ScreenCast.Capture
 
             await outgoingMessages.SendCursorChange(CursorIconWatcher.Current.GetCurrentCursor(), new List<string>() { viewerID });
 
+            // TODO: SetThradDesktop causes issues with input after switching.
+            //var desktopName = Win32Interop.GetCurrentDesktop();
             while (!viewer.DisconnectRequested)
             {
                 try
                 {
+                    // TODO: SetThradDesktop causes issues with input after switching.
+                    //var currentDesktopName = Win32Interop.GetCurrentDesktop();
+                    //if (desktopName.ToLower() != currentDesktopName.ToLower())
+                    //{
+                    //    desktopName = currentDesktopName;
+                    //    Logger.Write($"Switching to desktop {desktopName} in ScreenCaster.");
+                    //    var inputDesktop = Win32Interop.OpenInputDesktop();
+                    //    User32.SetThreadDesktop(inputDesktop);
+                    //    User32.CloseDesktop(inputDesktop);
+                    //    continue;
+                    //}
+
                     if (viewer.NextCaptureDelay > 0)
                     {
-                        await Task.Delay(viewer.NextCaptureDelay);
+                        await Task.Delay((int)viewer.NextCaptureDelay);
                         viewer.NextCaptureDelay = 0;
                     }
 
