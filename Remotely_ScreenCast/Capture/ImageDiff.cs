@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Remotely_ScreenCast.Models;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -17,7 +18,7 @@ namespace Remotely_ScreenCast.Capture
         {
             Param = new EncoderParameter[] 
             {
-                new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 25L),
+                new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 0L),
                 new EncoderParameter(System.Drawing.Imaging.Encoder.ColorDepth, 8L)
             }
         };
@@ -94,23 +95,28 @@ namespace Remotely_ScreenCast.Capture
             return mergedFrame;
         }
 
-        public static byte[] EncodeBitmap(Bitmap bitmap)
+        public static byte[] EncodeBitmap(Bitmap bitmap, Viewer viewer)
         {
             using (var ms = new MemoryStream())
             {
                 bitmap.Save(ms, CodecInfo, EncoderParams);
                 var bytes = ms.ToArray();
-                if (bytes.Length > 200000)
+                if (bytes.Length > 300000)
                 {
+                    viewer.Capturer.CaptureFullscreen = true;
                     var reducedBitmap = (Bitmap)bitmap.Clone();
-                    while (bytes.Length > 200000)
+                    var reductionRatio = (double)300000 / (double)bytes.Length;
+
+                    using (var ms2 = new MemoryStream())
                     {
-                        using (var ms2 = new MemoryStream())
+                        reducedBitmap = new Bitmap(reducedBitmap, (int)(reducedBitmap.Width * reductionRatio), (int)(reducedBitmap.Height * reductionRatio));
+                        using (var graphics = Graphics.FromImage(bitmap))
                         {
-                            reducedBitmap = new Bitmap(reducedBitmap, reducedBitmap.Width / 2, reducedBitmap.Height / 2);
-                            reducedBitmap.Save(ms2, CodecInfo, EncoderParams);
-                            bytes = ms2.ToArray();
+                            graphics.DrawImage(reducedBitmap, 0, 0, bitmap.Width, bitmap.Height);
                         }
+                        reducedBitmap.Save(ms2, CodecInfo, EncoderParams);
+                        bytes = ms2.ToArray();
+
                     }
                 }
 
