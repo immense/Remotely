@@ -112,7 +112,7 @@ namespace Remotely_ScreenCast.Capture
 
                     if (img?.Length > 0)
                     {
-                        await outgoingMessages.SendScreenCapture(img, viewerID, DateTime.Now);
+                        await outgoingMessages.SendScreenCapture(img, viewerID, DateTime.UtcNow);
                     }
                 }
                 catch (Exception ex)
