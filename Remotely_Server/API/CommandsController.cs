@@ -30,8 +30,13 @@ namespace Remotely_Server.API
         // GET: api/<controller>
         [HttpGet("{fileExt}")]
         [Authorize]
-        public FileResult DownloadAll(string fileExt)
+        public ActionResult DownloadAll(string fileExt)
         {
+            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+            {
+                return Unauthorized();
+            }
+
             var content = "";
             var commandContexts = DataService.GetAllCommandContexts(User.Identity.Name);
             switch (fileExt.ToUpper())
