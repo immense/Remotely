@@ -182,7 +182,7 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>copy /y "$(TargetPath)" "..\$(ProjectDir)Remotely_Agent\Resources\"</PostBuildEvent>
+    <PostBuildEvent>powershell -Command  "&amp; {Copy-Item -Path '$(TargetPath)' -Destination ((Get-Item -Path '$(ProjectDir)').Parent.FullName + '\Remotely_Agent\Resources') -Force }"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\Fody.4.0.2\build\Fody.targets" Condition="Exists('..\packages\Fody.4.0.2\build\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
