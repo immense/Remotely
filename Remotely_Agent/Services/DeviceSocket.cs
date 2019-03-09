@@ -46,7 +46,7 @@ namespace Remotely_Agent.Services
             if (string.IsNullOrWhiteSpace(ConnectionInfo.ServerVerificationToken))
             {
                 IsServerVerified = true;
-                ConnectionInfo.ServerVerificationToken = Guid.NewGuid().ToString();
+                ConnectionInfo.ServerVerificationToken = Guid.NewGuid().ToString().Replace("-","");
                 await HubConnection.InvokeAsync("SetServerVerificationToken", ConnectionInfo.ServerVerificationToken);
                 Utilities.SaveConnectionInfo(ConnectionInfo);
                 if (!Program.IsDebug)

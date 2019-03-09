@@ -1,7 +1,7 @@
 ﻿export interface UserOptions {
     ID: string;
     ConsolePrompt: string;
-    CommandModeShortcutRemotely: string;
+    CommandModeShortcutWeb: string;
     CommandModeShortcutPSCore: string;
     CommandModeShortcutWinPS: string;
     CommandModeShortcutCMD: string;

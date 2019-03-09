@@ -2,7 +2,7 @@
     PromptString = "~>";
 
     CommandModeShortcuts = {
-        "Remotely": "/remotely",
+        "Web": "/web",
         "PSCore": "/pscore",
         "WinPS": "/winps",
         "CMD": "/cmd",

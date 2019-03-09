@@ -9,7 +9,7 @@ namespace Remotely_Library.Models
     public class EventLog
     {
         [Key]
-        public string ID { get; set; } = Guid.NewGuid().ToString();
+        public string ID { get; set; } = Guid.NewGuid().ToString().Replace("-", "");
         public EventTypes EventType { get; set; }
         public string Message { get; set; }
         public string Source { get; set; }

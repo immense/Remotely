@@ -57,7 +57,7 @@ export function AddCommandResultsHarness(result: GenericCommandResult) {
     var deviceName = DataGrid.DataSource.find(x => x.ID == result.DeviceID).DeviceName;
     var resultsWrapper = document.getElementById(result.CommandContextID + "-results");
     var totalDevices = parseInt(document.getElementById(result.CommandContextID + "-totaldevices").innerText);
-    var collapseClass = totalDevices > 1 ? "collapse" : "collapse in";
+    var collapseClass = totalDevices > 1 ? "collapse" : "collapse show";
     
     var resultDiv = document.createElement("div");
     resultDiv.innerHTML = `

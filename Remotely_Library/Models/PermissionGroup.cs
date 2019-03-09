@@ -9,7 +9,7 @@ namespace Remotely_Library.Models
     public class PermissionGroup
     {
         [Key]
-        public string ID { get; set; } = Guid.NewGuid().ToString();
+        public string ID { get; set; } = Guid.NewGuid().ToString().Replace("-", "");
         [StringLength(100)]
         public string Name { get; set; }
         public virtual Organization Organization { get; set; }

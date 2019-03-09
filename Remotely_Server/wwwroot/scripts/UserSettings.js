@@ -2,7 +2,7 @@ export const UserSettings = new class {
     constructor() {
         this.PromptString = "~>";
         this.CommandModeShortcuts = {
-            "Remotely": "/remotely",
+            "Web": "/web",
             "PSCore": "/pscore",
             "WinPS": "/winps",
             "CMD": "/cmd",

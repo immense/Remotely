@@ -23,7 +23,12 @@ namespace Remotely_ScreenCast.Capture
 
             try
             {
-                if (Program.Viewers.Count == 0)
+                if (Program.CurrentDesktopName.ToLower() == "winlogon")
+                {
+                    capturer = new BitBltCapture();
+                    captureMode = CaptureMode.BitBtl;
+                }
+                else if (Program.Viewers.Count == 0)
                 {
                     capturer = new DXCapture();
                     captureMode = CaptureMode.DirectX;
@@ -41,12 +46,11 @@ namespace Remotely_ScreenCast.Capture
                 captureMode = CaptureMode.BitBtl;         
             }
 
-            Logger.Write($"Starting screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}. Capture Mode: {captureMode.ToString()}.  App Mode: {Program.Mode}  Desktop: {Win32Interop.GetCurrentDesktop()}");
+            Logger.Write($"Starting screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}. Capture Mode: {captureMode.ToString()}.  App Mode: {Program.Mode}  Desktop: {Program.CurrentDesktopName}");
 
             var viewer = new Models.Viewer()
             {
                 Capturer = capturer,
-                CurrentScreenIndex = capturer.SelectedScreen,
                 DisconnectRequested = false,
                 Name = requesterName,
                 ViewerConnectionID = viewerID,
@@ -60,7 +64,7 @@ namespace Remotely_ScreenCast.Capture
             }
 
             await outgoingMessages.SendScreenCount(
-                   viewer.CurrentScreenIndex,
+                   capturer.SelectedScreen,
                    Screen.AllScreens.Length,
                    viewerID);
 
@@ -100,11 +104,12 @@ namespace Remotely_ScreenCast.Capture
                     capturer.Capture();
 
                     var newImage = ImageDiff.GetImageDiff(capturer.CurrentFrame, capturer.PreviousFrame, capturer.CaptureFullscreen);
-                    var img = ImageDiff.EncodeBitmap(newImage, viewer);
                     if (capturer.CaptureFullscreen)
                     {
                         capturer.CaptureFullscreen = false;
                     }
+                    var img = ImageDiff.EncodeBitmapAndResize(newImage);
+
                     if (img?.Length > 0)
                     {
                         await outgoingMessages.SendScreenCapture(img, viewerID, DateTime.Now);

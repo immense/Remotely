@@ -41,7 +41,7 @@ export function Connect() {
 
 function applyMessageHandlers(hubConnection) {
     hubConnection.on("UserOptions", (options: UserOptions) => {
-        Main.UserSettings.CommandModeShortcuts.Remotely = options.CommandModeShortcutRemotely;
+        Main.UserSettings.CommandModeShortcuts.Web = options.CommandModeShortcutWeb;
         Main.UserSettings.CommandModeShortcuts.PSCore = options.CommandModeShortcutPSCore;
         Main.UserSettings.CommandModeShortcuts.WinPS = options.CommandModeShortcutWinPS;
         Main.UserSettings.CommandModeShortcuts.Bash = options.CommandModeShortcutBash;

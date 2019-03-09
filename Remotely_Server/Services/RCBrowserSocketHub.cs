@@ -159,9 +159,9 @@ namespace Remotely_Server.Services
             await RCDeviceHub.Clients.Client(screenCasterID).SendAsync("GetScreenCast", Context.ConnectionId, requesterName);
         }
 
-        public async Task SendFrameSkip(double delayTime)
+        public async Task SendLatencyUpdate(double latency, double payloadSize)
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("FrameSkip", delayTime, Context.ConnectionId);
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("LatencyUpdate", latency, payloadSize, Context.ConnectionId);
         }
         public async Task SendSharedFileIDs(List<string> fileIDs)
         {
