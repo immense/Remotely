@@ -91,16 +91,16 @@ namespace Remotely_ScreenCast.Capture
                     //    continue;
                     //}
 
-                    if (viewer.NextCaptureDelay > 0)
-                    {
-                        await Task.Delay((int)viewer.NextCaptureDelay);
-                        viewer.NextCaptureDelay = 0;
-                    }
+                    //if (viewer.NextCaptureDelay > 0)
+                    //{
+                    //    await Task.Delay((int)viewer.NextCaptureDelay);
+                    //    viewer.NextCaptureDelay = 0;
+                    //}
 
                     capturer.Capture();
 
                     var newImage = ImageDiff.GetImageDiff(capturer.CurrentFrame, capturer.PreviousFrame, capturer.CaptureFullscreen);
-                    var img = ImageDiff.EncodeBitmap(newImage);
+                    var img = ImageDiff.EncodeBitmap(newImage, viewer);
                     if (capturer.CaptureFullscreen)
                     {
                         capturer.CaptureFullscreen = false;
