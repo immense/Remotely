@@ -8,7 +8,7 @@ namespace Remotely_Library.Models
     public class SharedFile
     {
         [Key]
-        public string ID { get; set; } = Guid.NewGuid().ToString();
+        public string ID { get; set; } = Guid.NewGuid().ToString().Replace("-", "");
         public string FileName { get; set; }
         public string ContentType { get; set; }
         public byte[] FileContents { get; set; }

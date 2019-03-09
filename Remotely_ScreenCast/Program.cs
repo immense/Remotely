@@ -29,8 +29,8 @@ namespace Remotely_ScreenCast
         public static string Host { get; private set; }
         public static HubConnection Connection { get; private set; }
         public static OutgoingMessages OutgoingMessages { get; private set; }
+        public static string CurrentDesktopName { get; set; }
         public static ConcurrentDictionary<string, Viewer> Viewers { get; } = new ConcurrentDictionary<string, Viewer>();
-        private static string CurrentDesktopName { get; set; }
 
         static void Main(string[] args)
         {

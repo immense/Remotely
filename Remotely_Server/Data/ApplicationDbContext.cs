@@ -14,7 +14,7 @@ namespace Remotely_Server.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-            //this.Database.Migrate();
+            this.Database.Migrate();
         }
         public DbSet<CommandContext> CommandContexts { get; set; }
 

@@ -169,11 +169,12 @@ namespace Remotely_ScreenCast.Sockets
                 }
                 await hubConnection.InvokeAsync("ViewerDisconnected", viewerID);
             });
-            hubConnection.On("FrameSkip", (double delayTime, string viewerID) =>
+            hubConnection.On("LatencyUpdate", (double latency, double payloadSize, string viewerID) =>
             {
                 if (Program.Viewers.TryGetValue(viewerID, out var viewer))
                 {
-                    viewer.NextCaptureDelay = delayTime;
+                    // TODO.
+                    //viewer.Capturer.NextCaptureDelay = delayTime;
                 }
             });
 

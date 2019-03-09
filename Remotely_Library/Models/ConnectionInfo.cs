@@ -6,7 +6,7 @@ namespace Remotely_Library.Models
 {
     public class ConnectionInfo
     {
-        public string DeviceID { get; set; } = Guid.NewGuid().ToString();
+        public string DeviceID { get; set; } = Guid.NewGuid().ToString().Replace("-", "");
         private string host;
         public string Host
         {

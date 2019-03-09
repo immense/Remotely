@@ -80,7 +80,6 @@ namespace Remotely_Server.API
             return File(Encoding.UTF8.GetBytes(content), "application/octet-stream", "CommandResults." + fileExt.ToLower());
         }
 
-        // GET api/<controller>/5
         [HttpGet("PSCoreResult/{commandID}/{deviceID}")]
         [Authorize]
         public PSCoreCommandResult PSCoreResult(string commandID, string deviceID)
@@ -88,7 +87,13 @@ namespace Remotely_Server.API
             return DataService.GetCommandContext(commandID, User.Identity.Name).PSCoreResults.Find(x => x.DeviceID == deviceID);
         }
 
-        // POST api/<controller>
+        [HttpGet("GenericResult/{commandID}/{deviceID}")]
+        [Authorize]
+        public GenericCommandResult GenericResult(string commandID, string deviceID)
+        {
+            return DataService.GetCommandContext(commandID, User.Identity.Name).CommandResults.Find(x => x.DeviceID == deviceID);
+        }
+
         [HttpPost("{resultType}")]
         public void Post(string resultType)
         {

@@ -92,7 +92,7 @@ export function GetCommandCompletions(commandText:string): ConsoleCommand[] {
 /** Checks the given string for a matching shortcut. */
 export function GetCommandModeShortcut() {
     switch (UI.ConsoleTextArea.value.toLowerCase()) {
-        case UserSettings.CommandModeShortcuts.Remotely:
+        case UserSettings.CommandModeShortcuts.Web:
             return "Remotely";
         case UserSettings.CommandModeShortcuts.CMD:
             return "CMD";

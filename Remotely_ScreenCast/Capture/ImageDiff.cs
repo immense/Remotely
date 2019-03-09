@@ -27,6 +27,11 @@ namespace Remotely_ScreenCast.Capture
 
         public static Bitmap GetImageDiff(Bitmap currentFrame, Bitmap previousFrame, bool captureFullscreen)
         {
+            if (captureFullscreen)
+            {
+                return (Bitmap)currentFrame.Clone();
+            }
+
             if (currentFrame.Height != previousFrame.Height || currentFrame.Width != previousFrame.Width)
             {
                 throw new Exception("Bitmaps are not of equal dimensions.");
@@ -61,14 +66,6 @@ namespace Remotely_ScreenCast.Capture
 			Marshal.Copy(ptr1, rgbValues1, 0, arraySize);
             Marshal.Copy(ptr2, rgbValues2, 0, arraySize);
 
-            if (captureFullscreen)
-            {
-                previousFrame.UnlockBits(bd1);
-                currentFrame.UnlockBits(bd2);
-				mergedFrame.UnlockBits(bd3);
-				return currentFrame;
-            }
-
             // Check RGBA value for each pixel.
             for (int counter = 0; counter < rgbValues2.Length - 4; counter += 4)
             {
@@ -95,33 +92,21 @@ namespace Remotely_ScreenCast.Capture
             return mergedFrame;
         }
 
-        public static byte[] EncodeBitmap(Bitmap bitmap, Viewer viewer)
+        public static byte[] EncodeBitmapAndResize(Bitmap bitmap)
         {
             using (var ms = new MemoryStream())
             {
                 bitmap.Save(ms, CodecInfo, EncoderParams);
-                var bytes = ms.ToArray();
-                if (bytes.Length > 300000)
-                {
-                    viewer.Capturer.CaptureFullscreen = true;
-                    var reducedBitmap = (Bitmap)bitmap.Clone();
-                    var reductionRatio = (double)300000 / (double)bytes.Length;
-
-                    using (var ms2 = new MemoryStream())
-                    {
-                        reducedBitmap = new Bitmap(reducedBitmap, (int)(reducedBitmap.Width * reductionRatio), (int)(reducedBitmap.Height * reductionRatio));
-                        using (var graphics = Graphics.FromImage(bitmap))
-                        {
-                            graphics.DrawImage(reducedBitmap, 0, 0, bitmap.Width, bitmap.Height);
-                        }
-                        reducedBitmap.Save(ms2, CodecInfo, EncoderParams);
-                        bytes = ms2.ToArray();
-
-                    }
-                }
-
-                return bytes;
+                return ms.ToArray();
             }
         }
-	}
+        public static byte[] EncodeBitmap(Bitmap bitmap)
+        {
+            using (var ms = new MemoryStream())
+            {
+                bitmap.Save(ms, CodecInfo, EncoderParams);
+                return ms.ToArray();
+            }
+        }
+    }
 }

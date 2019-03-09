@@ -44,6 +44,11 @@ namespace Remotely_Server.API
                 var tempFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
                 zipArchive.GetEntry("Remotely_Agent.dll").ExtractToFile(tempFile, true);
                 var version = FileVersionInfo.GetVersionInfo(tempFile);
+                try
+                {
+                    System.IO.File.Delete(tempFile);
+                }
+                catch { }
                 return version.FileVersion.ToString();
             }
         }
