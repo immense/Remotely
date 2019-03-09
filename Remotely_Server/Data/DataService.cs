@@ -164,9 +164,12 @@ namespace Remotely_Server.Data
 
         public CommandContext GetCommandContext(string commandContextID, string userName)
         {
-            var orgID = GetUserByName(userName).OrganizationID;
+            var user = GetUserByName(userName);
             return RemotelyContext.CommandContexts
-                .FirstOrDefault(x => x.OrganizationID == orgID && x.ID == commandContextID);
+                .FirstOrDefault(x => 
+                    (user.IsAdministrator || x.SenderUserID == user.Id) &&
+                    x.OrganizationID == user.OrganizationID &&
+                    x.ID == commandContextID);
         }
 
         public CommandContext GetCommandContext(string commandContextID)
