@@ -72,7 +72,7 @@ namespace Remotely_Server.Services
 				{
 					EventType = EventTypes.Info,
 					OrganizationID = Device.OrganizationID,
-					Message = $"Device connection for {device.DeviceName} was denied because it is already connected."
+					Message = $"Device connection for {device?.DeviceName} was denied because it is already connected."
 				});
 				Context.Abort();
 				return;

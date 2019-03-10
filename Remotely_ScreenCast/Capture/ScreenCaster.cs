@@ -59,7 +59,7 @@ namespace Remotely_ScreenCast.Capture
                 Name = requesterName,
                 ViewerConnectionID = viewerID,
                 HasControl = Program.Mode == Enums.AppMode.Unattended,
-                ImageQuality = 1
+                ImageQuality = 100
             };
 
             while (!success)
@@ -101,13 +101,17 @@ namespace Remotely_ScreenCast.Capture
 
                     while (viewer.PendingFrames > 10)
                     {
-                        Logger.Write("Waiting on pending frames.");
                         await Task.Delay(1);
                     }
 
                     capturer.Capture();
 
                     var diffArea = ImageUtils.GetDiffArea(capturer.CurrentFrame, capturer.PreviousFrame, capturer.CaptureFullscreen);
+
+                    if (diffArea.IsEmpty)
+                    {
+                        continue;
+                    }
 
                     var newImage = capturer.CurrentFrame.Clone(diffArea, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
@@ -116,26 +120,28 @@ namespace Remotely_ScreenCast.Capture
                         capturer.CaptureFullscreen = false;
                     }
 
-                    long newQuality;
-                    if (viewer.PendingFrames < 5)
-                    {
-                        newQuality = (long)Math.Min(1, viewer.ImageQuality + .1);
-                    }
-                    else
-                    {
-                        newQuality = (long)Math.Max(.1, viewer.ImageQuality - .1);
-                    }
-                    Logger.Write($"New quality: {newQuality}");
-                    if (newQuality != viewer.ImageQuality)
-                    {
-                        viewer.ImageQuality = newQuality;
-                        viewer.FullScreenRefreshNeeded = true;
-                    }
-                    else
-                    {
-                        capturer.CaptureFullscreen = true;
-                        viewer.FullScreenRefreshNeeded = false;
-                    }
+                    //long newQuality;
+                    //if (viewer.PendingFrames < 8)
+                    //{
+                    //    newQuality = Math.Min(100, viewer.ImageQuality + 10);
+                    //}
+                    //else
+                    //{
+                    //    newQuality = Math.Max(0, viewer.ImageQuality - 10);
+                    //}
+             
+                    //if (newQuality != viewer.ImageQuality)
+                    //{
+                    //    Logger.Write($"New quality: {newQuality}");
+                    //    viewer.ImageQuality = newQuality;
+                    //    viewer.FullScreenRefreshNeeded = true;
+                    //}
+                    //else if (viewer.FullScreenRefreshNeeded)
+                    //{
+                    //    Logger.Write($"Quality stabilized.");
+                    //    capturer.CaptureFullscreen = true;
+                    //    viewer.FullScreenRefreshNeeded = false;
+                    //}
 
                     var img = ImageUtils.EncodeBitmap(newImage, viewer.EncoderParams);
 

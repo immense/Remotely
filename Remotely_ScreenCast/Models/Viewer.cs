@@ -48,7 +48,7 @@ namespace Remotely_ScreenCast.Models
         {
             Param = new EncoderParameter[]
             {
-                new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 75L)
+                new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 100L)
             }
         };
 
