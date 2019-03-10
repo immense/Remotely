@@ -103,6 +103,10 @@ namespace Remotely_Agent.Services
                     ps.Invoke();
                     ps.Commands.Clear();
                 }
+                else if (OSUtils.IsLinux)
+                {
+                    Process.Start("sudo", "systemctl stop remotely_service");
+                }
 
                 ps.AddScript(@"
                     Get-Process | Where-Object {
@@ -158,55 +162,6 @@ namespace Remotely_Agent.Services
                 }
                 Environment.Exit(0);
             }
-        }
-        internal static async Task DownloadLatestScreenCastVersion(HubConnection hubConnection, string requesterID)
-        {
-            if (!OSUtils.IsWindows)
-            {
-                return;
-            }
-
-            var fileName = OSUtils.ScreenCastZipFileName;
-            var wc = new WebClient();
-            var progress = 0;
-            wc.DownloadProgressChanged += async (sender, args) =>
-            {
-                if (args.ProgressPercentage - progress > 5)
-                {
-                    progress = args.ProgressPercentage;
-                    await hubConnection.InvokeAsync("DisplayConsoleMessage", $"Download progress: {args.ProgressPercentage}%", requesterID);
-                }
-            };
-            var done = false;
-            wc.DownloadFileCompleted += async (sender, args) =>
-            {
-                await hubConnection.InvokeAsync("DisplayConsoleMessage", $"Download completed.", requesterID);
-                done = true;
-            };
-            var rcDir = Directory.CreateDirectory(Path.Combine(Utilities.AppDataDir, "remote_control")).FullName;
-            var downloadFilePath = Path.Combine(rcDir, fileName);
-            if (File.Exists(downloadFilePath))
-            {
-                File.Delete(downloadFilePath);
-            }
-            wc.DownloadFileAsync(new Uri(Utilities.GetConnectionInfo().Host + $"/Downloads/{fileName}"), downloadFilePath);
-            while (!done)
-            {
-                await Task.Delay(100);
-            }
-            await hubConnection.InvokeAsync("DisplayConsoleMessage", "Extracting files...", requesterID);
-            if (OSUtils.IsWindows)
-            {
-                ZipFile.ExtractToDirectory(downloadFilePath, Path.Combine(Utilities.AppDataDir, "remote_control"), true);
-            }
-            //if (OSUtils.IsLinux)
-            //{
-            //    // ZipFile doesn't extract nested directories properly on Linux, so...
-            //    Directory.SetCurrentDirectory(rcDir);
-            //    Process.Start("apt-get", "install unzip").WaitForExit();
-            //    Process.Start("unzip", $"-o {fileName}").WaitForExit();
-            //    Process.Start("chmod", "755 " + Path.Combine(Utilities.AppDataDir, "remote_control", "remotely_remote_control")).WaitForExit();
-            //}
         }
     }
 }

@@ -5,7 +5,6 @@ import { RemoteControl } from "./RemoteControl.js";
 import { GetCursor } from "./CursorMap.js";
 
 var signalR = window["signalR"];
-var lastLatency = Date.now();
 
 export class RCBrowserSockets {
     Connection: any;
@@ -41,7 +40,6 @@ export class RCBrowserSockets {
     }
     SendLatencyUpdate(latency: number, payloadSize: number) {
         this.Connection.invoke("SendLatencyUpdate", latency, payloadSize);
-        console.log(`Sending latency update. Latency:${latency}.  Size: ${payloadSize}`)
     }
     SendSelectScreen(index: number) {
         return this.Connection.invoke("SelectScreen", index);
@@ -116,10 +114,8 @@ export class RCBrowserSockets {
         });
         hubConnection.on("ScreenCapture", (buffer: Uint8Array, captureTime: Date) => {
             var latency = Date.now() - new Date(captureTime).getTime();
-            if (latency > 3000 && Date.now() - lastLatency > 3000) {
-                this.SendLatencyUpdate(latency, buffer.length);
-                lastLatency = Date.now();
-            }
+            this.SendLatencyUpdate(latency, buffer.length);
+
             var url = window.URL.createObjectURL(new Blob([buffer]));
             var img = document.createElement("img");
             img.onload = () => {

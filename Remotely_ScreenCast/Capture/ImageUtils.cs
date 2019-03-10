@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Remotely_ScreenCast.Capture
 {
-    public class ImageDiff
+    public class ImageUtils
     {
         private static EncoderParameters EncoderParams { get; } = new EncoderParameters()
         {
@@ -92,14 +92,6 @@ namespace Remotely_ScreenCast.Capture
             return mergedFrame;
         }
 
-        public static byte[] EncodeBitmapAndResize(Bitmap bitmap)
-        {
-            using (var ms = new MemoryStream())
-            {
-                bitmap.Save(ms, CodecInfo, EncoderParams);
-                return ms.ToArray();
-            }
-        }
         public static byte[] EncodeBitmap(Bitmap bitmap)
         {
             using (var ms = new MemoryStream())

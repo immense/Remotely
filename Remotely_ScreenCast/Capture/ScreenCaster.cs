@@ -95,24 +95,38 @@ namespace Remotely_ScreenCast.Capture
                     //    continue;
                     //}
 
-                    //if (viewer.NextCaptureDelay > 0)
-                    //{
-                    //    await Task.Delay((int)viewer.NextCaptureDelay);
-                    //    viewer.NextCaptureDelay = 0;
-                    //}
+                    while (viewer.PendingFrames > 10)
+                    {
+                        await Task.Delay(1);
+                    }
 
                     capturer.Capture();
 
-                    var newImage = ImageDiff.GetImageDiff(capturer.CurrentFrame, capturer.PreviousFrame, capturer.CaptureFullscreen);
+                    var newImage = ImageUtils.GetImageDiff(capturer.CurrentFrame, capturer.PreviousFrame, capturer.CaptureFullscreen);
+
+
+                    if (viewer.PendingFrames > 5)
+                    {
+                        var reductionRatio = (double)5 / viewer.PendingFrames;
+                        Logger.Write($"Reducing image quality to {reductionRatio}.");
+
+                        newImage = new Bitmap(
+                            capturer.CurrentFrame,
+                            (int)(capturer.CurrentScreenBounds.Width * reductionRatio),
+                            (int)(capturer.CurrentScreenBounds.Height * reductionRatio));
+                    }
+
                     if (capturer.CaptureFullscreen)
                     {
                         capturer.CaptureFullscreen = false;
                     }
-                    var img = ImageDiff.EncodeBitmapAndResize(newImage);
+
+                    var img = ImageUtils.EncodeBitmap(newImage);
 
                     if (img?.Length > 0)
                     {
                         await outgoingMessages.SendScreenCapture(img, viewerID, DateTime.UtcNow);
+                        viewer.PendingFrames++;
                     }
                 }
                 catch (Exception ex)
