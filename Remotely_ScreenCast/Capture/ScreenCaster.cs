@@ -59,7 +59,7 @@ namespace Remotely_ScreenCast.Capture
                 Name = requesterName,
                 ViewerConnectionID = viewerID,
                 HasControl = Program.Mode == Enums.AppMode.Unattended,
-                ImageQuality = 100
+                ImageQuality = 1
             };
 
             while (!success)
@@ -99,7 +99,7 @@ namespace Remotely_ScreenCast.Capture
                     //    continue;
                     //}
 
-                    while (viewer.PendingFrames > 10)
+                    while (viewer.PendingFrames > 30)
                     {
                         await Task.Delay(1);
                     }
@@ -123,11 +123,11 @@ namespace Remotely_ScreenCast.Capture
                     //long newQuality;
                     //if (viewer.PendingFrames < 8)
                     //{
-                    //    newQuality = Math.Min(100, viewer.ImageQuality + 10);
+                    //    newQuality = Math.Min(1, viewer.ImageQuality + .1);
                     //}
                     //else
                     //{
-                    //    newQuality = Math.Max(0, viewer.ImageQuality - 10);
+                    //    newQuality = Math.Max(0, viewer.ImageQuality - .1);
                     //}
              
                     //if (newQuality != viewer.ImageQuality)
@@ -143,7 +143,7 @@ namespace Remotely_ScreenCast.Capture
                     //    viewer.FullScreenRefreshNeeded = false;
                     //}
 
-                    var img = ImageUtils.EncodeBitmap(newImage, viewer.EncoderParams);
+                    var img = ImageUtils.EncodeBitmap(newImage);
 
                     if (img?.Length > 0)
                     {
