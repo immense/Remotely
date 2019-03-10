@@ -19,8 +19,8 @@ namespace Remotely_ScreenCast.Models
         public double Latency { get; set; } = 1;
         public int PendingFrames { get; set; }
 
-        private long imageQuality = 1;
-        public long ImageQuality
+        private double imageQuality = 1;
+        public double ImageQuality
         {
             get
             {
@@ -28,29 +28,14 @@ namespace Remotely_ScreenCast.Models
             }
             set
             {
-                if (imageQuality > 100 || imageQuality < 0)
+                if (imageQuality > 1 || imageQuality < 0)
                 {
                     return;
                 }
                 imageQuality = value;
-                EncoderParams = new EncoderParameters()
-                                {
-                                    Param = new EncoderParameter[]
-                                    {
-                                        new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, value)
-                                    }
-                                };
             }
         }
         public bool FullScreenRefreshNeeded { get; internal set; }
-
-        public EncoderParameters EncoderParams { get; private set; } = new EncoderParameters()
-        {
-            Param = new EncoderParameter[]
-            {
-                new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 100L)
-            }
-        };
 
     }
 }
