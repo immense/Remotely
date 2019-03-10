@@ -173,8 +173,8 @@ namespace Remotely_ScreenCast.Sockets
             {
                 if (Program.Viewers.TryGetValue(viewerID, out var viewer))
                 {
-                    // TODO.
-                    //viewer.Capturer.NextCaptureDelay = delayTime;
+                    viewer.PendingFrames--;
+                    viewer.Latency = latency;
                 }
             });
 

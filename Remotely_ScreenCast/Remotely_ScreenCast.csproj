@@ -151,7 +151,7 @@
     <Compile Include="Capture\CursorIconWatcher.cs" />
     <Compile Include="Capture\DXCapture.cs" />
     <Compile Include="Capture\ICapturer.cs" />
-    <Compile Include="Capture\ImageDiff.cs" />
+    <Compile Include="Capture\ImageUtils.cs" />
     <Compile Include="Capture\ScreenCaster.cs" />
     <Compile Include="Enums\AppMode.cs" />
     <Compile Include="Models\Viewer.cs" />
