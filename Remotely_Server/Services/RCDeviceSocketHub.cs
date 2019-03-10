@@ -106,9 +106,9 @@ namespace Remotely_Server.Services
             await RCBrowserHub.Clients.Client(rcBrowserHubConnectionID).SendAsync("ScreenSize", width, height);
         }
 
-        public Task SendScreenCapture(byte[] captureBytes, string rcBrowserHubConnectionID, DateTime captureTime)
+        public Task SendScreenCapture(byte[] captureBytes, string rcBrowserHubConnectionID, int left, int top, int width, int height, DateTime captureTime)
         {
-            return RCBrowserHub.Clients.Client(rcBrowserHubConnectionID).SendAsync("ScreenCapture", captureBytes, captureTime);
+            return RCBrowserHub.Clients.Client(rcBrowserHubConnectionID).SendAsync("ScreenCapture", captureBytes, left, top, width, height, captureTime);
         }
 
         public async Task NotifyRequesterUnattendedReady(string browserHubConnectionID)

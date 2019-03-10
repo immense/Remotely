@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using Remotely_ScreenCast.Models;
 using Remotely_ScreenCast.Sockets;
 using Remotely_ScreenCast.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +22,8 @@ namespace Remotely_ScreenCast.Capture
         {
             ICapturer capturer;
             CaptureMode captureMode;
+            Viewer viewer;
+            var success = false;
 
             try
             {
@@ -48,16 +52,16 @@ namespace Remotely_ScreenCast.Capture
 
             Logger.Write($"Starting screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}. Capture Mode: {captureMode.ToString()}.  App Mode: {Program.Mode}  Desktop: {Program.CurrentDesktopName}");
 
-            var viewer = new Models.Viewer()
+            viewer = new Viewer()
             {
                 Capturer = capturer,
                 DisconnectRequested = false,
                 Name = requesterName,
                 ViewerConnectionID = viewerID,
-                HasControl = Program.Mode == Enums.AppMode.Unattended
+                HasControl = Program.Mode == Enums.AppMode.Unattended,
+                ImageQuality = 1
             };
 
-            var success = false;
             while (!success)
             {
                 success = Program.Viewers.TryAdd(viewerID, viewer);
@@ -97,35 +101,47 @@ namespace Remotely_ScreenCast.Capture
 
                     while (viewer.PendingFrames > 10)
                     {
+                        Logger.Write("Waiting on pending frames.");
                         await Task.Delay(1);
                     }
 
                     capturer.Capture();
 
-                    var newImage = ImageUtils.GetImageDiff(capturer.CurrentFrame, capturer.PreviousFrame, capturer.CaptureFullscreen);
+                    var diffArea = ImageUtils.GetDiffArea(capturer.CurrentFrame, capturer.PreviousFrame, capturer.CaptureFullscreen);
 
-
-                    if (viewer.PendingFrames > 5)
-                    {
-                        var reductionRatio = (double)5 / viewer.PendingFrames;
-                        Logger.Write($"Reducing image quality to {reductionRatio}.");
-
-                        newImage = new Bitmap(
-                            capturer.CurrentFrame,
-                            (int)(capturer.CurrentScreenBounds.Width * reductionRatio),
-                            (int)(capturer.CurrentScreenBounds.Height * reductionRatio));
-                    }
+                    var newImage = capturer.CurrentFrame.Clone(diffArea, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
                     if (capturer.CaptureFullscreen)
                     {
                         capturer.CaptureFullscreen = false;
                     }
 
-                    var img = ImageUtils.EncodeBitmap(newImage);
+                    long newQuality;
+                    if (viewer.PendingFrames < 5)
+                    {
+                        newQuality = (long)Math.Min(1, viewer.ImageQuality + .1);
+                    }
+                    else
+                    {
+                        newQuality = (long)Math.Max(.1, viewer.ImageQuality - .1);
+                    }
+                    Logger.Write($"New quality: {newQuality}");
+                    if (newQuality != viewer.ImageQuality)
+                    {
+                        viewer.ImageQuality = newQuality;
+                        viewer.FullScreenRefreshNeeded = true;
+                    }
+                    else
+                    {
+                        capturer.CaptureFullscreen = true;
+                        viewer.FullScreenRefreshNeeded = false;
+                    }
+
+                    var img = ImageUtils.EncodeBitmap(newImage, viewer.EncoderParams);
 
                     if (img?.Length > 0)
                     {
-                        await outgoingMessages.SendScreenCapture(img, viewerID, DateTime.UtcNow);
+                        await outgoingMessages.SendScreenCapture(img, viewerID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, DateTime.UtcNow);
                         viewer.PendingFrames++;
                     }
                 }
