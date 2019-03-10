@@ -58,11 +58,14 @@ Set-Location -Path (Get-Item -Path $PSScriptRoot).Parent.FullName
 
 if ($ArgList.Contains("c")) {
     # Copy .NET Framework ScreenCaster to Agent resources for embedding.
+    if ((Test-Path -Path ".\Remotely_Agent\Resources") -eq $false) {
+        New-Item -Path ".\Remotely_Agent\Resources" -ItemType Directory
+    }
     if ((Test-Path -Path ".\Remotely_ScreenCast\bin\Release\Remotely_ScreenCast.exe") -eq $true) {
-        Move-Item -Path ".\Remotely_ScreenCast\bin\Release\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\Resources\Remotely_ScreenCast.exe" -Force
+        Copy-Item -Path ".\Remotely_ScreenCast\bin\Release\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\Resources\Remotely_ScreenCast.exe" -Force
     }
     elseif ((Test-Path -Path ".\Remotely_ScreenCast\bin\Debug\Remotely_ScreenCast.exe") -eq $true) {
-        Move-Item -Path ".\Remotely_ScreenCast\bin\Debug\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\Resources\Remotely_ScreenCast.exe" -Force
+        Copy-Item -Path ".\Remotely_ScreenCast\bin\Debug\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\Resources\Remotely_ScreenCast.exe" -Force
     }
     # Clear publish folders.
 	if ((Test-Path -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish") -eq $true) {
