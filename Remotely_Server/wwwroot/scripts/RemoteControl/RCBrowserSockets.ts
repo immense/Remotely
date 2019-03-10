@@ -38,8 +38,8 @@ export class RCBrowserSockets {
     SendScreenCastRequestToDevice() {
         return this.Connection.invoke("SendScreenCastRequestToDevice", RemoteControl.ClientID, RemoteControl.RequesterName, RemoteControl.Mode);
     }
-    SendLatencyUpdate(latency: number, payloadSize: number) {
-        this.Connection.invoke("SendLatencyUpdate", latency, payloadSize);
+    SendLatencyUpdate(latency: number) {
+        this.Connection.invoke("SendLatencyUpdate", latency);
     }
     SendSelectScreen(index: number) {
         return this.Connection.invoke("SelectScreen", index);
@@ -112,14 +112,14 @@ export class RCBrowserSockets {
             UI.ScreenViewer.height = height;
             UI.Screen2DContext.clearRect(0, 0, width, height);
         });
-        hubConnection.on("ScreenCapture", (buffer: Uint8Array, captureTime: Date) => {
+        hubConnection.on("ScreenCapture", (buffer: Uint8Array, left:number, top:number, width:number, height:number, captureTime: Date) => {
             var latency = Date.now() - new Date(captureTime).getTime();
-            this.SendLatencyUpdate(latency, buffer.length);
+            this.SendLatencyUpdate(latency);
 
             var url = window.URL.createObjectURL(new Blob([buffer]));
             var img = document.createElement("img");
             img.onload = () => {
-                UI.Screen2DContext.drawImage(img, 0, 0, UI.ScreenViewer.width, UI.ScreenViewer.height);
+                UI.Screen2DContext.drawImage(img, left, top, width, height);
                 window.URL.revokeObjectURL(url);
             };
             img.src = url;

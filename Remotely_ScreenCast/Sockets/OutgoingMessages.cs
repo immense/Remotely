@@ -22,9 +22,9 @@ namespace Remotely_ScreenCast.Sockets
             await Connection.SendAsync("SendScreenSize", width, height, viewerID);
         }
 
-        public async Task SendScreenCapture(byte[] captureBytes, string viewerID, DateTime captureTime)
+        public async Task SendScreenCapture(byte[] captureBytes, string viewerID, int left, int top, int width, int height, DateTime captureTime)
         {
-            await Connection.SendAsync("SendScreenCapture", captureBytes, viewerID, captureTime);
+            await Connection.SendAsync("SendScreenCapture", captureBytes, viewerID, left, top, width, height, captureTime);
         }
 
         internal async Task SendScreenCount(int primaryScreenIndex, int screenCount, string viewerID)
