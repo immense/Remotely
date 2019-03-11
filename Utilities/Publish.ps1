@@ -39,7 +39,6 @@ if ($args.Count -eq 0){
 }
 else {
     $ArgList.Add("c")
-    $ArgList.Add("d")
     $ArgList.Add("s")
     for ($i = 0; $i -lt $args.Count; $i++)
     { 

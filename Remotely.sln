@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remotely_Library", "Remotel
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotely_ScreenCast", "Remotely_ScreenCast\Remotely_ScreenCast.csproj", "{2DCEA1F5-9B64-4EDB-9CD0-4D6675D96709}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotely_Desktop", "Remotely_Desktop\Remotely_Desktop.csproj", "{486A238C-387B-49C5-A361-B86ACDB2572A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +93,18 @@ Global
 		{2DCEA1F5-9B64-4EDB-9CD0-4D6675D96709}.Release|x64.Build.0 = Release|Any CPU
 		{2DCEA1F5-9B64-4EDB-9CD0-4D6675D96709}.Release|x86.ActiveCfg = Release|Any CPU
 		{2DCEA1F5-9B64-4EDB-9CD0-4D6675D96709}.Release|x86.Build.0 = Release|Any CPU
+		{486A238C-387B-49C5-A361-B86ACDB2572A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{486A238C-387B-49C5-A361-B86ACDB2572A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{486A238C-387B-49C5-A361-B86ACDB2572A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{486A238C-387B-49C5-A361-B86ACDB2572A}.Debug|x64.Build.0 = Debug|Any CPU
+		{486A238C-387B-49C5-A361-B86ACDB2572A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{486A238C-387B-49C5-A361-B86ACDB2572A}.Debug|x86.Build.0 = Debug|Any CPU
+		{486A238C-387B-49C5-A361-B86ACDB2572A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{486A238C-387B-49C5-A361-B86ACDB2572A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{486A238C-387B-49C5-A361-B86ACDB2572A}.Release|x64.ActiveCfg = Release|Any CPU
+		{486A238C-387B-49C5-A361-B86ACDB2572A}.Release|x64.Build.0 = Release|Any CPU
+		{486A238C-387B-49C5-A361-B86ACDB2572A}.Release|x86.ActiveCfg = Release|Any CPU
+		{486A238C-387B-49C5-A361-B86ACDB2572A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
