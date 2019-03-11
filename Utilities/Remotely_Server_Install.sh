@@ -55,7 +55,7 @@ Description=Remotely Server
 
 [Service]
 WorkingDirectory=$appRoot
-ExecStart=/usr/bin/dotnet $appRoot/Server.dll
+ExecStart=/usr/bin/dotnet $appRoot/Remotely_Server.dll
 Restart=always
 # Restart service after 10 seconds if the dotnet service crashes:
 RestartSec=10
