@@ -16,7 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{
 		Utilities\Register-TURNServer.ps1 = Utilities\Register-TURNServer.ps1
 		Utilities\Remotely_Server_Install.sh = Utilities\Remotely_Server_Install.sh
 		Utilities\Setup_Ubuntu_Builder.sh = Utilities\Setup_Ubuntu_Builder.sh
-		Utilities\TURN_Install.sh = Utilities\TURN_Install.sh
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{D96B47F6-EF3E-4AF6-A1BE-006D531DDBA4}"

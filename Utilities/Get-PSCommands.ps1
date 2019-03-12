@@ -1,9 +1,10 @@
-﻿function Append-Command($Command){
+﻿$Global:Commands = ""
+function Append-Command($Command){
     $Params = ""
     if ($Command.HelpFile.Length -gt 0) {
         $Help = Get-Help $Command.Name
-        $Synopsis = $Help.Synopsis.Trim().Replace("\", "\\")
-        $Syntax = ($Help.syntax | Out-String).Trim()
+        $Synopsis = $Help.Synopsis.Trim().Replace("\", "\\").Replace("``", "")
+        $Syntax = ($Help.syntax | Out-String).Trim().Replace("``", "")
         foreach ($param in $Help.parameters.parameter) {
             $Params += "new Parameter(``$(($param.name | Out-String).Trim())``, ``$(($param.description | Out-String).Trim().Replace('`', '"').Replace('${}',''))``, ``$($param.type.name.Trim().Replace('`', '^'))``),`r`n"
         }
@@ -17,7 +18,7 @@
     }
   
 
-@"
+$Global:Commands += @"
     new ConsoleCommand(
         ``$($Command.Name.Replace("\", "\\"))``,
         [
@@ -29,8 +30,8 @@
         (parameters, paramDictionary) => {
            
         }
-    ),
-"@ | Out-File -FilePath "$env:USERPROFILE\Downloads\PS.txt" -Append
+    ),`r`n
+"@
 }
 
 Update-Help
@@ -48,3 +49,5 @@ $Cmdlets | ForEach-Object {
     Append-Command  -Command $_
     $Error.Clear()
 }
+
+$Global:Commands | Out-File -FilePath "$env:USERPROFILE\Downloads\PS.txt"
