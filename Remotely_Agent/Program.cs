@@ -55,7 +55,7 @@ namespace Remotely_Agent
            
             while (true)
             {
-                Console.Read();
+                System.Threading.Thread.Sleep(1000);
             }
         }
 

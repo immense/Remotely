@@ -2,7 +2,7 @@ HostName=
 Organization=
 GUID=$(cat /proc/sys/kernel/random/uuid)
 
-systemctl stop remotely-client
+systemctl stop remotely-agent
 rm -r -f /usr/local/bin/Remotely
 rm -f /etc/systemd/system/remotely-agent.service
 systemctl daemon-reload
