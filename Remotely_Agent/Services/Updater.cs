@@ -54,8 +54,8 @@ namespace Remotely_Agent.Services
                 }
 
                 var wc = new WebClient();
-                var latestVersion = wc.DownloadString(Utilities.GetConnectionInfo().Host + $"/API/CoreVersion/{platform}");
-                var thisVersion = FileVersionInfo.GetVersionInfo("Remotely_Agent.dll").FileVersion.ToString();
+                var latestVersion = wc.DownloadString(Utilities.GetConnectionInfo().Host + $"/Downloads/CurrentAgentVersion.txt").Trim();
+                var thisVersion = FileVersionInfo.GetVersionInfo("Remotely_Agent.dll").FileVersion.ToString().Trim();
                 if (thisVersion != latestVersion)
                 {
                     Logger.Write($"Service Updater: Downloading update.  Current Version: {thisVersion}.  Latest Version: {latestVersion}.");
@@ -75,6 +75,7 @@ namespace Remotely_Agent.Services
                     }
                     else if (OSUtils.IsLinux)
                     {
+                        Process.Start("sudo", $"rm -r {Path.Combine(Path.GetTempPath(), "Remotely_Update")}");
                         Process.Start("sudo", "apt-get install unzip").WaitForExit();
                         Process.Start("sudo", $"unzip -o {tempFile} -d {Path.Combine(Path.GetTempPath(), "Remotely_Update")}").WaitForExit();
                         Process.Start("sudo", $"chmod -R 777 {Path.Combine(Path.GetTempPath(), "Remotely_Update")}").WaitForExit();
@@ -120,13 +121,13 @@ namespace Remotely_Agent.Services
                     Process.Start("sudo", "systemctl stop remotely-agent");
                 }
 
-                foreach (var proc in Process.GetProcesses().Where(x => 
+                foreach (var proc in Process.GetProcesses().Where(x =>
                                                 x.ProcessName.Contains("Remotely_Agent") &&
                                                 x.Id != Process.GetCurrentProcess().Id))
                 {
                     proc.Kill();
                 }
-  
+
                 Logger.Write("Service Updater: Gathering files.");
                 string targetDir = "";
 
@@ -139,15 +140,32 @@ namespace Remotely_Agent.Services
                     targetDir = "/usr/local/bin/Remotely";
                 }
  
-                var subdirList = Directory.GetDirectories(Path.Combine(Path.GetTempPath(), "Remotely_Update"));
-                var fileList = Directory.GetFiles(Path.Combine(Path.GetTempPath(), "Remotely_Update"));
                 Logger.Write("Service Updater: Copying new files.");
+
+
+                var fileList = Directory.GetFiles(Path.Combine(Path.GetTempPath(), "Remotely_Update"));
+                foreach (var file in fileList)
+                {
+                    try
+                    {
+                        var targetPath = Path.Combine(targetDir, Path.GetFileName(file));
+                        File.Copy(file, targetPath, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Write(ex);
+                        continue;
+                    }
+                }
+
+
+                var subdirList = Directory.GetDirectories(Path.Combine(Path.GetTempPath(), "Remotely_Update"));
 
                 foreach (var subdir in subdirList)
                 {
                     try
                     {
-                        var targetPath = Path.Combine(targetDir, Path.GetDirectoryName(subdir));
+                        var targetPath = Path.Combine(targetDir, Path.GetFileName(subdir.TrimEnd(Path.DirectorySeparatorChar)));
                         if (Directory.Exists(targetPath))
                         {
                             Directory.Delete(targetPath, true);
@@ -157,24 +175,9 @@ namespace Remotely_Agent.Services
                     catch (Exception ex)
                     {
                         Logger.Write(ex);
+                        continue;
                     }
                     
-                }
-                foreach (var file in fileList)
-                {
-                    try
-                    {
-                        var targetPath = Path.Combine(targetDir, Path.GetFileName(file));
-                        if (File.Exists(targetPath))
-                        {
-                            File.Delete(targetPath);
-                        }
-                        File.Move(file, targetPath);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Write(ex);
-                    }
                 }
                 Logger.Write("Service Updater: Update completed.");
             }
