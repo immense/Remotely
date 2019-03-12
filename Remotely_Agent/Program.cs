@@ -33,7 +33,6 @@ namespace Remotely_Agent
                 return settings;
             };
 
-
             if (argDict.ContainsKey("update"))
             {
                 Updater.CoreUpdate();

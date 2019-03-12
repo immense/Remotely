@@ -56,13 +56,6 @@ Set-Location -Path (Get-Item -Path $PSScriptRoot).Parent.FullName
 
 
 if ($ArgList.Contains("c")) {
-    # Try to build the .NET Framework ScreenCaster.
-    try {
-        dotnet build ".\Remotely_ScreenCast\" /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --configuration Release
-    }
-    catch {
-        Write-Host "Unable to build ScreenCaster.  The most recent pre-compiled binaries will be used."
-    }
     # Copy .NET Framework ScreenCaster to Agent resources for embedding.
     if ((Test-Path -Path ".\Remotely_Agent\Resources") -eq $false) {
         New-Item -Path ".\Remotely_Agent\Resources" -ItemType Directory

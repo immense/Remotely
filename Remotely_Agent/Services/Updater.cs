@@ -9,6 +9,7 @@ using System.Management.Automation;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Remotely_Agent.Services
 {
@@ -68,22 +69,33 @@ namespace Remotely_Agent.Services
 
                     Logger.Write($"Service Updater: Extracting files.");
 
-                    ZipFile.ExtractToDirectory(tempFile, Path.Combine(Path.GetTempPath(), "Remotely_Update"), true);
-                    if (OSUtils.IsLinux)
+                    if (OSUtils.IsWindows)
                     {
+                        ZipFile.ExtractToDirectory(tempFile, Path.Combine(Path.GetTempPath(), "Remotely_Update"), true);
+                    }
+                    else if (OSUtils.IsLinux)
+                    {
+                        Process.Start("sudo", "apt-get install unzip").WaitForExit();
+                        Process.Start("sudo", $"unzip -o {tempFile} -d {Path.Combine(Path.GetTempPath(), "Remotely_Update")}").WaitForExit();
                         Process.Start("sudo", $"chmod -R 777 {Path.Combine(Path.GetTempPath(), "Remotely_Update")}").WaitForExit();
                         Process.Start("sudo", $"chmod +x {Path.Combine(Path.GetTempPath(), "Remotely_Update", "Remotely_Agent")}").WaitForExit();
                     }
-                    var psi = new ProcessStartInfo()
-                    {
-                        FileName = Path.Combine(Path.GetTempPath(), "Remotely_Update", OSUtils.ClientExecutableFileName),
-                        Arguments = "-update true",
-                        Verb = "RunAs"
-                    };
 
-                    Logger.Write($"Service Updater: Launching new process.");
-                    Process.Start(psi);
-                    Environment.Exit(0);
+                    Logger.Write($"Service Updater: Launching extracted process to perform update.");
+                    if (OSUtils.IsWindows)
+                    {
+                        var psi = new ProcessStartInfo()
+                        {
+                            FileName = Path.Combine(Path.GetTempPath(), "Remotely_Update", OSUtils.ClientExecutableFileName),
+                            Arguments = "-update true",
+                            Verb = "RunAs"
+                        };
+                        Process.Start(psi);
+                    }
+                    else if (OSUtils.IsLinux)
+                    {
+                        Process.Start("sudo", $"{Path.Combine(Path.GetTempPath(), "Remotely_Update", "Remotely_Agent")} -update true");
+                    }
                 }
             }
             catch (Exception ex)
@@ -105,36 +117,59 @@ namespace Remotely_Agent.Services
                 }
                 else if (OSUtils.IsLinux)
                 {
-                    Process.Start("sudo", "systemctl stop remotely_service");
+                    Process.Start("sudo", "systemctl stop remotely-agent");
                 }
 
-                ps.AddScript(@"
-                    Get-Process | Where-Object {
-                        $_.Name -like ""Remotely_Agent"" -and 
-                        $_.Id -ne [System.Diagnostics.Process]::GetCurrentProcess().Id
-                    } | Stop-Process -Force");
-                ps.Invoke();
-                ps.Commands.Clear();
-
+                foreach (var proc in Process.GetProcesses().Where(x => 
+                                                x.ProcessName.Contains("Remotely_Agent") &&
+                                                x.Id != Process.GetCurrentProcess().Id))
+                {
+                    proc.Kill();
+                }
+  
                 Logger.Write("Service Updater: Gathering files.");
-                var targetDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Remotely");
+                string targetDir = "";
+
+                if (OSUtils.IsWindows)
+                {
+                    targetDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Remotely");
+                }
+                else if (OSUtils.IsLinux)
+                {
+                    targetDir = "/usr/local/bin/Remotely";
+                }
  
-                var itemList = Directory.GetFileSystemEntries(Path.Combine(Path.GetTempPath(), "Remotely_Update"));
+                var subdirList = Directory.GetDirectories(Path.Combine(Path.GetTempPath(), "Remotely_Update"));
+                var fileList = Directory.GetFiles(Path.Combine(Path.GetTempPath(), "Remotely_Update"));
                 Logger.Write("Service Updater: Copying new files.");
-                foreach (var item in itemList)
+
+                foreach (var subdir in subdirList)
                 {
                     try
                     {
-                        var targetPath = Path.Combine(targetDir, Path.GetFileName(item));
+                        var targetPath = Path.Combine(targetDir, Path.GetDirectoryName(subdir));
+                        if (Directory.Exists(targetPath))
+                        {
+                            Directory.Delete(targetPath, true);
+                        }
+                        Directory.Move(subdir, targetPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Write(ex);
+                    }
+                    
+                }
+                foreach (var file in fileList)
+                {
+                    try
+                    {
+                        var targetPath = Path.Combine(targetDir, Path.GetFileName(file));
                         if (File.Exists(targetPath))
                         {
                             File.Delete(targetPath);
                         }
-                        else if (Directory.Exists(targetPath))
-                        {
-                            Directory.Delete(targetPath, true);
-                        }
-                        Directory.Move(item, targetPath);
+                        File.Move(file, targetPath);
                     }
                     catch (Exception ex)
                     {
@@ -145,7 +180,7 @@ namespace Remotely_Agent.Services
             }
             catch (Exception ex)
             {
-                Logger.Write(ex);               
+                Logger.Write(ex);
             }
             finally
             {
