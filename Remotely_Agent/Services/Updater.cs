@@ -39,20 +39,6 @@ namespace Remotely_Agent.Services
         {
             try
             {
-                var platform = "";
-                if (OSUtils.IsWindows)
-                {
-                    platform = "Windows";
-                }
-                else if (OSUtils.IsLinux)
-                {
-                    platform = "Linux";
-                }
-                else
-                {
-                    throw new Exception("Unsupported operating system.");
-                }
-
                 var wc = new WebClient();
                 var latestVersion = wc.DownloadString(Utilities.GetConnectionInfo().Host + $"/Downloads/CurrentAgentVersion.txt").Trim();
                 var thisVersion = FileVersionInfo.GetVersionInfo("Remotely_Agent.dll").FileVersion.ToString().Trim();
@@ -95,7 +81,7 @@ namespace Remotely_Agent.Services
                     }
                     else if (OSUtils.IsLinux)
                     {
-                        Process.Start("sudo", $"{Path.Combine(Path.GetTempPath(), "Remotely_Update", "Remotely_Agent")} -update true");
+                        Process.Start("sudo", $"{Path.Combine(Path.GetTempPath(), "Remotely_Update", "Remotely_Agent")} -update true & disown");
                     }
                 }
             }
@@ -121,6 +107,7 @@ namespace Remotely_Agent.Services
                     Process.Start("sudo", "systemctl stop remotely-agent");
                 }
 
+
                 foreach (var proc in Process.GetProcesses().Where(x =>
                                                 x.ProcessName.Contains("Remotely_Agent") &&
                                                 x.Id != Process.GetCurrentProcess().Id))
@@ -128,7 +115,6 @@ namespace Remotely_Agent.Services
                     proc.Kill();
                 }
 
-                Logger.Write("Service Updater: Gathering files.");
                 string targetDir = "";
 
                 if (OSUtils.IsWindows)

@@ -21,36 +21,12 @@ namespace Remotely_Server.API
         [HttpGet("{platform}")]
         public string Get(string platform)
         {
-            string fileName = "";
-            switch (platform)
-            {
-                case "Windows":
-                    fileName = "Remotely-Win10-x64.zip";
-                    break;
-                case "Linux":
-                    fileName = "Remotely-Linux.zip";
-                    break;
-                default:
-                    return "";
-            }
-            var filePath = Path.Combine(HostingEnv.WebRootPath, "Downloads", fileName);
+            var filePath = Path.Combine(HostingEnv.WebRootPath, "Downloads", "CurrentAgentVersion.txt");
             if (!System.IO.File.Exists(filePath))
             {
                 return "0.0.0.0";
             }
-            using (var fs = new FileStream(filePath, FileMode.Open))
-            {
-                var zipArchive = new ZipArchive(fs);
-                var tempFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-                zipArchive.GetEntry("Remotely_Agent.dll").ExtractToFile(tempFile, true);
-                var version = FileVersionInfo.GetVersionInfo(tempFile);
-                try
-                {
-                    System.IO.File.Delete(tempFile);
-                }
-                catch { }
-                return version.FileVersion.ToString();
-            }
+            return System.IO.File.ReadAllText(filePath).Trim();
         }
     }
 }
