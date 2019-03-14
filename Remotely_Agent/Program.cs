@@ -1,5 +1,4 @@
-﻿using Remotely_Agent.Client;
-using Remotely_Agent.Services;
+﻿using Remotely_Agent.Services;
 using Remotely_Library.Services;
 using Remotely_Library.Win32;
 using Remotely_Library.Win32_Classes;
