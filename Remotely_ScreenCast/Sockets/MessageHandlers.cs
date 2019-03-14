@@ -32,15 +32,16 @@ namespace Remotely_ScreenCast.Sockets
                 try
                 {
                     ScreenCaster.BeginScreenCasting(viewerID, requesterName, outgoingMessages);
-                    if (Program.Viewers.TryGetValue(viewerID, out var viewer))
-                    {
-                        ViewerAdded?.Invoke(null, viewer);
-                    }
                 }
                 catch (Exception ex)
                 {
                     Logger.Write(ex);
                 }
+            });
+
+            hubConnection.On("RequestScreenCast", (string viewerID, string requesterName) =>
+            {
+                Program.ScreenCastRequested?.Invoke(null, new Tuple<string, string>(viewerID, requesterName));
             });
 
             hubConnection.On("KeyDown", (int keyCode, string viewerID) =>
@@ -62,6 +63,16 @@ namespace Remotely_ScreenCast.Sockets
                     if (keyCode == 59)
                     {
                         keyCode = 186;
+                    }
+                    // For minus.
+                    else if (keyCode == 45)
+                    {
+                        keyCode = 189;
+                    }
+                    // For plus.
+                    else if (keyCode == 61)
+                    {
+                        keyCode = 187;
                     }
                     Win32Interop.SendKeyDown((User32.VirtualKey)keyCode);
                 }
@@ -87,6 +98,16 @@ namespace Remotely_ScreenCast.Sockets
                     {
                         keyCode = 186;
                     }
+                    // For minus.
+                    else if (keyCode == 45)
+                    {
+                        keyCode = 189;
+                    }
+                    // For plus.
+                    else if (keyCode == 61)
+                    {
+                        keyCode = 187;
+                    }
                     Win32Interop.SendKeyUp((User32.VirtualKey)keyCode);
                 }
             });
@@ -111,6 +132,16 @@ namespace Remotely_ScreenCast.Sockets
                     if (keyCode == 59)
                     {
                         keyCode = 186;
+                    }
+                    // For minus.
+                    else if (keyCode == 45)
+                    {
+                        keyCode = 189;
+                    }
+                    // For plus.
+                    else if (keyCode == 61)
+                    {
+                        keyCode = 187;
                     }
                     Win32Interop.SendKeyDown((User32.VirtualKey)keyCode);
                     Win32Interop.SendKeyUp((User32.VirtualKey)keyCode);
@@ -173,7 +204,7 @@ namespace Remotely_ScreenCast.Sockets
                     viewer.DisconnectRequested = true;
                 }
                 await hubConnection.InvokeAsync("ViewerDisconnected", viewerID);
-                ViewerRemoved?.Invoke(null, viewerID);
+                Program.ViewerRemoved?.Invoke(null, viewerID);
 
             });
             hubConnection.On("LatencyUpdate", (double latency, string viewerID) =>
@@ -262,11 +293,8 @@ namespace Remotely_ScreenCast.Sockets
 
             hubConnection.On("SessionID", (string sessionID) =>
             {
-                SessionIDChanged?.Invoke(null, sessionID);
+                Program.SessionIDChanged?.Invoke(null, sessionID);
             });
         }
-        public static EventHandler<string> SessionIDChanged { get; set; }
-        public static EventHandler<string> ViewerRemoved { get; set; }
-        public static EventHandler<Viewer> ViewerAdded { get; set; }
     }
 }

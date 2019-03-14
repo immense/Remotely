@@ -14,12 +14,23 @@ namespace Remotely_ScreenCast.Capture
 {
     public class DXCapture : ICapturer
     {
-        public Bitmap PreviousFrame { get; set; }
+        private Adapter1 adapter;
+        private SharpDX.Direct3D11.Device device;
+        private OutputDuplication duplicatedOutput;
+        private Factory1 factory;
+        private int height;
+        private Output output;
+        private Output1 output1;
+        private Texture2D screenTexture;
+        private int selectedScreen = 0;
+        private Texture2DDescription textureDesc;
+        private int width;
+        public bool CaptureFullscreen { get; set; } = true;
         public Bitmap CurrentFrame { get; set; }
         public Rectangle CurrentScreenBounds { get; private set; }
-        public bool CaptureFullscreen { get; set; } = true;
+        public bool NeedsInit { get; set; } = true;
+        public Bitmap PreviousFrame { get; set; }
         public EventHandler<Rectangle> ScreenChanged { get; set; }
-        private Stopwatch FramerateTimer { get; } = Stopwatch.StartNew();
         public int SelectedScreen
         {
             get
@@ -51,79 +62,10 @@ namespace Remotely_ScreenCast.Capture
                 NeedsInit = true;
             }
         }
-        public bool NeedsInit { get; set; } = true;
 
-        private Factory1 factory;
-        private Adapter1 adapter;
-        private SharpDX.Direct3D11.Device device;
-        private Output output;
-        private Output1 output1;
-        private int width;
-        private int height;
-        private Texture2DDescription textureDesc;
-        private Texture2D screenTexture;
-        private OutputDuplication duplicatedOutput;
-        private int selectedScreen = 0;
+        private Stopwatch FramerateTimer { get; } = Stopwatch.StartNew();
         private object ScreenLock { get; } = new object();
 
-        private void Init()
-        {
-            try
-            {
-                lock (ScreenLock)
-                {
-                    factory = new Factory1();
-
-                    //Get first adapter
-                    adapter = factory.Adapters1.FirstOrDefault(x => x.Outputs.Length > 0);
-                    //Get device from adapter
-                    device = new SharpDX.Direct3D11.Device(adapter);
-                    //Get front buffer of the adapter
-                    if (adapter.GetOutputCount() < selectedScreen + 1)
-                    {
-                        selectedScreen = 0;
-                    }
-                    output = adapter.GetOutput(selectedScreen);
-                    output1 = output.QueryInterface<Output1>();
-
-                    // Width/Height of desktop to capture
-                    var bounds = output.Description.DesktopBounds;
-                    var newWidth = bounds.Right - bounds.Left;
-                    var newHeight = bounds.Bottom - bounds.Top;
-                    CurrentScreenBounds = new Rectangle(bounds.Left, bounds.Top, newWidth, newHeight);
-                    if (newWidth != width || newHeight != height)
-                    {
-                        ScreenChanged?.Invoke(this, CurrentScreenBounds);
-                    }
-                    width = newWidth;
-                    height = newHeight;
-
-                    CurrentFrame = new Bitmap(width, height);
-                    PreviousFrame = new Bitmap(width, height);
-
-                    // Create Staging texture CPU-accessible
-                    textureDesc = new Texture2DDescription
-                    {
-                        CpuAccessFlags = CpuAccessFlags.Read,
-                        BindFlags = BindFlags.None,
-                        Format = Format.B8G8R8A8_UNorm,
-                        Width = width,
-                        Height = height,
-                        OptionFlags = ResourceOptionFlags.None,
-                        MipLevels = 1,
-                        ArraySize = 1,
-                        SampleDescription = { Count = 1, Quality = 0 },
-                        Usage = ResourceUsage.Staging
-                    };
-                    screenTexture = new Texture2D(device, textureDesc);
-                    duplicatedOutput = output1.DuplicateOutput(device);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
-            }
-        }
         public void Capture()
         {
             try
@@ -206,6 +148,76 @@ namespace Remotely_ScreenCast.Capture
             {
                 Logger.Write(e);
                 NeedsInit = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            duplicatedOutput?.Dispose();
+            output1?.Dispose();
+            output?.Dispose();
+            device?.Dispose();
+            adapter?.Dispose();
+            factory?.Dispose();
+            CurrentFrame.Dispose();
+            PreviousFrame.Dispose();
+        }
+        private void Init()
+        {
+            try
+            {
+                lock (ScreenLock)
+                {
+                    factory = new Factory1();
+
+                    //Get first adapter
+                    adapter = factory.Adapters1.FirstOrDefault(x => x.Outputs.Length > 0);
+                    //Get device from adapter
+                    device = new SharpDX.Direct3D11.Device(adapter);
+                    //Get front buffer of the adapter
+                    if (adapter.GetOutputCount() < selectedScreen + 1)
+                    {
+                        selectedScreen = 0;
+                    }
+                    output = adapter.GetOutput(selectedScreen);
+                    output1 = output.QueryInterface<Output1>();
+
+                    // Width/Height of desktop to capture
+                    var bounds = output.Description.DesktopBounds;
+                    var newWidth = bounds.Right - bounds.Left;
+                    var newHeight = bounds.Bottom - bounds.Top;
+                    CurrentScreenBounds = new Rectangle(bounds.Left, bounds.Top, newWidth, newHeight);
+                    if (newWidth != width || newHeight != height)
+                    {
+                        ScreenChanged?.Invoke(this, CurrentScreenBounds);
+                    }
+                    width = newWidth;
+                    height = newHeight;
+
+                    CurrentFrame = new Bitmap(width, height);
+                    PreviousFrame = new Bitmap(width, height);
+
+                    // Create Staging texture CPU-accessible
+                    textureDesc = new Texture2DDescription
+                    {
+                        CpuAccessFlags = CpuAccessFlags.Read,
+                        BindFlags = BindFlags.None,
+                        Format = Format.B8G8R8A8_UNorm,
+                        Width = width,
+                        Height = height,
+                        OptionFlags = ResourceOptionFlags.None,
+                        MipLevels = 1,
+                        ArraySize = 1,
+                        SampleDescription = { Count = 1, Quality = 0 },
+                        Usage = ResourceUsage.Staging
+                    };
+                    screenTexture = new Texture2D(device, textureDesc);
+                    duplicatedOutput = output1.DuplicateOutput(device);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
             }
         }
     }

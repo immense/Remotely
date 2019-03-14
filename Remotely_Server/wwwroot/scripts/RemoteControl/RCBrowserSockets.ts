@@ -155,5 +155,9 @@ export class RCBrowserSockets {
             var newCursor = GetCursor(cursor);
             UI.ScreenViewer.style.cursor = newCursor;
         });
+
+        hubConnection.on("RequestingScreenCast", () => {
+            UI.ShowMessage("Requesting remote control...");
+        });
     }
 }

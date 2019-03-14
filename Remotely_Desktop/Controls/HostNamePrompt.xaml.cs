@@ -23,7 +23,6 @@ namespace Remotely_Desktop.Controls
         public HostNamePrompt()
         {
             InitializeComponent();
-            DataContext = new HostNamePromptViewModel();
         }
 
         private void OKButton_Click(object sender, RoutedEventArgs e)

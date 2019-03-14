@@ -160,10 +160,6 @@ namespace Remotely_ScreenCast
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Logger.Write((Exception)e.ExceptionObject);
-            if (Console.IsErrorRedirected)
-            {
-                
-            }
         }
 
         private static Dictionary<string, string> ProcessArgs(string[] args)
@@ -186,7 +182,9 @@ namespace Remotely_ScreenCast
             }
             return argDict;
         }
-
-    
+        public static EventHandler<string> SessionIDChanged { get; set; }
+        public static EventHandler<string> ViewerRemoved { get; set; }
+        public static EventHandler<Viewer> ViewerAdded { get; set; }
+        public static EventHandler<Tuple<string, string>> ScreenCastRequested { get; set; }
     }
 }
