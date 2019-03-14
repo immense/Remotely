@@ -12,7 +12,7 @@
     </Window.DataContext>
     <Grid>
         <StackPanel>
-            <Border Height="50" Background="#FF535353">
+            <Border Height="50" Background="#FF464646">
                 <DockPanel Margin="10,0,0,0">
                     <StackPanel>
                         <TextBlock Foreground="DeepSkyBlue" FontWeight="Bold" FontSize="20" Margin="0,2,0,0">Remotely</TextBlock>
@@ -42,9 +42,18 @@
                 </StackPanel>
                 <StackPanel Grid.Column="1" Margin="15,0,0,0">
                     <TextBlock Style="{StaticResource SectionHeader}"><Run Text="Viewers"/></TextBlock>
-                    <ListBox Height="90" Margin="0,5,0,0" ItemsSource="{Binding Viewers}">
+                    <Grid  Margin="0,5,0,0">
+                        <TextBlock FontSize="8" Margin="5,0,0,0">Name</TextBlock>
+                        <TextBlock FontSize="8" Margin="0,0,5,0" HorizontalAlignment="Right">Has Control</TextBlock>
+                    </Grid>
+                    <ListBox Height="90" HorizontalContentAlignment="Stretch" ItemsSource="{Binding Viewers}">
                         <ListBox.ItemTemplate>
-                            <DataTemplate/>
+                            <DataTemplate>
+                                <DockPanel>
+                                    <TextBlock Text="{Binding Name}"></TextBlock>
+                                    <CheckBox IsChecked="{Binding HasControl}" HorizontalAlignment="Right"></CheckBox>
+                                </DockPanel>
+                            </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </StackPanel>

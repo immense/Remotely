@@ -97,5 +97,12 @@ namespace Remotely_ScreenCast.Capture
                 Init();
             }
         }
+
+        public void Dispose()
+        {
+            graphic.Dispose();
+            CurrentFrame.Dispose();
+            PreviousFrame.Dispose();
+        }
     }
 }

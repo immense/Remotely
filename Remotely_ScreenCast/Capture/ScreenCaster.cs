@@ -27,12 +27,7 @@ namespace Remotely_ScreenCast.Capture
 
             try
             {
-                if (Program.CurrentDesktopName.ToLower() == "winlogon")
-                {
-                    capturer = new BitBltCapture();
-                    captureMode = CaptureMode.BitBtl;
-                }
-                else if (Program.Viewers.Count == 0)
+                if (Program.Viewers.Count == 0)
                 {
                     capturer = new DXCapture();
                     captureMode = CaptureMode.DirectX;
@@ -65,6 +60,11 @@ namespace Remotely_ScreenCast.Capture
             while (!success)
             {
                 success = Program.Viewers.TryAdd(viewerID, viewer);
+            }
+
+            if (Program.Mode == Enums.AppMode.Normal)
+            {
+                Program.ViewerAdded?.Invoke(null, viewer);
             }
 
             await outgoingMessages.SendScreenCount(
@@ -163,8 +163,10 @@ namespace Remotely_ScreenCast.Capture
                 success = Program.Viewers.TryRemove(viewerID, out _);
             }
 
+            capturer.Dispose();
+
             // Close if no one is viewing.
-            if (Program.Viewers.Count == 0)
+            if (Program.Viewers.Count == 0 && Program.Mode == Enums.AppMode.Unattended)
             {
                 Environment.Exit(0);
             }

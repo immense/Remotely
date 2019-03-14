@@ -76,7 +76,6 @@
       <DependentUpon>HostNamePrompt.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\Config.cs" />
-    <Compile Include="Services\IPC.cs" />
     <Compile Include="Services\Logger.cs" />
     <Compile Include="ViewModels\HostNamePromptViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
@@ -98,7 +97,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Viewer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -129,9 +127,6 @@
     <Resource Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Remotely_ScreenCast.exe" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="favicon.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -140,6 +135,7 @@
       <Name>Remotely_ScreenCast</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Remotely_ScreenCast.Capture
 {
-	public interface ICapturer
+    public interface ICapturer : IDisposable
 	{
 		Bitmap CurrentFrame { get; set; }
         Rectangle CurrentScreenBounds { get; }

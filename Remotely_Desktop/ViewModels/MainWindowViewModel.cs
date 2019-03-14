@@ -1,8 +1,8 @@
 ﻿using Remotely_Desktop.Controls;
-using Remotely_Desktop.Models;
 using Remotely_Desktop.Services;
+using Remotely_ScreenCast;
+using Remotely_ScreenCast.Capture;
 using Remotely_ScreenCast.Models;
-using Remotely_ScreenCast.Sockets;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,7 +14,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using Viewer = Remotely_Desktop.Models.Viewer;
 
 namespace Remotely_Desktop.ViewModels
 {
@@ -23,6 +22,11 @@ namespace Remotely_Desktop.ViewModels
         public MainWindowViewModel()
         {
             Current = this;
+
+            Program.SessionIDChanged += SessionIDChanged;
+            Program.ViewerRemoved += ViewerRemoved;
+            Program.ViewerAdded += ViewerAdded;
+            Program.ScreenCastRequested += ScreenCastRequested;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -37,10 +41,8 @@ namespace Remotely_Desktop.ViewModels
             }
         }
 
-        public IPC IPC { get; set; } = new IPC();
-        public Process ScreenCasterProcess { get; set; }
-        public string SessionID { get; set; } = "Retrieving...";
-        public ObservableCollection<Viewer> Viewers { get; set; }
+        public string SessionID { get; set; }
+        public ObservableCollection<Viewer> Viewers { get; } = new ObservableCollection<Viewer>();
         public void FirePropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -48,56 +50,52 @@ namespace Remotely_Desktop.ViewModels
 
         public void Init()
         {
-            var filePath = ExtractScreenCasterEXE();
+            SessionID = "Retrieving...";
             Config = Config.GetConfig();
             while (string.IsNullOrWhiteSpace(Config.Host))
             {
                 PromptForHostName();
             }
-            var psi = new ProcessStartInfo()
-            {
-                FileName = filePath,
-                Arguments = $"-mode Normal -host {Config.Host}",
-                RedirectStandardError = true,
-                RedirectStandardInput = true,
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-
-            MessageHandlers.SessionIDChanged += SessionIDChanged;
-            MessageHandlers.ViewerRemoved += ViewerRemoved;
-            MessageHandlers.ViewerAdded += ViewerAdded;
 
             Task.Run(() =>
             {
-                Remotely_ScreenCast.Program.Main(new string[] { "-mode", "Normal", "-host", Config.Host });
+                Program.Main(new string[] { "-mode", "Normal", "-host", Config.Host });
             });
-            //ScreenCasterProcess = new Process();
-            //ScreenCasterProcess.StartInfo = psi;
-            //ScreenCasterProcess.OutputDataReceived += IPC.OutputDataReceived;
-            //ScreenCasterProcess.ErrorDataReceived += IPC.ErrorDataReceived;
-            //ScreenCasterProcess.Exited += ScreenCasterProcess_Exited;
-            //ScreenCasterProcess.Start();
         }
 
-        private void ViewerAdded(object sender, Remotely_ScreenCast.Models.Viewer viewer)
+        private void ScreenCastRequested(object sender, Tuple<string, string> args)
         {
-            Viewers.Add(new Viewer()
+            App.Current.Dispatcher.Invoke(() =>
             {
-                ConnectionId = viewer.ViewerConnectionID,
-                HasControl = true,
-                Name = viewer.Name
+                var result = MessageBox.Show($"You've received a connection request from {args.Item2}.  Accept?", "Connection Request", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Yes)
+                {
+                    Task.Run(() =>
+                    {
+                        ScreenCaster.BeginScreenCasting(args.Item1, args.Item2, Program.OutgoingMessages);
+                    });
+                }
+            });
+        }
+
+        private void ViewerAdded(object sender, Viewer viewer)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                Viewers.Add(viewer);
             });
         }
 
         private void ViewerRemoved(object sender, string viewerID)
         {
-            var viewer = Viewers.FirstOrDefault(x => x.ConnectionId == viewerID);
-            if (viewer != null)
+            App.Current.Dispatcher.Invoke(() =>
             {
-                Viewers.Remove(viewer);
-            }
+                var viewer = Viewers.FirstOrDefault(x => x.ViewerConnectionID == viewerID);
+                if (viewer != null)
+                {
+                    Viewers.Remove(viewer);
+                }
+            });
         }
 
         internal void CopyLink()
@@ -123,43 +121,6 @@ namespace Remotely_Desktop.ViewModels
             }
         }
 
-        private string ExtractScreenCasterEXE()
-        {
-            // Cleanup old files.
-            foreach (var file in Directory.GetFiles(Path.GetTempPath(), "Remotely_ScreenCast*"))
-            {
-                try
-                {
-                    File.Delete(file);
-                }
-                catch { }
-            }
-
-            // Get temp file name.
-            var count = 0;
-            var filePath = Path.Combine(Path.GetTempPath(), "Remotely_ScreenCast.exe");
-            while (File.Exists(filePath))
-            {
-                filePath = Path.Combine(Path.GetTempPath(), $"Remotely_ScreenCast{count}.exe");
-                count++;
-            }
-
-            // Extract ScreenCast.
-            using (var mrs = Assembly.GetExecutingAssembly().GetManifestResourceStream("Remotely_Desktop.Resources.Remotely_ScreenCast.exe"))
-            {
-                using (var fs = new FileStream(filePath, FileMode.Create))
-                {
-                    mrs.CopyTo(fs);
-                }
-            }
-            return filePath;
-        }
-
-        private void ScreenCasterProcess_Exited(object sender, EventArgs e)
-        {
-            MessageBox.Show("The screen sharing process has stopped unexpectedly.  Remotely will now close.", "Sharing Stopped", MessageBoxButton.OK, MessageBoxImage.Warning);
-            App.Current.Shutdown();
-        }
 
         private void SessionIDChanged(object sender, string sessionID)
         {

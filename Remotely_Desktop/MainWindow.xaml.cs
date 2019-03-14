@@ -26,7 +26,6 @@ namespace Remotely_Desktop
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel();
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

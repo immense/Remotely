@@ -37,7 +37,7 @@ namespace Remotely_Server.Services
         {
             get
             {
-                return (RemoteControlMode)Context.Items["ClientType"];
+                return (RemoteControlMode)Context.Items["Mode"];
             }
             set
             {
@@ -156,7 +156,15 @@ namespace Remotely_Server.Services
             ScreenCasterID = screenCasterID;
             Mode = (RemoteControlMode)remoteControlMode;
             RequesterName = requesterName;
-            await RCDeviceHub.Clients.Client(screenCasterID).SendAsync("GetScreenCast", Context.ConnectionId, requesterName);
+            if (Mode == RemoteControlMode.Unattended)
+            {
+                await RCDeviceHub.Clients.Client(screenCasterID).SendAsync("GetScreenCast", Context.ConnectionId, requesterName);
+            }
+            else
+            {
+                await Clients.Caller.SendAsync("RequestingScreenCast");
+                await RCDeviceHub.Clients.Client(screenCasterID).SendAsync("RequestScreenCast", Context.ConnectionId, requesterName);
+            }
         }
 
         public async Task SendLatencyUpdate(double latency)
