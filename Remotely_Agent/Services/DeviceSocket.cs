@@ -285,12 +285,11 @@ namespace Remotely_Agent.Services
                 }
                 try
                 {
-                    var filePath = ExtractScreenCasterEXE();
-
                     // Start ScreenCast.                 
                     if (OSUtils.IsWindows)
                     {
-
+                        var filePath = ExtractScreenCasterEXE();
+                        
                         if (Program.IsDebug)
                         {
                             Process.Start(filePath, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}");

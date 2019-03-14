@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely_Agent.Services
+namespace Remotely_Desktop.Services
 {
     public static class Logger
     {
