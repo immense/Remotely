@@ -56,5 +56,10 @@ namespace Remotely_ScreenCast.Sockets
         {
             await Connection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
         }
+
+        internal async Task GetSessionID()
+        {
+            await Connection.SendAsync("GetSessionID");
+        }
     }
 }

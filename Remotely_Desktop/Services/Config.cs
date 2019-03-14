@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,17 +13,16 @@ namespace Remotely_Desktop.Services
     {
         private static string ConfigFolder => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Remotely");
         private static string ConfigFile => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Remotely", "Config.json");
-       
+
         public static Config GetConfig()
         {
-            if (Directory.Exists(ConfigFolder))
+            if (!Directory.Exists(ConfigFolder))
             {
                 return new Config();
             }
 
             if (File.Exists(ConfigFile))
             {
-                var serializer = new DataContractJsonSerializer(typeof(Config));
                 try
                 {
                     return JsonConvert.DeserializeObject<Config>(File.ReadAllText(ConfigFile));
@@ -36,11 +35,12 @@ namespace Remotely_Desktop.Services
             return new Config();
         }
 
-        public static void SaveConfig(Config config)
+        public void Save()
         {
             try
             {
-                File.WriteAllText(ConfigFile, JsonConvert.SerializeObject(config));
+                Directory.CreateDirectory(ConfigFolder);
+                File.WriteAllText(ConfigFile, JsonConvert.SerializeObject(this));
             }
             catch
             {
