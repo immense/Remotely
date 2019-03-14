@@ -1,5 +1,4 @@
-﻿using Remotely_Agent.Client;
-using Remotely_Library.Services;
+﻿using Remotely_Library.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
