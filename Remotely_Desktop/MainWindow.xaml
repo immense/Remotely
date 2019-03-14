@@ -6,47 +6,57 @@
         xmlns:local="clr-namespace:Remotely_Desktop"
         xmlns:ViewModels="clr-namespace:Remotely_Desktop.ViewModels" x:Class="Remotely_Desktop.MainWindow"
         mc:Ignorable="d"
-        Title="Remotely" Height="350" Width="400" MouseLeftButtonDown="Window_MouseLeftButtonDown" WindowStyle="None" ResizeMode="NoResize" Icon="favicon.ico">
+        Title="Remotely" Height="250" Width="350" MouseLeftButtonDown="Window_MouseLeftButtonDown" WindowStyle="None" ResizeMode="NoResize" Icon="favicon.ico" Loaded="Window_Loaded">
     <Window.DataContext>
         <ViewModels:MainWindowViewModel/>
     </Window.DataContext>
-    <StackPanel>
-        <Border Height="50" Background="#FF535353">
-            <DockPanel Margin="10,0,0,0">
-                <StackPanel>
-                    <TextBlock Foreground="DeepSkyBlue" FontWeight="Bold" FontSize="20" Margin="0,2,0,0">Remotely</TextBlock>
-                    <TextBlock Foreground="White" FontSize="10"><Run Text="Do IT Remotely"/></TextBlock>
-                </StackPanel>
-                <Button Style="{StaticResource TitlebarButton}" Click="CloseButton_Click" Content="X"/>
-                <Button Style="{StaticResource TitlebarButton}" Click="MinimizeButton_Click" Content="_"/>
-            </DockPanel>
-        </Border>
-        <Grid Margin="10,15,10,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0" Margin="0,0,15,0">
-                <TextBlock Style="{StaticResource SectionHeader}"><Run Text="Share Screen"/></TextBlock>
-                <TextBlock FontSize="16" Margin="0,10,0,5"><Run Text="Your Session ID:"/></TextBlock>
-                <TextBox FontSize="16" Text="{Binding SessionID}" IsReadOnly="True"/>
-                <Grid Margin="0,10,0,0">
-                    <TextBlock VerticalAlignment="Center">
+    <Grid>
+        <StackPanel>
+            <Border Height="50" Background="#FF535353">
+                <DockPanel Margin="10,0,0,0">
+                    <StackPanel>
+                        <TextBlock Foreground="DeepSkyBlue" FontWeight="Bold" FontSize="20" Margin="0,2,0,0">Remotely</TextBlock>
+                        <TextBlock Foreground="White" FontSize="10"><Run Text="Do IT Remotely"/></TextBlock>
+                    </StackPanel>
+                    <Button Style="{StaticResource TitlebarButton}" Click="CloseButton_Click" Content="X"/>
+                    <Button Style="{StaticResource TitlebarButton}" Click="MinimizeButton_Click" Content="_"/>
+                </DockPanel>
+            </Border>
+            <Grid Margin="10,15,10,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Margin="0,0,15,0">
+                    <TextBlock Style="{StaticResource SectionHeader}"><Run Text="Share Screen"/></TextBlock>
+                    <TextBlock FontSize="16" Margin="0,10,0,5"><Run Text="Your Session ID:"/></TextBlock>
+                    <TextBox FontSize="16" Text="{Binding SessionID}" IsReadOnly="True"/>
+                    <Grid Margin="0,10,0,0">
+                        <TextBlock VerticalAlignment="Center">
                         Invite Link:
-                    </TextBlock>
-                    <Button HorizontalAlignment="Right" Style="{StaticResource NormalButton}" Width="50" Height="25">
-                        Copy
-                    </Button>
-                </Grid>
-            </StackPanel>
-            <StackPanel Grid.Column="1" Margin="15,0,0,0">
-                <TextBlock Style="{StaticResource SectionHeader}"><Run Text="Viewers"/></TextBlock>
-                <ListBox Height="200" Margin="0,5,0,0" ItemsSource="{Binding Viewers}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate/>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </StackPanel>
-        </Grid>
-    </StackPanel>
+                        </TextBlock>
+                        <Button HorizontalAlignment="Right" Style="{StaticResource NormalButton}" Width="50" Height="25" Click="CopyLinkButton_Click">
+                            Copy
+                        </Button>
+                    </Grid>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Margin="15,0,0,0">
+                    <TextBlock Style="{StaticResource SectionHeader}"><Run Text="Viewers"/></TextBlock>
+                    <ListBox Height="90" Margin="0,5,0,0" ItemsSource="{Binding Viewers}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate/>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+        <DockPanel VerticalAlignment="Bottom" Margin="10,5">
+            <TextBlock FontSize="10">
+                <Run>Connected to: </Run>
+                <Hyperlink Click="HostHyperlink_Click">
+                    <TextBlock Text="{Binding Host}"></TextBlock>
+                </Hyperlink>
+            </TextBlock>
+        </DockPanel>
+    </Grid>
 </Window>

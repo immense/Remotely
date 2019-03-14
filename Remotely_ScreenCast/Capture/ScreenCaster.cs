@@ -58,7 +58,7 @@ namespace Remotely_ScreenCast.Capture
                 DisconnectRequested = false,
                 Name = requesterName,
                 ViewerConnectionID = viewerID,
-                HasControl = Program.Mode == Enums.AppMode.Unattended,
+                HasControl = true,
                 ImageQuality = 1
             };
 

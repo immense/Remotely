@@ -12,6 +12,7 @@ using Win32;
 using System.Net;
 using System.IO;
 using System.Diagnostics;
+using Remotely_ScreenCast.Models;
 
 namespace Remotely_ScreenCast.Sockets
 {
@@ -31,6 +32,10 @@ namespace Remotely_ScreenCast.Sockets
                 try
                 {
                     ScreenCaster.BeginScreenCasting(viewerID, requesterName, outgoingMessages);
+                    if (Program.Viewers.TryGetValue(viewerID, out var viewer))
+                    {
+                        ViewerAdded?.Invoke(null, viewer);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -168,6 +173,8 @@ namespace Remotely_ScreenCast.Sockets
                     viewer.DisconnectRequested = true;
                 }
                 await hubConnection.InvokeAsync("ViewerDisconnected", viewerID);
+                ViewerRemoved?.Invoke(null, viewerID);
+
             });
             hubConnection.On("LatencyUpdate", (double latency, string viewerID) =>
             {
@@ -176,18 +183,6 @@ namespace Remotely_ScreenCast.Sockets
                     viewer.PendingFrames--;
                     viewer.Latency = latency;
                 }
-            });
-
-            hubConnection.On("SessionID", (string sessionID) =>
-            {
-                var formattedSessionID = "";
-                for (var i = 0; i < sessionID.Length; i += 3)
-                {
-                    formattedSessionID += sessionID.Substring(i, 3) + " ";
-                }
-
-                // TODO: Send to desktop app.
-                formattedSessionID.Trim();
             });
 
             hubConnection.On("SelectScreen", (int screenIndex, string viewerID) =>
@@ -264,6 +259,14 @@ namespace Remotely_ScreenCast.Sockets
                     Process.Start("explorer.exe", dirPath);
                 });
             });
+
+            hubConnection.On("SessionID", (string sessionID) =>
+            {
+                SessionIDChanged?.Invoke(null, sessionID);
+            });
         }
+        public static EventHandler<string> SessionIDChanged { get; set; }
+        public static EventHandler<string> ViewerRemoved { get; set; }
+        public static EventHandler<Viewer> ViewerAdded { get; set; }
     }
 }

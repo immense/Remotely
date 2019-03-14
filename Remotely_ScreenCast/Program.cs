@@ -32,18 +32,21 @@ namespace Remotely_ScreenCast
         public static string CurrentDesktopName { get; set; }
         public static ConcurrentDictionary<string, Viewer> Viewers { get; } = new ConcurrentDictionary<string, Viewer>();
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             try
             {
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-
                 var argDict = ProcessArgs(args);
                 Mode = (AppMode)Enum.Parse(typeof(AppMode), argDict["mode"]);
-                RequesterID = argDict["requester"];
                 Host = argDict["host"];
-                CurrentDesktopName = argDict["desktop"];
-                ServiceID = argDict["serviceid"];
+
+                if (Mode == AppMode.Unattended)
+                {
+                    RequesterID = argDict["requester"];
+                    CurrentDesktopName = argDict["desktop"];
+                    ServiceID = argDict["serviceid"];
+                }
 
                 Connection = new HubConnectionBuilder()
                     .WithUrl($"{Host}/RCDeviceHub")
@@ -54,50 +57,59 @@ namespace Remotely_ScreenCast
 
                 OutgoingMessages = new OutgoingMessages(Connection);
 
-                OutgoingMessages.SendServiceID(ServiceID).Wait();
-
-                var desktopName = Win32Interop.GetCurrentDesktop();
-                if (desktopName.ToLower() != CurrentDesktopName.ToLower())
-                {
-                    CurrentDesktopName = desktopName;
-                    Logger.Write($"Setting initial desktop to {desktopName}.");
-                    argDict["desktop"] = desktopName;
-                    var openProcessString = Assembly.GetExecutingAssembly().Location;
-                    foreach (var arg in argDict)
-                    {
-                        openProcessString += $" -{arg.Key} {arg.Value}";
-                    }
-                    var result = Win32Interop.OpenInteractiveProcess(openProcessString, desktopName, true, out _);
-                    if (!result)
-                    {
-                        Logger.Write($"Desktop relaunch to {desktopName} failed.");
-                    }
-                    Environment.Exit(0);
-                }
-
                 MessageHandlers.ApplyConnectionHandlers(Connection, OutgoingMessages);
 
                 CursorIconWatcher.Current.OnChange += CursorIconWatcher_OnChange;
 
-                if (argDict.ContainsKey("relaunch"))
+                if (Mode == AppMode.Unattended)
                 {
-                    Logger.Write($"Resuming after relaunch in desktop {desktopName}.");
-                    var viewersString = argDict["viewers"];
-                    var viewerIDs = viewersString.Split(",".ToCharArray());
-                    OutgoingMessages.NotifyViewersRelaunchedScreenCasterReady(viewerIDs).Wait();
+                    OutgoingMessages.SendServiceID(ServiceID).Wait();
+
+                    var desktopName = Win32Interop.GetCurrentDesktop();
+                    if (desktopName.ToLower() != CurrentDesktopName.ToLower())
+                    {
+                        CurrentDesktopName = desktopName;
+                        Logger.Write($"Setting initial desktop to {desktopName}.");
+                        argDict["desktop"] = desktopName;
+                        var openProcessString = Assembly.GetExecutingAssembly().Location;
+                        foreach (var arg in argDict)
+                        {
+                            openProcessString += $" -{arg.Key} {arg.Value}";
+                        }
+                        var result = Win32Interop.OpenInteractiveProcess(openProcessString, desktopName, true, out _);
+                        if (!result)
+                        {
+                            Logger.Write($"Desktop relaunch to {desktopName} failed.");
+                        }
+                        Environment.Exit(0);
+                    }
+
+                    if (argDict.ContainsKey("relaunch"))
+                    {
+                        Logger.Write($"Resuming after relaunch in desktop {CurrentDesktopName}.");
+                        var viewersString = argDict["viewers"];
+                        var viewerIDs = viewersString.Split(",".ToCharArray());
+                        OutgoingMessages.NotifyViewersRelaunchedScreenCasterReady(viewerIDs).Wait();
+                    }
+                    else
+                    {
+                        OutgoingMessages.NotifyRequesterUnattendedReady(RequesterID).Wait();
+                    }
+
+                    StartWaitForViewerTimer();
                 }
-                else
+                else if (Mode == AppMode.Normal)
                 {
-                    OutgoingMessages.NotifyRequesterUnattendedReady(RequesterID).Wait();
+                    OutgoingMessages.GetSessionID().Wait();
                 }
 
-                StartWaitForViewerTimer();
+               
 
                 while (true)
                 {
                     if (Mode == AppMode.Unattended)
                     {
-                        desktopName = Win32Interop.GetCurrentDesktop();
+                        var desktopName = Win32Interop.GetCurrentDesktop();
                         if (desktopName.ToLower() != CurrentDesktopName.ToLower() && Viewers.Count > 0)
                         {
                             CurrentDesktopName = desktopName;
@@ -114,12 +126,8 @@ namespace Remotely_ScreenCast
                                 OutgoingMessages.SendConnectionFailedToViewers(Viewers.Keys.ToList()).Wait();
                             }
                         }
-                        System.Threading.Thread.Sleep(100);
                     }
-                    else
-                    {
-                        Console.Read();
-                    }
+                    System.Threading.Thread.Sleep(100);
                 }
             }
             catch (Exception ex)
@@ -152,6 +160,10 @@ namespace Remotely_ScreenCast
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Logger.Write((Exception)e.ExceptionObject);
+            if (Console.IsErrorRedirected)
+            {
+                
+            }
         }
 
         private static Dictionary<string, string> ProcessArgs(string[] args)

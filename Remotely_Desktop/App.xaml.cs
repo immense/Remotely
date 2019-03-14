@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Remotely_Desktop.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -13,5 +14,12 @@ namespace Remotely_Desktop
     /// </summary>
     public partial class App : Application
     {
+        private void Application_Exit(object sender, ExitEventArgs e)
+        {
+            if (MainWindowViewModel.Current?.ScreenCasterProcess?.HasExited == false)
+            {
+                MainWindowViewModel.Current.ScreenCasterProcess.Kill();
+            }
+        }
     }
 }
