@@ -60,7 +60,7 @@ namespace Remotely_ScreenCast
                 if (desktopName.ToLower() != CurrentDesktopName.ToLower())
                 {
                     CurrentDesktopName = desktopName;
-                    Logger.Write($"Relaunching in desktop {desktopName}.");
+                    Logger.Write($"Setting initial desktop to {desktopName}.");
                     argDict["desktop"] = desktopName;
                     var openProcessString = Assembly.GetExecutingAssembly().Location;
                     foreach (var arg in argDict)
@@ -81,6 +81,7 @@ namespace Remotely_ScreenCast
 
                 if (argDict.ContainsKey("relaunch"))
                 {
+                    Logger.Write($"Resuming after relaunch in desktop {desktopName}.");
                     var viewersString = argDict["viewers"];
                     var viewerIDs = viewersString.Split(",".ToCharArray());
                     OutgoingMessages.NotifyViewersRelaunchedScreenCasterReady(viewerIDs).Wait();

@@ -76,7 +76,7 @@ namespace Remotely_Server.Services
                 if (ViewerList.Count > 0)
                 {
                     await RCBrowserHub.Clients.Clients(ViewerList).SendAsync("Reconnecting");
-                    await DeviceHub.Clients.Client(ServiceID).SendAsync("RestartScreenCaster", ViewerList, ServiceID, Context.ConnectionId);
+                    await DeviceHub.Clients.Client(ServiceID).SendAsync("RestartScreenCaster", ViewerList, ServiceID, Context.ConnectionId);                    
                 }
             }
             await base.OnDisconnectedAsync(exception);

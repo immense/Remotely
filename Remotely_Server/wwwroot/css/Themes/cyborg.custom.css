@@ -38,7 +38,7 @@ button.navbar-toggler:hover {
 }
 
 .table-hover > tbody > .record-row.row-selected {
-    background-color: rgb(75, 75, 75);
+    color: limegreen;
 }
 
 #consoleStatusDiv select {
