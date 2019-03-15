@@ -78,6 +78,15 @@ namespace Remotely_Desktop.ViewModels
             });
         }
 
+        internal async Task RemoveViewers(IEnumerable<Viewer> viewerList)
+        {
+            foreach (Viewer viewer in viewerList)
+            {
+                viewer.DisconnectRequested = true;
+                await Program.OutgoingMessages.SendViewerRemoved(viewer.ViewerConnectionID);
+            }
+        }
+
         private void ViewerAdded(object sender, Viewer viewer)
         {
             App.Current.Dispatcher.Invoke(() =>

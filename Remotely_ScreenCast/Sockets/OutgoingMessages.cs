@@ -61,5 +61,10 @@ namespace Remotely_ScreenCast.Sockets
         {
             await Connection.SendAsync("GetSessionID");
         }
+
+        public async Task SendViewerRemoved(string viewerID)
+        {
+            await Connection.SendAsync("SendViewerRemoved", viewerID);
+        }
     }
 }

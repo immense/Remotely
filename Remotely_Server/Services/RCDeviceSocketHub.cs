@@ -134,6 +134,11 @@ namespace Remotely_Server.Services
             await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("SwitchingDesktops");
         }
 
+        public async Task SendViewerRemoved(string viewerID)
+        {
+            await RCBrowserHub.Clients.Clients(viewerID).SendAsync("ViewerRemoved");
+        }
+
         public async Task GetSessionID()
         {
             var random = new Random();

@@ -31,6 +31,7 @@ namespace Remotely_ScreenCast.Capture
                 {
                     capturer = new DXCapture();
                     captureMode = CaptureMode.DirectX;
+                    capturer.Init();
                 }
                 else
                 {

@@ -1,4 +1,5 @@
 ﻿using Remotely_Desktop.ViewModels;
+using Remotely_ScreenCast.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,6 +70,11 @@ namespace Remotely_Desktop
             await Task.Delay(750);
             var animation = new DoubleAnimation(0, TimeSpan.FromMilliseconds(750));
             tooltip.BeginAnimation(OpacityProperty, animation);
+        }
+
+        private async void RemoveButton_Click(object sender, RoutedEventArgs e)
+        {
+            await MainWindowViewModel.Current.RemoveViewers(ViewerListBox.SelectedItems.Cast<Viewer>());
         }
     }
 }
