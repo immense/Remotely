@@ -162,62 +162,55 @@ namespace Remotely_ScreenCast.Capture
             CurrentFrame.Dispose();
             PreviousFrame.Dispose();
         }
-        private void Init()
+        public void Init()
         {
-            try
+            lock (ScreenLock)
             {
-                lock (ScreenLock)
+                factory = new Factory1();
+
+                //Get first adapter
+                adapter = factory.Adapters1.FirstOrDefault(x => x.Outputs.Length > 0);
+                //Get device from adapter
+                device = new SharpDX.Direct3D11.Device(adapter);
+                //Get front buffer of the adapter
+                if (adapter.GetOutputCount() < selectedScreen + 1)
                 {
-                    factory = new Factory1();
-
-                    //Get first adapter
-                    adapter = factory.Adapters1.FirstOrDefault(x => x.Outputs.Length > 0);
-                    //Get device from adapter
-                    device = new SharpDX.Direct3D11.Device(adapter);
-                    //Get front buffer of the adapter
-                    if (adapter.GetOutputCount() < selectedScreen + 1)
-                    {
-                        selectedScreen = 0;
-                    }
-                    output = adapter.GetOutput(selectedScreen);
-                    output1 = output.QueryInterface<Output1>();
-
-                    // Width/Height of desktop to capture
-                    var bounds = output.Description.DesktopBounds;
-                    var newWidth = bounds.Right - bounds.Left;
-                    var newHeight = bounds.Bottom - bounds.Top;
-                    CurrentScreenBounds = new Rectangle(bounds.Left, bounds.Top, newWidth, newHeight);
-                    if (newWidth != width || newHeight != height)
-                    {
-                        ScreenChanged?.Invoke(this, CurrentScreenBounds);
-                    }
-                    width = newWidth;
-                    height = newHeight;
-
-                    CurrentFrame = new Bitmap(width, height);
-                    PreviousFrame = new Bitmap(width, height);
-
-                    // Create Staging texture CPU-accessible
-                    textureDesc = new Texture2DDescription
-                    {
-                        CpuAccessFlags = CpuAccessFlags.Read,
-                        BindFlags = BindFlags.None,
-                        Format = Format.B8G8R8A8_UNorm,
-                        Width = width,
-                        Height = height,
-                        OptionFlags = ResourceOptionFlags.None,
-                        MipLevels = 1,
-                        ArraySize = 1,
-                        SampleDescription = { Count = 1, Quality = 0 },
-                        Usage = ResourceUsage.Staging
-                    };
-                    screenTexture = new Texture2D(device, textureDesc);
-                    duplicatedOutput = output1.DuplicateOutput(device);
+                    selectedScreen = 0;
                 }
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
+                output = adapter.GetOutput(selectedScreen);
+                output1 = output.QueryInterface<Output1>();
+
+                // Width/Height of desktop to capture
+                var bounds = output.Description.DesktopBounds;
+                var newWidth = bounds.Right - bounds.Left;
+                var newHeight = bounds.Bottom - bounds.Top;
+                CurrentScreenBounds = new Rectangle(bounds.Left, bounds.Top, newWidth, newHeight);
+                if (newWidth != width || newHeight != height)
+                {
+                    ScreenChanged?.Invoke(this, CurrentScreenBounds);
+                }
+                width = newWidth;
+                height = newHeight;
+
+                CurrentFrame = new Bitmap(width, height);
+                PreviousFrame = new Bitmap(width, height);
+
+                // Create Staging texture CPU-accessible
+                textureDesc = new Texture2DDescription
+                {
+                    CpuAccessFlags = CpuAccessFlags.Read,
+                    BindFlags = BindFlags.None,
+                    Format = Format.B8G8R8A8_UNorm,
+                    Width = width,
+                    Height = height,
+                    OptionFlags = ResourceOptionFlags.None,
+                    MipLevels = 1,
+                    ArraySize = 1,
+                    SampleDescription = { Count = 1, Quality = 0 },
+                    Usage = ResourceUsage.Staging
+                };
+                screenTexture = new Texture2D(device, textureDesc);
+                duplicatedOutput = output1.DuplicateOutput(device);
             }
         }
     }

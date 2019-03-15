@@ -113,6 +113,14 @@ if ($ArgList.Contains("c")) {
     Pop-Location
     Move-Item -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\linux-x64\publish\Remotely-Linux.zip" -Destination ".\Remotely_Server\wwwroot\Downloads\Remotely-Linux.zip" -Force
 
+    # Copy desktop app to Downloads folder.
+    if ((Test-Path -Path ".\Remotely_Desktop\bin\Release\Remotely_Desktop.exe") -eq $true) {
+        Copy-Item -Path ".\Remotely_Desktop\bin\Release\Remotely_Desktop.exe" -Destination ".\Remotely_Server\wwwroot\Downloads\Remotely_Desktop.exe" -Force
+    }
+    elseif ((Test-Path -Path ".\Remotely_Desktop\bin\Debug\Remotely_Desktop.exe") -eq $true) {
+        Copy-Item -Path ".\Remotely_Desktop\bin\Debug\Remotely_Desktop.exe" -Destination ".\Remotely_Server\wwwroot\Downloads\Remotely_Desktop.exe" -Force
+    }
+
 }
 
 if ($ArgList.Contains("s") -and $OutDir.Length -gt 0) {

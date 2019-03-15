@@ -21,6 +21,7 @@ export class RCBrowserSockets {
             UI.StatusMessage.innerHTML = "";
         });
         this.Connection.closedCallbacks.push((ev) => {
+            UI.Screen2DContext.clearRect(0, 0, UI.ScreenViewer.width, UI.ScreenViewer.height);
             console.log("Connection closed.");
             UI.StatusMessage.innerHTML = "Connection closed.";
             UI.ScreenViewer.setAttribute("hidden", "hidden");
@@ -119,6 +120,12 @@ export class RCBrowserSockets {
             UI.ConnectButton.removeAttribute("disabled");
             UI.StatusMessage.innerHTML = "Connection failed or was denied.";
             UI.ShowMessage("Connection failed.  Please reconnect.");
+            this.Connection.stop();
+        });
+        hubConnection.on("ViewerRemoved", () => {
+            UI.ConnectButton.removeAttribute("disabled");
+            UI.StatusMessage.innerHTML = "The session was stopped by your partner.";
+            UI.ShowMessage("Session ended.");
             this.Connection.stop();
         });
         hubConnection.on("SessionIDNotFound", () => {

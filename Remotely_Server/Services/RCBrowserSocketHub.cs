@@ -123,8 +123,8 @@ namespace Remotely_Server.Services
                 {
                     await Task.Delay(1000);
                 }
-                await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ViewerDisconnected", Context.ConnectionId);
             }
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ViewerDisconnected", Context.ConnectionId);
         }
 
         public async Task SelectScreen(int screenIndex)

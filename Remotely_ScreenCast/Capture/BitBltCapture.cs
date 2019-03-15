@@ -66,7 +66,7 @@ namespace Remotely_ScreenCast.Capture
             Init();
         }
 
-        private void Init()
+        public void Init()
         {
             CurrentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
             PreviousFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
