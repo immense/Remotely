@@ -31,104 +31,17 @@ namespace Remotely_ScreenCast
         public static OutgoingMessages OutgoingMessages { get; private set; }
         public static string CurrentDesktopName { get; set; }
         public static ConcurrentDictionary<string, Viewer> Viewers { get; } = new ConcurrentDictionary<string, Viewer>();
+        public static Dictionary<string,string> ArgDict { get; set; }
 
         public static void Main(string[] args)
         {
             try
             {
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-                var argDict = ProcessArgs(args);
-                Mode = (AppMode)Enum.Parse(typeof(AppMode), argDict["mode"]);
-                Host = argDict["host"];
-
-                if (Mode == AppMode.Unattended)
-                {
-                    RequesterID = argDict["requester"];
-                    CurrentDesktopName = argDict["desktop"];
-                    ServiceID = argDict["serviceid"];
-                }
-
-                Connection = new HubConnectionBuilder()
-                    .WithUrl($"{Host}/RCDeviceHub")
-                    .AddMessagePackProtocol()
-                    .Build();
-
-                Connection.StartAsync().Wait();
-
-                OutgoingMessages = new OutgoingMessages(Connection);
-
-                MessageHandlers.ApplyConnectionHandlers(Connection, OutgoingMessages);
-
-                CursorIconWatcher.Current.OnChange += CursorIconWatcher_OnChange;
-
-                if (Mode == AppMode.Unattended)
-                {
-                    OutgoingMessages.SendServiceID(ServiceID).Wait();
-
-                    var desktopName = Win32Interop.GetCurrentDesktop();
-                    if (desktopName.ToLower() != CurrentDesktopName.ToLower())
-                    {
-                        CurrentDesktopName = desktopName;
-                        Logger.Write($"Setting initial desktop to {desktopName}.");
-                        argDict["desktop"] = desktopName;
-                        var openProcessString = Assembly.GetExecutingAssembly().Location;
-                        foreach (var arg in argDict)
-                        {
-                            openProcessString += $" -{arg.Key} {arg.Value}";
-                        }
-                        var result = Win32Interop.OpenInteractiveProcess(openProcessString, desktopName, true, out _);
-                        if (!result)
-                        {
-                            Logger.Write($"Desktop relaunch to {desktopName} failed.");
-                        }
-                        Environment.Exit(0);
-                    }
-
-                    if (argDict.ContainsKey("relaunch"))
-                    {
-                        Logger.Write($"Resuming after relaunch in desktop {CurrentDesktopName}.");
-                        var viewersString = argDict["viewers"];
-                        var viewerIDs = viewersString.Split(",".ToCharArray());
-                        OutgoingMessages.NotifyViewersRelaunchedScreenCasterReady(viewerIDs).Wait();
-                    }
-                    else
-                    {
-                        OutgoingMessages.NotifyRequesterUnattendedReady(RequesterID).Wait();
-                    }
-
-                    StartWaitForViewerTimer();
-                }
-                else if (Mode == AppMode.Normal)
-                {
-                    OutgoingMessages.GetSessionID().Wait();
-                }
-
-               
-
-                while (true)
-                {
-                    if (Mode == AppMode.Unattended)
-                    {
-                        var desktopName = Win32Interop.GetCurrentDesktop();
-                        if (desktopName.ToLower() != CurrentDesktopName.ToLower() && Viewers.Count > 0)
-                        {
-                            CurrentDesktopName = desktopName;
-                            Logger.Write($"Switching desktops to {desktopName}.");
-                            // TODO: SetThradDesktop causes issues with input after switching.
-                            //var inputDesktop = Win32Interop.OpenInputDesktop();
-                            //User32.SetThreadDesktop(inputDesktop);
-                            //User32.CloseDesktop(inputDesktop);
-                            Connection.InvokeAsync("SwitchingDesktops", Viewers.Keys.ToList()).Wait();
-                            var result = Win32Interop.OpenInteractiveProcess(Assembly.GetExecutingAssembly().Location + $" -mode {Mode.ToString()} -requester {RequesterID} -serviceid {ServiceID} -host {Host} -relaunch true -desktop {desktopName} -viewers {String.Join(",", Viewers.Keys.ToList())}", desktopName, true, out _);
-                            if (!result)
-                            {
-                                Logger.Write($"Desktop switch to {desktopName} failed.");
-                                OutgoingMessages.SendConnectionFailedToViewers(Viewers.Keys.ToList()).Wait();
-                            }
-                        }
-                    }
-                    System.Threading.Thread.Sleep(100);
-                }
+                ProcessArgs(args);
+                Connect().Wait();
+                SetEventHandlers();
+                HandleConnection().Wait();
             }
             catch (Exception ex)
             {
@@ -136,6 +49,98 @@ namespace Remotely_ScreenCast
             }
         }
 
+        public static async Task HandleConnection()
+        {
+            if (Mode == AppMode.Unattended)
+            {
+                OutgoingMessages.SendServiceID(ServiceID).Wait();
+
+                var desktopName = Win32Interop.GetCurrentDesktop();
+                if (desktopName.ToLower() != CurrentDesktopName.ToLower())
+                {
+                    CurrentDesktopName = desktopName;
+                    Logger.Write($"Setting initial desktop to {desktopName}.");
+                    ArgDict["desktop"] = desktopName;
+                    var openProcessString = Assembly.GetExecutingAssembly().Location;
+                    foreach (var arg in ArgDict)
+                    {
+                        openProcessString += $" -{arg.Key} {arg.Value}";
+                    }
+                    var result = Win32Interop.OpenInteractiveProcess(openProcessString, desktopName, true, out _);
+                    if (!result)
+                    {
+                        Logger.Write($"Desktop relaunch to {desktopName} failed.");
+                    }
+                    Environment.Exit(0);
+                }
+
+                if (ArgDict.ContainsKey("relaunch"))
+                {
+                    Logger.Write($"Resuming after relaunch in desktop {CurrentDesktopName}.");
+                    var viewersString = ArgDict["viewers"];
+                    var viewerIDs = viewersString.Split(",".ToCharArray());
+                    OutgoingMessages.NotifyViewersRelaunchedScreenCasterReady(viewerIDs).Wait();
+                }
+                else
+                {
+                    OutgoingMessages.NotifyRequesterUnattendedReady(RequesterID).Wait();
+                }
+
+                StartWaitForViewerTimer();
+            }
+            else if (Mode == AppMode.Normal)
+            {
+                OutgoingMessages.GetSessionID().Wait();
+            }
+
+
+
+            while (true)
+            {
+                if (Mode == AppMode.Unattended)
+                {
+                    var desktopName = Win32Interop.GetCurrentDesktop();
+                    if (desktopName.ToLower() != CurrentDesktopName.ToLower() && Viewers.Count > 0)
+                    {
+                        CurrentDesktopName = desktopName;
+                        Logger.Write($"Switching desktops to {desktopName}.");
+                        // TODO: SetThradDesktop causes issues with input after switching.
+                        //var inputDesktop = Win32Interop.OpenInputDesktop();
+                        //User32.SetThreadDesktop(inputDesktop);
+                        //User32.CloseDesktop(inputDesktop);
+                        Connection.InvokeAsync("SwitchingDesktops", Viewers.Keys.ToList()).Wait();
+                        var result = Win32Interop.OpenInteractiveProcess(Assembly.GetExecutingAssembly().Location + $" -mode {Mode.ToString()} -requester {RequesterID} -serviceid {ServiceID} -host {Host} -relaunch true -desktop {desktopName} -viewers {String.Join(",", Viewers.Keys.ToList())}", desktopName, true, out _);
+                        if (!result)
+                        {
+                            Logger.Write($"Desktop switch to {desktopName} failed.");
+                            OutgoingMessages.SendConnectionFailedToViewers(Viewers.Keys.ToList()).Wait();
+                        }
+                    }
+                }
+                await Task.Delay(100);
+            }
+        }
+
+        public static void SetEventHandlers()
+        {
+            OutgoingMessages = new OutgoingMessages(Connection);
+
+            MessageHandlers.ApplyConnectionHandlers(Connection, OutgoingMessages);
+
+            CursorIconWatcher.Current.OnChange += CursorIconWatcher_OnChange;
+        }
+
+        public static Task Connect()
+        {
+            Connection = new HubConnectionBuilder()
+                .WithUrl($"{Host}/RCDeviceHub")
+                .AddMessagePackProtocol()
+                .Build();
+
+            return Connection.StartAsync();
+        }
+
+ 
         private static async void CursorIconWatcher_OnChange(object sender, string cursor)
         {
             await OutgoingMessages.SendCursorChange(cursor, Viewers.Keys.ToList());
@@ -162,9 +167,9 @@ namespace Remotely_ScreenCast
             Logger.Write((Exception)e.ExceptionObject);
         }
 
-        private static Dictionary<string, string> ProcessArgs(string[] args)
+        public static void ProcessArgs(string[] args)
         {
-            var argDict = new Dictionary<string, string>();
+            ArgDict = new Dictionary<string, string>();
 
             for (var i = 0; i < args.Length; i += 2)
             {
@@ -175,12 +180,22 @@ namespace Remotely_ScreenCast
                     var value = args?[i + 1];
                     if (value != null)
                     {
-                        argDict[key] = args[i + 1].Trim();
+                        ArgDict[key] = args[i + 1].Trim();
                     }
                 }
 
             }
-            return argDict;
+
+            Mode = (AppMode)Enum.Parse(typeof(AppMode), Program.ArgDict["mode"]);
+            Host = Program.ArgDict["host"];
+
+            if (Mode == AppMode.Unattended)
+            {
+                RequesterID = Program.ArgDict["requester"];
+                CurrentDesktopName = Program.ArgDict["desktop"];
+                ServiceID = Program.ArgDict["serviceid"];
+            }
+
         }
         public static EventHandler<string> SessionIDChanged { get; set; }
         public static EventHandler<string> ViewerRemoved { get; set; }
