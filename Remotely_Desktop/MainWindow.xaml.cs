@@ -44,15 +44,15 @@ namespace Remotely_Desktop
             this.WindowState = WindowState.Minimized;
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            (DataContext as MainWindowViewModel).Init();
+            await MainWindowViewModel.Current.Init();
         }
 
-        private void HostHyperlink_Click(object sender, RoutedEventArgs e)
+        private async void HostHyperlink_Click(object sender, RoutedEventArgs e)
         {
             MainWindowViewModel.Current.PromptForHostName();
-            MainWindowViewModel.Current.Init();
+            await MainWindowViewModel.Current.Init();
         }
 
         private async void CopyLinkButton_Click(object sender, RoutedEventArgs e)

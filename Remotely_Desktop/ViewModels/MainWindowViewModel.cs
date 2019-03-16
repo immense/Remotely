@@ -48,7 +48,7 @@ namespace Remotely_Desktop.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public void Init()
+        public async Task Init()
         {
             SessionID = "Retrieving...";
             Config = Config.GetConfig();
@@ -57,9 +57,22 @@ namespace Remotely_Desktop.ViewModels
                 PromptForHostName();
             }
 
-            Task.Run(() =>
+            Program.ProcessArgs(new string[] { "-mode", "Normal", "-host", Config.Host });
+            try
             {
-                Program.Main(new string[] { "-mode", "Normal", "-host", Config.Host });
+               await Program.Connect();
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+                MessageBox.Show("Failed to connect to server.", "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            Program.SetEventHandlers();
+
+            await Task.Run(() =>
+            {
+                Program.HandleConnection();
             });
         }
 
