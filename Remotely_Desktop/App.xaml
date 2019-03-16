@@ -5,10 +5,10 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <Style x:Key="TitlebarButton" TargetType="Button">
+            <Setter Property="Background" Value="#FF464646"></Setter>
             <Setter Property="DockPanel.Dock" Value="Right"></Setter>
             <Setter Property="HorizontalAlignment" Value="Right"></Setter>
             <Setter Property="BorderBrush" Value="{x:Null}"></Setter>
-            <Setter Property="Background" Value="{x:Null}"></Setter>
             <Setter Property="Foreground" Value="White"></Setter>
             <Setter Property="FontWeight" Value="Bold"></Setter>
             <Setter Property="Height" Value="30"></Setter>
