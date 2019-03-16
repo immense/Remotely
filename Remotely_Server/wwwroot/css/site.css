@@ -37,6 +37,23 @@ a.navbar-brand {
     overflow-y: hidden;
     margin-top: 10px
 }
+#consoleAlert {
+    animation-name: blink;
+    animation-direction: alternate-reverse;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease;
+}
+@keyframes blink {
+    from {
+        opacity: .25;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
 
 #dataGridFrame {
     max-height: calc(100vh - 250px);

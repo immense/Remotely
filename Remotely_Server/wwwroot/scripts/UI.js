@@ -13,6 +13,8 @@ export var TotalDevicesCount = document.querySelector("#totalDevicesSpan");
 export var MeasurementCanvas = document.createElement("canvas");
 export var MeasurementContext = MeasurementCanvas.getContext("2d");
 export var TabContentWrapper = document.getElementById("tabContentWrapper");
+export var ConsoleTab = document.getElementById("consoleTab");
+export var ConsoleAlert = document.getElementById("consoleAlert");
 export function AddConsoleOutput(strOutputMessage) {
     var outputBlock = document.createElement("div");
     outputBlock.classList.add("console-block");
@@ -26,6 +28,9 @@ export function AddConsoleOutput(strOutputMessage) {
     outputBlock.appendChild(output);
     ConsoleOutputDiv.appendChild(outputBlock);
     TabContentWrapper.scrollTop = TabContentWrapper.scrollHeight;
+    if (!ConsoleTab.classList.contains("active")) {
+        ConsoleAlert.hidden = false;
+    }
 }
 export function AddConsoleHTML(html) {
     var contentWrapper = document.createElement("div");

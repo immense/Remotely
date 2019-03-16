@@ -1,6 +1,11 @@
 import { UserSettings } from "./UserSettings.js";
 import { Store } from "./Store.js";
+import { WebCommands } from "./Commands/WebCommands.js";
 import * as UI from "./UI.js";
+import { CMDCommands } from "./Commands/CMDCommands.js";
+import { PSCoreCommands } from "./Commands/PSCoreCommands.js";
+import { WinPSCommands } from "./Commands/WinPSCommands.js";
+import { BashCommands } from "./Commands/BashCommands.js";
 var commandCompletionDisplayTimeout;
 export function DisplayCommandCompletions(commands, relevantText) {
     window.clearTimeout(commandCompletionDisplayTimeout);
@@ -9,14 +14,14 @@ export function DisplayCommandCompletions(commands, relevantText) {
             var commandCompletionItem = document.createElement("div");
             commandCompletionItem.classList.add("command-completion-item");
             commandCompletionItem.innerHTML = x.Name;
-            commandCompletionItem.onclick = function (e) {
+            commandCompletionItem.onclick = function () {
                 var commandText = UI.ConsoleTextArea.value;
                 var insertCommandStart = commandText.lastIndexOf(relevantText);
                 UI.ConsoleTextArea.value = commandText.substring(0, insertCommandStart) + commandCompletionItem.innerHTML;
                 UI.CommandCompletionDiv.classList.add("hidden");
                 UI.CommandInfoDiv.classList.add("hidden");
             };
-            commandCompletionItem.onfocus = function (e) {
+            commandCompletionItem.onfocus = function () {
                 ShowCommandInfo(x);
             };
             UI.CommandCompletionDiv.appendChild(commandCompletionItem);
@@ -46,13 +51,13 @@ export function DisplayParameterCompletions(command, parameters, commandText) {
         var commandCompletionItem = document.createElement("div");
         commandCompletionItem.classList.add("command-completion-item");
         commandCompletionItem.innerHTML = param.Name;
-        commandCompletionItem.onclick = function (e) {
+        commandCompletionItem.onclick = function () {
             var preParam = UI.ConsoleTextArea.value.substring(0, UI.ConsoleTextArea.value.lastIndexOf(" "));
             UI.ConsoleTextArea.value = preParam.trim() + ` -${commandCompletionItem.innerText}`;
             UI.CommandCompletionDiv.classList.add("hidden");
             UI.CommandInfoDiv.classList.add("hidden");
         };
-        commandCompletionItem.onfocus = function (e) {
+        commandCompletionItem.onfocus = function () {
             ShowParameterInfo(param);
         };
         UI.CommandCompletionDiv.appendChild(commandCompletionItem);
@@ -71,19 +76,45 @@ export function DisplayCommandShortcuts(shortcutText) {
         var commandCompletionItem = document.createElement("div");
         commandCompletionItem.classList.add("command-completion-item");
         commandCompletionItem.innerHTML = x;
-        commandCompletionItem.onclick = function (e) {
+        commandCompletionItem.onclick = function () {
             UI.CommandModeSelect.value = x;
             UI.ConsoleTextArea.value = "";
             UI.CommandCompletionDiv.classList.add("hidden");
             UI.CommandInfoDiv.classList.add("hidden");
         };
-        commandCompletionItem.onfocus = function (e) { };
+        commandCompletionItem.onfocus = function () { };
         UI.CommandCompletionDiv.appendChild(commandCompletionItem);
     });
     if (!UI.CommandCompletionDiv.classList.contains("hidden") && matchingShortcuts.length > 0) {
         HighlightCompletionWindowItem(Store.CommandCompletionPosition);
         PositionCommandCompletionWindow();
     }
+}
+export function GetCommandCompletions(commandText) {
+    var commandList;
+    switch (UI.CommandModeSelect.value) {
+        case "Web":
+            commandList = WebCommands;
+            break;
+        case "CMD":
+            commandList = CMDCommands;
+            break;
+        case "PSCore":
+            commandList = PSCoreCommands;
+            break;
+        case "WinPS":
+            commandList = WinPSCommands;
+            break;
+        case "Bash":
+            commandList = BashCommands;
+            break;
+        default:
+            UI.CommandCompletionDiv.classList.add("hidden");
+            return;
+    }
+    var filteredList = commandList.filter(x => x.Name.toLowerCase().indexOf(commandText.toLowerCase()) > -1);
+    filteredList.sort((a, b) => a.Name.localeCompare(b.Name));
+    return filteredList;
 }
 export function SetCommandCompletionPositionToIncompleteParam(parameters) {
     var lastParam = parameters[parameters.length - 1];

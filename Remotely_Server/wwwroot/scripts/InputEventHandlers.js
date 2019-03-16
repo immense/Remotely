@@ -12,6 +12,7 @@ export function ApplyInputEventHandlers() {
     inputOnFilterTextBox();
     clickToggleAllDevices();
     clickStartRemoteControlButton();
+    consoleTabSelected();
     window.addEventListener("resize", ev => {
         PositionCommandCompletionWindow();
     });
@@ -147,6 +148,11 @@ function inputOnFilterTextBox() {
                 row.classList.remove("hidden");
             }
         });
+    });
+}
+function consoleTabSelected() {
+    $(UI.ConsoleTab).on("shown.bs.tab", () => {
+        UI.ConsoleAlert.hidden = true;
     });
 }
 function clickToggleAllDevices() {

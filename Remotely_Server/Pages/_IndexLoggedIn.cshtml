@@ -2,8 +2,19 @@
 
 <div class="work-area hidden">
     <ul class="nav nav-tabs">
-        <li class="nav-item"><a class="nav-link active show" href="#consoleFrame" data-toggle="tab">Console</a></li>
-        <li class="nav-item"><a class="nav-link" href="#dataGridFrame" data-toggle="tab">Grid</a></li>
+        <li class="nav-item">
+            <a id="consoleTab" class="nav-link active show" href="#consoleFrame" data-toggle="tab">
+                Console
+                <span id="consoleAlert" class="badge badge-info badge-pill align-top" hidden>
+                    <i class="fa fa-exclamation" aria-hidden="true"></i>
+                </span>
+             </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#dataGridFrame" data-toggle="tab">
+                Grid
+            </a>
+        </li>
     </ul>
     <div id="tabContentWrapper">
         <div class="tab-content">
