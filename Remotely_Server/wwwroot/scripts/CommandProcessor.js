@@ -1,14 +1,10 @@
 import { WebCommands } from "./Commands/WebCommands.js";
 import { UserSettings } from "./UserSettings.js";
-import { CMDCommands } from "./Commands/CMDCommands.js";
-import { PSCoreCommands } from "./Commands/PSCoreCommands.js";
-import { BashCommands } from "./Commands/BashCommands.js";
 import { Main } from "./Main.js";
 import { CommandLineParameter } from "./Models/CommandLineParameter.js";
 import * as UI from "./UI.js";
 import { Store } from "./Store.js";
-import { DisplayCommandShortcuts, DisplayCommandCompletions, DisplayParameterCompletions } from "./CommandCompletion.js";
-import { WinPSCommands } from "./Commands/WinPSCommands.js";
+import { DisplayCommandShortcuts, DisplayCommandCompletions, DisplayParameterCompletions, GetCommandCompletions } from "./CommandCompletion.js";
 import { Connection } from "./BrowserSockets.js";
 export function EvaluateCurrentCommandText() {
     UI.AutoSizeTextArea();
@@ -59,30 +55,6 @@ export function GetRelevantCommandText(commandText) {
             ;
     }
     return commandText;
-}
-export function GetCommandCompletions(commandText) {
-    var commandList;
-    switch (UI.CommandModeSelect.value) {
-        case "Web":
-            commandList = WebCommands;
-            break;
-        case "CMD":
-            commandList = CMDCommands;
-            break;
-        case "PSCore":
-            commandList = PSCoreCommands;
-            break;
-        case "WinPS":
-            commandList = WinPSCommands;
-            break;
-        case "Bash":
-            commandList = BashCommands;
-            break;
-        default:
-            UI.CommandCompletionDiv.classList.add("hidden");
-            return;
-    }
-    return commandList.filter(x => x.Name.toLowerCase().indexOf(commandText.toLowerCase()) > -1);
 }
 /** Checks the given string for a matching shortcut. */
 export function GetCommandModeShortcut() {

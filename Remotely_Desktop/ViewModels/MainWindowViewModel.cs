@@ -54,6 +54,7 @@ namespace Remotely_Desktop.ViewModels
             Config = Config.GetConfig();
             while (string.IsNullOrWhiteSpace(Config.Host))
             {
+                Config.Host = "https://";
                 PromptForHostName();
             }
 
@@ -135,6 +136,10 @@ namespace Remotely_Desktop.ViewModels
             prompt.Owner = App.Current?.MainWindow;
             prompt.ShowDialog();
             var result = HostNamePromptViewModel.Current.Host.TrimEnd("/".ToCharArray());
+            if (!result.StartsWith("https://") && !result.StartsWith("http://"))
+            {
+                result = $"https://{result}";
+            }
             if (result != Config.Host)
             {
                 Config.Host = result;
