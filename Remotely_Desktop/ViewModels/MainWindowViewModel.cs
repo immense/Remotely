@@ -71,9 +71,9 @@ namespace Remotely_Desktop.ViewModels
             }
             Program.SetEventHandlers();
 
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
-                Program.HandleConnection();
+                await Program.HandleConnection();
             });
         }
 
