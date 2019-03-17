@@ -210,6 +210,7 @@ namespace Remotely_Library.Win32
             CloseDesktop(inputDesktop);
             return deskName;
         }
+       
         // Remove trailing empty bytes in the buffer.
         private static byte[] TrimBytes(byte[] bytes)
         {

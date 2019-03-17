@@ -65,17 +65,17 @@ namespace Remotely_Server.Services
             await DeviceHub.Clients.Client(serviceID).SendAsync("CtrlAltDel");
         }
 
-        public async Task KeyDown(int key)
+        public async Task KeyDown(string key)
         {
             await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("KeyDown", key, Context.ConnectionId);
         }
 
-        public async Task KeyPress(int key)
+        public async Task KeyPress(string key)
         {
             await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("KeyPress", key, Context.ConnectionId);
         }
 
-        public async Task KeyUp(int key)
+        public async Task KeyUp(string key)
         {
             await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("KeyUp", key, Context.ConnectionId);
         }

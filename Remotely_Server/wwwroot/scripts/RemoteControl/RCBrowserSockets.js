@@ -65,14 +65,14 @@ export class RCBrowserSockets {
     SendMouseWheel(deltaX, deltaY) {
         this.Connection.invoke("MouseWheel", deltaX, deltaY);
     }
-    SendKeyDown(keyCode) {
-        this.Connection.invoke("KeyDown", keyCode);
+    SendKeyDown(key) {
+        this.Connection.invoke("KeyDown", key);
     }
-    SendKeyUp(keyCode) {
-        this.Connection.invoke("KeyUp", keyCode);
+    SendKeyUp(key) {
+        this.Connection.invoke("KeyUp", key);
     }
-    SendKeyPress(keyCode) {
-        this.Connection.invoke("KeyPress", keyCode);
+    SendKeyPress(key) {
+        this.Connection.invoke("KeyPress", key);
     }
     SendCtrlAltDel() {
         this.Connection.invoke("CtrlAltDel", RemoteControl.ServiceID);

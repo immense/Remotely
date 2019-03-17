@@ -231,25 +231,112 @@ namespace Win32
             CloseDesktop(inputDesktop);
             return desktopName;
         }
-        // Remove trailing empty bytes in the buffer.
-        private static byte[] TrimBytes(byte[] bytes)
+
+        public static short ConvertJavaScriptKeyToVirtualKey(string key)
         {
-            // Loop backwards through array until the first non-zero byte is found.
-            var firstZero = 0;
-            for (int i = bytes.Length - 1; i >= 0; i--)
+            short keyCode;
+            switch (key)
             {
-                if (bytes[i] != 0)
-                {
-                    firstZero = i + 1;
+                case "Down":
+                case "ArrowDown":
+                    keyCode = (short)VirtualKey.DOWN;
                     break;
-                }
+                case "Up":
+                case "ArrowUp":
+                    keyCode = (short)VirtualKey.UP;
+                    break;
+                case "Left":
+                case "ArrowLeft":
+                    keyCode = (short)VirtualKey.LEFT;
+                    break;
+                case "Right":
+                case "ArrowRight":
+                    keyCode = (short)VirtualKey.RIGHT;
+                    break;
+                case "Enter":
+                    keyCode = (short)VirtualKey.RETURN;
+                    break;
+                case "Esc":
+                case "Escape":
+                    keyCode = (short)VirtualKey.ESCAPE;
+                    break;
+                case "Alt":
+                    keyCode = (short)VirtualKey.MENU;
+                    break;
+                case "Control":
+                    keyCode = (short)VirtualKey.CONTROL;
+                    break;
+                case "Shift":
+                    keyCode = (short)VirtualKey.SHIFT;
+                    break;
+                case "PAUSE":
+                    keyCode = (short)VirtualKey.PAUSE;
+                    break;
+                case "BREAK":
+                    keyCode = (short)VirtualKey.PAUSE;
+                    break;
+                case "Delete":
+                    keyCode = (short)VirtualKey.DELETE;
+                    break;
+                case "Home":
+                    keyCode = (short)VirtualKey.HOME;
+                    break;
+                case "PageUp":
+                    keyCode = (short)VirtualKey.PRIOR;
+                    break;
+                case "PageDown":
+                    keyCode = (short)VirtualKey.NEXT;
+                    break;
+                case "NumLock":
+                    keyCode = (short)VirtualKey.NUMLOCK;
+                    break;
+                case "Insert":
+                    keyCode = (short)VirtualKey.INSERT;
+                    break;
+                case "ScrollLock":
+                    keyCode = (short)VirtualKey.SCROLL;
+                    break;
+                case "F1":
+                    keyCode = (short)VirtualKey.F1;
+                    break;
+                case "F2":
+                    keyCode = (short)VirtualKey.F2;
+                    break;
+                case "F3":
+                    keyCode = (short)VirtualKey.F3;
+                    break;
+                case "F4":
+                    keyCode = (short)VirtualKey.F4;
+                    break;
+                case "F5":
+                    keyCode = (short)VirtualKey.F5;
+                    break;
+                case "F6":
+                    keyCode = (short)VirtualKey.F6;
+                    break;
+                case "F7":
+                    keyCode = (short)VirtualKey.F7;
+                    break;
+                case "F8":
+                    keyCode = (short)VirtualKey.F8;
+                    break;
+                case "F9":
+                    keyCode = (short)VirtualKey.F9;
+                    break;
+                case "F10":
+                    keyCode = (short)VirtualKey.F10;
+                    break;
+                case "F11":
+                    keyCode = (short)VirtualKey.F11;
+                    break;
+                case "F12":
+                    keyCode = (short)VirtualKey.F12;
+                    break;
+                default:
+                    keyCode = User32.VkKeyScan(Convert.ToChar(key));
+                    break;
             }
-            if (firstZero == 0)
-            {
-                throw new Exception("Byte array is empty.");
-            }
-            // Return non-empty bytes.
-            return bytes.Take(firstZero).ToArray();
+            return keyCode;
         }
     }
 }
