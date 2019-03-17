@@ -1235,6 +1235,9 @@ namespace Remotely_Library.Win32_Classes
         [DllImport("user32.dll", SetLastError = true)]
         public static extern bool LockWorkStation();
 
+        [DllImport("user32.dll")]
+        public static extern short VkKeyScan(char ch);
+
         #endregion
     }
 }

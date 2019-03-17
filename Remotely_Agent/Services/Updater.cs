@@ -46,9 +46,14 @@ namespace Remotely_Agent.Services
                     Logger.Write($"Service Updater: Downloading update.  Current Version: {thisVersion}.  Latest Version: {latestVersion}.");
                     var fileName = OSUtils.CoreZipFileName;
                     var tempFile = Path.Combine(Path.GetTempPath(), fileName);
+                    var tempFolder = Path.Combine(Path.GetTempPath(), "Remotely_Update");
                     if (File.Exists(tempFile))
                     {
                         File.Delete(tempFile);
+                    }
+                    if (Directory.Exists(tempFolder))
+                    {
+                        Directory.Delete(tempFolder, true);
                     }
                     wc.DownloadFile(new Uri(Utilities.GetConnectionInfo().Host + $"/Downloads/{fileName}"), tempFile);
 
@@ -56,14 +61,13 @@ namespace Remotely_Agent.Services
 
                     if (OSUtils.IsWindows)
                     {
-                        ZipFile.ExtractToDirectory(tempFile, Path.Combine(Path.GetTempPath(), "Remotely_Update"), true);
+                        ZipFile.ExtractToDirectory(tempFile, tempFolder, true);
                     }
                     else if (OSUtils.IsLinux)
                     {
-                        Process.Start("sudo", $"rm -r {Path.Combine(Path.GetTempPath(), "Remotely_Update")}");
                         Process.Start("sudo", "apt-get install unzip").WaitForExit();
-                        Process.Start("sudo", $"unzip -o {tempFile} -d {Path.Combine(Path.GetTempPath(), "Remotely_Update")}").WaitForExit();
-                        Process.Start("sudo", $"chmod -R 777 {Path.Combine(Path.GetTempPath(), "Remotely_Update")}").WaitForExit();
+                        Process.Start("sudo", $"unzip -o {tempFile} -d {tempFolder}").WaitForExit();
+                        Process.Start("sudo", $"chmod -R 777 {tempFolder}").WaitForExit();
                         Process.Start("sudo", $"chmod +x {Path.Combine(Path.GetTempPath(), "Remotely_Update", "Remotely_Agent")}").WaitForExit();
                     }
 
@@ -181,7 +185,7 @@ namespace Remotely_Agent.Services
                 }
                 else if (OSUtils.IsLinux)
                 {
-                    Process.Start("sudo", "systemctl restart remotely-agent").WaitForExit();
+                    Process.Start("sudo", "systemctl start remotely-agent").WaitForExit();
                 }
                 Environment.Exit(0);
             }

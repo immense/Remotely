@@ -217,14 +217,14 @@ export function ApplyInputHandlers(sockets) {
             return;
         }
         e.preventDefault();
-        sockets.SendKeyDown(e.keyCode);
+        sockets.SendKeyDown(e.key);
     });
     window.addEventListener("keyup", function (e) {
         if (document.querySelector("input:focus")) {
             return;
         }
         e.preventDefault();
-        sockets.SendKeyUp(e.keyCode);
+        sockets.SendKeyUp(e.key);
     });
     window.ondragover = function (e) {
         e.preventDefault();

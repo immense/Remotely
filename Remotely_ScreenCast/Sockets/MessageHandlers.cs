@@ -44,106 +44,31 @@ namespace Remotely_ScreenCast.Sockets
                 Program.ScreenCastRequested?.Invoke(null, new Tuple<string, string>(viewerID, requesterName));
             });
 
-            hubConnection.On("KeyDown", (int keyCode, string viewerID) =>
+            hubConnection.On("KeyDown", (string key, string viewerID) =>
             {
                 if (Program.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
-                    //var converter = new KeysConverter();
-                    //try
-                    //{
-                    //    var key = (Keys)converter.ConvertFromString(keyCode.ToString());
-                    //    Win32Interop.SendKeyDown(key);
-                    //}
-                    //catch
-                    //{
-                    //    Logger.Write($"Failed to convert key {keyCode}.");
-                    //}
-
-                    // For colon/semicolon.
-                    if (keyCode == 59)
-                    {
-                        keyCode = 186;
-                    }
-                    // For minus.
-                    else if (keyCode == 45)
-                    {
-                        keyCode = 189;
-                    }
-                    // For plus.
-                    else if (keyCode == 61)
-                    {
-                        keyCode = 187;
-                    }
+                    var keyCode = Win32Interop.ConvertJavaScriptKeyToVirtualKey(key);
                     Win32Interop.SendKeyDown((User32.VirtualKey)keyCode);
                 }
             });
 
-            hubConnection.On("KeyUp", (int keyCode, string viewerID) =>
+            hubConnection.On("KeyUp", (string key, string viewerID) =>
             {
                 if (Program.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
-                    //var converter = new KeysConverter();
-                    //try
-                    //{
-                    //    var key = (Keys)converter.ConvertFromString(keyCode.ToString());
-                    //    Win32Interop.SendKeyDown(key);
-                    //}
-                    //catch
-                    //{
-                    //    Logger.Write($"Failed to convert key {keyCode}.");
-                    //}
-
-                    // For colon/semicolon.
-                    if (keyCode == 59)
-                    {
-                        keyCode = 186;
-                    }
-                    // For minus.
-                    else if (keyCode == 45)
-                    {
-                        keyCode = 189;
-                    }
-                    // For plus.
-                    else if (keyCode == 61)
-                    {
-                        keyCode = 187;
-                    }
+                    var keyCode = Win32Interop.ConvertJavaScriptKeyToVirtualKey(key);
                     Win32Interop.SendKeyUp((User32.VirtualKey)keyCode);
                 }
             });
 
-            hubConnection.On("KeyPress", (int keyCode, string viewerID) =>
+            hubConnection.On("KeyPress", async (string key, string viewerID) =>
             {
                 if (Program.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
-                    //var converter = new KeysConverter();
-                    //try
-                    //{
-                    //    var key = (Keys)converter.ConvertFromString(keyCode.ToString());
-                    //    Win32Interop.SendKeyDown(key);
-                    //    Win32Interop.SendKeyUp(key);
-                    //}
-                    //catch
-                    //{
-                    //    Logger.Write($"Failed to convert key {keyCode}.");
-                    //}
-
-                    // For colon/semicolon.
-                    if (keyCode == 59)
-                    {
-                        keyCode = 186;
-                    }
-                    // For minus.
-                    else if (keyCode == 45)
-                    {
-                        keyCode = 189;
-                    }
-                    // For plus.
-                    else if (keyCode == 61)
-                    {
-                        keyCode = 187;
-                    }
+                    var keyCode = Win32Interop.ConvertJavaScriptKeyToVirtualKey(key);
                     Win32Interop.SendKeyDown((User32.VirtualKey)keyCode);
+                    await Task.Delay(1);
                     Win32Interop.SendKeyUp((User32.VirtualKey)keyCode);
                 }
             });
