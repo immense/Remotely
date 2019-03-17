@@ -275,11 +275,17 @@ namespace Win32
                 case "BREAK":
                     keyCode = (short)VirtualKey.PAUSE;
                     break;
+                case "Backspace":
+                    keyCode = (short)VirtualKey.BACK;
+                    break;
                 case "Delete":
                     keyCode = (short)VirtualKey.DELETE;
                     break;
                 case "Home":
                     keyCode = (short)VirtualKey.HOME;
+                    break;
+                case "End":
+                    keyCode = (short)VirtualKey.END;
                     break;
                 case "PageUp":
                     keyCode = (short)VirtualKey.PRIOR;
