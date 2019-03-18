@@ -25,7 +25,6 @@ namespace Remotely_ScreenCast.Capture
         public bool CaptureFullscreen { get; set; } = true;
         public int PauseForMilliseconds { get; set; }
         public EventHandler<Rectangle> ScreenChanged { get; set; }
-        private Stopwatch FramerateTimer { get; } = Stopwatch.StartNew();
         private object ScreenLock { get; } = new object();
         public int SelectedScreen
         {
@@ -75,14 +74,6 @@ namespace Remotely_ScreenCast.Capture
 
         public void Capture()
         {
-            // Keep framerate below 30 FPS.
-            if (FramerateTimer.Elapsed.TotalMilliseconds > 33)
-            {
-                Thread.Sleep((int)FramerateTimer.Elapsed.TotalMilliseconds);
-            }
-            FramerateTimer.Restart();
-
-
             try
             {
                 lock (ScreenLock)

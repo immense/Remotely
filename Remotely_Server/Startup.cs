@@ -140,13 +140,13 @@ namespace Remotely_Server
                 });
                 routes.MapHub<RCDeviceSocketHub>("/RCDeviceHub", options =>
                 {
-                    options.ApplicationMaxBufferSize = 10000000;
-                    options.TransportMaxBufferSize = 10000000;
+                    options.ApplicationMaxBufferSize = 2000000;
+                    options.TransportMaxBufferSize = 2000000;
                 });
                 routes.MapHub<RCBrowserSocketHub>("/RCBrowserHub", options =>
                 {
-                    options.ApplicationMaxBufferSize = 10000000;
-                    options.TransportMaxBufferSize = 10000000;
+                    options.ApplicationMaxBufferSize = 2000000;
+                    options.TransportMaxBufferSize = 2000000;
                 });
             });
             app.UseMvcWithDefaultRoute();
