@@ -111,16 +111,6 @@ namespace Remotely_Server.Services
 			}
 			await Groups.AddToGroupAsync(Context.ConnectionId, RemotelyUser.Organization.ID);
 			await Clients.Caller.SendAsync("UserOptions", RemotelyUser.UserOptions);
-			if (AppConfig.ShowMessageOfTheDay)
-			{
-				try
-				{
-					var wc = new WebClient();
-					var message = await wc.DownloadStringTaskAsync(new Uri("https://remotely.lucency.co/api/messageoftheday"));
-					await Clients.Caller.SendAsync("DisplayConsoleHTML", message);
-				}
-				catch { }
-			}
 			await base.OnConnectedAsync();
 		}
 

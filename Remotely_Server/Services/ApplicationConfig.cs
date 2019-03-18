@@ -17,10 +17,9 @@ namespace Remotely_Server.Services
         public string DefaultPrompt => Config["ApplicationOptions:DefaultPrompt"];
         public string DBProvider => Config["ApplicationOptions:DBProvider"];
         public bool AllowSelfRegistration => bool.Parse(Config["ApplicationOptions:AllowSelfRegistration"]);
-        public bool UseDomainAuthentication => bool.Parse(Config["ApplicationOptions:UseDomainAuthentication"]);
-        public bool ShowMessageOfTheDay => bool.Parse(Config["ApplicationOptions:ShowMessageOfTheDay"]);
         public double DataRetentionInDays => double.Parse(Config["ApplicationOptions:DataRetentionInDays"]);
         public double RemoteControlSessionLimit => double.Parse(Config["ApplicationOptions:RemoteControlSessionLimit"]);
+        public bool RecordRemoteControlSessions => bool.Parse(Config["ApplicationOptions:RecordRemoteControlSessions"]);
 
         public string SmtpHost => Config["ApplicationOptions:SmtpHost"];
         public int SmtpPort => int.Parse(Config["ApplicationOptions:SmtpPort"]);

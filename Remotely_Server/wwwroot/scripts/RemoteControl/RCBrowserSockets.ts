@@ -30,8 +30,6 @@ export class RCBrowserSockets {
         })
         this.Connection.closedCallbacks.push((ev) => {
             UI.Screen2DContext.clearRect(0, 0, UI.ScreenViewer.width, UI.ScreenViewer.height);
-            console.log("Connection closed.");
-            UI.StatusMessage.innerHTML = "Connection closed.";
             UI.ScreenViewer.setAttribute("hidden", "hidden");
             UI.ConnectBox.style.removeProperty("display");
         });
@@ -143,6 +141,7 @@ export class RCBrowserSockets {
             this.Connection.stop();
         });
         hubConnection.on("ScreenCasterDisconnected", () => {
+            UI.StatusMessage.innerHTML = "The host has disconnected.";
             this.Connection.stop();
         });
         hubConnection.on("RelaunchedScreenCasterReady", (newClientID: string) => {

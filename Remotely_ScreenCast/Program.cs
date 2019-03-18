@@ -51,10 +51,11 @@ namespace Remotely_ScreenCast
 
         public static async Task HandleConnection()
         {
+            OutgoingMessages.SendDeviceInfo(ServiceID, Environment.MachineName).Wait();
+
+
             if (Mode == AppMode.Unattended)
             {
-                OutgoingMessages.SendServiceID(ServiceID).Wait();
-
                 var desktopName = Win32Interop.GetCurrentDesktop();
                 if (desktopName.ToLower() != CurrentDesktopName.ToLower())
                 {
