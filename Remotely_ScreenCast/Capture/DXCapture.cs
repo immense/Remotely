@@ -63,7 +63,6 @@ namespace Remotely_ScreenCast.Capture
             }
         }
 
-        private Stopwatch FramerateTimer { get; } = Stopwatch.StartNew();
         private object ScreenLock { get; } = new object();
 
         public void Capture()
@@ -79,13 +78,6 @@ namespace Remotely_ScreenCast.Capture
 
                 SharpDX.DXGI.Resource screenResource;
                 OutputDuplicateFrameInformation duplicateFrameInformation;
-
-                // Keep framerate below 30 FPS.
-                if (FramerateTimer.Elapsed.TotalMilliseconds > 33)
-                {
-                    Thread.Sleep((int)FramerateTimer.Elapsed.TotalMilliseconds);
-                }
-                FramerateTimer.Restart();
 
                 lock (ScreenLock)
                 {

@@ -48,50 +48,48 @@ namespace Remotely_ScreenCast.Capture
             var bd1 = previousFrame.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, currentFrame.PixelFormat);
             var bd2 = currentFrame.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, previousFrame.PixelFormat);
 
-            // Get the address of the first line.
-            IntPtr ptr1 = bd1.Scan0;
-            IntPtr ptr2 = bd2.Scan0;
+            var bytesPerPixel = Bitmap.GetPixelFormatSize(currentFrame.PixelFormat) / 8;
+            var totalSize = bd1.Height * bd1.Width * bytesPerPixel;
 
-
-            // Declare an array to hold the bytes of the bitmap.
-            int arraySize = Math.Abs(bd1.Stride) * currentFrame.Height;
-            var rgbValues1 = new byte[arraySize];
-            var rgbValues2 = new byte[arraySize];
-
-            // Copy the RGBA values into the array.
-            Marshal.Copy(ptr1, rgbValues1, 0, arraySize);
-            Marshal.Copy(ptr2, rgbValues2, 0, arraySize);
-
-            // Check RGBA value for each pixel.
-            for (int counter = 0; counter < rgbValues1.Length - 4; counter += 4)
+            unsafe
             {
-                if (rgbValues1[counter] != rgbValues2[counter] ||
-                    rgbValues1[counter + 1] != rgbValues2[counter + 1] ||
-                    rgbValues1[counter + 2] != rgbValues2[counter + 2] ||
-                    rgbValues1[counter + 3] != rgbValues2[counter + 3])
+                byte* scan1 = (byte*)bd1.Scan0.ToPointer();
+                byte* scan2 = (byte*)bd2.Scan0.ToPointer();
+
+                for (int counter = 0; counter < totalSize - bytesPerPixel; counter += bytesPerPixel)
                 {
-                    // Change was found.
-                    var pixel = counter / 4;
-                    var row = (int)Math.Floor((double)pixel / bd1.Width);
-                    var column = pixel % bd1.Width;
-                    if (row < top)
+                    byte* data1 = scan1 + counter;
+                    byte* data2 = scan2 + counter;
+
+                    if (data1[0] != data2[0] ||
+                        data1[1] != data2[1] ||
+                        data1[2] != data2[2] ||
+                        data1[3] != data2[3])
                     {
-                        top = row;
-                    }
-                    if (row > bottom)
-                    {
-                        bottom = row;
-                    }
-                    if (column < left)
-                    {
-                        left = column;
-                    }
-                    if (column > right)
-                    {
-                        right = column;
+                        // Change was found.
+                        var pixel = counter / 4;
+                        var row = (int)Math.Floor((double)pixel / bd1.Width);
+                        var column = pixel % bd1.Width;
+                        if (row < top)
+                        {
+                            top = row;
+                        }
+                        if (row > bottom)
+                        {
+                            bottom = row;
+                        }
+                        if (column < left)
+                        {
+                            left = column;
+                        }
+                        if (column > right)
+                        {
+                            right = column;
+                        }
                     }
                 }
             }
+
             if (left < right && top < bottom)
             {
                 // Bounding box is valid.

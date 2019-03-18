@@ -10,7 +10,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Win32;
 
 namespace Remotely_ScreenCast.Capture
 {
@@ -24,7 +23,7 @@ namespace Remotely_ScreenCast.Capture
             CaptureMode captureMode;
             Viewer viewer;
             var success = false;
-
+            
             try
             {
                 if (Program.Viewers.Count == 0)
