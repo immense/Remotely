@@ -278,6 +278,12 @@ namespace Win32
                 case "Backspace":
                     keyCode = (short)VirtualKey.BACK;
                     break;
+                case "Tab":
+                    keyCode = (short)VirtualKey.TAB;
+                    break;
+                case "CapsLock":
+                    keyCode = (short)VirtualKey.CAPITAL;
+                    break;
                 case "Delete":
                     keyCode = (short)VirtualKey.DELETE;
                     break;

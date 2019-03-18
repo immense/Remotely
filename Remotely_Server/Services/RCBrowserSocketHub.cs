@@ -12,12 +12,17 @@ namespace Remotely_Server.Services
 {
     public class RCBrowserSocketHub : Hub
     {
-        public RCBrowserSocketHub(DataService dataService, IHubContext<RCDeviceSocketHub> rcDeviceHub, IHubContext<DeviceSocketHub> deviceHub, ApplicationConfig appConfig)
+        public RCBrowserSocketHub(DataService dataService, 
+            IHubContext<RCDeviceSocketHub> rcDeviceHub, 
+            IHubContext<DeviceSocketHub> deviceHub, 
+            ApplicationConfig appConfig,
+            RemoteControlSessionRecorder rcSessionRecorder)
         {
             this.DataService = dataService;
             this.RCDeviceHub = rcDeviceHub;
             this.AppConfig = appConfig;
             this.DeviceHub = deviceHub;
+            RCSessionRecorder = rcSessionRecorder;
         }
         public static ConcurrentDictionary<string, RemotelyUser> OrganizationConnectionList { get; set; } = new ConcurrentDictionary<string, RemotelyUser>();
         private ApplicationConfig AppConfig { get; set; }
@@ -47,6 +52,7 @@ namespace Remotely_Server.Services
 
         private DataService DataService { get; }
         private IHubContext<DeviceSocketHub> DeviceHub { get; }
+        private RemoteControlSessionRecorder RCSessionRecorder { get; }
         private IHubContext<RCDeviceSocketHub> RCDeviceHub { get; }
         private string RequesterName
         {
@@ -125,6 +131,11 @@ namespace Remotely_Server.Services
                 }
             }
             await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ViewerDisconnected", Context.ConnectionId);
+
+            if (AppConfig.RecordRemoteControlSessions)
+            {
+                RCSessionRecorder.EncodeFrames(Context.ConnectionId);
+            }
         }
 
         public async Task SelectScreen(int screenIndex)
@@ -150,6 +161,7 @@ namespace Remotely_Server.Services
                 TimeStamp = DateTime.Now,
                 Message = $"Remote control session requested by {requesterName}.  " +
                                 $"Connection ID: {Context.ConnectionId}. User ID: {Context.UserIdentifier}.  " +
+                                $"Screen Caster ID: {screenCasterID}." + 
                                 $"Login ID (if logged in): {Context?.User?.Identity?.Name}.  " +
                                 $"Requester IP Address: " + Context?.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString()
             });

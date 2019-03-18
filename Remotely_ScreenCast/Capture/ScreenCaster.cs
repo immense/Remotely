@@ -99,7 +99,7 @@ namespace Remotely_ScreenCast.Capture
                     //    continue;
                     //}
 
-                    while (viewer.PendingFrames > 30)
+                    while (viewer.PendingFrames > 10)
                     {
                         await Task.Delay(1);
                     }

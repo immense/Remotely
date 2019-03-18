@@ -94,6 +94,7 @@ namespace Remotely_Server
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<EmailSender>();
             services.AddScoped<DataService>();
+            services.AddScoped<RemoteControlSessionRecorder>();
             services.AddSingleton<ApplicationConfig>();
             services.AddSingleton<RandomGenerator>();
         }

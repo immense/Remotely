@@ -47,9 +47,9 @@ namespace Remotely_ScreenCast.Sockets
             await Connection.SendAsync("NotifyViewersRelaunchedScreenCasterReady", viewerIDs);
         }
 
-        internal async Task SendServiceID(string serviceID)
+        internal async Task SendDeviceInfo(string serviceID, string machineName)
         {
-            await Connection.SendAsync("ReceiveServiceID", serviceID);
+            await Connection.SendAsync("ReceiveDeviceInfo", serviceID, machineName);
         }
 
         internal async Task SendConnectionFailedToViewers(List<string> viewerIDs)
