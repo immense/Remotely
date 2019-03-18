@@ -185,7 +185,7 @@ namespace Remotely_Agent.Services
                 }
                 else if (OSUtils.IsLinux)
                 {
-                    Process.Start("sudo", "systemctl start remotely-agent").WaitForExit();
+                    Process.Start("sudo", "systemctl restart remotely-agent").WaitForExit();
                 }
                 Environment.Exit(0);
             }
