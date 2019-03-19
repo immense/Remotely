@@ -3,12 +3,12 @@
    Publishes the Remotely client.
 .DESCRIPTION
    Publishes the Remotely client.
-   For automated deployments, supply the following arguments: -hostname example.com -rid win10-x64 -outdir path\to\dir
+   For automated deployments, supply the following arguments: -rid win10-x64 -outdir path\to\dir
 .COPYRIGHT
    Copyright ©  2019 Translucency Software.  All rights reserved.
 .EXAMPLE
    Run it from the Utilities folder (located in the solution directory).
-   Or run "powershell -f PublishClients.ps1 -hostname example.com -rid win10-x64 -outdir path\to\dir
+   Or run "powershell -f PublishClients.ps1 -rid win10-x64 -outdir path\to\dir
 #>
 $ErrorActionPreference = "Stop"
 $Year = (Get-Date).Year.ToString()
