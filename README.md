@@ -12,6 +12,7 @@ The following steps will configure your Windows 10 machine for building the Remo
     * Link: https://dotnet.microsoft.com/download
 * Clone the git repository and open the solution in Visual Studio.
 * Build (in Release configuration) the Remotely_Desktop and Remotely_ScreenCast projects.
+	* By default, the screen-sharing desktop app prompts for a host URL and can be changed thereafter.  To hard-code a URL, set the ForceHost value in /Remotely_Desktop/App.config to the server's URL.
 * Run Publish.ps1 in the Utilities folder.
     * Example: powershell -f [path]\Publish.ps1 -outdir C:\inetpub\remotely -rid win10-x86
     * The output folder will now contain the server, with the clients in the Downloads folder.

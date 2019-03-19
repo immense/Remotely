@@ -7,6 +7,9 @@
         xmlns:ViewModels="clr-namespace:Remotely_Desktop.ViewModels" x:Class="Remotely_Desktop.MainWindow"
         mc:Ignorable="d"
         Title="Remotely" Height="250" Width="350" MouseLeftButtonDown="Window_MouseLeftButtonDown" WindowStyle="None" ResizeMode="NoResize" Icon="favicon.ico" Loaded="Window_Loaded">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Window.Resources>
     <Window.DataContext>
         <ViewModels:MainWindowViewModel/>
     </Window.DataContext>
@@ -60,7 +63,7 @@
                 </StackPanel>
             </Grid>
         </StackPanel>
-        <DockPanel VerticalAlignment="Bottom" Margin="10,5">
+        <DockPanel VerticalAlignment="Bottom" Margin="10,5" Visibility="{Binding AllowHostChange, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
             <TextBlock FontSize="10">
                 <Run>Connected to: </Run>
                 <Hyperlink Click="HostHyperlink_Click">

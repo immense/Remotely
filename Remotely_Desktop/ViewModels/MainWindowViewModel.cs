@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -23,6 +24,8 @@ namespace Remotely_Desktop.ViewModels
         {
             Current = this;
 
+            ForceHost = ConfigurationManager.AppSettings["ForceHost"];
+
             Program.SessionIDChanged += SessionIDChanged;
             Program.ViewerRemoved += ViewerRemoved;
             Program.ViewerAdded += ViewerAdded;
@@ -33,6 +36,14 @@ namespace Remotely_Desktop.ViewModels
 
         public static MainWindowViewModel Current { get; private set; }
         public Config Config { get; private set; }
+        public string ForceHost { get; }
+        public bool AllowHostChange
+        {
+            get
+            {
+                return string.IsNullOrWhiteSpace(ForceHost);
+            }
+        }
         public string Host
         {
             get
@@ -52,11 +63,19 @@ namespace Remotely_Desktop.ViewModels
         {
             SessionID = "Retrieving...";
             Config = Config.GetConfig();
-            while (string.IsNullOrWhiteSpace(Config.Host))
+            if (AllowHostChange)
             {
-                Config.Host = "https://";
-                PromptForHostName();
+                while (string.IsNullOrWhiteSpace(Config.Host))
+                {
+                    Config.Host = "https://";
+                    PromptForHostName();
+                }
             }
+            else
+            {
+                Config.Host = ForceHost;
+            }
+
 
             Program.ProcessArgs(new string[] { "-mode", "Normal", "-host", Config.Host });
             try
