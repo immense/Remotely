@@ -24,8 +24,6 @@ namespace Remotely_Desktop.ViewModels
         {
             Current = this;
 
-            ForceHost = ConfigurationManager.AppSettings["ForceHost"];
-
             Program.SessionIDChanged += SessionIDChanged;
             Program.ViewerRemoved += ViewerRemoved;
             Program.ViewerAdded += ViewerAdded;
