@@ -62,18 +62,7 @@ namespace Remotely_Agent.Services
                     if (OSUtils.IsWindows)
                     {
                         ZipFile.ExtractToDirectory(tempFile, tempFolder, true);
-                    }
-                    else if (OSUtils.IsLinux)
-                    {
-                        Process.Start("sudo", "apt-get install unzip").WaitForExit();
-                        Process.Start("sudo", $"unzip -o {tempFile} -d {tempFolder}").WaitForExit();
-                        Process.Start("sudo", $"chmod -R 777 {tempFolder}").WaitForExit();
-                        Process.Start("sudo", $"chmod +x {Path.Combine(Path.GetTempPath(), "Remotely_Update", "Remotely_Agent")}").WaitForExit();
-                    }
-
-                    Logger.Write($"Service Updater: Launching extracted process to perform update.");
-                    if (OSUtils.IsWindows)
-                    {
+                        Logger.Write($"Service Updater: Launching extracted process to perform update.");
                         var psi = new ProcessStartInfo()
                         {
                             FileName = Path.Combine(Path.GetTempPath(), "Remotely_Update", OSUtils.ClientExecutableFileName),
@@ -84,7 +73,11 @@ namespace Remotely_Agent.Services
                     }
                     else if (OSUtils.IsLinux)
                     {
-                        Process.Start("sudo", $"{Path.Combine(Path.GetTempPath(), "Remotely_Update", "Remotely_Agent")} -update true & disown");
+                        Process.Start("sudo", "apt-get install unzip").WaitForExit();
+                        Process.Start("sudo", $"unzip -o {tempFile} -d /usr/local/bin/Remotely/").WaitForExit();
+                        Process.Start("sudo", "chmod +x /usr/local/bin/Remotely/Remotely_Agent").WaitForExit();
+                        Logger.Write($"Service Updater: Update complete.  Restarting service.");
+                        Process.Start("sudo", "systemctl restart remotely-agent");
                     }
                 }
             }
