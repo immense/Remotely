@@ -37,7 +37,7 @@ namespace Remotely_Server.Services
                 if (!IsProcessing)
                 {
                     IsProcessing = true;
-                    Task.Run(StartProcessing);
+                    Task.Run(new Action(StartProcessing));
                 }
             }
         }

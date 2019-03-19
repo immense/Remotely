@@ -114,3 +114,5 @@ systemctl start remotely.service
 apt-get install certbot python-certbot-nginx
 
 certbot --nginx
+
+apt-get install ffmpeg
