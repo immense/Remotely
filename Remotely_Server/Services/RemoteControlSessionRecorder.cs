@@ -44,45 +44,45 @@ namespace Remotely_Server.Services
 
         internal void StartProcessing()
         {
-            try
+            lock (LockObject)
             {
-                while (FrameQueue.Count > 0)
+                try
                 {
-                    if (FrameQueue.TryDequeue(out var frame))
+                    while (FrameQueue.Count > 0)
                     {
-                        if (!CumulativeFrames.ContainsKey(frame.ViewerID))
+                        if (FrameQueue.TryDequeue(out var frame))
                         {
-                            CumulativeFrames[frame.ViewerID] = new Bitmap(frame.Width, frame.Height);
-                        }
-
-                        var saveDir = Directory.CreateDirectory(GetSaveFolder(frame));
-
-                        var saveFile = Path.Combine(
-                            saveDir.FullName,
-                            $"frame-{(Directory.GetFiles(saveDir.FullName).Length + 1).ToString()}.jpg");
-
-                        var bitmap = CumulativeFrames[frame.ViewerID] as Bitmap;
-                        using (var graphics = Graphics.FromImage(bitmap))
-                        {
-                            using (var ms = new MemoryStream(frame.FrameBytes))
+                            if (!CumulativeFrames.ContainsKey(frame.ViewerID))
                             {
-                                using (var saveImage = Image.FromStream(ms))
+                                CumulativeFrames[frame.ViewerID] = new Bitmap(frame.Width, frame.Height);
+                            }
+
+                            var saveDir = Directory.CreateDirectory(GetSaveFolder(frame));
+
+                            var saveFile = Path.Combine(
+                                saveDir.FullName,
+                                $"frame-{(Directory.GetFiles(saveDir.FullName).Length + 1).ToString()}.jpg");
+
+                            var bitmap = CumulativeFrames[frame.ViewerID] as Bitmap;
+                            using (var graphics = Graphics.FromImage(bitmap))
+                            {
+                                using (var ms = new MemoryStream(frame.FrameBytes))
                                 {
-                                    graphics.DrawImage(saveImage, frame.Left, frame.Top);
+                                    using (var saveImage = Image.FromStream(ms))
+                                    {
+                                        graphics.DrawImage(saveImage, frame.Left, frame.Top);
+                                    }
                                 }
                             }
+                            bitmap.Save(saveFile, ImageFormat.Jpeg);
                         }
-                        bitmap.Save(saveFile, ImageFormat.Jpeg);
                     }
                 }
-            }
-            catch(Exception ex)
-            {
-                DataService.WriteEvent(ex);
-            }
-            finally
-            {
-                lock (LockObject)
+                catch (Exception ex)
+                {
+                    DataService.WriteEvent(ex);
+                }
+                finally
                 {
                     IsProcessing = false;
                 }
