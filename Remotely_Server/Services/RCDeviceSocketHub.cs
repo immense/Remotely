@@ -89,6 +89,7 @@ namespace Remotely_Server.Services
                 Context.Items["CurrentScreenSize"] = value;
             }
         }
+
         private DateTime StartTime
         {
             get
