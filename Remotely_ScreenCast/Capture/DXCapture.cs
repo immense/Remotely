@@ -173,7 +173,7 @@ namespace Remotely_ScreenCast.Capture
                 output1 = output.QueryInterface<Output1>();
 
                 // Width/Height of desktop to capture
-                var bounds = output.Description.DesktopBounds;
+                var bounds = output1.Description.DesktopBounds;
                 var newWidth = bounds.Right - bounds.Left;
                 var newHeight = bounds.Bottom - bounds.Top;
                 CurrentScreenBounds = new Rectangle(bounds.Left, bounds.Top, newWidth, newHeight);

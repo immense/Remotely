@@ -45,66 +45,78 @@ namespace Remotely_ScreenCast.Capture
             int right = int.MinValue;
             int bottom = int.MinValue;
 
-            var bd1 = previousFrame.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, currentFrame.PixelFormat);
-            var bd2 = currentFrame.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, previousFrame.PixelFormat);
+            BitmapData bd1 = null;
+            BitmapData bd2 = null;
 
-            var bytesPerPixel = Bitmap.GetPixelFormatSize(currentFrame.PixelFormat) / 8;
-            var totalSize = bd1.Height * bd1.Width * bytesPerPixel;
-
-            unsafe
+            try
             {
-                byte* scan1 = (byte*)bd1.Scan0.ToPointer();
-                byte* scan2 = (byte*)bd2.Scan0.ToPointer();
+                bd1 = previousFrame.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, currentFrame.PixelFormat);
+                bd2 = currentFrame.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, previousFrame.PixelFormat);
 
-                for (int counter = 0; counter < totalSize - bytesPerPixel; counter += bytesPerPixel)
+                var bytesPerPixel = Bitmap.GetPixelFormatSize(currentFrame.PixelFormat) / 8;
+                var totalSize = bd1.Height * bd1.Width * bytesPerPixel;
+
+                unsafe
                 {
-                    byte* data1 = scan1 + counter;
-                    byte* data2 = scan2 + counter;
+                    byte* scan1 = (byte*)bd1.Scan0.ToPointer();
+                    byte* scan2 = (byte*)bd2.Scan0.ToPointer();
 
-                    if (data1[0] != data2[0] ||
-                        data1[1] != data2[1] ||
-                        data1[2] != data2[2] ||
-                        data1[3] != data2[3])
+                    for (int counter = 0; counter < totalSize - bytesPerPixel; counter += bytesPerPixel)
                     {
-                        // Change was found.
-                        var pixel = counter / 4;
-                        var row = (int)Math.Floor((double)pixel / bd1.Width);
-                        var column = pixel % bd1.Width;
-                        if (row < top)
+                        byte* data1 = scan1 + counter;
+                        byte* data2 = scan2 + counter;
+
+                        if (data1[0] != data2[0] ||
+                            data1[1] != data2[1] ||
+                            data1[2] != data2[2] ||
+                            data1[3] != data2[3])
                         {
-                            top = row;
-                        }
-                        if (row > bottom)
-                        {
-                            bottom = row;
-                        }
-                        if (column < left)
-                        {
-                            left = column;
-                        }
-                        if (column > right)
-                        {
-                            right = column;
+                            // Change was found.
+                            var pixel = counter / 4;
+                            var row = (int)Math.Floor((double)pixel / bd1.Width);
+                            var column = pixel % bd1.Width;
+                            if (row < top)
+                            {
+                                top = row;
+                            }
+                            if (row > bottom)
+                            {
+                                bottom = row;
+                            }
+                            if (column < left)
+                            {
+                                left = column;
+                            }
+                            if (column > right)
+                            {
+                                right = column;
+                            }
                         }
                     }
                 }
+
+                if (left < right && top < bottom)
+                {
+                    // Bounding box is valid.
+
+                    left = Math.Max(left - 20, 0);
+                    top = Math.Max(top - 20, 0);
+                    right = Math.Min(right + 20, width);
+                    bottom = Math.Min(bottom + 20, height);
+
+                    currentFrame.UnlockBits(bd1);
+                    previousFrame.UnlockBits(bd2);
+
+                    return new Rectangle(left, top, right - left, bottom - top);
+                }
+                else
+                {
+                    currentFrame.UnlockBits(bd1);
+                    previousFrame.UnlockBits(bd2);
+                    return Rectangle.Empty;
+                }
             }
-
-            if (left < right && top < bottom)
-            {
-                // Bounding box is valid.
-
-                left = Math.Max(left - 20, 0);
-                top = Math.Max(top - 20, 0);
-                right = Math.Min(right + 20, width);
-                bottom = Math.Min(bottom + 20, height);
-
-                currentFrame.UnlockBits(bd1);
-                previousFrame.UnlockBits(bd2);
-
-                return new Rectangle(left, top, right - left, bottom - top);
-            }
-            else
+            catch
             {
                 currentFrame.UnlockBits(bd1);
                 previousFrame.UnlockBits(bd2);

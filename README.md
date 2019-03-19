@@ -6,22 +6,22 @@ Public Server: https://tryremotely.lucency.co
 
 ## Build Instructions (Windows 10)  
 The following steps will configure your Windows 10 machine for building the Remotely server and clients.
-* Install .NET Core SDK.
+* Install Visual Studio 2019.
+    * Link: https://visualstudio.microsoft.com/downloads/
+* Install the latest .NET Core SDK.
     * Link: https://dotnet.microsoft.com/download
+* Clone the git repository and open the solution in Visual Studio.
+* Build (in Release configuration) the Remotely_Desktop and Remotely_ScreenCast projects.
 * Run Publish.ps1 in the Utilities folder.
     * Example: powershell -f [path]\Publish.ps1 -outdir C:\inetpub\remotely -rid win10-x86
     * The output folder will now contain the server, with the clients in the Downloads folder.
     * Change values in appsettings.json for your environment.
     * Documentation for hosting in IIS can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/iis/index?view=aspnetcore-2.2
 
-## Build Instructions (Linux)
-* Install .NET Core SDK.
-    * Link: https://dotnet.microsoft.com/download
-* Install PowerShell Core.
-    * Link: https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-linux?view=powershell-6
-* Run Publish.ps1 in the Utilities folder.
-    * Example: pwsh -f [path]/Publish.ps1 -outdir /var/www/remotely -rid linux-x64
-    * The output folder will now contain the server, with the clients in the Downloads folder.
+## Hosting a Server (Windows)
+
+## Hosting a Server (Linux)
+* Download and unzip the Linux server package.
 * Run Remotely_Server_Setup.sh (with sudo) in the Utilities folder.
     * App root will be the above output folder.
     * Change values in appsettings.json for your environment.
