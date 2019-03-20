@@ -14,32 +14,14 @@ namespace Remotely_Agent.Services
 {
     public class Updater
     {
-        internal static async Task<string> GetLatestScreenCastVersion()
-        {
-            var platform = "";
-            if (OSUtils.IsWindows)
-            {
-                platform = "Windows";
-            }
-            else if (OSUtils.IsLinux)
-            {
-                platform = "Linux";
-            }
-            else
-            {
-                throw new Exception("Unsupported operating system.");
-            }
-            var response = await new HttpClient().GetAsync(Utilities.GetConnectionInfo().Host + $"/API/ScreenCastVersion/{platform}");
-            return await response.Content.ReadAsStringAsync();
-        }
-
 
         internal static void CheckForCoreUpdates()
         {
             try
             {
                 var wc = new WebClient();
-                var latestVersion = wc.DownloadString(Utilities.GetConnectionInfo().Host + $"/Downloads/CurrentAgentVersion.txt").Trim();
+                var response = new HttpClient().GetAsync(Utilities.GetConnectionInfo().Host + $"/API/CoreVersion/").Result;
+                var latestVersion = response.Content.ReadAsStringAsync().Result;
                 var thisVersion = FileVersionInfo.GetVersionInfo("Remotely_Agent.dll").FileVersion.ToString().Trim();
                 if (thisVersion != latestVersion)
                 {
@@ -183,5 +165,25 @@ namespace Remotely_Agent.Services
                 Environment.Exit(0);
             }
         }
+        internal static async Task<string> GetLatestScreenCastVersion()
+        {
+            var platform = "";
+            if (OSUtils.IsWindows)
+            {
+                platform = "Windows";
+            }
+            else if (OSUtils.IsLinux)
+            {
+                platform = "Linux";
+            }
+            else
+            {
+                throw new Exception("Unsupported operating system.");
+            }
+            var response = await new HttpClient().GetAsync(Utilities.GetConnectionInfo().Host + $"/API/ScreenCastVersion/{platform}");
+            return await response.Content.ReadAsStringAsync();
+        }
+
+
     }
 }

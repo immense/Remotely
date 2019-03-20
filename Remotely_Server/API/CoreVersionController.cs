@@ -18,10 +18,10 @@ namespace Remotely_Server.API
         public IHostingEnvironment HostingEnv { get; }
 
         // GET: api/<controller>
-        [HttpGet("{platform}")]
-        public string Get(string platform)
+        [HttpGet()]
+        public string Get()
         {
-            var filePath = Path.Combine(HostingEnv.WebRootPath, "Downloads", "CurrentAgentVersion.txt");
+            var filePath = Path.Combine(HostingEnv.ContentRootPath, "CurrentAgentVersion.txt");
             if (!System.IO.File.Exists(filePath))
             {
                 return "0.0.0.0";
