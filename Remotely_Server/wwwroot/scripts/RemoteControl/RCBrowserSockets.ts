@@ -64,8 +64,8 @@ export class RCBrowserSockets {
     SendTouchUp(): any {
         this.Connection.invoke("TouchUp");
     }
-    SendTap(): any {
-        this.Connection.invoke("Tap");
+    SendTap(percentX: number, percentY: number): any {
+        this.Connection.invoke("Tap", percentX, percentY);
     }
     SendMouseWheel(deltaX: number, deltaY: number): any {
         this.Connection.invoke("MouseWheel", deltaX, deltaY);

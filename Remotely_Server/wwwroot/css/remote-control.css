@@ -116,8 +116,6 @@ button[disabled] {
 #screenViewer {
     max-width: 99vw;
     max-height: 99vh;
-    -ms-touch-action: pinch-zoom;
-    touch-action: pinch-zoom;
     z-index: 1;
 }
 
