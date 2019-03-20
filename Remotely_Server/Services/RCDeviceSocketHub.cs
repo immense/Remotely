@@ -14,7 +14,7 @@ namespace Remotely_Server.Services
     public class RCDeviceSocketHub : Hub
     {
         public static ConcurrentDictionary<string, string> AttendedSessionList { get; set; } = new ConcurrentDictionary<string, string>();
-        public static object SaveLock { get; } = new object();
+        
         public RCDeviceSocketHub(DataService dataService, 
             IHubContext<BrowserSocketHub> browserHub, 
             IHubContext<RCBrowserSocketHub> rcBrowserHub, 

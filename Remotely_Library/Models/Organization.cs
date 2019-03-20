@@ -8,7 +8,7 @@ namespace Remotely_Library.Models
     public class Organization
     {
         [Key]
-        public string ID { get; set; } = Guid.NewGuid().ToString().Replace("-", "");
+        public string ID { get; set; } = Guid.NewGuid().ToString();
 
         [StringLength(25)]
         public string OrganizationName { get; set; }

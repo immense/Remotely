@@ -21,7 +21,7 @@ namespace Remotely_Server.API
         [HttpGet()]
         public string Get()
         {
-            var filePath = Path.Combine(HostingEnv.ContentRootPath, "CurrentAgentVersion.txt");
+            var filePath = Path.Combine(HostingEnv.ContentRootPath, "CurrentVersion.txt");
             if (!System.IO.File.Exists(filePath))
             {
                 return "0.0.0.0";
