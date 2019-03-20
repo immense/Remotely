@@ -48,7 +48,6 @@ namespace Remotely_Agent.Services
                 {
                     Logger.Write($"Failed to connect to {ConnectionInfo.Host}.  Trying with HTTPS.");
                     ConnectionInfo.Host = ConnectionInfo.Host.ToLower().Replace("http:", "https:");
-                    Utilities.SaveConnectionInfo(ConnectionInfo);
                     Connect();
                     return;
                 }
