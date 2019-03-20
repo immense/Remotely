@@ -182,13 +182,13 @@ namespace Remotely_ScreenCast.Sockets
                     Win32Interop.SendLeftMouseUp(point.X, point.Y);
                 }
             });
-            hubConnection.On("Tap", (string viewerID) =>
+            hubConnection.On("Tap", (double percentX, double percentY, string viewerID) =>
             {
                 if (Program.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
-                    User32.GetCursorPos(out var point);
-                    Win32Interop.SendLeftMouseDown(point.X, point.Y);
-                    Win32Interop.SendLeftMouseUp(point.X, point.Y);
+                    var mousePoint = ScreenCaster.GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
+                    Win32Interop.SendLeftMouseDown((int)mousePoint.Item1, (int)mousePoint.Item2);
+                    Win32Interop.SendLeftMouseUp((int)mousePoint.Item1, (int)mousePoint.Item2);
                 }
             });
             hubConnection.On("SharedFileIDs", (List<string> fileIDs) => {
