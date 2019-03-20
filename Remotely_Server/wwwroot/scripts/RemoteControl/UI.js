@@ -17,14 +17,10 @@ export var FileTransferInput = document.getElementById("fileTransferInput");
 export var FileTransferProgress = document.getElementById("fileTransferProgress");
 export var KeyboardButton = document.getElementById("keyboardButton");
 var lastPointerMove = Date.now();
-var lastTouchPointX;
-var lastTouchPointY;
-var lastTouchStart = Date.now();
-var touchList = new Array();
-var longPressTimeout;
 var isDragging;
-var lastTouchDistanceMoved = 0;
 var currentPointerDevice;
+var currentTouchCount;
+var rightClickOpen;
 export function ApplyInputHandlers(sockets) {
     document.querySelector("#menuButton").addEventListener("click", (ev) => {
         HorizontalBars.forEach(x => {
@@ -116,7 +112,7 @@ export function ApplyInputHandlers(sockets) {
         ConnectToClient();
     });
     ScreenViewer.addEventListener("mousemove", function (e) {
-        currentPointerDevice = "Touch";
+        currentPointerDevice = "Mouse";
         e.preventDefault();
         if (Date.now() - lastPointerMove < 25) {
             return;
@@ -151,99 +147,72 @@ export function ApplyInputHandlers(sockets) {
             e.preventDefault();
             e.stopPropagation();
         }
-        else if (currentPointerDevice == "Touch") {
+        else if (currentPointerDevice == "Touch" && currentTouchCount == 0) {
             var percentX = e.offsetX / ScreenViewer.clientWidth;
             var percentY = e.offsetY / ScreenViewer.clientHeight;
             sockets.SendTap(percentX, percentY);
         }
     });
-    //ScreenViewer.addEventListener("dblclick", function (e) {
-    //    if (currentPointerDevice == "Mouse") {
-    //        e.preventDefault();
-    //        e.stopPropagation();
-    //    }
-    //    else if (currentPointerDevice == "Touch") {
-    //    }
-    //});
     ScreenViewer.addEventListener("contextmenu", (ev) => {
         ev.preventDefault();
     });
     ScreenViewer.addEventListener("touchstart", function (e) {
+        if (rightClickOpen) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        }
+        isDragging = false;
         currentPointerDevice = "Touch";
+        currentTouchCount = e.touches.length;
         KeyboardButton.removeAttribute("hidden");
         var focusedInput = document.querySelector("input:focus");
         if (focusedInput) {
             focusedInput.blur();
         }
-        //touchList.push(e.changedTouches[0].identifier);
-        //if (e.touches.length > 1) {
-        //    window.clearTimeout(longPressTimeout);
-        //    return;
-        //}
-        //e.preventDefault();
-        //e.stopPropagation();
-        //if (Date.now() - lastTouchStart < 500) {
-        //    sockets.SendTouchDown();
-        //    return;
-        //}
-        //lastTouchStart = Date.now();
-        //lastTouchPointX = e.touches[0].clientX;
-        //lastTouchPointY = e.touches[0].clientY;
-        //lastTouchDistanceMoved = 0;
-        //longPressTimeout = window.setTimeout(() => {
-        //    if (lastTouchStart > lastPointerMove && touchList.some(x => x == e.changedTouches[0].identifier)) {
-        //        sockets.SendLongPress();
-        //    }
-        //}, 1500);
+        if (e.touches.length > 2) {
+            var percentX = (e.touches[0].pageX - ScreenViewer.getBoundingClientRect().left) / ScreenViewer.clientWidth;
+            var percentY = (e.touches[0].pageY - ScreenViewer.getBoundingClientRect().top) / ScreenViewer.clientHeight;
+            sockets.SendMouseDown(2, percentX, percentY);
+            sockets.SendMouseUp(2, percentX, percentY);
+        }
     });
     ScreenViewer.addEventListener("touchmove", function (e) {
+        if (rightClickOpen) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        }
         currentPointerDevice = "Touch";
+        currentTouchCount = e.touches.length;
         var percentX = (e.touches[0].pageX - ScreenViewer.getBoundingClientRect().left) / ScreenViewer.clientWidth;
         var percentY = (e.touches[0].pageY - ScreenViewer.getBoundingClientRect().top) / ScreenViewer.clientHeight;
         if (e.touches.length == 2) {
             return;
         }
-        else if (e.touches.length > 2) {
-            sockets.SendMouseDown(2, percentX, percentY);
-        }
         else if (isDragging) {
+            e.preventDefault();
+            e.stopPropagation();
             sockets.SendMouseDown(0, percentX, percentY);
             sockets.SendMouseMove(percentX, percentY);
         }
-        //lastTouchDistanceMoved = GetDistanceBetween(lastTouchPointX, lastTouchPointY, e.touches[0].clientX, e.touches[0].clientY);
-        //var moveX = (e.touches[0].clientX - lastTouchPointX) * 2;
-        //var moveY = (e.touches[0].clientY - lastTouchPointY) * 2;
-        //sockets.SendTouchMove(moveX, moveY);
-        //lastTouchPointX = e.touches[0].clientX;
-        //lastTouchPointY = e.touches[0].clientY;
-        //lastPointerMove = Date.now();
     });
     ScreenViewer.addEventListener("touchend", function (e) {
         currentPointerDevice = "Touch";
+        currentTouchCount = e.touches.length;
         if (e.touches.length == 1) {
             isDragging = true;
+            return;
         }
-        else {
-            if (isDragging) {
-                var percentX = (e.changedTouches[0].pageX - ScreenViewer.getBoundingClientRect().left) / ScreenViewer.clientWidth;
-                var percentY = (e.changedTouches[0].pageY - ScreenViewer.getBoundingClientRect().top) / ScreenViewer.clientHeight;
-                sockets.SendMouseUp(0, percentX, percentY);
-            }
-            isDragging = false;
+        if (currentTouchCount == 0 && rightClickOpen) {
+            rightClickOpen = false;
         }
-        //var index = touchList.findIndex(x => x == e.changedTouches[0].identifier);
-        //touchList.splice(index, 1);
-        //e.preventDefault();
-        //e.stopPropagation();
-        //if (e.touches.length > 0) {
-        //    return;
-        //}
-        //if (Date.now() - lastTouchStart < 500 && lastTouchDistanceMoved < 5) {
-        //    sockets.SendTap();
-        //}
-        //else {
-        //    sockets.SendTouchUp();
-        //}
+        if (isDragging) {
+            var percentX = (e.changedTouches[0].pageX - ScreenViewer.getBoundingClientRect().left) / ScreenViewer.clientWidth;
+            var percentY = (e.changedTouches[0].pageY - ScreenViewer.getBoundingClientRect().top) / ScreenViewer.clientHeight;
+            sockets.SendMouseUp(0, percentX, percentY);
+        }
+        isDragging = false;
     });
     ScreenViewer.addEventListener("wheel", function (e) {
         e.preventDefault();

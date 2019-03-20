@@ -56,7 +56,7 @@ Set-Location -Path (Get-Item -Path $PSScriptRoot).Parent.FullName
 
 if ($ArgList.Contains("c")) {
     # Add Current Version file to root content folder for client update checks.
-    Set-Content -Path ".\Remotely_Server\CurrentAgentVersion.txt" -Value $CurrentVersion.Trim() -Encoding UTF8 -Force
+    Set-Content -Path ".\Remotely_Server\CurrentVersion.txt" -Value $CurrentVersion.Trim() -Encoding UTF8 -Force
 
     # Copy .NET Framework ScreenCaster to Agent resources for embedding.
     if ((Test-Path -Path ".\Remotely_Agent\Resources") -eq $false) {

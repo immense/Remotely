@@ -8,7 +8,7 @@ namespace Remotely_Library.Models
     public class InviteLink
     {
         [Key]
-        public string ID { get; set; } = Guid.NewGuid().ToString().Replace("-", "");
+        public string ID { get; set; } = Guid.NewGuid().ToString();
         public string InvitedUser { get; set; }
         public bool IsAdmin { get; set; }
         public DateTime DateSent { get; set; }

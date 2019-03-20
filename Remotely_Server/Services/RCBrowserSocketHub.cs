@@ -165,6 +165,7 @@ namespace Remotely_Server.Services
                                 $"Login ID (if logged in): {Context?.User?.Identity?.Name}.  " +
                                 $"Requester IP Address: " + Context?.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString()
             });
+    
             ScreenCasterID = screenCasterID;
             Mode = (RemoteControlMode)remoteControlMode;
             RequesterName = requesterName;

@@ -32,11 +32,28 @@ namespace Remotely_Agent.Services
             HubConnection = new HubConnectionBuilder()
                 .WithUrl(ConnectionInfo.Host + "/DeviceHub")
                 .Build();
+
             HubConnection.Closed += HubConn_Closed;
 
             RegisterMessageHandlers(HubConnection);
 
-            await HubConnection.StartAsync();
+            try
+            {
+                await HubConnection.StartAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+                if (!ConnectionInfo.Host.StartsWith("https"))
+                {
+                    Logger.Write($"Failed to connect to {ConnectionInfo.Host}.  Trying with HTTPS.");
+                    ConnectionInfo.Host = ConnectionInfo.Host.ToLower().Replace("http:", "https:");
+                    Utilities.SaveConnectionInfo(ConnectionInfo);
+                    Connect();
+                    return;
+                }
+                throw;
+            }
 
             var device = Device.Create(ConnectionInfo);
 
@@ -45,7 +62,7 @@ namespace Remotely_Agent.Services
             if (string.IsNullOrWhiteSpace(ConnectionInfo.ServerVerificationToken))
             {
                 IsServerVerified = true;
-                ConnectionInfo.ServerVerificationToken = Guid.NewGuid().ToString().Replace("-","");
+                ConnectionInfo.ServerVerificationToken = Guid.NewGuid().ToString();
                 await HubConnection.InvokeAsync("SetServerVerificationToken", ConnectionInfo.ServerVerificationToken);
                 Utilities.SaveConnectionInfo(ConnectionInfo);
             }
@@ -61,8 +78,6 @@ namespace Remotely_Agent.Services
             HeartbeatTimer = new Timer(300000);
             HeartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
             HeartbeatTimer.Start();
-
-            Updater.CheckForCoreUpdates();
         }
 
         public static void SendHeartbeat()

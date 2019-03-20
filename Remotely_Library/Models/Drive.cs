@@ -9,7 +9,7 @@ namespace Remotely_Library.Models
     public class Drive
     {
         [Key]
-        public string ID { get; set; } = Guid.NewGuid().ToString().Replace("-", "");
+        public string ID { get; set; } = Guid.NewGuid().ToString();
         public DriveType DriveType { get; set; }
         public string RootDirectory { get; internal set; }
         public string Name { get; internal set; }

@@ -62,6 +62,11 @@ a.navbar-brand {
 .record-row {
     cursor: pointer;
 }
+.table tbody tr td {
+    padding: .5rem;
+    font-size: .9em;
+}
+
 
 #tabContentWrapper {
     overflow: auto;

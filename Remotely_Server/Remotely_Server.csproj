@@ -1709,7 +1709,7 @@
 
 
   <ItemGroup>
-    <None Update="CurrentAgentVersion.txt">
+    <None Update="CurrentVersion.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="ffmpeg.exe">

@@ -7,27 +7,29 @@ import { ConsoleOutputDiv, TabContentWrapper } from "./UI.js";
 export function CreateCommandHarness(context: CommandContext): HTMLDivElement {
     var collapseClass = context.TargetDeviceIDs.length > 1 ? "collapse" : "collapse show";
     var commandHarness = document.createElement("div");
-    commandHarness.id = context.ID;
+    var contextID = "c" + context.ID;
+    commandHarness.id = contextID;
     commandHarness.classList.add("command-harness");
     commandHarness.innerHTML = `
         <div class="command-harness-title">
             Command Type: ${context.CommandMode}  |  
-            Total Devices: <span id="${context.ID}-totaldevices">${context.TargetDeviceIDs.length}</span>  |  
-            Completed: <span id="${context.ID}-completed">0%</span>  |
-            Errors: <span id="${context.ID}-errors">0</span>  |  
-            <button class="btn btn-sm btn-secondary" data-toggle="collapse" data-target='#${context.ID}-results'>View</button> 
+            Total Devices: <span id="${contextID}-totaldevices">${context.TargetDeviceIDs.length}</span>  |  
+            Completed: <span id="${contextID}-completed">0%</span>  |
+            Errors: <span id="${contextID}-errors">0</span>  |  
+            <button class="btn btn-sm btn-secondary" data-toggle="collapse" data-target='#${contextID}-results'>View</button> 
             <a class="btn btn-sm btn-secondary" target="_blank" href="${location.origin}/API/Commands/JSON/${context.ID}">JSON</a>
             <a class="btn btn-sm btn-secondary" target="_blank" href="${location.origin}/API/Commands/XML/${context.ID}">XML</a> 
         </div>
-        <div id="${context.ID}-results" class="${collapseClass}">
+        <div id="${contextID}-results" class="${collapseClass}">
         </div>`;
     return commandHarness;
 }
 
 export function AddPSCoreResultsHarness(result: PSCoreCommandResult) {
+    var contextID = "c" + result.CommandContextID;
     var deviceName = DataGrid.DataSource.find(x => x.ID == result.DeviceID).DeviceName;
-    var resultsWrapper = document.getElementById(result.CommandContextID + "-results");
-    var totalDevices = parseInt(document.getElementById(result.CommandContextID + "-totaldevices").innerText);
+    var resultsWrapper = document.getElementById(contextID + "-results");
+    var totalDevices = parseInt(document.getElementById(contextID + "-totaldevices").innerText);
     var collapseClass = totalDevices > 1 ? "collapse" : "collapse show";
     
     var resultDiv = document.createElement("div");
@@ -35,9 +37,9 @@ export function AddPSCoreResultsHarness(result: PSCoreCommandResult) {
         <div class="result-header">
                 Device: ${deviceName}  |  
                 Had Errors: ${result.ErrorOutput.length > 1 ? "Yes": "No"}  |  
-                <button class="btn btn-sm btn-secondary" data-toggle="collapse" data-target='#${result.CommandContextID + result.DeviceID}-result'>View</button>
+                <button class="btn btn-sm btn-secondary" data-toggle="collapse" data-target='#${contextID + result.DeviceID}-result'>View</button>
         </div>
-        <div id='${result.CommandContextID + result.DeviceID}-result' class="command-result-output ${collapseClass}">
+        <div id='${contextID + result.DeviceID}-result' class="command-result-output ${collapseClass}">
             <div>Host Output:<br>${result.HostOutput.replace(/\n/g, "<br>").replace(/ /g, "&nbsp;")}</div>
             <div>Debug Output:<br>${result.DebugOutput.join("<br>").replace(/ /g, "&nbsp;")}</div>
             <div>Verbose Output:<br>${result.VerboseOutput.join("<br>").replace(/ /g, "&nbsp;")}</div>
@@ -45,7 +47,7 @@ export function AddPSCoreResultsHarness(result: PSCoreCommandResult) {
             <div>Error Output:<br>${result.ErrorOutput.join("<br>").replace(/ /g, "&nbsp;")}</div>
         </div>`;
     if (result.ErrorOutput.length > 0) {
-        var errorSpan = document.getElementById(result.CommandContextID + "-errors");
+        var errorSpan = document.getElementById(contextID + "-errors");
         var currentErrors = parseInt(errorSpan.innerText);
         currentErrors += 1;
         errorSpan.innerText = String(currentErrors);
@@ -54,9 +56,10 @@ export function AddPSCoreResultsHarness(result: PSCoreCommandResult) {
     TabContentWrapper.scrollTop = TabContentWrapper.scrollHeight;
 }
 export function AddCommandResultsHarness(result: GenericCommandResult) {
+    var contextID = "c" + result.CommandContextID;
     var deviceName = DataGrid.DataSource.find(x => x.ID == result.DeviceID).DeviceName;
-    var resultsWrapper = document.getElementById(result.CommandContextID + "-results");
-    var totalDevices = parseInt(document.getElementById(result.CommandContextID + "-totaldevices").innerText);
+    var resultsWrapper = document.getElementById(contextID + "-results");
+    var totalDevices = parseInt(document.getElementById(contextID + "-totaldevices").innerText);
     var collapseClass = totalDevices > 1 ? "collapse" : "collapse show";
     
     var resultDiv = document.createElement("div");
@@ -64,14 +67,14 @@ export function AddCommandResultsHarness(result: GenericCommandResult) {
         <div class="result-header">
                 Device: ${deviceName}  |  
                 Had Errors: ${result.ErrorOutput.length > 1 ? "Yes" : "No"}  |  
-                <button class="btn btn-sm btn-secondary" data-toggle="collapse" data-target="#${result.CommandContextID + result.DeviceID}-result">View</button>
+                <button class="btn btn-sm btn-secondary" data-toggle="collapse" data-target="#${contextID + result.DeviceID}-result">View</button>
         </div>
-        <div id="${result.CommandContextID + result.DeviceID}-result" class="command-result-output ${collapseClass}">
+        <div id="${contextID + result.DeviceID}-result" class="command-result-output ${collapseClass}">
             <div>Standard Output:<br>${result.StandardOutput.replace(/\n/g, "<br>").replace(/ /g, "&nbsp;")}</div>
             <div>Error Output:<br>${result.ErrorOutput.replace(/\n/g, "<br>").replace(/ /g, "&nbsp;")}</div>
         </div>`;
     if (result.ErrorOutput.length > 0) {
-        var errorSpan = document.getElementById(result.CommandContextID + "-errors");
+        var errorSpan = document.getElementById(`${contextID}-errors`);
         var currentErrors = parseInt(errorSpan.innerText);
         currentErrors += 1;
         errorSpan.innerText = String(currentErrors);
@@ -80,8 +83,9 @@ export function AddCommandResultsHarness(result: GenericCommandResult) {
     TabContentWrapper.scrollTop = TabContentWrapper.scrollHeight;
 }
 
-export function UpdateResultsCount(commandContextID:string) {
-    var totalDevices = parseInt(document.getElementById(commandContextID + "-totaldevices").innerText);
-    var percentComplete = Math.round(document.getElementById(commandContextID + "-results").children.length / totalDevices * 100);
-    document.getElementById(commandContextID + "-completed").innerText = String(percentComplete) + "%";
+export function UpdateResultsCount(commandContextID: string) {
+    var contextID = "c" + commandContextID;
+    var totalDevices = parseInt(document.getElementById(`${contextID}-totaldevices`).innerText);
+    var percentComplete = Math.round(document.getElementById(`${contextID}-results`).children.length / totalDevices * 100);
+    document.getElementById(`${contextID}-completed`).innerText = String(percentComplete) + "%";
 }

@@ -43,5 +43,7 @@ var cursorMap = {
     "567017879": "col-resize",
     "925305447": "row-resize",
     "-1670772177": "col-resize",
-    "6883365": "copy"
+    "6883365": "copy",
+    "852495": "col-resize",
+    "395343": "col-resize"
 }
