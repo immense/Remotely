@@ -61,6 +61,8 @@ namespace Remotely_Agent.Services
             HeartbeatTimer = new Timer(300000);
             HeartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
             HeartbeatTimer.Start();
+
+            Updater.CheckForCoreUpdates();
         }
 
         public static void SendHeartbeat()

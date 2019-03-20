@@ -36,7 +36,6 @@ namespace Remotely_Agent
             {
                 Updater.CoreUpdate();
             }
-            
 
             if (OSUtils.IsWindows)
             {
