@@ -1,4 +1,7 @@
 # Remotely
+[![Build Status](https://dev.azure.com/translucency/Remotely/_apis/build/status/Remotely?branchName=master)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=2&branchName=master)
+
+
 A remote control and remote scripting solution, built with .NET Core and SignalR Core.
 
 Website: https://remotely.lucency.co  
