@@ -20,9 +20,10 @@ var lastPointerMove = Date.now();
 var isDragging;
 var currentPointerDevice;
 var currentTouchCount;
-var rightClickOpen;
-var longPressTimer;
 var cancelNextClick;
+var isPinchZooming;
+var startPinchPoint1;
+var startPinchPoint2;
 export function ApplyInputHandlers(sockets) {
     document.querySelector("#menuButton").addEventListener("click", (ev) => {
         HorizontalBars.forEach(x => {
@@ -113,8 +114,16 @@ export function ApplyInputHandlers(sockets) {
     document.querySelector("#connectButton").addEventListener("click", (ev) => {
         ConnectToClient();
     });
+    ScreenViewer.addEventListener("pointermove", function (e) {
+        currentPointerDevice = e.pointerType;
+    });
+    ScreenViewer.addEventListener("pointerdown", function (e) {
+        currentPointerDevice = e.pointerType;
+    });
+    ScreenViewer.addEventListener("pointerenter", function (e) {
+        currentPointerDevice = e.pointerType;
+    });
     ScreenViewer.addEventListener("mousemove", function (e) {
-        currentPointerDevice = "Mouse";
         e.preventDefault();
         if (Date.now() - lastPointerMove < 25) {
             return;
@@ -125,6 +134,9 @@ export function ApplyInputHandlers(sockets) {
         sockets.SendMouseMove(percentX, percentY);
     });
     ScreenViewer.addEventListener("mousedown", function (e) {
+        if (currentPointerDevice == "touch") {
+            return;
+        }
         if (e.button != 0 && e.button != 2) {
             return;
         }
@@ -134,6 +146,9 @@ export function ApplyInputHandlers(sockets) {
         sockets.SendMouseDown(e.button, percentX, percentY);
     });
     ScreenViewer.addEventListener("mouseup", function (e) {
+        if (currentPointerDevice == "touch") {
+            return;
+        }
         if (e.button != 0 && e.button != 2) {
             return;
         }
@@ -147,36 +162,34 @@ export function ApplyInputHandlers(sockets) {
             cancelNextClick = false;
             return;
         }
-        if (currentPointerDevice == "Mouse") {
+        if (currentPointerDevice == "mouse") {
             e.preventDefault();
             e.stopPropagation();
         }
-        else if (currentPointerDevice == "Touch" && currentTouchCount == 0) {
+        else if (currentPointerDevice == "touch" && currentTouchCount == 0) {
             var percentX = e.offsetX / ScreenViewer.clientWidth;
             var percentY = e.offsetY / ScreenViewer.clientHeight;
             sockets.SendTap(percentX, percentY);
         }
     });
     ScreenViewer.addEventListener("dblclick", function (e) {
+        if (currentPointerDevice == "mouse") {
+            return;
+        }
         var percentX = e.offsetX / ScreenViewer.clientWidth;
         var percentY = e.offsetY / ScreenViewer.clientHeight;
         sockets.SendMouseDown(2, percentX, percentY);
         sockets.SendMouseUp(2, percentX, percentY);
     });
-    ScreenViewer.addEventListener("contextmenu", (ev) => {
-        ev.preventDefault();
-    });
     ScreenViewer.addEventListener("touchstart", function (e) {
-        if (rightClickOpen) {
-            e.preventDefault();
-            e.stopPropagation();
-            return;
-        }
         if (e.touches.length > 1) {
             cancelNextClick = true;
         }
+        if (e.touches.length == 2) {
+            startPinchPoint1 = { X: e.touches[0].pageX, Y: e.touches[0].pageY, IsEmpty: false };
+            startPinchPoint2 = { X: e.touches[1].pageX, Y: e.touches[1].pageY, IsEmpty: false };
+        }
         isDragging = false;
-        currentPointerDevice = "Touch";
         currentTouchCount = e.touches.length;
         KeyboardButton.removeAttribute("hidden");
         var focusedInput = document.querySelector("input:focus");
@@ -185,16 +198,15 @@ export function ApplyInputHandlers(sockets) {
         }
     });
     ScreenViewer.addEventListener("touchmove", function (e) {
-        if (rightClickOpen) {
-            e.preventDefault();
-            e.stopPropagation();
-            return;
-        }
-        currentPointerDevice = "Touch";
         currentTouchCount = e.touches.length;
         var percentX = (e.touches[0].pageX - ScreenViewer.getBoundingClientRect().left) / ScreenViewer.clientWidth;
         var percentY = (e.touches[0].pageY - ScreenViewer.getBoundingClientRect().top) / ScreenViewer.clientHeight;
         if (e.touches.length == 2) {
+            var distance1 = Math.hypot(startPinchPoint1.X - e.touches[0].pageX, startPinchPoint1.Y - e.touches[0].pageY);
+            var distance2 = Math.hypot(startPinchPoint2.X - e.touches[1].pageX, startPinchPoint2.Y - e.touches[1].pageY);
+            if (distance1 > 5 || distance2 > 5) {
+                isPinchZooming = true;
+            }
             return;
         }
         else if (isDragging) {
@@ -204,9 +216,8 @@ export function ApplyInputHandlers(sockets) {
         }
     });
     ScreenViewer.addEventListener("touchend", function (e) {
-        currentPointerDevice = "Touch";
         currentTouchCount = e.touches.length;
-        if (e.touches.length == 1) {
+        if (e.touches.length == 1 && !isPinchZooming) {
             isDragging = true;
             var percentX = (e.touches[0].pageX - ScreenViewer.getBoundingClientRect().left) / ScreenViewer.clientWidth;
             var percentY = (e.touches[0].pageY - ScreenViewer.getBoundingClientRect().top) / ScreenViewer.clientHeight;
@@ -216,7 +227,9 @@ export function ApplyInputHandlers(sockets) {
         }
         if (currentTouchCount == 0) {
             cancelNextClick = false;
-            rightClickOpen = false;
+            isPinchZooming = false;
+            startPinchPoint1 = null;
+            startPinchPoint2 = null;
         }
         if (isDragging) {
             var percentX = (e.changedTouches[0].pageX - ScreenViewer.getBoundingClientRect().left) / ScreenViewer.clientWidth;
@@ -224,6 +237,9 @@ export function ApplyInputHandlers(sockets) {
             sockets.SendMouseUp(0, percentX, percentY);
         }
         isDragging = false;
+    });
+    ScreenViewer.addEventListener("contextmenu", (ev) => {
+        ev.preventDefault();
     });
     ScreenViewer.addEventListener("wheel", function (e) {
         e.preventDefault();

@@ -3,6 +3,7 @@ import { GetDistanceBetween } from "../Utilities.js";
 import { ConnectToClient, RemoteControl } from "./RemoteControl.js";
 import { FloatMessage } from "../UI.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
+import { Point } from "../Models/Point.js";
 
 export var SessionIDInput = document.querySelector("#sessionIDInput") as HTMLInputElement;
 export var ConnectButton = document.querySelector("#connectButton") as HTMLButtonElement;
@@ -22,11 +23,12 @@ export var KeyboardButton = document.getElementById("keyboardButton") as HTMLBut
 
 var lastPointerMove = Date.now();
 var isDragging: boolean;
-var currentPointerDevice: "Mouse" | "Touch";
+var currentPointerDevice: string;
 var currentTouchCount: number;
-var rightClickOpen: boolean;
-var longPressTimer: number;
 var cancelNextClick: boolean;
+var isPinchZooming: boolean;
+var startPinchPoint1: Point;
+var startPinchPoint2: Point;
 
 export function ApplyInputHandlers(sockets: RCBrowserSockets) {
     document.querySelector("#menuButton").addEventListener("click", (ev) => {
@@ -120,8 +122,16 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
     document.querySelector("#connectButton").addEventListener("click", (ev) => {
         ConnectToClient();
     });
+    ScreenViewer.addEventListener("pointermove", function (e) {
+        currentPointerDevice = e.pointerType;
+    });
+    ScreenViewer.addEventListener("pointerdown", function (e) {
+        currentPointerDevice = e.pointerType;
+    });
+    ScreenViewer.addEventListener("pointerenter", function (e) {
+        currentPointerDevice = e.pointerType;
+    });
     ScreenViewer.addEventListener("mousemove", function (e) {
-        currentPointerDevice = "Mouse";
         e.preventDefault();
         if (Date.now() - lastPointerMove < 25) {
             return;
@@ -132,6 +142,9 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
         sockets.SendMouseMove(percentX, percentY);
     });
     ScreenViewer.addEventListener("mousedown", function (e) {
+        if (currentPointerDevice == "touch") {
+            return;
+        }
         if (e.button != 0 && e.button != 2) {
             return;
         }
@@ -141,6 +154,9 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
         sockets.SendMouseDown(e.button, percentX, percentY);
     });
     ScreenViewer.addEventListener("mouseup", function (e) {
+        if (currentPointerDevice == "touch") {
+            return;
+        }
         if (e.button != 0 && e.button != 2) {
             return;
         }
@@ -155,36 +171,35 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
             cancelNextClick = false;
             return;
         }
-        if (currentPointerDevice == "Mouse") {
+        if (currentPointerDevice == "mouse") {
             e.preventDefault();
             e.stopPropagation();
         }
-        else if (currentPointerDevice == "Touch" && currentTouchCount == 0) {
+        else if (currentPointerDevice == "touch" && currentTouchCount == 0) {
             var percentX = e.offsetX / ScreenViewer.clientWidth;
             var percentY = e.offsetY / ScreenViewer.clientHeight;
             sockets.SendTap(percentX, percentY);
         }
     });
     ScreenViewer.addEventListener("dblclick", function (e) {
+        if (currentPointerDevice == "mouse") {
+            return;
+        }
         var percentX = e.offsetX / ScreenViewer.clientWidth;
         var percentY = e.offsetY / ScreenViewer.clientHeight;
         sockets.SendMouseDown(2, percentX, percentY);
         sockets.SendMouseUp(2, percentX, percentY);
     });
-    ScreenViewer.addEventListener("contextmenu", (ev) => {
-        ev.preventDefault();
-    });
+
     ScreenViewer.addEventListener("touchstart", function (e) {
-        if (rightClickOpen) {
-            e.preventDefault();
-            e.stopPropagation();
-            return;
-        }
         if (e.touches.length > 1) {
             cancelNextClick = true;
         }
+        if (e.touches.length == 2) {
+            startPinchPoint1 = { X: e.touches[0].pageX, Y: e.touches[0].pageY, IsEmpty: false };
+            startPinchPoint2 = { X: e.touches[1].pageX, Y: e.touches[1].pageY, IsEmpty: false };
+        }
         isDragging = false;
-        currentPointerDevice = "Touch";
         currentTouchCount = e.touches.length;
         KeyboardButton.removeAttribute("hidden");
         var focusedInput = document.querySelector("input:focus") as HTMLInputElement;
@@ -194,17 +209,16 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
     });
 
     ScreenViewer.addEventListener("touchmove", function (e) {
-        if (rightClickOpen) {
-            e.preventDefault();
-            e.stopPropagation();
-            return;
-        }
-        currentPointerDevice = "Touch";
         currentTouchCount = e.touches.length;
         var percentX = (e.touches[0].pageX - ScreenViewer.getBoundingClientRect().left) / ScreenViewer.clientWidth;
         var percentY = (e.touches[0].pageY - ScreenViewer.getBoundingClientRect().top) / ScreenViewer.clientHeight;
 
         if (e.touches.length == 2) {
+            var distance1 = Math.hypot(startPinchPoint1.X - e.touches[0].pageX, startPinchPoint1.Y - e.touches[0].pageY);
+            var distance2 = Math.hypot(startPinchPoint2.X - e.touches[1].pageX, startPinchPoint2.Y - e.touches[1].pageY);
+            if (distance1 > 5 || distance2 > 5) {
+                isPinchZooming = true;
+            }
             return;
         }
         else if (isDragging) {
@@ -214,10 +228,9 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
         }
     });
     ScreenViewer.addEventListener("touchend", function (e) {
-        currentPointerDevice = "Touch";
         currentTouchCount = e.touches.length;
 
-        if (e.touches.length == 1) {
+        if (e.touches.length == 1 && !isPinchZooming) {
             isDragging = true;
             var percentX = (e.touches[0].pageX - ScreenViewer.getBoundingClientRect().left) / ScreenViewer.clientWidth;
             var percentY = (e.touches[0].pageY - ScreenViewer.getBoundingClientRect().top) / ScreenViewer.clientHeight;
@@ -228,9 +241,10 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
 
         if (currentTouchCount == 0) {
             cancelNextClick = false;
-            rightClickOpen = false;
+            isPinchZooming = false;
+            startPinchPoint1 = null;
+            startPinchPoint2 = null;
         }
-
 
         if (isDragging) {
             var percentX = (e.changedTouches[0].pageX - ScreenViewer.getBoundingClientRect().left) / ScreenViewer.clientWidth;
@@ -239,9 +253,10 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
         }
 
         isDragging = false;
-
     });
-
+    ScreenViewer.addEventListener("contextmenu", (ev) => {
+        ev.preventDefault();
+    });
     ScreenViewer.addEventListener("wheel", function (e) {
         e.preventDefault();
         sockets.SendMouseWheel(e.deltaX, e.deltaY);
