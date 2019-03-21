@@ -35,22 +35,20 @@ namespace Remotely_ScreenCast.Capture
                 User32.GetCursorInfo(out ci);
                 if (ci.flags == User32.CURSOR_SHOWING)
                 {
+                    if (ci.hCursor.ToString() == Cursors.IBeam.Handle.ToString())
+                    {
+                        return new CursorInfo(new byte[0], Point.Empty, "text");
+                    }
+
                     using (var icon = Icon.FromHandle(ci.hCursor))
                     {
                         using (var ms = new MemoryStream())
                         {
                             using (var cursor = new Cursor(ci.hCursor))
                             {
-                                if (cursor.ToString() == Cursors.IBeam.ToString())
-                                {
-                                    return new CursorInfo(new byte[0], Point.Empty, "text");
-                                }
-                                else
-                                {
-                                    var hotspot = cursor.HotSpot;
-                                    icon.ToBitmap().Save(ms, ImageFormat.Png);
-                                    return new CursorInfo(ms.ToArray(), hotspot);
-                                }
+                                var hotspot = cursor.HotSpot;
+                                icon.ToBitmap().Save(ms, ImageFormat.Png);
+                                return new CursorInfo(ms.ToArray(), hotspot);
                             }
                         }
                     }
@@ -63,7 +61,7 @@ namespace Remotely_ScreenCast.Capture
             }
             catch
             {
-                return new CursorInfo(new byte[0], Point.Empty, "none");
+                return new CursorInfo(new byte[0], Point.Empty, "default");
             }
         }
         private CursorIconWatcher()
@@ -89,22 +87,21 @@ namespace Remotely_ScreenCast.Capture
                     var currentCursor = cursorInfo.hCursor.ToString();
                     if (currentCursor != PreviousCursorHandle)
                     {
+                        if (currentCursor == Cursors.IBeam.Handle.ToString())
+                        {
+                            OnChange?.Invoke(this, new CursorInfo(new byte[0], Point.Empty, "text"));
+                            return;
+                        }
+
                         using (var icon = Icon.FromHandle(cursorInfo.hCursor))
                         {
                             using (var ms = new MemoryStream())
                             {
                                 using (var cursor = new Cursor(cursorInfo.hCursor))
                                 {
-                                    if (cursor.ToString() == Cursors.IBeam.ToString())
-                                    {
-                                        OnChange?.Invoke(this, new CursorInfo(new byte[0], Point.Empty, "text"));
-                                    }
-                                    else
-                                    {
-                                        var hotspot = cursor.HotSpot;
-                                        icon.ToBitmap().Save(ms, ImageFormat.Png);
-                                        OnChange?.Invoke(this, new CursorInfo(ms.ToArray(), hotspot));
-                                    }
+                                    var hotspot = cursor.HotSpot;
+                                    icon.ToBitmap().Save(ms, ImageFormat.Png);
+                                    OnChange?.Invoke(this, new CursorInfo(ms.ToArray(), hotspot));
                                 }
                             }
                         }
@@ -114,12 +111,12 @@ namespace Remotely_ScreenCast.Capture
                 else if (PreviousCursorHandle != "0")
                 {
                     PreviousCursorHandle = "0";
-                    OnChange?.Invoke(this, new CursorInfo(new byte[0], Point.Empty, "default"));
+                    OnChange?.Invoke(this, new CursorInfo(new byte[0], Point.Empty, "none"));
                 }
             }
             catch
             {
-                OnChange?.Invoke(this, new CursorInfo(new byte[0], Point.Empty, "none"));
+                OnChange?.Invoke(this, new CursorInfo(new byte[0], Point.Empty, "default"));
             }
         }
 
