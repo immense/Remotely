@@ -90,18 +90,19 @@ namespace Remotely_ScreenCast.Capture
                         if (currentCursor == Cursors.IBeam.Handle.ToString())
                         {
                             OnChange?.Invoke(this, new CursorInfo(new byte[0], Point.Empty, "text"));
-                            return;
                         }
-
-                        using (var icon = Icon.FromHandle(cursorInfo.hCursor))
+                        else
                         {
-                            using (var ms = new MemoryStream())
+                            using (var icon = Icon.FromHandle(cursorInfo.hCursor))
                             {
-                                using (var cursor = new Cursor(cursorInfo.hCursor))
+                                using (var ms = new MemoryStream())
                                 {
-                                    var hotspot = cursor.HotSpot;
-                                    icon.ToBitmap().Save(ms, ImageFormat.Png);
-                                    OnChange?.Invoke(this, new CursorInfo(ms.ToArray(), hotspot));
+                                    using (var cursor = new Cursor(cursorInfo.hCursor))
+                                    {
+                                        var hotspot = cursor.HotSpot;
+                                        icon.ToBitmap().Save(ms, ImageFormat.Png);
+                                        OnChange?.Invoke(this, new CursorInfo(ms.ToArray(), hotspot));
+                                    }
                                 }
                             }
                         }
