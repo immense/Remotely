@@ -50,9 +50,16 @@ The following steps will configure your Windows 10 machine for building the Remo
 		* Link: https://www.ffmpeg.org/download.html
 * Remotely control sessions will first be recorded as a series of images, which will then be converted to MP4 using FFmpeg.
 
-## Notes
+## Remote Control on Mobile
+Ideally, you'd be doing remote control from an actual computer or laptop.  However, I've tried to make the remote control at least somewhat usable from a mobile device.  Here are the controls:
+* Left-click: Single tap
+* Right-click: Double tap
+* Click-and-drag: Tap and hold with one finger, tap and release a second finger (without pinch-zooming)
+	* The click-and-drag operation will begin where finger one is held
+
+## .NET Core Deployments
 * .NET Core has two methods of deployment: framework-dependent and self-contained.
 	* Framework-dependent deployments require the .NET Core runtime to be installed on the target computers.  It must be the same version or higher that was used to build the app.
-	* Self-contained deployments have the runtime built in, so you don't need to install it on the target computers.  As a result, the total file size is much larger.
+	* Self-contained deployments include a copy of the runtime, so you don't need to install it on the target computers.  As a result, the total file size is much larger.
 * .NET Core uses runtime identifiers that are targeted when building.
 	* Link: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
