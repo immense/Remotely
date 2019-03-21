@@ -142,7 +142,7 @@ namespace Remotely_ScreenCast
         }
 
  
-        private static async void CursorIconWatcher_OnChange(object sender, string cursor)
+        private static async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)
         {
             await OutgoingMessages.SendCursorChange(cursor, Viewers.Keys.ToList());
         }

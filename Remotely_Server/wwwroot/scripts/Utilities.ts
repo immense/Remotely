@@ -70,3 +70,11 @@ export function ConvertBase64ToUInt8Array(base64:string) {
     }
     return bytes;
 }
+
+export function ConvertUInt8ArrayToBase64(array: Uint8Array): string {
+    var base64String = '';
+    for (var i = 0; i < array.byteLength; i++) {
+        base64String += String.fromCharCode(array[i]);
+    }
+    return btoa(base64String);
+}

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using System.Drawing;
+using Remotely_Library.Models;
 
 namespace Remotely_Server.Services
 {
@@ -197,7 +198,7 @@ namespace Remotely_Server.Services
             await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("ConnectionFailed");
         }
 
-        public async Task SendCursorChange(string cursor, List<string> viewerIDs)
+        public async Task SendCursorChange(CursorInfo cursor, List<string> viewerIDs)
         {
             await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("CursorChange", cursor);
         }

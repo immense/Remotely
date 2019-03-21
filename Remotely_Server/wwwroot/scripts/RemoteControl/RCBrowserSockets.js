@@ -1,6 +1,6 @@
+import * as Utilities from "../Utilities.js";
 import * as UI from "./UI.js";
 import { RemoteControl } from "./RemoteControl.js";
-import { GetCursor } from "./CursorMap.js";
 var signalR = window["signalR"];
 export class RCBrowserSockets {
     Connect() {
@@ -147,8 +147,16 @@ export class RCBrowserSockets {
             UI.ShowMessage("Reconnecting...");
         });
         hubConnection.on("CursorChange", (cursor) => {
-            var newCursor = GetCursor(cursor);
-            UI.ScreenViewer.style.cursor = newCursor;
+            if (cursor.CssOverride) {
+                UI.ScreenViewer.style.cursor = cursor.CssOverride;
+            }
+            else if (cursor.ImageBytes.byteLength == 0) {
+                UI.ScreenViewer.style.cursor = "default";
+            }
+            else {
+                var base64 = Utilities.ConvertUInt8ArrayToBase64(cursor.ImageBytes);
+                UI.ScreenViewer.style.cursor = `url('data:image/png;base64,${base64}') ${cursor.HotSpot.X} ${cursor.HotSpot.Y}, default`;
+            }
         });
         hubConnection.on("RequestingScreenCast", () => {
             UI.ShowMessage("Requesting remote control...");

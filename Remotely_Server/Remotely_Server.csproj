@@ -34,12 +34,13 @@
     <Content Remove="wwwroot\scripts\Models\CommandContext.ts" />
     <Content Remove="wwwroot\scripts\Models\CommandLineParameter.ts" />
     <Content Remove="wwwroot\scripts\Models\ConsoleCommand.ts" />
+    <Content Remove="wwwroot\scripts\Models\CursorInfo.ts" />
     <Content Remove="wwwroot\scripts\Models\Device.ts" />
     <Content Remove="wwwroot\scripts\Models\GenericCommandResult.ts" />
     <Content Remove="wwwroot\scripts\Models\Parameter.ts" />
+    <Content Remove="wwwroot\scripts\Models\Point.ts" />
     <Content Remove="wwwroot\scripts\Models\UserOptions.ts" />
     <Content Remove="wwwroot\scripts\Pages\OrganizationManagement.ts" />
-    <Content Remove="wwwroot\scripts\RemoteControl\CursorMap.ts" />
     <Content Remove="wwwroot\scripts\RemoteControl\RemoteControl.ts" />
     <Content Remove="wwwroot\scripts\RemoteControl\UI.ts" />
     <Content Remove="wwwroot\scripts\ResultsParser.ts" />
@@ -1643,6 +1644,10 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </None>
+    <None Include="wwwroot\scripts\Models\CursorInfo.ts">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </None>
     <None Include="wwwroot\scripts\Models\GenericCommandResult.ts">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -1665,11 +1670,11 @@
     <TypeScriptCompile Include="wwwroot\scripts\CommandProcessor.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\CommandLineParameter.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\ConsoleCommand.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Models\Point.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\UserOptions.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\Device.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\Parameter.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Pages\OrganizationManagement.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\CursorMap.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RemoteControl.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\UI.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\ResultsParser.ts" />

@@ -37,7 +37,7 @@ namespace Remotely_ScreenCast.Sockets
             await Connection.SendAsync("NotifyRequesterUnattendedReady", requesterID);
         }
 
-        public async Task SendCursorChange(string cursor, List<string> viewerIDs)
+        public async Task SendCursorChange(CursorInfo cursor, List<string> viewerIDs)
         {
             await Connection.SendAsync("SendCursorChange", cursor, viewerIDs);
         }
