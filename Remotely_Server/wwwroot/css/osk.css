@@ -1,14 +1,16 @@
 .osk-wrapper {
-    position: fixed;;
+    position: fixed;
     top: calc(100% + 250px);
     left: 50%;
-    transform:translate(-50%, -100%);
+    transform: translate(-50%, -100%);
     background-color: rgb(30, 30, 30);
     padding: 5px 20px 20px 20px;
     border-radius: 30px;
     transition: .5s top;
     white-space: nowrap;
     z-index: 1;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
 }
 .osk-wrapper.open {
     top: 100%;
