@@ -21,6 +21,8 @@ var isDragging;
 var currentPointerDevice;
 var currentTouchCount;
 var rightClickOpen;
+var longPressTimer;
+var cancelNextClick;
 export function ApplyInputHandlers(sockets) {
     document.querySelector("#menuButton").addEventListener("click", (ev) => {
         HorizontalBars.forEach(x => {
@@ -123,7 +125,6 @@ export function ApplyInputHandlers(sockets) {
         sockets.SendMouseMove(percentX, percentY);
     });
     ScreenViewer.addEventListener("mousedown", function (e) {
-        currentPointerDevice = "Mouse";
         if (e.button != 0 && e.button != 2) {
             return;
         }
@@ -133,7 +134,6 @@ export function ApplyInputHandlers(sockets) {
         sockets.SendMouseDown(e.button, percentX, percentY);
     });
     ScreenViewer.addEventListener("mouseup", function (e) {
-        currentPointerDevice = "Mouse";
         if (e.button != 0 && e.button != 2) {
             return;
         }
@@ -143,6 +143,10 @@ export function ApplyInputHandlers(sockets) {
         sockets.SendMouseUp(e.button, percentX, percentY);
     });
     ScreenViewer.addEventListener("click", function (e) {
+        if (cancelNextClick) {
+            cancelNextClick = false;
+            return;
+        }
         if (currentPointerDevice == "Mouse") {
             e.preventDefault();
             e.stopPropagation();
@@ -153,6 +157,12 @@ export function ApplyInputHandlers(sockets) {
             sockets.SendTap(percentX, percentY);
         }
     });
+    ScreenViewer.addEventListener("dblclick", function (e) {
+        var percentX = e.offsetX / ScreenViewer.clientWidth;
+        var percentY = e.offsetY / ScreenViewer.clientHeight;
+        sockets.SendMouseDown(2, percentX, percentY);
+        sockets.SendMouseUp(2, percentX, percentY);
+    });
     ScreenViewer.addEventListener("contextmenu", (ev) => {
         ev.preventDefault();
     });
@@ -162,6 +172,9 @@ export function ApplyInputHandlers(sockets) {
             e.stopPropagation();
             return;
         }
+        if (e.touches.length > 1) {
+            cancelNextClick = true;
+        }
         isDragging = false;
         currentPointerDevice = "Touch";
         currentTouchCount = e.touches.length;
@@ -169,12 +182,6 @@ export function ApplyInputHandlers(sockets) {
         var focusedInput = document.querySelector("input:focus");
         if (focusedInput) {
             focusedInput.blur();
-        }
-        if (e.touches.length > 2) {
-            var percentX = (e.touches[0].pageX - ScreenViewer.getBoundingClientRect().left) / ScreenViewer.clientWidth;
-            var percentY = (e.touches[0].pageY - ScreenViewer.getBoundingClientRect().top) / ScreenViewer.clientHeight;
-            sockets.SendMouseDown(2, percentX, percentY);
-            sockets.SendMouseUp(2, percentX, percentY);
         }
     });
     ScreenViewer.addEventListener("touchmove", function (e) {
@@ -193,7 +200,6 @@ export function ApplyInputHandlers(sockets) {
         else if (isDragging) {
             e.preventDefault();
             e.stopPropagation();
-            sockets.SendMouseDown(0, percentX, percentY);
             sockets.SendMouseMove(percentX, percentY);
         }
     });
@@ -202,9 +208,14 @@ export function ApplyInputHandlers(sockets) {
         currentTouchCount = e.touches.length;
         if (e.touches.length == 1) {
             isDragging = true;
+            var percentX = (e.touches[0].pageX - ScreenViewer.getBoundingClientRect().left) / ScreenViewer.clientWidth;
+            var percentY = (e.touches[0].pageY - ScreenViewer.getBoundingClientRect().top) / ScreenViewer.clientHeight;
+            sockets.SendMouseMove(percentX, percentY);
+            sockets.SendMouseDown(0, percentX, percentY);
             return;
         }
-        if (currentTouchCount == 0 && rightClickOpen) {
+        if (currentTouchCount == 0) {
+            cancelNextClick = false;
             rightClickOpen = false;
         }
         if (isDragging) {

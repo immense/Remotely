@@ -117,7 +117,8 @@ button[disabled] {
     max-width: 99vw;
     max-height: 99vh;
     z-index: 1;
-    touch-action: double-tap-zoom;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
 }
 
 #connectBox {
