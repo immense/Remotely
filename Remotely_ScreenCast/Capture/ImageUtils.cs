@@ -118,8 +118,13 @@ namespace Remotely_ScreenCast.Capture
             }
             catch
             {
-                currentFrame.UnlockBits(bd1);
-                previousFrame.UnlockBits(bd2);
+                try
+                {
+                    currentFrame.UnlockBits(bd1);
+                    previousFrame.UnlockBits(bd2);
+                }
+                catch { }
+
                 return Rectangle.Empty;
             }
         }
