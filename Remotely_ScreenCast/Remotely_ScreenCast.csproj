@@ -156,6 +156,10 @@
     <Compile Include="Capture\ImageUtils.cs" />
     <Compile Include="Capture\ScreenCaster.cs" />
     <Compile Include="Enums\AppMode.cs" />
+    <Compile Include="Models\CursorInfo.cs">
+      <Generator>DtsGenerator</Generator>
+      <LastGenOutput>CursorInfo.d.ts</LastGenOutput>
+    </Compile>
     <Compile Include="Models\Viewer.cs" />
     <Compile Include="Sockets\MessageHandlers.cs" />
     <Compile Include="Sockets\OutgoingMessages.cs" />
@@ -177,7 +181,13 @@
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Models\CursorInfo.d.ts">
+      <DependentUpon>CursorInfo.cs</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

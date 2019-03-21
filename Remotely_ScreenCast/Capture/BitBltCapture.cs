@@ -76,11 +76,8 @@ namespace Remotely_ScreenCast.Capture
         {
             try
             {
-                lock (ScreenLock)
-                {
-                    PreviousFrame = (Bitmap)CurrentFrame.Clone();                   
-                    graphic.CopyFromScreen(CurrentScreenBounds.Left, CurrentScreenBounds.Top, 0, 0, new Size(CurrentScreenBounds.Width, CurrentScreenBounds.Height));
-                }
+                PreviousFrame = (Bitmap)CurrentFrame.Clone();
+                graphic.CopyFromScreen(CurrentScreenBounds.Left, CurrentScreenBounds.Top, 0, 0, new Size(CurrentScreenBounds.Width, CurrentScreenBounds.Height));
             }
             catch (Exception ex)
             {

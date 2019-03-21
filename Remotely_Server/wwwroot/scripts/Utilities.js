@@ -64,4 +64,11 @@ export function ConvertBase64ToUInt8Array(base64) {
     }
     return bytes;
 }
+export function ConvertUInt8ArrayToBase64(array) {
+    var base64String = '';
+    for (var i = 0; i < array.byteLength; i++) {
+        base64String += String.fromCharCode(array[i]);
+    }
+    return btoa(base64String);
+}
 //# sourceMappingURL=Utilities.js.map

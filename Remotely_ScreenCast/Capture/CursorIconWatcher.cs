@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Remotely_ScreenCast.Models;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -17,22 +20,40 @@ namespace Remotely_ScreenCast.Capture
     public class CursorIconWatcher
     {
         public static CursorIconWatcher Current { get; } = new CursorIconWatcher();
-        public event EventHandler<string> OnChange;
+        public event EventHandler<CursorInfo> OnChange;
         private System.Timers.Timer ChangeTimer { get; set; }
         private string PreviousCursorHandle { get; set; }
         private User32.CursorInfo cursorInfo;
 
 
-        public string GetCurrentCursor()
+        public CursorInfo GetCurrentCursor()
         {
             var ci = new User32.CursorInfo();
             ci.cbSize = Marshal.SizeOf(ci);
             User32.GetCursorInfo(out ci);
-            return ci.hCursor.ToString();
+            using (var icon = Icon.FromHandle(ci.hCursor))
+            {
+                using (var ms = new MemoryStream())
+                {
+                    using (var cursor = new Cursor(ci.hCursor))
+                    {
+                        if (cursor.ToString() == Cursors.IBeam.ToString())
+                        {
+                            return new CursorInfo(new byte[0], Point.Empty, "text");
+                        }
+                        else
+                        {
+                            var hotspot = cursor.HotSpot;
+                            icon.ToBitmap().Save(ms, ImageFormat.Png);
+                            return new CursorInfo(ms.ToArray(), hotspot);
+                        }
+                    }
+                }
+            }
         }
         private CursorIconWatcher()
         {
-            ChangeTimer = new System.Timers.Timer(100);
+            ChangeTimer = new System.Timers.Timer(25);
             ChangeTimer.Elapsed += ChangeTimer_Elapsed;
             ChangeTimer.Start();
         }
@@ -53,14 +74,32 @@ namespace Remotely_ScreenCast.Capture
                     var currentCursor = cursorInfo.hCursor.ToString();
                     if (currentCursor != PreviousCursorHandle)
                     {
+                        using (var icon = Icon.FromHandle(cursorInfo.hCursor))
+                        {
+                            using (var ms = new MemoryStream())
+                            {
+                                using (var cursor = new Cursor(cursorInfo.hCursor))
+                                {
+                                    if (cursor.ToString() == Cursors.IBeam.ToString())
+                                    {
+                                        OnChange?.Invoke(this, new CursorInfo(new byte[0], Point.Empty, "text"));
+                                    }
+                                    else
+                                    {
+                                        var hotspot = cursor.HotSpot;
+                                        icon.ToBitmap().Save(ms, ImageFormat.Png);
+                                        OnChange?.Invoke(this, new CursorInfo(ms.ToArray(), hotspot));
+                                    }
+                                }
+                            }
+                        }
                         PreviousCursorHandle = currentCursor;
-                        OnChange?.Invoke(this, currentCursor);
                     }
                 }
                 else if (PreviousCursorHandle != "0")
                 {
                     PreviousCursorHandle = "0";
-                    OnChange?.Invoke(this, "0");
+                    OnChange?.Invoke(this, new CursorInfo(new byte[0], Point.Empty, "default"));
                 }
             }
             catch { }

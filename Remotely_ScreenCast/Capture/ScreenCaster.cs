@@ -22,6 +22,7 @@ namespace Remotely_ScreenCast.Capture
             ICapturer capturer;
             CaptureMode captureMode;
             Viewer viewer;
+            byte[] encodedImageBytes;
             var success = false;
             
             try
@@ -113,42 +114,44 @@ namespace Remotely_ScreenCast.Capture
                         continue;
                     }
 
-                    var newImage = capturer.CurrentFrame.Clone(diffArea, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-                    if (capturer.CaptureFullscreen)
+                    using (var newImage = capturer.CurrentFrame.Clone(diffArea, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
                     {
-                        capturer.CaptureFullscreen = false;
-                    }
+                        if (capturer.CaptureFullscreen)
+                        {
+                            capturer.CaptureFullscreen = false;
+                        }
 
-                    //long newQuality;
-                    //if (viewer.PendingFrames < 8)
-                    //{
-                    //    newQuality = Math.Min(1, viewer.ImageQuality + .1);
-                    //}
-                    //else
-                    //{
-                    //    newQuality = Math.Max(0, viewer.ImageQuality - .1);
-                    //}
-             
-                    //if (newQuality != viewer.ImageQuality)
-                    //{
-                    //    Logger.Write($"New quality: {newQuality}");
-                    //    viewer.ImageQuality = newQuality;
-                    //    viewer.FullScreenRefreshNeeded = true;
-                    //}
-                    //else if (viewer.FullScreenRefreshNeeded)
-                    //{
-                    //    Logger.Write($"Quality stabilized.");
-                    //    capturer.CaptureFullscreen = true;
-                    //    viewer.FullScreenRefreshNeeded = false;
-                    //}
+                        //long newQuality;
+                        //if (viewer.PendingFrames < 8)
+                        //{
+                        //    newQuality = Math.Min(1, viewer.ImageQuality + .1);
+                        //}
+                        //else
+                        //{
+                        //    newQuality = Math.Max(0, viewer.ImageQuality - .1);
+                        //}
 
-                    var img = ImageUtils.EncodeBitmap(newImage);
+                        //if (newQuality != viewer.ImageQuality)
+                        //{
+                        //    Logger.Write($"New quality: {newQuality}");
+                        //    viewer.ImageQuality = newQuality;
+                        //    viewer.FullScreenRefreshNeeded = true;
+                        //}
+                        //else if (viewer.FullScreenRefreshNeeded)
+                        //{
+                        //    Logger.Write($"Quality stabilized.");
+                        //    capturer.CaptureFullscreen = true;
+                        //    viewer.FullScreenRefreshNeeded = false;
+                        //}
 
-                    if (img?.Length > 0)
-                    {
-                        await outgoingMessages.SendScreenCapture(img, viewerID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, DateTime.UtcNow);
-                        viewer.PendingFrames++;
+                        encodedImageBytes = ImageUtils.EncodeBitmap(newImage);
+
+                        if (encodedImageBytes?.Length > 0)
+                        {
+                            await outgoingMessages.SendScreenCapture(encodedImageBytes, viewerID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, DateTime.UtcNow);
+                            viewer.PendingFrames++;
+                        }
+                        GC.Collect();
                     }
                 }
                 catch (Exception ex)

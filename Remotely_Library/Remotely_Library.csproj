@@ -31,6 +31,10 @@
       <LastGenOutput>CommandContext.cs.d.ts</LastGenOutput>
       <Generator>DtsGenerator</Generator>
     </Compile>
+    <Compile Update="Models\CursorInfo.cs">
+      <Generator>DtsGenerator</Generator>
+      <LastGenOutput>CursorInfo.d.ts</LastGenOutput>
+    </Compile>
     <Compile Update="Models\RemotelyUserOptions.cs">
       <LastGenOutput>DoXMUserOptions.cs.d.ts</LastGenOutput>
       <Generator>DtsGenerator</Generator>
@@ -47,6 +51,14 @@
       <LastGenOutput>PSCoreCommandResult.cs.d.ts</LastGenOutput>
       <Generator>DtsGenerator</Generator>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Models\CursorInfo.d.ts">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CursorInfo.cs</DependentUpon>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -104,28 +104,27 @@ namespace Remotely_ScreenCast.Capture
                     right = Math.Min(right + 20, width);
                     bottom = Math.Min(bottom + 20, height);
 
-                    currentFrame.UnlockBits(bd1);
-                    previousFrame.UnlockBits(bd2);
-
                     return new Rectangle(left, top, right - left, bottom - top);
                 }
                 else
                 {
-                    currentFrame.UnlockBits(bd1);
-                    previousFrame.UnlockBits(bd2);
                     return Rectangle.Empty;
                 }
             }
             catch
             {
+                return Rectangle.Empty;
+            }
+            finally
+            {
                 try
                 {
                     currentFrame.UnlockBits(bd1);
                     previousFrame.UnlockBits(bd2);
+                    bd1 = null;
+                    bd2 = null;
                 }
                 catch { }
-
-                return Rectangle.Empty;
             }
         }
 
