@@ -6,6 +6,7 @@ export function GetCursor(cursorCode) {
     return cursorMap[cursorCode];
 }
 var cursorMap = {
+    "0": "none",
     "65563": "wait",
     "65547": "crosshair",
     "65541": "text",

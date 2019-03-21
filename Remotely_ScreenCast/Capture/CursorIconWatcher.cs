@@ -57,6 +57,11 @@ namespace Remotely_ScreenCast.Capture
                         OnChange?.Invoke(this, currentCursor);
                     }
                 }
+                else if (PreviousCursorHandle != "0")
+                {
+                    PreviousCursorHandle = "0";
+                    OnChange?.Invoke(this, "0");
+                }
             }
             catch { }
         }
