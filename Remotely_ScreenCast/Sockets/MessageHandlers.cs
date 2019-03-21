@@ -203,6 +203,10 @@ namespace Remotely_ScreenCast.Sockets
                         .FirstOrDefault(x => x.Trim().StartsWith("filename"))
                         .Split("=".ToCharArray())[1];
 
+                    var legalChars = fileName.ToCharArray().Where(x => !Path.GetInvalidFileNameChars().Any(y => x == y));
+
+                    fileName = new string(legalChars.ToArray());
+
                     var dirPath = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "RemotelySharedFiles")).FullName;
                     var filePath = Path.Combine(dirPath, fileName);
                     using (var fs = new FileStream(filePath, FileMode.Create))

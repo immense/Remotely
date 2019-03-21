@@ -200,7 +200,16 @@ namespace Remotely_Agent.Services
                     var wr = WebRequest.CreateHttp(url);
                     var response = await wr.GetResponseAsync();
                     var cd = response.Headers["Content-Disposition"];
-                    var filename = cd.Split(";").FirstOrDefault(x => x.Trim().StartsWith("filename")).Split("=")[1];
+                    var filename = cd
+                                    .Split(";")
+                                    .FirstOrDefault(x => x.Trim()
+                                    .StartsWith("filename"))
+                                    .Split("=")[1];
+
+                    var legalChars = filename.ToCharArray().Where(x => !Path.GetInvalidFileNameChars().Any(y => x == y));
+
+                    filename = new string(legalChars.ToArray());
+
                     using (var rs = response.GetResponseStream())
                     {
                         using (var fs = new FileStream(Path.Combine(sharedFilePath, filename), FileMode.Create))
