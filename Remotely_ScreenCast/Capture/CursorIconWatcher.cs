@@ -28,27 +28,42 @@ namespace Remotely_ScreenCast.Capture
 
         public CursorInfo GetCurrentCursor()
         {
-            var ci = new User32.CursorInfo();
-            ci.cbSize = Marshal.SizeOf(ci);
-            User32.GetCursorInfo(out ci);
-            using (var icon = Icon.FromHandle(ci.hCursor))
+            try
             {
-                using (var ms = new MemoryStream())
+                var ci = new User32.CursorInfo();
+                ci.cbSize = Marshal.SizeOf(ci);
+                User32.GetCursorInfo(out ci);
+                if (ci.flags == User32.CURSOR_SHOWING)
                 {
-                    using (var cursor = new Cursor(ci.hCursor))
+                    using (var icon = Icon.FromHandle(ci.hCursor))
                     {
-                        if (cursor.ToString() == Cursors.IBeam.ToString())
+                        using (var ms = new MemoryStream())
                         {
-                            return new CursorInfo(new byte[0], Point.Empty, "text");
-                        }
-                        else
-                        {
-                            var hotspot = cursor.HotSpot;
-                            icon.ToBitmap().Save(ms, ImageFormat.Png);
-                            return new CursorInfo(ms.ToArray(), hotspot);
+                            using (var cursor = new Cursor(ci.hCursor))
+                            {
+                                if (cursor.ToString() == Cursors.IBeam.ToString())
+                                {
+                                    return new CursorInfo(new byte[0], Point.Empty, "text");
+                                }
+                                else
+                                {
+                                    var hotspot = cursor.HotSpot;
+                                    icon.ToBitmap().Save(ms, ImageFormat.Png);
+                                    return new CursorInfo(ms.ToArray(), hotspot);
+                                }
+                            }
                         }
                     }
                 }
+                else
+                {
+                    return new CursorInfo(new byte[0], Point.Empty, "none");
+                }
+                
+            }
+            catch
+            {
+                return new CursorInfo(new byte[0], Point.Empty, "none");
             }
         }
         private CursorIconWatcher()
@@ -102,7 +117,10 @@ namespace Remotely_ScreenCast.Capture
                     OnChange?.Invoke(this, new CursorInfo(new byte[0], Point.Empty, "default"));
                 }
             }
-            catch { }
+            catch
+            {
+                OnChange?.Invoke(this, new CursorInfo(new byte[0], Point.Empty, "none"));
+            }
         }
 
     }
