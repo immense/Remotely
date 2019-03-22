@@ -3,7 +3,7 @@ command (e.g. dotnet publish <path to csproj file> -o <output directory>).
 The output directory is the app root path. This would typically be in /var/www/[appname]/.
 "
 read -p "Enter app root path: " appRoot
-read -p "Enter app host (e.g. example.com): " appHost
+read -p "Enter server host (e.g. example.com): " serverHost
 
 
 
@@ -22,7 +22,7 @@ systemctl start nginx
 # Configure Nginx
 nginxConfig="server {
     listen        80;
-    server_name   $appHost *.$appHost;
+    server_name   $serverHost *.$serverHost;
     location / {
         proxy_pass         http://localhost:5000;
         proxy_http_version 1.1;
