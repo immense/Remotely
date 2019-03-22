@@ -268,3 +268,4 @@ __pycache__/
 /Remotely_Agent/Resources/*
 /Remotely_Server/Recordings/*
 /Remotely_Server/ffmpeg.exe
+/Remotely_Server/Properties/PublishProfiles
