@@ -5,7 +5,7 @@ The output directory is the app root path. This would typically be in /var/www/[
 read -p "Enter app root path: " appRoot
 read -p "Enter server host (e.g. example.com): " serverHost
 
-
+chmod 757 $appRoot
 
 # Install .NET Core Runtime.
 wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb
