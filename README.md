@@ -48,7 +48,7 @@ The following steps will configure your Windows 10 machine for building the Remo
 	* The process running the app must have access to create and/or modify a folder name "Recordings" in the site's root content folder.
 	* FFmpeg must be downloaded and in the same folder as your web app's EXE/DLL.
 		* Link: https://www.ffmpeg.org/download.html
-* Remotely control sessions will first be recorded as a series of images, which will then be converted to MP4 using FFmpeg.
+* Remote control sessions will first be recorded as a series of images, which will then be converted to MP4 using FFmpeg.
 
 ## Remote Control on Mobile
 Ideally, you'd be doing remote control from an actual computer or laptop.  However, I've tried to make the remote control at least somewhat usable from a mobile device.  Here are the controls:
