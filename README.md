@@ -46,7 +46,7 @@ The following steps will configure your Windows 10 machine for building the Remo
 * The following requirements must be met for it to work:
 	* On Linux, libgdiplus must be installed (sudo apt-get install libdgiplus).
 	* The process running the app must have access to create and/or modify a folder name "Recordings" in the site's root content folder.
-	* FFmpeg must be downloaded and in the same folder as your web app's EXE/DLL.
+	* FFmpeg must be executable from the process running the Remotely server.
 		* Link: https://www.ffmpeg.org/download.html
 * Remote control sessions will first be recorded as a series of images, which will then be converted to MP4 using FFmpeg.
 
