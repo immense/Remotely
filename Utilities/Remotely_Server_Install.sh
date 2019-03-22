@@ -8,13 +8,17 @@ read -p "Enter server host (e.g. example.com): " serverHost
 
 
 # Install .NET Core Runtime.
-curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin
-
-
+wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb
+dpkg -i packages-microsoft-prod.deb
+add-apt-repository universe
+apt-get install -y apt-transport-https
+apt-get update
+apt-get install -y aspnetcore-runtime-2.2
+rm packages-microsoft-prod.deb
 
 # Install Nginx
 apt-get update
-apt-get install nginx
+apt-get install -y nginx
 
 systemctl start nginx
 
@@ -111,10 +115,10 @@ systemctl start remotely.service
 
 
 # Install Certbot and get SSL cert.
-apt-get install certbot python-certbot-nginx
+apt-get -y install certbot python-certbot-nginx
 
 certbot --nginx
 
-apt-get install ffmpeg
+apt-get -y install ffmpeg
 
-apt-get install libgdiplus
+apt-get -y install libgdiplus
