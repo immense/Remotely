@@ -20,6 +20,8 @@ namespace Remotely_Server.Services
         public double DataRetentionInDays => double.Parse(Config["ApplicationOptions:DataRetentionInDays"]);
         public double RemoteControlSessionLimit => double.Parse(Config["ApplicationOptions:RemoteControlSessionLimit"]);
         public bool RecordRemoteControlSessions => bool.Parse(Config["ApplicationOptions:RecordRemoteControlSessions"]);
+        public bool RedirectToHTTPS => bool.Parse(Config["ApplicationOptions:RedirectToHTTPS"]);
+        public bool UseHSTS => bool.Parse(Config["ApplicationOptions:RedirectToHTTPS"]);
 
         public string SmtpHost => Config["ApplicationOptions:SmtpHost"];
         public int SmtpPort => int.Parse(Config["ApplicationOptions:SmtpPort"]);

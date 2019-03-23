@@ -111,8 +111,14 @@ namespace Remotely_Server
             else
             {
                 app.UseExceptionHandler("/Error");
-                app.UseHsts();
-                app.UseHttpsRedirection();
+                if (bool.Parse(Configuration["ApplicationOptions:UseHSTS"]))
+                {
+                    app.UseHsts();
+                }
+                if (bool.Parse(Configuration["ApplicationOptions:RedirectToHTTPS"]))
+                {
+                    app.UseHttpsRedirection();
+                }
             }
 
             ConfigureStaticFiles(app);
