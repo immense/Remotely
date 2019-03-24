@@ -81,6 +81,7 @@ namespace Remotely_Server.Data
                 .Include(x => x.Devices)
                 .Include(x => x.SharedFiles)
                 .Include(x => x.PermissionGroups)
+                .Include(x => x.EventLogs)
                 .Where(x => x.RemotelyUsers.Count == 0);
 
             foreach (var emptyOrg in emptyOrgs)
