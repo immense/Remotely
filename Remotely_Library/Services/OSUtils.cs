@@ -43,11 +43,11 @@ namespace Remotely_Library.Services
             {
                 if (IsWindows)
                 {
-                    return "Remotely Remote Control.exe";
+                    return "Remotely_ScreenCast.exe";
                 }
                 else if (IsLinux)
                 {
-                    return "remotely_remote_control";
+                    return "Remotely_ScreenCast";
                 }
                 else
                 {
