@@ -278,11 +278,11 @@ namespace Remotely_Agent.Services
 
                         if (Program.IsDebug)
                         {
-                            Process.Start(OSUtils.ScreenCastExecutableFileName, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default");
+                            Process.Start(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", OSUtils.ScreenCastExecutableFileName), $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default");
                         }
                         else
                         {
-                            var result = Win32Interop.OpenInteractiveProcess(OSUtils.ScreenCastExecutableFileName + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default", "default", true, out _);
+                            var result = Win32Interop.OpenInteractiveProcess(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", OSUtils.ScreenCastExecutableFileName) + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default", "default", true, out _);
                             if (!result)
                             {
                                 await hubConnection.InvokeAsync("DisplayConsoleMessage", "Remote control failed to start on target device.", requesterID);
@@ -320,11 +320,11 @@ namespace Remotely_Agent.Services
                         
                         if (Program.IsDebug)
                         {
-                            Process.Start(OSUtils.ScreenCastExecutableFileName, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}");
+                            Process.Start(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", OSUtils.ScreenCastExecutableFileName), $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}");
                         }
                         else
                         {
-                            var result = Win32Interop.OpenInteractiveProcess(OSUtils.ScreenCastExecutableFileName + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}", "default", true, out _);
+                            var result = Win32Interop.OpenInteractiveProcess(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", OSUtils.ScreenCastExecutableFileName) + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}", "default", true, out _);
                             if (!result)
                             {
                                 Logger.Write("Failed to relaunch screen caster.");
