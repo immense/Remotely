@@ -151,6 +151,8 @@ namespace Remotely_ScreenCast.Capture
                             await outgoingMessages.SendScreenCapture(encodedImageBytes, viewerID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, DateTime.UtcNow);
                             viewer.PendingFrames++;
                         }
+                        // TODO: Even after disposing of the bitmap, GC doesn't collect in time.  Memory usage soars quickly.
+                        // Need to revisit this later.
                         GC.Collect();
                     }
                 }

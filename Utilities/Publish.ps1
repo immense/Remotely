@@ -79,14 +79,17 @@ if ($ArgList.Contains("c")) {
 
     Pop-Location
 
+	New-Item -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish\ScreenCast\" -ItemType Directory -Force
+	New-Item -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish\ScreenCast\" -ItemType Directory -Force
+
     # Copy .NET Framework ScreenCaster to Agent output.
     if ((Test-Path -Path ".\Remotely_ScreenCast\bin\Release\Remotely_ScreenCast.exe") -eq $true) {
-        Copy-Item -Path ".\Remotely_ScreenCast\bin\Release\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish\Remotely_ScreenCast.exe" -Force
-        Copy-Item -Path ".\Remotely_ScreenCast\bin\Release\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish\Remotely_ScreenCast.exe" -Force
+        Copy-Item -Path ".\Remotely_ScreenCast\bin\Release\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish\ScreenCast\Remotely_ScreenCast.exe" -Force
+        Copy-Item -Path ".\Remotely_ScreenCast\bin\Release\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish\ScreenCast\Remotely_ScreenCast.exe" -Force
     }
     elseif ((Test-Path -Path ".\Remotely_ScreenCast\bin\Debug\Remotely_ScreenCast.exe") -eq $true) {
-        Copy-Item -Path ".\Remotely_ScreenCast\bin\Debug\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish\Remotely_ScreenCast.exe" -Force
-        Copy-Item -Path ".\Remotely_ScreenCast\bin\Debug\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish\Remotely_ScreenCast.exe" -Force
+        Copy-Item -Path ".\Remotely_ScreenCast\bin\Debug\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish\ScreenCast\Remotely_ScreenCast.exe" -Force
+        Copy-Item -Path ".\Remotely_ScreenCast\bin\Debug\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish\ScreenCast\Remotely_ScreenCast.exe" -Force
     }
 
     # Compress Core clients.
