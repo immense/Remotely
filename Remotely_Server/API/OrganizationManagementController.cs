@@ -27,8 +27,54 @@ namespace Remotely_Server.API
         }
 
         private DataService DataService { get; }
-        private UserManager<RemotelyUser> UserManager { get; }
         private EmailSender EmailSender { get; }
+        private UserManager<RemotelyUser> UserManager { get; }
+        [HttpPost("AddUserPermission/{userID}")]
+        public IActionResult AddUserPermission(string userID, [FromBody]string permissionID)
+        {
+            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+            {
+                return Unauthorized();
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            var result = DataService.AddPermissionToUser(User.Identity.Name, userID, permissionID.Trim());
+            if (!result.Item1)
+            {
+                return BadRequest(result.Item2);
+            }
+            return Ok(permissionID);
+        }
+
+        [HttpPost("ChangeIsAdmin/{userID}")]
+        public IActionResult ChangeIsAdmin(string userID, [FromBody]bool isAdmin)
+        {
+            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+            {
+                return Unauthorized();
+            }
+
+            if (DataService.GetUserByName(User.Identity.Name).Id == userID)
+            {
+                return BadRequest("You can't remove administrator rights from yourself.");
+            }
+
+            DataService.ChangeUserIsAdmin(User.Identity.Name, userID, isAdmin);
+            return Ok("ok");
+        }
+
+        [HttpDelete("DeleteInvite")]
+        public IActionResult DeleteInvite([FromBody]string inviteID)
+        {
+            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+            {
+                return Unauthorized();
+            }
+            DataService.DeleteInvite(User.Identity.Name, inviteID);
+            return Ok("ok");
+        }
 
         [HttpPut("Name")]
         public IActionResult Name([FromBody]string organizationName)
@@ -74,46 +120,6 @@ namespace Remotely_Server.API
             }
             return Ok(result.Item2);
         }
-        [HttpPost("AddUserPermission/{userID}")]
-        public IActionResult AddUserPermission(string userID, [FromBody]string permissionID)
-        {
-            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
-            {
-                return Unauthorized();
-            }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-            var result = DataService.AddPermissionToUser(User.Identity.Name, userID, permissionID.Trim());
-            if (!result.Item1)
-            {
-                return BadRequest(result.Item2);
-            }
-            return Ok(permissionID);
-        }
-        [HttpDelete("RemoveUserPermission/{userID}")]
-        public IActionResult RemoveUserPermission(string userID, [FromBody]string permissionID)
-        {
-            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
-            {
-                return Unauthorized();
-            }
-
-            DataService.RemovePermissionFromUser(User.Identity.Name, userID, permissionID.Trim());
-            return Ok("ok");
-        }
-        [HttpPost("ChangeIsAdmin/{userID}")]
-        public IActionResult ChangeIsAdmin(string userID, [FromBody]bool isAdmin)
-        {
-            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
-            {
-                return Unauthorized();
-            }
-
-            DataService.ChangeUserIsAdmin(User.Identity.Name, userID, isAdmin);
-            return Ok("ok");
-        }
         [HttpDelete("RemoveFromOrganization")]
         public IActionResult RemoveFromOrganization([FromBody]string userID)
         {
@@ -123,6 +129,18 @@ namespace Remotely_Server.API
             }
 
             DataService.RemoveFromOrganization(User.Identity.Name, userID);
+            return Ok("ok");
+        }
+
+        [HttpDelete("RemoveUserPermission/{userID}")]
+        public IActionResult RemoveUserPermission(string userID, [FromBody]string permissionID)
+        {
+            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+            {
+                return Unauthorized();
+            }
+
+            DataService.RemovePermissionFromUser(User.Identity.Name, userID, permissionID.Trim());
             return Ok("ok");
         }
         [HttpPost("SendInvite")]
@@ -173,19 +191,5 @@ namespace Remotely_Server.API
 
             return Ok(newInvite);
         }
-
-
-        [HttpDelete("DeleteInvite")]
-        public IActionResult DeleteInvite([FromBody]string inviteID)
-        {
-            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
-            {
-                return Unauthorized();
-            }
-            DataService.DeleteInvite(User.Identity.Name, inviteID);
-            return Ok("ok");
-        }
-
- 
     }
 }
