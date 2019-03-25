@@ -195,7 +195,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Debug (
-  copy /y "$(TargetPath)" "$(SolutionDir)Remotely_Agent\Resources\"
+  copy /y "$(TargetPath)" "$(SolutionDir)Remotely_Agent\bin\Debug\netcoreapp2.2\"
 )</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\Fody.4.0.2\build\Fody.targets" Condition="Exists('..\packages\Fody.4.0.2\build\Fody.targets')" />

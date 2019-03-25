@@ -264,7 +264,12 @@ namespace Remotely_Agent.Services
                         return;
                     }
 
-                    var filePath = ExtractScreenCasterEXE();
+                    if (!File.Exists(OSUtils.ScreenCastExecutableFileName))
+                    {
+                        await hubConnection.InvokeAsync("DisplayConsoleMessage", "Remote control executable not found on target device.", requesterID);
+                        return;
+                    }
+
 
                     // Start ScreenCast.
                     await hubConnection.InvokeAsync("DisplayConsoleMessage", $"Starting remote control...", requesterID);
@@ -273,11 +278,11 @@ namespace Remotely_Agent.Services
 
                         if (Program.IsDebug)
                         {
-                            Process.Start(filePath, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default");
+                            Process.Start(OSUtils.ScreenCastExecutableFileName, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default");
                         }
                         else
                         {
-                            var result = Win32Interop.OpenInteractiveProcess(filePath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default", "default", true, out _);
+                            var result = Win32Interop.OpenInteractiveProcess(OSUtils.ScreenCastExecutableFileName + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default", "default", true, out _);
                             if (!result)
                             {
                                 await hubConnection.InvokeAsync("DisplayConsoleMessage", "Remote control failed to start on target device.", requesterID);
@@ -311,16 +316,15 @@ namespace Remotely_Agent.Services
                 {
                     // Start ScreenCast.                 
                     if (OSUtils.IsWindows)
-                    {
-                        var filePath = ExtractScreenCasterEXE();
+                    { 
                         
                         if (Program.IsDebug)
                         {
-                            Process.Start(filePath, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}");
+                            Process.Start(OSUtils.ScreenCastExecutableFileName, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}");
                         }
                         else
                         {
-                            var result = Win32Interop.OpenInteractiveProcess(filePath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}", "default", true, out _);
+                            var result = Win32Interop.OpenInteractiveProcess(OSUtils.ScreenCastExecutableFileName + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}", "default", true, out _);
                             if (!result)
                             {
                                 Logger.Write("Failed to relaunch screen caster.");
@@ -366,38 +370,6 @@ namespace Remotely_Agent.Services
                     return;
                 }
             });           
-        }
-
-        private static string ExtractScreenCasterEXE()
-        {
-            // Cleanup old files.
-            foreach (var file in Directory.GetFiles(Path.GetTempPath(), "Remotely_ScreenCast*"))
-            {
-                try
-                {
-                    File.Delete(file);
-                }
-                catch { }
-            }
-
-            // Get temp file name.
-            var count = 0;
-            var filePath = Path.Combine(Path.GetTempPath(), "Remotely_ScreenCast.exe");
-            while (File.Exists(filePath))
-            {
-                filePath = Path.Combine(Path.GetTempPath(), $"Remotely_ScreenCast{count}.exe");
-                count++;
-            }
-
-            // Extract ScreenCast.
-            using (var mrs = Assembly.GetExecutingAssembly().GetManifestResourceStream("Remotely_Agent.Resources.Remotely_ScreenCast.exe"))
-            {
-                using (var fs = new FileStream(filePath, FileMode.Create))
-                {
-                    mrs.CopyTo(fs);
-                }
-            }
-            return filePath;
         }
 
         private static void SendResultsViaAjax(string resultType, object result)

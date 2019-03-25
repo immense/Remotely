@@ -263,9 +263,7 @@ __pycache__/
 /Remotely_Server/wwwroot/Downloads/*.exe
 /Remotely_Server/wwwroot/Downloads/*.zip
 /Remotely_Server/wwwroot/Downloads/*.appimage
-/Remotely_Server/wwwroot/Downloads/CurrentAgentVersion.txt
 /Remotely_Server/Server.db
-/Remotely_Agent/Resources/*
 /Remotely_Server/Recordings/*
 /Remotely_Server/ffmpeg.exe
 /Remotely_Server/Properties/PublishProfiles

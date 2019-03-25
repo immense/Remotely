@@ -1,11 +1,12 @@
 # Remotely
 [![Build Status](https://dev.azure.com/translucency/Remotely/_apis/build/status/Remotely-GitHub?branchName=master)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=5&branchName=master)
 
-
 A remote control and remote scripting solution, built with .NET Core and SignalR Core.
 
 Website: https://remotely.lucency.co  
 Public Server: https://tryremotely.lucency.co
+
+(Please Note: Documentation and setup processes will improve eventually.  Compatibility for older OS versions will likely never happen.  I have a full-time job and a family/kids, which leaves me very little time to work on this.  Right now, my focus is on getting features built that I already have planned.)
 
 ## Build Instructions (Windows 10)  
 The following steps will configure your Windows 10 machine for building the Remotely server and clients.
@@ -24,18 +25,19 @@ The following steps will configure your Windows 10 machine for building the Remo
 * Download and install the .NET Core Runtime.
 	* Link: https://dotnet.microsoft.com/download
 	* This includes the Hosting Bundle for Windows, which allows you to run ASP.NET Core in IIS.
-* Download and unzip the Remotely Windows server package into your IIS site folder.
-* An SSL certificate for HTTPS is required.  You can install one for free using Let's Encrypt.
+* Obtain a copy of the server files, either by building (above) or downloading the Windows server package from the website.
+* Put the server files into your IIS site folder.
+* An SSL certificate for HTTPS is recommended.  You can install one for free using Let's Encrypt.
 	* Resources: https://letsencrypt.org/, https://certifytheweb.com/
 * Documentation for hosting in IIS can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/iis/index?view=aspnetcore-2.2
 
 ## Hosting a Server (Linux)
-* Download and install the .NET Core Runtime.
-	* Link: https://dotnet.microsoft.com/download
-* Download and unzip the Remotely Linux server package.
-* These files would typically go in /var/www/remotely/.
-* Run Remotely_Server_Setup.sh (with sudo), which is in the Utilities folder in source control.
-	* Certbot is used in this script and will install an SSL certificate for your site.  Your server needs to have a public domain name that is accessible from the internet.
+* Obtain a copy of the server files, either by building (above) or downloading the Linux server package from the website.
+* Copy the server files to the location from which they will be run.
+	* This would typically be in /var/www/remotely/.
+* Run Remotely_Server_Setup.sh (with sudo), which is in the [Utilities folder in source control](https://raw.githubusercontent.com/Jay-Rad/Remotely/master/Utilities/Remotely_Server_Install.sh).
+	* The script installs the .NET Core runtime, as well as other dependencies.
+	* Certbot is used in this script and will install an SSL certificate for your site.  Your server needs to have a public domain name that is accessible from the internet for this to work.
 		* More information: https://letsencrypt.org/, https://certbot.eff.org/
     * App root will be the above output folder.
 * Change values in appsettings.json for your environment.
@@ -45,7 +47,7 @@ The following steps will configure your Windows 10 machine for building the Remo
 * You can turn on session recording in appsettings.json.
 * The following requirements must be met for it to work:
 	* On Linux, libgdiplus must be installed (sudo apt-get install libdgiplus).
-	* The process running the app must have access to create and/or modify a folder name "Recordings" in the site's root content folder.
+	* The process running the app must have access to create and modify a folder name "Recordings" in the site's root content folder.
 	* FFmpeg must be executable from the process running the Remotely server.
 		* Link: https://www.ffmpeg.org/download.html
 * Remote control sessions will first be recorded as a series of images, which will then be converted to MP4 using FFmpeg.

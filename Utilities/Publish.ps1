@@ -58,16 +58,7 @@ if ($ArgList.Contains("c")) {
     # Add Current Version file to root content folder for client update checks.
     Set-Content -Path ".\Remotely_Server\CurrentVersion.txt" -Value $CurrentVersion.Trim() -Encoding UTF8 -Force
 
-    # Copy .NET Framework ScreenCaster to Agent resources for embedding.
-    if ((Test-Path -Path ".\Remotely_Agent\Resources") -eq $false) {
-        New-Item -Path ".\Remotely_Agent\Resources" -ItemType Directory
-    }
-    if ((Test-Path -Path ".\Remotely_ScreenCast\bin\Release\Remotely_ScreenCast.exe") -eq $true) {
-        Copy-Item -Path ".\Remotely_ScreenCast\bin\Release\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\Resources\Remotely_ScreenCast.exe" -Force
-    }
-    elseif ((Test-Path -Path ".\Remotely_ScreenCast\bin\Debug\Remotely_ScreenCast.exe") -eq $true) {
-        Copy-Item -Path ".\Remotely_ScreenCast\bin\Debug\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\Resources\Remotely_ScreenCast.exe" -Force
-    }
+    
     # Clear publish folders.
 	if ((Test-Path -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish") -eq $true) {
 		Get-ChildItem -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish" | Remove-Item -Force -Recurse
@@ -87,6 +78,16 @@ if ($ArgList.Contains("c")) {
     dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64 --configuration Release --output ".\bin\Release\netcoreapp2.2\linux-x64\publish"
 
     Pop-Location
+
+    # Copy .NET Framework ScreenCaster to Agent output.
+    if ((Test-Path -Path ".\Remotely_ScreenCast\bin\Release\Remotely_ScreenCast.exe") -eq $true) {
+        Copy-Item -Path ".\Remotely_ScreenCast\bin\Release\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish\Remotely_ScreenCast.exe" -Force
+        Copy-Item -Path ".\Remotely_ScreenCast\bin\Release\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish\Remotely_ScreenCast.exe" -Force
+    }
+    elseif ((Test-Path -Path ".\Remotely_ScreenCast\bin\Debug\Remotely_ScreenCast.exe") -eq $true) {
+        Copy-Item -Path ".\Remotely_ScreenCast\bin\Debug\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish\Remotely_ScreenCast.exe" -Force
+        Copy-Item -Path ".\Remotely_ScreenCast\bin\Debug\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish\Remotely_ScreenCast.exe" -Force
+    }
 
     # Compress Core clients.
     Push-Location -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish"
