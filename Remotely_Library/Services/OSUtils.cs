@@ -56,32 +56,6 @@ namespace Remotely_Library.Services
             }
         }
 
-        public static string ScreenCastZipFileName
-        {
-            get
-            {
-                if (IsWindows)
-                {
-                    if (Environment.Is64BitOperatingSystem)
-                    {
-                        return "RC-Winx64.zip";
-                    }
-                    else
-                    {
-                        return "RC-Winx86.zip";
-                    }
-
-                }
-                else if (OSUtils.IsLinux)
-                {
-                    return "RC-Linux.zip";
-                }
-                else
-                {
-                    throw new Exception("Unsupported operating system.");
-                }
-            }
-        }
         public static string CoreZipFileName
         {
             get
