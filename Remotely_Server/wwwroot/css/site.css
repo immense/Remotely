@@ -75,6 +75,7 @@ a.navbar-brand {
     text-align: right;
     margin-bottom: 5px;
     margin-right: 5px;
+    padding-top: 3px;
 }
 
 #gridControlsWrapper span {

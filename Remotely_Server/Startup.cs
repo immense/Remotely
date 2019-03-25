@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Http.Connections;
 using Remotely_Library.Services;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 
 namespace Remotely_Server
 {
@@ -71,6 +72,15 @@ namespace Remotely_Server
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddDefaultTokenProviders();
+
+            services.AddCors(options=>
+            {
+                options.AddPolicy("AnyOriginPolicy", builder =>  builder
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                );
+            });
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(options =>
@@ -156,6 +166,7 @@ namespace Remotely_Server
                     options.TransportMaxBufferSize = 2000000;
                 });
             });
+            
             app.UseMvcWithDefaultRoute();
             dataService.SetAllDevicesNotOnline();
             dataService.CleanupEmptyOrganizations();
