@@ -264,7 +264,7 @@ namespace Remotely_Agent.Services
                         return;
                     }
 
-                    if (!File.Exists(OSUtils.ScreenCastExecutableFileName))
+                    if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", OSUtils.ScreenCastExecutableFileName)))
                     {
                         await hubConnection.InvokeAsync("DisplayConsoleMessage", "Remote control executable not found on target device.", requesterID);
                         return;
