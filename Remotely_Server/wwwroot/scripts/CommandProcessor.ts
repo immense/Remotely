@@ -64,7 +64,7 @@ export function GetRelevantCommandText(commandText:string) {
 export function GetCommandModeShortcut() {
     switch (UI.ConsoleTextArea.value.toLowerCase()) {
         case UserSettings.CommandModeShortcuts.Web:
-            return "Remotely";
+            return "Web";
         case UserSettings.CommandModeShortcuts.CMD:
             return "CMD";
         case UserSettings.CommandModeShortcuts.PSCore:
