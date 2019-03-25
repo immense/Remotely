@@ -14,7 +14,7 @@ namespace Remotely_Library.Models
         
         [Display(Name = "Web Shortcut")]
         [StringLength(10)]
-        public string CommandModeShortcutRemotely { get; set; } = "/web";
+        public string CommandModeShortcutWeb { get; set; } = "/web";
         [Display(Name = "PS Core Shortcut")]
         [StringLength(10)]
         public string CommandModeShortcutPSCore { get; set; } = "/pscore";
