@@ -14,11 +14,13 @@ namespace Remotely_ScreenCast.Capture
 {
     public class ImageUtils
     {
-        public static byte[] EncodeBitmap(Bitmap bitmap)
+        public static ImageCodecInfo JpegEncoder { get; } = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == ImageFormat.Jpeg.Guid);
+        public static byte[] EncodeBitmap(Bitmap bitmap, EncoderParameters encoderParams)
         {
             using (var ms = new MemoryStream())
             {
                 bitmap.Save(ms, ImageFormat.Jpeg);
+                //bitmap.Save(ms, JpegEncoder, encoderParams);
                 return ms.ToArray();
             }
         }

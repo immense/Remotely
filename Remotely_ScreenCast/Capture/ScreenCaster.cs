@@ -54,8 +54,7 @@ namespace Remotely_ScreenCast.Capture
                 DisconnectRequested = false,
                 Name = requesterName,
                 ViewerConnectionID = viewerID,
-                HasControl = true,
-                ImageQuality = 1
+                HasControl = true
             };
 
             while (!success)
@@ -120,15 +119,15 @@ namespace Remotely_ScreenCast.Capture
                         {
                             capturer.CaptureFullscreen = false;
                         }
-
+                        
                         //long newQuality;
                         //if (viewer.PendingFrames < 8)
                         //{
-                        //    newQuality = Math.Min(1, viewer.ImageQuality + .1);
+                        //    newQuality = Math.Min(1, viewer.ImageQuality + 1);
                         //}
                         //else
                         //{
-                        //    newQuality = Math.Max(0, viewer.ImageQuality - .1);
+                        //    newQuality = Math.Max(0, viewer.ImageQuality - 1);
                         //}
 
                         //if (newQuality != viewer.ImageQuality)
@@ -144,7 +143,7 @@ namespace Remotely_ScreenCast.Capture
                         //    viewer.FullScreenRefreshNeeded = false;
                         //}
 
-                        encodedImageBytes = ImageUtils.EncodeBitmap(newImage);
+                        encodedImageBytes = ImageUtils.EncodeBitmap(newImage, viewer.EncoderParams);
 
                         if (encodedImageBytes?.Length > 0)
                         {
