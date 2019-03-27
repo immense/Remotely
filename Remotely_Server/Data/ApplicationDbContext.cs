@@ -11,11 +11,11 @@ namespace Remotely_Server.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> context)
+            : base(context)
         {
-            this.Database.Migrate();
         }
+
         public DbSet<CommandContext> CommandContexts { get; set; }
 
         public DbSet<Drive> Drives { get; set; }

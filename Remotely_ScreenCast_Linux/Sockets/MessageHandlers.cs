@@ -11,7 +11,6 @@ using System.Net;
 using System.IO;
 using System.Diagnostics;
 using Remotely_ScreenCast_Linux.Models;
-using Remotely_ScreenCast_Linux.Capture;
 
 namespace Remotely_ScreenCast_Linux.Sockets
 {
