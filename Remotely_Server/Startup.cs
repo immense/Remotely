@@ -37,7 +37,6 @@ namespace Remotely_Server
 
         public IConfiguration Configuration { get; }
         private bool IsDev { get; set; }
-        private DataService DataService { get; set; }
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -110,9 +109,8 @@ namespace Remotely_Server
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, DataService dataService)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ApplicationDbContext context, DataService dataService)
         {
-            DataService = dataService;
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -168,6 +166,8 @@ namespace Remotely_Server
             });
             
             app.UseMvcWithDefaultRoute();
+
+            context.Database.Migrate();
             dataService.SetAllDevicesNotOnline();
             dataService.CleanupEmptyOrganizations();
             dataService.CleanupOldRecords();

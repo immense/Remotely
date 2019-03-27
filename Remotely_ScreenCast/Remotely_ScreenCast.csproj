@@ -196,7 +196,7 @@
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Debug (
   md "$(SolutionDir)Remotely_Agent\bin\Debug\netcoreapp2.2\ScreenCast\"
-  copy /y "$(TargetPath)" "$(SolutionDir)Remotely_Agent\bin\Debug\netcoreapp2.2\ScreenCast\"
+  if exist "$(TargetPath)" copy /y "$(TargetPath)" "$(SolutionDir)Remotely_Agent\bin\Debug\netcoreapp2.2\ScreenCast\"
 )</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\Fody.4.0.2\build\Fody.targets" Condition="Exists('..\packages\Fody.4.0.2\build\Fody.targets')" />
