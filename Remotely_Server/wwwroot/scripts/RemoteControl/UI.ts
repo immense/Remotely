@@ -114,10 +114,12 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
         ConnectionBar.classList.remove("open");
         RemoteControl.RCBrowserSockets.SendCtrlAltDel();
     });
-    document.querySelector("#sessionIDInput, #nameInput").addEventListener("keypress", (ev: KeyboardEvent) => {
-        if (ev.key.toLowerCase() == "enter") {
-            ConnectToClient();
-        }
+    document.querySelectorAll("#sessionIDInput, #nameInput").forEach(x => {
+        x.addEventListener("keypress", (ev: KeyboardEvent) => {
+            if (ev.key.toLowerCase() == "enter") {
+                ConnectToClient();
+            }
+        })
     });
     document.querySelector("#connectButton").addEventListener("click", (ev) => {
         ConnectToClient();

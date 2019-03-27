@@ -1,8 +1,11 @@
 ﻿using Remotely_Desktop.Controls;
 using Remotely_Desktop.Services;
-using Remotely_ScreenCast;
-using Remotely_ScreenCast.Capture;
-using Remotely_ScreenCast.Models;
+using Remotely_ScreenCast.Core;
+using Remotely_ScreenCast.Core.Capture;
+using Remotely_ScreenCast.Core.Models;
+using Remotely_ScreenCast.Win;
+using Remotely_ScreenCast.Win.Capture;
+using Remotely_ScreenCast.Win.Input;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -23,16 +26,24 @@ namespace Remotely_Desktop.ViewModels
         public MainWindowViewModel()
         {
             Current = this;
+            Conductor = new Conductor();
+            Conductor.SessionIDChanged += SessionIDChanged;
+            Conductor.ViewerRemoved += ViewerRemoved;
+            Conductor.ViewerAdded += ViewerAdded;
+            Conductor.ScreenCastRequested += ScreenCastRequested;
+            CursorIconWatcher = new CursorIconWatcher(Conductor);
+            CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
+        }
 
-            Program.SessionIDChanged += SessionIDChanged;
-            Program.ViewerRemoved += ViewerRemoved;
-            Program.ViewerAdded += ViewerAdded;
-            Program.ScreenCastRequested += ScreenCastRequested;
+        private async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)
+        {
+            await Conductor.OutgoingMessages.SendCursorChange(cursor, Conductor.Viewers.Keys.ToList());
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public static MainWindowViewModel Current { get; private set; }
+        public Conductor Conductor { get; }
         public Config Config { get; private set; }
         public string ForceHost { get; }
         public bool AllowHostChange
@@ -52,6 +63,8 @@ namespace Remotely_Desktop.ViewModels
 
         public string SessionID { get; set; }
         public ObservableCollection<Viewer> Viewers { get; } = new ObservableCollection<Viewer>();
+        public CursorIconWatcher CursorIconWatcher { get; }
+
         public void FirePropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -75,10 +88,10 @@ namespace Remotely_Desktop.ViewModels
             }
 
 
-            Program.ProcessArgs(new string[] { "-mode", "Normal", "-host", Config.Host });
+            Conductor.ProcessArgs(new string[] { "-mode", "Normal", "-host", Config.Host });
             try
             {
-               await Program.Connect();
+                await Conductor.Connect();
             }
             catch (Exception ex)
             {
@@ -86,24 +99,43 @@ namespace Remotely_Desktop.ViewModels
                 MessageBox.Show("Failed to connect to server.", "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            Program.SetEventHandlers();
-            
-            await Task.Run(async () =>
-            {
-                await Program.HandleConnection();
-            });
+
+            Conductor.SetMessageHandlers(new WinInput());
+            await Conductor.OutgoingMessages.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName);
+            await Conductor.OutgoingMessages.GetSessionID();
         }
 
-        private void ScreenCastRequested(object sender, Tuple<string, string> args)
+
+
+        private void ScreenCastRequested(object sender, Tuple<string, string> viewerAndRequester)
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                var result = MessageBox.Show($"You've received a connection request from {args.Item2}.  Accept?", "Connection Request", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                var result = MessageBox.Show($"You've received a connection request from {viewerAndRequester.Item2}.  Accept?", "Connection Request", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
-                    Task.Run(() =>
+                    Task.Run(async() =>
                     {
-                        ScreenCaster.BeginScreenCasting(args.Item1, args.Item2, Program.OutgoingMessages);
+                        ICapturer capturer;
+                        try
+                        {
+                            if (Conductor.Viewers.Count == 0)
+                            {
+                                capturer = new DXCapture();
+                                capturer.Init();
+                            }
+                            else
+                            {
+                                capturer = new BitBltCapture();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Write(ex);
+                            capturer = new BitBltCapture();
+                        }
+                        await Conductor.OutgoingMessages.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { viewerAndRequester.Item1 });
+                        ScreenCaster.BeginScreenCasting(viewerAndRequester.Item1, viewerAndRequester.Item2, Conductor.OutgoingMessages, capturer, Conductor);
                     });
                 }
             });
@@ -114,7 +146,7 @@ namespace Remotely_Desktop.ViewModels
             foreach (Viewer viewer in viewerList)
             {
                 viewer.DisconnectRequested = true;
-                await Program.OutgoingMessages.SendViewerRemoved(viewer.ViewerConnectionID);
+                await Conductor.OutgoingMessages.SendViewerRemoved(viewer.ViewerConnectionID);
             }
         }
 

@@ -11,7 +11,8 @@ if [ "$1" = "--uninstall" ]; then
 	exit
 fi
 
-apt-get install unzip
+apt-get -y install unzip
+apt-get -y install libgdiplus
 
 mkdir -p /usr/local/bin/Remotely/
 cd /usr/local/bin/Remotely/
@@ -48,9 +49,11 @@ WorkingDirectory=/usr/local/bin/Remotely/
 ExecStart=/usr/local/bin/Remotely/Remotely_Agent
 Restart=always
 RestartSec=10
+Environment=DISPLAY=:0
+Environment="XAUTHORITY=/home/$USER/.Xauthority"
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=graphical.target
 EOL
 
 systemctl enable remotely-agent

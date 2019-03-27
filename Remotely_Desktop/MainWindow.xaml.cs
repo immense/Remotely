@@ -1,5 +1,5 @@
 ﻿using Remotely_Desktop.ViewModels;
-using Remotely_ScreenCast.Models;
+using Remotely_ScreenCast.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
