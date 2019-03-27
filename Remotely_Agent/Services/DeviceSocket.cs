@@ -258,13 +258,8 @@ namespace Remotely_Agent.Services
                 }
                 try
                 {
-                    if (!OSUtils.IsWindows)
-                    {
-                        await hubConnection.InvokeAsync("DisplayConsoleMessage", $"Remote control is only supported on Windows at this time.", requesterID);
-                        return;
-                    }
-
-                    if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", OSUtils.ScreenCastExecutableFileName)))
+                    var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", OSUtils.ScreenCastExecutableFileName);
+                    if (!File.Exists(rcBinaryPath))
                     {
                         await hubConnection.InvokeAsync("DisplayConsoleMessage", "Remote control executable not found on target device.", requesterID);
                         return;
@@ -278,24 +273,24 @@ namespace Remotely_Agent.Services
 
                         if (Program.IsDebug)
                         {
-                            Process.Start(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", OSUtils.ScreenCastExecutableFileName), $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default");
+                            Process.Start(rcBinaryPath, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default");
                         }
                         else
                         {
-                            var result = Win32Interop.OpenInteractiveProcess(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", OSUtils.ScreenCastExecutableFileName) + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default", "default", true, out _);
+                            var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default", "default", true, out _);
                             if (!result)
                             {
                                 await hubConnection.InvokeAsync("DisplayConsoleMessage", "Remote control failed to start on target device.", requesterID);
                             }
                         }
                     }
-                    //else if (OSUtils.IsLinux)
-                    //{
-                    //    var users = OSUtils.StartProcessWithResults("users", "");
-                    //    var username = users?.Split()?.FirstOrDefault()?.Trim();
+                    else if (OSUtils.IsLinux)
+                    {
+                        var users = OSUtils.StartProcessWithResults("users", "");
+                        var username = users?.Split()?.FirstOrDefault()?.Trim();
 
-                    //    Process.Start("sudo", $"-u {username} {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -desktop default -hostname {Utilities.GetConnectionInfo().Host.Split("//").Last()}");
-                    //}
+                        Process.Start("sudo", $"-u {username} mono {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default");
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -314,17 +309,18 @@ namespace Remotely_Agent.Services
                 }
                 try
                 {
+                    var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", OSUtils.ScreenCastExecutableFileName);
                     // Start ScreenCast.                 
                     if (OSUtils.IsWindows)
                     { 
                         
                         if (Program.IsDebug)
                         {
-                            Process.Start(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", OSUtils.ScreenCastExecutableFileName), $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}");
+                            Process.Start(rcBinaryPath, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}");
                         }
                         else
                         {
-                            var result = Win32Interop.OpenInteractiveProcess(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", OSUtils.ScreenCastExecutableFileName) + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}", "default", true, out _);
+                            var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}", "default", true, out _);
                             if (!result)
                             {
                                 Logger.Write("Failed to relaunch screen caster.");
@@ -333,13 +329,13 @@ namespace Remotely_Agent.Services
                             }
                         }
                     }
-                    //else if (OSUtils.IsLinux)
-                    //{
-                    //    var users = OSUtils.StartProcessWithResults("users", "");
-                    //    var username = users?.Split()?.FirstOrDefault()?.Trim();
+                    else if (OSUtils.IsLinux)
+                    {
+                        var users = OSUtils.StartProcessWithResults("users", "");
+                        var username = users?.Split()?.FirstOrDefault()?.Trim();
 
-                    //    Process.Start("sudo", $"-u {username} {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -desktop default -hostname {Utilities.GetConnectionInfo().Host.Split("//").Last()}");
-                    //}
+                        Process.Start("sudo", $"-u {username} mono {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -hostname {Utilities.GetConnectionInfo().Host} -desktop default");
+                    }
                 }
                 catch (Exception ex)
                 {
