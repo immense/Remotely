@@ -20,6 +20,7 @@ namespace Remotely_ScreenCast.Linux
             try
             {
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+                // TODO: Works.  Now make it happen.
                 //var display = Xlib.XOpenDisplay(null);
                 //Console.WriteLine($"Display is {display.ToString()}");
                 //var count = Xlib.XScreenCount(display);
