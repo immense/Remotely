@@ -1,3 +1,4 @@
+#!/bin/bash
 echo "If you haven't already, publish the Remotely Server app using the 'dotnet publish' 
 command (e.g. dotnet publish <path to csproj file> -o <output directory>).  
 The output directory is the app root path. This would typically be in /var/www/[appname]/.

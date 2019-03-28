@@ -288,8 +288,7 @@ namespace Remotely_Agent.Services
                     {
                         var users = OSUtils.StartProcessWithResults("users", "");
                         var username = users?.Split()?.FirstOrDefault()?.Trim();
-
-                        Process.Start("sudo", $"-u {username} mono {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default");
+                        Process.Start("sudo", $"-u {username} {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default & disown");
                     }
                 }
                 catch (Exception ex)
@@ -334,7 +333,7 @@ namespace Remotely_Agent.Services
                         var users = OSUtils.StartProcessWithResults("users", "");
                         var username = users?.Split()?.FirstOrDefault()?.Trim();
 
-                        Process.Start("sudo", $"-u {username} mono {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -hostname {Utilities.GetConnectionInfo().Host} -desktop default");
+                        Process.Start("sudo", $"-u {username} {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -hostname {Utilities.GetConnectionInfo().Host} -desktop default  & disown");
                     }
                 }
                 catch (Exception ex)

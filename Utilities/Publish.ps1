@@ -79,9 +79,14 @@ if ($ArgList.Contains("c")) {
 
     Pop-Location
 
+
+    # Publish Linux ScreenCaster
+    dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64  --configuration Release --output ".\Remotely_Agent\bin\Release\netcoreapp2.2\linux-x64\publish\ScreenCast\" ".\Remotely_ScreenCast.Linux\"
+
+
 	New-Item -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish\ScreenCast\" -ItemType Directory -Force
 	New-Item -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish\ScreenCast\" -ItemType Directory -Force
-	New-Item -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\linux-x64\publish\ScreenCast\" -ItemType Directory -Force
+	#New-Item -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\linux-x64\publish\ScreenCast\" -ItemType Directory -Force
 
     # Copy .NET Framework ScreenCaster to Agent output folder.
     if ((Test-Path -Path ".\Remotely_ScreenCast.Win\bin\Release\Remotely_ScreenCast.exe") -eq $true) {
@@ -93,13 +98,7 @@ if ($ArgList.Contains("c")) {
         Copy-Item -Path ".\Remotely_ScreenCast.Win\bin\Debug\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish\ScreenCast\Remotely_ScreenCast.exe" -Force
     }
 
-	 # Copy Mono ScreenCaster to Agent output folder.
-    if ((Test-Path -Path ".\Remotely_ScreenCast.Mono\bin\Release\Remotely_ScreenCast.Mono.exe") -eq $true) {
-        Copy-Item -Path ".\Remotely_ScreenCast.Mono\bin\Release\Remotely_ScreenCast.Mono.exe" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\linux-x64\publish\ScreenCast\Remotely_ScreenCast.Mono.exe" -Force
-    }
-    elseif ((Test-Path -Path ".\Remotely_ScreenCast.Mono\bin\Debug\Remotely_ScreenCast.Mono.exe") -eq $true) {
-        Copy-Item -Path ".\Remotely_ScreenCast.Mono\bin\Debug\Remotely_ScreenCast.Mono.exe" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\linux-x64\publish\ScreenCast\Remotely_ScreenCast.Mono.exe" -Force
-    }
+
 
     # Compress Core clients.
     Push-Location -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish"

@@ -20,79 +20,32 @@ namespace Remotely_ScreenCast.Win.Capture
 {
     public class BitBltCapture : ICapturer
     {
-        public Bitmap CurrentFrame { get; set; }
-        public Bitmap PreviousFrame { get; set; }
-        public bool IsCapturing { get; set; }
-        public bool CaptureFullscreen { get; set; } = true;
-        public int PauseForMilliseconds { get; set; }
-        public EventHandler<Rectangle> ScreenChanged { get; set; }
-        private object ScreenLock { get; } = new object();
-        public int SelectedScreen
-        {
-            get
-            {
-                return selectedScreen;
-            }
-            set
-            {
-                if (value == selectedScreen)
-                {
-                    return;
-                }
-                lock (ScreenLock)
-                {
-                    if (Screen.AllScreens.Length >= value + 1)
-                    {
-                        selectedScreen = value;
-                    }
-                    else
-                    {
-                        selectedScreen = 0;
-                    }
-                    CurrentScreenBounds = Screen.AllScreens[selectedScreen].Bounds;
-                    CaptureFullscreen = true;
-                    Init();
-                    ScreenChanged?.Invoke(this, CurrentScreenBounds);
-                }
-            }
-        }
-        public Rectangle CurrentScreenBounds { get; set; } = Screen.PrimaryScreen.Bounds;
-        public int GetScreenCount()
-        {
-            return Screen.AllScreens.Length;
-        }
-        public double GetVirtualScreenHeight()
-        {
-            return SystemInformation.VirtualScreen.Width;
-        }
-        public double GetVirtualScreenWidth()
-        {
-            return SystemInformation.VirtualScreen.Height;
-        }
-
-
-        private int selectedScreen = Screen.AllScreens.ToList().IndexOf(Screen.PrimaryScreen);
-        private Graphics graphic;
-
-
         public BitBltCapture()
         {
             Init();
         }
 
-        public void Init()
-        {
-            CurrentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
-            PreviousFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
-            graphic = Graphics.FromImage(CurrentFrame);     
-        }
+        public bool CaptureFullscreen { get; set; } = true;
+        public Bitmap CurrentFrame { get; set; }
+        public Rectangle CurrentScreenBounds { get; set; } = Screen.PrimaryScreen.Bounds;
+        public bool IsCapturing { get; set; }
+        public int PauseForMilliseconds { get; set; }
+        public Bitmap PreviousFrame { get; set; }
+        public EventHandler<Rectangle> ScreenChanged { get; set; }
+        public int SelectedScreen { get; private set; } = Screen.AllScreens.ToList().IndexOf(Screen.PrimaryScreen);
+        private Graphics Graphic { get; set; }
+
+        private object ScreenLock { get; } = new object();
 
         public void Capture()
         {
             try
             {
-                PreviousFrame = (Bitmap)CurrentFrame.Clone();
-                graphic.CopyFromScreen(CurrentScreenBounds.Left, CurrentScreenBounds.Top, 0, 0, new Size(CurrentScreenBounds.Width, CurrentScreenBounds.Height));
+                lock (ScreenLock)
+                {
+                    PreviousFrame = (Bitmap)CurrentFrame.Clone();
+                    Graphic.CopyFromScreen(CurrentScreenBounds.Left, CurrentScreenBounds.Top, 0, 0, new Size(CurrentScreenBounds.Width, CurrentScreenBounds.Height));
+                }
             }
             catch (Exception ex)
             {
@@ -103,9 +56,54 @@ namespace Remotely_ScreenCast.Win.Capture
 
         public void Dispose()
         {
-            graphic.Dispose();
+            Graphic.Dispose();
             CurrentFrame.Dispose();
             PreviousFrame.Dispose();
+        }
+
+        public int GetScreenCount()
+        {
+            return Screen.AllScreens.Length;
+        }
+
+        public double GetVirtualScreenHeight()
+        {
+            return SystemInformation.VirtualScreen.Height;
+        }
+
+        public double GetVirtualScreenWidth()
+        {
+            return SystemInformation.VirtualScreen.Width;
+        }
+
+        public void Init()
+        {
+            CurrentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
+            PreviousFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
+            Graphic = Graphics.FromImage(CurrentFrame);
+        }
+
+        public void SetSelectedScreen(int screenNumber)
+        {
+            if (screenNumber == SelectedScreen)
+            {
+                return;
+            }
+            lock (ScreenLock)
+            {
+                if (GetScreenCount() >= screenNumber + 1)
+                {
+                    SelectedScreen = screenNumber;
+                }
+                else
+                {
+                    SelectedScreen = 0;
+                }
+                CurrentScreenBounds = Screen.AllScreens[SelectedScreen].Bounds;
+                CaptureFullscreen = true;
+                Init();
+                ScreenChanged?.Invoke(this, CurrentScreenBounds);
+            }
         }
     }
 }

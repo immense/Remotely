@@ -149,6 +149,10 @@ namespace Remotely_ScreenCast.Linux.X11Interop
         public static extern int XWidthOfScreen(IntPtr screen);
         [DllImport("libX11")]
         public static extern int XHeightOfScreen(IntPtr screen);
+        [DllImport("libX11")]
+        public static extern IntPtr XDefaultGC(IntPtr display, int screen_number);
+        [DllImport("libX11")]
+        public static extern IntPtr XDefaultRootWindow(IntPtr display);
         #endregion Imports
     }
 }

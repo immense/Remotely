@@ -58,6 +58,7 @@ namespace Remotely_Agent.Services
                         Process.Start("sudo", "apt-get install unzip").WaitForExit();
                         Process.Start("sudo", $"unzip -o {tempFile} -d /usr/local/bin/Remotely/").WaitForExit();
                         Process.Start("sudo", "chmod +x /usr/local/bin/Remotely/Remotely_Agent").WaitForExit();
+                        Process.Start("sudo", "chmod +x /usr/local/bin/Remotely/ScreenCast/Remotely_ScreenCast.Linux").WaitForExit();
                         Logger.Write($"Service Updater: Update complete.  Restarting service.");
                         Process.Start("sudo", "systemctl restart remotely-agent");
                     }

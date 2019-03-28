@@ -94,7 +94,11 @@ namespace Remotely_ScreenCast.Win
 
         public static async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)
         {
-            await Conductor.OutgoingMessages.SendCursorChange(cursor, Conductor.Viewers.Keys.ToList());
+            if (Conductor?.OutgoingMessages != null)
+            {
+                await Conductor.OutgoingMessages.SendCursorChange(cursor, Conductor.Viewers.Keys.ToList());
+
+            }
         }
 
         public static async Task HandleConnection(Conductor conductor)
