@@ -97,7 +97,6 @@ namespace Remotely_ScreenCast.Win
             if (Conductor?.OutgoingMessages != null)
             {
                 await Conductor.OutgoingMessages.SendCursorChange(cursor, Conductor.Viewers.Keys.ToList());
-
             }
         }
 

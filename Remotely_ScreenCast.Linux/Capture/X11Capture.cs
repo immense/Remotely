@@ -4,6 +4,7 @@ using Remotely_ScreenCast.Linux.X11Interop;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Text;
 
 namespace Remotely_ScreenCast.Linux.Capture
@@ -21,7 +22,7 @@ namespace Remotely_ScreenCast.Linux.Capture
         public IntPtr Display { get; private set; }
         public Bitmap PreviousFrame { get; set; }
         public EventHandler<Rectangle> ScreenChanged { get; set; }
-        public int SelectedScreen { get; private set; }
+        public int SelectedScreen { get; private set; } = -1;
         private Graphics Graphic { get; set; }
         private object ScreenLock { get; } = new object();
         public void Capture()
@@ -76,7 +77,11 @@ namespace Remotely_ScreenCast.Linux.Capture
         public void Init()
         {
             Display = Xlib.XOpenDisplay(null);
-            SelectedScreen = Xlib.XDefaultScreen(Display);
+            var defaultScreen = Xlib.XDefaultScreen(Display);
+            SetSelectedScreen(defaultScreen);
+            CurrentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
+            PreviousFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
+            Graphic = Graphics.FromImage(CurrentFrame);
         }
 
         public void SetSelectedScreen(int screenNumber)
@@ -95,8 +100,8 @@ namespace Remotely_ScreenCast.Linux.Capture
                 {
                     SelectedScreen = 0;
                 }
-                var width = Xlib.XWidthOfScreen(Xlib.XScreenOfDisplay(Display, screenNumber));
-                var height = Xlib.XWidthOfScreen(Xlib.XScreenOfDisplay(Display, screenNumber));
+                var width = Xlib.XDisplayWidth(Display, SelectedScreen);
+                var height = Xlib.XDisplayHeight(Display, SelectedScreen);
                 CurrentScreenBounds = new Rectangle(0, 0, width, height);
                 CaptureFullscreen = true;
                 Init();

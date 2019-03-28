@@ -162,6 +162,7 @@ namespace Remotely_Server.Services
                 Message = $"Remote control session requested by {requesterName}.  " +
                                 $"Connection ID: {Context.ConnectionId}. User ID: {Context.UserIdentifier}.  " +
                                 $"Screen Caster ID: {screenCasterID}." + 
+                                $"Mode: {((RemoteControlMode)remoteControlMode).ToString()}" + 
                                 $"Login ID (if logged in): {Context?.User?.Identity?.Name}.  " +
                                 $"Requester IP Address: " + Context?.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString()
             });
