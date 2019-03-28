@@ -19,6 +19,7 @@ namespace Remotely_ScreenCast.Linux
         {
             try
             {
+                ScreenCastInitiated(null, new Tuple<string, string>("asdf", "asdf"));
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
                 Conductor = new Conductor();
                 Conductor.ProcessArgs(args);
@@ -30,11 +31,9 @@ namespace Remotely_ScreenCast.Linux
                 Conductor.OutgoingMessages.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName).Wait();
                 Conductor.OutgoingMessages.NotifyRequesterUnattendedReady(Conductor.RequesterID).Wait();
                 Conductor.StartWaitForViewerTimer();
-
                 while (true)
                 {
                     System.Threading.Thread.Sleep(100);
-                    Console.Read();
                 }
             }
             catch (Exception ex)

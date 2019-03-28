@@ -10,6 +10,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Remotely_Agent
 {
