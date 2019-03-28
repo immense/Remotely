@@ -16,9 +16,6 @@ namespace Remotely_ScreenCast.Linux.Capture
         public System.Drawing.Bitmap PreviousFrame { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public EventHandler<Rectangle> ScreenChanged { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public int SelectedScreen { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int ScreenCount { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public double VirtualScreenHeight { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public double VirtualScreenWidth { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public void Capture()
         {
@@ -26,6 +23,21 @@ namespace Remotely_ScreenCast.Linux.Capture
         }
 
         public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetScreenCount()
+        {
+            throw new NotImplementedException();
+        }
+
+        public double GetVirtualScreenHeight()
+        {
+            throw new NotImplementedException();
+        }
+
+        public double GetVirtualScreenWidth()
         {
             throw new NotImplementedException();
         }

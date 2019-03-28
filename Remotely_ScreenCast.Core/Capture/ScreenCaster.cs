@@ -48,7 +48,7 @@ namespace Remotely_ScreenCast.Core.Capture
 
             await outgoingMessages.SendScreenCount(
                    capturer.SelectedScreen,
-                   capturer.ScreenCount,
+                   capturer.GetScreenCount(),
                    viewerID);
 
             await outgoingMessages.SendScreenSize(capturer.CurrentScreenBounds.Width, capturer.CurrentScreenBounds.Height, viewerID);
@@ -157,7 +157,7 @@ namespace Remotely_ScreenCast.Core.Capture
         {
             var absoluteX = (capturer.CurrentScreenBounds.Width * percentX) + capturer.CurrentScreenBounds.Left;
             var absoluteY = (capturer.CurrentScreenBounds.Height * percentY) + capturer.CurrentScreenBounds.Top;
-            return new Tuple<double, double>(absoluteX / capturer.VirtualScreenWidth, absoluteY / capturer.VirtualScreenHeight);
+            return new Tuple<double, double>(absoluteX / capturer.GetVirtualScreenWidth(), absoluteY / capturer.GetVirtualScreenHeight());
         }
         public static Tuple<double, double> GetAbsolutePointFromRelativePercent(double percentX, double percentY, ICapturer capturer)
         {

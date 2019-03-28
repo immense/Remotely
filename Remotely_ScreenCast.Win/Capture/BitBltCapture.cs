@@ -57,9 +57,19 @@ namespace Remotely_ScreenCast.Win.Capture
             }
         }
         public Rectangle CurrentScreenBounds { get; set; } = Screen.PrimaryScreen.Bounds;
-        public int ScreenCount { get; set; } = Screen.AllScreens.Length;
-        public double VirtualScreenHeight { get; set; } = SystemInformation.VirtualScreen.Width;
-        public double VirtualScreenWidth { get; set; } = SystemInformation.VirtualScreen.Height;
+        public int GetScreenCount()
+        {
+            return Screen.AllScreens.Length;
+        }
+        public double GetVirtualScreenHeight()
+        {
+            return SystemInformation.VirtualScreen.Width;
+        }
+        public double GetVirtualScreenWidth()
+        {
+            return SystemInformation.VirtualScreen.Height;
+        }
+
 
         private int selectedScreen = Screen.AllScreens.ToList().IndexOf(Screen.PrimaryScreen);
         private Graphics graphic;
