@@ -1,3 +1,4 @@
+#!/bin/bash
 HostName=
 Organization=
 GUID=$(cat /proc/sys/kernel/random/uuid)
@@ -27,6 +28,7 @@ fi
 
 unzip ./Remotely-Linux.zip
 chmod +x ./Remotely_Agent
+chmod +x ./ScreenCast/Remotely_ScreenCast.Linux
 
 cat > ./ConnectionInfo.json << EOL
 {
@@ -40,6 +42,9 @@ EOL
 
 echo Creating service...
 
+usersArr=($(users))
+targetUser=${usersArr[0]}
+
 cat > /etc/systemd/system/remotely-agent.service << EOL
 [Unit]
 Description=The Remotely agent used for remote access.
@@ -50,7 +55,7 @@ ExecStart=/usr/local/bin/Remotely/Remotely_Agent
 Restart=always
 RestartSec=10
 Environment=DISPLAY=:0
-Environment="XAUTHORITY=/home/$USER/.Xauthority"
+Environment="XAUTHORITY=/home/$targetUser/.Xauthority"
 
 [Install]
 WantedBy=graphical.target

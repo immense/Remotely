@@ -141,7 +141,7 @@ namespace Remotely_ScreenCast.Core.Sockets
             {
                 if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
                 {
-                    viewer.Capturer.SelectedScreen = screenIndex;
+                    viewer.Capturer.SetSelectedScreen(screenIndex);
                 }
             });
 

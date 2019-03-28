@@ -9,42 +9,42 @@ namespace Remotely_ScreenCast.Linux.Input
     {
         public void SendKeyDown(string key)
         {
-            throw new NotImplementedException();
+            
         }
 
         public void SendKeyUp(string key)
         {
-            throw new NotImplementedException();
+            
         }
 
         public uint SendLeftMouseDown(double percentX, double percentY)
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         public uint SendLeftMouseUp(double percentX, double percentY)
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         public uint SendMouseMove(double percentX, double percentY)
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         public uint SendMouseWheel(int deltaY)
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         public uint SendRightMouseDown(double percentX, double percentY)
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         public uint SendRightMouseUp(double percentX, double percentY)
         {
-            throw new NotImplementedException();
+            return 0;
         }
     }
 }

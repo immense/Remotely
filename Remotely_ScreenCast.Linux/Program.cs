@@ -20,23 +20,6 @@ namespace Remotely_ScreenCast.Linux
             try
             {
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-                // TODO: Works.  Now make it happen.
-                //var display = Xlib.XOpenDisplay(null);
-                //Console.WriteLine($"Display is {display.ToString()}");
-                //var count = Xlib.XScreenCount(display);
-                //Console.WriteLine($"Count is {count}");
-                //using (var bitmap = new System.Drawing.Bitmap(800, 600))
-                //{
-                //    using (var graphic = System.Drawing.Graphics.FromImage(bitmap))
-                //    {
-                //        graphic.CopyFromScreen(0, 0, 0, 0, new System.Drawing.Size(800, 600));
-                //    }
-                //    bitmap.Save("Test.jpg");
-                //}
-                //var width = Xlib.XDisplayWidth(display, 0);
-                //var height = Xlib.XDisplayHeight(display, 0);
-                //Console.WriteLine($"Width: {width}, Height: {height}");
-                //Console.ReadLine();
                 Conductor = new Conductor();
                 Conductor.ProcessArgs(args);
                 Conductor.Connect().Wait();
@@ -45,8 +28,14 @@ namespace Remotely_ScreenCast.Linux
                 //CursorIconWatcher = new CursorIconWatcher(Conductor);
                 //CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
                 Conductor.OutgoingMessages.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName).Wait();
+                Conductor.OutgoingMessages.NotifyRequesterUnattendedReady(Conductor.RequesterID).Wait();
                 Conductor.StartWaitForViewerTimer();
-                HandleConnection(Conductor).Wait();
+
+                while (true)
+                {
+                    System.Threading.Thread.Sleep(100);
+                    Console.Read();
+                }
             }
             catch (Exception ex)
             {
@@ -62,7 +51,6 @@ namespace Remotely_ScreenCast.Linux
                 capturer = new X11Capture();
                 //await Conductor.OutgoingMessages.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { viewerAndRequester.Item1 });
                 ScreenCaster.BeginScreenCasting(viewerAndRequester.Item1, viewerAndRequester.Item2, Conductor.OutgoingMessages, capturer, Conductor);
-                Conductor.OutgoingMessages.SendConnectionFailedToViewers(new List<string>() { viewerAndRequester.Item1 }).Wait();
             }
             catch (Exception ex)
             {
@@ -74,12 +62,6 @@ namespace Remotely_ScreenCast.Linux
         //{
         //    await Conductor.OutgoingMessages.SendCursorChange(cursor, Conductor.Viewers.Keys.ToList());
         //}
-
-        public static async Task HandleConnection(Conductor conductor)
-        {
-                await Task.Delay(100);
-            
-        }
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {

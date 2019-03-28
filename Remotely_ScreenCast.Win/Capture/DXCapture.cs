@@ -24,7 +24,6 @@ namespace Remotely_ScreenCast.Win.Capture
         private Output output;
         private Output1 output1;
         private Texture2D screenTexture;
-        private int selectedScreen = 0;
         private Texture2DDescription textureDesc;
         private int width;
         public bool CaptureFullscreen { get; set; } = true;
@@ -33,50 +32,7 @@ namespace Remotely_ScreenCast.Win.Capture
         public bool NeedsInit { get; set; } = true;
         public Bitmap PreviousFrame { get; set; }
         public EventHandler<Rectangle> ScreenChanged { get; set; }
-        public int SelectedScreen
-        {
-            get
-            {
-                return selectedScreen;
-            }
-            set
-            {
-                if (value == selectedScreen)
-                {
-                    return;
-                }
-                if (adapter == null)
-                {
-                    selectedScreen = 0;
-                }
-                else
-                {
-                    if (adapter.Outputs.Length >= value + 1)
-                    {
-                        selectedScreen = value;
-                    }
-                    else
-                    {
-                        selectedScreen = 0;
-                    }
-                }
-                CaptureFullscreen = true;
-                NeedsInit = true;
-            }
-        }
-
-        public int GetScreenCount()
-        {
-            return Screen.AllScreens.Length;
-        }
-        public double GetVirtualScreenHeight()
-        {
-            return SystemInformation.VirtualScreen.Width;
-        }
-        public double GetVirtualScreenWidth()
-        {
-            return SystemInformation.VirtualScreen.Height;
-        }
+        public int SelectedScreen { get; private set; } = 0;
 
         public void Capture()
         {
@@ -164,6 +120,22 @@ namespace Remotely_ScreenCast.Win.Capture
             CurrentFrame?.Dispose();
             PreviousFrame?.Dispose();
         }
+
+        public int GetScreenCount()
+        {
+            return Screen.AllScreens.Length;
+        }
+
+        public double GetVirtualScreenHeight()
+        {
+            return SystemInformation.VirtualScreen.Height;
+        }
+
+        public double GetVirtualScreenWidth()
+        {
+            return SystemInformation.VirtualScreen.Width;
+        }
+
         public void Init()
         {
             factory = new Factory1();
@@ -173,11 +145,11 @@ namespace Remotely_ScreenCast.Win.Capture
             //Get device from adapter
             device = new SharpDX.Direct3D11.Device(adapter);
             //Get front buffer of the adapter
-            if (adapter.GetOutputCount() < selectedScreen + 1)
+            if (adapter.GetOutputCount() < SelectedScreen + 1)
             {
-                selectedScreen = 0;
+                SelectedScreen = 0;
             }
-            output = adapter.GetOutput(selectedScreen);
+            output = adapter.GetOutput(SelectedScreen);
             output1 = output.QueryInterface<Output1>();
 
             // Width/Height of desktop to capture
@@ -211,6 +183,31 @@ namespace Remotely_ScreenCast.Win.Capture
             };
             screenTexture = new Texture2D(device, textureDesc);
             duplicatedOutput = output1.DuplicateOutput(device);
+        }
+
+        public void SetSelectedScreen(int screenNumber)
+        {
+            if (screenNumber == SelectedScreen)
+            {
+                return;
+            }
+            if (adapter == null)
+            {
+                SelectedScreen = 0;
+            }
+            else
+            {
+                if (adapter.Outputs.Length >= screenNumber + 1)
+                {
+                    SelectedScreen = screenNumber;
+                }
+                else
+                {
+                    SelectedScreen = 0;
+                }
+            }
+            CaptureFullscreen = true;
+            NeedsInit = true;
         }
     }
 }

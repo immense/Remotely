@@ -47,7 +47,7 @@ namespace Remotely_Library.Services
                 }
                 else if (IsLinux)
                 {
-                    return "Remotely_ScreenCast.Mono.exe";
+                    return "Remotely_ScreenCast.Linux";
                 }
                 else
                 {

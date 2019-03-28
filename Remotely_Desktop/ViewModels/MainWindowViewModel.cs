@@ -35,17 +35,10 @@ namespace Remotely_Desktop.ViewModels
             CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
         }
 
-        private async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)
-        {
-            await Conductor.OutgoingMessages.SendCursorChange(cursor, Conductor.Viewers.Keys.ToList());
-        }
-
         public event PropertyChangedEventHandler PropertyChanged;
 
         public static MainWindowViewModel Current { get; private set; }
-        public Conductor Conductor { get; }
-        public Config Config { get; private set; }
-        public string ForceHost { get; }
+
         public bool AllowHostChange
         {
             get
@@ -53,6 +46,15 @@ namespace Remotely_Desktop.ViewModels
                 return string.IsNullOrWhiteSpace(ForceHost);
             }
         }
+
+        public Conductor Conductor { get; }
+
+        public Config Config { get; private set; }
+
+        public CursorIconWatcher CursorIconWatcher { get; private set; }
+
+        public string ForceHost { get; }
+
         public string Host
         {
             get
@@ -62,8 +64,8 @@ namespace Remotely_Desktop.ViewModels
         }
 
         public string SessionID { get; set; }
+
         public ObservableCollection<Viewer> Viewers { get; } = new ObservableCollection<Viewer>();
-        public CursorIconWatcher CursorIconWatcher { get; }
 
         public void FirePropertyChanged(string propertyName)
         {
@@ -86,8 +88,7 @@ namespace Remotely_Desktop.ViewModels
             {
                 Config.Host = ForceHost;
             }
-
-
+            
             Conductor.ProcessArgs(new string[] { "-mode", "Normal", "-host", Config.Host });
             try
             {
@@ -105,8 +106,49 @@ namespace Remotely_Desktop.ViewModels
             await Conductor.OutgoingMessages.GetSessionID();
         }
 
+        public void PromptForHostName()
+        {
+            var prompt = new HostNamePrompt();
+            if (!string.IsNullOrWhiteSpace(Config.Host))
+            {
+                HostNamePromptViewModel.Current.Host = Config.Host;
+            }
+            prompt.Owner = App.Current?.MainWindow;
+            prompt.ShowDialog();
+            var result = HostNamePromptViewModel.Current.Host.TrimEnd("/".ToCharArray());
+            if (!result.StartsWith("https://") && !result.StartsWith("http://"))
+            {
+                result = $"https://{result}";
+            }
+            if (result != Config.Host)
+            {
+                Config.Host = result;
+                Config.Save();
+                FirePropertyChanged("Host");
+            }
+        }
 
+        internal void CopyLink()
+        {
+            Clipboard.SetText($"{Host}/RemoteControl?sessionID={SessionID.Replace(" ", "")}");
+        }
 
+        internal async Task RemoveViewers(IEnumerable<Viewer> viewerList)
+        {
+            foreach (Viewer viewer in viewerList)
+            {
+                viewer.DisconnectRequested = true;
+                await Conductor.OutgoingMessages.SendViewerRemoved(viewer.ViewerConnectionID);
+            }
+        }
+
+        private async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)
+        {
+            if (Conductor?.OutgoingMessages != null)
+            {
+                await Conductor?.OutgoingMessages?.SendCursorChange(cursor, Conductor.Viewers.Keys.ToList());
+            }
+        }
         private void ScreenCastRequested(object sender, Tuple<string, string> viewerAndRequester)
         {
             App.Current.Dispatcher.Invoke(() =>
@@ -140,14 +182,14 @@ namespace Remotely_Desktop.ViewModels
                 }
             });
         }
-
-        internal async Task RemoveViewers(IEnumerable<Viewer> viewerList)
+        private void SessionIDChanged(object sender, string sessionID)
         {
-            foreach (Viewer viewer in viewerList)
+            var formattedSessionID = "";
+            for (var i = 0; i < sessionID.Length; i += 3)
             {
-                viewer.DisconnectRequested = true;
-                await Conductor.OutgoingMessages.SendViewerRemoved(viewer.ViewerConnectionID);
+                formattedSessionID += sessionID.Substring(i, 3) + " ";
             }
+            SessionID = formattedSessionID.Trim();
         }
 
         private void ViewerAdded(object sender, Viewer viewer)
@@ -168,44 +210,6 @@ namespace Remotely_Desktop.ViewModels
                     Viewers.Remove(viewer);
                 }
             });
-        }
-
-        internal void CopyLink()
-        {
-            Clipboard.SetText($"{Host}/RemoteControl?sessionID={SessionID.Replace(" ", "")}");
-        }
-
-        public void PromptForHostName()
-        {
-            var prompt = new HostNamePrompt();
-            if (!string.IsNullOrWhiteSpace(Config.Host))
-            {
-                HostNamePromptViewModel.Current.Host = Config.Host;
-            }
-            prompt.Owner = App.Current?.MainWindow;
-            prompt.ShowDialog();
-            var result = HostNamePromptViewModel.Current.Host.TrimEnd("/".ToCharArray());
-            if (!result.StartsWith("https://") && !result.StartsWith("http://"))
-            {
-                result = $"https://{result}";
-            }
-            if (result != Config.Host)
-            {
-                Config.Host = result;
-                Config.Save();
-                FirePropertyChanged("Host");
-            }
-        }
-
-
-        private void SessionIDChanged(object sender, string sessionID)
-        {
-            var formattedSessionID = "";
-            for (var i = 0; i < sessionID.Length; i += 3)
-            {
-                formattedSessionID += sessionID.Substring(i, 3) + " ";
-            }
-            SessionID = formattedSessionID.Trim();
         }
     }
 }
