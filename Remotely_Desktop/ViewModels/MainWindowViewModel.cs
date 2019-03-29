@@ -3,6 +3,7 @@ using Remotely_Desktop.Services;
 using Remotely_ScreenCast.Core;
 using Remotely_ScreenCast.Core.Capture;
 using Remotely_ScreenCast.Core.Models;
+using Remotely_ScreenCast.Core.Utilities;
 using Remotely_ScreenCast.Win;
 using Remotely_ScreenCast.Win.Capture;
 using Remotely_ScreenCast.Win.Input;
@@ -177,7 +178,7 @@ namespace Remotely_Desktop.ViewModels
                             capturer = new BitBltCapture();
                         }
                         await Conductor.OutgoingMessages.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { viewerAndRequester.Item1 });
-                        ScreenCaster.BeginScreenCasting(viewerAndRequester.Item1, viewerAndRequester.Item2, Conductor.OutgoingMessages, capturer, Conductor);
+                        ScreenCaster.BeginScreenCasting(viewerAndRequester.Item1, viewerAndRequester.Item2, capturer, Conductor);
                     });
                 }
             });

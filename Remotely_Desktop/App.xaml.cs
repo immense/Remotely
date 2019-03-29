@@ -1,5 +1,6 @@
 ﻿using Remotely_Desktop.Services;
 using Remotely_Desktop.ViewModels;
+using Remotely_ScreenCast.Core.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Configuration;

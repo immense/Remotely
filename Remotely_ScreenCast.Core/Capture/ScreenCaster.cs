@@ -16,7 +16,6 @@ namespace Remotely_ScreenCast.Core.Capture
     {
         public static async void BeginScreenCasting(string viewerID,
                                                    string requesterName,
-                                                   OutgoingMessages outgoingMessages,
                                                    ICapturer capturer,
                                                    Conductor conductor)
         {
@@ -46,16 +45,16 @@ namespace Remotely_ScreenCast.Core.Capture
                 conductor.ViewerAdded?.Invoke(null, viewer);
             }
 
-            await outgoingMessages.SendScreenCount(
+            await conductor.OutgoingMessages.SendScreenCount(
                    capturer.SelectedScreen,
                    capturer.GetScreenCount(),
                    viewerID);
 
-            await outgoingMessages.SendScreenSize(capturer.CurrentScreenBounds.Width, capturer.CurrentScreenBounds.Height, viewerID);
+            await conductor.OutgoingMessages.SendScreenSize(capturer.CurrentScreenBounds.Width, capturer.CurrentScreenBounds.Height, viewerID);
 
             capturer.ScreenChanged += async (sender, bounds) =>
             {
-                await outgoingMessages.SendScreenSize(bounds.Width, bounds.Height, viewerID);
+                await conductor.OutgoingMessages.SendScreenSize(bounds.Width, bounds.Height, viewerID);
             };
 
             // TODO: SetThradDesktop causes issues with input after switching.
@@ -124,7 +123,7 @@ namespace Remotely_ScreenCast.Core.Capture
 
                         if (encodedImageBytes?.Length > 0)
                         {
-                            await outgoingMessages.SendScreenCapture(encodedImageBytes, viewerID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, DateTime.UtcNow);
+                            await conductor.OutgoingMessages.SendScreenCapture(encodedImageBytes, viewerID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, DateTime.UtcNow);
                             viewer.PendingFrames++;
                         }
                         // TODO: Even after disposing of the bitmap, GC doesn't collect in time.  Memory usage soars quickly.

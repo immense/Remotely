@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,7 +15,14 @@ namespace Remotely_ScreenCast.Core.Utilities
         public static void Write(string message)
         {
             var path = Path.Combine(Path.GetTempPath(), "Remotely_Logs.txt");
-
+            if (!File.Exists(path))
+            {
+                File.Create(path).Close();
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    Process.Start("sudo", $"chmod 666 {path}").WaitForExit();
+                }
+            }
             var jsoninfo = new
             {
                 Type = "Info",
@@ -47,6 +56,15 @@ namespace Remotely_ScreenCast.Core.Utilities
         {
             var exception = ex;
             var path = Path.Combine(Path.GetTempPath(), "Remotely_Logs.txt");
+
+            if (!File.Exists(path))
+            {
+                File.Create(path).Close();
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    Process.Start("sudo", $"chmod 666 {path}").WaitForExit();
+                }
+            }
 
             while (exception != null)
             {

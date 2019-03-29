@@ -6,6 +6,8 @@ The output directory is the app root path. This would typically be in /var/www/[
 read -p "Enter app root path: " appRoot
 read -p "Enter server host (e.g. example.com): " serverHost
 
+apt-get install acl
+
 setfacl -R -m u:www-data:rwx $appRoot
 
 # Install .NET Core Runtime.
@@ -16,6 +18,7 @@ apt-get install -y apt-transport-https
 apt-get update
 apt-get install -y aspnetcore-runtime-2.2
 rm packages-microsoft-prod.deb
+
 
 # Install Nginx
 apt-get update
