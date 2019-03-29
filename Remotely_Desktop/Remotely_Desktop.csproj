@@ -80,7 +80,6 @@
       <DependentUpon>HostNamePrompt.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\Config.cs" />
-    <Compile Include="Services\Logger.cs" />
     <Compile Include="ViewModels\HostNamePromptViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Page Include="Controls\HostNamePrompt.xaml">

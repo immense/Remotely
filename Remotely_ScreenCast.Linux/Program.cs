@@ -19,7 +19,6 @@ namespace Remotely_ScreenCast.Linux
         {
             try
             {
-                ScreenCastInitiated(null, new Tuple<string, string>("asdf", "asdf"));
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
                 Conductor = new Conductor();
                 Conductor.ProcessArgs(args);
@@ -49,7 +48,7 @@ namespace Remotely_ScreenCast.Linux
             {
                 capturer = new X11Capture();
                 //await Conductor.OutgoingMessages.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { viewerAndRequester.Item1 });
-                ScreenCaster.BeginScreenCasting(viewerAndRequester.Item1, viewerAndRequester.Item2, Conductor.OutgoingMessages, capturer, Conductor);
+                ScreenCaster.BeginScreenCasting(viewerAndRequester.Item1, viewerAndRequester.Item2, capturer, Conductor);
             }
             catch (Exception ex)
             {

@@ -89,7 +89,7 @@ namespace Remotely_ScreenCast.Win
                 capturer = new BitBltCapture();
             }
             await Conductor.OutgoingMessages.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { viewerAndRequester.Item1 });
-            ScreenCaster.BeginScreenCasting(viewerAndRequester.Item1, viewerAndRequester.Item2, Conductor.OutgoingMessages, capturer, Conductor);
+            ScreenCaster.BeginScreenCasting(viewerAndRequester.Item1, viewerAndRequester.Item2, capturer, Conductor);
         }
 
         public static async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)
