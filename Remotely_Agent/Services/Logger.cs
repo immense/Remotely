@@ -14,48 +14,22 @@ namespace Remotely_Agent.Services
     {
         public static void Write(string message)
         {
-            var path = Path.Combine(Path.GetTempPath(), "Remotely_Logs.txt");
-            if (!File.Exists(path))
+            try
             {
-                File.Create(path).Close();
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                var path = Path.Combine(Path.GetTempPath(), "Remotely_Logs.txt");
+                if (!File.Exists(path))
                 {
-                    Process.Start("sudo", $"chmod 666 {path}").WaitForExit();
+                    File.Create(path).Close();
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    {
+                        Process.Start("sudo", $"chmod 666 {path}").WaitForExit();
+                    }
                 }
-            }
-            var jsoninfo = new
-            {
-                Type = "Info",
-                Timestamp = DateTime.Now.ToString(),
-                Message = message
-            };
-            if (File.Exists(path))
-            {
-                var fi = new FileInfo(path);
-                while (fi.Length > 1000000)
+                var jsoninfo = new
                 {
-                    var content = File.ReadAllLines(path);
-                    File.WriteAllLines(path, content.Skip(10));
-                    fi = new FileInfo(path);
-                }
-            }
-            File.AppendAllText(path, JsonConvert.SerializeObject(jsoninfo) + Environment.NewLine);
-        }
-
-        public static void Write(Exception ex)
-        {
-            var exception = ex;
-            var path = Path.Combine(Path.GetTempPath(), "Remotely_Logs.txt");
-
-            while (exception != null)
-            {
-                var jsonError = new
-                {
-                    Type = "Error",
+                    Type = "Info",
                     Timestamp = DateTime.Now.ToString(),
-                    Message = exception?.Message,
-                    Source = exception?.Source,
-                    StackTrace = exception?.StackTrace,
+                    Message = message
                 };
                 if (File.Exists(path))
                 {
@@ -67,9 +41,43 @@ namespace Remotely_Agent.Services
                         fi = new FileInfo(path);
                     }
                 }
-                File.AppendAllText(path, JsonConvert.SerializeObject(jsonError) + Environment.NewLine);
-                exception = exception.InnerException;
+                File.AppendAllText(path, JsonConvert.SerializeObject(jsoninfo) + Environment.NewLine);
             }
+            catch { }
+        }
+
+        public static void Write(Exception ex)
+        {
+            try
+            {
+                var exception = ex;
+                var path = Path.Combine(Path.GetTempPath(), "Remotely_Logs.txt");
+
+                while (exception != null)
+                {
+                    var jsonError = new
+                    {
+                        Type = "Error",
+                        Timestamp = DateTime.Now.ToString(),
+                        Message = exception?.Message,
+                        Source = exception?.Source,
+                        StackTrace = exception?.StackTrace,
+                    };
+                    if (File.Exists(path))
+                    {
+                        var fi = new FileInfo(path);
+                        while (fi.Length > 1000000)
+                        {
+                            var content = File.ReadAllLines(path);
+                            File.WriteAllLines(path, content.Skip(10));
+                            fi = new FileInfo(path);
+                        }
+                    }
+                    File.AppendAllText(path, JsonConvert.SerializeObject(jsonError) + Environment.NewLine);
+                    exception = exception.InnerException;
+                }
+            }
+            catch { }
         }
     }
 }
