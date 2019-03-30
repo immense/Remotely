@@ -37,22 +37,7 @@ namespace Remotely_Agent.Services
 
             RegisterMessageHandlers(HubConnection);
 
-            try
-            {
-                await HubConnection.StartAsync();
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
-                if (!ConnectionInfo.Host.StartsWith("https"))
-                {
-                    Logger.Write($"Failed to connect to {ConnectionInfo.Host}.  Trying with HTTPS.");
-                    ConnectionInfo.Host = ConnectionInfo.Host.ToLower().Replace("http:", "https:");
-                    Connect();
-                    return;
-                }
-                throw;
-            }
+            await HubConnection.StartAsync();
 
             var device = Device.Create(ConnectionInfo);
 

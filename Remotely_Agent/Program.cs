@@ -19,42 +19,50 @@ namespace Remotely_Agent
         public static bool IsDebug { get; set; }
         static void Main(string[] args)
         {
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            SetWorkingDirectory();
-            var argDict = ProcessArgs(args);
-
-            JsonConvert.DefaultSettings = () =>
+            try
             {
-                var settings = new JsonSerializerSettings();
-                settings.Error = (sender, arg) =>
+                AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+                SetWorkingDirectory();
+                var argDict = ProcessArgs(args);
+
+                JsonConvert.DefaultSettings = () =>
                 {
-                    arg.ErrorContext.Handled = true;
+                    var settings = new JsonSerializerSettings();
+                    settings.Error = (sender, arg) =>
+                    {
+                        arg.ErrorContext.Handled = true;
+                    };
+                    return settings;
                 };
-                return settings;
-            };
 
-            if (argDict.ContainsKey("update"))
-            {
-                Updater.CoreUpdate();
-            }
+                if (argDict.ContainsKey("update"))
+                {
+                    Updater.CoreUpdate();
+                }
 
-            if (OSUtils.IsWindows)
-            {
+                if (OSUtils.IsWindows)
+                {
 #if DEBUG
-                IsDebug = true;
-                DeviceSocket.Connect();
+                    IsDebug = true;
+                    DeviceSocket.Connect();
 #else
                 ServiceBase.Run(new WindowsService());
 #endif
+                }
+                else
+                {
+                    DeviceSocket.Connect();
+                }
+
+                while (true)
+                {
+                    System.Threading.Thread.Sleep(1000);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                DeviceSocket.Connect();
-            }
-           
-            while (true)
-            {
-                System.Threading.Thread.Sleep(1000);
+                Logger.Write(ex);
+                throw;
             }
         }
 

@@ -66,41 +66,49 @@ namespace Remotely_Server.Services
 
 		public async Task DeviceCameOnline(Device device)
 		{
-			if (ServiceConnections.Any(x => x.Value.ID == device.ID))
-			{
-				DataService.WriteEvent(new EventLog()
-				{
-					EventType = EventTypes.Info,
-					OrganizationID = Device.OrganizationID,
-					Message = $"Device connection for {device?.DeviceName} was denied because it is already connected."
-				});
-				Context.Abort();
-				return;
-			}
-			device.IsOnline = true;
-			device.LastOnline = DateTime.Now;
-			Device = device;
-			if (DataService.AddOrUpdateDevice(device))
-			{
-				var failCount = 0;
-				while (!ServiceConnections.TryAdd(Context.ConnectionId, device))
-				{
-					if (failCount > 3)
-					{
-						Context.Abort();
-						return;
-					}
-					failCount++;
-					await Task.Delay(1000);
-				}
-				await this.Groups.AddToGroupAsync(this.Context.ConnectionId, device.OrganizationID);
-				await BrowserHub.Clients.Group(Device.OrganizationID).SendAsync("DeviceCameOnline", Device);
-			}
-			else
-			{
-				// Organization wasn't found.
-				await Clients.Caller.SendAsync("UninstallClient");
-			}
+            try
+            {
+                if (ServiceConnections.Any(x => x.Value.ID == device.ID))
+                {
+                    DataService.WriteEvent(new EventLog()
+                    {
+                        EventType = EventTypes.Info,
+                        OrganizationID = device.OrganizationID,
+                        Message = $"Device connection for {device?.DeviceName} was denied because it is already connected."
+                    });
+                    Context.Abort();
+                    return;
+                }
+                device.IsOnline = true;
+                device.LastOnline = DateTime.Now;
+                Device = device;
+                if (DataService.AddOrUpdateDevice(device))
+                {
+                    var failCount = 0;
+                    while (!ServiceConnections.TryAdd(Context.ConnectionId, device))
+                    {
+                        if (failCount > 3)
+                        {
+                            Context.Abort();
+                            return;
+                        }
+                        failCount++;
+                        await Task.Delay(1000);
+                    }
+                    await this.Groups.AddToGroupAsync(this.Context.ConnectionId, device.OrganizationID);
+                    await BrowserHub.Clients.Group(Device.OrganizationID).SendAsync("DeviceCameOnline", Device);
+                }
+                else
+                {
+                    // Organization wasn't found.
+                    await Clients.Caller.SendAsync("UninstallClient");
+                }
+            }
+            catch (Exception ex)
+            {
+                DataService.WriteEvent(ex);
+                throw;
+            }	
 		}
 
 		public async Task DeviceHeartbeat(Device device)
