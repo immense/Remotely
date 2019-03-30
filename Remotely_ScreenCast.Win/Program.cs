@@ -49,6 +49,7 @@ namespace Remotely_ScreenCast.Win
             catch (Exception ex)
             {
                 Logger.Write(ex);
+                throw;
             }
         }
 

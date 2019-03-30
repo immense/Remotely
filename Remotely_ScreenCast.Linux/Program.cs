@@ -38,6 +38,7 @@ namespace Remotely_ScreenCast.Linux
             catch (Exception ex)
             {
                 Logger.Write(ex);
+                throw;
             }
         }
 
