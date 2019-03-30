@@ -14,7 +14,7 @@ namespace Remotely_Library.Models
     public class Device
     {
         public string CurrentUser { get; set; }
-        public virtual List<Drive> Drives { get; set; }
+        public virtual ICollection<Drive> Drives { get; set; }
 
         public double FreeMemory { get; set; }
 
@@ -37,7 +37,7 @@ namespace Remotely_Library.Models
 
         public string OSDescription { get; set; }
 
-        public virtual List<PermissionGroup> PermissionGroups { get; set; } = new List<PermissionGroup>();
+        public virtual ICollection<DevicePermissionLink> DevicePermissionLinks { get; set; } = new List<DevicePermissionLink>();
         public string Platform { get; set; }
 
         public int ProcessorCount { get; set; }

@@ -15,8 +15,8 @@ namespace Remotely_Library.Models
         public string SenderUserID { get; set; }
         public string SenderConnectionID { get; set; }
         public string[] TargetDeviceIDs { get; set; }
-        public List<PSCoreCommandResult> PSCoreResults { get; set; } = new List<PSCoreCommandResult>();
-        public List<GenericCommandResult> CommandResults { get; set; } = new List<GenericCommandResult>();
+        public ICollection<PSCoreCommandResult> PSCoreResults { get; set; } = new List<PSCoreCommandResult>();
+        public ICollection<GenericCommandResult> CommandResults { get; set; } = new List<GenericCommandResult>();
         public DateTime TimeStamp { get; set; } = DateTime.Now;
         [IgnoreDataMember]
         public virtual Organization Organization { get; set; }

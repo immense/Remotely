@@ -34,6 +34,9 @@ namespace Remotely_Server.Data
 
         public DbSet<PermissionGroup> PermissionGroups { get; set; }
 
+        public DbSet<UserPermissionLink> UserPermissionLinks { get; set; }
+        public DbSet<DevicePermissionLink> DevicePermissionLinks { get; set; }
+
 		protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -82,22 +85,38 @@ namespace Remotely_Server.Data
 
 
 			builder.Entity<RemotelyUser>()
-				.HasMany(x => x.PermissionGroups);
-
-			builder.Entity<Device>()
-				.HasMany(x => x.PermissionGroups);
-
-			builder.Entity<PermissionGroup>()
-				.HasMany(x => x.RemotelyUsers);
-
-			builder.Entity<PermissionGroup>()
-				.HasMany(x => x.Devices);
-
-			builder.Entity<RemotelyUser>()
                .HasOne(x => x.Organization);
 
             builder.Entity<Device>()
                 .HasMany(x => x.Drives);
+
+
+            builder.Entity<UserPermissionLink>()
+                .HasKey(x => new { x.PermissionGroupID, x.RemotelyUserID });
+
+            builder.Entity<UserPermissionLink>()
+                .HasOne(x => x.RemotelyUser)
+                .WithMany(y => y.UserPermissionLinks)
+                .HasForeignKey(x => x.RemotelyUserID);
+
+            builder.Entity<UserPermissionLink>()
+               .HasOne(x => x.PermissionGroup)
+               .WithMany(y => y.UserPermissionLinks)
+               .HasForeignKey(x => x.PermissionGroupID);
+
+
+            builder.Entity<DevicePermissionLink>()
+                .HasKey(x => new { x.PermissionGroupID, x.DeviceID });
+
+            builder.Entity<UserPermissionLink>()
+                .HasOne(x => x.RemotelyUser)
+                .WithMany(y => y.UserPermissionLinks)
+                .HasForeignKey(x => x.RemotelyUserID);
+
+            builder.Entity<UserPermissionLink>()
+               .HasOne(x => x.PermissionGroup)
+               .WithMany(y => y.UserPermissionLinks)
+               .HasForeignKey(x => x.PermissionGroupID);
 
         }
     }

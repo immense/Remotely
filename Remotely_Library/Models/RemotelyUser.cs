@@ -19,7 +19,7 @@ namespace Remotely_Library.Models
         public virtual Organization Organization { get; set; }
         public string OrganizationID { get; set; }
 
-        public virtual List<PermissionGroup> PermissionGroups { get; set; } = new List<PermissionGroup>();
+        public virtual ICollection<UserPermissionLink> UserPermissionLinks { get; set; } = new List<UserPermissionLink>();
 
         public bool IsAdministrator { get; set; } = true;
     }

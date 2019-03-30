@@ -13,7 +13,7 @@ namespace Remotely_Library.Models
         [StringLength(100)]
         public string Name { get; set; }
         public virtual Organization Organization { get; set; }
-		public virtual List<Device> Devices { get; set; }
-		public virtual List<RemotelyUser> RemotelyUsers { get; set; }
+        public virtual ICollection<UserPermissionLink> UserPermissionLinks { get; set; } = new List<UserPermissionLink>();
+        public virtual ICollection<DevicePermissionLink> DevicePermissionLinks { get; set; } = new List<DevicePermissionLink>();
 	}
 }
