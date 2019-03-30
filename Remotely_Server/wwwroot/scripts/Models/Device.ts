@@ -1,10 +1,13 @@
-﻿export interface Device {
+﻿import { DevicePermissionLink } from "./DevicePermissionLink";
+
+export interface Device {
     Drives: any[];
     ID: string;
     Is64Bit: boolean;
     IsOnline: boolean;
     LastOnline: Date;
     DeviceName: string;
+    DevicePermissionLinks: DevicePermissionLink[];
     OrganizationID: string;
     OSArchitecture: any;
     OSDescription: string;

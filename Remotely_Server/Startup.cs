@@ -96,6 +96,7 @@ namespace Remotely_Server
                 .AddJsonProtocol(options =>
                 {
                     options.PayloadSerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
+                    options.PayloadSerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                 })
                 .AddMessagePackProtocol();
 

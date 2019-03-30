@@ -72,6 +72,23 @@ namespace Remotely_Server.Data
             return true;
         }
 
+        public IEnumerable<Device> GetDevicesAndPermissions(string userID, string[] deviceIDs)
+        {
+            var user = GetUserByID(userID);
+
+            var devices = RemotelyContext.Devices
+                            .Include(x => x.DevicePermissionLinks)
+                            .Include("DevicePermissionLinks.PermissionGroup")
+                            .Where(x => x.OrganizationID == user.OrganizationID)
+                            .ToList();
+
+            return devices.Select(x => new Device()
+                    {
+                        DeviceName = x.DeviceName,
+                        DevicePermissionLinks = x.DevicePermissionLinks.ToList()
+                    });
+        }
+
         public void CleanupEmptyOrganizations()
         {
             var emptyOrgs = RemotelyContext.Organizations
@@ -213,7 +230,7 @@ namespace Remotely_Server.Data
 			return result.FirstOrDefault();
         }
 
-        public RemotelyUser GetUserByID(string userID)
+        public RemotelyUser GetUserAndPermissionsByID(string userID)
         {
             if (userID == null)
             {
@@ -223,6 +240,14 @@ namespace Remotely_Server.Data
                 .Include(x => x.Organization)
                 .Include(x => x.UserPermissionLinks)
                 .FirstOrDefault(x => x.Id == userID);
+        }
+        public RemotelyUser GetUserByID(string userID)
+        {
+            if (userID == null)
+            {
+                return null;
+            }
+            return RemotelyContext.Users.FirstOrDefault(x => x.Id == userID);
         }
 
         public RemotelyUser GetUserByName(string userName)
