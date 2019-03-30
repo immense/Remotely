@@ -67,6 +67,22 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
+        "GetGroups",
+        [
+        ],
+        "Lists the permission group(s) that are applied to the selected computer(s).",
+        "GetGroups",
+        "",
+        (parameters, paramDictionary) => {
+            var selectedDevices = Main.DataGrid.GetSelectedDevices();
+            if (selectedDevices.length == 0) {
+                AddConsoleOutput("No devices are selected.");
+                return;
+            };
+            BrowserSockets.Connection.invoke("GetGroups", selectedDevices.map(x=>x.ID));
+        }
+    ),
+    new ConsoleCommand(
         "RemoveGroup",
         [
             new Parameter("group", "The group name to remove.", "String")
@@ -215,6 +231,7 @@ var commands: Array<ConsoleCommand> = [
                         </tr>`
             });
             output += deviceList.join("");
+            output += "</table>";
             UI.AddConsoleOutput(output);
         }
     ),

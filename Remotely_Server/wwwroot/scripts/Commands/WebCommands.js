@@ -49,6 +49,15 @@ var commands = [
         };
         fileInput.click();
     }),
+    new ConsoleCommand("GetGroups", [], "Lists the permission group(s) that are applied to the selected computer(s).", "GetGroups", "", (parameters, paramDictionary) => {
+        var selectedDevices = Main.DataGrid.GetSelectedDevices();
+        if (selectedDevices.length == 0) {
+            AddConsoleOutput("No devices are selected.");
+            return;
+        }
+        ;
+        BrowserSockets.Connection.invoke("GetGroups", selectedDevices.map(x => x.ID));
+    }),
     new ConsoleCommand("RemoveGroup", [
         new Parameter("group", "The group name to remove.", "String")
     ], "Removes a permission group to the selected computer(s).", "RemoveGroup -group Lab Devices", "", (parameters, paramDictionary) => {
@@ -136,6 +145,7 @@ var commands = [
                         </tr>`;
         });
         output += deviceList.join("");
+        output += "</table>";
         UI.AddConsoleOutput(output);
     }),
     new ConsoleCommand("Remove", [], "Removes the selected devices from the database.  (Note: This does not attempt to uninstall the client.  Use Uninstall.)", "remove", "", (parameters) => {

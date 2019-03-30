@@ -81,6 +81,25 @@ function applyMessageHandlers(hubConnection) {
     hubConnection.on("DisplayConsoleHTML", (message: string) => {
         UI.AddConsoleHTML(message);
     });
+    hubConnection.on("GetGroupsResult", (devices: Device[]) => {
+        var output = `<div>Permission Groups:</div>
+                            <table class="console-device-table table table-responsive">
+                            <thead><tr>
+                            <th>Device Name</th><th>Permission Groups</th>
+                            </tr></thead>`;
+
+        var deviceList = devices.map(x => {
+            return `<tr>
+                        <td>${x.DeviceName}</td>
+                        <td>
+                            ${x.DevicePermissionLinks.map(x => x.PermissionGroup.Name + "<br />").join("")}
+                        </td>
+                        </tr>`
+        });
+        output += deviceList.join("");
+        output += "</table>";
+        UI.AddConsoleOutput(output);
+    });
     hubConnection.on("TransferCompleted", (transferID: string) => {
         var completedWrapper = document.getElementById(transferID + "-completed");
         var count = parseInt(completedWrapper.innerHTML);

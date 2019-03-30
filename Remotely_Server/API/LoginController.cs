@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Remotely_Library.Models;
 using Remotely_Server.Data;
 using Remotely_Server.Models;
+using Remotely_Server.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,19 +18,25 @@ namespace Remotely_Server.API
     [Route("api/[controller]")]
     public class LoginController : Controller
     {
-        public LoginController(SignInManager<RemotelyUser> signInManager, DataService dataService)
+        public LoginController(SignInManager<RemotelyUser> signInManager, DataService dataService, ApplicationConfig appConfig)
         {
             SignInManager = signInManager;
             DataService = dataService;
+            AppConfig = appConfig;
         }
 
         private SignInManager<RemotelyUser> SignInManager { get; }
         private DataService DataService { get; }
+        public ApplicationConfig AppConfig { get; }
 
         [HttpPost]
         [EnableCors("AnyOriginPolicy")]
         public async Task<IActionResult> Post([FromBody]ApiLogin login)
         {
+            if (!AppConfig.AllowApiLogin)
+            {
+                return NotFound();
+            }
             var result = await SignInManager.PasswordSignInAsync(login.Email, login.Password, false, true);
             if (result.Succeeded)
             {

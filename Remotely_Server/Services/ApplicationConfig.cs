@@ -21,6 +21,7 @@ namespace Remotely_Server.Services
         public double RemoteControlSessionLimit => double.Parse(Config["ApplicationOptions:RemoteControlSessionLimit"]);
         public bool RecordRemoteControlSessions => bool.Parse(Config["ApplicationOptions:RecordRemoteControlSessions"]);
         public bool RedirectToHTTPS => bool.Parse(Config["ApplicationOptions:RedirectToHTTPS"]);
+        public bool AllowApiLogin => bool.Parse(Config["ApplicationOptions:AllowApiLogin"]);
         public bool UseHSTS => bool.Parse(Config["ApplicationOptions:RedirectToHTTPS"]);
 
         public string SmtpHost => Config["ApplicationOptions:SmtpHost"];

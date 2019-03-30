@@ -59,7 +59,13 @@ namespace Remotely_Server.Services
             DataService.AddPermissionToDevices(RemotelyUser.Id, deviceIDs, groupName);
             await Clients.Caller.SendAsync("DisplayConsoleMessage", "Group added.");
         }
-		public async Task DeployScript(string fileID, string mode, string[] deviceIDs)
+        public async Task GetGroups(string[] deviceIDs)
+        {
+            deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
+            var result = DataService.GetDevicesAndPermissions(RemotelyUser.Id, deviceIDs);
+            await Clients.Caller.SendAsync("GetGroupsResult", result);
+        }
+        public async Task DeployScript(string fileID, string mode, string[] deviceIDs)
 		{
 			deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
 			var connections = GetActiveClientConnections(deviceIDs);
@@ -104,7 +110,7 @@ namespace Remotely_Server.Services
 
 		public override async Task OnConnectedAsync()
 		{
-			RemotelyUser = DataService.GetUserByID(Context?.UserIdentifier);
+			RemotelyUser = DataService.GetUserAndPermissionsByID(Context?.UserIdentifier);
 			if (IsConnectionValid()?.Result == false)
 			{
 				return;
