@@ -28,7 +28,7 @@
 
   <ItemGroup>
     <Compile Update="Models\CommandContext.cs">
-      <LastGenOutput>CommandContext.cs.d.ts</LastGenOutput>
+      <LastGenOutput>CommandContext.d.ts</LastGenOutput>
       <Generator>DtsGenerator</Generator>
     </Compile>
     <Compile Update="Models\CursorInfo.cs">
@@ -44,7 +44,7 @@
       <Generator>DtsGenerator</Generator>
     </Compile>
     <Compile Update="Models\Device.cs">
-      <LastGenOutput>Machine.cs.d.ts</LastGenOutput>
+      <LastGenOutput>Device.d.ts</LastGenOutput>
       <Generator>DtsGenerator</Generator>
     </Compile>
     <Compile Update="Models\PSCoreCommandResult.cs">
@@ -54,6 +54,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Models\CommandContext.d.ts">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CommandContext.cs</DependentUpon>
+    </None>
     <None Update="Models\CursorInfo.d.ts">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

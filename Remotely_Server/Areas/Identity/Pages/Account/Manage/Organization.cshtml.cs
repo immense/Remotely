@@ -42,27 +42,33 @@ namespace Remotely_Server.Areas.Identity.Pages.Account.Manage
                 {
                     ID = x.Id,
                     IsAdmin = x.IsAdministrator,
-                    Permissions = x?.PermissionGroups?.Select(y => new Permission()
+                    Permissions = x?.UserPermissionLinks?.Select(y => new Permission()
                     {
-                        ID = y.ID,
-                        Name = y.Name
+                        ID = y.PermissionGroupID,
+                        Name = y.PermissionGroup.Name
                     })?.ToList(),
                     UserName = x.UserName
                 }).ToList();
+
             foreach (var user in Users)
             {
-                user.Permissions = DataService.GetUserPermissions(User.Identity.Name, user.ID).Select(x => new Permission
+                var permissions = DataService.GetUserPermissions(User.Identity.Name, user.ID);
+
+                if (permissions.Any())
                 {
-                    ID = x.ID,
-                    Name = x.Name
-                }).ToList();
+                    user.Permissions = permissions?.Select(x => new Permission
+                    {
+                        ID = x.PermissionGroupID,
+                        Name = x.PermissionGroup?.Name
+                    }).ToList();
+                }
             }
-            var allPermissions = DataService.GetAllPermissions(User.Identity.Name).Select(x => new Permission()
+
+            PermissionList = DataService.GetAllPermissions(User.Identity.Name).Select(x => new Permission()
             {
                 ID = x.ID,
                 Name = x.Name
             }).ToList();
-            PermissionList = allPermissions;
 
             Invites = DataService.GetAllInviteLinks(User.Identity.Name).Select(x => new Invite()
             {

@@ -89,14 +89,14 @@ namespace Remotely_Server.API
         [Authorize]
         public PSCoreCommandResult PSCoreResult(string commandID, string deviceID)
         {
-            return DataService.GetCommandContext(commandID, User.Identity.Name).PSCoreResults.Find(x => x.DeviceID == deviceID);
+            return DataService.GetCommandContext(commandID, User.Identity.Name).PSCoreResults.FirstOrDefault(x => x.DeviceID == deviceID);
         }
 
         [HttpGet("GenericResult/{commandID}/{deviceID}")]
         [Authorize]
         public GenericCommandResult GenericResult(string commandID, string deviceID)
         {
-            return DataService.GetCommandContext(commandID, User.Identity.Name).CommandResults.Find(x => x.DeviceID == deviceID);
+            return DataService.GetCommandContext(commandID, User.Identity.Name).CommandResults.FirstOrDefault(x => x.DeviceID == deviceID);
         }
 
         [HttpPost("{resultType}")]
