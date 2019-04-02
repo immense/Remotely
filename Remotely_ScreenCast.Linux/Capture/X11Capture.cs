@@ -24,16 +24,12 @@ namespace Remotely_ScreenCast.Linux.Capture
         public EventHandler<Rectangle> ScreenChanged { get; set; }
         public int SelectedScreen { get; private set; } = -1;
         private Graphics Graphic { get; set; }
-        private object ScreenLock { get; } = new object();
         public void Capture()
         {
             try
             {
-                lock (ScreenLock)
-                {
-                    PreviousFrame = (Bitmap)CurrentFrame.Clone();
-                    Graphic.CopyFromScreen(CurrentScreenBounds.Left, CurrentScreenBounds.Top, 0, 0, new Size(CurrentScreenBounds.Width, CurrentScreenBounds.Height));
-                }
+                PreviousFrame = (Bitmap)CurrentFrame.Clone();
+                Graphic.CopyFromScreen(CurrentScreenBounds.Left, CurrentScreenBounds.Top, 0, 0, new Size(CurrentScreenBounds.Width, CurrentScreenBounds.Height));
             }
             catch (Exception ex)
             {
@@ -51,7 +47,7 @@ namespace Remotely_ScreenCast.Linux.Capture
 
         public int GetScreenCount()
         {
-            return Xlib.XScreenCount(Display);
+            return LibX11.XScreenCount(Display);
         }
 
         public double GetVirtualScreenHeight()
@@ -59,7 +55,7 @@ namespace Remotely_ScreenCast.Linux.Capture
             double height = 0;
             for (var i = 0; i < GetScreenCount(); i++)
             {
-                height += Xlib.XHeightOfScreen(Xlib.XScreenOfDisplay(Display, i));
+                height += LibX11.XHeightOfScreen(LibX11.XScreenOfDisplay(Display, i));
             }
             return height;
         }
@@ -69,19 +65,26 @@ namespace Remotely_ScreenCast.Linux.Capture
             double width = 0;
             for (var i = 0; i < GetScreenCount(); i++)
             {
-                width += Xlib.XWidthOfScreen(Xlib.XScreenOfDisplay(Display, i));
+                width += LibX11.XWidthOfScreen(LibX11.XScreenOfDisplay(Display, i));
             }
             return width;
         }
 
         public void Init()
         {
-            Display = Xlib.XOpenDisplay(null);
-            var defaultScreen = Xlib.XDefaultScreen(Display);
-            SetSelectedScreen(defaultScreen);
-            CurrentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
-            PreviousFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
-            Graphic = Graphics.FromImage(CurrentFrame);
+            try
+            {
+                Display = LibX11.XOpenDisplay(null);
+                var defaultScreen = LibX11.XDefaultScreen(Display);
+                SetSelectedScreen(defaultScreen);
+                CurrentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
+                PreviousFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
+                Graphic = Graphics.FromImage(CurrentFrame);
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+            }
         }
 
         public void SetSelectedScreen(int screenNumber)
@@ -90,7 +93,7 @@ namespace Remotely_ScreenCast.Linux.Capture
             {
                 return;
             }
-            lock (ScreenLock)
+            try
             {
                 if (GetScreenCount() >= screenNumber + 1)
                 {
@@ -100,12 +103,17 @@ namespace Remotely_ScreenCast.Linux.Capture
                 {
                     SelectedScreen = 0;
                 }
-                var width = Xlib.XDisplayWidth(Display, SelectedScreen);
-                var height = Xlib.XDisplayHeight(Display, SelectedScreen);
+                var width = LibX11.XDisplayWidth(Display, SelectedScreen);
+                var height = LibX11.XDisplayHeight(Display, SelectedScreen);
                 CurrentScreenBounds = new Rectangle(0, 0, width, height);
                 CaptureFullscreen = true;
                 Init();
                 ScreenChanged?.Invoke(this, CurrentScreenBounds);
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
             }
         }
     }

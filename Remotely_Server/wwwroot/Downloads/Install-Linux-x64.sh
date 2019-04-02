@@ -14,6 +14,7 @@ fi
 
 apt-get -y install unzip
 apt-get -y install libgdiplus
+apt-get -y install libxtst-dev
 
 mkdir -p /usr/local/bin/Remotely/
 cd /usr/local/bin/Remotely/

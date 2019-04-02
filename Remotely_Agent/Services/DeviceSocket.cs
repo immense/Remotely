@@ -319,7 +319,7 @@ namespace Remotely_Agent.Services
                         var users = OSUtils.StartProcessWithResults("users", "");
                         var username = users?.Split()?.FirstOrDefault()?.Trim();
 
-                        var casterProc = Process.Start("sudo", $"-u {username} {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -hostname {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)} & disown");
+                        var casterProc = Process.Start("sudo", $"-u {username} {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)} & disown");
                         casterProc.WaitForExit();
                     }
                 }
