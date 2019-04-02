@@ -47,7 +47,7 @@ namespace Remotely_ScreenCast.Core.Sockets
             {
                 if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
-                    keyboardMouse.SendKeyDown(key);
+                    keyboardMouse.SendKeyDown(key, viewer);
                 }
             });
 
@@ -55,7 +55,7 @@ namespace Remotely_ScreenCast.Core.Sockets
             {
                 if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
-                    keyboardMouse.SendKeyUp(key);
+                    keyboardMouse.SendKeyUp(key, viewer);
                 }
             });
 
@@ -63,9 +63,9 @@ namespace Remotely_ScreenCast.Core.Sockets
             {
                 if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
-                    keyboardMouse.SendKeyDown(key);
+                    keyboardMouse.SendKeyDown(key, viewer);
                     await Task.Delay(1);
-                    keyboardMouse.SendKeyUp(key);
+                    keyboardMouse.SendKeyUp(key, viewer);
                 }
             });
 
@@ -74,7 +74,7 @@ namespace Remotely_ScreenCast.Core.Sockets
                 if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
                     var xyPercents = ScreenCaster.GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
-                    keyboardMouse.SendMouseMove(xyPercents.Item1, xyPercents.Item2);
+                    keyboardMouse.SendMouseMove(xyPercents.Item1, xyPercents.Item2, viewer);
                 }
             });
 
@@ -85,11 +85,11 @@ namespace Remotely_ScreenCast.Core.Sockets
                     var xyPercents = ScreenCaster.GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
                     if (button == 0)
                     {
-                        keyboardMouse.SendLeftMouseDown(xyPercents.Item1, xyPercents.Item2);
+                        keyboardMouse.SendLeftMouseDown(xyPercents.Item1, xyPercents.Item2, viewer);
                     }
                     else if (button == 2)
                     {
-                        keyboardMouse.SendRightMouseDown(xyPercents.Item1, xyPercents.Item2);
+                        keyboardMouse.SendRightMouseDown(xyPercents.Item1, xyPercents.Item2, viewer);
                     }
                 }
             });
@@ -101,11 +101,11 @@ namespace Remotely_ScreenCast.Core.Sockets
                     var xyPercents = ScreenCaster.GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
                     if (button == 0)
                     {
-                        keyboardMouse.SendLeftMouseUp(xyPercents.Item1, xyPercents.Item2);
+                        keyboardMouse.SendLeftMouseUp(xyPercents.Item1, xyPercents.Item2, viewer);
                     }
                     else if (button == 2)
                     {
-                        keyboardMouse.SendRightMouseUp(xyPercents.Item1, xyPercents.Item2);
+                        keyboardMouse.SendRightMouseUp(xyPercents.Item1, xyPercents.Item2, viewer);
                     }
                 }
             });
@@ -114,7 +114,7 @@ namespace Remotely_ScreenCast.Core.Sockets
             {
                 if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
-                    keyboardMouse.SendMouseWheel(-(int)deltaY);
+                    keyboardMouse.SendMouseWheel(-(int)deltaY, viewer);
                 }
             });
 
@@ -183,8 +183,8 @@ namespace Remotely_ScreenCast.Core.Sockets
                 if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
                     var xyPercents = ScreenCaster.GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
-                    keyboardMouse.SendLeftMouseDown(xyPercents.Item1, xyPercents.Item2);
-                    keyboardMouse.SendLeftMouseUp(xyPercents.Item1, xyPercents.Item2);
+                    keyboardMouse.SendLeftMouseDown(xyPercents.Item1, xyPercents.Item2, viewer);
+                    keyboardMouse.SendLeftMouseUp(xyPercents.Item1, xyPercents.Item2, viewer);
                 }
             });
             hubConnection.On("SharedFileIDs", (List<string> fileIDs) => {

@@ -11,8 +11,9 @@ namespace Remotely_ScreenCast.Linux.Capture
 {
     public class X11Capture : ICapturer
     {
-        public X11Capture()
+        public X11Capture(IntPtr display)
         {
+            Display = display;
             Init();
         }
 
@@ -74,7 +75,6 @@ namespace Remotely_ScreenCast.Linux.Capture
         {
             try
             {
-                Display = LibX11.XOpenDisplay(null);
                 var defaultScreen = LibX11.XDefaultScreen(Display);
                 SetSelectedScreen(defaultScreen);
                 CurrentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
