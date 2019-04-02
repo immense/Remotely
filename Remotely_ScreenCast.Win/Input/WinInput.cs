@@ -1,4 +1,5 @@
 ﻿using Remotely_ScreenCast.Core.Input;
+using Remotely_ScreenCast.Core.Models;
 using System;
 using Win32;
 using static Win32.User32;
@@ -7,7 +8,7 @@ namespace Remotely_ScreenCast.Win.Input
 {
     public class WinInput : IKeyboardMouseInput
     {
-        public uint SendLeftMouseDown(double percentX, double percentY)
+        public uint SendLeftMouseDown(double percentX, double percentY, Viewer viewer)
         {
             // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
             var normalizedX = percentX * 65535D;
@@ -16,7 +17,7 @@ namespace Remotely_ScreenCast.Win.Input
             var input = new INPUT() { type = InputType.MOUSE, U = union };
             return SendInput(1, new INPUT[] { input }, INPUT.Size);
         }
-        public uint SendLeftMouseUp(double percentX, double percentY)
+        public uint SendLeftMouseUp(double percentX, double percentY, Viewer viewer)
         {
             // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
             var normalizedX = percentX * 65535D;
@@ -25,7 +26,7 @@ namespace Remotely_ScreenCast.Win.Input
             var input = new INPUT() { type = InputType.MOUSE, U = union };
             return SendInput(1, new INPUT[] { input }, INPUT.Size);
         }
-        public uint SendRightMouseDown(double percentX, double percentY)
+        public uint SendRightMouseDown(double percentX, double percentY, Viewer viewer)
         {
             // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
             var normalizedX = percentX * 65535D;
@@ -34,7 +35,7 @@ namespace Remotely_ScreenCast.Win.Input
             var input = new INPUT() { type = InputType.MOUSE, U = union };
             return SendInput(1, new INPUT[] { input }, INPUT.Size);
         }
-        public uint SendRightMouseUp(double percentX, double percentY)
+        public uint SendRightMouseUp(double percentX, double percentY, Viewer viewer)
         {
             // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
             var normalizedX = percentX * 65535D;
@@ -43,7 +44,7 @@ namespace Remotely_ScreenCast.Win.Input
             var input = new INPUT() { type = InputType.MOUSE, U = union };
             return SendInput(1, new INPUT[] { input }, INPUT.Size);
         }
-        public uint SendMouseMove(double percentX, double percentY)
+        public uint SendMouseMove(double percentX, double percentY, Viewer viewer)
         {
             // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
             var normalizedX = percentX * 65535D;
@@ -52,7 +53,7 @@ namespace Remotely_ScreenCast.Win.Input
             var input = new INPUT() { type = InputType.MOUSE, U = union };
             return SendInput(1, new INPUT[] { input }, INPUT.Size);
         }
-        public uint SendMouseWheel(int deltaY)
+        public uint SendMouseWheel(int deltaY, Viewer viewer)
         {
             if (deltaY < 0)
             {
@@ -66,7 +67,7 @@ namespace Remotely_ScreenCast.Win.Input
             var input = new User32.INPUT() { type = InputType.MOUSE, U = union };
             return SendInput(1, new User32.INPUT[] { input }, INPUT.Size);
         }
-        public void SendKeyDown(string key)
+        public void SendKeyDown(string key, Viewer viewer)
         {
             var keyCode = ConvertJavaScriptKeyToVirtualKey(key);
             var union = new InputUnion()
@@ -82,7 +83,7 @@ namespace Remotely_ScreenCast.Win.Input
             var input = new INPUT() { type = InputType.KEYBOARD, U = union };
             SendInput(1, new INPUT[] { input }, INPUT.Size);
         }
-        public void SendKeyUp(string key)
+        public void SendKeyUp(string key, Viewer viewer)
         {
             var keyCode = ConvertJavaScriptKeyToVirtualKey(key);
             var union = new InputUnion()

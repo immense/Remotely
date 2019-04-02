@@ -14,6 +14,7 @@ namespace Remotely_ScreenCast.Linux
     public class Program
     {
         public static Conductor Conductor { get; private set; }
+        public static IntPtr Display { get; } = LibX11.XOpenDisplay(null);
         //public static CursorIconWatcher CursorIconWatcher { get; private set; }
         public static void Main(string[] args)
         {
@@ -23,7 +24,7 @@ namespace Remotely_ScreenCast.Linux
                 Conductor = new Conductor();
                 Conductor.ProcessArgs(args);
                 Conductor.Connect().Wait();
-                Conductor.SetMessageHandlers(new X11Input());
+                Conductor.SetMessageHandlers(new X11Input(Display));
                 Conductor.ScreenCastInitiated += ScreenCastInitiated;
                 //CursorIconWatcher = new CursorIconWatcher(Conductor);
                 //CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
@@ -32,7 +33,7 @@ namespace Remotely_ScreenCast.Linux
                 Conductor.StartWaitForViewerTimer();
                 while (true)
                 {
-                    System.Threading.Thread.Sleep(1000);
+                    System.Threading.Thread.Sleep(100);
                 }
             }
             catch (Exception ex)
@@ -46,7 +47,7 @@ namespace Remotely_ScreenCast.Linux
         {
             try
             {
-                var capturer = new X11Capture();
+                var capturer = new X11Capture(Display);
                 //await Conductor.OutgoingMessages.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { viewerAndRequester.Item1 });
                 ScreenCaster.BeginScreenCasting(viewerAndRequester.Item1, viewerAndRequester.Item2, capturer, Conductor);
             }

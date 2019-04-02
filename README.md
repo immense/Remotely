@@ -4,9 +4,7 @@
 A remote control and remote scripting solution, built with .NET Core and SignalR Core.
 
 Website: https://remotely.lucency.co  
-Public Server: https://tryremotely.lucency.co
-
-(Please Note: Documentation and setup processes will improve eventually.  Compatibility for older OS versions will likely never happen.  I have a full-time job and a family/kids, which leaves me very little time to work on this.  Right now, my focus is on getting features built that I already have planned.)
+Public Server: https://tryremotely.lucency.co (not intended for production use)
 
 ## Build Instructions (Windows 10)  
 The following steps will configure your Windows 10 machine for building the Remotely server and clients.
@@ -27,6 +25,9 @@ The following steps will configure your Windows 10 machine for building the Remo
 	* This includes the Hosting Bundle for Windows, which allows you to run ASP.NET Core in IIS.
 * Obtain a copy of the server files, either by building (above) or downloading the Windows server package from the website.
 * Put the server files into your IIS site folder.
+* Change values in appsettings.json for your environment.
+* If using SQLite configuration, make sure the ApplicationPool's account has write access to the DB file location.
+* After creating your account on the website, you can set "AllowSelfRegistration" to false in appsettings.json to disable registration.
 * An SSL certificate for HTTPS is recommended.  You can install one for free using Let's Encrypt.
 	* Resources: https://letsencrypt.org/, https://certifytheweb.com/
 * Documentation for hosting in IIS can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/iis/index?view=aspnetcore-2.2
@@ -36,6 +37,7 @@ The following steps will configure your Windows 10 machine for building the Remo
 * Obtain a copy of the server files, either by building (above) or downloading the Linux server package from the website.
 * Copy the server files to the location from which they will be run.
 	* This would typically be in /var/www/remotely/.
+* If using SQLite configuration, make sure the www-data account has write access to the DB file location.
 * Run Remotely_Server_Setup.sh (with sudo), which is in the [Utilities folder in source control](https://raw.githubusercontent.com/Jay-Rad/Remotely/master/Utilities/Remotely_Server_Install.sh).
 	* This script is only for Ubuntu 18.04.
 	* The script installs the .NET Core runtime, as well as other dependencies.
@@ -43,7 +45,14 @@ The following steps will configure your Windows 10 machine for building the Remo
 		* More information: https://letsencrypt.org/, https://certbot.eff.org/
     * App root will be the above output folder.
 * Change values in appsettings.json for your environment.
+* After creating your account on the website, you can set "AllowSelfRegistration" to false in appsettings.json to disable registration.
 * Documentation for hosting behind Nginx can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx?view=aspnetcore-2.2
+
+## Remote Control Requirements
+* Windows: Only the latest version of Windows 10 is tested.
+* Linux: Only Lubuntu 18.10 is tested.
+	* Your account must be set to auto login for unattended remote control to work.
+	* The install script needs to be run while the above account is logged in.
 
 ## Session Recording
 * You can turn on session recording in appsettings.json.
@@ -59,7 +68,20 @@ Ideally, you'd be doing remote control from an actual computer or laptop.  Howev
 * Left-click: Single tap
 * Right-click: Double tap
 * Click-and-drag: Tap and hold with one finger, tap and release a second finger (without pinch-zooming)
-	* The click-and-drag operation will begin where finger one is held
+	* The click-and-drag operation will begin where finger one is held.
+
+## Configuration
+The following settings are available in appsettings.json.
+	* DefaultPrompt: The default prompt string you'll see for each line on the console.
+	* DBProvider: Determines which of the three connection strings (at the top) will be used.  The appropriate DB provider for the database type is automatically loaded in code.
+	* AllowSelfRegistration: Enable/disable the ability for people to create accounts.
+	* RecordRemoteControlSessions: Whether or not to record remote control sessions.
+	* RedirectToHTTPS: Whether ASP.NET Core will redirect all traffic from HTTP to HTTPS.  This is independent of Nginx and IIS configurations that do the same.
+	* UseHSTS: Whether ASP.NET Core will use HTTP Strict Transport Security.
+	* DataRetentionInDays: How long event logs and remote command logs will be kept.
+	* RemoteControlSessionLimit: How many concurrent remote control sessions are allowed per organization.
+	* AllowApiLogin: Whether to allow logging in via the API.
+	* Smpt*: SMTP settings for auto-generated system emails (such as registration and password reset).
 
 ## .NET Core Deployments
 * .NET Core has two methods of deployment: framework-dependent and self-contained.
