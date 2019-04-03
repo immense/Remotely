@@ -134,9 +134,9 @@ document.querySelectorAll(".remove-permission-from-user-button").forEach((remove
             xhr.onerror = () => {
                 showError(xhr);
             };
-            xhr.open("delete", location.origin + `/api/OrganizationManagement/RemoveUserPermission/${userID}`);
+            xhr.open("delete", `${location.origin}/api/OrganizationManagement/RemovePermissionFromUser/${userID}/${selectedValue}`);
             xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.send(JSON.stringify(selectedValue));
+            xhr.send();
         }
     });
 });
@@ -196,7 +196,7 @@ document.querySelectorAll(".remove-user-button").forEach((removeButton) => {
             var xhr = new XMLHttpRequest();
             xhr.onload = () => {
                 if (xhr.status == 200) {
-                    document.querySelector(`tr [user='${userID}']`).remove();
+                    document.querySelector(`tr[user='${userID}']`).remove();
                 }
                 else if (xhr.status == 400) {
                     ShowModal("Invalid Request", xhr.responseText);
@@ -208,9 +208,9 @@ document.querySelectorAll(".remove-user-button").forEach((removeButton) => {
             xhr.onerror = () => {
                 showError(xhr);
             };
-            xhr.open("delete", location.origin + `/api/OrganizationManagement/RemoveFromOrganization/`);
+            xhr.open("delete", `${location.origin}/api/OrganizationManagement/RemoveUserFromOrganization/${userID}`);
             xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.send(JSON.stringify(userID));
+            xhr.send();
         }
     });
 });
@@ -281,9 +281,9 @@ function deleteInvite(ev) {
     xhr.onerror = () => {
         showError(xhr);
     };
-    xhr.open("delete", location.origin + `/api/OrganizationManagement/DeleteInvite/`);
+    xhr.open("delete", location.origin + `/api/OrganizationManagement/DeleteInvite/${inviteID}`);
     xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.send(JSON.stringify(inviteID));
+    xhr.send();
 }
 function showError(xhr) {
     console.error(xhr);

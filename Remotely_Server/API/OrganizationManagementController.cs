@@ -65,8 +65,8 @@ namespace Remotely_Server.API
             return Ok("ok");
         }
 
-        [HttpDelete("DeleteInvite")]
-        public IActionResult DeleteInvite([FromBody]string inviteID)
+        [HttpDelete("DeleteInvite/{inviteID}")]
+        public IActionResult DeleteInvite(string inviteID)
         {
             if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
             {
@@ -120,20 +120,20 @@ namespace Remotely_Server.API
             }
             return Ok(result.Item2);
         }
-        [HttpDelete("RemoveFromOrganization")]
-        public IActionResult RemoveFromOrganization([FromBody]string userID)
+        [HttpDelete("RemoveUserFromOrganization/{userID}")]
+        public IActionResult RemoveUserFromOrganization(string userID)
         {
             if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
             {
                 return Unauthorized();
             }
 
-            DataService.RemoveFromOrganization(User.Identity.Name, userID);
+            DataService.RemoveUserFromOrganization(User.Identity.Name, userID);
             return Ok("ok");
         }
 
-        [HttpDelete("RemoveUserPermission/{userID}")]
-        public IActionResult RemoveUserPermission(string userID, [FromBody]string permissionID)
+        [HttpDelete("RemovePermissionFromUser/{userID}/{permissionID}")]
+        public IActionResult RemovePermissionFromUser(string userID, string permissionID)
         {
             if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
             {

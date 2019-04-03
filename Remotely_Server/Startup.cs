@@ -24,6 +24,7 @@ using Remotely_Library.Services;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Remotely_Server
 {
@@ -100,6 +101,11 @@ namespace Remotely_Server
                 })
                 .AddMessagePackProtocol();
 
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "Remotely API", Version = "v1" });
+            });
+
             services.AddLogging();
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<EmailSender>();
@@ -165,7 +171,14 @@ namespace Remotely_Server
                     options.TransportMaxBufferSize = 2000000;
                 });
             });
-            
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Remotely API V1");
+            });
+
             app.UseMvcWithDefaultRoute();
 
             context.Database.Migrate();

@@ -63,6 +63,12 @@ namespace Win32
             XDOWN = 0x0080,
             XUP = 0x0100
         }
+        public enum MonitorState
+        {
+            MonitorStateOn = -1,
+            MonitorStateOff = 2,
+            MonitorStateStandBy = 1
+        }
         [Flags]
         public enum KEYEVENTF : uint
         {
@@ -1237,6 +1243,9 @@ namespace Win32
 
         [DllImport("user32.dll")]
         public static extern short VkKeyScan(char ch);
+
+        [DllImport("user32.dll")]
+        public static extern int SendMessage(int hWnd, int hMsg, int wParam, int lParam);
 
         #endregion
     }

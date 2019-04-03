@@ -136,5 +136,9 @@ namespace Win32
             CloseDesktop(inputDesktop);
             return desktopName;
         }
+        public static void SetMonitorState(MonitorState state)
+        {
+            User32.SendMessage(0xFFFF, 0x112, 0xF170, (int)state);
+        }
     }
 }
