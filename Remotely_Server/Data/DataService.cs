@@ -620,7 +620,7 @@ namespace Remotely_Server.Data
             RemotelyContext.SaveChanges();
             return true;
         }
-        internal void RemoveFromOrganization(string requesterUserName, string targetUserID)
+        internal void RemoveUserFromOrganization(string requesterUserName, string targetUserID)
         {
             var requester = RemotelyContext.Users
                 .Include(x => x.Organization)
