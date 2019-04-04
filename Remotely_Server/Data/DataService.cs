@@ -156,7 +156,6 @@ namespace Remotely_Server.Data
 
 			var result = RemotelyContext.Devices
 				.Include(x => x.DevicePermissionLinks)
-				.Include(x => x.Drives)
                 .Where(x => x.OrganizationID == user.OrganizationID);
 
 			if (user.IsAdministrator)
@@ -215,7 +214,6 @@ namespace Remotely_Server.Data
 
 			var result = RemotelyContext.Devices
 						.Include(x => x.DevicePermissionLinks)
-						.Include(x => x.Drives)
 						.Where(x =>
 							x.OrganizationID == user.OrganizationID &&
 							x.ID == deviceID);
@@ -275,17 +273,8 @@ namespace Remotely_Server.Data
         public void RemoveDevices(string[] deviceIDs)
         {
             var devices = RemotelyContext.Devices
-                .Include(x => x.Drives)
                 .Where(x => deviceIDs.Contains(x.ID));
-            foreach (var device in devices)
-            {
-
-                if (device?.Drives?.Count > 0)
-                {
-                    RemotelyContext.Drives.RemoveRange(device.Drives);
-                }
-                RemotelyContext.Devices.Remove(device);
-            }
+            RemotelyContext.Devices.RemoveRange(devices);
             RemotelyContext.SaveChanges();
         }
 
