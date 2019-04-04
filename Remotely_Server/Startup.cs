@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Swashbuckle.AspNetCore.Swagger;
+using Newtonsoft.Json;
 
 namespace Remotely_Server
 {
@@ -38,6 +39,7 @@ namespace Remotely_Server
 
         public IConfiguration Configuration { get; }
         private bool IsDev { get; set; }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -73,23 +75,37 @@ namespace Remotely_Server
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddDefaultTokenProviders();
 
-            services.AddCors(options=>
+
+            services.ConfigureApplicationCookie(cookieOptions =>
             {
-                options.AddPolicy("AnyOriginPolicy", builder =>  builder
-                    .AllowAnyOrigin()
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-                );
+                cookieOptions.Cookie.SameSite = SameSiteMode.None;
             });
 
-            services.AddMvc()
+
+            var trustedOrigins = Configuration.GetSection("ApplicationOptions:TrustedCorsOrigins").Get<string[]>();
+
+            if (trustedOrigins != null)
+            {
+                services.AddCors(options =>
+                {
+                    options.AddPolicy("TrustedOriginPolicy", builder => builder
+                        .WithOrigins(trustedOrigins)
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+                    );
+                });
+            }
+
+
+            services.AddMvcCore()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(options =>
                 {
                     options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                     options.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.None;
                 });
-            
+
             services.AddSignalR(options =>
                 {
                     options.EnableDetailedErrors = IsDev;
@@ -137,7 +153,7 @@ namespace Remotely_Server
             }
 
             ConfigureStaticFiles(app);
-            
+
             app.UseCookiePolicy();
 
             // Uncomment to run .NET Core behind a reverse proxy.
@@ -150,7 +166,7 @@ namespace Remotely_Server
 
             app.UseSignalR(routes =>
             {
-                routes.MapHub<BrowserSocketHub>("/BrowserHub", options => 
+                routes.MapHub<BrowserSocketHub>("/BrowserHub", options =>
                 {
                     options.ApplicationMaxBufferSize = 500000;
                     options.TransportMaxBufferSize = 500000;
@@ -178,9 +194,8 @@ namespace Remotely_Server
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Remotely API V1");
             });
-
+            app.UseCors("TrustedOriginPolicy");
             app.UseMvcWithDefaultRoute();
-
             context.Database.Migrate();
             dataService.SetAllDevicesNotOnline();
             dataService.CleanupEmptyOrganizations();
