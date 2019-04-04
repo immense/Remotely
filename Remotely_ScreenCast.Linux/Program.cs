@@ -1,4 +1,5 @@
-﻿using Remotely_ScreenCast.Core;
+﻿using Remotely_Library.Models;
+using Remotely_ScreenCast.Core;
 using Remotely_ScreenCast.Core.Capture;
 using Remotely_ScreenCast.Core.Utilities;
 using Remotely_ScreenCast.Linux.Capture;
@@ -41,13 +42,13 @@ namespace Remotely_ScreenCast.Linux
             }
         }
 
-        private static async void ScreenCastInitiated(object sender, Tuple<string, string> viewerAndRequester)
+        private static async void ScreenCastInitiated(object sender, ScreenCastRequest screenCastRequest)
         {
             try
             {
                 var capturer = new X11Capture(Display);
-                await Conductor.OutgoingMessages.SendCursorChange(new Core.Models.CursorInfo(null, Point.Empty, "default"), new List<string>() { viewerAndRequester.Item1 });
-                ScreenCaster.BeginScreenCasting(viewerAndRequester.Item1, viewerAndRequester.Item2, capturer, Conductor);
+                await Conductor.OutgoingMessages.SendCursorChange(new CursorInfo(null, Point.Empty, "default"), new List<string>() { screenCastRequest.ViewerID });
+                ScreenCaster.BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, capturer, Conductor);
             }
             catch (Exception ex)
             {

@@ -293,9 +293,9 @@ function deleteInvite(ev: MouseEvent) {
     xhr.onerror = () => {
         showError(xhr);
     }
-    xhr.open("delete", location.origin + `/api/OrganizationManagement/DeleteInvite/`);
+    xhr.open("delete", location.origin + `/api/OrganizationManagement/DeleteInvite/${inviteID}`);
     xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.send(JSON.stringify(inviteID));
+    xhr.send();
 }
 function showError(xhr: XMLHttpRequest) {
     console.error(xhr);

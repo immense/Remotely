@@ -5,7 +5,7 @@ using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Remotely_Library.Win32_Classes
+namespace Remotely_Library.Win32
 {
     public static class User32
     {
@@ -62,6 +62,12 @@ namespace Remotely_Library.Win32_Classes
             WHEEL = 0x0800,
             XDOWN = 0x0080,
             XUP = 0x0100
+        }
+        public enum MonitorState
+        {
+            MonitorStateOn = -1,
+            MonitorStateOff = 2,
+            MonitorStateStandBy = 1
         }
         [Flags]
         public enum KEYEVENTF : uint
@@ -1126,7 +1132,7 @@ namespace Remotely_Library.Win32_Classes
 
         [DllImport("user32.dll")]
         public static extern bool EnumDesktopsA(IntPtr hwinsta, EnumDesktopsDelegate lpEnumFunc, IntPtr lParam);
-        
+
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr OpenInputDesktop(uint dwFlags, bool fInherit, ACCESS_MASK dwDesiredAccess);
 
@@ -1237,6 +1243,9 @@ namespace Remotely_Library.Win32_Classes
 
         [DllImport("user32.dll")]
         public static extern short VkKeyScan(char ch);
+
+        [DllImport("user32.dll")]
+        public static extern int SendMessage(int hWnd, int hMsg, int wParam, int lParam);
 
         #endregion
     }

@@ -1,7 +1,5 @@
 ﻿using Remotely_Agent.Services;
 using Remotely_Library.Services;
-using Remotely_Library.Win32;
-using Remotely_Library.Win32_Classes;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

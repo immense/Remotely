@@ -1,12 +1,12 @@
-﻿using Remotely_Library.Win32_Classes;
+﻿using Remotely_Library.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using static Remotely_Library.Win32_Classes.ADVAPI32;
-using static Remotely_Library.Win32_Classes.User32;
+using static Remotely_Library.Win32.ADVAPI32;
+using static Remotely_Library.Win32.User32;
 
 namespace Remotely_Library.Win32
 {
@@ -65,14 +65,14 @@ namespace Remotely_Library.Win32
             // user input. To remedy this we set the lpDesktop parameter to indicate we want to enable user 
             // interaction with the new process.
             STARTUPINFO si = new STARTUPINFO();
-            si.cb = (int)Marshal.SizeOf(si);
+            si.cb = Marshal.SizeOf(si);
             si.lpDesktop = @"winsta0\" + desktopName;
 
             // Flags that specify the priority and creation method of the process.
             uint dwCreationFlags;
             if (hiddenWindow)
             {
-                dwCreationFlags = NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW;
+                dwCreationFlags = NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW | DETACHED_PROCESS;
             }
             else
             {
@@ -120,81 +120,6 @@ namespace Remotely_Library.Win32
         {
             return User32.OpenInputDesktop(0, false, ACCESS_MASK.GENERIC_ALL);
         }
-        public static void SendLeftMouseDown(int x, int y)
-        {
-            mouse_event(MOUSEEVENTF_LEFTDOWN, (uint)x, (uint)y, 0, GetMessageExtraInfo());
-        }
-        public static void SendLeftMouseUp(int x, int y)
-        {
-            mouse_event(MOUSEEVENTF_LEFTUP, (uint)x, (uint)y, 0, GetMessageExtraInfo());
-        }
-        public static void SendRightMouseDown(int x, int y)
-        {
-            mouse_event(MOUSEEVENTF_RIGHTDOWN, (uint)x, (uint)y, 0, GetMessageExtraInfo());
-        }
-        public static void SendRightMouseUp(int x, int y)
-        {
-            mouse_event(MOUSEEVENTF_RIGHTUP, (uint)x, (uint)y, 0, GetMessageExtraInfo());
-        }
-
-        // Offsets are used in case there's a multi-monitor setup where the left-most or top-most edge of the virtual screen
-        // is not 0.  The coordinates sent from the web viewer are always zero-based, so the offset must be applied.
-        public static uint SendMouseMove(double x, double y)
-        {
-            // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
-            var normalizedX = x * (double)65535;
-            var normalizedY = y * (double)65535;
-            var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.MOVE | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = (UIntPtr)GetMessageExtraInfo() } };
-            var input = new INPUT() { type = InputType.MOUSE, U = union };
-            return SendInput(1, new INPUT[] { input }, INPUT.Size);
-        }
-
-        public static uint SendMouseWheel(int deltaY)
-        {
-            if (deltaY < 0)
-            {
-                deltaY = -120;
-            }
-            else if (deltaY > 0)
-            {
-                deltaY = 120;
-            }
-            var union = new User32.InputUnion() { mi = new User32.MOUSEINPUT() { dwFlags = MOUSEEVENTF.WHEEL, dx = 0, dy = 0, time = 0, mouseData = deltaY, dwExtraInfo = GetMessageExtraInfo() } };
-            var input = new User32.INPUT() { type = InputType.MOUSE, U = union };
-            return SendInput(1, new User32.INPUT[] { input }, INPUT.Size);
-        }
-
-        public static void SendKeyDown(VirtualKey key)
-        {
-            var union = new InputUnion()
-            {
-                ki = new KEYBDINPUT()
-                {
-                    wVk = key,
-                    wScan = 0,
-                    time = 0,
-                    dwExtraInfo = GetMessageExtraInfo()
-                }
-            };
-            var input = new INPUT() { type = InputType.KEYBOARD, U = union };
-            SendInput(1, new INPUT[] { input }, INPUT.Size);
-        }
-        public static void SendKeyUp(VirtualKey key)
-        {
-            var union = new InputUnion()
-            {
-                ki = new KEYBDINPUT()
-                {
-                    wVk = key,
-                    wScan = 0,
-                    time = 0,
-                    dwFlags = KEYEVENTF.KEYUP,
-                    dwExtraInfo = GetMessageExtraInfo()
-                }
-            };
-            var input = new INPUT() { type = InputType.KEYBOARD, U = union };
-            SendInput(1, new INPUT[] { input }, INPUT.Size);
-        }
         public static string GetCurrentDesktop()
         {
             var inputDesktop = OpenInputDesktop();
@@ -203,33 +128,16 @@ namespace Remotely_Library.Win32
             var success = GetUserObjectInformationW(inputDesktop, UOI_NAME, deskBytes, 256, out lenNeeded);
             if (!success)
             {
-                return "default";
+                CloseDesktop(inputDesktop);
+                return "Default";
             }
-            string deskName;
-            deskName = Encoding.Unicode.GetString(deskBytes.Take((int)lenNeeded).ToArray()).Replace("\0", "");
+            var desktopName = Encoding.Unicode.GetString(deskBytes.Take((int)lenNeeded).ToArray()).Replace("\0", "");
             CloseDesktop(inputDesktop);
-            return deskName;
+            return desktopName;
         }
-       
-        // Remove trailing empty bytes in the buffer.
-        private static byte[] TrimBytes(byte[] bytes)
+        public static void SetMonitorState(MonitorState state)
         {
-            // Loop backwards through array until the first non-zero byte is found.
-            var firstZero = 0;
-            for (int i = bytes.Length - 1; i >= 0; i--)
-            {
-                if (bytes[i] != 0)
-                {
-                    firstZero = i + 1;
-                    break;
-                }
-            }
-            if (firstZero == 0)
-            {
-                throw new Exception("Byte array is empty.");
-            }
-            // Return non-empty bytes.
-            return bytes.Take(firstZero).ToArray();
+            User32.SendMessage(0xFFFF, 0x112, 0xF170, (int)state);
         }
     }
 }

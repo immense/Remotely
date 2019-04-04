@@ -1,5 +1,6 @@
 ﻿using Remotely_Desktop.Controls;
 using Remotely_Desktop.Services;
+using Remotely_Library.Models;
 using Remotely_ScreenCast.Core;
 using Remotely_ScreenCast.Core.Capture;
 using Remotely_ScreenCast.Core.Models;
@@ -150,11 +151,11 @@ namespace Remotely_Desktop.ViewModels
                 await Conductor?.OutgoingMessages?.SendCursorChange(cursor, Conductor.Viewers.Keys.ToList());
             }
         }
-        private void ScreenCastRequested(object sender, Tuple<string, string> viewerAndRequester)
+        private void ScreenCastRequested(object sender, ScreenCastRequest screenCastRequest)
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                var result = MessageBox.Show($"You've received a connection request from {viewerAndRequester.Item2}.  Accept?", "Connection Request", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                var result = MessageBox.Show($"You've received a connection request from {screenCastRequest.RequesterName}.  Accept?", "Connection Request", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
                     Task.Run(async() =>
@@ -177,8 +178,8 @@ namespace Remotely_Desktop.ViewModels
                             Logger.Write(ex);
                             capturer = new BitBltCapture();
                         }
-                        await Conductor.OutgoingMessages.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { viewerAndRequester.Item1 });
-                        ScreenCaster.BeginScreenCasting(viewerAndRequester.Item1, viewerAndRequester.Item2, capturer, Conductor);
+                        await Conductor.OutgoingMessages.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
+                        ScreenCaster.BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, capturer, Conductor);
                     });
                 }
             });

@@ -5,7 +5,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
-using Win32;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;

@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace Remotely_Library.Win32_Classes
+namespace Remotely_Library.Win32
 {
     public static class ADVAPI32
     {

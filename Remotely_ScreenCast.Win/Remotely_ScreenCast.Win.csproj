@@ -157,13 +157,6 @@
     <Compile Include="Input\WinInput.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Win32\ADVAPI32.cs" />
-    <Compile Include="Win32\GDI32.cs" />
-    <Compile Include="Win32\Kernel32.cs" />
-    <Compile Include="Win32\SECUR32.cs" />
-    <Compile Include="Win32\User32.cs" />
-    <Compile Include="Win32\Win32Interop.cs" />
-    <Compile Include="Win32\WTSAPI32.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -173,6 +166,10 @@
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Remotely_Library\Remotely_Library.csproj">
+      <Project>{a9e1ba7a-6080-4dac-9b29-6dc8437150ea}</Project>
+      <Name>Remotely_Library</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Remotely_ScreenCast.Core\Remotely_ScreenCast.Core.csproj">
       <Project>{b04a1728-2e87-491e-bc7f-f575a1754def}</Project>
       <Name>Remotely_ScreenCast.Core</Name>

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
+using Remotely_Library.Models;
 using Remotely_ScreenCast.Core.Enums;
 using Remotely_ScreenCast.Core.Input;
 using Remotely_ScreenCast.Core.Models;
@@ -16,9 +17,9 @@ namespace Remotely_ScreenCast.Core
 {
     public class Conductor
     {
-        public event EventHandler<Tuple<string, string>> ScreenCastInitiated;
+        public event EventHandler<ScreenCastRequest> ScreenCastInitiated;
 
-        public event EventHandler<Tuple<string, string>> ScreenCastRequested;
+        public event EventHandler<ScreenCastRequest> ScreenCastRequested;
 
         public event EventHandler<string> SessionIDChanged;
 
@@ -98,14 +99,19 @@ namespace Remotely_ScreenCast.Core
             timer.Start();
         }
 
-        internal void InvokeScreenCastInitiated(Tuple<string, string> viewerIdAndRequesterName)
+        internal void InvokeScreenCastInitiated(ScreenCastRequest viewerIdAndRequesterName)
         {
             ScreenCastInitiated?.Invoke(null, viewerIdAndRequesterName);
         }
-        internal void InvokeScreenCastRequested(Tuple<string, string> viewerIdAndRequesterName)
+        internal void InvokeScreenCastRequested(ScreenCastRequest viewerIdAndRequesterName)
         {
             ScreenCastRequested?.Invoke(null, viewerIdAndRequesterName);
         }
+        internal void InvokeSessionIDChanged(string sessionID)
+        {
+            SessionIDChanged?.Invoke(null, sessionID);
+        }
+
         internal void InvokeViewerAdded(Viewer viewer)
         {
             ViewerAdded?.Invoke(null, viewer);
@@ -113,11 +119,6 @@ namespace Remotely_ScreenCast.Core
         internal void InvokeViewerRemoved(string viewerID)
         {
             ViewerRemoved?.Invoke(null, viewerID);
-        }
-
-        internal void InvokeSessionIDChanged(string sessionID)
-        {
-            SessionIDChanged?.Invoke(null, sessionID);
         }
     }
 }
