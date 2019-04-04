@@ -16,23 +16,25 @@ namespace Remotely_ScreenCast.Core
 {
     public class Conductor
     {
+        public event EventHandler<Tuple<string, string>> ScreenCastInitiated;
+
+        public event EventHandler<Tuple<string, string>> ScreenCastRequested;
+
+        public event EventHandler<string> SessionIDChanged;
+
+        public event EventHandler<Viewer> ViewerAdded;
+
+        public event EventHandler<string> ViewerRemoved;
+
+        public Dictionary<string, string> ArgDict { get; set; }
+        public HubConnection Connection { get; private set; }
+        public string CurrentDesktopName { get; set; }
+        public string Host { get; private set; }
         public AppMode Mode { get; private set; }
+        public OutgoingMessages OutgoingMessages { get; private set; }
         public string RequesterID { get; private set; }
         public string ServiceID { get; private set; }
-        public string Host { get; private set; }
-        public HubConnection Connection { get; private set; }
-        public OutgoingMessages OutgoingMessages { get; private set; }
-        public string CurrentDesktopName { get; set; }
         public ConcurrentDictionary<string, Viewer> Viewers { get; } = new ConcurrentDictionary<string, Viewer>();
-        public Dictionary<string, string> ArgDict { get; set; }
-
-        public void SetMessageHandlers(IKeyboardMouseInput keyboardMouse)
-        {
-            OutgoingMessages = new OutgoingMessages(Connection);
-
-            MessageHandlers.ApplyConnectionHandlers(Connection, this, keyboardMouse);
-        }
-
         public Task Connect()
         {
             Connection = new HubConnectionBuilder()
@@ -41,22 +43,6 @@ namespace Remotely_ScreenCast.Core
                 .Build();
 
             return Connection.StartAsync();
-        }
-
-        public void StartWaitForViewerTimer()
-        {
-            var timer = new System.Timers.Timer(10000);
-            timer.AutoReset = false;
-            timer.Elapsed += (sender, arg) =>
-            {
-                // Shut down if no viewers have connected within 10 seconds.
-                if (Viewers.Count == 0)
-                {
-                    Logger.Write("No viewers connected after 10 seconds.  Shutting down.");
-                    Environment.Exit(0);
-                }
-            };
-            timer.Start();
         }
 
         public void ProcessArgs(string[] args)
@@ -87,12 +73,51 @@ namespace Remotely_ScreenCast.Core
                 CurrentDesktopName = ArgDict["desktop"];
                 ServiceID = ArgDict["serviceid"];
             }
-
         }
-        public EventHandler<string> SessionIDChanged { get; set; }
-        public EventHandler<string> ViewerRemoved { get; set; }
-        public EventHandler<Viewer> ViewerAdded { get; set; }
-        public EventHandler<Tuple<string, string>> ScreenCastRequested { get; set; }
-        public EventHandler<Tuple<string, string>> ScreenCastInitiated { get; set; }
+
+        public void SetMessageHandlers(IKeyboardMouseInput keyboardMouse)
+        {
+            OutgoingMessages = new OutgoingMessages(Connection);
+
+            MessageHandlers.ApplyConnectionHandlers(Connection, this, keyboardMouse);
+        }
+
+        public void StartWaitForViewerTimer()
+        {
+            var timer = new System.Timers.Timer(10000);
+            timer.AutoReset = false;
+            timer.Elapsed += (sender, arg) =>
+            {
+                // Shut down if no viewers have connected within 10 seconds.
+                if (Viewers.Count == 0)
+                {
+                    Logger.Write("No viewers connected after 10 seconds.  Shutting down.");
+                    Environment.Exit(0);
+                }
+            };
+            timer.Start();
+        }
+
+        internal void InvokeScreenCastInitiated(Tuple<string, string> viewerIdAndRequesterName)
+        {
+            ScreenCastInitiated?.Invoke(null, viewerIdAndRequesterName);
+        }
+        internal void InvokeScreenCastRequested(Tuple<string, string> viewerIdAndRequesterName)
+        {
+            ScreenCastRequested?.Invoke(null, viewerIdAndRequesterName);
+        }
+        internal void InvokeViewerAdded(Viewer viewer)
+        {
+            ViewerAdded?.Invoke(null, viewer);
+        }
+        internal void InvokeViewerRemoved(string viewerID)
+        {
+            ViewerRemoved?.Invoke(null, viewerID);
+        }
+
+        internal void InvokeSessionIDChanged(string sessionID)
+        {
+            SessionIDChanged?.Invoke(null, sessionID);
+        }
     }
 }

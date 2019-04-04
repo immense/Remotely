@@ -30,7 +30,7 @@ namespace Remotely_ScreenCast.Core.Sockets
             {
                 try
                 {
-                    conductor.ScreenCastInitiated?.Invoke(null, new Tuple<string, string>(viewerID, requesterName));
+                    conductor.InvokeScreenCastInitiated(new Tuple<string, string>(viewerID, requesterName));
                 }
                 catch (Exception ex)
                 {
@@ -40,7 +40,7 @@ namespace Remotely_ScreenCast.Core.Sockets
 
             hubConnection.On("RequestScreenCast", (string viewerID, string requesterName) =>
             {
-                conductor.ScreenCastRequested?.Invoke(null, new Tuple<string, string>(viewerID, requesterName));
+                conductor.InvokeScreenCastRequested(new Tuple<string, string>(viewerID, requesterName));
             });
 
             hubConnection.On("KeyDown", (string key, string viewerID) =>
@@ -125,7 +125,7 @@ namespace Remotely_ScreenCast.Core.Sockets
                     viewer.DisconnectRequested = true;
                 }
                 await hubConnection.InvokeAsync("ViewerDisconnected", viewerID);
-                conductor.ViewerRemoved?.Invoke(null, viewerID);
+                conductor.InvokeViewerRemoved(viewerID);
 
             });
             hubConnection.On("LatencyUpdate", (double latency, string viewerID) =>
@@ -218,7 +218,7 @@ namespace Remotely_ScreenCast.Core.Sockets
 
             hubConnection.On("SessionID", (string sessionID) =>
             {
-                conductor.SessionIDChanged?.Invoke(null, sessionID);
+                conductor.InvokeSessionIDChanged(sessionID);
             });
         }
     }
