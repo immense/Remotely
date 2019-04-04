@@ -13,7 +13,7 @@ namespace Remotely_ScreenCast.Core.Capture
         Bitmap CurrentFrame { get; set; }
         Rectangle CurrentScreenBounds { get; }
         Bitmap PreviousFrame { get; set; }
-        EventHandler<Rectangle> ScreenChanged { get; set; }
+        event EventHandler<Rectangle> ScreenChanged;
         int SelectedScreen { get; }
         void SetSelectedScreen(int screenNumber);
         int GetScreenCount();

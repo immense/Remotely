@@ -22,7 +22,7 @@ namespace Remotely_ScreenCast.Linux.Capture
         public Rectangle CurrentScreenBounds { get; private set; }
         public IntPtr Display { get; private set; }
         public Bitmap PreviousFrame { get; set; }
-        public EventHandler<Rectangle> ScreenChanged { get; set; }
+        public event EventHandler<Rectangle> ScreenChanged;
         public int SelectedScreen { get; private set; } = -1;
         private Graphics Graphic { get; set; }
         public void Capture()

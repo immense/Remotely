@@ -42,7 +42,7 @@ namespace Remotely_ScreenCast.Core.Capture
 
             if (conductor.Mode == Enums.AppMode.Normal)
             {
-                conductor.ViewerAdded?.Invoke(null, viewer);
+                conductor.InvokeViewerAdded(viewer);
             }
 
             await conductor.OutgoingMessages.SendScreenCount(

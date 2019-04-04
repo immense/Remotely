@@ -31,7 +31,7 @@ namespace Remotely_ScreenCast.Win.Capture
         public Rectangle CurrentScreenBounds { get; private set; }
         public bool NeedsInit { get; set; } = true;
         public Bitmap PreviousFrame { get; set; }
-        public EventHandler<Rectangle> ScreenChanged { get; set; }
+        public event EventHandler<Rectangle> ScreenChanged;
         public int SelectedScreen { get; private set; } = 0;
 
         public void Capture()
