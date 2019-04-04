@@ -14,7 +14,7 @@ namespace Remotely_Library.Models
     public class Device
     {
         public string CurrentUser { get; set; }
-        public virtual ICollection<Drive> Drives { get; set; }
+        public List<Drive> Drives { get; set; }
 
         public double FreeMemory { get; set; }
 

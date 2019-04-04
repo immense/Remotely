@@ -102,8 +102,7 @@ namespace Remotely_Server
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(options =>
                 {
                     options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
-                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-                    options.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.None;
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
 
             services.AddSignalR(options =>
@@ -113,7 +112,7 @@ namespace Remotely_Server
                 .AddJsonProtocol(options =>
                 {
                     options.PayloadSerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
-                    options.PayloadSerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                    options.PayloadSerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 })
                 .AddMessagePackProtocol();
 
@@ -205,11 +204,10 @@ namespace Remotely_Server
 
         private void ConfigureStaticFiles(IApplicationBuilder app)
         {
-            Newtonsoft.Json.JsonConvert.DefaultSettings = () =>
+            JsonConvert.DefaultSettings = () =>
             {
-                var settings = new Newtonsoft.Json.JsonSerializerSettings();
-                settings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-                settings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.None;
+                var settings = new JsonSerializerSettings();
+                settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 return settings;
             };
             var provider = new FileExtensionContentTypeProvider();

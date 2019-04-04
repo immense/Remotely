@@ -18,8 +18,6 @@ namespace Remotely_Server.Data
 
         public DbSet<CommandContext> CommandContexts { get; set; }
 
-        public DbSet<Drive> Drives { get; set; }
-
         public DbSet<Device> Devices { get; set; }
 
         public DbSet<Organization> Organizations { get; set; }
@@ -88,7 +86,10 @@ namespace Remotely_Server.Data
                .HasOne(x => x.Organization);
 
             builder.Entity<Device>()
-                .HasMany(x => x.Drives);
+                .Property(x => x.Drives)
+                .HasConversion(
+                    x => JsonConvert.SerializeObject(x),
+                    x => JsonConvert.DeserializeObject<List<Drive>>(x));
 
 
             builder.Entity<UserPermissionLink>()
