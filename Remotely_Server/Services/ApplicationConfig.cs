@@ -31,6 +31,7 @@ namespace Remotely_Server.Services
         public string SmtpEmail => Config["ApplicationOptions:SmtpEmail"];
         public string SmtpDisplayName => Config["ApplicationOptions:SmtpDisplayName"];
 
+
         private IConfiguration Config { get; set; }
     }
 }

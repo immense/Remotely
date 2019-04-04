@@ -72,16 +72,116 @@ Ideally, you'd be doing remote control from an actual computer or laptop.  Howev
 
 ## Configuration
 The following settings are available in appsettings.json.
-	* DefaultPrompt: The default prompt string you'll see for each line on the console.
-	* DBProvider: Determines which of the three connection strings (at the top) will be used.  The appropriate DB provider for the database type is automatically loaded in code.
-	* AllowSelfRegistration: Enable/disable the ability for people to create accounts.
-	* RecordRemoteControlSessions: Whether or not to record remote control sessions.
-	* RedirectToHTTPS: Whether ASP.NET Core will redirect all traffic from HTTP to HTTPS.  This is independent of Nginx and IIS configurations that do the same.
-	* UseHSTS: Whether ASP.NET Core will use HTTP Strict Transport Security.
-	* DataRetentionInDays: How long event logs and remote command logs will be kept.
-	* RemoteControlSessionLimit: How many concurrent remote control sessions are allowed per organization.
-	* AllowApiLogin: Whether to allow logging in via the API.
-	* Smpt*: SMTP settings for auto-generated system emails (such as registration and password reset).
+* DefaultPrompt: The default prompt string you'll see for each line on the console.
+
+* DBProvider: Determines which of the three connection strings (at the top) will be used.  The appropriate DB provider for the database type is automatically loaded in code.
+* AllowSelfRegistration: Enable/disable the ability for people to create accounts.
+* RecordRemoteControlSessions: Whether or not to record remote control sessions.
+* RedirectToHTTPS: Whether ASP.NET Core will redirect all traffic from HTTP to HTTPS.  This is independent of Nginx and IIS configurations that do the same.
+* UseHSTS: Whether ASP.NET Core will use HTTP Strict Transport Security.
+* DataRetentionInDays: How long event logs and remote command logs will be kept.
+* RemoteControlSessionLimit: How many concurrent remote control sessions are allowed per organization.
+* AllowApiLogin: Whether to allow logging in via the API (see below).
+* TrustedCorsOrigins: For cross-origin API requests via JavaScript.  The websites listed in this array with be allowed to make requests to the API.  This does not grant authentication, which is still required on most endpoints.
+* Smpt*: SMTP settings for auto-generated system emails (such as registration and password reset).
+
+## API and Integrations
+Remotely has a basic API, which can be browsed at https://tryremotely.lucency.co/swagger (or your own server instance).  Most endpoints require authentication via the /api/Login, which in turn requires the AllowApiLogin option to be set to true in appsettings.json.  If you're not familiar with how CORS works, I recommend reading up on it before proceeding.
+
+Once AllowApiLogin is set to true, you'll be able to use the API with languages such as C# and PowerShell.  For JavaScript clients to work, you'll also need to add the website's origin to the TrustedCorsOrigins array.  For example, if I wanted to create a login form on https://lucency.co that logged into the Remotely API, I'd need to add "https://lucency.co" to the TrustedCorsOrigins.
+
+Below are examples of how to use the API for starting a remote control session.
+
+**JavaScript Client**  
+
+	// Log in with one request, then launch remote control with another.
+	fetch("https://localhost:44351/api/Login/", {
+		method: "post",
+		credentials: "include",
+		mode: "cors",
+		body: '{"Email":"email@example.com", "Password":"P@ssword1"}',
+		headers: {
+			"Content-Type": "application/json",
+		}
+	}).then(response=>{
+		if (response.ok) {
+			fetch("https://localhost:44351/api/RemoteControl/Maker", {
+				method: "get",
+				credentials: "include",
+				mode: "cors"
+			}).then(response=>{
+				if (response.ok) {
+					response.text().then(url=>{
+						window.open(url);
+					})
+				}
+			})
+		}
+	})
+
+	// Log in and launch remote control in the same request.
+	fetch("https://localhost:44351/api/RemoteControl/", {
+		method: "post",
+		credentials: "include",
+		mode: "cors",
+		body: '{"Email":"email@example.com", "Password":"P@ssword1", "DeviceName":"Maker"}',
+		headers: {
+			"Content-Type": "application/json",
+		}
+	}).then(response=>{
+		if (response.ok) {
+			response.text().then(url=>{
+				window.open(url);
+			})
+		}
+	})
+
+**C# Client**
+
+	private static async Task StartRemoteControl()
+	{
+		var client = new System.Net.Http.HttpClient();
+		client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+		var stringContent = new System.Net.Http.StringContent(
+			@"{
+				'Email': 'email@example.com',
+				'Password': 'P@ssword1'
+			}",
+			System.Text.Encoding.UTF8,
+			"application/json");
+
+
+		var response = await client.PostAsync("https://localhost:44351/api/Login", stringContent);
+		if (response.IsSuccessStatusCode)
+		{
+			response = await client.GetAsync("https://localhost:44351/api/RemoteControl/Maker");
+			if (response.IsSuccessStatusCode)
+			{
+				var remoteControlURL = await response.Content.ReadAsStringAsync();
+				System.Diagnostics.Process.Start(remoteControlURL);
+			}
+		}
+	}
+
+**PowerShell Client**
+
+	$WebSession = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+	 
+	$Response = Invoke-WebRequest -Uri "https://localhost:44351/api/Login" -WebSession $WebSession -Method Post -Body "
+	{
+		'Email': 'email@example.com',
+		'Password': 'P@ssword1'
+	}
+	" -ContentType "application/json"
+
+
+	if ($Response.StatusCode -eq 200) {
+		$Response = Invoke-WebRequest -Uri "https://localhost:44351/api/RemoteControl/Maker" -WebSession $WebSession -Method Get -ContentType "application/json"
+		if ($Response.StatusCode -eq 200) {
+			Start-Process -FilePath $Response.Content
+		}
+	}
 
 ## .NET Core Deployments
 * .NET Core has two methods of deployment: framework-dependent and self-contained.

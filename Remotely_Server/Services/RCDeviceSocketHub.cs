@@ -15,7 +15,9 @@ namespace Remotely_Server.Services
     public class RCDeviceSocketHub : Hub
     {
         public static ConcurrentDictionary<string, string> AttendedSessionList { get; set; } = new ConcurrentDictionary<string, string>();
-        
+
+        public static ConcurrentDictionary<string, string> MachineNameToSessionIDLookup { get; set; } = new ConcurrentDictionary<string, string>();
+
         public RCDeviceSocketHub(DataService dataService, 
             IHubContext<BrowserSocketHub> browserHub, 
             IHubContext<RCBrowserSocketHub> rcBrowserHub, 
@@ -145,12 +147,21 @@ namespace Remotely_Server.Services
                     await DeviceHub.Clients.Client(ServiceID).SendAsync("RestartScreenCaster", ViewerList, ServiceID, Context.ConnectionId);                    
                 }
             }
+
+            if (!string.IsNullOrWhiteSpace(MachineName) && MachineNameToSessionIDLookup.ContainsKey(MachineName))
+            {
+                while (!MachineNameToSessionIDLookup.TryRemove(MachineName, out _))
+                {
+                    await Task.Delay(1000);
+                }
+            }
             await base.OnDisconnectedAsync(exception);
         }
         public void ReceiveDeviceInfo(string serviceID, string machineName)
         {
             ServiceID = serviceID;
             MachineName = machineName;
+            MachineNameToSessionIDLookup[MachineName] = Context.ConnectionId;
         }
         public void ViewerDisconnected(string viewerID)
         {

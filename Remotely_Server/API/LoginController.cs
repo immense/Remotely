@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Remotely_Library.Models;
 using Remotely_Server.Data;
 using Remotely_Server.Models;
@@ -30,7 +30,6 @@ namespace Remotely_Server.API
         public ApplicationConfig AppConfig { get; }
 
         [HttpPost]
-        [EnableCors("AnyOriginPolicy")]
         public async Task<IActionResult> Post([FromBody]ApiLogin login)
         {
             if (!AppConfig.AllowApiLogin)
