@@ -12,6 +12,7 @@ using System.IO;
 using System.Diagnostics;
 using Remotely_ScreenCast.Core.Models;
 using Remotely_ScreenCast.Core.Input;
+using Remotely_Library.Models;
 
 namespace Remotely_ScreenCast.Core.Sockets
 {
@@ -30,7 +31,7 @@ namespace Remotely_ScreenCast.Core.Sockets
             {
                 try
                 {
-                    conductor.InvokeScreenCastInitiated(new Tuple<string, string>(viewerID, requesterName));
+                    conductor.InvokeScreenCastInitiated(new ScreenCastRequest() { ViewerID = viewerID, RequesterName = requesterName });
                 }
                 catch (Exception ex)
                 {
@@ -40,7 +41,7 @@ namespace Remotely_ScreenCast.Core.Sockets
 
             hubConnection.On("RequestScreenCast", (string viewerID, string requesterName) =>
             {
-                conductor.InvokeScreenCastRequested(new Tuple<string, string>(viewerID, requesterName));
+                conductor.InvokeScreenCastRequested(new ScreenCastRequest() { ViewerID = viewerID, RequesterName = requesterName });
             });
 
             hubConnection.On("KeyDown", (string key, string viewerID) =>

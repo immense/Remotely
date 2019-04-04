@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
+using Remotely_Library.Models;
 using Remotely_ScreenCast.Core;
 using Remotely_ScreenCast.Core.Capture;
 using Remotely_ScreenCast.Core.Enums;
@@ -19,7 +20,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Win32;
+using Remotely_Library.Win32;
 
 namespace Remotely_ScreenCast.Win
 {
@@ -69,7 +70,7 @@ namespace Remotely_ScreenCast.Win
             }
         }
 
-        private static async void ScreenCastInitiated(object sender, Tuple<string, string> viewerAndRequester)
+        private static async void ScreenCastInitiated(object sender, ScreenCastRequest screenCastRequest)
         {
             ICapturer capturer;
             try
@@ -89,8 +90,8 @@ namespace Remotely_ScreenCast.Win
                 Logger.Write(ex);
                 capturer = new BitBltCapture();
             }
-            await Conductor.OutgoingMessages.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { viewerAndRequester.Item1 });
-            ScreenCaster.BeginScreenCasting(viewerAndRequester.Item1, viewerAndRequester.Item2, capturer, Conductor);
+            await Conductor.OutgoingMessages.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
+            ScreenCaster.BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, capturer, Conductor);
         }
 
         public static async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)

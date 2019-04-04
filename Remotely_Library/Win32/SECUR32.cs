@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using Microsoft.Win32.SafeHandles;
 using System.Runtime.ConstrainedExecution;
-using Remotely_Library.Win32_Classes;
+using Remotely_Library.Win32;
 
 public static class SECUR32
 {

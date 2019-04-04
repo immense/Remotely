@@ -134,6 +134,10 @@
     <Resource Include="favicon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Remotely_Library\Remotely_Library.csproj">
+      <Project>{a9e1ba7a-6080-4dac-9b29-6dc8437150ea}</Project>
+      <Name>Remotely_Library</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Remotely_ScreenCast.Core\Remotely_ScreenCast.Core.csproj">
       <Project>{b04a1728-2e87-491e-bc7f-f575a1754def}</Project>
       <Name>Remotely_ScreenCast.Core</Name>

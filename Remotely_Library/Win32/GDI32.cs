@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Win32
+namespace Remotely_Library.Win32
 {
     public static class GDI32
     {

@@ -35,7 +35,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotely_Desktop", "Remotel
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remotely_ScreenCast.Linux", "Remotely_ScreenCast.Linux\Remotely_ScreenCast.Linux.csproj", "{E46F11D0-3C88-4D43-8CCC-EE7182CAD5C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotely_ScreenCast.Core", "Remotely_ScreenCast.Core\Remotely_ScreenCast.Core.csproj", "{B04A1728-2E87-491E-BC7F-F575A1754DEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remotely_ScreenCast.Core", "Remotely_ScreenCast.Core\Remotely_ScreenCast.Core.csproj", "{B04A1728-2E87-491E-BC7F-F575A1754DEF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

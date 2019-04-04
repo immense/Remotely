@@ -23,7 +23,7 @@ namespace Remotely_Server.Services
         public bool RedirectToHTTPS => bool.Parse(Config["ApplicationOptions:RedirectToHTTPS"]);
         public bool AllowApiLogin => bool.Parse(Config["ApplicationOptions:AllowApiLogin"]);
         public bool UseHSTS => bool.Parse(Config["ApplicationOptions:RedirectToHTTPS"]);
-
+        public string[] TrustedCorsOrigins => Config.GetSection("ApplicationOptions:TrustedCorsOrigins").Get<string[]>();
         public string SmtpHost => Config["ApplicationOptions:SmtpHost"];
         public int SmtpPort => int.Parse(Config["ApplicationOptions:SmtpPort"]);
         public string SmtpUserName => Config["ApplicationOptions:SmtpUserName"];

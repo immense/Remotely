@@ -1,7 +1,5 @@
 ﻿using Remotely_Library.Models;
 using Remotely_Library.Services;
-using Remotely_Library.Win32;
-using Remotely_Library.Win32_Classes;
 using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
 using System;
@@ -14,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Reflection;
+using Remotely_Library.Win32;
 
 namespace Remotely_Agent.Services
 {

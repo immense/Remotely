@@ -10,7 +10,6 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using Win32;
 
 namespace Remotely_ScreenCast.Win.Capture
 {

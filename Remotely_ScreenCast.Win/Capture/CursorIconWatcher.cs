@@ -11,7 +11,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
-using Win32;
+using Remotely_Library.Win32;
+using Remotely_Library.Models;
 
 namespace Remotely_ScreenCast.Win.Capture
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Remotely_Library.Win32_Classes
+namespace Remotely_Library.Win32
 {
     public static class Kernel32
     {
