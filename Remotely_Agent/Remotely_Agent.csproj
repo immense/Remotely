@@ -35,6 +35,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Remotely_Library\Remotely_Library.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="System">
       <HintPath>System</HintPath>
     </Reference>
@@ -59,10 +63,6 @@
     <None Update="Build.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Remotely_Library\Remotely_Library.csproj" />
   </ItemGroup>
 
 </Project>
