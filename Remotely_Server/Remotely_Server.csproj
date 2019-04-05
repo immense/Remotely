@@ -1661,6 +1661,13 @@
   </ItemGroup>
 
 
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\Remotely_Library\Remotely_Library.csproj" />
+  </ItemGroup>
+
+
   <ItemGroup>
     <TypeScriptCompile Include="wwwroot\lib\types\jquery\index.d.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\CommandCompletion.ts" />
@@ -1704,11 +1711,6 @@
     <Content Update="wwwroot\scripts\Commands\WinPSCommands.js">
       <DependentUpon>WinPSCommands.ts</DependentUpon>
     </Content>
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <ProjectReference Include="..\Remotely_Library\Remotely_Library.csproj" />
   </ItemGroup>
 
 
