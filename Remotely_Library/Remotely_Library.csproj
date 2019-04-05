@@ -38,7 +38,7 @@
       <LastGenOutput>DevicePermissionLink.d.ts</LastGenOutput>
     </Compile>
     <Compile Update="Models\RemotelyUserOptions.cs">
-      <LastGenOutput>DoXMUserOptions.cs.d.ts</LastGenOutput>
+      <LastGenOutput>RemotelyUserOptions.d.ts</LastGenOutput>
       <Generator>DtsGenerator</Generator>
     </Compile>
     <Compile Update="Models\GenericCommandResult.cs">
@@ -70,6 +70,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>DevicePermissionLink.cs</DependentUpon>
+    </None>
+    <None Update="Models\RemotelyUserOptions.d.ts">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>RemotelyUserOptions.cs</DependentUpon>
     </None>
   </ItemGroup>
 

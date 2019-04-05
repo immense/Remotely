@@ -4,6 +4,35 @@
   <xs:element name="Weavers">
     <xs:complexType>
       <xs:all>
+        <xs:element name="PropertyChanged" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:attribute name="InjectOnPropertyNameChanged" type="xs:boolean">
+              <xs:annotation>
+                <xs:documentation>Used to control if the On_PropertyName_Changed feature is enabled.</xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="EventInvokerNames" type="xs:string">
+              <xs:annotation>
+                <xs:documentation>Used to change the name of the method that fires the notify event. This is a string that accepts multiple values in a comma separated form.</xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="CheckForEquality" type="xs:boolean">
+              <xs:annotation>
+                <xs:documentation>Used to control if equality checks should be inserted. If false, equality checking will be disabled for the project.</xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="CheckForEqualityUsingBaseEquals" type="xs:boolean">
+              <xs:annotation>
+                <xs:documentation>Used to control if equality checks should use the Equals method resolved from the base class.</xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="UseStaticEqualsFromBase" type="xs:boolean">
+              <xs:annotation>
+                <xs:documentation>Used to control if equality checks should use the static Equals method resolved from the base class.</xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
         <xs:element name="Costura" minOccurs="0" maxOccurs="1">
           <xs:complexType>
             <xs:all>
@@ -86,35 +115,6 @@
             <xs:attribute name="PreloadOrder" type="xs:string">
               <xs:annotation>
                 <xs:documentation>The order of preloaded assemblies, delimited with |.</xs:documentation>
-              </xs:annotation>
-            </xs:attribute>
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="PropertyChanged" minOccurs="0" maxOccurs="1">
-          <xs:complexType>
-            <xs:attribute name="InjectOnPropertyNameChanged" type="xs:boolean">
-              <xs:annotation>
-                <xs:documentation>Used to control if the On_PropertyName_Changed feature is enabled.</xs:documentation>
-              </xs:annotation>
-            </xs:attribute>
-            <xs:attribute name="EventInvokerNames" type="xs:string">
-              <xs:annotation>
-                <xs:documentation>Used to change the name of the method that fires the notify event. This is a string that accepts multiple values in a comma separated form.</xs:documentation>
-              </xs:annotation>
-            </xs:attribute>
-            <xs:attribute name="CheckForEquality" type="xs:boolean">
-              <xs:annotation>
-                <xs:documentation>Used to control if equality checks should be inserted. If false, equality checking will be disabled for the project.</xs:documentation>
-              </xs:annotation>
-            </xs:attribute>
-            <xs:attribute name="CheckForEqualityUsingBaseEquals" type="xs:boolean">
-              <xs:annotation>
-                <xs:documentation>Used to control if equality checks should use the Equals method resolved from the base class.</xs:documentation>
-              </xs:annotation>
-            </xs:attribute>
-            <xs:attribute name="UseStaticEqualsFromBase" type="xs:boolean">
-              <xs:annotation>
-                <xs:documentation>Used to control if equality checks should use the static Equals method resolved from the base class.</xs:documentation>
               </xs:annotation>
             </xs:attribute>
           </xs:complexType>

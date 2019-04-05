@@ -690,7 +690,7 @@ namespace Remotely_Server.Data
             RemotelyContext.SaveChanges();
         }
 
-        internal void UpdateUserOptions(string userName, Remotely_Library.Models.RemotelyUserOptions options)
+        internal void UpdateUserOptions(string userName, RemotelyUserOptions options)
         {
             RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName).UserOptions = options;
             RemotelyContext.SaveChanges();

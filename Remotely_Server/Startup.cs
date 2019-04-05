@@ -195,7 +195,14 @@ namespace Remotely_Server
             });
             app.UseCors("TrustedOriginPolicy");
             app.UseMvcWithDefaultRoute();
-            context.Database.Migrate();
+            try
+            {
+                context.Database.Migrate();
+            }
+            catch (Exception ex)
+            {
+                dataService.WriteEvent(ex);
+            }
             dataService.SetAllDevicesNotOnline();
             dataService.CleanupEmptyOrganizations();
             dataService.CleanupOldRecords();

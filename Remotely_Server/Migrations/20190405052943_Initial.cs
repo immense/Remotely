@@ -34,23 +34,6 @@ namespace Remotely_Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RemotelyUserOptions",
-                columns: table => new
-                {
-                    ID = table.Column<string>(nullable: false),
-                    ConsolePrompt = table.Column<string>(maxLength: 5, nullable: true),
-                    CommandModeShortcutWeb = table.Column<string>(maxLength: 10, nullable: true),
-                    CommandModeShortcutPSCore = table.Column<string>(maxLength: 10, nullable: true),
-                    CommandModeShortcutWinPS = table.Column<string>(maxLength: 10, nullable: true),
-                    CommandModeShortcutCMD = table.Column<string>(maxLength: 10, nullable: true),
-                    CommandModeShortcutBash = table.Column<string>(maxLength: 10, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RemotelyUserOptions", x => x.ID);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -103,6 +86,7 @@ namespace Remotely_Server.Migrations
                 {
                     ID = table.Column<string>(nullable: false),
                     CurrentUser = table.Column<string>(nullable: true),
+                    Drives = table.Column<string>(nullable: true),
                     FreeMemory = table.Column<double>(nullable: false),
                     FreeStorage = table.Column<double>(nullable: false),
                     Is64Bit = table.Column<bool>(nullable: false),
@@ -194,28 +178,6 @@ namespace Remotely_Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SharedFiles",
-                columns: table => new
-                {
-                    ID = table.Column<string>(nullable: false),
-                    FileName = table.Column<string>(nullable: true),
-                    ContentType = table.Column<string>(nullable: true),
-                    FileContents = table.Column<byte[]>(nullable: true),
-                    Timestamp = table.Column<DateTime>(nullable: false),
-                    OrganizationID = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SharedFiles", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_SharedFiles_Organizations_OrganizationID",
-                        column: x => x.OrganizationID,
-                        principalTable: "Organizations",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "RemotelyUsers",
                 columns: table => new
                 {
@@ -235,7 +197,7 @@ namespace Remotely_Server.Migrations
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
                     Discriminator = table.Column<string>(nullable: false),
-                    UserOptionsID = table.Column<string>(nullable: true),
+                    UserOptions = table.Column<string>(nullable: true),
                     OrganizationID = table.Column<string>(nullable: true),
                     IsAdministrator = table.Column<bool>(nullable: true)
                 },
@@ -248,35 +210,26 @@ namespace Remotely_Server.Migrations
                         principalTable: "Organizations",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_RemotelyUsers_RemotelyUserOptions_UserOptionsID",
-                        column: x => x.UserOptionsID,
-                        principalTable: "RemotelyUserOptions",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Drives",
+                name: "SharedFiles",
                 columns: table => new
                 {
                     ID = table.Column<string>(nullable: false),
-                    DriveType = table.Column<int>(nullable: false),
-                    RootDirectory = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(nullable: true),
-                    DriveFormat = table.Column<string>(nullable: true),
-                    FreeSpace = table.Column<double>(nullable: false),
-                    TotalSize = table.Column<double>(nullable: false),
-                    VolumeLabel = table.Column<string>(nullable: true),
-                    DeviceID = table.Column<string>(nullable: true)
+                    FileName = table.Column<string>(nullable: true),
+                    ContentType = table.Column<string>(nullable: true),
+                    FileContents = table.Column<byte[]>(nullable: true),
+                    Timestamp = table.Column<DateTime>(nullable: false),
+                    OrganizationID = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Drives", x => x.ID);
+                    table.PrimaryKey("PK_SharedFiles", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Drives_Devices_DeviceID",
-                        column: x => x.DeviceID,
-                        principalTable: "Devices",
+                        name: "FK_SharedFiles_Organizations_OrganizationID",
+                        column: x => x.OrganizationID,
+                        principalTable: "Organizations",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -456,11 +409,6 @@ namespace Remotely_Server.Migrations
                 column: "OrganizationID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Drives_DeviceID",
-                table: "Drives",
-                column: "DeviceID");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_EventLogs_OrganizationID",
                 table: "EventLogs",
                 column: "OrganizationID");
@@ -490,11 +438,6 @@ namespace Remotely_Server.Migrations
                 name: "IX_RemotelyUsers_OrganizationID",
                 table: "RemotelyUsers",
                 column: "OrganizationID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RemotelyUsers_UserOptionsID",
-                table: "RemotelyUsers",
-                column: "UserOptionsID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SharedFiles_OrganizationID",
@@ -531,9 +474,6 @@ namespace Remotely_Server.Migrations
                 name: "DevicePermissionLinks");
 
             migrationBuilder.DropTable(
-                name: "Drives");
-
-            migrationBuilder.DropTable(
                 name: "EventLogs");
 
             migrationBuilder.DropTable(
@@ -559,9 +499,6 @@ namespace Remotely_Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "Organizations");
-
-            migrationBuilder.DropTable(
-                name: "RemotelyUserOptions");
         }
     }
 }

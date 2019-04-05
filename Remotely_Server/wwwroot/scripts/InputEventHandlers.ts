@@ -24,10 +24,10 @@ export function ApplyInputEventHandlers() {
 function arrowUpOrDownOnTextArea(e: KeyboardEvent) {
     if (e.ctrlKey) {
         if (e.key.toLowerCase() == "arrowdown") {
-            UI.ConsoleOutputDiv.parentElement.scrollTop += 30;
+            UI.TabContentWrapper.scrollTop += 30;
         }
         else if (e.key.toLowerCase() == "arrowup") {
-            UI.ConsoleOutputDiv.parentElement.scrollTop -= 30;
+            UI.TabContentWrapper.scrollTop -= 30;
         }
     }
     else {
@@ -109,6 +109,11 @@ function keyDownOnInputTextArea() {
                     if (UI.ConsoleTextArea.value.length == 0 && !UI.CommandCompletionDiv.classList.contains("hidden")) {
                         UI.CommandCompletionDiv.classList.add("hidden");
                         UI.CommandInfoDiv.classList.add("hidden");
+                    }
+                    break;
+                case "q":
+                    if (e.ctrlKey) {
+                        UI.ConsoleOutputDiv.innerHTML = "";
                     }
                     break;
                 default:

@@ -34,6 +34,26 @@ namespace Remotely_Server.Areas.Identity.Pages.Account.Manage
             {
                 return Page();
             }
+            if (!options.CommandModeShortcutBash.StartsWith("/"))
+            {
+                options.CommandModeShortcutBash = "/" + options.CommandModeShortcutBash;
+            }
+            if (!options.CommandModeShortcutCMD.StartsWith("/"))
+            {
+                options.CommandModeShortcutCMD = "/" + options.CommandModeShortcutCMD;
+            }
+            if (!options.CommandModeShortcutPSCore.StartsWith("/"))
+            {
+                options.CommandModeShortcutPSCore = "/" + options.CommandModeShortcutPSCore;
+            }
+            if (!options.CommandModeShortcutWeb.StartsWith("/"))
+            {
+                options.CommandModeShortcutWeb = "/" + options.CommandModeShortcutWeb;
+            }
+            if (!options.CommandModeShortcutWinPS.StartsWith("/"))
+            {
+                options.CommandModeShortcutWinPS = "/" + options.CommandModeShortcutWinPS;
+            }
             DataService.UpdateUserOptions(User.Identity.Name, options);
             Message = "Saved successfully.";
             return RedirectToPage();

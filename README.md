@@ -70,6 +70,14 @@ Ideally, you'd be doing remote control from an actual computer or laptop.  Howev
 * Click-and-drag: Tap and hold with one finger, tap and release a second finger (without pinch-zooming)
 	* The click-and-drag operation will begin where finger one is held.
 
+## Shortcut Keys
+There are a few shortcut keys available when using the console.
+* / : Slash will open the autocomplete for selecting the current command mode.  The names are configurable in the Account - Options page.
+* Up/Down: Use arrow up/down to cycle through input history.
+* Ctrl + Up/Down: Scroll the console output window.
+* Ctrl + Q: Clear the output window.
+* Esc: Close the autocomplete window.
+
 ## Configuration
 The following settings are available in appsettings.json.
 * DefaultPrompt: The default prompt string you'll see for each line on the console.
