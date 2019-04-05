@@ -9,8 +9,8 @@ using Remotely_Server.Data;
 namespace Remotely_Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190404021415_DrivesValuesConversion")]
-    partial class DrivesValuesConversion
+    [Migration("20190405052943_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -348,34 +348,6 @@ namespace Remotely_Server.Migrations
                     b.ToTable("PermissionGroups");
                 });
 
-            modelBuilder.Entity("Remotely_Library.Models.RemotelyUserOptions", b =>
-                {
-                    b.Property<string>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("CommandModeShortcutBash")
-                        .HasMaxLength(10);
-
-                    b.Property<string>("CommandModeShortcutCMD")
-                        .HasMaxLength(10);
-
-                    b.Property<string>("CommandModeShortcutPSCore")
-                        .HasMaxLength(10);
-
-                    b.Property<string>("CommandModeShortcutWeb")
-                        .HasMaxLength(10);
-
-                    b.Property<string>("CommandModeShortcutWinPS")
-                        .HasMaxLength(10);
-
-                    b.Property<string>("ConsolePrompt")
-                        .HasMaxLength(5);
-
-                    b.HasKey("ID");
-
-                    b.ToTable("RemotelyUserOptions");
-                });
-
             modelBuilder.Entity("Remotely_Library.Models.SharedFile", b =>
                 {
                     b.Property<string>("ID")
@@ -419,11 +391,9 @@ namespace Remotely_Server.Migrations
 
                     b.Property<string>("OrganizationID");
 
-                    b.Property<string>("UserOptionsID");
+                    b.Property<string>("UserOptions");
 
                     b.HasIndex("OrganizationID");
-
-                    b.HasIndex("UserOptionsID");
 
                     b.ToTable("RemotelyUsers");
 
@@ -548,10 +518,6 @@ namespace Remotely_Server.Migrations
                     b.HasOne("Remotely_Library.Models.Organization", "Organization")
                         .WithMany("RemotelyUsers")
                         .HasForeignKey("OrganizationID");
-
-                    b.HasOne("Remotely_Library.Models.RemotelyUserOptions", "UserOptions")
-                        .WithMany()
-                        .HasForeignKey("UserOptionsID");
                 });
 #pragma warning restore 612, 618
         }

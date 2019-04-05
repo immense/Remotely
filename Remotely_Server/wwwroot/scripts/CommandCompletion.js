@@ -71,11 +71,11 @@ export function DisplayParameterCompletions(command, parameters, commandText) {
 }
 export function DisplayCommandShortcuts(shortcutText) {
     UI.CommandCompletionDiv.classList.remove("hidden");
-    var matchingShortcuts = Object.keys(UserSettings.CommandModeShortcuts).filter(x => x.toLowerCase().startsWith(shortcutText.toLowerCase()));
+    var matchingShortcuts = Object.keys(UserSettings.CommandModeShortcuts).filter(x => UserSettings.CommandModeShortcuts[x].slice(1).toLowerCase().startsWith(shortcutText.toLowerCase()));
     matchingShortcuts.forEach(x => {
         var commandCompletionItem = document.createElement("div");
         commandCompletionItem.classList.add("command-completion-item");
-        commandCompletionItem.innerHTML = x;
+        commandCompletionItem.innerHTML = UserSettings.CommandModeShortcuts[x].slice(1);
         commandCompletionItem.onclick = function () {
             UI.CommandModeSelect.value = x;
             UI.ConsoleTextArea.value = "";

@@ -14,7 +14,7 @@ namespace Remotely_Library.Models
             UserOptions = new RemotelyUserOptions();
             Organization = new Organization();
         }
-        public virtual RemotelyUserOptions UserOptions { get; set; }
+        public RemotelyUserOptions UserOptions { get; set; }
 
         public virtual Organization Organization { get; set; }
         public string OrganizationID { get; set; }

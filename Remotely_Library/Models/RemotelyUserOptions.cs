@@ -6,8 +6,6 @@ namespace Remotely_Library.Models
 {
     public class RemotelyUserOptions
     {
-        [Key]
-        public string ID { get; set; } = Guid.NewGuid().ToString();
         [Display(Name ="Console Prompt")]
         [StringLength(5)]
         public string ConsolePrompt { get; set; } = "~>";

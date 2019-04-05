@@ -6,28 +6,30 @@ using Remotely_Server.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Remotely_Library.Models;
 
 namespace Remotely_Server.Pages
 {
     public class IndexModel : PageModel
     {
-        private DataService DB { get; }
-        public IndexModel(DataService db)
+        private DataService DataService { get; }
+        public IndexModel(DataService dataService)
         {
-            DB = db;
+            DataService = dataService;
         }
 
         public string DefaultPrompt { get; set; }
+
         public void OnGet()
         {
             if (User?.Identity?.IsAuthenticated == true)
             {
-                DefaultPrompt = DB.GetDefaultPrompt(User.Identity.Name);
+                DefaultPrompt = DataService.GetDefaultPrompt(User.Identity.Name);
 
             }
             else
             {
-                DefaultPrompt = DB.GetDefaultPrompt();
+                DefaultPrompt = DataService.GetDefaultPrompt();
             }
         }
     }
