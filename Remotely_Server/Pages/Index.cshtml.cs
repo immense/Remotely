@@ -6,7 +6,7 @@ using Remotely_Server.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Remotely_Library.Models;
+using Remotely_Shared.Models;
 
 namespace Remotely_Server.Pages
 {

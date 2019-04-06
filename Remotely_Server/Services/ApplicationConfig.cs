@@ -1,4 +1,4 @@
-﻿using Remotely_Library.Models;
+﻿using Remotely_Shared.Models;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;

@@ -103,13 +103,6 @@
   </ItemGroup>
 
 
-
-
-  <ItemGroup>
-    <ProjectReference Include="..\Remotely_Library\Remotely_Library.csproj" />
-  </ItemGroup>
-
-
   <ItemGroup>
     <TypeScriptCompile Include="wwwroot\lib\types\jquery\index.d.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\CommandCompletion.ts" />
@@ -175,6 +168,11 @@
 
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\Remotely_Shared\Remotely_Shared.csproj" />
   </ItemGroup>
 
 </Project>

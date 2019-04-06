@@ -1,0 +1,85 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="Models\PSCoreCommandResult.d.ts">
+      <DependentUpon>PSCoreCommandResult.cs</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Management.Infrastructure" Version="1.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Models\CommandContext.cs">
+      <LastGenOutput>CommandContext.d.ts</LastGenOutput>
+      <Generator>DtsGenerator</Generator>
+    </Compile>
+    <Compile Update="Models\CursorInfo.cs">
+      <LastGenOutput>CursorInfo.d.ts</LastGenOutput>
+      <Generator>DtsGenerator</Generator>
+    </Compile>
+    <Compile Update="Models\Device.cs">
+      <LastGenOutput>Device.d.ts</LastGenOutput>
+      <Generator>DtsGenerator</Generator>
+    </Compile>
+    <Compile Update="Models\DevicePermissionLink.cs">
+      <LastGenOutput>DevicePermissionLink.d.ts</LastGenOutput>
+      <Generator>DtsGenerator</Generator>
+    </Compile>
+    <Compile Update="Models\GenericCommandResult.cs">
+      <LastGenOutput>GenericCommandResult.d.ts</LastGenOutput>
+      <Generator>DtsGenerator</Generator>
+    </Compile>
+    <Compile Update="Models\PSCoreCommandResult.cs">
+      <LastGenOutput>PSCoreCommandResult.d.ts</LastGenOutput>
+      <Generator>DtsGenerator</Generator>
+    </Compile>
+    <Compile Update="Models\RemotelyUserOptions.cs">
+      <LastGenOutput>RemotelyUserOptions.d.ts</LastGenOutput>
+      <Generator>DtsGenerator</Generator>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Models\CommandContext.d.ts">
+      <DependentUpon>CommandContext.cs</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </None>
+    <None Update="Models\CursorInfo.d.ts">
+      <DependentUpon>CursorInfo.cs</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </None>
+    <None Update="Models\Device.d.ts">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Device.cs</DependentUpon>
+    </None>
+    <None Update="Models\DevicePermissionLink.d.ts">
+      <DependentUpon>DevicePermissionLink.cs</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </None>
+    <None Update="Models\GenericCommandResult.d.ts">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>GenericCommandResult.cs</DependentUpon>
+    </None>
+    <None Update="Models\RemotelyUserOptions.d.ts">
+      <DependentUpon>RemotelyUserOptions.cs</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </None>
+  </ItemGroup>
+
+</Project>

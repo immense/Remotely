@@ -1,4 +1,4 @@
-﻿using Remotely_Library.Models;
+﻿using Remotely_Shared.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

@@ -1,4 +1,4 @@
-﻿using Remotely_Library.Services;
+﻿using Remotely_Shared.Services;
 using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Diagnostics;

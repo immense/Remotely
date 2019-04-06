@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using System.Drawing;
-using Remotely_Library.Models;
+using Remotely_Shared.Models;
 
 namespace Remotely_Server.Services
 {

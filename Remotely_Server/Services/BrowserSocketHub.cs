@@ -1,4 +1,4 @@
-﻿using Remotely_Library.Models;
+﻿using Remotely_Shared.Models;
 using Remotely_Server.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

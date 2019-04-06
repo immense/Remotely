@@ -182,7 +182,7 @@ namespace Remotely_Server.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Remotely_Library.Models.CommandContext", b =>
+            modelBuilder.Entity("Remotely_Shared.Models.CommandContext", b =>
                 {
                     b.Property<string>("ID")
                         .ValueGeneratedOnAdd();
@@ -212,7 +212,7 @@ namespace Remotely_Server.Migrations
                     b.ToTable("CommandContexts");
                 });
 
-            modelBuilder.Entity("Remotely_Library.Models.Device", b =>
+            modelBuilder.Entity("Remotely_Shared.Models.Device", b =>
                 {
                     b.Property<string>("ID")
                         .ValueGeneratedOnAdd();
@@ -259,7 +259,7 @@ namespace Remotely_Server.Migrations
                     b.ToTable("Devices");
                 });
 
-            modelBuilder.Entity("Remotely_Library.Models.DevicePermissionLink", b =>
+            modelBuilder.Entity("Remotely_Shared.Models.DevicePermissionLink", b =>
                 {
                     b.Property<string>("PermissionGroupID");
 
@@ -272,7 +272,7 @@ namespace Remotely_Server.Migrations
                     b.ToTable("DevicePermissionLinks");
                 });
 
-            modelBuilder.Entity("Remotely_Library.Models.EventLog", b =>
+            modelBuilder.Entity("Remotely_Shared.Models.EventLog", b =>
                 {
                     b.Property<string>("ID")
                         .ValueGeneratedOnAdd();
@@ -296,7 +296,7 @@ namespace Remotely_Server.Migrations
                     b.ToTable("EventLogs");
                 });
 
-            modelBuilder.Entity("Remotely_Library.Models.InviteLink", b =>
+            modelBuilder.Entity("Remotely_Shared.Models.InviteLink", b =>
                 {
                     b.Property<string>("ID")
                         .ValueGeneratedOnAdd();
@@ -316,7 +316,7 @@ namespace Remotely_Server.Migrations
                     b.ToTable("InviteLinks");
                 });
 
-            modelBuilder.Entity("Remotely_Library.Models.Organization", b =>
+            modelBuilder.Entity("Remotely_Shared.Models.Organization", b =>
                 {
                     b.Property<string>("ID")
                         .ValueGeneratedOnAdd();
@@ -329,7 +329,7 @@ namespace Remotely_Server.Migrations
                     b.ToTable("Organizations");
                 });
 
-            modelBuilder.Entity("Remotely_Library.Models.PermissionGroup", b =>
+            modelBuilder.Entity("Remotely_Shared.Models.PermissionGroup", b =>
                 {
                     b.Property<string>("ID")
                         .ValueGeneratedOnAdd();
@@ -346,7 +346,7 @@ namespace Remotely_Server.Migrations
                     b.ToTable("PermissionGroups");
                 });
 
-            modelBuilder.Entity("Remotely_Library.Models.SharedFile", b =>
+            modelBuilder.Entity("Remotely_Shared.Models.SharedFile", b =>
                 {
                     b.Property<string>("ID")
                         .ValueGeneratedOnAdd();
@@ -368,7 +368,7 @@ namespace Remotely_Server.Migrations
                     b.ToTable("SharedFiles");
                 });
 
-            modelBuilder.Entity("Remotely_Library.Models.UserPermissionLink", b =>
+            modelBuilder.Entity("Remotely_Shared.Models.UserPermissionLink", b =>
                 {
                     b.Property<string>("PermissionGroupID");
 
@@ -381,7 +381,7 @@ namespace Remotely_Server.Migrations
                     b.ToTable("UserPermissionLinks");
                 });
 
-            modelBuilder.Entity("Remotely_Library.Models.RemotelyUser", b =>
+            modelBuilder.Entity("Remotely_Shared.Models.RemotelyUser", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
@@ -443,77 +443,77 @@ namespace Remotely_Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Remotely_Library.Models.CommandContext", b =>
+            modelBuilder.Entity("Remotely_Shared.Models.CommandContext", b =>
                 {
-                    b.HasOne("Remotely_Library.Models.Organization", "Organization")
+                    b.HasOne("Remotely_Shared.Models.Organization", "Organization")
                         .WithMany("CommandContexts")
                         .HasForeignKey("OrganizationID");
                 });
 
-            modelBuilder.Entity("Remotely_Library.Models.Device", b =>
+            modelBuilder.Entity("Remotely_Shared.Models.Device", b =>
                 {
-                    b.HasOne("Remotely_Library.Models.Organization", "Organization")
+                    b.HasOne("Remotely_Shared.Models.Organization", "Organization")
                         .WithMany("Devices")
                         .HasForeignKey("OrganizationID");
                 });
 
-            modelBuilder.Entity("Remotely_Library.Models.DevicePermissionLink", b =>
+            modelBuilder.Entity("Remotely_Shared.Models.DevicePermissionLink", b =>
                 {
-                    b.HasOne("Remotely_Library.Models.Device", "Device")
+                    b.HasOne("Remotely_Shared.Models.Device", "Device")
                         .WithMany("DevicePermissionLinks")
                         .HasForeignKey("DeviceID")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Remotely_Library.Models.PermissionGroup", "PermissionGroup")
+                    b.HasOne("Remotely_Shared.Models.PermissionGroup", "PermissionGroup")
                         .WithMany("DevicePermissionLinks")
                         .HasForeignKey("PermissionGroupID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Remotely_Library.Models.EventLog", b =>
+            modelBuilder.Entity("Remotely_Shared.Models.EventLog", b =>
                 {
-                    b.HasOne("Remotely_Library.Models.Organization", "Organization")
+                    b.HasOne("Remotely_Shared.Models.Organization", "Organization")
                         .WithMany("EventLogs")
                         .HasForeignKey("OrganizationID");
                 });
 
-            modelBuilder.Entity("Remotely_Library.Models.InviteLink", b =>
+            modelBuilder.Entity("Remotely_Shared.Models.InviteLink", b =>
                 {
-                    b.HasOne("Remotely_Library.Models.Organization", "Organization")
+                    b.HasOne("Remotely_Shared.Models.Organization", "Organization")
                         .WithMany("InviteLinks")
                         .HasForeignKey("OrganizationID");
                 });
 
-            modelBuilder.Entity("Remotely_Library.Models.PermissionGroup", b =>
+            modelBuilder.Entity("Remotely_Shared.Models.PermissionGroup", b =>
                 {
-                    b.HasOne("Remotely_Library.Models.Organization", "Organization")
+                    b.HasOne("Remotely_Shared.Models.Organization", "Organization")
                         .WithMany("PermissionGroups")
                         .HasForeignKey("OrganizationID");
                 });
 
-            modelBuilder.Entity("Remotely_Library.Models.SharedFile", b =>
+            modelBuilder.Entity("Remotely_Shared.Models.SharedFile", b =>
                 {
-                    b.HasOne("Remotely_Library.Models.Organization", "Organization")
+                    b.HasOne("Remotely_Shared.Models.Organization", "Organization")
                         .WithMany("SharedFiles")
                         .HasForeignKey("OrganizationID");
                 });
 
-            modelBuilder.Entity("Remotely_Library.Models.UserPermissionLink", b =>
+            modelBuilder.Entity("Remotely_Shared.Models.UserPermissionLink", b =>
                 {
-                    b.HasOne("Remotely_Library.Models.PermissionGroup", "PermissionGroup")
+                    b.HasOne("Remotely_Shared.Models.PermissionGroup", "PermissionGroup")
                         .WithMany("UserPermissionLinks")
                         .HasForeignKey("PermissionGroupID")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Remotely_Library.Models.RemotelyUser", "RemotelyUser")
+                    b.HasOne("Remotely_Shared.Models.RemotelyUser", "RemotelyUser")
                         .WithMany("UserPermissionLinks")
                         .HasForeignKey("RemotelyUserID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Remotely_Library.Models.RemotelyUser", b =>
+            modelBuilder.Entity("Remotely_Shared.Models.RemotelyUser", b =>
                 {
-                    b.HasOne("Remotely_Library.Models.Organization", "Organization")
+                    b.HasOne("Remotely_Shared.Models.Organization", "Organization")
                         .WithMany("RemotelyUsers")
                         .HasForeignKey("OrganizationID");
                 });

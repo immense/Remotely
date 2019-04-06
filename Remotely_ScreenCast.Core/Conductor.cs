@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
-using Remotely_Library.Models;
+using Remotely_Shared.Models;
 using Remotely_ScreenCast.Core.Enums;
 using Remotely_ScreenCast.Core.Input;
 using Remotely_ScreenCast.Core.Models;

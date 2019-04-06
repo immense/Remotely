@@ -36,9 +36,9 @@ namespace Remotely_Server.Pages
                     var error = feature.Error;
                     while (error != null)
                     {
-                        var logEntry = new Remotely_Library.Models.EventLog()
+                        var logEntry = new Remotely_Shared.Models.EventLog()
                         {
-                            EventType = Remotely_Library.Models.EventTypes.Error,
+                            EventType = Remotely_Shared.Models.EventTypes.Error,
                             Message = error.Message,
                             Source = error.Source,
                             StackTrace = error.StackTrace,
