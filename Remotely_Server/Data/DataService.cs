@@ -295,19 +295,14 @@ namespace Remotely_Server.Data
 
         public void WriteEvent(Exception ex)
         {
-            var error = ex;
-            while (error != null)
+            RemotelyContext.EventLogs.Add(new EventLog()
             {
-                RemotelyContext.EventLogs.Add(new EventLog()
-                {
-                    EventType = EventTypes.Error,
-                    Message = error.Message,
-                    Source = error.Source,
-                    StackTrace = error.StackTrace,
-                    TimeStamp = DateTime.Now
-                });
-                error = ex.InnerException;
-            }
+                EventType = EventTypes.Error,
+                Message = ex.Message,
+                Source = ex.Source,
+                StackTrace = ex.StackTrace,
+                TimeStamp = DateTime.Now
+            });
             RemotelyContext.SaveChanges();
         }
 
