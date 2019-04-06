@@ -1,4 +1,4 @@
-﻿using Remotely_Library.Services;
+﻿using Remotely_Shared.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

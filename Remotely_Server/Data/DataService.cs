@@ -1,5 +1,5 @@
-﻿using Remotely_Library.Models;
-using Remotely_Library.ViewModels;
+﻿using Remotely_Shared.Models;
+using Remotely_Shared.ViewModels;
 using Remotely_Server.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;

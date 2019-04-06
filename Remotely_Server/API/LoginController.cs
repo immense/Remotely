@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
-using Remotely_Library.Models;
+using Remotely_Shared.Models;
 using Remotely_Server.Data;
 using Remotely_Server.Models;
 using Remotely_Server.Services;

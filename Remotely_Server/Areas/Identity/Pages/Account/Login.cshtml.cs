@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Remotely_Server.Data;
-using Remotely_Library.Models;
+using Remotely_Shared.Models;
 
 namespace Remotely_Server.Areas.Identity.Pages.Account
 {

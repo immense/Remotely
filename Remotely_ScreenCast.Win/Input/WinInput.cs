@@ -1,8 +1,8 @@
 ﻿using Remotely_ScreenCast.Core.Input;
 using Remotely_ScreenCast.Core.Models;
 using System;
-using Remotely_Library.Win32;
-using static Remotely_Library.Win32.User32;
+using Remotely_Shared.Win32;
+using static Remotely_Shared.Win32.User32;
 
 namespace Remotely_ScreenCast.Win.Input
 {

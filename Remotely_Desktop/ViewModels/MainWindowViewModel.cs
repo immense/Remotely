@@ -1,6 +1,6 @@
 ﻿using Remotely_Desktop.Controls;
 using Remotely_Desktop.Services;
-using Remotely_Library.Models;
+using Remotely_Shared.Models;
 using Remotely_ScreenCast.Core;
 using Remotely_ScreenCast.Core.Capture;
 using Remotely_ScreenCast.Core.Models;

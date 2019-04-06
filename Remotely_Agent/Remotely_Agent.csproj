@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Remotely_Library\Remotely_Library.csproj" />
+    <ProjectReference Include="..\Remotely_Shared\Remotely_Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

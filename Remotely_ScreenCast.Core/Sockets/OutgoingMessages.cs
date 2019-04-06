@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
-using Remotely_Library.Models;
+using Remotely_Shared.Models;
 using Remotely_ScreenCast.Core.Models;
 using System;
 using System.Collections.Concurrent;

@@ -12,7 +12,7 @@ using System.IO;
 using System.Diagnostics;
 using Remotely_ScreenCast.Core.Models;
 using Remotely_ScreenCast.Core.Input;
-using Remotely_Library.Models;
+using Remotely_Shared.Models;
 
 namespace Remotely_ScreenCast.Core.Sockets
 {
