@@ -25,7 +25,6 @@ namespace Remotely_ScreenCast.Linux.Input
             try
             {
                 key = ConvertJavaScriptKeyToX11Key(key);
-                Logger.Write($"Converting key {key}");
                 var keySim = LibX11.XStringToKeysym(key);
                 if (keySim == null)
                 {
