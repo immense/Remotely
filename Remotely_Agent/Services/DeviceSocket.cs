@@ -74,7 +74,7 @@ namespace Remotely_Agent.Services
             if (!IsServerVerified)
             {
                 Logger.Write($"Command attempted before server was verified.  Mode: {mode}.  Command: {command}.  Sender: {senderConnectionID}");
-                Uninstaller.UninstallClient();
+                Uninstaller.UninstallAgent();
                 return;
             }
             try
@@ -229,7 +229,7 @@ namespace Remotely_Agent.Services
             });
             hubConnection.On("UninstallClient", () =>
             {
-                Uninstaller.UninstallClient();
+                Uninstaller.UninstallAgent();
             });
           
             hubConnection.On("RemoteControl", async (string requesterID, string serviceID) =>
@@ -237,7 +237,7 @@ namespace Remotely_Agent.Services
                 if (!IsServerVerified)
                 {
                     Logger.Write("Remote control attempted before server was verified.");
-                    Uninstaller.UninstallClient();
+                    Uninstaller.UninstallAgent();
                     return;
                 }
                 try
@@ -288,7 +288,7 @@ namespace Remotely_Agent.Services
                 if (!IsServerVerified)
                 {
                     Logger.Write("Remote control attempted before server was verified.");
-                    Uninstaller.UninstallClient();
+                    Uninstaller.UninstallAgent();
                     return;
                 }
                 try
@@ -347,7 +347,7 @@ namespace Remotely_Agent.Services
                 else
                 {
                     Logger.Write($"Server sent an incorrect verification token.  Token Sent: {verificationToken}.");
-                    Uninstaller.UninstallClient();
+                    Uninstaller.UninstallAgent();
                     return;
                 }
             });           

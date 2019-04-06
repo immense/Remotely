@@ -11,41 +11,25 @@ namespace Remotely_Agent.Services
 {
     public class Uninstaller
     {
-        public static void UninstallClient()
+        public static void UninstallAgent()
         {
             if (OSUtils.IsWindows)
             {
                 Process.Start("cmd.exe", "/c sc delete Remotely_Service");
-                var tempFilePath = Path.Combine(Path.GetTempPath(), Path.GetTempFileName()) + ".ps1";
+                var deleteTime = DateTime.Now.AddMinutes(2).ToString("HH:mm");
                 var currentDir = AppDomain.CurrentDomain.BaseDirectory;
-                var ps = PowerShell.Create();
-                ps.AddScript($@"
-                            $Success = $false;
-                            $Count = 0;
-                            while ((Test-Path ""{currentDir}"") -eq $true -and $Count -lt 10) {{
-                                try {{
-                                    Get-Process -Name Agent | Stop-Process -Force; 
-                                    Start-Sleep -Seconds 3;
-                                    Remove-Item ""{currentDir}"" -Force -Recurse;
-                                    $Count++;
-                                    continue;
-                                }}
-                                catch{{
-                                    continue;
-                                }}
-                            }}
-                        ");
-                ps.Invoke();
+                Process.Start("cmd.exe", $"/c timeout 5 & rd /s /q \"{currentDir}\"");
             }
             else if (OSUtils.IsLinux)
             {
                 var users = OSUtils.StartProcessWithResults("users", "");
                 var username = users?.Split()?.FirstOrDefault()?.Trim();
-                Process.Start("systemctl", "stop remotely-client").WaitForExit();
+                Process.Start("sudo", "systemctl stop remotely-agent").WaitForExit();
                 Directory.Delete("/usr/local/bin/Remotely", true);
-                File.Delete("/etc/systemd/system/remotely-client.service");
-                Process.Start("systemctl", "daemon-reload").WaitForExit();
+                File.Delete("/etc/systemd/system/remotely-agent.service");
+                Process.Start("sudo", "systemctl daemon-reload").WaitForExit();
             }
+            Environment.Exit(0);
         }
     }
 }
