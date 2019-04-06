@@ -52,7 +52,9 @@ else {
     }
 }
 
-Set-Location -Path (Get-Item -Path $PSScriptRoot).Parent.FullName
+$Root = (Get-Item -Path $PSScriptRoot).Parent.FullName
+
+Set-Location -Path $Root
 
 if ($ArgList.Contains("c")) {
     # Add Current Version file to root content folder for client update checks.
@@ -79,14 +81,14 @@ if ($ArgList.Contains("c")) {
 
     Pop-Location
 
+    New-Item -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish\ScreenCast\" -ItemType Directory -Force
+	New-Item -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish\ScreenCast\" -ItemType Directory -Force
+	New-Item -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\linux-x64\publish\ScreenCast\" -ItemType Directory -Force
+
 
     # Publish Linux ScreenCaster
-    dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64  --configuration Release --output ".\Remotely_Agent\bin\Release\netcoreapp2.2\linux-x64\publish\ScreenCast\" ".\Remotely_ScreenCast.Linux\"
+    dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64  --configuration Release --output "$Root\Remotely_Agent\bin\Release\netcoreapp2.2\linux-x64\publish\ScreenCast\" "$Root\Remotely_ScreenCast.Linux\"
 
-
-	New-Item -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish\ScreenCast\" -ItemType Directory -Force
-	New-Item -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish\ScreenCast\" -ItemType Directory -Force
-	#New-Item -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\linux-x64\publish\ScreenCast\" -ItemType Directory -Force
 
     # Copy .NET Framework ScreenCaster to Agent output folder.
     if ((Test-Path -Path ".\Remotely_ScreenCast.Win\bin\Release\Remotely_ScreenCast.exe") -eq $true) {
