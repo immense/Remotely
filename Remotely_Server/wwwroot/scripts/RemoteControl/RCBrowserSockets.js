@@ -78,6 +78,9 @@ export class RCBrowserSockets {
     SendSharedFileIDs(fileIDs) {
         this.Connection.invoke("SendSharedFileIDs", JSON.parse(fileIDs));
     }
+    SendQualityChange(qualityLevel) {
+        this.Connection.invoke("SendQualityChange", qualityLevel);
+    }
     ApplyMessageHandlers(hubConnection) {
         hubConnection.on("ScreenCount", (primaryScreenIndex, screenCount) => {
             document.querySelector("#screenSelectBar").innerHTML = "";

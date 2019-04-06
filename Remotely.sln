@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.28606.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remotely_Agent", "Remotely_Agent\Remotely_Agent.csproj", "{98A8DF30-0993-4B49-822E-244A70AB8C4D}"
-	ProjectSection(ProjectDependencies) = postProject
-		{2DCEA1F5-9B64-4EDB-9CD0-4D6675D96709} = {2DCEA1F5-9B64-4EDB-9CD0-4D6675D96709}
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{2CAC9A2B-1402-465F-83F8-958B4E081CA3}"
 	ProjectSection(SolutionItems) = preProject
@@ -30,6 +27,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remotely_Library", "Remotely_Library\Remotely_Library.csproj", "{A9E1BA7A-6080-4DAC-9B29-6DC8437150EA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotely_ScreenCast.Win", "Remotely_ScreenCast.Win\Remotely_ScreenCast.Win.csproj", "{2DCEA1F5-9B64-4EDB-9CD0-4D6675D96709}"
+	ProjectSection(ProjectDependencies) = postProject
+		{98A8DF30-0993-4B49-822E-244A70AB8C4D} = {98A8DF30-0993-4B49-822E-244A70AB8C4D}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotely_Desktop", "Remotely_Desktop\Remotely_Desktop.csproj", "{486A238C-387B-49C5-A361-B86ACDB2572A}"
 EndProject

@@ -18,7 +18,7 @@
     <meta name="description" content="Remote access tools designed to get things done quickly." />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link href="~/css/remote-control.css" rel="stylesheet" asp-append-version="true" />
-    <link href="~/css/fontawesome/css/all.min.css" rel="stylesheet" />
+    <link href="~/lib/fontawesome/css/all.min.css" rel="stylesheet" />
 
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
@@ -47,8 +47,7 @@
         </div>
         <div class="connection-bar-body">
             <button id="actionsButton" class="bar-button">Actions <i class="fas fa-bolt"></i></button>
-            <button id="changeScreenButton" class="bar-button">Monitors <i class="fas fa-desktop"></i></button>
-            <button id="fitToScreenButton" class="toggled bar-button">Fit <i class="fas fa-expand"></i></button>
+            <button id="viewButton" class="bar-button">View <i class="fas fa-eye"></i></button>
             <button id="disconnectButton" class="bar-button">Disconnect <i class="fas fa-window-close"></i></button>
         </div>
 
@@ -58,6 +57,11 @@
         <button id="keyboardButton" hidden="hidden" class="bar-button">Keyboard  <i class="fas fa-keyboard"></i></button>
         <button id="fileTransferButton" class="bar-button">File Transfer  <i class="fas fa-file-upload"></i></button>
         <button id="ctrlAltDelButton" class="bar-button">Ctrl+Alt+Del <i class="fas fa-sign-in-alt"></i></button>
+    </div>
+    <div id="viewBar" class="horizontal-button-bar">
+        <button id="changeScreenButton" class="bar-button">Monitors <i class="fas fa-desktop"></i></button>
+        <button id="fitToScreenButton" class="toggled bar-button">Fit <i class="fas fa-expand"></i></button>
+        <button id="qualityButton" class="bar-button">Quality <i class="far fa-image"></i></button>
     </div>
     <div id="connectBox">
         <h3>Connect to a client:</h3>
@@ -80,6 +84,13 @@
     </div>
     <div id="screenSelectBar" class="horizontal-button-bar">
 
+    </div>
+
+    <div id="qualityBar" class="horizontal-button-bar">
+        <div class="center-aligned" style="color:white; font-size:12px">
+            Image Quality
+        </div>
+        <input id="qualityRangeInput" value="50" max="100" class="form-control-range" type="range" />
     </div>
 
     <div class="center-aligned">

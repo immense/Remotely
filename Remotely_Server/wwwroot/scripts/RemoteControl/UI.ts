@@ -5,21 +5,36 @@ import { FloatMessage } from "../UI.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 import { Point } from "../Models/Point.js";
 
-export var SessionIDInput = document.querySelector("#sessionIDInput") as HTMLInputElement;
-export var ConnectButton = document.querySelector("#connectButton") as HTMLButtonElement;
-export var RequesterNameInput = document.querySelector("#nameInput") as HTMLInputElement;
-export var StatusMessage = document.querySelector("#statusMessage") as HTMLDivElement;
-export var ScreenViewer = document.querySelector("#screenViewer") as HTMLCanvasElement;
+export var MenuButton = document.getElementById("menuButton") as HTMLButtonElement;
+export var SessionIDInput = document.getElementById("sessionIDInput") as HTMLInputElement;
+export var ConnectButton = document.getElementById("connectButton") as HTMLButtonElement;
+export var RequesterNameInput = document.getElementById("nameInput") as HTMLInputElement;
+export var StatusMessage = document.getElementById("statusMessage") as HTMLDivElement;
+export var ScreenViewer = document.getElementById("screenViewer") as HTMLCanvasElement;
 export var Screen2DContext = ScreenViewer.getContext("2d");
 export var HorizontalBars = document.querySelectorAll(".horizontal-button-bar");
 export var ConnectBox = document.getElementById("connectBox") as HTMLDivElement;
-export var ScreenSelectBar = document.querySelector("#screenSelectBar") as HTMLDivElement;
+export var ScreenSelectBar = document.getElementById("screenSelectBar") as HTMLDivElement;
+export var QualityBar = document.getElementById("qualityBar") as HTMLDivElement;
 export var ConnectionBar = document.getElementById("connectionBar") as HTMLDivElement;
+export var QualitySlider = document.getElementById("qualityRangeInput") as HTMLInputElement;
 export var ActionsBar = document.getElementById("actionsBar") as HTMLDivElement;
+export var ViewBar = document.getElementById("viewBar") as HTMLDivElement;
+export var ActionsButton = document.getElementById("actionsButton") as HTMLButtonElement;
+export var ViewButton = document.getElementById("viewButton") as HTMLButtonElement;
+export var ChangeScreenButton = document.getElementById("changeScreenButton") as HTMLButtonElement;
+export var QualityButton = document.getElementById("qualityButton") as HTMLButtonElement;
+export var FitToScreenButton = document.getElementById("fitToScreenButton") as HTMLButtonElement;
+export var DisconnectButton = document.getElementById("disconnectButton") as HTMLButtonElement;
 export var OnScreenKeyboard = document.getElementById("osk") as HTMLDivElement;
 export var FileTransferInput = document.getElementById("fileTransferInput") as HTMLInputElement;
 export var FileTransferProgress = document.getElementById("fileTransferProgress") as HTMLProgressElement;
 export var KeyboardButton = document.getElementById("keyboardButton") as HTMLButtonElement;
+export var InviteButton = document.getElementById("inviteButton") as HTMLButtonElement;
+export var FileTransferButton = document.getElementById("fileTransferButton") as HTMLButtonElement;
+export var CtrlAltDelButton = document.getElementById("ctrlAltDelButton") as HTMLButtonElement;
+
+
 
 var lastPointerMove = Date.now();
 var isDragging: boolean;
@@ -31,29 +46,28 @@ var startPinchPoint1: Point;
 var startPinchPoint2: Point;
 
 export function ApplyInputHandlers(sockets: RCBrowserSockets) {
-    document.querySelector("#menuButton").addEventListener("click", (ev) => {
-        HorizontalBars.forEach(x => {
-            x.classList.remove('open');
-        })
+    MenuButton.addEventListener("click", (ev) => {
+        closeAllHorizontalBars(null);
         ConnectionBar.classList.toggle("open");
     })
-    document.querySelector("#actionsButton").addEventListener("click", (ev) => {
-        HorizontalBars.forEach(x => {
-            if (x.id != "actionsBar") {
-                x.classList.remove('open');
-            }
-        })
+    ActionsButton.addEventListener("click", (ev) => {
+        closeAllHorizontalBars("actionsBar");
         ActionsBar.classList.toggle("open");
     })
-    document.querySelector("#changeScreenButton").addEventListener("click", (ev) => {
-        HorizontalBars.forEach(x => {
-            if (x.id != "screenSelectBar") {
-                x.classList.remove('open');
-            }
-        })
+
+    ViewButton.addEventListener("click", (ev) => {
+        closeAllHorizontalBars("viewBar");
+        ViewBar.classList.toggle("open");
+    })
+    ChangeScreenButton.addEventListener("click", (ev) => {
+        closeAllHorizontalBars("screenSelectBar");
         ScreenSelectBar.classList.toggle("open");
     })
-    document.querySelector("#fitToScreenButton").addEventListener("click", (ev) => {
+    QualityButton.addEventListener("click", (ev) => {
+        closeAllHorizontalBars("qualityBar");
+        QualityBar.classList.toggle("open");
+    })
+    FitToScreenButton.addEventListener("click", (ev) => {
         var button = ev.currentTarget as HTMLButtonElement;
         button.classList.toggle("toggled");
         if (button.classList.contains("toggled")) {
@@ -65,18 +79,16 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
             ScreenViewer.style.maxHeight = "unset";
         }
     })
-    document.querySelector("#disconnectButton").addEventListener("click", (ev) => {
+    DisconnectButton.addEventListener("click", (ev) => {
         ConnectButton.removeAttribute("disabled");
         RemoteControl.RCBrowserSockets.Connection.stop();
     });
-    document.querySelector("#keyboardButton").addEventListener("click", (ev) => {
-        HorizontalBars.forEach(x => {
-            x.classList.remove('open');
-        });
+    KeyboardButton.addEventListener("click", (ev) => {
+        closeAllHorizontalBars(null);
         ConnectionBar.classList.remove("open");
         OnScreenKeyboard.classList.toggle("open");
     });
-    document.querySelector("#inviteButton").addEventListener("click", (ev) => {
+    InviteButton.addEventListener("click", (ev) => {
         var url = "";
         if (RemoteControl.Mode ==  RemoteControlMode.Normal) {
             url = `${location.origin}${location.pathname}?sessionID=${RemoteControl.ClientID}`;
@@ -96,21 +108,19 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
         FloatMessage("Link copied to clipboard.");
         
     })
-    document.querySelector("#fileTransferButton").addEventListener("click", (ev) => {
+    FileTransferButton.addEventListener("click", (ev) => {
         FileTransferInput.click();
     });
-    (document.querySelector("#fileTransferInput") as HTMLInputElement).addEventListener("change", (ev) => {
+    FileTransferInput.addEventListener("change", (ev) => {
         uploadFiles(FileTransferInput.files);
     });
   
-    document.querySelector("#ctrlAltDelButton").addEventListener("click", (ev) => {
+    CtrlAltDelButton.addEventListener("click", (ev) => {
         if (!RemoteControl.ServiceID) {
             ShowMessage("Not available for this session.");
             return;
         }
-        HorizontalBars.forEach(x => {
-            x.classList.remove('open');
-        });
+        closeAllHorizontalBars(null);
         ConnectionBar.classList.remove("open");
         RemoteControl.RCBrowserSockets.SendCtrlAltDel();
     });
@@ -121,9 +131,12 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
             }
         })
     });
-    document.querySelector("#connectButton").addEventListener("click", (ev) => {
+    ConnectButton.addEventListener("click", (ev) => {
         ConnectToClient();
     });
+    QualitySlider.addEventListener("change", (ev) => {
+        sockets.SendQualityChange(Number(QualitySlider.value));
+    })
     ScreenViewer.addEventListener("pointermove", function (e) {
         currentPointerDevice = e.pointerType;
     });
@@ -371,4 +384,12 @@ function uploadFiles(fileList: FileList) {
     });
     xhr.send(fd);
   
+}
+
+function closeAllHorizontalBars(exceptBarId: string) {
+    HorizontalBars.forEach(x => {
+        if (x.id != exceptBarId) {
+            x.classList.remove('open');
+        }
+    })
 }

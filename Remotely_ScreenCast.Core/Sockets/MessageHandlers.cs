@@ -146,6 +146,15 @@ namespace Remotely_ScreenCast.Core.Sockets
                 }
             });
 
+            hubConnection.On("QualityChange", (int qualityLevel, string viewerID) =>
+            {
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
+                {
+                    viewer.ImageQuality = qualityLevel;
+                }
+            });
+
+
             hubConnection.On("TouchDown", (string viewerID) =>
             {
                 if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
