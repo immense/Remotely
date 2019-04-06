@@ -189,7 +189,10 @@ namespace Remotely_Server.Services
         {
             await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("SharedFileIDs", fileIDs);
         }
-
+        public async Task SendQualityChange(int qualityLevel)
+        {
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("QualityChange", qualityLevel, Context.ConnectionId);
+        }
         public async Task Tap(double percentX, double percentY)
         {
             await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("Tap", percentX, percentY, Context.ConnectionId);
