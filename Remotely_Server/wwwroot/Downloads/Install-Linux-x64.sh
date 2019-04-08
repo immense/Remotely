@@ -43,9 +43,6 @@ EOL
 
 echo Creating service...
 
-usersArr=($(users))
-targetUser=${usersArr[0]}
-
 cat > /etc/systemd/system/remotely-agent.service << EOL
 [Unit]
 Description=The Remotely agent used for remote access.
@@ -54,9 +51,7 @@ Description=The Remotely agent used for remote access.
 WorkingDirectory=/usr/local/bin/Remotely/
 ExecStart=/usr/local/bin/Remotely/Remotely_Agent
 Restart=always
-RestartSec=10
-Environment=DISPLAY=:0
-Environment="XAUTHORITY=/home/$targetUser/.Xauthority"
+RestartSec=10"
 
 [Install]
 WantedBy=graphical.target

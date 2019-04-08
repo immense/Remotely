@@ -52,7 +52,6 @@ The following steps will configure your Windows 10 machine for building the Remo
 * Windows: Only the latest version of Windows 10 is tested.
 * Linux: Only Lubuntu 18.10 is tested.
 	* Your account must be set to auto login for unattended remote control to work.
-	* The install script needs to be run while the above account is logged in.
 
 ## Session Recording
 * You can turn on session recording in appsettings.json.
