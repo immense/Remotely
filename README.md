@@ -20,14 +20,16 @@ The following steps will configure your Windows 10 machine for building the Remo
     * The output folder will now contain the server, with the clients in the Downloads folder.
 
 ## Hosting a Server (Windows)
-* Download and install the .NET Core Runtime.
+* Download and install the .NET Core Runtime (not the SDK).
 	* Link: https://dotnet.microsoft.com/download
 	* This includes the Hosting Bundle for Windows, which allows you to run ASP.NET Core in IIS.
-* Obtain a copy of the server files, either by building (above) or downloading the Windows server package from the website.
-* Put the server files into your IIS site folder.
+* Create a site in IIS that will run Remotely.
+* Run Install-RemotelyServer.ps1 (as an administrator), which is in the [Utilities folder in source control](https://raw.githubusercontent.com/Jay-Rad/Remotely/master/Utilities/Install-RemotelyServer.ps1).
 * Change values in appsettings.json for your environment.
 * If using SQLite configuration, make sure the ApplicationPool's account has write access to the DB file location.
+	* The script will do this for you, assuming all default settings.
 * After creating your account on the website, you can set "AllowSelfRegistration" to false in appsettings.json to disable registration.
+* If the site will be public-facing, configure your bindings in IIS.
 * An SSL certificate for HTTPS is recommended.  You can install one for free using Let's Encrypt.
 	* Resources: https://letsencrypt.org/, https://certifytheweb.com/
 * Documentation for hosting in IIS can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/iis/index?view=aspnetcore-2.2
