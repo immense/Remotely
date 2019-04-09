@@ -50,6 +50,7 @@ The following steps will configure your Windows 10 machine for building the Remo
 
 ## Remote Control Requirements
 * Windows: Only the latest version of Windows 10 is tested.
+	* Requires .NET Framework 4.7.2.
 * Linux: Only Lubuntu 18.10 is tested.
 	* Your account must be set to auto login for unattended remote control to work.
 
