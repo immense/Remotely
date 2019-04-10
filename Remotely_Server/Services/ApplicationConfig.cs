@@ -30,6 +30,7 @@ namespace Remotely_Server.Services
         public string SmtpPassword => Config["ApplicationOptions:SmtpPassword"];
         public string SmtpEmail => Config["ApplicationOptions:SmtpEmail"];
         public string SmtpDisplayName => Config["ApplicationOptions:SmtpDisplayName"];
+        public bool SmtpEnableSsl => bool.Parse(Config["ApplicationOptions:SmtpEnableSsl"]);
 
 
         private IConfiguration Config { get; set; }
