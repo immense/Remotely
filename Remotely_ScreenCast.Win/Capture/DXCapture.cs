@@ -125,14 +125,9 @@ namespace Remotely_ScreenCast.Win.Capture
             return Screen.AllScreens.Length;
         }
 
-        public double GetVirtualScreenHeight()
+        public Rectangle GetVirtualScreenBounds()
         {
-            return SystemInformation.VirtualScreen.Height;
-        }
-
-        public double GetVirtualScreenWidth()
-        {
-            return SystemInformation.VirtualScreen.Width;
+            return SystemInformation.VirtualScreen;
         }
 
         public void Init()

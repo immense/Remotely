@@ -3,6 +3,7 @@ using Remotely_ScreenCast.Core.Models;
 using System;
 using Remotely_Shared.Win32;
 using static Remotely_Shared.Win32.User32;
+using Remotely_ScreenCast.Core.Capture;
 
 namespace Remotely_ScreenCast.Win.Input
 {
@@ -10,45 +11,50 @@ namespace Remotely_ScreenCast.Win.Input
     {
         public uint SendLeftMouseDown(double percentX, double percentY, Viewer viewer)
         {
+            var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
             // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
-            var normalizedX = percentX * 65535D;
-            var normalizedY = percentY * 65535D;
+            var normalizedX = xyPercent.Item1 * 65535D;
+            var normalizedY = xyPercent.Item2 * 65535D;
             var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.LEFTDOWN | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
             var input = new INPUT() { type = InputType.MOUSE, U = union };
             return SendInput(1, new INPUT[] { input }, INPUT.Size);
         }
         public uint SendLeftMouseUp(double percentX, double percentY, Viewer viewer)
         {
+            var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
             // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
-            var normalizedX = percentX * 65535D;
-            var normalizedY = percentY * 65535D;
+            var normalizedX = xyPercent.Item1 * 65535D;
+            var normalizedY = xyPercent.Item2 * 65535D;
             var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.LEFTUP | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
             var input = new INPUT() { type = InputType.MOUSE, U = union };
             return SendInput(1, new INPUT[] { input }, INPUT.Size);
         }
         public uint SendRightMouseDown(double percentX, double percentY, Viewer viewer)
         {
+            var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
             // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
-            var normalizedX = percentX * 65535D;
-            var normalizedY = percentY * 65535D;
+            var normalizedX = xyPercent.Item1 * 65535D;
+            var normalizedY = xyPercent.Item2 * 65535D;
             var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.RIGHTDOWN | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
             var input = new INPUT() { type = InputType.MOUSE, U = union };
             return SendInput(1, new INPUT[] { input }, INPUT.Size);
         }
         public uint SendRightMouseUp(double percentX, double percentY, Viewer viewer)
         {
+            var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
             // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
-            var normalizedX = percentX * 65535D;
-            var normalizedY = percentY * 65535D;
+            var normalizedX = xyPercent.Item1 * 65535D;
+            var normalizedY = xyPercent.Item2 * 65535D;
             var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.RIGHTUP | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
             var input = new INPUT() { type = InputType.MOUSE, U = union };
             return SendInput(1, new INPUT[] { input }, INPUT.Size);
         }
         public uint SendMouseMove(double percentX, double percentY, Viewer viewer)
         {
+            var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
             // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
-            var normalizedX = percentX * 65535D;
-            var normalizedY = percentY * 65535D;
+            var normalizedX = xyPercent.Item1 * 65535D;
+            var normalizedY = xyPercent.Item2 * 65535D;
             var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.MOVE | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
             var input = new INPUT() { type = InputType.MOUSE, U = union };
             return SendInput(1, new INPUT[] { input }, INPUT.Size);
@@ -220,6 +226,17 @@ namespace Remotely_ScreenCast.Win.Input
             return keyCode;
         }
 
-      
+        public Tuple<double, double> GetAbsolutePercentFromRelativePercent(double percentX, double percentY, ICapturer capturer)
+        {
+            var absoluteX = (capturer.CurrentScreenBounds.Width * percentX) + capturer.CurrentScreenBounds.Left - capturer.GetVirtualScreenBounds().Left;
+            var absoluteY = (capturer.CurrentScreenBounds.Height * percentY) + capturer.CurrentScreenBounds.Top - capturer.GetVirtualScreenBounds().Top;
+            return new Tuple<double, double>(absoluteX / capturer.GetVirtualScreenBounds().Width, absoluteY / capturer.GetVirtualScreenBounds().Height);
+        }
+        public Tuple<double, double> GetAbsolutePointFromRelativePercent(double percentX, double percentY, ICapturer capturer)
+        {
+            var absoluteX = (capturer.CurrentScreenBounds.Width * percentX) + capturer.CurrentScreenBounds.Left;
+            var absoluteY = (capturer.CurrentScreenBounds.Height * percentY) + capturer.CurrentScreenBounds.Top;
+            return new Tuple<double, double>(absoluteX, absoluteY);
+        }
     }
 }

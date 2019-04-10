@@ -20,11 +20,12 @@ The following steps will configure your Windows 10 machine for building the Remo
     * The output folder will now contain the server, with the clients in the Downloads folder.
 
 ## Hosting a Server (Windows)
+* Create a site in IIS that will run Remotely.
+* Run Install-RemotelyServer.ps1 (as an administrator), which is in the [Utilities folder in source control](https://raw.githubusercontent.com/Jay-Rad/Remotely/master/Utilities/Install-RemotelyServer.ps1).
 * Download and install the .NET Core Runtime (not the SDK).
 	* Link: https://dotnet.microsoft.com/download
 	* This includes the Hosting Bundle for Windows, which allows you to run ASP.NET Core in IIS.
-* Create a site in IIS that will run Remotely.
-* Run Install-RemotelyServer.ps1 (as an administrator), which is in the [Utilities folder in source control](https://raw.githubusercontent.com/Jay-Rad/Remotely/master/Utilities/Install-RemotelyServer.ps1).
+	* Important: If you installed .NET Core Runtime before installing all the required IIS features (which is done in the script), you may need to run a repair on the .NET Core Runtime installation.
 * Change values in appsettings.json for your environment.
 * If using SQLite configuration, make sure the ApplicationPool's account has write access to the DB file location.
 	* The script will do this for you, assuming all default settings.
@@ -49,6 +50,16 @@ The following steps will configure your Windows 10 machine for building the Remo
 * Change values in appsettings.json for your environment.
 * After creating your account on the website, you can set "AllowSelfRegistration" to false in appsettings.json to disable registration.
 * Documentation for hosting behind Nginx can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx?view=aspnetcore-2.2
+
+## Logging
+* On clients, logs are kept in %temp%\Remotely_Logs.txt.
+	* For the Agent running as a Windows service, this maps to C:\Windows\Temp\Remotely_Logs.txt.
+* On the server, some event information is explicitly written to the EventLogs table in the database.
+* Built-in ASP.NET Core logs are written to the console (stdout).  You can redirect this to a file if desired.
+	* In IIS, this can be done in the web.config file by setting stdoutLogEnabled to true.
+* On Windows Servers, the above logs are also written to the Windows Event Log.
+* You can configure logging levels and other settings in appsetttings.json.
+	* More information: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-2.2
 
 ## Remote Control Requirements
 * Windows: Only the latest version of Windows 10 is tested.

@@ -152,17 +152,6 @@ namespace Remotely_ScreenCast.Core.Capture
             }
 
         }
-        public static Tuple<double, double> GetAbsolutePercentFromRelativePercent(double percentX, double percentY, ICapturer capturer)
-        {
-            var absoluteX = (capturer.CurrentScreenBounds.Width * percentX) + capturer.CurrentScreenBounds.Left;
-            var absoluteY = (capturer.CurrentScreenBounds.Height * percentY) + capturer.CurrentScreenBounds.Top;
-            return new Tuple<double, double>(absoluteX / capturer.GetVirtualScreenWidth(), absoluteY / capturer.GetVirtualScreenHeight());
-        }
-        public static Tuple<double, double> GetAbsolutePointFromRelativePercent(double percentX, double percentY, ICapturer capturer)
-        {
-            var absoluteX = (capturer.CurrentScreenBounds.Width * percentX) + capturer.CurrentScreenBounds.Left;
-            var absoluteY = (capturer.CurrentScreenBounds.Height * percentY) + capturer.CurrentScreenBounds.Top;
-            return new Tuple<double, double>(absoluteX, absoluteY);
-        }
+       
     }
 }
