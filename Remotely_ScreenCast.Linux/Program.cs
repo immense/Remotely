@@ -27,8 +27,8 @@ namespace Remotely_ScreenCast.Linux
                 Conductor.Connect().Wait();
                 Conductor.SetMessageHandlers(new X11Input(Display));
                 Conductor.ScreenCastInitiated += ScreenCastInitiated;
-                Conductor.OutgoingMessages.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName).Wait();
-                Conductor.OutgoingMessages.NotifyRequesterUnattendedReady(Conductor.RequesterID).Wait();
+                Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName).Wait();
+                Conductor.CasterSocket.NotifyRequesterUnattendedReady(Conductor.RequesterID).Wait();
                 Conductor.StartWaitForViewerTimer();
                 while (true)
                 {
@@ -47,7 +47,7 @@ namespace Remotely_ScreenCast.Linux
             try
             {
                 var capturer = new X11Capture(Display);
-                await Conductor.OutgoingMessages.SendCursorChange(new CursorInfo(null, Point.Empty, "default"), new List<string>() { screenCastRequest.ViewerID });
+                await Conductor.CasterSocket.SendCursorChange(new CursorInfo(null, Point.Empty, "default"), new List<string>() { screenCastRequest.ViewerID });
                 ScreenCaster.BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, capturer, Conductor);
             }
             catch (Exception ex)

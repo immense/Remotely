@@ -104,8 +104,8 @@ namespace Remotely_Desktop.ViewModels
             }
 
             Conductor.SetMessageHandlers(new WinInput());
-            await Conductor.OutgoingMessages.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName);
-            await Conductor.OutgoingMessages.GetSessionID();
+            await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName);
+            await Conductor.CasterSocket.GetSessionID();
         }
 
         public void PromptForHostName()
@@ -140,15 +140,15 @@ namespace Remotely_Desktop.ViewModels
             foreach (Viewer viewer in viewerList)
             {
                 viewer.DisconnectRequested = true;
-                await Conductor.OutgoingMessages.SendViewerRemoved(viewer.ViewerConnectionID);
+                await Conductor.CasterSocket.SendViewerRemoved(viewer.ViewerConnectionID);
             }
         }
 
         private async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)
         {
-            if (Conductor?.OutgoingMessages != null)
+            if (Conductor?.CasterSocket != null)
             {
-                await Conductor?.OutgoingMessages?.SendCursorChange(cursor, Conductor.Viewers.Keys.ToList());
+                await Conductor?.CasterSocket?.SendCursorChange(cursor, Conductor.Viewers.Keys.ToList());
             }
         }
         private void ScreenCastRequested(object sender, ScreenCastRequest screenCastRequest)
@@ -178,7 +178,7 @@ namespace Remotely_Desktop.ViewModels
                             Logger.Write(ex);
                             capturer = new BitBltCapture();
                         }
-                        await Conductor.OutgoingMessages.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
+                        await Conductor.CasterSocket.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
                         ScreenCaster.BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, capturer, Conductor);
                     });
                 }
