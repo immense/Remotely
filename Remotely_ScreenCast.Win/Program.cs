@@ -41,7 +41,7 @@ namespace Remotely_ScreenCast.Win
                 Conductor.ScreenCastInitiated += ScreenCastInitiated;
                 CursorIconWatcher = new CursorIconWatcher(Conductor);
                 CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
-                Conductor.OutgoingMessages.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName).Wait();
+                Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName).Wait();
                 CheckInitialDesktop();
                 CheckForRelaunch();
                 Conductor.StartWaitForViewerTimer();
@@ -62,11 +62,11 @@ namespace Remotely_ScreenCast.Win
                 Logger.Write($"Resuming after relaunch in desktop {Conductor.CurrentDesktopName}.");
                 var viewersString = Conductor.ArgDict["viewers"];
                 var viewerIDs = viewersString.Split(",".ToCharArray());
-                Conductor.OutgoingMessages.NotifyViewersRelaunchedScreenCasterReady(viewerIDs).Wait();
+                Conductor.CasterSocket.NotifyViewersRelaunchedScreenCasterReady(viewerIDs).Wait();
             }
             else
             {
-                Conductor.OutgoingMessages.NotifyRequesterUnattendedReady(Conductor.RequesterID).Wait();
+                Conductor.CasterSocket.NotifyRequesterUnattendedReady(Conductor.RequesterID).Wait();
             }
         }
 
@@ -90,15 +90,15 @@ namespace Remotely_ScreenCast.Win
                 Logger.Write(ex);
                 capturer = new BitBltCapture();
             }
-            await Conductor.OutgoingMessages.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
+            await Conductor.CasterSocket.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
             ScreenCaster.BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, capturer, Conductor);
         }
 
         public static async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)
         {
-            if (Conductor?.OutgoingMessages != null)
+            if (Conductor?.CasterSocket != null)
             {
-                await Conductor.OutgoingMessages.SendCursorChange(cursor, Conductor.Viewers.Keys.ToList());
+                await Conductor.CasterSocket.SendCursorChange(cursor, Conductor.Viewers.Keys.ToList());
             }
         }
 
@@ -120,7 +120,7 @@ namespace Remotely_ScreenCast.Win
                     if (!result)
                     {
                         Logger.Write($"Desktop switch to {desktopName} failed.");
-                        conductor.OutgoingMessages.SendConnectionFailedToViewers(conductor.Viewers.Keys.ToList()).Wait();
+                        conductor.CasterSocket.SendConnectionFailedToViewers(conductor.Viewers.Keys.ToList()).Wait();
                     }
                 }
                 await Task.Delay(100);

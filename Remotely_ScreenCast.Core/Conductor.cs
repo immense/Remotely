@@ -32,7 +32,7 @@ namespace Remotely_ScreenCast.Core
         public string CurrentDesktopName { get; set; }
         public string Host { get; private set; }
         public AppMode Mode { get; private set; }
-        public OutgoingMessages OutgoingMessages { get; private set; }
+        public CasterSocket CasterSocket { get; private set; }
         public string RequesterID { get; private set; }
         public string ServiceID { get; private set; }
         public ConcurrentDictionary<string, Viewer> Viewers { get; } = new ConcurrentDictionary<string, Viewer>();
@@ -78,9 +78,7 @@ namespace Remotely_ScreenCast.Core
 
         public void SetMessageHandlers(IKeyboardMouseInput keyboardMouse)
         {
-            OutgoingMessages = new OutgoingMessages(Connection);
-
-            MessageHandlers.ApplyConnectionHandlers(Connection, this, keyboardMouse);
+            CasterSocket = new CasterSocket(Connection, this, keyboardMouse);
         }
 
         public void StartWaitForViewerTimer()
