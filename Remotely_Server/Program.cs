@@ -7,6 +7,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Remotely_Shared.Services;
 
 namespace Remotely_Server
 {
@@ -26,6 +27,10 @@ namespace Remotely_Server
                     logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                     logging.AddConsole();
                     logging.AddDebug();
+                    if (OSUtils.IsWindows)
+                    {
+                        logging.AddEventLog();
+                    }
                 });
     }
 }

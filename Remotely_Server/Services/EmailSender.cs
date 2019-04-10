@@ -31,7 +31,7 @@ namespace Remotely_Server.Services
                 var mailClient = new SmtpClient();
                 mailClient.Host = AppConfig.SmtpHost;
                 mailClient.Port = AppConfig.SmtpPort;
-                mailClient.EnableSsl = true;
+                mailClient.EnableSsl = AppConfig.SmtpEnableSsl;
                 mailClient.Credentials = new NetworkCredential(AppConfig.SmtpUserName, AppConfig.SmtpPassword);
                 mailClient.DeliveryMethod = SmtpDeliveryMethod.Network;
 
