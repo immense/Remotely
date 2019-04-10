@@ -51,24 +51,19 @@ namespace Remotely_ScreenCast.Linux.Capture
             return LibX11.XScreenCount(Display);
         }
 
-        public double GetVirtualScreenHeight()
+        public Rectangle GetVirtualScreenBounds()
         {
-            double height = 0;
-            for (var i = 0; i < GetScreenCount(); i++)
-            {
-                height += LibX11.XHeightOfScreen(LibX11.XScreenOfDisplay(Display, i));
-            }
-            return height;
-        }
-
-        public double GetVirtualScreenWidth()
-        {
-            double width = 0;
+            int width = 0;
             for (var i = 0; i < GetScreenCount(); i++)
             {
                 width += LibX11.XWidthOfScreen(LibX11.XScreenOfDisplay(Display, i));
             }
-            return width;
+            int height = 0;
+            for (var i = 0; i < GetScreenCount(); i++)
+            {
+                height += LibX11.XHeightOfScreen(LibX11.XScreenOfDisplay(Display, i));
+            }
+            return new Rectangle(0, 0, width, height);
         }
 
         public void Init()

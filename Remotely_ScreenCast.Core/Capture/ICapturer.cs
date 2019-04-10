@@ -17,8 +17,7 @@ namespace Remotely_ScreenCast.Core.Capture
         int SelectedScreen { get; }
         void SetSelectedScreen(int screenNumber);
         int GetScreenCount();
-        double GetVirtualScreenHeight();
-        double GetVirtualScreenWidth();
+        Rectangle GetVirtualScreenBounds();
 
         void Capture();
         void Init();
