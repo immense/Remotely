@@ -12,7 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{
 		Utilities\Install-RemotelyServer.ps1 = Utilities\Install-RemotelyServer.ps1
 		Utilities\Publish.ps1 = Utilities\Publish.ps1
 		Utilities\Remotely_Server_Install.sh = Utilities\Remotely_Server_Install.sh
-		Utilities\Setup_Ubuntu_Builder.sh = Utilities\Setup_Ubuntu_Builder.sh
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{D96B47F6-EF3E-4AF6-A1BE-006D531DDBA4}"
@@ -36,7 +35,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remotely_ScreenCast.Linux",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remotely_ScreenCast.Core", "Remotely_ScreenCast.Core\Remotely_ScreenCast.Core.csproj", "{B04A1728-2E87-491E-BC7F-F575A1754DEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotely_Shared", "Remotely_Shared\Remotely_Shared.csproj", "{3B1B36AE-7A60-4974-A868-1E24894D4149}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remotely_Shared", "Remotely_Shared\Remotely_Shared.csproj", "{3B1B36AE-7A60-4974-A868-1E24894D4149}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

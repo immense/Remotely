@@ -1,14 +1,31 @@
 #!/bin/bash
-echo "If you haven't already, publish the Remotely Server app using the 'dotnet publish' 
-command (e.g. dotnet publish <path to csproj file> -o <output directory>).  
-The output directory is the app root path. This would typically be in /var/www/[appname]/.
-"
-read -p "Enter app root path: " appRoot
+echo "Thanks for trying remotely!  If you have any questions, feel free to email me at Translucency_Software@outlook.com."
+echo
+read -p "Enter app root path (typically /var/www/remotely): " appRoot
 read -p "Enter server host (e.g. example.com): " serverHost
 
-apt-get install acl
+
+# Download and install Remotely files.
+echo "Downloading Remotely server package"
+
+mkdir -p $appRoot
+wget -q "https://remotely.lucency.co/Downloads/linux-x64/Remotely_Server.zip"
+unzip -o Remotely_Server.zip -d $appRoot
+rm Remotely_Server.zip
+
+
+ # Install other prerequisites.
+
+apt-get install -y unzip
+
+apt-get install -y acl
+
+apt-get -y install ffmpeg
+
+apt-get -y install libgdiplus
 
 setfacl -R -m u:www-data:rwx $appRoot
+
 
 # Install .NET Core Runtime.
 wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb
@@ -122,7 +139,3 @@ systemctl start remotely.service
 apt-get -y install certbot python-certbot-nginx
 
 certbot --nginx
-
-apt-get -y install ffmpeg
-
-apt-get -y install libgdiplus
