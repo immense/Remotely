@@ -57,13 +57,15 @@ The following steps will configure your Windows 10 machine for building the Remo
 * On the server, some event information is explicitly written to the EventLogs table in the database.
 * Built-in ASP.NET Core logs are written to the console (stdout).  You can redirect this to a file if desired.
 	* In IIS, this can be done in the web.config file by setting stdoutLogEnabled to true.
-* On Windows Servers, the above logs are also written to the Windows Event Log.
+* On Windows Servers, the above logs can also be written to the Windows Event Log.
+	* This is enabled in appsettings.json by setting EnableWindowsEventLog to true.
 * You can configure logging levels and other settings in appsetttings.json.
 	* More information: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-2.2
 
 ## Remote Control Requirements
 * Windows: Only the latest version of Windows 10 is tested.
 	* Requires .NET Framework 4.7.2.
+	* Windows 2016/2019 should work as well, but isn't tested regularly.
 * Linux: Only Lubuntu 18.10 is tested.
 	* Your account must be set to auto login for unattended remote control to work.
 

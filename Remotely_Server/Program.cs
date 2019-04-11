@@ -27,9 +27,13 @@ namespace Remotely_Server
                     logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                     logging.AddConsole();
                     logging.AddDebug();
-                    if (OSUtils.IsWindows)
+
+                    if (bool.TryParse(hostingContext.Configuration["ApplicationOptions:EnableWindowsEventLog"], out var enableEventLog))
                     {
-                        logging.AddEventLog();
+                        if (OSUtils.IsWindows && enableEventLog)
+                        {
+                            logging.AddEventLog();
+                        }
                     }
                 });
     }

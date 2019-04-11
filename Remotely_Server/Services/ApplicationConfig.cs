@@ -16,6 +16,7 @@ namespace Remotely_Server.Services
         }
         public string DefaultPrompt => Config["ApplicationOptions:DefaultPrompt"];
         public string DBProvider => Config["ApplicationOptions:DBProvider"];
+        public bool EnableWindowsEventLog => bool.Parse(Config["ApplicationOptions:EnableWindowsEventLog"]);
         public bool AllowSelfRegistration => bool.Parse(Config["ApplicationOptions:AllowSelfRegistration"]);
         public double DataRetentionInDays => double.Parse(Config["ApplicationOptions:DataRetentionInDays"]);
         public double RemoteControlSessionLimit => double.Parse(Config["ApplicationOptions:RemoteControlSessionLimit"]);
