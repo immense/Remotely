@@ -21,7 +21,6 @@ apt-get install -y unzip
 apt-get install -y acl
 apt-get -y install ffmpeg
 apt-get -y install libgdiplus
-setfacl -R -m u:www-data:rwx $appRoot
 
 
 # Download and install Remotely files.
@@ -29,7 +28,7 @@ mkdir -p $appRoot
 wget "https://remotely.lucency.co/Downloads/linux-x64/Remotely_Server.zip"
 unzip -o Remotely_Server.zip -d $appRoot
 rm Remotely_Server.zip
-
+setfacl -R -m u:www-data:rwx $appRoot
 
 
 # Install Nginx
