@@ -72,7 +72,7 @@ The following steps will configure your Windows 10 machine for building the Remo
 ## Session Recording
 * You can turn on session recording in appsettings.json.
 * The following requirements must be met for it to work:
-	* On Linux, libgdiplus must be installed (sudo apt-get install libdgiplus).
+	* On Linux, libgdiplus and libc6-dev must be installed (sudo apt-get install libgdiplus libc6-dev).
 	* The process running the app must have access to create and modify a folder name "Recordings" in the site's root content folder.
 	* FFmpeg must be executable from the process running the Remotely server.
 		* Link: https://www.ffmpeg.org/download.html
