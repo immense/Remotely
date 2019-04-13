@@ -4,7 +4,6 @@ echo
 read -p "Enter app root path (typically /var/www/remotely): " appRoot
 read -p "Enter server host (e.g. example.com): " serverHost
 
-
 # Install .NET Core Runtime.
 wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb
 dpkg -i packages-microsoft-prod.deb
@@ -15,24 +14,20 @@ apt-get install -y aspnetcore-runtime-2.2
 rm packages-microsoft-prod.deb
 
 
+ # Install other prerequisites.
+apt-get install -y unzip
+apt-get install -y acl
+apt-get -y install ffmpeg
+apt-get -y install libgdiplus
+setfacl -R -m u:www-data:rwx $appRoot
+
+
 # Download and install Remotely files.
 mkdir -p $appRoot
 wget "https://remotely.lucency.co/Downloads/linux-x64/Remotely_Server.zip"
 unzip -o Remotely_Server.zip -d $appRoot
 rm Remotely_Server.zip
 
-
- # Install other prerequisites.
-
-apt-get install -y unzip
-
-apt-get install -y acl
-
-apt-get -y install ffmpeg
-
-apt-get -y install libgdiplus
-
-setfacl -R -m u:www-data:rwx $appRoot
 
 
 # Install Nginx
