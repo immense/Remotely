@@ -4,6 +4,8 @@ echo
 read -p "Enter app root path (typically /var/www/remotely): " appRoot
 read -p "Enter server host (e.g. example.com): " serverHost
 
+apt-get update
+
 # Install .NET Core Runtime.
 wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb
 dpkg -i packages-microsoft-prod.deb
