@@ -13,6 +13,7 @@ if [ "$1" = "--uninstall" ]; then
 fi
 
 apt-get -y install unzip
+apt-get -y install libc6-dev
 apt-get -y install libgdiplus
 apt-get -y install libxtst-dev
 

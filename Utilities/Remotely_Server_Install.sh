@@ -20,6 +20,7 @@ rm packages-microsoft-prod.deb
 apt-get install -y unzip
 apt-get install -y acl
 apt-get -y install ffmpeg
+apt-get -y install libc6-dev
 apt-get -y install libgdiplus
 
 
@@ -29,6 +30,7 @@ wget "https://remotely.lucency.co/Downloads/linux-x64/Remotely_Server.zip"
 unzip -o Remotely_Server.zip -d $appRoot
 rm Remotely_Server.zip
 setfacl -R -m u:www-data:rwx $appRoot
+chown -R www-data:www-data $appRoot
 
 
 # Install Nginx
