@@ -99,12 +99,7 @@ namespace Remotely_ScreenCast.Core.Capture
 
                 if (left < right && top < bottom)
                 {
-                    // Bounding box is valid.
-
-                    left = Math.Max(left - 20, 0);
-                    top = Math.Max(top - 20, 0);
-                    right = Math.Min(right + 20, width);
-                    bottom = Math.Min(bottom + 20, height);
+                    // Bounding box is valid
 
                     return new Rectangle(left, top, right - left, bottom - top);
                 }

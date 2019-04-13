@@ -96,29 +96,6 @@ namespace Remotely_ScreenCast.Core.Capture
                             capturer.CaptureFullscreen = false;
                         }
                         
-                        //long newQuality;
-                        //if (viewer.PendingFrames < 8)
-                        //{
-                        //    newQuality = Math.Min(1, viewer.ImageQuality + 1);
-                        //}
-                        //else
-                        //{
-                        //    newQuality = Math.Max(0, viewer.ImageQuality - 1);
-                        //}
-
-                        //if (newQuality != viewer.ImageQuality)
-                        //{
-                        //    Logger.Write($"New quality: {newQuality}");
-                        //    viewer.ImageQuality = newQuality;
-                        //    viewer.FullScreenRefreshNeeded = true;
-                        //}
-                        //else if (viewer.FullScreenRefreshNeeded)
-                        //{
-                        //    Logger.Write($"Quality stabilized.");
-                        //    capturer.CaptureFullscreen = true;
-                        //    viewer.FullScreenRefreshNeeded = false;
-                        //}
-
                         encodedImageBytes = ImageUtils.EncodeBitmap(newImage, viewer.EncoderParams);
 
                         if (encodedImageBytes?.Length > 0)

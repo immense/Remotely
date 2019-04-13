@@ -15,6 +15,10 @@ a.navbar-brand {
     margin: 15px;
 }
 
+h6 {
+    font-size: 1rem !important;
+}
+
 
 .logo-subtitle {
     font-size: .5em;
