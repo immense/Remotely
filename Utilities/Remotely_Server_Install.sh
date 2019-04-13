@@ -9,7 +9,7 @@ read -p "Enter server host (e.g. example.com): " serverHost
 echo "Downloading Remotely server package"
 
 mkdir -p $appRoot
-wget -q "https://remotely.lucency.co/Downloads/linux-x64/Remotely_Server.zip"
+wget "https://remotely.lucency.co/Downloads/linux-x64/Remotely_Server.zip"
 unzip -o Remotely_Server.zip -d $appRoot
 rm Remotely_Server.zip
 
