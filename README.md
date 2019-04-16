@@ -37,10 +37,6 @@ The following steps will configure your Windows 10 machine for building the Remo
 
 ## Hosting a Server (Ubuntu)
 * Currently, only Ubuntu 18.04 is tested.  The Linux server package will likely work with other distros after some alterations to the setup script.
-* Obtain a copy of the server files, either by building (above) or downloading the Linux server package from the website.
-* Copy the server files to the location from which they will be run.
-	* This would typically be in /var/www/remotely/.
-* If using SQLite configuration, make sure the www-data account has write access to the DB file location.
 * Run Remotely_Server_Setup.sh (with sudo), which is in the [Utilities folder in source control](https://raw.githubusercontent.com/Jay-Rad/Remotely/master/Utilities/Remotely_Server_Install.sh).
 	* This script is only for Ubuntu 18.04.
 	* The script installs the .NET Core runtime, as well as other dependencies.
