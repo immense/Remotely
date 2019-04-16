@@ -272,13 +272,14 @@ namespace Remotely_Agent.Services
                     {
                         var users = OSUtils.StartProcessWithResults("users", "");
                         var username = users?.Split()?.FirstOrDefault()?.Trim();
+                        var homeDir = OSUtils.StartProcessWithResults("sudo", $"-u {username} env | grep HOME")?.Split('=')?.Last();
                         var psi = new ProcessStartInfo()
                         {
                             FileName = "sudo",
                             Arguments = $"-u {username} {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default & disown"
                         };
                         psi.Environment.Add("DISPLAY", ":0");
-                        psi.Environment.Add("XAUTHORITY", $"/home/{username}/.Xauthority");
+                        psi.Environment.Add("XAUTHORITY", $"{homeDir}/.Xauthority");
                         var casterProc = Process.Start(psi);
                         casterProc.WaitForExit();
                     }
@@ -324,13 +325,14 @@ namespace Remotely_Agent.Services
                     {
                         var users = OSUtils.StartProcessWithResults("users", "");
                         var username = users?.Split()?.FirstOrDefault()?.Trim();
+                        var homeDir = OSUtils.StartProcessWithResults("sudo", $"-u {username} env | grep HOME")?.Split('=')?.Last();
                         var psi = new ProcessStartInfo()
                         {
                             FileName = "sudo",
                             Arguments = $"-u {username} {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)} & disown"
                         };
                         psi.Environment.Add("DISPLAY", ":0");
-                        psi.Environment.Add("XAUTHORITY", $"/home/{username}/.Xauthority");
+                        psi.Environment.Add("XAUTHORITY", $"{homeDir}/.Xauthority");
                         var casterProc = Process.Start(psi);
                         casterProc.WaitForExit();
                     }

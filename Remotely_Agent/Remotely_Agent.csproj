@@ -5,13 +5,13 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Copyright>Copyright ©  2019 Translucency Software</Copyright>
-    <Description>Background service that maintains a connection to the DoXM server.  The service is used for remote support and maintenance by this computer's administrators.</Description>
+    <Description>Background service that maintains a connection to the Remotely server.  The service is used for remote support and maintenance by this computer's administrators.</Description>
     <PackageLicenseUrl>https://doxm.app/EULA</PackageLicenseUrl>
     <Authors>Jared Goodwin</Authors>
-    <Product>DoXM Client</Product>
+    <Product>Remotely Agent</Product>
     <Company>Translucency Software</Company>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <PackageProjectUrl>https://doxm.app</PackageProjectUrl>
+    <PackageProjectUrl>https://remotely.lucency.co</PackageProjectUrl>
     <Platforms>AnyCPU;x86;x64</Platforms>
     <AssemblyName>Remotely_Agent</AssemblyName>
     <RootNamespace>Remotely_Agent</RootNamespace>
