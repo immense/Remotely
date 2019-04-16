@@ -99,7 +99,12 @@ namespace Remotely_ScreenCast.Core.Capture
 
                 if (left < right && top < bottom)
                 {
-                    // Bounding box is valid
+                    // Bounding box is valid.  Padding is necessary to prevent artifacts from
+                    // moving windows.
+                    left = Math.Max(left - 10, 0);
+                    top = Math.Max(top - 10, 0);
+                    right = Math.Min(right + 10, width);
+                    bottom = Math.Min(bottom + 10, height);
 
                     return new Rectangle(left, top, right - left, bottom - top);
                 }
