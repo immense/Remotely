@@ -20,6 +20,9 @@ window.addEventListener("load", (ev) => {
                     RemoteControl.RCBrowserSockets.SendKeyUp(key.innerHTML);
                 }
             }
+            else if (key.innerHTML == "Space") {
+                RemoteControl.RCBrowserSockets.SendKeyPress(" ");
+            }
             else {
                 RemoteControl.RCBrowserSockets.SendKeyPress(key.innerHTML);
             }
