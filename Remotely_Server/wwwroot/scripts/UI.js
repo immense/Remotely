@@ -13,6 +13,7 @@ export var TotalDevicesCount = document.querySelector("#totalDevicesSpan");
 export var MeasurementCanvas = document.createElement("canvas");
 export var MeasurementContext = MeasurementCanvas.getContext("2d");
 export var TabContentWrapper = document.getElementById("tabContentWrapper");
+export var ConsoleFrame = document.getElementById("consoleFrame");
 export var ConsoleTab = document.getElementById("consoleTab");
 export var ConsoleAlert = document.getElementById("consoleAlert");
 export function AddConsoleOutput(strOutputMessage) {
@@ -27,7 +28,7 @@ export function AddConsoleOutput(strOutputMessage) {
     outputBlock.appendChild(prompt);
     outputBlock.appendChild(output);
     ConsoleOutputDiv.appendChild(outputBlock);
-    TabContentWrapper.scrollTop = TabContentWrapper.scrollHeight;
+    ConsoleFrame.scrollTop = ConsoleFrame.scrollHeight;
     if (!ConsoleTab.classList.contains("active")) {
         ConsoleAlert.hidden = false;
     }
@@ -36,7 +37,7 @@ export function AddConsoleHTML(html) {
     var contentWrapper = document.createElement("div");
     contentWrapper.innerHTML = html;
     ConsoleOutputDiv.appendChild(contentWrapper);
-    TabContentWrapper.scrollTop = TabContentWrapper.scrollHeight;
+    ConsoleFrame.scrollTop = ConsoleFrame.scrollHeight;
 }
 export function AddTransferHarness(transferID, totalDevices) {
     GetSelectedDevices();
