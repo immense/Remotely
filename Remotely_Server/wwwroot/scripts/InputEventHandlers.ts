@@ -146,7 +146,7 @@ function inputOnCommandTextArea() {
         else {
             CommandProcessor.EvaluateCurrentCommandText();
         }
-        UI.ConsoleOutputDiv.parentElement.scrollTop = UI.ConsoleOutputDiv.parentElement.scrollHeight;
+        UI.ConsoleFrame.scrollTop = UI.ConsoleFrame.scrollHeight;
     });
 }
 function inputOnFilterTextBox() {

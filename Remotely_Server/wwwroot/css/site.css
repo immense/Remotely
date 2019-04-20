@@ -35,11 +35,10 @@ h6 {
 
 .work-area {
     display: grid;
-    grid-template-rows: min-content auto min-content;
+    grid-template-rows: min-content auto;
     grid-row-gap: 15px;
-    height: calc(100vh - 150px);
+    height: calc(100vh - 155px);
     overflow-y: hidden;
-    margin-top: 10px
 }
 #consoleAlert {
     animation-name: blink;
@@ -87,6 +86,13 @@ h6 {
 }
 #gridControlsWrapper button {
     margin-right: 10px;
+}
+
+#consoleFrame.show {
+    display: grid;
+    grid-template-rows: auto min-content;
+    grid-row-gap: 10px;
+    height: 100%;
 }
 
 .console {
