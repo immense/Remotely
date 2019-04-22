@@ -26,6 +26,7 @@ using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Swashbuckle.AspNetCore.Swagger;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace Remotely_Server
 {
@@ -97,6 +98,17 @@ namespace Remotely_Server
                 });
             }
 
+            var knownProxies = Configuration.GetSection("ApplicationOptions:KnownProxies").Get<string[]>();
+            if (knownProxies != null)
+            {
+                services.Configure<ForwardedHeadersOptions>(options =>
+                {
+                    foreach (var proxy in knownProxies)
+                    {
+                        options.KnownProxies.Add(IPAddress.Parse(proxy));
+                    }
+                });
+            }
 
             services.AddMvcCore()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(options =>
