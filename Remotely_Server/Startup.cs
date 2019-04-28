@@ -106,6 +106,7 @@ namespace Remotely_Server
                     foreach (var proxy in knownProxies)
                     {
                         options.KnownProxies.Add(IPAddress.Parse(proxy));
+                        options.ForwardLimit = 2;
                     }
                 });
             }
@@ -167,10 +168,9 @@ namespace Remotely_Server
 
             app.UseCookiePolicy();
 
-            // Uncomment to run .NET Core behind a reverse proxy.
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
-                ForwardedHeaders = ForwardedHeaders.All
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
 
             app.UseAuthentication();
