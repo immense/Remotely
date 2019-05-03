@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -103,14 +104,17 @@ namespace Remotely_ScreenCast.Core.Capture
                             await conductor.CasterSocket.SendScreenCapture(encodedImageBytes, viewerID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, DateTime.UtcNow);
                             viewer.PendingFrames++;
                         }
-                        // TODO: Even after disposing of the bitmap, GC doesn't collect in time.  Memory usage soars quickly.
-                        // Need to revisit this later.
-                        GC.Collect();
                     }
                 }
                 catch (Exception ex)
                 {
                     Logger.Write(ex);
+                }
+                finally
+                {
+                    // TODO: Even after disposing of the bitmap, GC doesn't collect in time.  Memory usage soars quickly.
+                    // Need to revisit this later.
+                    GC.Collect();
                 }
             }
             Logger.Write($"Ended screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}.");
