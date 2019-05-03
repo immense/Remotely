@@ -166,7 +166,6 @@ namespace Remotely_Desktop.ViewModels
                             if (Conductor.Viewers.Count == 0)
                             {
                                 capturer = new DXCapture();
-                                capturer.Init();
                             }
                             else
                             {

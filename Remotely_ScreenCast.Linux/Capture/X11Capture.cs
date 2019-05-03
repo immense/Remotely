@@ -5,15 +5,16 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Remotely_ScreenCast.Linux.Capture
 {
     public class X11Capture : ICapturer
     {
-        public X11Capture(IntPtr display)
+        public X11Capture()
         {
-            Display = display;
+            Display = LibX11.XOpenDisplay(null);
             Init();
         }
 
@@ -24,13 +25,12 @@ namespace Remotely_ScreenCast.Linux.Capture
         public Bitmap PreviousFrame { get; set; }
         public event EventHandler<Rectangle> ScreenChanged;
         public int SelectedScreen { get; private set; } = -1;
-        private Graphics Graphic { get; set; }
         public void Capture()
         {
             try
             {
                 PreviousFrame = (Bitmap)CurrentFrame.Clone();
-                Graphic.CopyFromScreen(CurrentScreenBounds.Left, CurrentScreenBounds.Top, 0, 0, new Size(CurrentScreenBounds.Width, CurrentScreenBounds.Height));
+                RefreshCurrentFrame();
             }
             catch (Exception ex)
             {
@@ -41,7 +41,7 @@ namespace Remotely_ScreenCast.Linux.Capture
 
         public void Dispose()
         {
-            Graphic.Dispose();
+            //Graphic.Dispose();
             CurrentFrame.Dispose();
             PreviousFrame.Dispose();
         }
@@ -74,7 +74,6 @@ namespace Remotely_ScreenCast.Linux.Capture
                 SetSelectedScreen(defaultScreen);
                 CurrentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
                 PreviousFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
-                Graphic = Graphics.FromImage(CurrentFrame);
             }
             catch (Exception ex)
             {
@@ -110,6 +109,30 @@ namespace Remotely_ScreenCast.Linux.Capture
             {
                 Logger.Write(ex);
             }
+        }
+
+        private void RefreshCurrentFrame()
+        {
+            var window = LibX11.XRootWindow(Display, SelectedScreen);
+
+            var imagePointer = LibX11.XGetImage(Display, window, 0, 0, CurrentScreenBounds.Width, CurrentScreenBounds.Height, ~0, 2);
+            var image = Marshal.PtrToStructure<LibX11.XImage>(imagePointer);
+
+            var bd = CurrentFrame.LockBits(new Rectangle(0, 0, CurrentFrame.Width, CurrentFrame.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+            unsafe
+            {
+                byte* scan1 = (byte*)bd.Scan0.ToPointer();
+                byte* scan2 = (byte*)image.data.ToPointer();
+                var bytesPerPixel = Bitmap.GetPixelFormatSize(CurrentFrame.PixelFormat) / 8;
+                var totalSize = bd.Height * bd.Width * bytesPerPixel;
+                for (int counter = 0; counter < totalSize - bytesPerPixel; counter++)
+                {
+                    scan1[counter] = scan2[counter];
+                }
+            }
+
+            CurrentFrame.UnlockBits(bd);
+            LibX11.XDestroyImage(imagePointer);
         }
     }
 }

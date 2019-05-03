@@ -2,7 +2,7 @@
 import { PSCoreCommandResult } from "./Models/PSCoreCommandResult.js";
 import * as DataGrid from "./DataGrid.js";
 import { GenericCommandResult } from "./Models/GenericCommandResult.js";
-import { ConsoleOutputDiv, TabContentWrapper } from "./UI.js";
+import { ConsoleOutputDiv, TabContentWrapper, ConsoleFrame } from "./UI.js";
 
 export function CreateCommandHarness(context: CommandContext): HTMLDivElement {
     var collapseClass = context.TargetDeviceIDs.length > 1 ? "collapse" : "collapse show";
@@ -53,7 +53,7 @@ export function AddPSCoreResultsHarness(result: PSCoreCommandResult) {
         errorSpan.innerText = String(currentErrors);
     }
     resultsWrapper.appendChild(resultDiv);
-    TabContentWrapper.scrollTop = TabContentWrapper.scrollHeight;
+    ConsoleFrame.scrollTop = ConsoleFrame.scrollHeight;
 }
 export function AddCommandResultsHarness(result: GenericCommandResult) {
     var contextID = "c" + result.CommandContextID;
@@ -80,7 +80,7 @@ export function AddCommandResultsHarness(result: GenericCommandResult) {
         errorSpan.innerText = String(currentErrors);
     }
     resultsWrapper.appendChild(resultDiv);
-    TabContentWrapper.scrollTop = TabContentWrapper.scrollHeight;
+    ConsoleFrame.scrollTop = ConsoleFrame.scrollHeight;
 }
 
 export function UpdateResultsCount(commandContextID: string) {

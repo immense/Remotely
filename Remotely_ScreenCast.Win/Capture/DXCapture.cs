@@ -33,6 +33,11 @@ namespace Remotely_ScreenCast.Win.Capture
         public event EventHandler<Rectangle> ScreenChanged;
         public int SelectedScreen { get; private set; } = 0;
 
+        public DXCapture()
+        {
+            Init();
+        }
+
         public void Capture()
         {
             try

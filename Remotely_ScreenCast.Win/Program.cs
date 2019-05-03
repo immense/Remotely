@@ -78,7 +78,6 @@ namespace Remotely_ScreenCast.Win
                 if (Conductor.Viewers.Count == 0)
                 {
                     capturer = new DXCapture();
-                    capturer.Init();
                 }
                 else
                 {
@@ -111,7 +110,7 @@ namespace Remotely_ScreenCast.Win
                 {
                     conductor.CurrentDesktopName = desktopName;
                     Logger.Write($"Switching desktops to {desktopName}.");
-                    // TODO: SetThradDesktop causes issues with input after switching.
+                    // TODO: SetThreadDesktop causes issues with input after switching.
                     //var inputDesktop = Win32Interop.OpenInputDesktop();
                     //User32.SetThreadDesktop(inputDesktop);
                     //User32.CloseDesktop(inputDesktop);

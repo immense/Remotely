@@ -57,13 +57,13 @@ namespace Remotely_ScreenCast.Core.Capture
                 await conductor.CasterSocket.SendScreenSize(bounds.Width, bounds.Height, viewerID);
             };
 
-            // TODO: SetThradDesktop causes issues with input after switching.
+            // TODO: SetThreadDesktop causes issues with input after switching.
             //var desktopName = Win32Interop.GetCurrentDesktop();
             while (!viewer.DisconnectRequested)
             {
                 try
                 {
-                    // TODO: SetThradDesktop causes issues with input after switching.
+                    // TODO: SetThreadDesktop causes issues with input after switching.
                     //var currentDesktopName = Win32Interop.GetCurrentDesktop();
                     //if (desktopName.ToLower() != currentDesktopName.ToLower())
                     //{

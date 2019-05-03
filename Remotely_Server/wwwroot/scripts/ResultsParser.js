@@ -1,5 +1,5 @@
 import * as DataGrid from "./DataGrid.js";
-import { TabContentWrapper } from "./UI.js";
+import { ConsoleFrame } from "./UI.js";
 export function CreateCommandHarness(context) {
     var collapseClass = context.TargetDeviceIDs.length > 1 ? "collapse" : "collapse show";
     var commandHarness = document.createElement("div");
@@ -47,7 +47,7 @@ export function AddPSCoreResultsHarness(result) {
         errorSpan.innerText = String(currentErrors);
     }
     resultsWrapper.appendChild(resultDiv);
-    TabContentWrapper.scrollTop = TabContentWrapper.scrollHeight;
+    ConsoleFrame.scrollTop = ConsoleFrame.scrollHeight;
 }
 export function AddCommandResultsHarness(result) {
     var contextID = "c" + result.CommandContextID;
@@ -73,7 +73,7 @@ export function AddCommandResultsHarness(result) {
         errorSpan.innerText = String(currentErrors);
     }
     resultsWrapper.appendChild(resultDiv);
-    TabContentWrapper.scrollTop = TabContentWrapper.scrollHeight;
+    ConsoleFrame.scrollTop = ConsoleFrame.scrollHeight;
 }
 export function UpdateResultsCount(commandContextID) {
     var contextID = "c" + commandContextID;

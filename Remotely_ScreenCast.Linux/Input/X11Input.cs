@@ -13,9 +13,9 @@ namespace Remotely_ScreenCast.Linux.Input
 {
     public class X11Input : IKeyboardMouseInput
     {
-        public X11Input(IntPtr display)
+        public X11Input()
         {
-            Display = display;
+            Display = LibX11.XOpenDisplay(null);
         }
 
         public IntPtr Display { get; }
@@ -101,7 +101,6 @@ namespace Remotely_ScreenCast.Linux.Input
         {
             try
             {
-                var capturer = new X11Capture(Display);
                 LibXtst.XTestFakeMotionEvent(Display, 
                     viewer.Capturer.SelectedScreen,
                     (int)(viewer.Capturer.CurrentScreenBounds.Width * percentX), 

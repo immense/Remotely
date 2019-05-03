@@ -37,7 +37,10 @@ namespace Remotely_ScreenCast.Linux.X11Interop
     {
 
         [DllImport("libX11")]
-        public static extern IntPtr XGetImage(IntPtr display, IntPtr drawable, int x, int y, uint width, uint height, ulong plane_mask, int format);
+        public static extern IntPtr XGetImage(IntPtr display, IntPtr drawable, int x, int y, int width, int height, long plane_mask, int format);
+        
+        [DllImport("libX11")]
+        public static extern IntPtr XDefaultVisual(IntPtr display, int screen_number);
         [DllImport("libX11")]
         public static extern int XScreenCount(IntPtr display);
         [DllImport("libX11")]
@@ -80,5 +83,29 @@ namespace Remotely_ScreenCast.Linux.X11Interop
         public static extern void XForceScreenSaver(IntPtr display, int mode);
         [DllImport("libX11")]
         public static extern void XSync(IntPtr display, bool discard);
+        [DllImport("libX11")]
+        public static extern void XDestroyImage(IntPtr ximage);
+
+
+        public struct XImage
+        {
+            public int width;
+            public int height;                 /* size of image */
+            public int xoffset;               /* number of pixels offset in X direction */
+            public int format;                /* XYBitmap, XYPixmap, ZPixmap */
+            //public char* data;                /* pointer to image data */
+            public IntPtr data;                /* pointer to image data */
+            public int byte_order;            /* data byte order, LSBFirst, MSBFirst */
+            public int bitmap_unit;           /* quant. of scanline 8, 16, 32 */
+            public int bitmap_bit_order;      /* LSBFirst, MSBFirst */
+            public int bitmap_pad;            /* 8, 16, 32 either XY or ZPixmap */
+            public int depth;                 /* depth of image */
+            public int bytes_per_line;        /* accelerator to next scanline */
+            public int bits_per_pixel;        /* bits per pixel (ZPixmap) */
+            public ulong red_mask;    /* bits in z arrangement */
+            public ulong green_mask;
+            public ulong blue_mask;
+            public IntPtr obdata;           /* hook for the object routines to hang on */
+        }
     }
 }
