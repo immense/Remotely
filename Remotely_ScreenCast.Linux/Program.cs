@@ -16,7 +16,6 @@ namespace Remotely_ScreenCast.Linux
     public class Program
     {
         public static Conductor Conductor { get; private set; }
-        public static IntPtr Display { get; } = LibX11.XOpenDisplay(null);
         public static void Main(string[] args)
         {
             try
@@ -25,7 +24,7 @@ namespace Remotely_ScreenCast.Linux
                 Conductor = new Conductor();
                 Conductor.ProcessArgs(args);
                 Conductor.Connect().Wait();
-                Conductor.SetMessageHandlers(new X11Input(Display));
+                Conductor.SetMessageHandlers(new X11Input());
                 Conductor.ScreenCastInitiated += ScreenCastInitiated;
                 Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName).Wait();
                 Conductor.CasterSocket.NotifyRequesterUnattendedReady(Conductor.RequesterID).Wait();
@@ -46,7 +45,7 @@ namespace Remotely_ScreenCast.Linux
         {
             try
             {
-                var capturer = new X11Capture(Display);
+                var capturer = new X11Capture();
                 await Conductor.CasterSocket.SendCursorChange(new CursorInfo(null, Point.Empty, "default"), new List<string>() { screenCastRequest.ViewerID });
                 ScreenCaster.BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, capturer, Conductor);
             }
