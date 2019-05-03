@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <ApplicationIcon>Assets\favicon.ico</ApplicationIcon>
+    <AssemblyName>Remotely_Desktop</AssemblyName>
+    <RootNamespace>Remotely_Desktop.Unix</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <Compile Update="**\*.xaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <AvaloniaResource Include="**\*.xaml">
+      <SubType>Designer</SubType>
+    </AvaloniaResource>
+    <AvaloniaResource Include="Assets\*" />
+    <AvaloniaResource Remove="Controls\HostNamePrompt.xaml" />
+    <AvaloniaResource Remove="Controls\MessageBox.xaml" />
+    <None Remove="Controls\HostNamePrompt.xaml" />
+    <None Remove="Controls\MessageBox.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="0.8.0" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.8.0" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.8.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Controls\HostNamePrompt.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Controls\MessageBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Remotely_ScreenCast.Core\Remotely_ScreenCast.Core.csproj" />
+    <ProjectReference Include="..\Remotely_ScreenCast.Linux\Remotely_ScreenCast.Linux.csproj" />
+    <ProjectReference Include="..\Remotely_ScreenCast.Win\Remotely_ScreenCast.Win.csproj" />
+    <ProjectReference Include="..\Remotely_Shared\Remotely_Shared.csproj" />
+  </ItemGroup>
+</Project>

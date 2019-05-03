@@ -1,4 +1,4 @@
-﻿using Remotely_Desktop.ViewModels;
+﻿using Remotely_Desktop.Win.ViewModels;
 using Remotely_ScreenCast.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Remotely_Desktop
+namespace Remotely_Desktop.Win
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

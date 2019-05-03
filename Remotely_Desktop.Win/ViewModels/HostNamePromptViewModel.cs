@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely_Desktop.ViewModels
+namespace Remotely_Desktop.Win.ViewModels
 {
     public class HostNamePromptViewModel : INotifyPropertyChanged
     {

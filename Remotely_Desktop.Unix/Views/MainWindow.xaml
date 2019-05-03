@@ -1,0 +1,74 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:Remotely_Desktop.Unix.ViewModels;assembly=Remotely_Desktop.Unix"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Remotely_Desktop.Unix.Views.MainWindow"
+        Icon="/Assets/favicon.ico"
+        Title="Remotely" Height="275" Width="350" HasSystemDecorations="False">
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <StackPanel>
+            <Border Name="TitleBanner" Height="50" Background="#FF464646">
+                <DockPanel Margin="10,0,0,0">
+                    <StackPanel>
+                        <TextBlock Foreground="DeepSkyBlue" FontWeight="Bold" FontSize="20" Margin="0,2,0,0">Remotely</TextBlock>
+                        <TextBlock Foreground="White" FontSize="10" Text="Do IT Remotely"></TextBlock>
+                    </StackPanel>
+                    <Button Classes="TitlebarButton" Command="{Binding CloseCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Content="X" />
+                    <Button Classes="TitlebarButton" Command="{Binding MinimizeCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Content="_"/>
+                </DockPanel>
+            </Border>
+            <Grid Margin="10,15,10,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Margin="0,0,15,0">
+                    <TextBlock Classes="SectionHeader">Share Screen</TextBlock>
+                    <TextBlock FontSize="16" Margin="0,10,0,5">Your Session ID:</TextBlock>
+                    <TextBox Name="SessionIDTextBox" FontSize="16" Text="{Binding SessionID}" IsReadOnly="True"/>
+                    <Grid Margin="0,10,0,0">
+                        <TextBlock VerticalAlignment="Center">
+                        Invite Link:
+                        </TextBlock>
+                        <Button HorizontalAlignment="Right" Classes="NormalButton" Command="{Binding CopyLinkCommand}">
+                            Copy
+                        </Button>
+                    </Grid>
+                    <TextBlock Margin="0,10,0,0" Foreground="DodgerBlue" IsVisible="{Binding IsCopyMessageVisible}" Opacity="{Binding CopyMessageOpacity}" HorizontalAlignment="Right">Copied to clipboard!</TextBlock>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Margin="15,0,0,0">
+                    <TextBlock Classes="SectionHeader">Viewers</TextBlock>
+                    <Grid  Margin="0,5,0,0">
+                        <TextBlock FontSize="8" Margin="5,0,0,0">Name</TextBlock>
+                        <TextBlock FontSize="8" Margin="0,0,5,0" HorizontalAlignment="Right">Has Control</TextBlock>
+                    </Grid>
+                    <ListBox Name="ViewerListBox" Height="90" Items="{Binding Viewers}" SelectionMode="Multiple">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <DockPanel>
+                                    <TextBlock Text="{Binding Name}"></TextBlock>
+                                    <CheckBox IsChecked="{Binding HasControl}" HorizontalAlignment="Right"></CheckBox>
+                                </DockPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Button Classes="NormalButton" HorizontalAlignment="Right"  Margin="0,5,0,0" 
+                            Command="{Binding RemoveViewerCommand}"
+                            CommandParameter="{Binding SelectedItems, ElementName=ViewerListBox}">
+                        Remove  
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+      <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Margin="10,5" IsVisible="{Binding AllowHostChange}">
+        <TextBlock FontSize="10" Text="Connected to: "></TextBlock>
+        <Button Classes="HyperlinkButton" Command="{Binding ChangeHostCommand}" FontSize="10" Margin="5,0" Content="{Binding Host}">
+        </Button>
+      </StackPanel>
+    </Grid>
+</Window>
