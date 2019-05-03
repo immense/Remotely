@@ -1,5 +1,5 @@
-﻿using Remotely_Desktop.Services;
-using Remotely_Desktop.ViewModels;
+﻿using Remotely_Desktop.Win.Services;
+using Remotely_Desktop.Win.ViewModels;
 using Remotely_ScreenCast.Core.Utilities;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Remotely_Desktop
+namespace Remotely_Desktop.Win
 {
     /// <summary>
     /// Interaction logic for App.xaml

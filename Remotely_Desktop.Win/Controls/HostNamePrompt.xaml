@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Remotely_Desktop.Controls"
-        xmlns:ViewModels="clr-namespace:Remotely_Desktop.ViewModels" x:Name="PromptWindow" x:Class="Remotely_Desktop.Controls.HostNamePrompt"
+        xmlns:local="clr-namespace:Remotely_Desktop.Win.Controls"
+        xmlns:ViewModels="clr-namespace:Remotely_Desktop.Win.ViewModels" x:Name="PromptWindow" x:Class="Remotely_Desktop.Win.Controls.HostNamePrompt"
         mc:Ignorable="d"
         Title="Remotely Host Name" Height="150" Width="350" Icon="/Remotely_Desktop;component/favicon.ico" WindowStartupLocation="CenterOwner">
     <Window.DataContext>

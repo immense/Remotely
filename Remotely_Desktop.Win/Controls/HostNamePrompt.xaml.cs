@@ -1,4 +1,4 @@
-﻿using Remotely_Desktop.ViewModels;
+﻿using Remotely_Desktop.Win.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Remotely_Desktop.Controls
+namespace Remotely_Desktop.Win.Controls
 {
     /// <summary>
     /// Interaction logic for HostNamePrompt.xaml

@@ -1,5 +1,5 @@
-﻿using Remotely_Desktop.Controls;
-using Remotely_Desktop.Services;
+﻿using Remotely_Desktop.Win.Controls;
+using Remotely_Desktop.Win.Services;
 using Remotely_Shared.Models;
 using Remotely_ScreenCast.Core;
 using Remotely_ScreenCast.Core.Capture;
@@ -21,7 +21,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Remotely_Desktop.ViewModels
+namespace Remotely_Desktop.Win.ViewModels
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {

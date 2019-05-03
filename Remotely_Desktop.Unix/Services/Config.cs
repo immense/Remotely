@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely_Desktop.Services
+namespace Remotely_Desktop.Unix.Services
 {
     public class Config
     {

@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Remotely_Desktop"
-        xmlns:ViewModels="clr-namespace:Remotely_Desktop.ViewModels" x:Class="Remotely_Desktop.MainWindow"
+        xmlns:local="clr-namespace:Remotely_Desktop.Win"
+        xmlns:ViewModels="clr-namespace:Remotely_Desktop.Win.ViewModels" x:Class="Remotely_Desktop.Win.MainWindow"
         mc:Ignorable="d"
         Title="Remotely" Height="250" Width="350" MouseLeftButtonDown="Window_MouseLeftButtonDown" WindowStyle="None" ResizeMode="NoResize" Icon="favicon.ico" Loaded="Window_Loaded">
     <Window.Resources>
