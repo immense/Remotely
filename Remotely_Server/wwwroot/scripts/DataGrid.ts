@@ -51,6 +51,9 @@ export function AddOrUpdateDevice(device: Device) {
     (recordRow.querySelector(".device-tag") as HTMLInputElement).onchange = (ev) => {
         var newTag = (ev.currentTarget as HTMLInputElement).value;
         DataSource.find(x => x.ID == device.ID).Tags = newTag;
+        var deviceTagInput = document.getElementById(device.ID).querySelector(".device-tag") as HTMLInputElement;
+        deviceTagInput.value = newTag;
+        deviceTagInput.setAttribute("value", newTag);
         BrowserSockets.Connection.invoke("UpdateTags", device.ID, newTag);
     };
     UpdateDeviceCounts();

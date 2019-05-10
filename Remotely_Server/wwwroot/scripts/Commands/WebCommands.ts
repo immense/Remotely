@@ -440,7 +440,9 @@ var commands: Array<ConsoleCommand> = [
                     parameterDict["tags"] = x.Tags.trim() + separator + parameterDict["tags"]
                 }
                 DataGrid.DataSource.find(y => y.ID == x.ID).Tags = parameterDict["tags"];
-                (document.getElementById(x.ID).querySelector(".device-tag") as HTMLInputElement).value = parameterDict["tags"];
+                var deviceTagInput = document.getElementById(x.ID).querySelector(".device-tag") as HTMLInputElement;
+                deviceTagInput.value = parameterDict["tags"];
+                deviceTagInput.setAttribute("value", parameterDict["tags"]);
                 BrowserSockets.Connection.invoke("UpdateTags", x.ID, parameterDict["tags"]);
             });
         }

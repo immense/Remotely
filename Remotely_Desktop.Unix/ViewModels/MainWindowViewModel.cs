@@ -10,8 +10,6 @@ using Remotely_ScreenCast.Core.Models;
 using Remotely_ScreenCast.Core.Utilities;
 using Remotely_ScreenCast.Linux.Capture;
 using Remotely_ScreenCast.Linux.Input;
-using Remotely_ScreenCast.Win.Capture;
-using Remotely_ScreenCast.Win.Input;
 using Remotely_Shared.Models;
 using Remotely_Shared.Services;
 using System;
@@ -157,10 +155,6 @@ namespace Remotely_Desktop.Unix.ViewModels
             {
                 Conductor.SetMessageHandlers(new X11Input());
             }
-            else if (OSUtils.IsWindows)
-            {
-                Conductor.SetMessageHandlers(new WinInput());
-            }
             
             await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName);
             await Conductor.CasterSocket.GetSessionID();
@@ -204,17 +198,6 @@ namespace Remotely_Desktop.Unix.ViewModels
                         if (OSUtils.IsLinux)
                         {
                             capturer = new X11Capture();
-                        }
-                        else if (OSUtils.IsWindows)
-                        {
-                            if (Conductor.Viewers.Count == 0)
-                            {
-                                capturer = new DXCapture();
-                            }
-                            else
-                            {
-                                capturer = new BitBltCapture();
-                            }
                         }
                         
                         await Conductor.CasterSocket.SendCursorChange(new CursorInfo(null, Point.Empty, "default"), new List<string>() { screenCastRequest.ViewerID });
