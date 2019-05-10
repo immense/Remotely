@@ -38,7 +38,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Remotely_ScreenCast.Core\Remotely_ScreenCast.Core.csproj" />
     <ProjectReference Include="..\Remotely_ScreenCast.Linux\Remotely_ScreenCast.Linux.csproj" />
-    <ProjectReference Include="..\Remotely_ScreenCast.Win\Remotely_ScreenCast.Win.csproj" />
     <ProjectReference Include="..\Remotely_Shared\Remotely_Shared.csproj" />
   </ItemGroup>
 </Project>
