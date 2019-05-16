@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Remotely_Desktop.Unix.Controls.HostNamePrompt"
-        xmlns:ViewModels="clr-namespace:Remotely_Desktop.Unix.ViewModels"
+        xmlns:ViewModels="clr-namespace:Remotely_Desktop.Unix.ViewModels;assembly=Remotely_Desktop"
         Title="Remotely Host Name" Height="150" Width="350"  WindowStartupLocation="CenterOwner">
   <Window.DataContext>
     <ViewModels:HostNamePromptViewModel/>
