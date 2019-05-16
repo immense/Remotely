@@ -1,6 +1,6 @@
 ﻿<Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Remotely_Desktop.Unix"
+             xmlns:local="clr-namespace:Remotely_Desktop.Unix;assembly=Remotely_Desktop"
              x:Class="Remotely_Desktop.Unix.App">
     <Application.DataTemplates>
         <local:ViewLocator/>

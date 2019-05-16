@@ -3,7 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        xmlns:vm="clr-namespace:Remotely_Desktop.Unix.ViewModels;assembly=Remotely_Desktop.Unix"
+        xmlns:vm="clr-namespace:Remotely_Desktop.Unix.ViewModels;assembly=Remotely_Desktop"
         x:Class="Remotely_Desktop.Unix.Controls.MessageBox"
         Title="{Binding Caption}" SizeToContent="WidthAndHeight" MinWidth="200" MinHeight="100" WindowStartupLocation="CenterOwner">
   <Window.DataContext>

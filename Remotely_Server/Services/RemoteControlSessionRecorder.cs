@@ -4,6 +4,7 @@ using Remotely_Server.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -16,7 +17,7 @@ namespace Remotely_Server.Services
     {
         private static bool IsProcessing { get; set; }
         private static ConcurrentQueue<RemoteControlFrame> FrameQueue { get; } = new ConcurrentQueue<RemoteControlFrame>();
-        private static ConcurrentDictionary<string, Bitmap> CumulativeFrames { get; } = new ConcurrentDictionary<string, Bitmap>();
+        private static ConcurrentDictionary<string, RecordingSessionState> SessionStates { get; } = new ConcurrentDictionary<string, RecordingSessionState>();
         private static object LockObject { get; } = new object();
 
         private IHostingEnvironment HostingEnv { get; }
@@ -52,18 +53,28 @@ namespace Remotely_Server.Services
                     {
                         if (FrameQueue.TryDequeue(out var frame))
                         {
-                            if (!CumulativeFrames.ContainsKey(frame.ViewerID))
-                            {
-                                CumulativeFrames[frame.ViewerID] = new Bitmap(frame.Width, frame.Height);
-                            }
-
                             var saveDir = Directory.CreateDirectory(GetSaveFolder(frame));
 
-                            var saveFile = Path.Combine(
-                                saveDir.FullName,
-                                $"frame-{(Directory.GetFiles(saveDir.FullName).Length + 1).ToString()}.jpg");
+                            var saveFile = Path.Combine(saveDir.FullName, $"Recording.mp4");
 
-                            var bitmap = CumulativeFrames[frame.ViewerID] as Bitmap;
+                            if (!SessionStates.ContainsKey(frame.ViewerID))
+                            {
+                                SessionStates[frame.ViewerID] = new RecordingSessionState()
+                                {
+                                    CumulativeFrame = new Bitmap(frame.Width, frame.Height)
+                                };
+                                var ffmpegProc = new Process();
+                                SessionStates[frame.ViewerID].FfmpegProcess = ffmpegProc;
+
+                                ffmpegProc.StartInfo.FileName = "ffmpeg.exe";
+                                ffmpegProc.StartInfo.Arguments = $"-y -f image2pipe -i pipe:.jpg -r 5 \"{saveFile}\"";
+                                ffmpegProc.StartInfo.UseShellExecute = false;
+                                ffmpegProc.StartInfo.RedirectStandardInput = true;
+
+                                ffmpegProc.Start();
+                            }
+
+                            var bitmap = SessionStates[frame.ViewerID].CumulativeFrame;
                             using (var graphics = Graphics.FromImage(bitmap))
                             {
                                 using (var ms = new MemoryStream(frame.FrameBytes))
@@ -74,13 +85,9 @@ namespace Remotely_Server.Services
                                     }
                                 }
                             }
-                            bitmap.Save(saveFile, ImageFormat.Jpeg);
+                            bitmap.Save(SessionStates[frame.ViewerID].FfmpegProcess.StandardInput.BaseStream, ImageFormat.Jpeg);
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    DataService.WriteEvent(ex);
                 }
                 finally
                 {
@@ -102,34 +109,12 @@ namespace Remotely_Server.Services
                         frame.StartTime.ToString("HH.mm.ss.fff"));
         }
 
-        internal void EncodeFrames(string viewerID)
+        internal void StopProcessing(string viewerID)
         {
-            var recordingDirs = Directory.GetDirectories(Path.Combine(
-                                    HostingEnv.ContentRootPath,
-                                    "Recordings",
-                                    DateTime.Now.Year.ToString().PadLeft(4, '0'),
-                                    DateTime.Now.Month.ToString().PadLeft(2, '0')),
-                                viewerID,
-                                SearchOption.AllDirectories);
-
-            foreach (var dir in recordingDirs)
-            {
-                foreach (var subDir in Directory.GetDirectories(dir))
-                {
-                    try
-                    {
-                        System.Diagnostics.Process.Start("ffmpeg", $"-y -i \"{Path.Combine(subDir, "frame-%d.jpg")}\" \"{Path.Combine(subDir, "Recording.mp4")}\"").WaitForExit();
-                        foreach (var file in Directory.GetFiles(subDir, "*.jpg"))
-                        {
-                            File.Delete(file);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        DataService.WriteEvent(ex);
-                    }
-                }
-            }
+            SessionStates[viewerID].FfmpegProcess.StandardInput.Flush();
+            SessionStates[viewerID].FfmpegProcess.StandardInput.Close();
+            SessionStates[viewerID].FfmpegProcess.Close();
+            SessionStates.TryRemove(viewerID, out _);
         }
     }
 }

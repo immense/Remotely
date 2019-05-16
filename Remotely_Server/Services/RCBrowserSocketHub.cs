@@ -134,7 +134,7 @@ namespace Remotely_Server.Services
 
             if (AppConfig.RecordRemoteControlSessions)
             {
-                RCSessionRecorder.EncodeFrames(Context.ConnectionId);
+                RCSessionRecorder.StopProcessing(Context.ConnectionId);
             }
         }
 

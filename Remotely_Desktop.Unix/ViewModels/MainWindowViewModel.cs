@@ -155,6 +155,11 @@ namespace Remotely_Desktop.Unix.ViewModels
             {
                 Conductor.SetMessageHandlers(new X11Input());
             }
+
+            if (OSUtils.IsWindows)
+            {
+                return;
+            }
             
             await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName);
             await Conductor.CasterSocket.GetSessionID();
