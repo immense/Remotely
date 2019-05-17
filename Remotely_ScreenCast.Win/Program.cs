@@ -104,16 +104,25 @@ namespace Remotely_ScreenCast.Win
             {
                 if (args.BytesRecorded > 0)
                 {
-                    using (var ms = new MemoryStream())
+                    using (var ms1 = new MemoryStream())
                     {
-                        using (var wfw = new WaveFileWriter(ms, AudioCapturer.WaveFormat))
+                        using (var wfw = new WaveFileWriter(ms1, AudioCapturer.WaveFormat))
                         {
                             wfw.Write(args.Buffer, 0, args.BytesRecorded);
                         }
-                        await Conductor.CasterSocket.SendAudioSample(ms.ToArray(), Conductor.Viewers.Keys.ToList());
+                        using (var ms2 = new MemoryStream(ms1.ToArray()))
+                        using (var wfr = new WaveFileReader(ms2))
+                        using (var ms3 = new MemoryStream())
+                        {
+                            using (var resampler = new MediaFoundationResampler(wfr, new WaveFormat(AudioCapturer.WaveFormat.SampleRate, 16, AudioCapturer.WaveFormat.Channels)))
+                            {
+                                WaveFileWriter.WriteWavFileToStream(ms3, resampler);
+                            }
+                            await Conductor.CasterSocket.SendAudioSample(ms3.ToArray(), Conductor.Viewers.Keys.ToList());
+                        }
                     }
+                   
                 }
-            
             };
             AudioCapturer.StartRecording();
         }
