@@ -71,4 +71,11 @@ export function ConvertUInt8ArrayToBase64(array) {
     }
     return btoa(base64String);
 }
+export function RemoveFromArray(array, item) {
+    var index = array.indexOf(item);
+    if (index > -1) {
+        array.splice(index, 1);
+    }
+}
+;
 //# sourceMappingURL=Utilities.js.map

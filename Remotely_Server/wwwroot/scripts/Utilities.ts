@@ -78,3 +78,10 @@ export function ConvertUInt8ArrayToBase64(array: Uint8Array): string {
     }
     return btoa(base64String);
 }
+
+export function RemoveFromArray(array: Array<any>, item: any) {
+    var index = array.indexOf(item);
+    if (index > -1) {
+        array.splice(index, 1);
+    }
+};

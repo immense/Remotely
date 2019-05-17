@@ -240,6 +240,11 @@ namespace Remotely_ScreenCast.Core.Sockets
             });
         }
 
+        public async Task SendAudioSample(byte[] buffer, List<string> viewerIDs)
+        {
+            await Connection.SendAsync("SendAudioSample", buffer, viewerIDs);
+        }
+
         public async Task SendScreenSize(int width, int height, string viewerID)
         {
             await Connection.SendAsync("SendScreenSize", width, height, viewerID);

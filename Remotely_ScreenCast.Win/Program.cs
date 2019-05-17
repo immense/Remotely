@@ -21,6 +21,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Remotely_Shared.Win32;
+using NAudio.Wave;
 
 namespace Remotely_ScreenCast.Win
 {
@@ -28,6 +29,7 @@ namespace Remotely_ScreenCast.Win
 	{
         public static Conductor Conductor { get; private set; }
         public static CursorIconWatcher CursorIconWatcher { get; private set; }
+        public static WasapiLoopbackCapture AudioCapturer { get; private set; }
 
         public static void Main(string[] args)
         {
@@ -91,7 +93,31 @@ namespace Remotely_ScreenCast.Win
             }
             await Conductor.CasterSocket.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
             ScreenCaster.BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, capturer, Conductor);
+            BeginAudioCapture();
         }
+
+        private static void BeginAudioCapture()
+        {
+
+            AudioCapturer = new WasapiLoopbackCapture();
+            AudioCapturer.DataAvailable += async (aud, args) =>
+            {
+                if (args.BytesRecorded > 0)
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        using (var wfw = new WaveFileWriter(ms, AudioCapturer.WaveFormat))
+                        {
+                            wfw.Write(args.Buffer, 0, args.BytesRecorded);
+                        }
+                        await Conductor.CasterSocket.SendAudioSample(ms.ToArray(), Conductor.Viewers.Keys.ToList());
+                    }
+                }
+            
+            };
+            AudioCapturer.StartRecording();
+        }
+
 
         public static async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)
         {

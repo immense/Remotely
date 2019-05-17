@@ -179,6 +179,11 @@ namespace Remotely_Server.Services
             await RCBrowserHub.Clients.Client(rcBrowserHubConnectionID).SendAsync("ScreenCount", primaryScreenIndex, screenCount);
         }
 
+        public async Task SendAudioSample(byte[] buffer, List<string> viewerIDs)
+        {
+            await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("AudioSample", buffer);
+        }
+
         public async Task SendScreenSize(int width, int height, string rcBrowserHubConnectionID)
         {
             CurrentScreenSize = new Size(width, height);

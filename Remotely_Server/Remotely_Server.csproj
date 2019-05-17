@@ -47,6 +47,7 @@
     <Content Remove="wwwroot\scripts\ResultsParser.ts" />
     <Content Remove="wwwroot\scripts\RTC.ts" />
     <Content Remove="wwwroot\scripts\SocketsRC.ts" />
+    <Content Remove="wwwroot\scripts\Sound.ts" />
     <Content Remove="wwwroot\scripts\Store.ts" />
     <Content Remove="wwwroot\scripts\UI.ts" />
     <Content Remove="wwwroot\scripts\UserSettings.ts" />
@@ -129,6 +130,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\UI.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\ResultsParser.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RCBrowserSockets.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Sound.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Store.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\UI.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\UserSettings.ts" />

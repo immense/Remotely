@@ -3,6 +3,7 @@ import * as UI from "./UI.js";
 import { ConnectButton } from "./UI.js";
 import { RemoteControl } from "./RemoteControl.js";
 import { CursorInfo } from "../Models/CursorInfo.js";
+import { Sound } from "../Sound.js";
 
 var signalR = window["signalR"];
 
@@ -125,6 +126,9 @@ export class RCBrowserSockets {
                 window.URL.revokeObjectURL(url);
             };
             img.src = url;
+        });
+        hubConnection.on("AudioSample", (buffer: Uint8Array) => {
+            Sound.Play(buffer);
         });
         hubConnection.on("ConnectionFailed", () => {
             UI.ConnectButton.removeAttribute("disabled");
