@@ -53,9 +53,9 @@ if ((Test-Path -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\linux-x64\publi
 
 
 # Publish Core clients.
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win10-x64 --configuration Release --output ".\bin\Release\netcoreapp2.2\win10-x64\publish" "$Root\Remotely_Agent"
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win10-x86 --configuration Release --output ".\bin\Release\netcoreapp2.2\win10-x86\publish" "$Root\Remotely_Agent"
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64 --configuration Release --output ".\bin\Release\netcoreapp2.2\linux-x64\publish" "$Root\Remotely_Agent"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win10-x64 --configuration Release --output "$Root\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish" "$Root\Remotely_Agent"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win10-x86 --configuration Release --output "$Root\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish" "$Root\Remotely_Agent"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64 --configuration Release --output "$Root\Remotely_Agent\bin\Release\netcoreapp2.2\linux-x64\publish" "$Root\Remotely_Agent"
 
 New-Item -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish\ScreenCast\" -ItemType Directory -Force
 New-Item -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish\ScreenCast\" -ItemType Directory -Force

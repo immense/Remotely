@@ -110,6 +110,7 @@ namespace Remotely_ScreenCast.Win
                         {
                             wfw.Write(args.Buffer, 0, args.BytesRecorded);
                         }
+                        // Resample to 16-bit so Firefox will play it.
                         using (var ms2 = new MemoryStream(ms1.ToArray()))
                         using (var wfr = new WaveFileReader(ms2))
                         using (var ms3 = new MemoryStream())
