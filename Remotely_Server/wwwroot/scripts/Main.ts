@@ -11,6 +11,7 @@ import { Store } from "./Store.js";
 import { UserSettings } from "./UserSettings.js";
 import { WinPSCommands } from "./Commands/WinPSCommands.js";
 import { ApplyInputEventHandlers } from "./InputEventHandlers.js";
+import { Sound } from "./Sound.js";
 
 var remotely = {
     Commands: {
@@ -26,6 +27,7 @@ var remotely = {
     Sockets: BrowserSockets,
     Storage: Storage,
     UserSettings: UserSettings,
+    Sound: Sound,
     Init() {
         UI.ConsoleTextArea.focus();
         ApplyInputEventHandlers();

@@ -1,6 +1,7 @@
 import * as Utilities from "../Utilities.js";
 import * as UI from "./UI.js";
 import { RemoteControl } from "./RemoteControl.js";
+import { Sound } from "../Sound.js";
 var signalR = window["signalR"];
 export class RCBrowserSockets {
     Connect() {
@@ -116,6 +117,9 @@ export class RCBrowserSockets {
                 window.URL.revokeObjectURL(url);
             };
             img.src = url;
+        });
+        hubConnection.on("AudioSample", (buffer) => {
+            Sound.Play(buffer);
         });
         hubConnection.on("ConnectionFailed", () => {
             UI.ConnectButton.removeAttribute("disabled");
