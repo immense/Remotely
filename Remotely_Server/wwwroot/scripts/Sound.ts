@@ -26,12 +26,5 @@ export const Sound = new class {
         }
 
         fr.readAsArrayBuffer(new Blob([buffer], { 'type': 'audio/wav' }));
-
-        //var blob = new Blob([buffer], { 'type': 'audio/wav' });
-        //var src = URL.createObjectURL(blob);
-        //var audioElement = new Audio(src);
-        //var sourceNode = this.Context.createMediaElementSource(audioElement);
-        //sourceNode.connect(this.Context.destination);
-        //audioElement.play();
     };
 }

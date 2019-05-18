@@ -24,6 +24,12 @@ export function AddOrUpdateDevice(device) {
         recordRow.id = device.ID;
         tableBody.appendChild(recordRow);
         recordRow.addEventListener("click", (e) => {
+            if (!e.ctrlKey && !e.shiftKey) {
+                var selectedID = e.currentTarget.id;
+                DeviceGrid.querySelectorAll(`.record-row.row-selected:not([id='${selectedID}'])`).forEach(elem => {
+                    elem.classList.remove("row-selected");
+                });
+            }
             e.currentTarget.classList.toggle("row-selected");
             UpdateDeviceCounts();
         });

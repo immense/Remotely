@@ -29,7 +29,7 @@ namespace Remotely_ScreenCast.Win
 	{
         public static Conductor Conductor { get; private set; }
         public static CursorIconWatcher CursorIconWatcher { get; private set; }
-        public static WasapiLoopbackCapture AudioCapturer { get; private set; }
+        public static AudioCapturer AudioCapturer { get; private set; }
 
         public static void Main(string[] args)
         {
@@ -41,6 +41,7 @@ namespace Remotely_ScreenCast.Win
                 Conductor.Connect().Wait();
                 Conductor.SetMessageHandlers(new WinInput());
                 Conductor.ScreenCastInitiated += ScreenCastInitiated;
+                AudioCapturer = new AudioCapturer(Conductor);
                 CursorIconWatcher = new CursorIconWatcher(Conductor);
                 CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
                 Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName).Wait();
@@ -93,41 +94,8 @@ namespace Remotely_ScreenCast.Win
             }
             await Conductor.CasterSocket.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
             ScreenCaster.BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, capturer, Conductor);
-            BeginAudioCapture();
+            AudioCapturer.Start();
         }
-
-        private static void BeginAudioCapture()
-        {
-
-            AudioCapturer = new WasapiLoopbackCapture();
-            AudioCapturer.DataAvailable += async (aud, args) =>
-            {
-                if (args.BytesRecorded > 0)
-                {
-                    using (var ms1 = new MemoryStream())
-                    {
-                        using (var wfw = new WaveFileWriter(ms1, AudioCapturer.WaveFormat))
-                        {
-                            wfw.Write(args.Buffer, 0, args.BytesRecorded);
-                        }
-                        // Resample to 16-bit so Firefox will play it.
-                        using (var ms2 = new MemoryStream(ms1.ToArray()))
-                        using (var wfr = new WaveFileReader(ms2))
-                        using (var ms3 = new MemoryStream())
-                        {
-                            using (var resampler = new MediaFoundationResampler(wfr, new WaveFormat(AudioCapturer.WaveFormat.SampleRate, 16, AudioCapturer.WaveFormat.Channels)))
-                            {
-                                WaveFileWriter.WriteWavFileToStream(ms3, resampler);
-                            }
-                            await Conductor.CasterSocket.SendAudioSample(ms3.ToArray(), Conductor.Viewers.Keys.ToList());
-                        }
-                    }
-                   
-                }
-            };
-            AudioCapturer.StartRecording();
-        }
-
 
         public static async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)
         {
