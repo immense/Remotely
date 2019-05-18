@@ -154,6 +154,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Capture\AudioCapturer.cs" />
     <Compile Include="Capture\BitBltCapture.cs" />
     <Compile Include="Capture\CursorIconWatcher.cs" />
     <Compile Include="Capture\DXCapture.cs" />

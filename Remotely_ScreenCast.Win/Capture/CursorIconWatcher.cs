@@ -65,9 +65,8 @@ namespace Remotely_ScreenCast.Win.Capture
                 }
                 else
                 {
-                    return new CursorInfo(new byte[0], Point.Empty, "none");
+                    return new CursorInfo(new byte[0], Point.Empty, "default");
                 }
-                
             }
             catch
             {
@@ -116,7 +115,7 @@ namespace Remotely_ScreenCast.Win.Capture
                 else if (PreviousCursorHandle != "0")
                 {
                     PreviousCursorHandle = "0";
-                    OnChange?.Invoke(this, new CursorInfo(new byte[0], Point.Empty, "none"));
+                    OnChange?.Invoke(this, new CursorInfo(new byte[0], Point.Empty, "default"));
                 }
             }
             catch
