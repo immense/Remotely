@@ -35,11 +35,14 @@ namespace Remotely_Desktop.Win.ViewModels
             Conductor.ScreenCastRequested += ScreenCastRequested;
             CursorIconWatcher = new CursorIconWatcher(Conductor);
             CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
+            AudioCapturer = new AudioCapturer(Conductor);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public static MainWindowViewModel Current { get; private set; }
+
+        public AudioCapturer AudioCapturer { get; private set; }
 
         public bool AllowHostChange
         {
@@ -179,6 +182,7 @@ namespace Remotely_Desktop.Win.ViewModels
                         }
                         await Conductor.CasterSocket.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
                         ScreenCaster.BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, capturer, Conductor);
+                        AudioCapturer.Start();
                     });
                 }
             });
