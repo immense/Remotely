@@ -112,10 +112,10 @@ Move-Item -Path "$PublishDir\Remotely-Linux.zip" -Destination "$Root\Remotely_Se
 
 # Copy desktop app to Downloads folder.
 if ((Test-Path -Path ".\Remotely_Desktop.Win\bin\Release\Remotely_Desktop.exe") -eq $true) {
-    Compress-Archive -Path ".\Remotely_Desktop.Win\bin\Release\Remotely_Desktop.exe" -DestinationPath ".\Remotely_Server\wwwroot\Downloads\Remotely_Desktop.zip" -Force
+    Copy-Item -Path ".\Remotely_Desktop.Win\bin\Release\Remotely_Desktop.exe" -Destination ".\Remotely_Server\wwwroot\Downloads\Remotely_Desktop.exe" -Force
 }
 elseif ((Test-Path -Path ".\Remotely_Desktop.Win\bin\Debug\Remotely_Desktop.exe") -eq $true) {
-    Compress-Archive -Path ".\Remotely_Desktop.Win\bin\Debug\Remotely_Desktop.exe" -Destination ".\Remotely_Server\wwwroot\Downloads\Remotely_Desktop.zip" -Force
+    Copy-Item -Path ".\Remotely_Desktop.Win\bin\Debug\Remotely_Desktop.exe" -Destination ".\Remotely_Server\wwwroot\Downloads\Remotely_Desktop.exe" -Force
 }
 
 if ($RID.Length -gt 0 -and $OutDir.Length -gt 0) {
