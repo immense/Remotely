@@ -49,6 +49,8 @@ namespace Remotely_ScreenCast.Win.Capture
                     NeedsInit = false;
                 }
 
+                PreviousFrame = (Bitmap)CurrentFrame.Clone();
+
                 SharpDX.DXGI.Resource screenResource;
                 OutputDuplicateFrameInformation duplicateFrameInformation;
 
@@ -91,11 +93,10 @@ namespace Remotely_ScreenCast.Win.Capture
                     bitmap.UnlockBits(mapDest);
                     device.ImmediateContext.UnmapSubresource(screenTexture, 0);
 
-                    PreviousFrame = (Bitmap)CurrentFrame.Clone();
-                    CurrentFrame = (Bitmap)bitmap.Clone();
-
                     screenResource.Dispose();
                     duplicatedOutput.ReleaseFrame();
+
+                    CurrentFrame = (Bitmap)bitmap.Clone();
                 }
             }
             catch (SharpDXException e)
