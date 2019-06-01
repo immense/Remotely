@@ -216,7 +216,6 @@ namespace Remotely_Server
                 dataService.WriteEvent(ex);
             }
             dataService.SetAllDevicesNotOnline();
-            dataService.CleanupEmptyOrganizations();
             dataService.CleanupOldRecords();
         }
 
