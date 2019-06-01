@@ -89,25 +89,6 @@ namespace Remotely_Server.Data
                     });
         }
 
-        public void CleanupEmptyOrganizations()
-        {
-            var emptyOrgs = RemotelyContext.Organizations
-                .Include(x => x.RemotelyUsers)
-                .Include(x => x.CommandContexts)
-                .Include(x => x.InviteLinks)
-                .Include(x => x.Devices)
-                .Include(x => x.SharedFiles)
-                .Include(x => x.PermissionGroups)
-                .Include(x => x.EventLogs)
-                .Where(x => x.RemotelyUsers.Count == 0);
-
-            foreach (var emptyOrg in emptyOrgs)
-            {
-                RemotelyContext.Remove(emptyOrg);
-            }
-            RemotelyContext.SaveChanges();
-        }
-
         public bool DoesUserExist(string userName)
         {
             if (userName == null)
@@ -473,13 +454,6 @@ namespace Remotely_Server.Data
 
                 RemotelyContext.CommandContexts
                     .Where(x => DateTime.Now - x.TimeStamp > TimeSpan.FromDays(AppConfig.DataRetentionInDays))
-                    .ForEachAsync(x =>
-                    {
-                        RemotelyContext.Remove(x);
-                    }).Wait();
-
-                RemotelyContext.Devices
-                    .Where(x => DateTime.Now - x.LastOnline > TimeSpan.FromDays(AppConfig.DataRetentionInDays))
                     .ForEachAsync(x =>
                     {
                         RemotelyContext.Remove(x);
