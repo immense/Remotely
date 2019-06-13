@@ -155,15 +155,17 @@ namespace Remotely_Server.Services
 
                 screenCasterID = RCDeviceSocketHub.AttendedSessionList[screenCasterID];
             }
+           
             DataService.WriteEvent(new EventLog()
             {
                 EventType = EventTypes.Info,
                 TimeStamp = DateTime.Now,
-                Message = $"Remote control session requested by {requesterName}.  " +
+                Message = $"Remote control session requested.  " +
                                 $"Connection ID: {Context.ConnectionId}. User ID: {Context.UserIdentifier}.  " +
-                                $"Screen Caster ID: {screenCasterID}." + 
-                                $"Mode: {((RemoteControlMode)remoteControlMode).ToString()}" + 
+                                $"Screen Caster ID: {screenCasterID}.  " + 
+                                $"Mode: {((RemoteControlMode)remoteControlMode).ToString()}.  " + 
                                 $"Login ID (if logged in): {Context?.User?.Identity?.Name}.  " +
+                                $"Rquester Name (if specified): {requesterName}.  " +
                                 $"Requester IP Address: " + Context?.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString()
             });
     
