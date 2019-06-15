@@ -20,6 +20,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Security.Principal;
+using System.Security.Claims;
 
 namespace Remotely_Desktop.Win.ViewModels
 {
@@ -109,6 +111,23 @@ namespace Remotely_Desktop.Win.ViewModels
             Conductor.SetMessageHandlers(new WinInput());
             await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName);
             await Conductor.CasterSocket.GetSessionID();
+
+            CheckForAdminRights();
+        }
+
+        private void CheckForAdminRights()
+        {
+            if (!new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator))
+            {
+                var result = MessageBox.Show("Remotely isn't running with administrator rights.  Would you like to re-launch as an admin?", "Run as Admin", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Yes)
+                {
+                    var psi = new ProcessStartInfo(Assembly.GetExecutingAssembly().Location);
+                    psi.Verb = "RunAs";
+                    Process.Start(psi);
+                    Environment.Exit(0);
+                }
+            }
         }
 
         public void PromptForHostName()
