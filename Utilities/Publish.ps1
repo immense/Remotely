@@ -78,12 +78,12 @@ Move-Item -Path "$PublishDir\Remotely_Desktop.Unix.zip" -Destination "$Root\Remo
 
 # Copy .NET Framework ScreenCaster to Agent output folder.
 if ((Test-Path -Path ".\Remotely_ScreenCast.Win\bin\Release\Remotely_ScreenCast.exe") -eq $true) {
-    Copy-Item -Path ".\Remotely_ScreenCast.Win\bin\Release\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish\ScreenCast\Remotely_ScreenCast.exe" -Force
-    Copy-Item -Path ".\Remotely_ScreenCast.Win\bin\Release\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish\ScreenCast\Remotely_ScreenCast.exe" -Force
+    Copy-Item -Path ".\Remotely_ScreenCast.Win\bin\Release\" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish\ScreenCast\" -Force -Recurse
+    Copy-Item -Path ".\Remotely_ScreenCast.Win\bin\Release\" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish\ScreenCast\" -Force -Recurse
 }
 elseif ((Test-Path -Path ".\Remotely_ScreenCast.Win\bin\Debug\Remotely_ScreenCast.exe") -eq $true) {
-    Copy-Item -Path ".\Remotely_ScreenCast.Win\bin\Debug\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish\ScreenCast\Remotely_ScreenCast.exe" -Force
-    Copy-Item -Path ".\Remotely_ScreenCast.Win\bin\Debug\Remotely_ScreenCast.exe" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish\ScreenCast\Remotely_ScreenCast.exe" -Force
+    Copy-Item -Path ".\Remotely_ScreenCast.Win\bin\Debug\" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish\ScreenCast\" -Force -Recurse
+    Copy-Item -Path ".\Remotely_ScreenCast.Win\bin\Debug\" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish\ScreenCast\" -Force -Recurse
 }
 
 
