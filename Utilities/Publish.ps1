@@ -20,6 +20,7 @@ $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
 $OutDir = ""
 # RIDs are described here: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
 $RID = ""
+$MSBuildPath = (Get-ChildItem -Path "${env:ProgramFiles(x86)}\Microsoft Visual Studio\" -Recurse -Filter "MSBuild.exe" -File)[0].FullName
 
 for ($i = 0; $i -lt $args.Count; $i++)
 { 
@@ -37,92 +38,90 @@ $Root = (Get-Item -Path $PSScriptRoot).Parent.FullName
 Set-Location -Path $Root
 
 # Add Current Version file to root content folder for client update checks.
-Set-Content -Path ".\Remotely_Server\CurrentVersion.txt" -Value $CurrentVersion.Trim() -Encoding UTF8 -Force
+Set-Content -Path ".\Server\CurrentVersion.txt" -Value $CurrentVersion.Trim() -Encoding UTF8 -Force
 
     
 # Clear publish folders.
-if ((Test-Path -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish") -eq $true) {
-	Get-ChildItem -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish" | Remove-Item -Force -Recurse
+if ((Test-Path -Path ".\Agent\bin\Release\netcoreapp2.2\win10-x64\publish") -eq $true) {
+	Get-ChildItem -Path ".\Agent\bin\Release\netcoreapp2.2\win10-x64\publish" | Remove-Item -Force -Recurse
 }
-if ((Test-Path -Path  ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish" ) -eq $true) {
-	Get-ChildItem -Path  ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish" | Remove-Item -Force -Recurse
+if ((Test-Path -Path  ".\Agent\bin\Release\netcoreapp2.2\win10-x86\publish" ) -eq $true) {
+	Get-ChildItem -Path  ".\Agent\bin\Release\netcoreapp2.2\win10-x86\publish" | Remove-Item -Force -Recurse
 }
-if ((Test-Path -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\linux-x64\publish") -eq $true) {
-	Get-ChildItem -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\linux-x64\publish" | Remove-Item -Force -Recurse
+if ((Test-Path -Path ".\Agent\bin\Release\netcoreapp2.2\linux-x64\publish") -eq $true) {
+	Get-ChildItem -Path ".\Agent\bin\Release\netcoreapp2.2\linux-x64\publish" | Remove-Item -Force -Recurse
 }
 
 
 # Publish Core clients.
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win10-x64 --configuration Release --output "$Root\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish" "$Root\Remotely_Agent"
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win10-x86 --configuration Release --output "$Root\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish" "$Root\Remotely_Agent"
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64 --configuration Release --output "$Root\Remotely_Agent\bin\Release\netcoreapp2.2\linux-x64\publish" "$Root\Remotely_Agent"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win10-x64 --configuration Release --output "$Root\Agent\bin\Release\netcoreapp2.2\win10-x64\publish" "$Root\Agent"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win10-x86 --configuration Release --output "$Root\Agent\bin\Release\netcoreapp2.2\win10-x86\publish" "$Root\Agent"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64 --configuration Release --output "$Root\Agent\bin\Release\netcoreapp2.2\linux-x64\publish" "$Root\Agent"
 
-New-Item -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish\ScreenCast\" -ItemType Directory -Force
-New-Item -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish\ScreenCast\" -ItemType Directory -Force
-New-Item -Path ".\Remotely_Agent\bin\Release\netcoreapp2.2\linux-x64\publish\ScreenCast\" -ItemType Directory -Force
+New-Item -Path ".\Agent\bin\Release\netcoreapp2.2\win10-x64\publish\ScreenCast\" -ItemType Directory -Force
+New-Item -Path ".\Agent\bin\Release\netcoreapp2.2\win10-x86\publish\ScreenCast\" -ItemType Directory -Force
+New-Item -Path ".\Agent\bin\Release\netcoreapp2.2\linux-x64\publish\ScreenCast\" -ItemType Directory -Force
 
 
 # Publish Linux ScreenCaster
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64  --configuration Release --output "$Root\Remotely_Agent\bin\Release\netcoreapp2.2\linux-x64\publish\ScreenCast\" "$Root\Remotely_ScreenCast.Linux\"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64  --configuration Release --output "$Root\Agent\bin\Release\netcoreapp2.2\linux-x64\publish\ScreenCast\" "$Root\ScreenCast.Linux\"
 
 # Publish Linux GUI App
-$PublishDir = "$Root\Remotely_Desktop.Unix\bin\Release\netcoreapp2.2\linux-x64\publish\"
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64  --configuration Release --output "$PublishDir" "$Root\Remotely_Desktop.Unix\"
+$PublishDir = "$Root\Desktop.Unix\bin\Release\netcoreapp2.2\linux-x64\publish\"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64  --configuration Release --output "$PublishDir" "$Root\Desktop.Unix\"
 # Compress Linux GUI App
 Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely_Desktop.Unix.zip" -CompressionLevel Optimal -Force
 while ((Test-Path -Path "$PublishDir\Remotely_Desktop.Unix.zip") -eq $false){
     Start-Sleep -Seconds 1
 }
-Move-Item -Path "$PublishDir\Remotely_Desktop.Unix.zip" -Destination "$Root\Remotely_Server\wwwroot\Downloads\Remotely_Desktop.Unix.zip" -Force
+Move-Item -Path "$PublishDir\Remotely_Desktop.Unix.zip" -Destination "$Root\Server\wwwroot\Downloads\Remotely_Desktop.Unix.zip" -Force
+
+# Build .NET Framework Projects
+&"$MSBuildPath" "$Root\ScreenCast.Win" /t:Build /p:Configuration=Release
+&"$MSBuildPath" "$Root\Desktop.Win" /t:Build /p:Configuration=Release
 
 
 # Copy .NET Framework ScreenCaster to Agent output folder.
-if ((Test-Path -Path ".\Remotely_ScreenCast.Win\bin\Release\Remotely_ScreenCast.exe") -eq $true) {
-    Copy-Item -Path ".\Remotely_ScreenCast.Win\bin\Release\" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish\ScreenCast\" -Force -Recurse
-    Copy-Item -Path ".\Remotely_ScreenCast.Win\bin\Release\" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish\ScreenCast\" -Force -Recurse
-}
-elseif ((Test-Path -Path ".\Remotely_ScreenCast.Win\bin\Debug\Remotely_ScreenCast.exe") -eq $true) {
-    Copy-Item -Path ".\Remotely_ScreenCast.Win\bin\Debug\" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish\ScreenCast\" -Force -Recurse
-    Copy-Item -Path ".\Remotely_ScreenCast.Win\bin\Debug\" -Destination ".\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish\ScreenCast\" -Force -Recurse
-}
+Get-ChildItem -Path ".\ScreenCast.Win\bin\Release\" -Exclude "*.xml" | Copy-Item -Destination ".\Agent\bin\Release\netcoreapp2.2\win10-x64\publish\ScreenCast\" -Force
+Get-ChildItem -Path ".\ScreenCast.Win\bin\Release\" -Exclude "*.xml" | Copy-Item -Destination ".\Agent\bin\Release\netcoreapp2.2\win10-x86\publish\ScreenCast\" -Force
 
 
 
 # Compress Core clients.
-$PublishDir =  "$Root\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x64\publish"
+$PublishDir =  "$Root\Agent\bin\Release\netcoreapp2.2\win10-x64\publish"
 Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Win10-x64.zip" -CompressionLevel Optimal -Force
 while ((Test-Path -Path "$PublishDir\Remotely-Win10-x64.zip") -eq $false){
     Start-Sleep -Seconds 1
 }
-Move-Item -Path "$PublishDir\Remotely-Win10-x64.zip" -Destination "$Root\Remotely_Server\wwwroot\Downloads\Remotely-Win10-x64.zip" -Force
+Move-Item -Path "$PublishDir\Remotely-Win10-x64.zip" -Destination "$Root\Server\wwwroot\Downloads\Remotely-Win10-x64.zip" -Force
 
-$PublishDir =  "$Root\Remotely_Agent\bin\Release\netcoreapp2.2\win10-x86\publish"
+$PublishDir =  "$Root\Agent\bin\Release\netcoreapp2.2\win10-x86\publish"
 Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Win10-x86.zip" -CompressionLevel Optimal -Force
 while ((Test-Path -Path "$PublishDir\Remotely-Win10-x86.zip") -eq $false){
     Start-Sleep -Seconds 1
 }
-Move-Item -Path "$PublishDir\Remotely-Win10-x86.zip" -Destination "$Root\Remotely_Server\wwwroot\Downloads\Remotely-Win10-x86.zip" -Force
+Move-Item -Path "$PublishDir\Remotely-Win10-x86.zip" -Destination "$Root\Server\wwwroot\Downloads\Remotely-Win10-x86.zip" -Force
 
-$PublishDir =  "$Root\Remotely_Agent\bin\Release\netcoreapp2.2\linux-x64\publish"
+$PublishDir =  "$Root\Agent\bin\Release\netcoreapp2.2\linux-x64\publish"
 Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Linux.zip" -CompressionLevel Optimal -Force
 while ((Test-Path -Path "$PublishDir\Remotely-Linux.zip") -eq $false){
     Start-Sleep -Seconds 1
 }
-Move-Item -Path "$PublishDir\Remotely-Linux.zip" -Destination "$Root\Remotely_Server\wwwroot\Downloads\Remotely-Linux.zip" -Force
+Move-Item -Path "$PublishDir\Remotely-Linux.zip" -Destination "$Root\Server\wwwroot\Downloads\Remotely-Linux.zip" -Force
 
 # Copy desktop app to Downloads folder.
-if ((Test-Path -Path ".\Remotely_Desktop.Win\bin\Release\Remotely_Desktop.exe") -eq $true) {
-    Copy-Item -Path ".\Remotely_Desktop.Win\bin\Release\Remotely_Desktop.exe" -Destination ".\Remotely_Server\wwwroot\Downloads\Remotely_Desktop.exe" -Force
+if ((Test-Path -Path ".\Desktop.Win\bin\Release\Remotely_Desktop.exe") -eq $true) {
+    Copy-Item -Path ".\Desktop.Win\bin\Release\Remotely_Desktop.exe" -Destination ".\Server\wwwroot\Downloads\Remotely_Desktop.exe" -Force
 }
-elseif ((Test-Path -Path ".\Remotely_Desktop.Win\bin\Debug\Remotely_Desktop.exe") -eq $true) {
-    Copy-Item -Path ".\Remotely_Desktop.Win\bin\Debug\Remotely_Desktop.exe" -Destination ".\Remotely_Server\wwwroot\Downloads\Remotely_Desktop.exe" -Force
+elseif ((Test-Path -Path ".\Desktop.Win\bin\Debug\Remotely_Desktop.exe") -eq $true) {
+    Copy-Item -Path ".\Desktop.Win\bin\Debug\Remotely_Desktop.exe" -Destination ".\Server\wwwroot\Downloads\Remotely_Desktop.exe" -Force
 }
 
 if ($RID.Length -gt 0 -and $OutDir.Length -gt 0) {
     if ((Test-Path -Path $OutDir) -eq $false){
         New-Item -Path $OutDir -ItemType Directory
     }
-    dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime $RID --configuration Release --output $OutDir "$Root\Remotely_Server\"
+    dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime $RID --configuration Release --output $OutDir "$Root\Server\"
 }
 else {
     Write-Host "`r`nSkipping server deployment.  Params -outdir and -rid not specified." -ForegroundColor DarkYellow

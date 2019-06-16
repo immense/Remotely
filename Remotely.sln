@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28606.126
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remotely_Agent", "Remotely_Agent\Remotely_Agent.csproj", "{98A8DF30-0993-4B49-822E-244A70AB8C4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Agent", "Agent\Agent.csproj", "{98A8DF30-0993-4B49-822E-244A70AB8C4D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{2CAC9A2B-1402-465F-83F8-958B4E081CA3}"
 	ProjectSection(SolutionItems) = preProject
@@ -22,22 +22,22 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{D96B47
 		Assets\Remotely_Logo.png = Assets\Remotely_Logo.png
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remotely_Server", "Remotely_Server\Remotely_Server.csproj", "{3E835099-C417-4D82-8D5C-13DC09AF48AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csproj", "{3E835099-C417-4D82-8D5C-13DC09AF48AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotely_ScreenCast.Win", "Remotely_ScreenCast.Win\Remotely_ScreenCast.Win.csproj", "{2DCEA1F5-9B64-4EDB-9CD0-4D6675D96709}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenCast.Win", "ScreenCast.Win\ScreenCast.Win.csproj", "{2DCEA1F5-9B64-4EDB-9CD0-4D6675D96709}"
 	ProjectSection(ProjectDependencies) = postProject
 		{98A8DF30-0993-4B49-822E-244A70AB8C4D} = {98A8DF30-0993-4B49-822E-244A70AB8C4D}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotely_Desktop.Win", "Remotely_Desktop.Win\Remotely_Desktop.Win.csproj", "{486A238C-387B-49C5-A361-B86ACDB2572A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desktop.Win", "Desktop.Win\Desktop.Win.csproj", "{486A238C-387B-49C5-A361-B86ACDB2572A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remotely_ScreenCast.Linux", "Remotely_ScreenCast.Linux\Remotely_ScreenCast.Linux.csproj", "{E46F11D0-3C88-4D43-8CCC-EE7182CAD5C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScreenCast.Linux", "ScreenCast.Linux\ScreenCast.Linux.csproj", "{E46F11D0-3C88-4D43-8CCC-EE7182CAD5C1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remotely_ScreenCast.Core", "Remotely_ScreenCast.Core\Remotely_ScreenCast.Core.csproj", "{B04A1728-2E87-491E-BC7F-F575A1754DEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScreenCast.Core", "ScreenCast.Core\ScreenCast.Core.csproj", "{B04A1728-2E87-491E-BC7F-F575A1754DEF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remotely_Shared", "Remotely_Shared\Remotely_Shared.csproj", "{3B1B36AE-7A60-4974-A868-1E24894D4149}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{3B1B36AE-7A60-4974-A868-1E24894D4149}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remotely_Desktop.Unix", "Remotely_Desktop.Unix\Remotely_Desktop.Unix.csproj", "{FF7FD66A-B3E2-4D39-A457-A00C94EDE9E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desktop.Unix", "Desktop.Unix\Desktop.Unix.csproj", "{FF7FD66A-B3E2-4D39-A457-A00C94EDE9E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
