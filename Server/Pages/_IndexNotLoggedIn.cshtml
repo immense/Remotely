@@ -1,0 +1,34 @@
+﻿@inject Remotely.Server.Services.ApplicationConfig AppConfig
+@model IndexModel
+
+<div class="console">
+    <div id="consoleOutputDiv">
+        <div class="console-block">
+            <div class="console-prompt">@Model.DefaultPrompt</div>
+            <div class="console-output">Authentication required.</div>
+        </div>
+
+        <div class="console-block">
+            <div class="console-prompt">@Model.DefaultPrompt</div>
+            <div class="console-output">Please log in or register.</div>
+        </div>
+        <br />
+        <br />
+
+        <div class="text-center">
+            <div class="login-frame">
+                <a href="~/Identity/Account/Login" class="btn btn-primary btn-lg login-button">
+                    Login
+                </a>
+                @if (AppConfig.AllowSelfRegistration)
+                {
+                    <br />
+                    <br />
+                    <a href="~/Identity/Account/Register" class="btn btn-secondary btn-lg login-button">
+                        Register
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

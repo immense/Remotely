@@ -1,0 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Remotely.Server.Models
+{
+    public class RemoteControlRequest
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string DeviceName { get; set; }
+    }
+}

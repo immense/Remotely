@@ -260,10 +260,10 @@ paket-files/
 __pycache__/
 *.pyc
 
-/Remotely_Server/wwwroot/Downloads/*.exe
-/Remotely_Server/wwwroot/Downloads/*.zip
-/Remotely_Server/wwwroot/Downloads/*.appimage
-/Remotely_Server/Server.db
-/Remotely_Server/Recordings/*
-/Remotely_Server/ffmpeg.exe
-/Remotely_Server/Properties/PublishProfiles
+/Server/wwwroot/Downloads/*.exe
+/Server/wwwroot/Downloads/*.zip
+/Server/wwwroot/Downloads/*.appimage
+/Server/Server.db
+/Server/Recordings/*
+/Server/ffmpeg.exe
+/Server/Properties/PublishProfiles
