@@ -21,6 +21,13 @@ $OutDir = ""
 # RIDs are described here: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
 $RID = ""
 $MSBuildPath = (Get-ChildItem -Path "${env:ProgramFiles(x86)}\Microsoft Visual Studio\" -Recurse -Filter "MSBuild.exe" -File)[0].FullName
+$DevEnv = (Get-ChildItem -Path "${env:ProgramFiles(x86)}\Microsoft Visual Studio\" -Recurse -Filter "devenv.com" -File)[0].FullName
+
+if (!(Test-Path -Path $MSBuildPath)) {
+    Write-Host "ERROR: Unable to find the path to MSBuild.exe." -ForegroundColor Red
+    pause
+    return
+}
 
 for ($i = 0; $i -lt $args.Count; $i++)
 { 
@@ -79,6 +86,7 @@ Move-Item -Path "$PublishDir\Remotely_Desktop.Unix.zip" -Destination "$Root\Serv
 # Build .NET Framework Projects
 &"$MSBuildPath" "$Root\ScreenCast.Win" /t:Build /p:Configuration=Release
 &"$MSBuildPath" "$Root\Desktop.Win" /t:Build /p:Configuration=Release
+&"$MSBuildPath" "$Root\Desktop.Win" /t:Build /p:Configuration=Release
 
 
 # Copy .NET Framework ScreenCaster to Agent output folder.
@@ -110,12 +118,9 @@ while ((Test-Path -Path "$PublishDir\Remotely-Linux.zip") -eq $false){
 Move-Item -Path "$PublishDir\Remotely-Linux.zip" -Destination "$Root\Server\wwwroot\Downloads\Remotely-Linux.zip" -Force
 
 # Copy desktop app to Downloads folder.
-if ((Test-Path -Path ".\Desktop.Win\bin\Release\Remotely_Desktop.exe") -eq $true) {
-    Copy-Item -Path ".\Desktop.Win\bin\Release\Remotely_Desktop.exe" -Destination ".\Server\wwwroot\Downloads\Remotely_Desktop.exe" -Force
-}
-elseif ((Test-Path -Path ".\Desktop.Win\bin\Debug\Remotely_Desktop.exe") -eq $true) {
-    Copy-Item -Path ".\Desktop.Win\bin\Debug\Remotely_Desktop.exe" -Destination ".\Server\wwwroot\Downloads\Remotely_Desktop.exe" -Force
-}
+&"$DevEnv" "$Root\Desktop.Win.Installer\Desktop.Win.Installer.vdproj" /build "Release"
+Copy-Item -Path ".\Desktop.Win.Installer\bin\Release\Remotely_Desktop_Installer.msi" -Destination ".\Server\wwwroot\Downloads\Remotely_Desktop_Installer.msi" -Force
+
 
 if ($RID.Length -gt 0 -and $OutDir.Length -gt 0) {
     if ((Test-Path -Path $OutDir) -eq $false){
