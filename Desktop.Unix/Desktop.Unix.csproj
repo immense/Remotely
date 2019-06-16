@@ -5,6 +5,7 @@
     <ApplicationIcon>Assets\favicon.ico</ApplicationIcon>
     <AssemblyName>Remotely_Desktop</AssemblyName>
     <RootNamespace>Remotely.Desktop.Unix</RootNamespace>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Models\" />
