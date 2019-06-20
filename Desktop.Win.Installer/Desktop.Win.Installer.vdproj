@@ -2482,7 +2482,7 @@
                 {
                 "Name" = "8:.NET Framework"
                 "Message" = "8:[VSDNETMSG]"
-                "FrameworkVersion" = "8:.NETFramework,Version=v4.6.1"
+                "FrameworkVersion" = "8:.NETFramework,Version=v4.7.2"
                 "AllowLaterVersions" = "11:FALSE"
                 "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=671728"
                 }
@@ -7148,7 +7148,7 @@
             }
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_CF8239574F86487C9D3AFD7CEECA3BB5"
             {
-            "DefaultLocation" = "8:[ProgramFilesFolder][Manufacturer]\\[ProductName]"
+            "DefaultLocation" = "8:[ProgramFiles64Folder][Manufacturer]\\[ProductName]"
             "Name" = "8:#1925"
             "AlwaysCreate" = "11:FALSE"
             "Condition" = "8:"
@@ -7186,7 +7186,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Remotely Desktop"
         "ProductCode" = "8:{9ED3CF93-A3C5-4E86-8071-A8CEEC860767}"
-        "PackageCode" = "8:{0742D5DA-72E4-49D9-975E-4C071BBED7AC}"
+        "PackageCode" = "8:{1152E147-B2C4-44AA-B6B7-4D345A5D9E71}"
         "UpgradeCode" = "8:{B974F227-4132-4FF3-AD07-D359623501C3}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -7207,7 +7207,7 @@
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
-        "TargetPlatform" = "3:0"
+        "TargetPlatform" = "3:1"
         "PreBuildEvent" = "8:"
         "PostBuildEvent" = "8:"
         "RunPostBuildEvent" = "3:0"
