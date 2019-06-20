@@ -267,3 +267,4 @@ __pycache__/
 /Server/Recordings/*
 /Server/ffmpeg.exe
 /Server/Properties/PublishProfiles
+*.msi

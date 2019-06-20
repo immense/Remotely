@@ -117,7 +117,7 @@ while ((Test-Path -Path "$PublishDir\Remotely-Linux.zip") -eq $false){
 Move-Item -Path "$PublishDir\Remotely-Linux.zip" -Destination "$Root\Server\wwwroot\Downloads\Remotely-Linux.zip" -Force
 
 # Copy desktop app to Downloads folder.
-&"$DevEnv" "$Root\Desktop.Win.Installer\Desktop.Win.Installer.vdproj" /build "Release|x86"
+&"$DevEnv" "$Root\Desktop.Win.Installer\Desktop.Win.Installer.vdproj" /build "Release|x64"
 Copy-Item -Path ".\Desktop.Win.Installer\Release\Remotely_Desktop_Installer.msi" -Destination ".\Server\wwwroot\Downloads\Remotely_Desktop_Installer.msi" -Force
 
 
