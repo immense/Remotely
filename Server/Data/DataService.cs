@@ -79,7 +79,7 @@ namespace Remotely.Server.Data
             var devices = RemotelyContext.Devices
                             .Include(x => x.DevicePermissionLinks)
                             .Include("DevicePermissionLinks.PermissionGroup")
-                            .Where(x => x.OrganizationID == user.OrganizationID)
+                            .Where(x => x.OrganizationID == user.OrganizationID && deviceIDs.Contains(x.ID))
                             .ToList();
 
             return devices.Select(x => new Device()

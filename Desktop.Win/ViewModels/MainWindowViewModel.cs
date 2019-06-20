@@ -25,8 +25,10 @@ using System.Security.Claims;
 
 namespace Remotely.Desktop.Win.ViewModels
 {
-    public class MainWindowViewModel : INotifyPropertyChanged
+    public class MainWindowViewModel : ViewModelBase
     {
+        private string host;
+        private string sessionID;
         public MainWindowViewModel()
         {
             Current = this;
@@ -39,8 +41,6 @@ namespace Remotely.Desktop.Win.ViewModels
             CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
             AudioCapturer = new AudioCapturer(Conductor);
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public static MainWindowViewModel Current { get; private set; }
 
@@ -55,7 +55,6 @@ namespace Remotely.Desktop.Win.ViewModels
         public AudioCapturer AudioCapturer { get; private set; }
         public Conductor Conductor { get; }
 
-        public Config Config { get; private set; }
 
         public CursorIconWatcher CursorIconWatcher { get; private set; }
 
@@ -63,13 +62,23 @@ namespace Remotely.Desktop.Win.ViewModels
 
         public string Host
         {
-            get
+            get => host;
+            set
             {
-                return Config?.Host;
+                host = value;
+                FirePropertyChanged("Host");
             }
         }
 
-        public string SessionID { get; set; }
+        public string SessionID
+        {
+            get => sessionID;
+            set
+            {
+                sessionID = value;
+                FirePropertyChanged("SessionID");
+            }
+        }
 
         public ObservableCollection<Viewer> Viewers { get; } = new ObservableCollection<Viewer>();
 
@@ -88,29 +97,24 @@ namespace Remotely.Desktop.Win.ViewModels
             }
         }
 
-        public void FirePropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
         public async Task Init()
         {
             SessionID = "Retrieving...";
-            Config = Config.GetConfig();
+            Host = Config.GetHostName();
             if (AllowHostChange)
             {
-                while (string.IsNullOrWhiteSpace(Config.Host))
+                while (string.IsNullOrWhiteSpace(Host))
                 {
-                    Config.Host = "https://";
+                    Host = "https://";
                     PromptForHostName();
                 }
             }
             else
             {
-                Config.Host = ForceHost;
+                Host = ForceHost;
             }
             
-            Conductor.ProcessArgs(new string[] { "-mode", "Normal", "-host", Config.Host });
+            Conductor.ProcessArgs(new string[] { "-mode", "Normal", "-host", Host });
             try
             {
                 await Conductor.Connect();
@@ -129,9 +133,9 @@ namespace Remotely.Desktop.Win.ViewModels
         public void PromptForHostName()
         {
             var prompt = new HostNamePrompt();
-            if (!string.IsNullOrWhiteSpace(Config.Host))
+            if (!string.IsNullOrWhiteSpace(Host))
             {
-                HostNamePromptViewModel.Current.Host = Config.Host;
+                HostNamePromptViewModel.Current.Host = Host;
             }
             prompt.Owner = App.Current?.MainWindow;
             prompt.ShowDialog();
@@ -140,10 +144,10 @@ namespace Remotely.Desktop.Win.ViewModels
             {
                 result = $"https://{result}";
             }
-            if (result != Config.Host)
+            if (result != Host)
             {
-                Config.Host = result;
-                Config.Save();
+                Host = result;
+                Config.SaveHostName(Host);
                 FirePropertyChanged("Host");
             }
         }
