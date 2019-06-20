@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PropertyChanged;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -7,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace Remotely.Desktop.Win.ViewModels
 {
-    public class HostNamePromptViewModel : INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public class HostNamePromptViewModel
     {
         public static HostNamePromptViewModel Current { get; private set; }
         public HostNamePromptViewModel()
@@ -15,7 +17,5 @@ namespace Remotely.Desktop.Win.ViewModels
             Current = this;
         }
         public string Host { get; set; }
-
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

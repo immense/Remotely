@@ -86,7 +86,6 @@ Move-Item -Path "$PublishDir\Remotely_Desktop.Unix.zip" -Destination "$Root\Serv
 # Build .NET Framework Projects
 &"$MSBuildPath" "$Root\ScreenCast.Win" /t:Build /p:Configuration=Release
 &"$MSBuildPath" "$Root\Desktop.Win" /t:Build /p:Configuration=Release
-&"$MSBuildPath" "$Root\Desktop.Win" /t:Build /p:Configuration=Release
 
 
 # Copy .NET Framework ScreenCaster to Agent output folder.
@@ -118,8 +117,8 @@ while ((Test-Path -Path "$PublishDir\Remotely-Linux.zip") -eq $false){
 Move-Item -Path "$PublishDir\Remotely-Linux.zip" -Destination "$Root\Server\wwwroot\Downloads\Remotely-Linux.zip" -Force
 
 # Copy desktop app to Downloads folder.
-&"$DevEnv" "$Root\Desktop.Win.Installer\Desktop.Win.Installer.vdproj" /build "Release"
-Copy-Item -Path ".\Desktop.Win.Installer\bin\Release\Remotely_Desktop_Installer.msi" -Destination ".\Server\wwwroot\Downloads\Remotely_Desktop_Installer.msi" -Force
+&"$DevEnv" "$Root\Desktop.Win.Installer\Desktop.Win.Installer.vdproj" /build "Release|x86"
+Copy-Item -Path ".\Desktop.Win.Installer\Release\Remotely_Desktop_Installer.msi" -Destination ".\Server\wwwroot\Downloads\Remotely_Desktop_Installer.msi" -Force
 
 
 if ($RID.Length -gt 0 -and $OutDir.Length -gt 0) {
