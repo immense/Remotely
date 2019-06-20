@@ -250,8 +250,10 @@
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Debug (
-  md "$(SolutionDir)Agent\bin\x64\Debug\netcoreapp2.2\ScreenCast\"
-  copy /y "$(TargetDir)\*" "$(SolutionDir)Agent\bin\x64\Debug\netcoreapp2.2\ScreenCast\"
+  if $(PlatformName) == AnyCPU (
+      md "$(SolutionDir)Agent\bin\Debug\netcoreapp2.2\ScreenCast\"
+      copy /y "$(TargetDir)\*" "$(SolutionDir)Agent\bin\Debug\netcoreapp2.2\ScreenCast\"
+  )
 )</PostBuildEvent>
   </PropertyGroup>
 </Project>

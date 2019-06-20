@@ -153,7 +153,7 @@ Copy-Item -Path ".\Desktop.Win.Installer\Release\Remotely_Desktop_Installer.msi"
 # 32-bit desktop app installer.
 $Vdproj = $Vdproj.Replace('"TargetPlatform" = "3:1"', '"TargetPlatform" = "3:0"')
 Set-Content -Value $Vdproj -Path $VdprojPath -NoNewline
-&"$DevEnv" "$Root\Desktop.Win.Installer\Desktop.Win.Installer.vdproj" /build "Release|x64"
+&"$DevEnv" "$Root\Desktop.Win.Installer\Desktop.Win.Installer.vdproj" /build "Release|x86"
 Copy-Item -Path ".\Desktop.Win.Installer\Release\Remotely_Desktop_Installer.msi" -Destination ".\Server\wwwroot\Downloads\Remotely_Desktop_Installer_x86.msi" -Force
 
 
