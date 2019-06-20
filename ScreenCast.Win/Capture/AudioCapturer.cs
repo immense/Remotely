@@ -58,5 +58,9 @@ namespace Remotely.ScreenCast.Win.Capture
             }
             catch { }
         }
+        public void Stop()
+        {
+            Capturer.StopRecording();
+        }
     }
 }

@@ -22,9 +22,29 @@ $OutDir = ""
 $RID = ""
 $MSBuildPath = (Get-ChildItem -Path "${env:ProgramFiles(x86)}\Microsoft Visual Studio\" -Recurse -Filter "MSBuild.exe" -File)[0].FullName
 $DevEnv = (Get-ChildItem -Path "${env:ProgramFiles(x86)}\Microsoft Visual Studio\" -Recurse -Filter "devenv.com" -File)[0].FullName
+$DisableOutOfProcBuild = (Get-ChildItem -Path "${env:ProgramFiles(x86)}\Microsoft Visual Studio\" -Recurse -Filter "DisableOutOfProcBuild.exe" -File)[0].FullName
 
-if (!(Test-Path -Path $MSBuildPath)) {
+
+if ([string]::IsNullOrWhiteSpace($MSBuildPath) -or !(Test-Path -Path $MSBuildPath)) {
+    Write-Host
     Write-Host "ERROR: Unable to find the path to MSBuild.exe." -ForegroundColor Red
+    Write-Host
+    pause
+    return
+}
+
+if ([string]::IsNullOrWhiteSpace($DevEnv) -or !(Test-Path -Path $DevEnv)) {
+    Write-Host
+    Write-Host "ERROR: Unable to find the path to devenv.com." -ForegroundColor Red
+    Write-Host
+    pause
+    return
+}
+
+if ([string]::IsNullOrWhiteSpace($DisableOutOfProcBuild) -or !(Test-Path -Path $DisableOutOfProcBuild)) {
+    Write-Host
+    Write-Host "ERROR: Unable to find the path to DisableOutOfProcBuild.exe." -ForegroundColor Red
+    Write-Host
     pause
     return
 }
@@ -62,8 +82,8 @@ if ((Test-Path -Path ".\Agent\bin\Release\netcoreapp2.2\linux-x64\publish") -eq 
 
 # Publish Core clients.
 dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win10-x64 --configuration Release --output "$Root\Agent\bin\Release\netcoreapp2.2\win10-x64\publish" "$Root\Agent"
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win10-x86 --configuration Release --output "$Root\Agent\bin\Release\netcoreapp2.2\win10-x86\publish" "$Root\Agent"
 dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64 --configuration Release --output "$Root\Agent\bin\Release\netcoreapp2.2\linux-x64\publish" "$Root\Agent"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win10-x86 --configuration Release --output "$Root\Agent\bin\Release\netcoreapp2.2\win10-x86\publish" "$Root\Agent"
 
 New-Item -Path ".\Agent\bin\Release\netcoreapp2.2\win10-x64\publish\ScreenCast\" -ItemType Directory -Force
 New-Item -Path ".\Agent\bin\Release\netcoreapp2.2\win10-x86\publish\ScreenCast\" -ItemType Directory -Force
@@ -83,14 +103,17 @@ while ((Test-Path -Path "$PublishDir\Remotely_Desktop.Unix.zip") -eq $false){
 }
 Move-Item -Path "$PublishDir\Remotely_Desktop.Unix.zip" -Destination "$Root\Server\wwwroot\Downloads\Remotely_Desktop.Unix.zip" -Force
 
-# Build .NET Framework Projects
-&"$MSBuildPath" "$Root\ScreenCast.Win" /t:Build /p:Configuration=Release
-&"$MSBuildPath" "$Root\Desktop.Win" /t:Build /p:Configuration=Release
+# Build .NET Framework ScreenCaster (32-bit)
+&"$MSBuildPath" "$Root\ScreenCast.Win" /t:Build /p:Configuration=Release /p:Platform=x86
 
+# Copy 32-bit .NET Framework ScreenCaster to Agent output folder.
+Get-ChildItem -Path ".\ScreenCast.Win\bin\x86\Release\" -Exclude "*.xml" | Copy-Item -Destination ".\Agent\bin\Release\netcoreapp2.2\win10-x86\publish\ScreenCast\" -Force
 
-# Copy .NET Framework ScreenCaster to Agent output folder.
-Get-ChildItem -Path ".\ScreenCast.Win\bin\Release\" -Exclude "*.xml" | Copy-Item -Destination ".\Agent\bin\Release\netcoreapp2.2\win10-x64\publish\ScreenCast\" -Force
-Get-ChildItem -Path ".\ScreenCast.Win\bin\Release\" -Exclude "*.xml" | Copy-Item -Destination ".\Agent\bin\Release\netcoreapp2.2\win10-x86\publish\ScreenCast\" -Force
+# Build .NET Framework ScreenCaster (64-bit)
+&"$MSBuildPath" "$Root\ScreenCast.Win" /t:Build /p:Configuration=Release /p:Platform=x64
+
+# Copy 64-bit .NET Framework ScreenCaster to Agent output folder.
+Get-ChildItem -Path ".\ScreenCast.Win\bin\x64\Release\" -Exclude "*.xml" | Copy-Item -Destination ".\Agent\bin\Release\netcoreapp2.2\win10-x64\publish\ScreenCast\" -Force
 
 
 
@@ -116,9 +139,22 @@ while ((Test-Path -Path "$PublishDir\Remotely-Linux.zip") -eq $false){
 }
 Move-Item -Path "$PublishDir\Remotely-Linux.zip" -Destination "$Root\Server\wwwroot\Downloads\Remotely-Linux.zip" -Force
 
-# Copy desktop app to Downloads folder.
+# Build desktop app installer and copy to Downloads folder.
+Start-Process -FilePath $DisableOutOfProcBuild -Wait
+$VdprojPath = "$Root\Desktop.Win.Installer\Desktop.Win.Installer.vdproj"
+$Vdproj = Get-Content -Path $VdprojPath -Raw
+
+# 64-bit desktop app installer.
+$Vdproj = $Vdproj.Replace('"TargetPlatform" = "3:0"', '"TargetPlatform" = "3:1"')
+Set-Content -Value $Vdproj -Path $VdprojPath -NoNewline
 &"$DevEnv" "$Root\Desktop.Win.Installer\Desktop.Win.Installer.vdproj" /build "Release|x64"
-Copy-Item -Path ".\Desktop.Win.Installer\Release\Remotely_Desktop_Installer.msi" -Destination ".\Server\wwwroot\Downloads\Remotely_Desktop_Installer.msi" -Force
+Copy-Item -Path ".\Desktop.Win.Installer\Release\Remotely_Desktop_Installer.msi" -Destination ".\Server\wwwroot\Downloads\Remotely_Desktop_Installer_x64.msi" -Force
+
+# 32-bit desktop app installer.
+$Vdproj = $Vdproj.Replace('"TargetPlatform" = "3:1"', '"TargetPlatform" = "3:0"')
+Set-Content -Value $Vdproj -Path $VdprojPath -NoNewline
+&"$DevEnv" "$Root\Desktop.Win.Installer\Desktop.Win.Installer.vdproj" /build "Release|x64"
+Copy-Item -Path ".\Desktop.Win.Installer\Release\Remotely_Desktop_Installer.msi" -Destination ".\Server\wwwroot\Downloads\Remotely_Desktop_Installer_x86.msi" -Force
 
 
 if ($RID.Length -gt 0 -and $OutDir.Length -gt 0) {
