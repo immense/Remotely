@@ -1,0 +1,60 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Remotely_Shared</AssemblyName>
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Management.Infrastructure" Version="1.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Models\CommandContext.cs">
+      <LastGenOutput>CommandContext.cs.d.ts</LastGenOutput>
+      <Generator>DtsGenerator</Generator>
+    </Compile>
+    <Compile Update="Models\CursorInfo.cs">
+      <Generator></Generator>
+    </Compile>
+    <Compile Update="Models\Device.cs">
+      <Generator></Generator>
+    </Compile>
+    <Compile Update="Models\DevicePermissionLink.cs">
+      <Generator></Generator>
+    </Compile>
+    <Compile Update="Models\GenericCommandResult.cs">
+      <LastGenOutput>GenericCommandResult.cs.d.ts</LastGenOutput>
+      <Generator>DtsGenerator</Generator>
+    </Compile>
+    <Compile Update="Models\PSCoreCommandResult.cs">
+      <Generator></Generator>
+    </Compile>
+    <Compile Update="Models\RemotelyUserOptions.cs">
+      <LastGenOutput>RemotelyUserOptions.cs.d.ts</LastGenOutput>
+      <Generator>DtsGenerator</Generator>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Models\CommandContext.cs.d.ts">
+      <DependentUpon>CommandContext.cs</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </None>
+    <None Update="Models\GenericCommandResult.cs.d.ts">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>GenericCommandResult.cs</DependentUpon>
+    </None>
+    <None Update="Models\RemotelyUserOptions.cs.d.ts">
+      <DependentUpon>RemotelyUserOptions.cs</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </None>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,175 @@
+﻿@page
+@model ClientsModel
+@{
+    ViewData["Title"] = "Client Downloads";
+}
+
+<div class="row mb-3" style="margin-top:15px">
+    <div class="col-sm-12 card card-body">
+        <p>
+            <strong class="text-info">Please Note:</strong>
+        </p>
+        <ul>
+            <li>
+                Install/uninstall scripts require elevated privileges (i.e. "run as admininistrator").
+            </li>
+            <li>
+                An installation log is created at %temp%\Remotely_Install.txt.
+            </li>
+            <li>
+                Client logs are created at %temp%\Remotely_Logs.txt.
+                <ul>
+                    <li>
+                        For a Windows Service, %temp% is C:\Windows\Temp\.
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+    </div>
+</div>
+
+
+<div class="row mb-3">
+    <h4>Screen-Sharing Client</h4>
+    <div class="text-info col-sm-12 pl-0 mb-2">
+        Instant desktop sharing.  No account required.
+    </div>
+    <div class="col-sm-6">
+        <h6 class="font-weight-bold">Windows (32/64-Bit)</h6>
+        <p>
+            <strong>Download:</strong>
+            <br />
+            <a href="~/Downloads/Remotely_Desktop_Installer.msi">Windows Installer</a>
+        </p>
+    </div>
+    <div class="col-sm-6">
+        <h6 class="font-weight-bold">Linux 64-Bit</h6>
+        <p>
+            <strong>Download:</strong>
+            <br />
+            <a href="~/Downloads/Remotely_Desktop.Unix.zip">Linux Zipped</a>
+        </p>
+    </div>
+</div>
+
+<div class="row">
+    <h4>Resident Agents</h4>
+    <div class="text-info col-sm-12 pl-0 mb-2">
+        Installable background agents that provide unattended access and remote scripting.
+    </div>
+    @if (User.Identity.IsAuthenticated)
+    {
+    <div class="col-sm-6">
+        <h6 class="font-weight-bold">Windows 10 64-Bit</h6>
+        <p>
+            <strong>Download:</strong>
+            <br />
+            <a href="/API/ClientDownloads/Win10-x64">Windows 10 x64 PowerShell Installer</a>
+            <br />
+            <a href="~/Downloads/Remotely-Win10-x64.zip">Windows 10 x64 Files Only</a>
+        </p>
+
+        <p>
+            <strong>Install:</strong>
+            <br />
+            <span class="label label-default code">powershell -f [path]\Install-Win10-x64.ps1</span>
+        </p>
+        <p>
+            <strong>Local Install:</strong>
+            <span data-toggle="modal" data-target="#localInstallInfo" class="fas fa-question-circle pointer"></span>
+            <br />
+            <span class="label label-default code">powershell -f [path]\Install-Win10-x64.ps1 -path \\[path]\Remotely-Win10-x64.zip</span>
+        </p>
+        <p>
+            <strong>Uninstall:</strong>
+            <br />
+            <span class="label label-default code">powershell -f [path]\Install-Win10-x64.ps1 -uninstall</span>
+        </p>
+    </div>
+
+    <div class="col-sm-6 ">
+        <h6 class="font-weight-bold">Windows 10 32-Bit</h6>
+        <p>
+            <strong>Download:</strong>
+            <br />
+            <a href="/API/ClientDownloads/Win10-x86">Windows 10 x86 PowerShell Installer</a>
+            <br />
+            <a href="~/Downloads/Remotely-Win10-x86.zip">Windows 10 x86 Files Only</a>
+        </p>
+        <p>
+            <strong>Install:</strong>
+            <br />
+            <span class="label label-default code">powershell -f [path]\Install-Win10-x86.ps1</span>
+        </p>
+        <p>
+            <strong>Local Install:</strong>
+            <span data-toggle="modal" data-target="#localInstallInfo" class="fas fa-question-circle pointer"></span>
+            <br />
+            <span class="label label-default code">powershell -f [path]\Install-Win10-x86.ps1 -path \\[path]\Remotely-Win10-x86.zip</span>
+        </p>
+        <p>
+            <strong>Uninstall:</strong>
+            <br />
+            <span class="label label-default code">powershell -f [path]\Install-Win10-x86.ps1 -uninstall</span>
+        </p>
+    </div>
+    <div class="col-sm-6 ">
+        <h6 class="font-weight-bold">Linux 64-Bit</h6>
+        <p>
+            <strong>Download:</strong>
+            <br />
+            <a href="/API/ClientDownloads/Linux-x64">Linux x64 Bash Installer</a>
+            <br />
+            <a href="~/Downloads/Remotely-Linux.zip">Linux x64 Files Only</a>
+        </p>
+        <p>
+            <strong>Install:</strong>
+            <br />
+            <span class="label label-default code">sudo [path]/Install-Linux-x64.sh</span>
+        </p>
+        <p>
+            <strong>Local Install:</strong>
+            <span data-toggle="modal" data-target="#localInstallInfo" class="fas fa-question-circle pointer"></span>
+            <br />
+            <span class="label label-default code">sudo [path]/Install-Linux-x64.sh --path [path]/Remotely-Win10-x86.zip</span>
+        </p>
+        <p>
+            <strong>Uninstall:</strong>
+            <br />
+            <span class="label label-default code">sudo [path]/Install-Linux-x64.sh --uninstall</span>
+        </p>
+    </div>
+    }
+    else
+    {
+        <div class="col-sm-6 ">
+            <h6 class="font-weight-bold">Resident clients are available after logging in.</h6>
+        </div>
+
+    }
+</div>
+<div id="localInstallInfo" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Local Installs</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    By default, the install scripts will download the client files from the server before installing them.
+                    This is fine for one or two devices, but it wouldn't be ideal to have a large number of computers
+                    downloading over the WAN simultaneously.
+                    <br /><br />
+                    To reduce bandwidth usage, you can download separately the ZIP file containing the client files and put
+                    them on a network share. Then you can use the -path argument to have the script copy the files from
+                    that location.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

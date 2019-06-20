@@ -1,0 +1,25 @@
+﻿@page
+@model Remotely.Server.Pages.InviteModel
+@{
+    ViewData["Title"] = "Invite";
+}
+<h2>Organization Invite</h2>
+<div class="row">
+    <div class="col-sm-12">
+        @if (Model.Success)
+        {
+            <h5>Congratulations!</h5>
+            <p class="text-info">
+                You've successfully joined the organization!
+            </p>
+        }
+
+        else
+        {
+            <h5>Uh oh.</h5>
+            <p>@Model.Message</p>
+
+        }
+
+    </div>
+</div>
