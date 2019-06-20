@@ -47,6 +47,7 @@ namespace Remotely.Desktop.Win
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             await MainWindowViewModel.Current.Init();
+            MainWindowViewModel.Current.CheckForAdminRights();
         }
 
         private async void HostHyperlink_Click(object sender, RoutedEventArgs e)

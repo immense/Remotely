@@ -44,8 +44,6 @@ namespace Remotely.Desktop.Win.ViewModels
 
         public static MainWindowViewModel Current { get; private set; }
 
-        public AudioCapturer AudioCapturer { get; private set; }
-
         public bool AllowHostChange
         {
             get
@@ -54,6 +52,7 @@ namespace Remotely.Desktop.Win.ViewModels
             }
         }
 
+        public AudioCapturer AudioCapturer { get; private set; }
         public Conductor Conductor { get; }
 
         public Config Config { get; private set; }
@@ -73,6 +72,21 @@ namespace Remotely.Desktop.Win.ViewModels
         public string SessionID { get; set; }
 
         public ObservableCollection<Viewer> Viewers { get; } = new ObservableCollection<Viewer>();
+
+        public void CheckForAdminRights()
+        {
+            if (!new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator))
+            {
+                var result = MessageBox.Show(Application.Current.MainWindow, "Remotely isn't running with administrator rights.  Would you like to re-launch as an admin?", "Run as Admin", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Yes)
+                {
+                    var psi = new ProcessStartInfo(Assembly.GetExecutingAssembly().Location);
+                    psi.Verb = "RunAs";
+                    Process.Start(psi);
+                    Environment.Exit(0);
+                }
+            }
+        }
 
         public void FirePropertyChanged(string propertyName)
         {
@@ -104,32 +118,14 @@ namespace Remotely.Desktop.Win.ViewModels
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                MessageBox.Show("Failed to connect to server.", "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(Application.Current.MainWindow, "Failed to connect to server.", "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             Conductor.SetMessageHandlers(new WinInput());
             await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName);
             await Conductor.CasterSocket.GetSessionID();
-
-            CheckForAdminRights();
         }
-
-        private void CheckForAdminRights()
-        {
-            if (!new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator))
-            {
-                var result = MessageBox.Show("Remotely isn't running with administrator rights.  Would you like to re-launch as an admin?", "Run as Admin", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result == MessageBoxResult.Yes)
-                {
-                    var psi = new ProcessStartInfo(Assembly.GetExecutingAssembly().Location);
-                    psi.Verb = "RunAs";
-                    Process.Start(psi);
-                    Environment.Exit(0);
-                }
-            }
-        }
-
         public void PromptForHostName()
         {
             var prompt = new HostNamePrompt();
@@ -177,10 +173,10 @@ namespace Remotely.Desktop.Win.ViewModels
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                var result = MessageBox.Show($"You've received a connection request from {screenCastRequest.RequesterName}.  Accept?", "Connection Request", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                var result = MessageBox.Show(Application.Current.MainWindow, $"You've received a connection request from {screenCastRequest.RequesterName}.  Accept?", "Connection Request", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
-                    Task.Run(async() =>
+                    Task.Run(async () =>
                     {
                         ICapturer capturer;
                         try
