@@ -22,6 +22,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Security.Principal;
 using System.Security.Claims;
+using System.Windows.Input;
+using System.Windows.Controls;
 
 namespace Remotely.Desktop.Win.ViewModels
 {
@@ -44,22 +46,21 @@ namespace Remotely.Desktop.Win.ViewModels
 
         public static MainWindowViewModel Current { get; private set; }
 
-        public bool AllowHostChange
+        public AudioCapturer AudioCapturer { get; private set; }
+        public ICommand ChangeServerCommand
         {
             get
             {
-                return string.IsNullOrWhiteSpace(ForceHost);
+                return new Executor(async (param) =>
+                {
+                    PromptForHostName();
+                    await Init();
+                });
             }
         }
 
-        public AudioCapturer AudioCapturer { get; private set; }
         public Conductor Conductor { get; }
-
-
         public CursorIconWatcher CursorIconWatcher { get; private set; }
-
-        public string ForceHost { get; }
-
         public string Host
         {
             get => host;
@@ -67,6 +68,28 @@ namespace Remotely.Desktop.Win.ViewModels
             {
                 host = value;
                 FirePropertyChanged("Host");
+            }
+        }
+
+        public bool IsAdministrator => new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
+        public ICommand RestartAsAdminCommand
+        {
+            get
+            {
+                return new Executor((param) =>
+                {
+                    try
+                    {
+                        var psi = new ProcessStartInfo(Assembly.GetExecutingAssembly().Location);
+                        psi.Verb = "RunAs";
+                        Process.Start(psi);
+                        Environment.Exit(0);
+                    }
+                    // Exception can be thrown if UAC is dialog is cancelled.
+                    catch { }
+                }, (param) => {
+                    return !IsAdministrator;
+                });
             }
         }
 
@@ -81,39 +104,19 @@ namespace Remotely.Desktop.Win.ViewModels
         }
 
         public ObservableCollection<Viewer> Viewers { get; } = new ObservableCollection<Viewer>();
-
-        public void CheckForAdminRights()
-        {
-            if (!new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator))
-            {
-                var result = MessageBox.Show(Application.Current.MainWindow, "Remotely isn't running with administrator rights.  Would you like to re-launch as an admin?", "Run as Admin", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result == MessageBoxResult.Yes)
-                {
-                    var psi = new ProcessStartInfo(Assembly.GetExecutingAssembly().Location);
-                    psi.Verb = "RunAs";
-                    Process.Start(psi);
-                    Environment.Exit(0);
-                }
-            }
-        }
-
         public async Task Init()
         {
             SessionID = "Retrieving...";
-            Host = Config.GetHostName();
-            if (AllowHostChange)
+
+            var config = Config.GetConfig();
+            Host = config.Host;
+
+            while (string.IsNullOrWhiteSpace(Host))
             {
-                while (string.IsNullOrWhiteSpace(Host))
-                {
-                    Host = "https://";
-                    PromptForHostName();
-                }
+                Host = "https://";
+                PromptForHostName();
             }
-            else
-            {
-                Host = ForceHost;
-            }
-            
+
             Conductor.ProcessArgs(new string[] { "-mode", "Normal", "-host", Host });
             try
             {
@@ -147,23 +150,35 @@ namespace Remotely.Desktop.Win.ViewModels
             if (result != Host)
             {
                 Host = result;
-                Config.SaveHostName(Host);
-                FirePropertyChanged("Host");
+                var config = Config.GetConfig();
+                config.Host = Host;
+                config.Save();
             }
         }
 
-        internal void CopyLink()
+        public void CopyLink()
         {
             Clipboard.SetText($"{Host}/RemoteControl?sessionID={SessionID.Replace(" ", "")}");
         }
 
-        internal async Task RemoveViewers(IEnumerable<Viewer> viewerList)
+        public ICommand RemoveViewersCommand
         {
-            foreach (Viewer viewer in viewerList)
+            get
             {
-                viewer.DisconnectRequested = true;
-                await Conductor.CasterSocket.SendViewerRemoved(viewer.ViewerConnectionID);
+                return new Executor(async (param) =>
+                {
+                    foreach (Viewer viewer in (param as IList<object>))
+                    {
+                        viewer.DisconnectRequested = true;
+                        await Conductor.CasterSocket.SendViewerRemoved(viewer.ViewerConnectionID);
+                    }
+                },
+                (param) =>
+                {
+                    return (param as IList<object>)?.Count > 0;
+                });
             }
+
         }
 
         private async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)

@@ -11,34 +11,10 @@ namespace Remotely.Desktop.Win.Services
 {
     public class Config
     {
-        private Config()
-        {
-
-        }
-
-        public string Host { get; set; }
+        public string Host { get; set; } = "";
         private static string ConfigFile => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Remotely", "Config.json");
         private static string ConfigFolder => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Remotely");
-        public static string GetHostName()
-        {
-            return GetConfig()?.Host;
-        }
-
-        public static void SaveHostName(string hostName)
-        {
-            try
-            {
-                var config = GetConfig();
-                config.Host = hostName;
-                Directory.CreateDirectory(ConfigFolder);
-                File.WriteAllText(ConfigFile, JsonConvert.SerializeObject(config));
-            }
-            catch
-            {
-            }
-        }
-
-        private static Config GetConfig()
+        public static Config GetConfig()
         {
             if (!Directory.Exists(ConfigFolder))
             {
@@ -57,6 +33,18 @@ namespace Remotely.Desktop.Win.Services
                 }
             }
             return new Config();
+        }
+
+        public void Save()
+        {
+            try
+            {
+                Directory.CreateDirectory(ConfigFolder);
+                File.WriteAllText(ConfigFile, JsonConvert.SerializeObject(this));
+            }
+            catch
+            {
+            }
         }
     }
 }

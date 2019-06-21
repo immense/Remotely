@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace Remotely.Desktop.Unix.Services
+namespace Remotely.Desktop.Win.Services
 {
     public class Executor : ICommand
     {
@@ -15,7 +15,11 @@ namespace Remotely.Desktop.Unix.Services
             IsExecutable = isExecutable;
         }
 
-        public event EventHandler CanExecuteChanged;
+        public event EventHandler CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
+        }
 
         private Action<object> ExecuteAction { get; set; }
 

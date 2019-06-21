@@ -13,9 +13,9 @@
     <Grid>
         <StackPanel>
             <Border Name="TitleBanner" Height="50" Background="#FF464646">
-                <DockPanel Margin="10,0,0,0">
+                <DockPanel Margin="10,4,0,0">
                     <StackPanel>
-                        <TextBlock Foreground="DeepSkyBlue" FontWeight="Bold" FontSize="20" Margin="0,2,0,0">Remotely</TextBlock>
+                        <TextBlock Foreground="DeepSkyBlue" FontWeight="Bold" FontSize="20">Remotely</TextBlock>
                         <TextBlock Foreground="White" FontSize="10" Text="Do IT Remotely"></TextBlock>
                     </StackPanel>
                     <Button Classes="TitlebarButton" Command="{Binding CloseCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Content="X" />
@@ -65,10 +65,23 @@
                 </StackPanel>
             </Grid>
         </StackPanel>
-      <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Margin="10,5" IsVisible="{Binding AllowHostChange}">
-        <TextBlock FontSize="10" Text="Connected to: "></TextBlock>
-        <Button Classes="HyperlinkButton" Command="{Binding ChangeHostCommand}" FontSize="10" Margin="5,0" Content="{Binding Host}">
-        </Button>
-      </StackPanel>
+      <Button BorderThickness="0"
+              Background="Transparent"
+              VerticalAlignment="Bottom"
+              HorizontalAlignment="Left"
+              Cursor="Hand"
+              Height="25"
+              Width="25"
+              VerticalContentAlignment="Stretch"
+              HorizontalContentAlignment="Stretch"
+              Margin="10,5"
+              >
+        <Button.ContextMenu>
+          <ContextMenu>
+            <MenuItem Header="Change Server" Command="{Binding ChangeServerCommand}"></MenuItem>
+          </ContextMenu>
+        </Button.ContextMenu>
+        <Image Source="avares://Remotely_Desktop/Assets/Gear.png"></Image>
+      </Button>
     </Grid>
 </Window>

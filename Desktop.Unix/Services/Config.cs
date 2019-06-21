@@ -11,9 +11,9 @@ namespace Remotely.Desktop.Unix.Services
 {
     public class Config
     {
-        private static string ConfigFolder => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Remotely");
+        public string Host { get; set; } = "";
         private static string ConfigFile => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Remotely", "Config.json");
-
+        private static string ConfigFolder => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Remotely");
         public static Config GetConfig()
         {
             if (!Directory.Exists(ConfigFolder))
@@ -46,6 +46,5 @@ namespace Remotely.Desktop.Unix.Services
             {
             }
         }
-        public string Host { get; set; }
     }
 }
