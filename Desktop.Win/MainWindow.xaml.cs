@@ -47,14 +47,8 @@ namespace Remotely.Desktop.Win
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             await MainWindowViewModel.Current.Init();
-            MainWindowViewModel.Current.CheckForAdminRights();
         }
 
-        private async void HostHyperlink_Click(object sender, RoutedEventArgs e)
-        {
-            MainWindowViewModel.Current.PromptForHostName();
-            await MainWindowViewModel.Current.Init();
-        }
 
         private async void CopyLinkButton_Click(object sender, RoutedEventArgs e)
         {
@@ -73,9 +67,9 @@ namespace Remotely.Desktop.Win
             tooltip.BeginAnimation(OpacityProperty, animation);
         }
 
-        private async void RemoveButton_Click(object sender, RoutedEventArgs e)
+        private void OptionsButton_Click(object sender, RoutedEventArgs e)
         {
-            await MainWindowViewModel.Current.RemoveViewers(ViewerListBox.SelectedItems.Cast<Viewer>());
+            (sender as Button).ContextMenu.IsOpen = true;
         }
     }
 }

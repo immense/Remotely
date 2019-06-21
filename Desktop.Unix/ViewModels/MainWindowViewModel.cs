@@ -25,6 +25,9 @@ namespace Remotely.Desktop.Unix.ViewModels
 {
     public class MainWindowViewModel : ReactiveObject
     {
+        private double copyMessageOpacity;
+        private string host;
+        private bool isCopyMessageVisible;
         private string sessionID;
 
         public MainWindowViewModel()
@@ -40,15 +43,7 @@ namespace Remotely.Desktop.Unix.ViewModels
 
         public static MainWindowViewModel Current { get; private set; }
 
-        public bool AllowHostChange
-        {
-            get
-            {
-                return string.IsNullOrWhiteSpace(ForceHost);
-            }
-        }
-
-        public ICommand ChangeHostCommand => new Executor(async (param) =>
+        public ICommand ChangeServerCommand => new Executor(async (param) =>
         {
             await PromptForHostName();
             await Init();
@@ -60,8 +55,6 @@ namespace Remotely.Desktop.Unix.ViewModels
         });
 
         public Conductor Conductor { get; }
-
-        public Config Config { get; private set; }
 
         public ICommand CopyLinkCommand => new Executor(async (param) =>
         {
@@ -77,29 +70,22 @@ namespace Remotely.Desktop.Unix.ViewModels
             }
             IsCopyMessageVisible = false;
         });
-
-        private double copyMessageOpacity;
         public double CopyMessageOpacity
         {
             get => copyMessageOpacity;
             set => this.RaiseAndSetIfChanged(ref copyMessageOpacity, value);
         }
-
-        public string ForceHost { get; }
-
-        private string host;
         public string Host
         {
             get => host;
             set => this.RaiseAndSetIfChanged(ref host, value);
         }
-
-        private bool isCopyMessageVisible;
         public bool IsCopyMessageVisible
         {
             get => isCopyMessageVisible;
             set => this.RaiseAndSetIfChanged(ref isCopyMessageVisible, value);
         }
+
         public ICommand MinimizeCommand => new Executor((param) =>
         {
             (param as Window).WindowState = WindowState.Minimized;
@@ -114,32 +100,25 @@ namespace Remotely.Desktop.Unix.ViewModels
                 await Conductor.CasterSocket.SendViewerRemoved(viewer.ViewerConnectionID);
             }
         });
+
         public string SessionID
         {
             get => sessionID;
             set => this.RaiseAndSetIfChanged(ref sessionID, value);
         }
-
         public ObservableCollection<Viewer> Viewers { get; } = new ObservableCollection<Viewer>();
 
         public async Task Init()
         {
             SessionID = "Retrieving...";
-            Config = Config.GetConfig();
-            if (AllowHostChange)
+            Host = Config.GetConfig().Host;
+            while (string.IsNullOrWhiteSpace(Host))
             {
-                while (string.IsNullOrWhiteSpace(Config.Host))
-                {
-                    Config.Host = "https://";
-                    await PromptForHostName();
-                }
+                Host = "https://";
+                await PromptForHostName();
             }
-            else
-            {
-                Config.Host = ForceHost;
-            }
-            Host = Config.Host;
-            Conductor.ProcessArgs(new string[] { "-mode", "Normal", "-host", Config.Host });
+            Host = Host;
+            Conductor.ProcessArgs(new string[] { "-mode", "Normal", "-host", Host });
             try
             {
                 await Conductor.Connect();
@@ -168,9 +147,9 @@ namespace Remotely.Desktop.Unix.ViewModels
         public async Task PromptForHostName()
         {
             var prompt = new HostNamePrompt();
-            if (!string.IsNullOrWhiteSpace(Config.Host))
+            if (!string.IsNullOrWhiteSpace(Host))
             {
-                HostNamePromptViewModel.Current.Host = Config.Host;
+                HostNamePromptViewModel.Current.Host = Host;
             }
             prompt.Owner = App.Current?.MainWindow;
             await prompt.ShowDialog(App.Current?.MainWindow);
@@ -179,11 +158,12 @@ namespace Remotely.Desktop.Unix.ViewModels
             {
                 result = $"https://{result}";
             }
-            if (result != Config.Host)
+            if (result != Host)
             {
-                Config.Host = result;
                 Host = result;
-                Config.Save();
+                var config = Config.GetConfig();
+                config.Host = Host;
+                config.Save();
             }
         }
 

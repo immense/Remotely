@@ -215,6 +215,7 @@
       <DependentUpon>HostNamePrompt.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\Config.cs" />
+    <Compile Include="Services\Executor.cs" />
     <Compile Include="ViewModels\HostNamePromptViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />

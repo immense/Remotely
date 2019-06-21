@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Remotely.Desktop.Win.Controls"
         xmlns:ViewModels="clr-namespace:Remotely.Desktop.Win.ViewModels" x:Name="PromptWindow" x:Class="Remotely.Desktop.Win.Controls.HostNamePrompt"
         mc:Ignorable="d"
-        Title="Remotely Host Name" Height="150" Width="350" Icon="/Remotely_Desktop;component/favicon.ico" WindowStartupLocation="CenterOwner">
+        Title="Remotely Host Name" Height="150" Width="350" WindowStartupLocation="CenterOwner" Icon="/Remotely_Desktop;component/favicon.ico">
     <Window.DataContext>
         <ViewModels:HostNamePromptViewModel/>
     </Window.DataContext>
