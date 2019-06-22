@@ -90,20 +90,23 @@ export class RCBrowserSockets {
     SendQualityChange(qualityLevel: number) {
         this.Connection.invoke("SendQualityChange", qualityLevel);
     }
+    SendToggleAudio(toggleOn: boolean) {
+        this.Connection.invoke("SendToggleAudio", toggleOn);
+    }
     private ApplyMessageHandlers(hubConnection) {
         hubConnection.on("ScreenCount", (primaryScreenIndex: number, screenCount: number) => {
             document.querySelector("#screenSelectBar").innerHTML = "";
             for (let i = 0; i < screenCount; i++) {
                 var button = document.createElement("button");
                 button.innerHTML = `Monitor ${i}`;
-                button.classList.add("bar-button");
+                button.classList.add("horizontal-bar-button");
                 if (i == primaryScreenIndex) {
                     button.classList.add("toggled");
                 }
                 document.querySelector("#screenSelectBar").appendChild(button);
                 button.onclick = (ev: MouseEvent) => {
                     this.SendSelectScreen(i);
-                    document.querySelectorAll("#screenSelectBar .bar-button").forEach(button => {
+                    document.querySelectorAll("#screenSelectBar .horizontal-bar-button").forEach(button => {
                         button.classList.remove("toggled");
                     });
                     (ev.currentTarget as HTMLButtonElement).classList.add("toggled");

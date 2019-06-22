@@ -195,6 +195,10 @@ namespace Remotely.Server.Services
         {
             await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("QualityChange", qualityLevel, Context.ConnectionId);
         }
+        public async Task SendToggleAudio(bool toggleOn)
+        {
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ToggleAudio", toggleOn);
+        }
         public async Task Tap(double percentX, double percentY)
         {
             await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("Tap", percentX, percentY, Context.ConnectionId);

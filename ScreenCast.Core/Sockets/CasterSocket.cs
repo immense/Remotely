@@ -163,6 +163,11 @@ namespace Remotely.ScreenCast.Core.Sockets
                 }
             });
 
+            Connection.On("ToggleAudio", (bool toggleOn) =>
+            {
+                Conductor.InvokeAudioToggled(toggleOn);
+            });
+
 
             Connection.On("TouchDown", (string viewerID) =>
             {

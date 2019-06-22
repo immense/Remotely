@@ -41,6 +41,7 @@ namespace Remotely.ScreenCast.Win
                 Conductor.Connect().Wait();
                 Conductor.SetMessageHandlers(new WinInput());
                 Conductor.ScreenCastInitiated += ScreenCastInitiated;
+                Conductor.AudioToggled += AudioToggled;
                 AudioCapturer = new AudioCapturer(Conductor);
                 CursorIconWatcher = new CursorIconWatcher(Conductor);
                 CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
@@ -54,6 +55,18 @@ namespace Remotely.ScreenCast.Win
             {
                 Logger.Write(ex);
                 throw;
+            }
+        }
+
+        private static void AudioToggled(object sender, bool toggledOn)
+        {
+            if (toggledOn)
+            {
+                AudioCapturer.Start();
+            }
+            else
+            {
+                AudioCapturer.Stop();
             }
         }
 
@@ -94,7 +107,6 @@ namespace Remotely.ScreenCast.Win
             }
             await Conductor.CasterSocket.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
             ScreenCaster.BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, capturer, Conductor);
-            AudioCapturer.Start();
         }
 
         public static async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)

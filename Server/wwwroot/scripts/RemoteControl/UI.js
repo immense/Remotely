@@ -1,6 +1,7 @@
 import { ConnectToClient, RemoteControl } from "./RemoteControl.js";
 import { FloatMessage } from "../UI.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
+export var AudioButton = document.getElementById("audioButton");
 export var MenuButton = document.getElementById("menuButton");
 export var MenuFrame = document.getElementById("menuFrame");
 export var SessionIDInput = document.getElementById("sessionIDInput");
@@ -78,6 +79,11 @@ export function ApplyInputHandlers(sockets) {
             ScreenViewer.style.maxWidth = "unset";
             ScreenViewer.style.maxHeight = "unset";
         }
+    });
+    AudioButton.addEventListener("click", (ev) => {
+        AudioButton.classList.toggle("toggled");
+        var toggleOn = AudioButton.classList.contains("toggled");
+        sockets.SendToggleAudio(toggleOn);
     });
     DisconnectButton.addEventListener("click", (ev) => {
         ConnectButton.removeAttribute("disabled");
