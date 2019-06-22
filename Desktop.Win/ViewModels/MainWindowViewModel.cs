@@ -39,9 +39,22 @@ namespace Remotely.Desktop.Win.ViewModels
             Conductor.ViewerRemoved += ViewerRemoved;
             Conductor.ViewerAdded += ViewerAdded;
             Conductor.ScreenCastRequested += ScreenCastRequested;
+            Conductor.AudioToggled += AudioToggled;
             CursorIconWatcher = new CursorIconWatcher(Conductor);
             CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
             AudioCapturer = new AudioCapturer(Conductor);
+        }
+
+        private void AudioToggled(object sender, bool toggleOn)
+        {
+            if (toggleOn)
+            {
+                AudioCapturer.Start();
+            }
+            else
+            {
+                AudioCapturer.Stop();
+            }
         }
 
         public static MainWindowViewModel Current { get; private set; }
@@ -216,7 +229,6 @@ namespace Remotely.Desktop.Win.ViewModels
                         }
                         await Conductor.CasterSocket.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
                         ScreenCaster.BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, capturer, Conductor);
-                        AudioCapturer.Start();
                     });
                 }
             });

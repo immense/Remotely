@@ -46,6 +46,11 @@ button[disabled] {
     width: 90%;
 }
 
+.horizontal-bar-button {
+    height: 35px;
+    margin: 5px;
+}
+
 .menu-options-header {
     text-align: center;
     color: lightgray;
@@ -121,10 +126,6 @@ button[disabled] {
     transition: all 250ms;
 }
 
-.horizontal-button-bar .bar-button {
-    margin: 0 5px 0 5px;
-    font-size: .8em;
-}
 
 #screenViewer {
     max-width: 99vw;

@@ -5,6 +5,7 @@ import { FloatMessage } from "../UI.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 import { Point } from "../Models/Point.js";
 
+export var AudioButton = document.getElementById("audioButton") as HTMLButtonElement;
 export var MenuButton = document.getElementById("menuButton") as HTMLButtonElement;
 export var MenuFrame = document.getElementById("menuFrame") as HTMLDivElement;
 export var SessionIDInput = document.getElementById("sessionIDInput") as HTMLInputElement;
@@ -87,6 +88,11 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
             ScreenViewer.style.maxWidth = "unset";
             ScreenViewer.style.maxHeight = "unset";
         }
+    })
+    AudioButton.addEventListener("click", (ev) => {
+        AudioButton.classList.toggle("toggled");
+        var toggleOn = AudioButton.classList.contains("toggled");
+        sockets.SendToggleAudio(toggleOn);
     })
     DisconnectButton.addEventListener("click", (ev) => {
         ConnectButton.removeAttribute("disabled");

@@ -17,6 +17,8 @@ namespace Remotely.ScreenCast.Core
 {
     public class Conductor
     {
+        public event EventHandler<bool> AudioToggled;
+
         public event EventHandler<ScreenCastRequest> ScreenCastInitiated;
 
         public event EventHandler<ScreenCastRequest> ScreenCastRequested;
@@ -26,16 +28,16 @@ namespace Remotely.ScreenCast.Core
         public event EventHandler<Viewer> ViewerAdded;
 
         public event EventHandler<string> ViewerRemoved;
-
         public Dictionary<string, string> ArgDict { get; set; }
+        public CasterSocket CasterSocket { get; private set; }
         public HubConnection Connection { get; private set; }
         public string CurrentDesktopName { get; set; }
         public string Host { get; private set; }
         public AppMode Mode { get; private set; }
-        public CasterSocket CasterSocket { get; private set; }
         public string RequesterID { get; private set; }
         public string ServiceID { get; private set; }
         public ConcurrentDictionary<string, Viewer> Viewers { get; } = new ConcurrentDictionary<string, Viewer>();
+
         public Task Connect()
         {
             Connection = new HubConnectionBuilder()
@@ -95,6 +97,11 @@ namespace Remotely.ScreenCast.Core
                 }
             };
             timer.Start();
+        }
+
+        internal void InvokeAudioToggled(bool toggleOn)
+        {
+            AudioToggled?.Invoke(null, toggleOn);
         }
 
         internal void InvokeScreenCastInitiated(ScreenCastRequest viewerIdAndRequesterName)
