@@ -56,8 +56,6 @@ export function ApplyInputHandlers(sockets) {
         }
     });
     MenuButton.addEventListener("touchmove", (ev) => {
-        ev.preventDefault();
-        isMenuButtonDragging = true;
         MenuButton.style.top = `${ev.touches[0].clientY}px`;
     });
     ChangeScreenButton.addEventListener("click", (ev) => {

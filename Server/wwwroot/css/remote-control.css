@@ -70,6 +70,7 @@ button[disabled] {
     border-radius: 0 3px 3px 0;
     pointer-events: all;
     cursor: pointer;
+    z-index: 3;
     transition: .5s ease left;
 }
 
@@ -92,6 +93,7 @@ button[disabled] {
     overflow-y: auto;
     text-align: center;
     opacity: 0;
+    z-index: 3;
     transition: .5s ease all;
 }
 
