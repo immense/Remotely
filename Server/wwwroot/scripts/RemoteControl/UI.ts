@@ -6,6 +6,7 @@ import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 import { Point } from "../Models/Point.js";
 
 export var MenuButton = document.getElementById("menuButton") as HTMLButtonElement;
+export var MenuFrame = document.getElementById("menuFrame") as HTMLDivElement;
 export var SessionIDInput = document.getElementById("sessionIDInput") as HTMLInputElement;
 export var ConnectButton = document.getElementById("connectButton") as HTMLButtonElement;
 export var RequesterNameInput = document.getElementById("nameInput") as HTMLInputElement;
@@ -16,12 +17,9 @@ export var HorizontalBars = document.querySelectorAll(".horizontal-button-bar");
 export var ConnectBox = document.getElementById("connectBox") as HTMLDivElement;
 export var ScreenSelectBar = document.getElementById("screenSelectBar") as HTMLDivElement;
 export var QualityBar = document.getElementById("qualityBar") as HTMLDivElement;
-export var ConnectionBar = document.getElementById("connectionBar") as HTMLDivElement;
 export var QualitySlider = document.getElementById("qualityRangeInput") as HTMLInputElement;
 export var ActionsBar = document.getElementById("actionsBar") as HTMLDivElement;
 export var ViewBar = document.getElementById("viewBar") as HTMLDivElement;
-export var ActionsButton = document.getElementById("actionsButton") as HTMLButtonElement;
-export var ViewButton = document.getElementById("viewButton") as HTMLButtonElement;
 export var ChangeScreenButton = document.getElementById("changeScreenButton") as HTMLButtonElement;
 export var QualityButton = document.getElementById("qualityButton") as HTMLButtonElement;
 export var FitToScreenButton = document.getElementById("fitToScreenButton") as HTMLButtonElement;
@@ -34,8 +32,6 @@ export var InviteButton = document.getElementById("inviteButton") as HTMLButtonE
 export var FileTransferButton = document.getElementById("fileTransferButton") as HTMLButtonElement;
 export var CtrlAltDelButton = document.getElementById("ctrlAltDelButton") as HTMLButtonElement;
 
-
-
 var lastPointerMove = Date.now();
 var isDragging: boolean;
 var currentPointerDevice: string;
@@ -44,21 +40,34 @@ var cancelNextClick: boolean;
 var isPinchZooming: boolean;
 var startPinchPoint1: Point;
 var startPinchPoint2: Point;
+var isMenuButtonDragging: boolean;
 
 export function ApplyInputHandlers(sockets: RCBrowserSockets) {
     MenuButton.addEventListener("click", (ev) => {
+        if (isMenuButtonDragging) {
+            isMenuButtonDragging = false;
+            ev.preventDefault();
+            return;
+        }
+        MenuFrame.classList.toggle("open");
+        MenuButton.classList.toggle("open");
         closeAllHorizontalBars(null);
-        ConnectionBar.classList.toggle("open");
-    })
-    ActionsButton.addEventListener("click", (ev) => {
-        closeAllHorizontalBars("actionsBar");
-        ActionsBar.classList.toggle("open");
-    })
+    });
+    
+    MenuButton.addEventListener("mousemove", (ev) => {
+        if (ev.buttons == 1) {
+            ev.preventDefault();
+            isMenuButtonDragging = true;
+            MenuButton.style.top = `${ev.clientY}px`;
+        }
+    });
 
-    ViewButton.addEventListener("click", (ev) => {
-        closeAllHorizontalBars("viewBar");
-        ViewBar.classList.toggle("open");
-    })
+    MenuButton.addEventListener("touchmove", (ev) => {
+        ev.preventDefault();
+        isMenuButtonDragging = true;
+        MenuButton.style.top = `${ev.touches[0].clientY}px`;
+    });
+
     ChangeScreenButton.addEventListener("click", (ev) => {
         closeAllHorizontalBars("screenSelectBar");
         ScreenSelectBar.classList.toggle("open");
@@ -85,7 +94,6 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
     });
     KeyboardButton.addEventListener("click", (ev) => {
         closeAllHorizontalBars(null);
-        ConnectionBar.classList.remove("open");
         OnScreenKeyboard.classList.toggle("open");
     });
     InviteButton.addEventListener("click", (ev) => {
@@ -121,7 +129,6 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
             return;
         }
         closeAllHorizontalBars(null);
-        ConnectionBar.classList.remove("open");
         RemoteControl.RCBrowserSockets.SendCtrlAltDel();
     });
     document.querySelectorAll("#sessionIDInput, #nameInput").forEach(x => {

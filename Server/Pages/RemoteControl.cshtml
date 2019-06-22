@@ -40,29 +40,47 @@
         </div>
         <div class="logo-subtitle">Do IT Remotely</div>
     </div>
-    <div id="connectionBar" class="connection-bar">
-        <i id="menuButton" class="fas fa-bars"></i>
 
-        <div class="connection-bar-footer">
-        </div>
-        <div class="connection-bar-body">
-            <button id="actionsButton" class="bar-button">Actions <i class="fas fa-bolt"></i></button>
-            <button id="viewButton" class="bar-button">View <i class="fas fa-eye"></i></button>
-            <button id="disconnectButton" class="bar-button">Disconnect <i class="fas fa-window-close"></i></button>
+    <i id="menuButton" class="fas fa-chevron-circle-right"></i>
+
+    <div id="menuFrame">
+
+        <div class="menu-options-header">
+            Actions
         </div>
 
+        <div>
+            <button id="inviteButton" class="option-button">Invite Others  <i class="fas fa-user-plus"></i></button>
+            <button id="fileTransferButton" class="option-button">File Transfer  <i class="fas fa-file-upload"></i></button>
+            <button id="ctrlAltDelButton" class="option-button">Ctrl+Alt+Del <i class="fas fa-sign-in-alt"></i></button>
+            <button id="keyboardButton" hidden="hidden" class="option-button">Keyboard  <i class="fas fa-keyboard"></i></button>
+            <button id="disconnectButton" class="option-button">Disconnect <i class="fas fa-window-close"></i></button>
+        </div>
+
+
+        <div class="menu-options-header">
+            View
+        </div>
+
+        <div>
+            <button id="changeScreenButton" class="option-button">Monitors <i class="fas fa-desktop"></i></button>
+            <button id="fitToScreenButton" class="toggled option-button">Fit <i class="fas fa-expand"></i></button>
+            <button id="qualityButton" class="option-button">Quality <i class="far fa-image"></i></button>
+        </div>
+
     </div>
-    <div id="actionsBar" class="horizontal-button-bar">
-        <button id="inviteButton" class="bar-button">Invite Others  <i class="fas fa-user-plus"></i></button>
-        <button id="keyboardButton" hidden="hidden" class="bar-button">Keyboard  <i class="fas fa-keyboard"></i></button>
-        <button id="fileTransferButton" class="bar-button">File Transfer  <i class="fas fa-file-upload"></i></button>
-        <button id="ctrlAltDelButton" class="bar-button">Ctrl+Alt+Del <i class="fas fa-sign-in-alt"></i></button>
+
+    <div id="screenSelectBar" class="horizontal-button-bar">
+
     </div>
-    <div id="viewBar" class="horizontal-button-bar">
-        <button id="changeScreenButton" class="bar-button">Monitors <i class="fas fa-desktop"></i></button>
-        <button id="fitToScreenButton" class="toggled bar-button">Fit <i class="fas fa-expand"></i></button>
-        <button id="qualityButton" class="bar-button">Quality <i class="far fa-image"></i></button>
+
+    <div id="qualityBar" class="horizontal-button-bar">
+        <div class="center-aligned" style="color:white; font-size:12px">
+            Image Quality
+        </div>
+        <input id="qualityRangeInput" value="50" max="100" class="form-control-range" type="range" />
     </div>
+
     <div id="connectBox">
         <h3>Connect to a client:</h3>
         <div class="form-block">
@@ -82,16 +100,7 @@
 
         </div>
     </div>
-    <div id="screenSelectBar" class="horizontal-button-bar">
 
-    </div>
-
-    <div id="qualityBar" class="horizontal-button-bar">
-        <div class="center-aligned" style="color:white; font-size:12px">
-            Image Quality
-        </div>
-        <input id="qualityRangeInput" value="50" max="100" class="form-control-range" type="range" />
-    </div>
 
     <div class="center-aligned">
         <canvas id="screenViewer" hidden="hidden"></canvas>
