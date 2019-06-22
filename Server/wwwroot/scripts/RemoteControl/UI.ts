@@ -64,8 +64,6 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
     });
 
     MenuButton.addEventListener("touchmove", (ev) => {
-        ev.preventDefault();
-        isMenuButtonDragging = true;
         MenuButton.style.top = `${ev.touches[0].clientY}px`;
     });
 
