@@ -16,9 +16,6 @@ button {
     border: none;
 }
 
-.bar-button {
-    height: 100%;
-}
 
 button:hover {
     background-color: rgb(100,100,100);
@@ -41,46 +38,62 @@ button[disabled] {
     text-align: center;
 }
 
-.connection-bar {
-    display: inline-block;
-    position: fixed;
-    top: 10px;
-    border: none;
-    border-radius: 5px;
-    background-color: rgb(60, 60, 60);
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 3;
-    overflow: visible;
-    height: 0;
-    transition: height 250ms;
-    padding-right: 1px;
-    pointer-events: none;
-}
 
-.connection-bar.open {
+.option-button {
+    position: relative;
     height: 40px;
-    transition: height 250ms;
-    border: 1px solid white;
-    pointer-events: all;
+    margin: 5px 0;
+    width: 90%;
 }
 
-.connection-bar-body {
-    overflow: hidden;
-    height: 100%;
-    white-space: nowrap;
+.menu-options-header {
+    text-align: center;
+    color: lightgray;
+    margin: 20px 0 5px 0;
+    font-family: monospace;
+    font-size: .9em;
 }
-
 
 #menuButton {
-    background-color: rgb(40,40,40);
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    background-color: rgb(50,50,50);
     font-size: 1.5em;
-    padding: 5px;
-    border-radius: 3px;
+    padding: 20px 5px;
+    border-radius: 0 3px 3px 0;
     pointer-events: all;
-    margin-right: -1.5em;
-    float: right;
     cursor: pointer;
+    transition: .5s ease left;
+}
+
+#menuButton.open {
+    left: 150px;
+    transform: translateY(-50%) rotateY(180deg);
+    border-radius: 3px 0 0 3px;
+    transition: .5s ease left;
+}
+
+#menuFrame {
+    position: absolute;
+    color: white;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background-color: rgb(50,50,50);
+    width: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    text-align: center;
+    opacity: 0;
+    transition: .5s ease all;
+}
+
+#menuFrame.open {
+    width: 150px;
+    opacity: 1;
+    transition: .5s ease all;
 }
 
 #menuButton:hover {
@@ -92,7 +105,7 @@ button[disabled] {
     background-color: rgb(90, 90, 90);
     height: 0;
     padding: 0;
-    top: 55px;
+    top: 10px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 3;
