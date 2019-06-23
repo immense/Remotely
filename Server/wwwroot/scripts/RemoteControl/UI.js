@@ -37,22 +37,28 @@ var isPinchZooming;
 var startPinchPoint1;
 var startPinchPoint2;
 var isMenuButtonDragging;
+var startMenuDraggingY;
 export function ApplyInputHandlers(sockets) {
     MenuButton.addEventListener("click", (ev) => {
-        if (isMenuButtonDragging) {
-            isMenuButtonDragging = false;
+        if (isMenuButtonDragging && Math.abs(ev.clientY - startMenuDraggingY) > 5) {
             ev.preventDefault();
+            isMenuButtonDragging = false;
             return;
         }
+        isMenuButtonDragging = false;
         MenuFrame.classList.toggle("open");
         MenuButton.classList.toggle("open");
         closeAllHorizontalBars(null);
     });
     MenuButton.addEventListener("mousemove", (ev) => {
         if (ev.buttons == 1) {
-            ev.preventDefault();
+            if (!isMenuButtonDragging) {
+                startMenuDraggingY = ev.clientY;
+            }
             isMenuButtonDragging = true;
-            MenuButton.style.top = `${ev.clientY}px`;
+            if (Math.abs(ev.clientY - startMenuDraggingY) > 5) {
+                MenuButton.style.top = `${ev.clientY}px`;
+            }
         }
     });
     MenuButton.addEventListener("touchmove", (ev) => {

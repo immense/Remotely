@@ -42,14 +42,17 @@ var isPinchZooming: boolean;
 var startPinchPoint1: Point;
 var startPinchPoint2: Point;
 var isMenuButtonDragging: boolean;
+var startMenuDraggingY: number;
 
 export function ApplyInputHandlers(sockets: RCBrowserSockets) {
     MenuButton.addEventListener("click", (ev) => {
-        if (isMenuButtonDragging) {
-            isMenuButtonDragging = false;
+        
+        if (isMenuButtonDragging && Math.abs(ev.clientY - startMenuDraggingY) > 5) {
             ev.preventDefault();
+            isMenuButtonDragging = false;
             return;
         }
+        isMenuButtonDragging = false;
         MenuFrame.classList.toggle("open");
         MenuButton.classList.toggle("open");
         closeAllHorizontalBars(null);
@@ -57,9 +60,14 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
     
     MenuButton.addEventListener("mousemove", (ev) => {
         if (ev.buttons == 1) {
-            ev.preventDefault();
+            if (!isMenuButtonDragging) {
+                startMenuDraggingY = ev.clientY;
+            }
             isMenuButtonDragging = true;
-            MenuButton.style.top = `${ev.clientY}px`;
+
+            if (Math.abs(ev.clientY - startMenuDraggingY) > 5) {
+                MenuButton.style.top = `${ev.clientY}px`;
+            }
         }
     });
 
