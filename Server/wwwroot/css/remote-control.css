@@ -74,6 +74,10 @@ button[disabled] {
     transition: .5s ease left;
 }
 
+#menuButton:focus {
+    outline: none;
+}
+
 #menuButton.open {
     left: 150px;
     transform: translateY(-50%) rotateY(180deg);
