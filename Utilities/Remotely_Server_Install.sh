@@ -26,9 +26,9 @@ apt-get -y install libgdiplus
 
 # Download and install Remotely files.
 mkdir -p $appRoot
-wget "https://remotely.lucency.co/Downloads/linux-x64/Remotely_Server.zip"
-unzip -o Remotely_Server.zip -d $appRoot
-rm Remotely_Server.zip
+wget "https://remotely.lucency.co/Downloads/linux-x64/Server.zip"
+unzip -o Server.zip -d $appRoot
+rm Server.zip
 setfacl -R -m u:www-data:rwx $appRoot
 chown -R www-data:www-data $appRoot
 
