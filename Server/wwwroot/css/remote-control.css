@@ -63,6 +63,7 @@ button[disabled] {
     position: absolute;
     top: 50%;
     left: 0;
+    color: gray;
     transform: translateY(-50%);
     background-color: rgb(50,50,50);
     font-size: 1.5em;
@@ -73,7 +74,9 @@ button[disabled] {
     z-index: 3;
     transition: .5s ease left;
 }
-
+#menuButton:hover {
+    color: white;
+}
 #menuButton:focus {
     outline: none;
 }
@@ -107,9 +110,7 @@ button[disabled] {
     transition: .5s ease all;
 }
 
-#menuButton:hover {
-    color: white;
-}
+
 
 .horizontal-button-bar {
     position: fixed;

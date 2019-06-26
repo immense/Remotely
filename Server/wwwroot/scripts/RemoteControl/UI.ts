@@ -43,33 +43,28 @@ var startPinchPoint1: Point;
 var startPinchPoint2: Point;
 var isMenuButtonDragging: boolean;
 var startMenuDraggingY: number;
+var ignoreNextMenuClick: boolean;
 
 export function ApplyInputHandlers(sockets: RCBrowserSockets) {
     MenuButton.addEventListener("click", (ev) => {
-        
-        if (isMenuButtonDragging && Math.abs(ev.clientY - startMenuDraggingY) > 5) {
-            ev.preventDefault();
-            isMenuButtonDragging = false;
+        if (ignoreNextMenuClick) {
+            ignoreNextMenuClick = false;
             return;
         }
-        isMenuButtonDragging = false;
         MenuFrame.classList.toggle("open");
         MenuButton.classList.toggle("open");
         closeAllHorizontalBars(null);
     });
-    
-    MenuButton.addEventListener("mousemove", (ev) => {
-        if (ev.buttons == 1) {
-            if (!isMenuButtonDragging) {
-                startMenuDraggingY = ev.clientY;
-            }
-            isMenuButtonDragging = true;
 
-            if (Math.abs(ev.clientY - startMenuDraggingY) > 5) {
-                MenuButton.style.top = `${ev.clientY}px`;
-            }
-        }
+    MenuButton.addEventListener("mousedown", (ev) => {
+        isMenuButtonDragging = true;
+        ignoreNextMenuClick = false;
+        startMenuDraggingY = ev.clientY;
+        window.addEventListener("mousemove", moveMenuButton);
+        window.addEventListener("mouseup", removeMouseButtonWindowListeners);
+        window.addEventListener("mouseleave", removeMouseButtonWindowListeners);
     });
+
 
     MenuButton.addEventListener("touchmove", (ev) => {
         MenuButton.style.top = `${ev.touches[0].clientY}px`;
@@ -411,4 +406,21 @@ function closeAllHorizontalBars(exceptBarId: string) {
             x.classList.remove('open');
         }
     })
+}
+
+function moveMenuButton(ev: MouseEvent) {
+    if (Math.abs(ev.clientY - startMenuDraggingY) > 5) {
+        if (ev.clientY < 0 || ev.clientY > window.innerHeight) {
+            return;
+        }
+        ignoreNextMenuClick = true;
+        MenuButton.style.top = `${ev.clientY}px`;
+    }
+}
+
+function removeMouseButtonWindowListeners(ev: MouseEvent) {
+    window.removeEventListener("mousemove", moveMenuButton);
+    window.removeEventListener("mouseup", removeMouseButtonWindowListeners);
+    window.removeEventListener("mouseleave", removeMouseButtonWindowListeners);
+    isMenuButtonDragging = false;
 }
