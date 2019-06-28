@@ -76,7 +76,7 @@ namespace Remotely.ScreenCast.Core.Capture
                     //    continue;
                     //}
 
-                    while (viewer.PendingFrames > 10)
+                    while (viewer.PendingFrames > 10 || conductor.IsSwitchingDesktops)
                     {
                         await Task.Delay(1);
                     }

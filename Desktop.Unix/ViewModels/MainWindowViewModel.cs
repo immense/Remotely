@@ -15,7 +15,9 @@ using Remotely.Shared.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,9 +39,9 @@ namespace Remotely.Desktop.Unix.ViewModels
             Conductor.SessionIDChanged += SessionIDChanged;
             Conductor.ViewerRemoved += ViewerRemoved;
             Conductor.ViewerAdded += ViewerAdded;
+            Conductor.ClipboardTransferred += Conductor_ClipboardTransferred;
             Conductor.ScreenCastRequested += ScreenCastRequested;
         }
-
 
         public static MainWindowViewModel Current { get; private set; }
 
@@ -70,16 +72,19 @@ namespace Remotely.Desktop.Unix.ViewModels
             }
             IsCopyMessageVisible = false;
         });
+
         public double CopyMessageOpacity
         {
             get => copyMessageOpacity;
             set => this.RaiseAndSetIfChanged(ref copyMessageOpacity, value);
         }
+
         public string Host
         {
             get => host;
             set => this.RaiseAndSetIfChanged(ref host, value);
         }
+
         public bool IsCopyMessageVisible
         {
             get => isCopyMessageVisible;
@@ -106,6 +111,7 @@ namespace Remotely.Desktop.Unix.ViewModels
             get => sessionID;
             set => this.RaiseAndSetIfChanged(ref sessionID, value);
         }
+
         public ObservableCollection<Viewer> Viewers { get; } = new ObservableCollection<Viewer>();
 
         public async Task Init()
@@ -139,7 +145,7 @@ namespace Remotely.Desktop.Unix.ViewModels
             {
                 return;
             }
-            
+
             await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName);
             await Conductor.CasterSocket.GetSessionID();
         }
@@ -167,8 +173,29 @@ namespace Remotely.Desktop.Unix.ViewModels
             }
         }
 
+        private void Conductor_ClipboardTransferred(object sender, string transferredText)
+        {
+            var tempPath = Path.GetTempFileName();
+            File.WriteAllText(tempPath, transferredText);
+            try
+            {
+                var psi = new ProcessStartInfo("bash", $"-c \"cat {tempPath} | xclip -i -selection clipboard\"")
+                {
+                    WindowStyle = ProcessWindowStyle.Hidden
+                };
+                var proc = Process.Start(psi);
+                proc.WaitForExit();
 
-
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+            }
+            finally
+            {
+                File.Delete(tempPath);
+            }
+        }
         private void ScreenCastRequested(object sender, ScreenCastRequest screenCastRequest)
         {
             Dispatcher.UIThread.InvokeAsync(async () =>

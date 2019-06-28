@@ -41,10 +41,10 @@ The following steps will configure your Windows 10 machine for building the Remo
 * Documentation for hosting in IIS can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/iis/index?view=aspnetcore-2.2
 
 ## Hosting a Server (Ubuntu)
-* Currently, only Ubuntu 18.04 is tested.  The Linux server package will likely work with other distros after some alterations to the setup script.
+* Ubuntu 18.04 and 19.04 have been tested.  The Linux server package might work with other distros after some alterations to the setup script.
 * Run Remotely_Server_Setup.sh (with sudo), which is in the [Utilities folder in source control](https://raw.githubusercontent.com/Jay-Rad/Remotely/master/Utilities/Remotely_Server_Install.sh).
     * "App root" will be the directory in which the Remotely server files are placed (typically /var/www/remotely).
-	* This script is only for Ubuntu 18.04.
+	* This script is only for Ubuntu 18.04 and 19.04.
 	* The script installs the .NET Core runtime, as well as other dependencies.
 	* Certbot is used in this script and will install an SSL certificate for your site.  Your server needs to have a public domain name that is accessible from the internet for this to work.
 		* More information: https://letsencrypt.org/, https://certbot.eff.org/
@@ -67,7 +67,7 @@ The following steps will configure your Windows 10 machine for building the Remo
 * Windows: Only the latest version of Windows 10 is tested.
 	* Requires .NET Framework 4.7.2.
 	* Windows 2016/2019 should work as well, but isn't tested regularly.
-* Linux: Only Lubuntu 18.10 is tested.
+* Linux: Only Ubuntu 18.04+ is tested.
 	* Your account must be set to auto login for unattended remote control to work.
 
 ## Session Recording

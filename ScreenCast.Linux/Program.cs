@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Remotely.ScreenCast.Linux
 {
@@ -26,6 +27,7 @@ namespace Remotely.ScreenCast.Linux
                 Conductor.Connect().Wait();
                 Conductor.SetMessageHandlers(new X11Input());
                 Conductor.ScreenCastInitiated += ScreenCastInitiated;
+                Conductor.ClipboardTransferred += Conductor_ClipboardTransferred;
                 Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName).Wait();
                 Conductor.CasterSocket.NotifyRequesterUnattendedReady(Conductor.RequesterID).Wait();
                 Conductor.StartWaitForViewerTimer();
@@ -38,6 +40,30 @@ namespace Remotely.ScreenCast.Linux
             {
                 Logger.Write(ex);
                 throw;
+            }
+        }
+
+        private static void Conductor_ClipboardTransferred(object sender, string transferredText)
+        {
+            var tempPath = Path.GetTempFileName();
+            File.WriteAllText(tempPath, transferredText);
+            try
+            {
+                var psi = new ProcessStartInfo("bash", $"-c \"cat {tempPath} | xclip -i -selection clipboard\"")
+                {
+                    WindowStyle = ProcessWindowStyle.Hidden
+                };
+                var proc = Process.Start(psi);
+                proc.WaitForExit();
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+            }
+            finally
+            {
+                File.Delete(tempPath);
             }
         }
 

@@ -304,15 +304,43 @@ namespace Remotely.Agent.Services
                     var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", OSUtils.ScreenCastExecutableFileName);
                     // Start ScreenCast.                 
                     if (OSUtils.IsWindows)
-                    { 
-                        
+                    {
+                        Logger.Write("Restarting screen caster.");
                         if (Program.IsDebug)
                         {
-                            Process.Start(rcBinaryPath, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}");
+                            var proc = Process.Start(rcBinaryPath, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}");
+                            var stopwatch = Stopwatch.StartNew();
+                            while (stopwatch.Elapsed.TotalSeconds < 10)
+                            {
+                                await Task.Delay(250);
+                                if (Process.GetProcessesByName(Path.GetFileNameWithoutExtension(rcBinaryPath))?.Where(x => x.Id == proc.Id)?.Count() > 0 != true)
+                                {
+                                    Logger.Write("Restarting screen caster after failed relaunch.");
+                                }
+                            }
                         }
                         else
                         {
-                            var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}", "default", true, out _);
+                            var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}", "default", true, out var procInfo);
+                            
+                            if (result)
+                            {
+                                // This relaunch might have been prompted by a user logging out, which would close
+                                // the screencaster process.  In that scenario, the relaunched process can get closed again
+                                // while the Windows sign-out process is still occurring.  We'll wait a bit to make sure the
+                                // relaunched process is still running.  If not, launch again.
+                                var stopwatch = Stopwatch.StartNew();
+                                while (stopwatch.Elapsed.TotalSeconds < 10)
+                                {
+                                    await Task.Delay(250);
+                                    if (Process.GetProcessesByName(Path.GetFileNameWithoutExtension(rcBinaryPath))?.Where(x=>x.Id == procInfo.dwProcessId)?.Count() > 0 != true)
+                                    {
+                                        Logger.Write("Restarting screen caster after failed relaunch.");
+                                        result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}", "default", true, out procInfo);
+                                    }
+                                }
+                            }
+                 
                             if (!result)
                             {
                                 Logger.Write("Failed to relaunch screen caster.");

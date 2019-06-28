@@ -52,6 +52,7 @@
         </div>
 
         <div>
+            <button id="clipboardTransferButton" class="option-button">Clipboard  <i class="fas fa-clipboard"></i></button>
             <button id="inviteButton" class="option-button">Invite Others  <i class="fas fa-user-plus"></i></button>
             <button id="audioButton" class="option-button">Audio <i class="fas fa-volume-up"></i></button>
             <button id="fileTransferButton" class="option-button">File Transfer  <i class="fas fa-file-upload"></i></button>
@@ -78,10 +79,17 @@
     </div>
 
     <div id="qualityBar" class="horizontal-button-bar">
-        <div class="center-aligned" style="color:white; font-size:12px">
+        <div style="color:white; font-size:12px">
             Image Quality
         </div>
         <input id="qualityRangeInput" value="50" max="100" class="form-control-range" type="range" />
+    </div>
+
+    <div id="clipboardTransferBar" class="horizontal-button-bar">
+        <div style="color:white; font-size:12px">
+            Paste to Transfer
+        </div>
+        <textarea id="clipboardTransferTextArea"></textarea>
     </div>
 
     <div id="connectBox">
@@ -108,10 +116,9 @@
     <div class="center-aligned">
         <canvas id="screenViewer" hidden="hidden"></canvas>
         <input id="fileTransferInput" hidden="hidden" type="file" />
-        <input id="touchKeyboardInput" type="text" />
+        <textarea id="touchKeyboardTextArea" value=" #"> #</textarea>
     </div>
 
-    <partial name="_OSK.cshtml" />
     <footer>
         <div class="footer-wrapper">
             <p>&copy; @DateTime.Now.Year - Translucency Software</p>
