@@ -14,7 +14,6 @@ namespace Remotely.Agent.Services
 {
     public class Updater
     {
-
         internal static void CheckForCoreUpdates()
         {
             try
@@ -88,8 +87,10 @@ namespace Remotely.Agent.Services
 
 
                 foreach (var proc in Process.GetProcesses().Where(x =>
-                                                x.ProcessName.Contains("Remotely_Agent") &&
-                                                x.Id != Process.GetCurrentProcess().Id))
+                                                (x.ProcessName.Contains("Remotely_Agent") ||
+                                                    x.ProcessName.Contains("Remotely_ScreenCast") ||
+                                                    x.ProcessName.Contains("Remotely_Desktop"))
+                                                && x.Id != Process.GetCurrentProcess().Id))
                 {
                     proc.Kill();
                 }

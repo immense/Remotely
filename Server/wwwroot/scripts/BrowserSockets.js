@@ -23,7 +23,7 @@ export function Connect() {
     this.Connection.closedCallbacks.push((ev) => {
         Connected = false;
         if (!Store.IsDisconnectExpected) {
-            UI.ShowModal("Connection Failure", "Your connection was lost. Refresh the page or enter a command to reconnect.");
+            UI.ShowModal("Connection Failure", "Your connection was lost. Click Reconnect to start a new session.", `<button type="button" class="btn btn-secondary" onclick="location.reload()">Reconnect</button>`);
             UI.AddConsoleOutput("Connection lost.");
         }
     });

@@ -26,9 +26,63 @@ namespace Remotely.ScreenCast.Core.Sockets
             ApplyConnectionHandlers();
         }
 
-        private HubConnection Connection { get; }
         public Conductor Conductor { get; }
         public IKeyboardMouseInput KeyboardMouseInput { get; }
+        private HubConnection Connection { get; }
+        public async Task GetSessionID()
+        {
+            await Connection.SendAsync("GetSessionID");
+        }
+
+        public async Task NotifyRequesterUnattendedReady(string requesterID)
+        {
+            await Connection.SendAsync("NotifyRequesterUnattendedReady", requesterID);
+        }
+
+        public async Task NotifyViewersRelaunchedScreenCasterReady(string[] viewerIDs)
+        {
+            await Connection.SendAsync("NotifyViewersRelaunchedScreenCasterReady", viewerIDs);
+        }
+
+        public async Task SendAudioSample(byte[] buffer, List<string> viewerIDs)
+        {
+            await Connection.SendAsync("SendAudioSample", buffer, viewerIDs);
+        }
+
+        public async Task SendConnectionFailedToViewers(List<string> viewerIDs)
+        {
+            await Connection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
+        }
+
+        public async Task SendCursorChange(CursorInfo cursor, List<string> viewerIDs)
+        {
+            await Connection.SendAsync("SendCursorChange", cursor, viewerIDs);
+        }
+
+        public async Task SendDeviceInfo(string serviceID, string machineName)
+        {
+            await Connection.SendAsync("ReceiveDeviceInfo", serviceID, machineName);
+        }
+
+        public async Task SendScreenCapture(byte[] captureBytes, string viewerID, int left, int top, int width, int height, DateTime captureTime)
+        {
+            await Connection.SendAsync("SendScreenCapture", captureBytes, viewerID, left, top, width, height, captureTime);
+        }
+
+        public async Task SendScreenCount(int primaryScreenIndex, int screenCount, string viewerID)
+        {
+            await Connection.SendAsync("SendScreenCountToBrowser", primaryScreenIndex, screenCount, viewerID);
+        }
+
+        public async Task SendScreenSize(int width, int height, string viewerID)
+        {
+            await Connection.SendAsync("SendScreenSize", width, height, viewerID);
+        }
+
+        public async Task SendViewerRemoved(string viewerID)
+        {
+            await Connection.SendAsync("SendViewerRemoved", viewerID);
+        }
 
         private void ApplyConnectionHandlers()
         {
@@ -38,6 +92,18 @@ namespace Remotely.ScreenCast.Core.Sockets
                 Environment.Exit(1);
                 return Task.CompletedTask;
             };
+
+            Connection.On("ClipboardTransfer", (string transferText) =>
+            {
+                try
+                {
+                    Conductor.InvokeClipboardTransfer(transferText);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
+            });
 
             Connection.On("GetScreenCast", (string viewerID, string requesterName) =>
             {
@@ -210,7 +276,8 @@ namespace Remotely.ScreenCast.Core.Sockets
                     KeyboardMouseInput.SendLeftMouseUp(percentX, percentY, viewer);
                 }
             });
-            Connection.On("SharedFileIDs", (List<string> fileIDs) => {
+            Connection.On("SharedFileIDs", (List<string> fileIDs) =>
+            {
                 fileIDs.ForEach(id =>
                 {
                     var url = $"{Conductor.Host}/API/FileSharing/{id}";
@@ -243,61 +310,6 @@ namespace Remotely.ScreenCast.Core.Sockets
             {
                 Conductor.InvokeSessionIDChanged(sessionID);
             });
-        }
-
-        public async Task SendAudioSample(byte[] buffer, List<string> viewerIDs)
-        {
-            await Connection.SendAsync("SendAudioSample", buffer, viewerIDs);
-        }
-
-        public async Task SendScreenSize(int width, int height, string viewerID)
-        {
-            await Connection.SendAsync("SendScreenSize", width, height, viewerID);
-        }
-
-        public async Task SendScreenCapture(byte[] captureBytes, string viewerID, int left, int top, int width, int height, DateTime captureTime)
-        {
-            await Connection.SendAsync("SendScreenCapture", captureBytes, viewerID, left, top, width, height, captureTime);
-        }
-
-        public async Task SendScreenCount(int primaryScreenIndex, int screenCount, string viewerID)
-        {
-            await Connection.SendAsync("SendScreenCountToBrowser", primaryScreenIndex, screenCount, viewerID);
-        }
-
-        public async Task NotifyRequesterUnattendedReady(string requesterID)
-        {
-            await Connection.SendAsync("NotifyRequesterUnattendedReady", requesterID);
-        }
-
-        public async Task SendCursorChange(CursorInfo cursor, List<string> viewerIDs)
-        {
-            await Connection.SendAsync("SendCursorChange", cursor, viewerIDs);
-        }
-
-        public async Task NotifyViewersRelaunchedScreenCasterReady(string[] viewerIDs)
-        {
-            await Connection.SendAsync("NotifyViewersRelaunchedScreenCasterReady", viewerIDs);
-        }
-
-        public async Task SendDeviceInfo(string serviceID, string machineName)
-        {
-            await Connection.SendAsync("ReceiveDeviceInfo", serviceID, machineName);
-        }
-
-        public async Task SendConnectionFailedToViewers(List<string> viewerIDs)
-        {
-            await Connection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
-        }
-
-        public async Task GetSessionID()
-        {
-            await Connection.SendAsync("GetSessionID");
-        }
-
-        public async Task SendViewerRemoved(string viewerID)
-        {
-            await Connection.SendAsync("SendViewerRemoved", viewerID);
         }
     }
 }

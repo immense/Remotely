@@ -85,6 +85,10 @@ export class RCBrowserSockets {
     SendToggleAudio(toggleOn) {
         this.Connection.invoke("SendToggleAudio", toggleOn);
     }
+    ;
+    SendClipboardTransfer(text) {
+        this.Connection.invoke("SendClipboardTransfer", text);
+    }
     ApplyMessageHandlers(hubConnection) {
         hubConnection.on("ScreenCount", (primaryScreenIndex, screenCount) => {
             document.querySelector("#screenSelectBar").innerHTML = "";

@@ -1,13 +1,15 @@
 #!/bin/bash
 echo "Thanks for trying remotely!  If you have any questions, feel free to email me at Translucency_Software@outlook.com."
 echo
-read -p "Enter app root path (typically /var/www/remotely): " appRoot
-read -p "Enter server host (e.g. example.com): " serverHost
+read -p "Enter path where the Remotely server will be installed (typically /var/www/remotely): " appRoot
+read -p "Enter server host (e.g. remotely.yourdomainname.com): " serverHost
+
+UbuntuVersion=$(lsb_release -r -s)
 
 apt-get update
 
 # Install .NET Core Runtime.
-wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb
+wget -q https://packages.microsoft.com/config/ubuntu/$UbuntuVersion/packages-microsoft-prod.deb
 dpkg -i packages-microsoft-prod.deb
 add-apt-repository universe
 apt-get install -y apt-transport-https

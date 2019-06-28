@@ -19,6 +19,8 @@ namespace Remotely.ScreenCast.Core
     {
         public event EventHandler<bool> AudioToggled;
 
+        public event EventHandler<string> ClipboardTransferred;
+
         public event EventHandler<ScreenCastRequest> ScreenCastInitiated;
 
         public event EventHandler<ScreenCastRequest> ScreenCastRequested;
@@ -37,6 +39,7 @@ namespace Remotely.ScreenCast.Core
         public string RequesterID { get; private set; }
         public string ServiceID { get; private set; }
         public ConcurrentDictionary<string, Viewer> Viewers { get; } = new ConcurrentDictionary<string, Viewer>();
+        public bool IsSwitchingDesktops { get; set; }
 
         public Task Connect()
         {
@@ -108,6 +111,12 @@ namespace Remotely.ScreenCast.Core
         {
             ScreenCastInitiated?.Invoke(null, viewerIdAndRequesterName);
         }
+
+        internal void InvokeClipboardTransfer(string transferText)
+        {
+            ClipboardTransferred?.Invoke(null, transferText);
+        }
+
         internal void InvokeScreenCastRequested(ScreenCastRequest viewerIdAndRequesterName)
         {
             ScreenCastRequested?.Invoke(null, viewerIdAndRequesterName);

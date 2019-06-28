@@ -40,26 +40,16 @@ namespace Remotely.Desktop.Win.ViewModels
             Conductor.ViewerAdded += ViewerAdded;
             Conductor.ScreenCastRequested += ScreenCastRequested;
             Conductor.AudioToggled += AudioToggled;
+            Conductor.ClipboardTransferred += Conductor_ClipboardTransferred;
             CursorIconWatcher = new CursorIconWatcher(Conductor);
             CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
             AudioCapturer = new AudioCapturer(Conductor);
         }
 
-        private void AudioToggled(object sender, bool toggleOn)
-        {
-            if (toggleOn)
-            {
-                AudioCapturer.Start();
-            }
-            else
-            {
-                AudioCapturer.Stop();
-            }
-        }
-
         public static MainWindowViewModel Current { get; private set; }
 
         public AudioCapturer AudioCapturer { get; private set; }
+
         public ICommand ChangeServerCommand
         {
             get
@@ -73,7 +63,9 @@ namespace Remotely.Desktop.Win.ViewModels
         }
 
         public Conductor Conductor { get; }
+
         public CursorIconWatcher CursorIconWatcher { get; private set; }
+
         public string Host
         {
             get => host;
@@ -85,6 +77,27 @@ namespace Remotely.Desktop.Win.ViewModels
         }
 
         public bool IsAdministrator => new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
+
+        public ICommand RemoveViewersCommand
+        {
+            get
+            {
+                return new Executor(async (param) =>
+                {
+                    foreach (Viewer viewer in (param as IList<object>))
+                    {
+                        viewer.DisconnectRequested = true;
+                        await Conductor.CasterSocket.SendViewerRemoved(viewer.ViewerConnectionID);
+                    }
+                },
+                (param) =>
+                {
+                    return (param as IList<object>)?.Count > 0;
+                });
+            }
+
+        }
+
         public ICommand RestartAsAdminCommand
         {
             get
@@ -100,7 +113,8 @@ namespace Remotely.Desktop.Win.ViewModels
                     }
                     // Exception can be thrown if UAC is dialog is cancelled.
                     catch { }
-                }, (param) => {
+                }, (param) =>
+                {
                     return !IsAdministrator;
                 });
             }
@@ -117,6 +131,12 @@ namespace Remotely.Desktop.Win.ViewModels
         }
 
         public ObservableCollection<Viewer> Viewers { get; } = new ObservableCollection<Viewer>();
+
+        public void CopyLink()
+        {
+            Clipboard.SetText($"{Host}/RemoteControl?sessionID={SessionID.Replace(" ", "")}");
+        }
+
         public async Task Init()
         {
             SessionID = "Retrieving...";
@@ -146,6 +166,7 @@ namespace Remotely.Desktop.Win.ViewModels
             await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName);
             await Conductor.CasterSocket.GetSessionID();
         }
+
         public void PromptForHostName()
         {
             var prompt = new HostNamePrompt();
@@ -169,31 +190,24 @@ namespace Remotely.Desktop.Win.ViewModels
             }
         }
 
-        public void CopyLink()
+        private void AudioToggled(object sender, bool toggleOn)
         {
-            Clipboard.SetText($"{Host}/RemoteControl?sessionID={SessionID.Replace(" ", "")}");
-        }
-
-        public ICommand RemoveViewersCommand
-        {
-            get
+            if (toggleOn)
             {
-                return new Executor(async (param) =>
-                {
-                    foreach (Viewer viewer in (param as IList<object>))
-                    {
-                        viewer.DisconnectRequested = true;
-                        await Conductor.CasterSocket.SendViewerRemoved(viewer.ViewerConnectionID);
-                    }
-                },
-                (param) =>
-                {
-                    return (param as IList<object>)?.Count > 0;
-                });
+                AudioCapturer.Start();
             }
-
+            else
+            {
+                AudioCapturer.Stop();
+            }
         }
 
+        private void Conductor_ClipboardTransferred(object sender, string transferredText)
+        {
+            Application.Current.Dispatcher.Invoke(() => {
+                Clipboard.SetText(transferredText);
+            });
+        }
         private async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)
         {
             if (Conductor?.CasterSocket != null)

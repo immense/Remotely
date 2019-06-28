@@ -22,14 +22,50 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Remotely.Shared.Win32;
 using NAudio.Wave;
+using Remotely.Shared.Services;
+using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace Remotely.ScreenCast.Win
 {
 	public class Program
 	{
+        public static AudioCapturer AudioCapturer { get; private set; }
         public static Conductor Conductor { get; private set; }
         public static CursorIconWatcher CursorIconWatcher { get; private set; }
-        public static AudioCapturer AudioCapturer { get; private set; }
+        public static async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)
+        {
+            if (Conductor?.CasterSocket != null)
+            {
+                await Conductor.CasterSocket.SendCursorChange(cursor, Conductor.Viewers.Keys.ToList());
+            }
+        }
+
+        public static async Task HandleConnection(Conductor conductor)
+        {
+            while (true)
+            {
+                var desktopName = Win32Interop.GetCurrentDesktop();
+                if (desktopName.ToLower() != conductor.CurrentDesktopName.ToLower() && conductor.Viewers.Count > 0)
+                {
+                    conductor.CurrentDesktopName = desktopName;
+                    Logger.Write($"Switching desktops to {desktopName}.");
+                    conductor.IsSwitchingDesktops = true;
+                    // TODO: SetThreadDesktop causes issues with input after switching.
+                    //var inputDesktop = Win32Interop.OpenInputDesktop();
+                    //User32.SetThreadDesktop(inputDesktop);
+                    //User32.CloseDesktop(inputDesktop);
+                    conductor.Connection.InvokeAsync("SwitchingDesktops", conductor.Viewers.Keys.ToList()).Wait();
+                    var result = Win32Interop.OpenInteractiveProcess(Assembly.GetExecutingAssembly().Location + $" -mode {conductor.Mode.ToString()} -requester {conductor.RequesterID} -serviceid {conductor.ServiceID} -host {conductor.Host} -relaunch true -desktop {desktopName} -viewers {String.Join(",", conductor.Viewers.Keys.ToList())}", desktopName, true, out _);
+                    if (!result)
+                    {
+                        Logger.Write($"Desktop switch to {desktopName} failed.");
+                        conductor.CasterSocket.SendConnectionFailedToViewers(conductor.Viewers.Keys.ToList()).Wait();
+                    }
+                }
+                await Task.Delay(100);
+            }
+        }
 
         public static void Main(string[] args)
         {
@@ -42,6 +78,7 @@ namespace Remotely.ScreenCast.Win
                 Conductor.SetMessageHandlers(new WinInput());
                 Conductor.ScreenCastInitiated += ScreenCastInitiated;
                 Conductor.AudioToggled += AudioToggled;
+                Conductor.ClipboardTransferred += Conductor_ClipboardTransferred;
                 AudioCapturer = new AudioCapturer(Conductor);
                 CursorIconWatcher = new CursorIconWatcher(Conductor);
                 CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
@@ -86,61 +123,6 @@ namespace Remotely.ScreenCast.Win
             }
         }
 
-        private static async void ScreenCastInitiated(object sender, ScreenCastRequest screenCastRequest)
-        {
-            ICapturer capturer;
-            try
-            {
-                if (Conductor.Viewers.Count == 0)
-                {
-                    capturer = new DXCapture();
-                }
-                else
-                {
-                    capturer = new BitBltCapture();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
-                capturer = new BitBltCapture();
-            }
-            await Conductor.CasterSocket.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
-            ScreenCaster.BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, capturer, Conductor);
-        }
-
-        public static async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)
-        {
-            if (Conductor?.CasterSocket != null)
-            {
-                await Conductor.CasterSocket.SendCursorChange(cursor, Conductor.Viewers.Keys.ToList());
-            }
-        }
-
-        public static async Task HandleConnection(Conductor conductor)
-        {
-            while (true)
-            {
-                var desktopName = Win32Interop.GetCurrentDesktop();
-                if (desktopName.ToLower() != conductor.CurrentDesktopName.ToLower() && conductor.Viewers.Count > 0)
-                {
-                    conductor.CurrentDesktopName = desktopName;
-                    Logger.Write($"Switching desktops to {desktopName}.");
-                    // TODO: SetThreadDesktop causes issues with input after switching.
-                    //var inputDesktop = Win32Interop.OpenInputDesktop();
-                    //User32.SetThreadDesktop(inputDesktop);
-                    //User32.CloseDesktop(inputDesktop);
-                    conductor.Connection.InvokeAsync("SwitchingDesktops", conductor.Viewers.Keys.ToList()).Wait();
-                    var result = Win32Interop.OpenInteractiveProcess(Assembly.GetExecutingAssembly().Location + $" -mode {conductor.Mode.ToString()} -requester {conductor.RequesterID} -serviceid {conductor.ServiceID} -host {conductor.Host} -relaunch true -desktop {desktopName} -viewers {String.Join(",", conductor.Viewers.Keys.ToList())}", desktopName, true, out _);
-                    if (!result)
-                    {
-                        Logger.Write($"Desktop switch to {desktopName} failed.");
-                        conductor.CasterSocket.SendConnectionFailedToViewers(conductor.Viewers.Keys.ToList()).Wait();
-                    }
-                }
-                await Task.Delay(100);
-            }
-        }
         private static void CheckInitialDesktop()
         {
             var desktopName = Win32Interop.GetCurrentDesktop();
@@ -162,9 +144,41 @@ namespace Remotely.ScreenCast.Win
                 Environment.Exit(0);
             }
         }
+
+        private static void Conductor_ClipboardTransferred(object sender, string transferredText)
+        {
+            var thread = new Thread(() => {
+                Clipboard.SetText(transferredText);
+            });
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
+        }
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Logger.Write((Exception)e.ExceptionObject);
+        }
+
+        private static async void ScreenCastInitiated(object sender, ScreenCastRequest screenCastRequest)
+        {
+            ICapturer capturer;
+            try
+            {
+                if (Conductor.Viewers.Count == 0)
+                {
+                    capturer = new DXCapture();
+                }
+                else
+                {
+                    capturer = new BitBltCapture();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+                capturer = new BitBltCapture();
+            }
+            await Conductor.CasterSocket.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
+            ScreenCaster.BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, capturer, Conductor);
         }
     }
 }

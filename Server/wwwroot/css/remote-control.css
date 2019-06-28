@@ -125,10 +125,12 @@ button[disabled] {
     border-radius: 5px;
     overflow: hidden;
     white-space: nowrap;
+    text-align: center;
 }
 
 .horizontal-button-bar.open {
-    height: 40px;
+    height: auto;
+    min-height: 40px;
     padding: 10px;
     transition: all 250ms;
 }
@@ -287,7 +289,7 @@ footer a {
     margin-left: 10px;
 }
 
-#touchKeyboardInput {
+#touchKeyboardTextArea {
     position: fixed;
     top: -100%;
 }

@@ -199,6 +199,10 @@ namespace Remotely.Server.Services
         {
             await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ToggleAudio", toggleOn);
         }
+        public async Task SendClipboardTransfer(string transferText)
+        {
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ClipboardTransfer", transferText);
+        }
         public async Task Tap(double percentX, double percentY)
         {
             await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("Tap", percentX, percentY, Context.ConnectionId);

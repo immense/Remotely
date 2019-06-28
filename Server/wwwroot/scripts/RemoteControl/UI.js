@@ -21,52 +21,77 @@ export var ChangeScreenButton = document.getElementById("changeScreenButton");
 export var QualityButton = document.getElementById("qualityButton");
 export var FitToScreenButton = document.getElementById("fitToScreenButton");
 export var DisconnectButton = document.getElementById("disconnectButton");
-export var OnScreenKeyboard = document.getElementById("osk");
 export var FileTransferInput = document.getElementById("fileTransferInput");
 export var FileTransferProgress = document.getElementById("fileTransferProgress");
 export var KeyboardButton = document.getElementById("keyboardButton");
 export var InviteButton = document.getElementById("inviteButton");
 export var FileTransferButton = document.getElementById("fileTransferButton");
 export var CtrlAltDelButton = document.getElementById("ctrlAltDelButton");
+export var TouchKeyboardTextArea = document.getElementById("touchKeyboardTextArea");
+export var ClipboardTransferBar = document.getElementById("clipboardTransferBar");
+export var ClipboardTransferTextArea = document.getElementById("clipboardTransferTextArea");
+export var ClipboardTransferButton = document.getElementById("clipboardTransferButton");
 var lastPointerMove = Date.now();
 var isDragging;
 var currentPointerDevice;
 var currentTouchCount;
-var cancelNextClick;
+var cancelNextViewerClick;
 var isPinchZooming;
 var startPinchPoint1;
 var startPinchPoint2;
 var isMenuButtonDragging;
 var startMenuDraggingY;
-var ignoreNextMenuClick;
 export function ApplyInputHandlers(sockets) {
-    MenuButton.addEventListener("click", (ev) => {
-        if (ignoreNextMenuClick) {
-            ignoreNextMenuClick = false;
-            return;
-        }
-        MenuFrame.classList.toggle("open");
-        MenuButton.classList.toggle("open");
-        closeAllHorizontalBars(null);
-    });
-    MenuButton.addEventListener("mousedown", (ev) => {
-        isMenuButtonDragging = true;
-        ignoreNextMenuClick = false;
-        startMenuDraggingY = ev.clientY;
-        window.addEventListener("mousemove", moveMenuButton);
-        window.addEventListener("mouseup", removeMouseButtonWindowListeners);
-        window.addEventListener("mouseleave", removeMouseButtonWindowListeners);
-    });
-    MenuButton.addEventListener("touchmove", (ev) => {
-        MenuButton.style.top = `${ev.touches[0].clientY}px`;
+    AudioButton.addEventListener("click", (ev) => {
+        AudioButton.classList.toggle("toggled");
+        var toggleOn = AudioButton.classList.contains("toggled");
+        sockets.SendToggleAudio(toggleOn);
     });
     ChangeScreenButton.addEventListener("click", (ev) => {
         closeAllHorizontalBars("screenSelectBar");
         ScreenSelectBar.classList.toggle("open");
     });
-    QualityButton.addEventListener("click", (ev) => {
-        closeAllHorizontalBars("qualityBar");
-        QualityBar.classList.toggle("open");
+    ClipboardTransferButton.addEventListener("click", (ev) => {
+        closeAllHorizontalBars("clipboardTransferBar");
+        ClipboardTransferBar.classList.toggle("open");
+    });
+    ClipboardTransferTextArea.addEventListener("input", (ev) => {
+        if (ClipboardTransferTextArea.value.length == 0) {
+            return;
+        }
+        sockets.SendClipboardTransfer(ClipboardTransferTextArea.value);
+        ClipboardTransferTextArea.value = "";
+        ClipboardTransferTextArea.blur();
+        ClipboardTransferBar.classList.remove("open");
+        FloatMessage("Clipboard sent!");
+    });
+    ConnectButton.addEventListener("click", (ev) => {
+        ConnectToClient();
+    });
+    CtrlAltDelButton.addEventListener("click", (ev) => {
+        if (!RemoteControl.ServiceID) {
+            ShowMessage("Not available for this session.");
+            return;
+        }
+        closeAllHorizontalBars(null);
+        RemoteControl.RCBrowserSockets.SendCtrlAltDel();
+    });
+    DisconnectButton.addEventListener("click", (ev) => {
+        ConnectButton.removeAttribute("disabled");
+        RemoteControl.RCBrowserSockets.Connection.stop();
+    });
+    document.querySelectorAll("#sessionIDInput, #nameInput").forEach(x => {
+        x.addEventListener("keypress", (ev) => {
+            if (ev.key.toLowerCase() == "enter") {
+                ConnectToClient();
+            }
+        });
+    });
+    FileTransferButton.addEventListener("click", (ev) => {
+        FileTransferInput.click();
+    });
+    FileTransferInput.addEventListener("change", (ev) => {
+        uploadFiles(FileTransferInput.files);
     });
     FitToScreenButton.addEventListener("click", (ev) => {
         var button = ev.currentTarget;
@@ -79,19 +104,6 @@ export function ApplyInputHandlers(sockets) {
             ScreenViewer.style.maxWidth = "unset";
             ScreenViewer.style.maxHeight = "unset";
         }
-    });
-    AudioButton.addEventListener("click", (ev) => {
-        AudioButton.classList.toggle("toggled");
-        var toggleOn = AudioButton.classList.contains("toggled");
-        sockets.SendToggleAudio(toggleOn);
-    });
-    DisconnectButton.addEventListener("click", (ev) => {
-        ConnectButton.removeAttribute("disabled");
-        RemoteControl.RCBrowserSockets.Connection.stop();
-    });
-    KeyboardButton.addEventListener("click", (ev) => {
-        closeAllHorizontalBars(null);
-        OnScreenKeyboard.classList.toggle("open");
     });
     InviteButton.addEventListener("click", (ev) => {
         var url = "";
@@ -112,29 +124,35 @@ export function ApplyInputHandlers(sockets) {
         input.remove();
         FloatMessage("Link copied to clipboard.");
     });
-    FileTransferButton.addEventListener("click", (ev) => {
-        FileTransferInput.click();
+    KeyboardButton.addEventListener("click", (ev) => {
+        closeAllHorizontalBars(null);
+        TouchKeyboardTextArea.focus();
+        TouchKeyboardTextArea.setSelectionRange(TouchKeyboardTextArea.value.length, TouchKeyboardTextArea.value.length);
+        MenuFrame.classList.remove("open");
+        MenuButton.classList.remove("open");
     });
-    FileTransferInput.addEventListener("change", (ev) => {
-        uploadFiles(FileTransferInput.files);
-    });
-    CtrlAltDelButton.addEventListener("click", (ev) => {
-        if (!RemoteControl.ServiceID) {
-            ShowMessage("Not available for this session.");
+    MenuButton.addEventListener("click", (ev) => {
+        if (isMenuButtonDragging) {
+            isMenuButtonDragging = false;
             return;
         }
+        MenuFrame.classList.toggle("open");
+        MenuButton.classList.toggle("open");
         closeAllHorizontalBars(null);
-        RemoteControl.RCBrowserSockets.SendCtrlAltDel();
     });
-    document.querySelectorAll("#sessionIDInput, #nameInput").forEach(x => {
-        x.addEventListener("keypress", (ev) => {
-            if (ev.key.toLowerCase() == "enter") {
-                ConnectToClient();
-            }
-        });
+    MenuButton.addEventListener("mousedown", (ev) => {
+        isMenuButtonDragging = false;
+        startMenuDraggingY = ev.clientY;
+        window.addEventListener("mousemove", moveMenuButton);
+        window.addEventListener("mouseup", removeMouseButtonWindowListeners);
+        window.addEventListener("mouseleave", removeMouseButtonWindowListeners);
     });
-    ConnectButton.addEventListener("click", (ev) => {
-        ConnectToClient();
+    MenuButton.addEventListener("touchmove", (ev) => {
+        MenuButton.style.top = `${ev.touches[0].clientY}px`;
+    });
+    QualityButton.addEventListener("click", (ev) => {
+        closeAllHorizontalBars("qualityBar");
+        QualityBar.classList.toggle("open");
     });
     QualitySlider.addEventListener("change", (ev) => {
         sockets.SendQualityChange(Number(QualitySlider.value));
@@ -183,8 +201,8 @@ export function ApplyInputHandlers(sockets) {
         sockets.SendMouseUp(e.button, percentX, percentY);
     });
     ScreenViewer.addEventListener("click", function (e) {
-        if (cancelNextClick) {
-            cancelNextClick = false;
+        if (cancelNextViewerClick) {
+            cancelNextViewerClick = false;
             return;
         }
         if (currentPointerDevice == "mouse") {
@@ -208,7 +226,7 @@ export function ApplyInputHandlers(sockets) {
     });
     ScreenViewer.addEventListener("touchstart", function (e) {
         if (e.touches.length > 1) {
-            cancelNextClick = true;
+            cancelNextViewerClick = true;
         }
         if (e.touches.length == 2) {
             startPinchPoint1 = { X: e.touches[0].pageX, Y: e.touches[0].pageY, IsEmpty: false };
@@ -251,7 +269,7 @@ export function ApplyInputHandlers(sockets) {
             return;
         }
         if (currentTouchCount == 0) {
-            cancelNextClick = false;
+            cancelNextViewerClick = false;
             isPinchZooming = false;
             startPinchPoint1 = null;
             startPinchPoint2 = null;
@@ -270,15 +288,44 @@ export function ApplyInputHandlers(sockets) {
         e.preventDefault();
         sockets.SendMouseWheel(e.deltaX, e.deltaY);
     });
+    TouchKeyboardTextArea.addEventListener("input", (ev) => {
+        if (TouchKeyboardTextArea.value.length == 1) {
+            sockets.SendKeyPress("Backspace");
+        }
+        else if (TouchKeyboardTextArea.value.endsWith("\n")) {
+            sockets.SendKeyPress("Enter");
+        }
+        else if (TouchKeyboardTextArea.value.endsWith(" ")) {
+            sockets.SendKeyPress(" ");
+        }
+        else {
+            var input = TouchKeyboardTextArea.value.trim().substr(1);
+            for (var i = 0; i < input.length; i++) {
+                var character = input.charAt(i);
+                var sendShift = character.match(/[A-Z~!@#$%^&*()_+{}|<>?]/);
+                if (sendShift) {
+                    sockets.SendKeyDown("Shift");
+                }
+                sockets.SendKeyPress(character);
+                if (sendShift) {
+                    sockets.SendKeyUp("Shift");
+                }
+            }
+        }
+        window.setTimeout(() => {
+            TouchKeyboardTextArea.value = " #";
+            TouchKeyboardTextArea.setSelectionRange(TouchKeyboardTextArea.value.length, TouchKeyboardTextArea.value.length);
+        });
+    });
     window.addEventListener("keydown", function (e) {
-        if (document.querySelector("input:focus")) {
+        if (document.querySelector("input:focus") || document.querySelector("textarea:focus")) {
             return;
         }
         e.preventDefault();
         sockets.SendKeyDown(e.key);
     });
     window.addEventListener("keyup", function (e) {
-        if (document.querySelector("input:focus")) {
+        if (document.querySelector("input:focus") || document.querySelector("textarea:focus")) {
             return;
         }
         e.preventDefault();
@@ -295,15 +342,6 @@ export function ApplyInputHandlers(sockets) {
         }
         uploadFiles(e.dataTransfer.files);
     };
-}
-export function ShowMessage(message) {
-    var messageDiv = document.createElement("div");
-    messageDiv.classList.add("float-message");
-    messageDiv.innerHTML = message;
-    document.body.appendChild(messageDiv);
-    window.setTimeout(() => {
-        messageDiv.remove();
-    }, 5000);
 }
 export function Prompt(promptMessage) {
     return new Promise((resolve, reject) => {
@@ -333,6 +371,15 @@ export function Prompt(promptMessage) {
             resolve(null);
         };
     });
+}
+export function ShowMessage(message) {
+    var messageDiv = document.createElement("div");
+    messageDiv.classList.add("float-message");
+    messageDiv.innerHTML = message;
+    document.body.appendChild(messageDiv);
+    window.setTimeout(() => {
+        messageDiv.remove();
+    }, 5000);
 }
 function uploadFiles(fileList) {
     ShowMessage("File upload started...");
@@ -376,7 +423,7 @@ function moveMenuButton(ev) {
         if (ev.clientY < 0 || ev.clientY > window.innerHeight) {
             return;
         }
-        ignoreNextMenuClick = true;
+        isMenuButtonDragging = true;
         MenuButton.style.top = `${ev.clientY}px`;
     }
 }
