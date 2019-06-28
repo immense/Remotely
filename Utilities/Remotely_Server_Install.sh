@@ -2,6 +2,9 @@
 echo "Thanks for trying remotely!  If you have any questions, feel free to email me at Translucency_Software@outlook.com."
 echo
 read -p "Enter path where the Remotely server will be installed (typically /var/www/remotely): " appRoot
+if [ -z "$appRoot" ]; then
+    appRoot="/var/www/remotely"
+fi
 read -p "Enter server host (e.g. remotely.yourdomainname.com): " serverHost
 
 UbuntuVersion=$(lsb_release -r -s)
