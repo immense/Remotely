@@ -24,5 +24,6 @@ namespace Remotely.Shared.ViewModels
         public bool IsAdmin { get; set; }
         public DateTime DateSent { get; set; }
         public string InvitedUser { get; set; }
+        public string ResetUrl { get; set; }
     }
 }

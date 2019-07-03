@@ -75,7 +75,8 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
                 ID = x.ID,
                 InvitedUser = x.InvitedUser,
                 IsAdmin = x.IsAdmin,
-                DateSent = x.DateSent
+                DateSent = x.DateSent,
+                ResetUrl = x.ResetUrl
             }).ToList();
         }
     }

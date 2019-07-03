@@ -13,5 +13,6 @@ namespace Remotely.Shared.Models
         public bool IsAdmin { get; set; }
         public DateTime DateSent { get; set; }
         public virtual Organization Organization { get; set; }
+        public string ResetUrl { get; set; }
     }
 }

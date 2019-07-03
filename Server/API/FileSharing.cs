@@ -23,14 +23,14 @@ namespace Remotely.Server.API
         public DataService DataService { get; set; }
         // GET api/<controller>/5
         [HttpGet("{id}")]
-        public FileResult Get(string id)
+        public ActionResult Get(string id)
         {
             var sharedFile = DataService.GetSharedFiled(id);
             if (sharedFile != null)
             {
                 return File(sharedFile.FileContents, sharedFile.ContentType, sharedFile.FileName);
             }
-            return null;
+            return NotFound();
         }
 
         [HttpPost]
