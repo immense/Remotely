@@ -7,9 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Remotely.Shared.Enums;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Remotely.Server.Services
 {
+    [Authorize("RemoteControlPolicy")]
     public class RCBrowserSocketHub : Hub
     {
         public RCBrowserSocketHub(DataService dataService, 
