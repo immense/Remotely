@@ -19,8 +19,7 @@ The following steps will configure your Windows 10 machine for building the Remo
     * Example: powershell -f [path]\Publish.ps1 -outdir C:\inetpub\remotely -rid win10-x86
     * The output folder will now contain the server, with the clients in the Downloads folder.
 	* By default, the screen-sharing desktop app prompts for a host URL and can be changed thereafter.
-		* To hard-code a URL, set the Host value in /Desktop.Win/Services/Config.cs to the server's URL (same for the Desktop.Unix project).
-		* To hide the server name in the app, set ShowHostName to false.
+		* To hard-code an initial URL, set the Host value in /Desktop.Win/Services/Config.cs to the server's URL (same for the Desktop.Unix project).
 
 ## Hosting a Server (Windows)
 * Create a site in IIS that will run Remotely.

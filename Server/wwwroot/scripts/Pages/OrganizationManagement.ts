@@ -239,10 +239,18 @@ document.getElementById("sendInviteButton").addEventListener("click", (ev) => {
             var tbody = document.querySelector("#invitesTable tbody");
             var newRow = document.createElement("tr");
             newRow.setAttribute("invite", newInvite.ID);
-            newRow.innerHTML = `<td class="middle-aligned"><label class="control-label">${newInvite.InvitedUser}</label></td>
+            var innerHtml = `<td class="middle-aligned"><label class="control-label">${newInvite.InvitedUser}</label></td>
                                 <td class="middle-aligned text-center"><input type="checkbox" disabled ${newInvite.IsAdmin ? "checked" : ""}/></td>
-                                <td class="middle-aligned"><label class="control-label">${location.origin}/Invite/?id=${newInvite.ID}</label></td>
+                                <td class="middle-aligned">
+                                    <label class="control-label">
+                                        <a href="${location.origin}/Invite/?id=${newInvite.ID}">Join Link</a>`;
+            if (newInvite.ResetUrl) {
+                innerHtml += `<br /> <a href="${newInvite.ResetUrl}">Reset Password</a>`;
+            }
+            innerHtml +=       ` </label> </td>
                                 <td><button type="button" class="btn btn-danger delete-invite-button" invite="${newInvite.ID}">Delete</button></td>`;
+
+            newRow.innerHTML = innerHtml;
             tbody.appendChild(newRow);
             newRow.querySelector(".delete-invite-button").addEventListener("click", (ev:MouseEvent) => {
                 deleteInvite(ev);

@@ -314,7 +314,8 @@ namespace Remotely.Server.Data
                 DateSent = DateTime.Now,
                 InvitedUser = invite.InvitedUser,
                 IsAdmin = invite.IsAdmin,
-                Organization = requester.Organization
+                Organization = requester.Organization,
+                ResetUrl = invite.ResetUrl
             };
             requester.Organization.InviteLinks.Add(newInvite);
             RemotelyContext.SaveChanges();
@@ -468,6 +469,11 @@ namespace Remotely.Server.Data
                .ThenInclude(x => x.InviteLinks)
                .FirstOrDefault(x => x.UserName == requesterUserName);
             var invite = requester.Organization.InviteLinks.FirstOrDefault(x => x.ID == inviteID);
+            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == invite.InvitedUser);
+            if (string.IsNullOrWhiteSpace(user.PasswordHash))
+            {
+                RemotelyContext.Remove(user);
+            }
             RemotelyContext.Remove(invite);
             RemotelyContext.SaveChanges();
         }

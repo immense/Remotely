@@ -120,18 +120,6 @@ namespace Remotely.Server.API
             }
             return Ok(result.Item2);
         }
-        [HttpDelete("RemoveUserFromOrganization/{userID}")]
-        public IActionResult RemoveUserFromOrganization(string userID)
-        {
-            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
-            {
-                return Unauthorized();
-            }
-
-            DataService.RemoveUserFromOrganization(User.Identity.Name, userID);
-            return Ok("ok");
-        }
-
         [HttpDelete("RemovePermissionFromUser/{userID}/{permissionID}")]
         public IActionResult RemovePermissionFromUser(string userID, string permissionID)
         {
@@ -141,6 +129,18 @@ namespace Remotely.Server.API
             }
 
             DataService.RemovePermissionFromUser(User.Identity.Name, userID, permissionID.Trim());
+            return Ok("ok");
+        }
+
+        [HttpDelete("RemoveUserFromOrganization/{userID}")]
+        public IActionResult RemoveUserFromOrganization(string userID)
+        {
+            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+            {
+                return Unauthorized();
+            }
+
+            DataService.RemoveUserFromOrganization(User.Identity.Name, userID);
             return Ok("ok");
         }
         [HttpPost("SendInvite")]
@@ -166,16 +166,18 @@ namespace Remotely.Server.API
                     await UserManager.ConfirmEmailAsync(user, await UserManager.GenerateEmailConfirmationTokenAsync(user));
                     var resetCode = UrlEncoder.Default.Encode(await UserManager.GeneratePasswordResetTokenAsync(user));
                     var resetUrl = $"{Request.Scheme}://{Request.Host}/Identity/Account/ResetPassword?code={resetCode}";
+                    invite.ResetUrl = resetUrl;
                     newUserMessage = $@"<br><br>Since you don't have an account yet, one has been created for you.
                                     You will need to set a password first before attempting to join the organization.<br><br>
                                     Set your password by <a href='{resetUrl}'>clicking here</a>.  Your username/email
-                                    is <strong>${invite.InvitedUser}</strong>.";
+                                    is <strong>{invite.InvitedUser}</strong>.";
                 }
                 else
                 {
                     return BadRequest("There was an issue creating the new account.");
                 }
             }
+
             var newInvite = DataService.AddInvite(User.Identity.Name, invite, Request.Scheme + "://" + Request.Host);
 
             var inviteURL = $"{Request.Scheme}://{Request.Host}/Invite?id={newInvite.ID}";

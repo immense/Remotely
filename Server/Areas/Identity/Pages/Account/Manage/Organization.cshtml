@@ -103,7 +103,7 @@
                         <tr>
                             <th>Invited User</th>
                             <th>Administrator</th>
-                            <th>URL</th>
+                            <th>Link(s)</th>
                             <th>Delete</th>
                         </tr>
                     </thead>
@@ -113,7 +113,16 @@
                             <tr invite="@Model.Invites[i].ID">
                                 <td class="middle-aligned"><label class="control-label">@Model.Invites[i].InvitedUser</label></td>
                                 <td class="middle-aligned text-center">@Html.CheckBoxFor(x => x.Invites[i].IsAdmin, new { disabled = "disabled" })</td>
-                                <td class="middle-aligned"><label class="control-label">@Request.Scheme://@Request.Host/Invite/?id=@Model.Invites[i].ID</label></td>
+                                <td class="middle-aligned">
+                                    <label class="control-label">
+                                        <a href="@Request.Scheme://@Request.Host/Invite/?id=@Model.Invites[i].ID">Join Link</a>
+                                        @if (!string.IsNullOrWhiteSpace(Model.Invites[i].ResetUrl))
+                                        {
+                                            <br />
+                                            <a href="@Model.Invites[i].ResetUrl">Reset Password</a>
+                                        }
+                                    </label>
+                                </td>
                                 <td><button type="button" class="btn btn-danger delete-invite-button" invite="@Model.Invites[i].ID">Delete</button></td>
                             </tr>
                         }
