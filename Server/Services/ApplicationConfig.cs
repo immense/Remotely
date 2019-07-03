@@ -19,6 +19,7 @@ namespace Remotely.Server.Services
         public bool EnableWindowsEventLog => bool.Parse(Config["ApplicationOptions:EnableWindowsEventLog"]);
         public bool AllowSelfRegistration => bool.Parse(Config["ApplicationOptions:AllowSelfRegistration"]);
         public double DataRetentionInDays => double.Parse(Config["ApplicationOptions:DataRetentionInDays"]);
+        public bool RemoteControlRequiresAuthentication => bool.Parse(Config["ApplicationOptions:RemoteControlRequiresAuthentication"]);
         public double RemoteControlSessionLimit => double.Parse(Config["ApplicationOptions:RemoteControlSessionLimit"]);
         public bool RecordRemoteControlSessions => bool.Parse(Config["ApplicationOptions:RecordRemoteControlSessions"]);
         public bool RedirectToHTTPS => bool.Parse(Config["ApplicationOptions:RedirectToHTTPS"]);

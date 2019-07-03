@@ -19,16 +19,20 @@ export class RCBrowserSockets {
 
         this.ApplyMessageHandlers(this.Connection);
 
-        this.Connection.start().catch(err => {
-            console.error(err.toString());
-            console.log("Connection closed.");
-        }).then(() => {
+        this.Connection.start().then(() => {
             this.SendScreenCastRequestToDevice();
             UI.ConnectButton.removeAttribute("disabled");
             UI.ConnectBox.style.display = "none";
             UI.ScreenViewer.removeAttribute("hidden");
             UI.StatusMessage.innerHTML = "";
-        })
+        }).catch(err => {
+            console.error(err.toString());
+            console.log("Connection closed.");
+            UI.StatusMessage.innerHTML = `Connection error: ${err.message}`;
+            UI.Screen2DContext.clearRect(0, 0, UI.ScreenViewer.width, UI.ScreenViewer.height);
+            UI.ScreenViewer.setAttribute("hidden", "hidden");
+            UI.ConnectBox.style.removeProperty("display");
+        });
         this.Connection.closedCallbacks.push((ev) => {
             UI.Screen2DContext.clearRect(0, 0, UI.ScreenViewer.width, UI.ScreenViewer.height);
             UI.ScreenViewer.setAttribute("hidden", "hidden");
@@ -36,13 +40,13 @@ export class RCBrowserSockets {
         });
     };
     SendScreenCastRequestToDevice() {
-        return this.Connection.invoke("SendScreenCastRequestToDevice", RemoteControl.ClientID, RemoteControl.RequesterName, RemoteControl.Mode);
+        this.Connection.invoke("SendScreenCastRequestToDevice", RemoteControl.ClientID, RemoteControl.RequesterName, RemoteControl.Mode);
     }
     SendLatencyUpdate(latency: number) {
         this.Connection.invoke("SendLatencyUpdate", latency);
     }
     SendSelectScreen(index: number) {
-        return this.Connection.invoke("SelectScreen", index);
+        this.Connection.invoke("SelectScreen", index);
     }
     SendMouseMove(percentX: number, percentY: number): any {
         this.Connection.invoke("MouseMove", percentX, percentY);

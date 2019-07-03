@@ -106,6 +106,7 @@ Note: To retain your settings between upgrades, copy your settings to appsetting
 * UseHSTS: Whether ASP.NET Core will use HTTP Strict Transport Security.
 * DataRetentionInDays: How long event logs and remote command logs will be kept.
 * RemoteControlSessionLimit: How many concurrent remote control sessions are allowed per organization.
+* RemoteControlRequiresAuthentication: Whether the remote control page requires authentication to establish a connection.
 * AllowApiLogin: Whether to allow logging in via the API (see below).
 * TrustedCorsOrigins: For cross-origin API requests via JavaScript.  The websites listed in this array with be allowed to make requests to the API.  This does not grant authentication, which is still required on most endpoints.
 * KnownProxies: If your Nginx server is on a different machine and is forwarding requests to the Remotely server, you will need to add the IP of the Nginx server to this array.
