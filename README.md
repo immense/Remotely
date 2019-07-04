@@ -1,5 +1,5 @@
 # Remotely
-[![Build Status](https://dev.azure.com/translucency/Remotely/_apis/build/status/Remotely-GitHub?branchName=master)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=5&branchName=master)
+[![Build status](https://dev.azure.com/translucency/Remotely/_apis/build/status/Remotely-All)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=13)
 
 A remote control and remote scripting solution, built with .NET Core and SignalR Core.
 

@@ -192,6 +192,10 @@ namespace Remotely.Server.Services
             MachineName = machineName;
             MachineNameToSessionIDLookup[MachineName] = Context.ConnectionId;
         }
+        public async Task SendMachineName(string machineName, string viewerID)
+        {
+            await RCBrowserHub.Clients.Client(viewerID).SendAsync("ReceiveMachineName", machineName);
+        }
         public async Task SendAudioSample(byte[] buffer, List<string> viewerIDs)
         {
             await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("AudioSample", buffer);

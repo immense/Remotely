@@ -153,6 +153,9 @@ export class RCBrowserSockets {
             UI.StatusMessage.innerHTML = "The host has disconnected.";
             this.Connection.stop();
         });
+        hubConnection.on("ReceiveMachineName", (machineName) => {
+            document.title = `${machineName} - Remotely Session`;
+        });
         hubConnection.on("RelaunchedScreenCasterReady", (newClientID) => {
             RemoteControl.ClientID = newClientID;
             this.Connection.stop();
