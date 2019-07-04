@@ -64,6 +64,10 @@ namespace Remotely.ScreenCast.Core.Sockets
             await Connection.SendAsync("ReceiveDeviceInfo", serviceID, machineName);
         }
 
+        public async Task SendMachineName(string machineName, string viewerID)
+        {
+            await Connection.SendAsync("SendMachineName", machineName, viewerID);
+        }
         public async Task SendScreenCapture(byte[] captureBytes, string viewerID, int left, int top, int width, int height, DateTime captureTime)
         {
             await Connection.SendAsync("SendScreenCapture", captureBytes, viewerID, left, top, width, height, captureTime);
@@ -93,11 +97,14 @@ namespace Remotely.ScreenCast.Core.Sockets
                 return Task.CompletedTask;
             };
 
-            Connection.On("ClipboardTransfer", (string transferText) =>
+            Connection.On("ClipboardTransfer", (string transferText, string viewerID) =>
             {
                 try
                 {
-                    Conductor.InvokeClipboardTransfer(transferText);
+                    if (Conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                    {
+                        Conductor.InvokeClipboardTransfer(transferText);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -229,9 +236,12 @@ namespace Remotely.ScreenCast.Core.Sockets
                 }
             });
 
-            Connection.On("ToggleAudio", (bool toggleOn) =>
+            Connection.On("ToggleAudio", (bool toggleOn, string viewerID) =>
             {
-                Conductor.InvokeAudioToggled(toggleOn);
+                if (Conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                {
+                    Conductor.InvokeAudioToggled(toggleOn);
+                }
             });
 
 

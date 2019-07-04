@@ -46,6 +46,8 @@ namespace Remotely.ScreenCast.Core.Capture
                 conductor.InvokeViewerAdded(viewer);
             }
 
+            await conductor.CasterSocket.SendMachineName(Environment.MachineName, viewerID);
+
             await conductor.CasterSocket.SendScreenCount(
                    capturer.SelectedScreen,
                    capturer.GetScreenCount(),
