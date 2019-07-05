@@ -13,6 +13,7 @@ using System.IO;
 using System.Net;
 using Remotely.ScreenCast.Core.Utilities;
 using Remotely.ScreenCast.Core.Input;
+using Remotely.Shared.Win32;
 
 namespace Remotely.ScreenCast.Core.Sockets
 {
@@ -109,6 +110,14 @@ namespace Remotely.ScreenCast.Core.Sockets
                 catch (Exception ex)
                 {
                     Logger.Write(ex);
+                }
+            });
+
+            Connection.On("CtrlAltDel", async (string viewerID) =>
+            {
+                if (Conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                {
+                    await Connection.InvokeAsync("CtrlAltDel");
                 }
             });
 

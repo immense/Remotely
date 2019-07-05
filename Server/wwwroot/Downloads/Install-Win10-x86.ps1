@@ -120,9 +120,12 @@ try {
 	Run-StartupChecks
 
 	if ($ArgList.Contains("-uninstall")) {
-		Write-Log "Uninstall started."
-		Uninstall-Remotely
-		Write-Log "Uninstall completed."
+		Write-Log "Install started."
+        Write-Log
+        Write-Log "Install/uninstall logs are being written to `"$LogPath`""
+        Write-Log
+		Install-Remotely
+		Write-Log "Install completed."
 		exit
 	}
 	else {

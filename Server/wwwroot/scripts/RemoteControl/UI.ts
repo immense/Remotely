@@ -1,6 +1,6 @@
 ﻿import { RCBrowserSockets } from "./RCBrowserSockets.js";
 import { GetDistanceBetween } from "../Utilities.js";
-import { ConnectToClient, RemoteControl } from "./RemoteControl.js";
+import { ConnectToClient, RemoteControl } from "./Main.js";
 import { FloatMessage } from "../UI.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 import { Point } from "../Models/Point.js";

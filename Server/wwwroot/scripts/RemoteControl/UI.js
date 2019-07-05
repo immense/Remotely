@@ -1,4 +1,4 @@
-import { ConnectToClient, RemoteControl } from "./RemoteControl.js";
+import { ConnectToClient, RemoteControl } from "./Main.js";
 import { FloatMessage } from "../UI.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 export var AudioButton = document.getElementById("audioButton");

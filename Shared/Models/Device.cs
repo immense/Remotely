@@ -12,7 +12,10 @@ namespace Remotely.Shared.Models
 {
     public class Device
     {
+        public string AgentVersion { get; set; }
         public string CurrentUser { get; set; }
+        public string DeviceName { get; set; }
+        public virtual ICollection<DevicePermissionLink> DevicePermissionLinks { get; set; } = new List<DevicePermissionLink>();
         public List<Drive> Drives { get; set; }
 
         public double FreeMemory { get; set; }
@@ -27,16 +30,11 @@ namespace Remotely.Shared.Models
         public bool IsOnline { get; set; }
 
         public DateTime LastOnline { get; set; }
-
-        public string DeviceName { get; set; }
-
         public virtual Organization Organization { get; set; }
         public string OrganizationID { get; set; }
         public Architecture OSArchitecture { get; set; }
 
         public string OSDescription { get; set; }
-
-        public virtual ICollection<DevicePermissionLink> DevicePermissionLinks { get; set; } = new List<DevicePermissionLink>();
         public string Platform { get; set; }
 
         public int ProcessorCount { get; set; }
@@ -116,6 +114,11 @@ namespace Remotely.Shared.Models
                 device.FreeMemory = 0;
             }
             device.TotalMemory = totalMemory.Item2;
+
+            if (File.Exists("Remotely_Agent.dll"))
+            {
+                device.AgentVersion = FileVersionInfo.GetVersionInfo("Remotely_Agent.dll")?.FileVersion?.ToString()?.Trim();
+            }
 
             return device;
         }

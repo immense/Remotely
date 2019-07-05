@@ -58,6 +58,30 @@ var commands = [
         ;
         BrowserSockets.Connection.invoke("GetGroups", selectedDevices.map(x => x.ID));
     }),
+    new ConsoleCommand("GetVersion", [], "Display the remote agent's version.", "GetVersion", "", (parameters, paramDictionary) => {
+        var selectedDevices = Main.DataGrid.GetSelectedDevices();
+        if (selectedDevices.length == 0) {
+            AddConsoleOutput("No devices are selected.");
+            return;
+        }
+        ;
+        var output = `<div>Permission Groups:</div>
+                            <table class="console-device-table table table-responsive">
+                            <thead><tr>
+                            <th>Device Name</th><th>Agent Version</th>
+                            </tr></thead>`;
+        var deviceList = selectedDevices.map(x => {
+            return `<tr>
+                        <td>${x.DeviceName}</td>
+                        <td>
+                            ${x.AgentVersion}
+                        </td>
+                        </tr>`;
+        });
+        output += deviceList.join("");
+        output += "</table>";
+        UI.AddConsoleOutput(output);
+    }),
     new ConsoleCommand("RemoveGroup", [
         new Parameter("group", "The group name to remove.", "String")
     ], "Removes a permission group to the selected computer(s).", "RemoveGroup -group Lab Devices", "", (parameters, paramDictionary) => {

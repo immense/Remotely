@@ -132,6 +132,9 @@ try {
 	}
 	else {
 		Write-Log "Install started."
+        Write-Log
+        Write-Log "Install/uninstall logs are being written to `"$LogPath`""
+        Write-Log
 		Install-Remotely
 		Write-Log "Install completed."
 		exit

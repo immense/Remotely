@@ -2,16 +2,10 @@ import * as Utilities from "../Utilities.js";
 import { RCBrowserSockets } from "./RCBrowserSockets.js";
 import * as UI from "./UI.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
+import { Conductor } from "./Conductor.js";
 var queryString = Utilities.ParseSearchString();
 var rcBrowserSockets = new RCBrowserSockets();
-export const RemoteControl = new class {
-    constructor() {
-        this.RCBrowserSockets = rcBrowserSockets;
-        this.ClientID = queryString["clientID"] ? decodeURIComponent(queryString["clientID"]) : "";
-        this.ServiceID = queryString["serviceID"] ? decodeURIComponent(queryString["serviceID"]) : "";
-        this.RequesterName = "";
-    }
-};
+export const RemoteControl = new Conductor(rcBrowserSockets, queryString["clientID"] ? decodeURIComponent(queryString["clientID"]) : "", queryString["serviceID"] ? decodeURIComponent(queryString["serviceID"]) : "");
 export function ConnectToClient() {
     UI.ConnectButton.disabled = true;
     RemoteControl.ClientID = UI.SessionIDInput.value.split(" ").join("");
@@ -35,4 +29,4 @@ window.onload = () => {
         }
     }
 };
-//# sourceMappingURL=RemoteControl.js.map
+//# sourceMappingURL=Main.js.map

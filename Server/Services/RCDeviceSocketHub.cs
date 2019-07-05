@@ -125,6 +125,10 @@ namespace Remotely.Server.Services
             }
         }
 
+        public async Task CtrlAltDel()
+        {
+            await DeviceHub.Clients.Client(ServiceID).SendAsync("CtrlAltDel");
+        }
         public async Task GetSessionID()
         {
             var random = new Random();

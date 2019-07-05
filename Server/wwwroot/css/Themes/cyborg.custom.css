@@ -1,5 +1,6 @@
 ﻿body {
     color: rgb(180,180,180);
+    background: rgb(20,20,20) !important;
 }
 
 nav.navbar.navbar-dark.bg-dark {
