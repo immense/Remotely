@@ -26,19 +26,11 @@ namespace Remotely.Server.Services
             this.DeviceHub = deviceHub;
             RCSessionRecorder = rcSessionRecorder;
         }
-        public static ConcurrentDictionary<string, RemotelyUser> OrganizationConnectionList { get; set; } = new ConcurrentDictionary<string, RemotelyUser>();
+        public static ConcurrentDictionary<string, RemotelyUser> OrganizationConnectionList { get; } = new ConcurrentDictionary<string, RemotelyUser>();
         private ApplicationConfig AppConfig { get; set; }
-        private string ScreenCasterID
-        {
-            get
-            {
-                return Context.Items["ScreenCasterID"] as string;
-            }
-            set
-            {
-                Context.Items["ScreenCasterID"] = value;
-            }
-        }
+        private DataService DataService { get; }
+
+        private IHubContext<DeviceSocketHub> DeviceHub { get; }
 
         private RemoteControlMode Mode
         {
@@ -52,10 +44,10 @@ namespace Remotely.Server.Services
             }
         }
 
-        private DataService DataService { get; }
-        private IHubContext<DeviceSocketHub> DeviceHub { get; }
-        private RemoteControlSessionRecorder RCSessionRecorder { get; }
         private IHubContext<RCDeviceSocketHub> RCDeviceHub { get; }
+
+        private RemoteControlSessionRecorder RCSessionRecorder { get; }
+
         private string RequesterName
         {
             get
@@ -68,6 +60,17 @@ namespace Remotely.Server.Services
             }
         }
 
+        private string ScreenCasterID
+        {
+            get
+            {
+                return Context.Items["ScreenCasterID"] as string;
+            }
+            set
+            {
+                Context.Items["ScreenCasterID"] = value;
+            }
+        }
         public async Task CtrlAltDel(string serviceID)
         {
             await DeviceHub.Clients.Client(serviceID).SendAsync("CtrlAltDel");
@@ -145,6 +148,21 @@ namespace Remotely.Server.Services
             await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("SelectScreen", screenIndex, Context.ConnectionId);
         }
 
+        public async Task SendClipboardTransfer(string transferText)
+        {
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ClipboardTransfer", transferText, Context.ConnectionId);
+        }
+
+        public async Task SendLatencyUpdate(double latency)
+        {
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("LatencyUpdate", latency, Context.ConnectionId);
+        }
+
+        public async Task SendQualityChange(int qualityLevel)
+        {
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("QualityChange", qualityLevel, Context.ConnectionId);
+        }
+
         public async Task SendScreenCastRequestToDevice(string screenCasterID, string requesterName, int remoteControlMode)
         {
             if ((RemoteControlMode)remoteControlMode == RemoteControlMode.Normal)
@@ -184,26 +202,13 @@ namespace Remotely.Server.Services
                 await RCDeviceHub.Clients.Client(screenCasterID).SendAsync("RequestScreenCast", Context.ConnectionId, requesterName);
             }
         }
-
-        public async Task SendLatencyUpdate(double latency)
-        {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("LatencyUpdate", latency, Context.ConnectionId);
-        }
         public async Task SendSharedFileIDs(List<string> fileIDs)
         {
             await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("SharedFileIDs", fileIDs);
         }
-        public async Task SendQualityChange(int qualityLevel)
-        {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("QualityChange", qualityLevel, Context.ConnectionId);
-        }
         public async Task SendToggleAudio(bool toggleOn)
         {
             await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ToggleAudio", toggleOn, Context.ConnectionId);
-        }
-        public async Task SendClipboardTransfer(string transferText)
-        {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ClipboardTransfer", transferText, Context.ConnectionId);
         }
         public async Task Tap(double percentX, double percentY)
         {
