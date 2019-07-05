@@ -1,6 +1,6 @@
 import * as Utilities from "../Utilities.js";
 import * as UI from "./UI.js";
-import { RemoteControl } from "./RemoteControl.js";
+import { RemoteControl } from "./Main.js";
 import { Sound } from "../Sound.js";
 var signalR = window["signalR"];
 export class RCBrowserSockets {
@@ -78,7 +78,7 @@ export class RCBrowserSockets {
         this.Connection.invoke("KeyPress", key);
     }
     SendCtrlAltDel() {
-        this.Connection.invoke("CtrlAltDel", RemoteControl.ServiceID);
+        this.Connection.invoke("CtrlAltDel");
     }
     SendSharedFileIDs(fileIDs) {
         this.Connection.invoke("SendSharedFileIDs", JSON.parse(fileIDs));

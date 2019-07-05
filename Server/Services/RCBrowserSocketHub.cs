@@ -71,9 +71,9 @@ namespace Remotely.Server.Services
                 Context.Items["ScreenCasterID"] = value;
             }
         }
-        public async Task CtrlAltDel(string serviceID)
+        public async Task CtrlAltDel()
         {
-            await DeviceHub.Clients.Client(serviceID).SendAsync("CtrlAltDel");
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("CtrlAltDel", Context.ConnectionId);
         }
 
         public async Task KeyDown(string key)
