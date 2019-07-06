@@ -7,7 +7,7 @@ using Remotely.Desktop.Unix.Services;
 using Remotely.ScreenCast.Core;
 using Remotely.ScreenCast.Core.Capture;
 using Remotely.ScreenCast.Core.Models;
-using Remotely.ScreenCast.Core.Utilities;
+using Remotely.ScreenCast.Core.Services;
 using Remotely.ScreenCast.Linux.Capture;
 using Remotely.ScreenCast.Linux.Input;
 using Remotely.Shared.Models;

@@ -1,5 +1,5 @@
 ﻿using Remotely.ScreenCast.Core.Capture;
-using Remotely.ScreenCast.Core.Utilities;
+using Remotely.ScreenCast.Core.Services;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;

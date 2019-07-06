@@ -1,7 +1,7 @@
 ﻿using Remotely.Shared.Models;
 using Remotely.ScreenCast.Core;
 using Remotely.ScreenCast.Core.Capture;
-using Remotely.ScreenCast.Core.Utilities;
+using Remotely.ScreenCast.Core.Services;
 using Remotely.ScreenCast.Linux.Capture;
 using Remotely.ScreenCast.Linux.Input;
 using Remotely.ScreenCast.Linux.X11Interop;
@@ -30,7 +30,8 @@ namespace Remotely.ScreenCast.Linux
                 Conductor.ClipboardTransferred += Conductor_ClipboardTransferred;
                 Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName).Wait();
                 Conductor.CasterSocket.NotifyRequesterUnattendedReady(Conductor.RequesterID).Wait();
-                Conductor.StartWaitForViewerTimer();
+                Conductor.IdleTimer = new IdleTimer(Conductor.Viewers);
+                Conductor.IdleTimer.Start();
                 while (true)
                 {
                     System.Threading.Thread.Sleep(100);

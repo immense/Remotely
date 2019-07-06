@@ -1,6 +1,6 @@
 ﻿using Remotely.Desktop.Win.Services;
 using Remotely.Desktop.Win.ViewModels;
-using Remotely.ScreenCast.Core.Utilities;
+using Remotely.ScreenCast.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Configuration;

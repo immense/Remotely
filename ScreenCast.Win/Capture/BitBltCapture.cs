@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Diagnostics;
 using System.Runtime.Serialization.Formatters.Binary;
-using Remotely.ScreenCast.Core.Utilities;
+using Remotely.ScreenCast.Core.Services;
 using System.Threading;
 using Remotely.ScreenCast.Core.Capture;
 

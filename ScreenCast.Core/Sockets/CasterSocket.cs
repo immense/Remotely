@@ -11,7 +11,7 @@ using Remotely.ScreenCast.Core.Capture;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
-using Remotely.ScreenCast.Core.Utilities;
+using Remotely.ScreenCast.Core.Services;
 using Remotely.ScreenCast.Core.Input;
 using Remotely.Shared.Win32;
 
