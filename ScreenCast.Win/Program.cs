@@ -6,7 +6,7 @@ using Remotely.ScreenCast.Core.Capture;
 using Remotely.ScreenCast.Core.Enums;
 using Remotely.ScreenCast.Core.Models;
 using Remotely.ScreenCast.Core.Sockets;
-using Remotely.ScreenCast.Core.Utilities;
+using Remotely.ScreenCast.Core.Services;
 using Remotely.ScreenCast.Win.Capture;
 using Remotely.ScreenCast.Win.Input;
 using System;
@@ -85,7 +85,8 @@ namespace Remotely.ScreenCast.Win
                 Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName).Wait();
                 CheckInitialDesktop();
                 CheckForRelaunch();
-                Conductor.StartWaitForViewerTimer();
+                Conductor.IdleTimer = new IdleTimer(Conductor.Viewers);
+                Conductor.IdleTimer.Start();
                 HandleConnection(Conductor).Wait();
             }
             catch (Exception ex)

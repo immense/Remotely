@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Remotely.ScreenCast.Core.Models;
 using Remotely.ScreenCast.Core.Sockets;
-using Remotely.ScreenCast.Core.Utilities;
+using Remotely.ScreenCast.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

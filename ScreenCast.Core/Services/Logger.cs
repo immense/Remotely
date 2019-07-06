@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely.ScreenCast.Core.Utilities
+namespace Remotely.ScreenCast.Core.Services
 {
     public static class Logger
     {

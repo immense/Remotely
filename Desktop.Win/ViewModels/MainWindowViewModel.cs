@@ -4,7 +4,7 @@ using Remotely.Shared.Models;
 using Remotely.ScreenCast.Core;
 using Remotely.ScreenCast.Core.Capture;
 using Remotely.ScreenCast.Core.Models;
-using Remotely.ScreenCast.Core.Utilities;
+using Remotely.ScreenCast.Core.Services;
 using Remotely.ScreenCast.Win;
 using Remotely.ScreenCast.Win.Capture;
 using Remotely.ScreenCast.Win.Input;

@@ -5,7 +5,7 @@ using Remotely.ScreenCast.Core.Enums;
 using Remotely.ScreenCast.Core.Input;
 using Remotely.ScreenCast.Core.Models;
 using Remotely.ScreenCast.Core.Sockets;
-using Remotely.ScreenCast.Core.Utilities;
+using Remotely.ScreenCast.Core.Services;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -35,12 +35,12 @@ namespace Remotely.ScreenCast.Core
         public HubConnection Connection { get; private set; }
         public string CurrentDesktopName { get; set; }
         public string Host { get; private set; }
+        public IdleTimer IdleTimer { get; set; }
+        public bool IsSwitchingDesktops { get; set; }
         public AppMode Mode { get; private set; }
         public string RequesterID { get; private set; }
         public string ServiceID { get; private set; }
         public ConcurrentDictionary<string, Viewer> Viewers { get; } = new ConcurrentDictionary<string, Viewer>();
-        public bool IsSwitchingDesktops { get; set; }
-
         public Task Connect()
         {
             Connection = new HubConnectionBuilder()
@@ -86,30 +86,9 @@ namespace Remotely.ScreenCast.Core
             CasterSocket = new CasterSocket(Connection, this, keyboardMouse);
         }
 
-        public void StartWaitForViewerTimer()
-        {
-            var timer = new System.Timers.Timer(10000);
-            timer.AutoReset = false;
-            timer.Elapsed += (sender, arg) =>
-            {
-                // Shut down if no viewers have connected within 10 seconds.
-                if (Viewers.Count == 0)
-                {
-                    Logger.Write("No viewers connected after 10 seconds.  Shutting down.");
-                    Environment.Exit(0);
-                }
-            };
-            timer.Start();
-        }
-
         internal void InvokeAudioToggled(bool toggleOn)
         {
             AudioToggled?.Invoke(null, toggleOn);
-        }
-
-        internal void InvokeScreenCastInitiated(ScreenCastRequest viewerIdAndRequesterName)
-        {
-            ScreenCastInitiated?.Invoke(null, viewerIdAndRequesterName);
         }
 
         internal void InvokeClipboardTransfer(string transferText)
@@ -117,6 +96,10 @@ namespace Remotely.ScreenCast.Core
             ClipboardTransferred?.Invoke(null, transferText);
         }
 
+        internal void InvokeScreenCastInitiated(ScreenCastRequest viewerIdAndRequesterName)
+        {
+            ScreenCastInitiated?.Invoke(null, viewerIdAndRequesterName);
+        }
         internal void InvokeScreenCastRequested(ScreenCastRequest viewerIdAndRequesterName)
         {
             ScreenCastRequested?.Invoke(null, viewerIdAndRequesterName);
