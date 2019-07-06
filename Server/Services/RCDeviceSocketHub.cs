@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using System.Drawing;
 using Remotely.Shared.Models;
+using Remotely.Server.Models;
 
 namespace Remotely.Server.Services
 {
@@ -29,9 +30,7 @@ namespace Remotely.Server.Services
             AppConfig = appConfig;
         }
 
-        public static ConcurrentDictionary<string, string> AttendedSessionList { get; set; } = new ConcurrentDictionary<string, string>();
-
-        public static ConcurrentDictionary<string, string> MachineNameToSessionIDLookup { get; set; } = new ConcurrentDictionary<string, string>();
+        public static ConcurrentDictionary<string, RCSessionInfo> SessionInfoList { get; } = new ConcurrentDictionary<string, RCSessionInfo>();
         public ApplicationConfig AppConfig { get; }
         public RemoteControlSessionRecorder RCSessionRecorder { get; }
         private IHubContext<BrowserSocketHub> BrowserHub { get; }
@@ -53,65 +52,30 @@ namespace Remotely.Server.Services
                 Context.Items["CurrentScreenSize"] = value;
             }
         }
+        private RCSessionInfo SessionInfo
+        {
+            get
+            {
+                if (Context.Items.ContainsKey("SessionInfo"))
+                {
+                    return (RCSessionInfo)Context.Items["SessionInfo"];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                Context.Items["SessionInfo"] = value;
+            }
+        }
+
 
         private DataService DataService { get; }
         private IHubContext<DeviceSocketHub> DeviceHub { get; }
-        private string MachineName
-        {
-            get
-            {
-                if (Context.Items.ContainsKey("MachineName"))
-                {
-                    return Context.Items["MachineName"] as string;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            set
-            {
-                Context.Items["MachineName"] = value;
-            }
-        }
 
         private IHubContext<RCBrowserSocketHub> RCBrowserHub { get; }
-        private string ServiceID
-        {
-            get
-            {
-                if (Context.Items.ContainsKey("ServiceID"))
-                {
-                    return Context.Items["ServiceID"] as string;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            set
-            {
-                Context.Items["ServiceID"] = value;
-            }
-        }
-        private DateTime StartTime
-        {
-            get
-            {
-                if (Context.Items.ContainsKey("StartTime"))
-                {
-                    return (DateTime)Context.Items["StartTime"];
-                }
-                else
-                {
-                    return DateTime.Now;
-                }
-            }
-            set
-            {
-                Context.Items["StartTime"] = value;
-            }
-        }
 
         private List<string> ViewerList
         {
@@ -127,7 +91,7 @@ namespace Remotely.Server.Services
 
         public async Task CtrlAltDel()
         {
-            await DeviceHub.Clients.Client(ServiceID).SendAsync("CtrlAltDel");
+            await DeviceHub.Clients.Client(SessionInfo.ServiceID).SendAsync("CtrlAltDel");
         }
         public async Task GetSessionID()
         {
@@ -139,10 +103,7 @@ namespace Remotely.Server.Services
             }
             Context.Items["SessionID"] = sessionID;
 
-            while (!AttendedSessionList.TryAdd(sessionID, Context.ConnectionId))
-            {
-                await Task.Delay(1000);
-            }
+            SessionInfoList[Context.ConnectionId].AttendedSessionID = sessionID;
 
             await Clients.Caller.SendAsync("SessionID", sessionID);
         }
@@ -157,44 +118,46 @@ namespace Remotely.Server.Services
             await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("RelaunchedScreenCasterReady", Context.ConnectionId);
         }
 
-        public override Task OnConnectedAsync()
+        public override async Task OnConnectedAsync()
         {
-            StartTime = DateTime.Now;
-            return base.OnConnectedAsync();
+            SessionInfo = new RCSessionInfo()
+            {
+                RCSocketID = Context.ConnectionId,
+                StartTime = DateTime.Now
+            };
+            while (!SessionInfoList.TryAdd(Context.ConnectionId, SessionInfo))
+            {
+                await Task.Delay(100);
+            }
+            
+            await base.OnConnectedAsync();
         }
         public override async Task OnDisconnectedAsync(Exception exception)
-        {           
-            if (Context.Items.ContainsKey("SessionID") && AttendedSessionList.ContainsKey(Context.Items["SessionID"].ToString())) 
+        {
+            while (!SessionInfoList.TryRemove(Context.ConnectionId, out _))
             {
-                while (!AttendedSessionList.TryRemove(Context.Items["SessionID"].ToString(), out var value))
-                {
-                    await Task.Delay(1000);
-                }
+                await Task.Delay(100);
+            }
+
+            if (SessionInfo.Mode == Shared.Enums.RemoteControlMode.Unattended)
+            {
                 await RCBrowserHub.Clients.Clients(ViewerList).SendAsync("ScreenCasterDisconnected");
             }
-            else
+            else if (SessionInfo.Mode == Shared.Enums.RemoteControlMode.Unattended)
             {
                 if (ViewerList.Count > 0)
                 {
                     await RCBrowserHub.Clients.Clients(ViewerList).SendAsync("Reconnecting");
-                    await DeviceHub.Clients.Client(ServiceID).SendAsync("RestartScreenCaster", ViewerList, ServiceID, Context.ConnectionId);                    
+                    await DeviceHub.Clients.Client(SessionInfo.ServiceID).SendAsync("RestartScreenCaster", ViewerList, SessionInfo.ServiceID, Context.ConnectionId);
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(MachineName) && MachineNameToSessionIDLookup.ContainsKey(MachineName))
-            {
-                while (!MachineNameToSessionIDLookup.TryRemove(MachineName, out _))
-                {
-                    await Task.Delay(1000);
-                }
-            }
             await base.OnDisconnectedAsync(exception);
         }
         public void ReceiveDeviceInfo(string serviceID, string machineName)
         {
-            ServiceID = serviceID;
-            MachineName = machineName;
-            MachineNameToSessionIDLookup[MachineName] = Context.ConnectionId;
+            SessionInfo.ServiceID = serviceID;
+            SessionInfo.MachineName = machineName;
         }
         public async Task SendMachineName(string machineName, string viewerID)
         {
@@ -219,7 +182,8 @@ namespace Remotely.Server.Services
         {
             if (AppConfig.RecordRemoteControlSessions)
             {
-                RCSessionRecorder.SaveFrame(captureBytes, left, top, CurrentScreenSize.Width, CurrentScreenSize.Height, rcBrowserHubConnectionID, MachineName, StartTime);
+                RCSessionRecorder.SaveFrame(captureBytes, left, top, CurrentScreenSize.Width, CurrentScreenSize.Height, 
+                                                rcBrowserHubConnectionID, SessionInfo.MachineName, SessionInfo.StartTime);
             }
 
             return RCBrowserHub.Clients.Client(rcBrowserHubConnectionID).SendAsync("ScreenCapture", captureBytes, left, top, width, height, captureTime);

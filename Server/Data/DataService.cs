@@ -109,6 +109,19 @@ namespace Remotely.Server.Data
                     targetDevice.DevicePermissionLinks.Any(x => x.PermissionGroup.UserPermissionLinks.Any(y => y.RemotelyUserID == remotelyUser.Id));
         }
 
+        public bool DoesUserHaveAccessToDevice(string deviceID, string remotelyUserID)
+        {
+            var remotelyUser = RemotelyContext.Users.Find(remotelyUserID);
+
+            var targetDevice = RemotelyContext.Devices
+                                .Include(x => x.DevicePermissionLinks)
+                                .FirstOrDefault(x => x.ID == deviceID && x.OrganizationID == remotelyUser.OrganizationID);
+
+            return remotelyUser.IsAdministrator ||
+                    targetDevice.DevicePermissionLinks.Count == 0 ||
+                    targetDevice.DevicePermissionLinks.Any(x => x.PermissionGroup.UserPermissionLinks.Any(y => y.RemotelyUserID == remotelyUser.Id));
+        }
+
         public string[] FilterDeviceIDsByUserPermission(string[] deviceIDs, RemotelyUser remotelyUser)
         {
             return RemotelyContext.Devices.Where(x =>

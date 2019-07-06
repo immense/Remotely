@@ -83,22 +83,26 @@ namespace Remotely.Server.API
                     {
                         return BadRequest("There are already the maximum amount of active remote control sessions for your organization.");
                     }
+
+                    var existingSessions = RCDeviceSocketHub.SessionInfoList.Where(x => x.Value.MachineName == targetDevice.Value.DeviceName);
+
                     await DeviceHub.Clients.Client(targetDevice.Key).SendAsync("RemoteControl", Request.HttpContext.Connection.Id, targetDevice.Key);
 
                     var stopWatch = Stopwatch.StartNew();
-                    while (!RCDeviceSocketHub.MachineNameToSessionIDLookup.ContainsKey(targetDevice.Value.DeviceName) && stopWatch.Elapsed.TotalSeconds < 5)
+
+                    while (!RCDeviceSocketHub.SessionInfoList.Values.Any(x=>x.MachineName == targetDevice.Value.DeviceName && !existingSessions.Any(y=>y.Key != x.RCSocketID)) && stopWatch.Elapsed.TotalSeconds < 5)
                     {
                         await Task.Delay(10);
                     }
 
-                    if (!RCDeviceSocketHub.MachineNameToSessionIDLookup.ContainsKey(targetDevice.Value.DeviceName))
+                    if (!RCDeviceSocketHub.SessionInfoList.Values.Any(x => x.MachineName == targetDevice.Value.DeviceName && !existingSessions.Any(y => y.Key != x.RCSocketID)))
                     {
                         return StatusCode(500, "The remote control process failed to start in time on the remote device.");
                     }
                     else
                     {
-                        var rcSessionID = RCDeviceSocketHub.MachineNameToSessionIDLookup[targetDevice.Value.DeviceName];
-                        return Ok($"{HttpContext.Request.Scheme}://{Request.Host}/RemoteControl?clientID={rcSessionID}&serviceID={targetDevice.Key}");
+                        var rcSession = RCDeviceSocketHub.SessionInfoList.Values.FirstOrDefault(x=>x.MachineName == targetDevice.Value.DeviceName && !existingSessions.Any(y=>y.Key != x.RCSocketID));
+                        return Ok($"{HttpContext.Request.Scheme}://{Request.Host}/RemoteControl?clientID={rcSession.RCSocketID}&serviceID={targetDevice.Key}");
                     }
                 }
                 else

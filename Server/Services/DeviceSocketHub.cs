@@ -21,7 +21,7 @@ namespace Remotely.Server.Services
             RCBrowserHub = rcBrowserHub;
         }
 
-		public static ConcurrentDictionary<string, Device> ServiceConnections { get; set; } = new ConcurrentDictionary<string, Device>();
+		public static ConcurrentDictionary<string, Device> ServiceConnections { get; } = new ConcurrentDictionary<string, Device>();
         public IHubContext<RCBrowserSocketHub> RCBrowserHub { get; }
         private IHubContext<BrowserSocketHub> BrowserHub { get; }
         private DataService DataService { get; }
