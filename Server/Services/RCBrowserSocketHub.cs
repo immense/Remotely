@@ -167,13 +167,13 @@ namespace Remotely.Server.Services
         {
             if ((RemoteControlMode)remoteControlMode == RemoteControlMode.Normal)
             {
-                if (!RCDeviceSocketHub.AttendedSessionList.ContainsKey(screenCasterID))
+                if (!RCDeviceSocketHub.SessionInfoList.Any(x => x.Value.AttendedSessionID == screenCasterID))
                 {
                     await Clients.Caller.SendAsync("SessionIDNotFound");
                     return;
                 }
 
-                screenCasterID = RCDeviceSocketHub.AttendedSessionList[screenCasterID];
+                screenCasterID = RCDeviceSocketHub.SessionInfoList.First(x => x.Value.AttendedSessionID == screenCasterID).Value.RCSocketID;
             }
            
             DataService.WriteEvent(new EventLog()
@@ -194,7 +194,12 @@ namespace Remotely.Server.Services
             RequesterName = requesterName;
             if (Mode == RemoteControlMode.Unattended)
             {
-                await RCDeviceHub.Clients.Client(screenCasterID).SendAsync("GetScreenCast", Context.ConnectionId, requesterName);
+                var serviceID = RCDeviceSocketHub.SessionInfoList.FirstOrDefault(x => x.Value.RCSocketID == screenCasterID).Value?.ServiceID;
+                var deviceID = DeviceSocketHub.ServiceConnections[serviceID].ID;
+                if (Context.User.Identity.IsAuthenticated && DataService.DoesUserHaveAccessToDevice(deviceID, Context.UserIdentifier))
+                {
+                    await RCDeviceHub.Clients.Client(screenCasterID).SendAsync("GetScreenCast", Context.ConnectionId, requesterName);
+                }
             }
             else
             {
