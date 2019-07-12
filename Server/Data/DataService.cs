@@ -13,22 +13,15 @@ namespace Remotely.Server.Data
 {
     public class DataService
     {
-        public DataService(
-                ApplicationDbContext context,
-                ApplicationConfig appConfig,
-                UserManager<RemotelyUser> userManager
-            )
+        public DataService(ApplicationDbContext context, ApplicationConfig appConfig)
         {
             RemotelyContext = context;
             AppConfig = appConfig;
-            UserManager = userManager;
         }
 
         private ApplicationConfig AppConfig { get; set; }
 
         private ApplicationDbContext RemotelyContext { get; set; }
-
-        private UserManager<RemotelyUser> UserManager { get; set; }
 
         public void AddOrUpdateCommandContext(CommandContext commandContext)
         {

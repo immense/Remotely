@@ -38,7 +38,7 @@ namespace Remotely.Server.Data
 		protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            
+
             builder.Entity<IdentityUser>().ToTable("RemotelyUsers");
             builder.Entity<RemotelyUser>().ToTable("RemotelyUsers");
 

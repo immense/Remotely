@@ -192,10 +192,11 @@ namespace Remotely.Server.Services
             ScreenCasterID = screenCasterID;
             Mode = (RemoteControlMode)remoteControlMode;
             RequesterName = requesterName;
+            var sessionInfo = RCDeviceSocketHub.SessionInfoList.FirstOrDefault(x => x.Value.RCSocketID == screenCasterID).Value;
             if (Mode == RemoteControlMode.Unattended)
             {
-                var serviceID = RCDeviceSocketHub.SessionInfoList.FirstOrDefault(x => x.Value.RCSocketID == screenCasterID).Value?.ServiceID;
-                var deviceID = DeviceSocketHub.ServiceConnections[serviceID].ID;
+                sessionInfo.Mode = RemoteControlMode.Unattended;
+                var deviceID = DeviceSocketHub.ServiceConnections[sessionInfo.ServiceID].ID;
                 if (Context.User.Identity.IsAuthenticated && DataService.DoesUserHaveAccessToDevice(deviceID, Context.UserIdentifier))
                 {
                     await RCDeviceHub.Clients.Client(screenCasterID).SendAsync("GetScreenCast", Context.ConnectionId, requesterName);
@@ -203,6 +204,7 @@ namespace Remotely.Server.Services
             }
             else
             {
+                sessionInfo.Mode = RemoteControlMode.Normal;
                 await Clients.Caller.SendAsync("RequestingScreenCast");
                 await RCDeviceHub.Clients.Client(screenCasterID).SendAsync("RequestScreenCast", Context.ConnectionId, requesterName);
             }
