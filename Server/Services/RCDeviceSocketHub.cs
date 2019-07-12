@@ -139,7 +139,7 @@ namespace Remotely.Server.Services
                 await Task.Delay(100);
             }
 
-            if (SessionInfo.Mode == Shared.Enums.RemoteControlMode.Unattended)
+            if (SessionInfo.Mode == Shared.Enums.RemoteControlMode.Normal)
             {
                 await RCBrowserHub.Clients.Clients(ViewerList).SendAsync("ScreenCasterDisconnected");
             }
