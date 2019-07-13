@@ -39,16 +39,30 @@ namespace Remotely.Server.Data
             RemotelyContext.SaveChanges();
         }
 
-        public bool AddOrUpdateDevice(Device device)
+        public bool AddOrUpdateDevice(Device device, out Device updatedDevice)
         {
             var existingDevice = RemotelyContext.Devices.Find(device.ID);
             if (existingDevice != null)
             {
-                device.ServerVerificationToken = existingDevice.ServerVerificationToken;
-                RemotelyContext.Entry(existingDevice).CurrentValues.SetValues(device);
+                existingDevice.CurrentUser = device.CurrentUser;
+                existingDevice.DeviceName = device.DeviceName;
+                existingDevice.Drives = device.Drives;
+                existingDevice.FreeMemory = device.FreeMemory;
+                existingDevice.FreeStorage = device.FreeStorage;
+                existingDevice.Is64Bit = device.Is64Bit;
+                existingDevice.IsOnline = true;
+                existingDevice.LastOnline = DateTime.Now;
+                existingDevice.OSArchitecture = device.OSArchitecture;
+                existingDevice.OSDescription = device.OSDescription;
+                existingDevice.Platform = device.Platform;
+                existingDevice.ProcessorCount = device.ProcessorCount;
+                existingDevice.TotalMemory = device.TotalMemory;
+                existingDevice.TotalStorage = device.TotalStorage;
+                updatedDevice = existingDevice;
             }
             else
             {
+                updatedDevice = device;
                 if (!RemotelyContext.Organizations.Any(x => x.ID == device.OrganizationID))
                 {
                     WriteEvent(new EventLog()
@@ -95,11 +109,33 @@ namespace Remotely.Server.Data
         {
             var targetDevice = RemotelyContext.Devices
                                 .Include(x=>x.DevicePermissionLinks)
+                                .ThenInclude(x=>x.PermissionGroup)
+                                .ThenInclude(x=>x.UserPermissionLinks)
                                 .FirstOrDefault(x => x.ID == deviceID && x.OrganizationID == remotelyUser.OrganizationID);
 
             return remotelyUser.IsAdministrator ||
                     targetDevice.DevicePermissionLinks.Count == 0 ||
                     targetDevice.DevicePermissionLinks.Any(x => x.PermissionGroup.UserPermissionLinks.Any(y => y.RemotelyUserID == remotelyUser.Id));
+        }
+
+        public List<RemotelyUser> GetUsersWithAccessToDevice(IEnumerable<string> userIDs, Device device)
+        {
+            var targetDevice = RemotelyContext.Devices
+                                .Include(x => x.DevicePermissionLinks)
+                                .ThenInclude(x => x.PermissionGroup)
+                                .ThenInclude(x => x.UserPermissionLinks)
+                                .FirstOrDefault(x => x.ID == device.ID && x.OrganizationID == device.OrganizationID);
+
+            var authorizedUsers = RemotelyContext.Users.Where(x => 
+                            x.OrganizationID == device.OrganizationID && 
+                            userIDs.Contains(x.Id) &&
+                            (
+                                targetDevice.DevicePermissionLinks.Count == 0 || 
+                                x.IsAdministrator || 
+                                targetDevice.DevicePermissionLinks.Any(y => y.PermissionGroup.UserPermissionLinks.Any(z=>z.RemotelyUserID == x.Id))
+                            ));
+
+            return authorizedUsers.ToList();
         }
 
         public bool DoesUserHaveAccessToDevice(string deviceID, string remotelyUserID)
@@ -108,6 +144,8 @@ namespace Remotely.Server.Data
 
             var targetDevice = RemotelyContext.Devices
                                 .Include(x => x.DevicePermissionLinks)
+                                .ThenInclude(x => x.PermissionGroup)
+                                .ThenInclude(x => x.UserPermissionLinks)
                                 .FirstOrDefault(x => x.ID == deviceID && x.OrganizationID == remotelyUser.OrganizationID);
 
             return remotelyUser.IsAdministrator ||

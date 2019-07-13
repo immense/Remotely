@@ -73,24 +73,26 @@ namespace Remotely.Server.Services
                     Context.Abort();
                     return;
                 }
-                device.IsOnline = true;
-                device.LastOnline = DateTime.Now;
-                Device = device;
-                if (DataService.AddOrUpdateDevice(device))
+                
+                if (DataService.AddOrUpdateDevice(device, out var updatedDevice))
                 {
-                    var failCount = 0;
-                    while (!ServiceConnections.TryAdd(Context.ConnectionId, device))
+                    Device = updatedDevice;
+                    while (!ServiceConnections.TryAdd(Context.ConnectionId, Device))
                     {
-                        if (failCount > 3)
-                        {
-                            Context.Abort();
-                            return;
-                        }
-                        failCount++;
-                        await Task.Delay(1000);
+                        DataService.WriteEvent("Retrying ServiceConnections.TryAdd in DeviceSocketHub.");
+                        await Task.Delay(100);
                     }
-                    await this.Groups.AddToGroupAsync(this.Context.ConnectionId, device.OrganizationID);
-                    await BrowserHub.Clients.Group(Device.OrganizationID).SendAsync("DeviceCameOnline", Device);
+
+                    var onlineOrganizationUsers = BrowserSocketHub.ConnectionIdToUserLookup
+                                                    .Where(x => x.Value.OrganizationID == Device.OrganizationID);
+
+                    var authorizedUsers = DataService.GetUsersWithAccessToDevice(onlineOrganizationUsers.Select(x => x.Value.Id), Device);
+                    var connectionIds = onlineOrganizationUsers
+                                            .Where(onlineUser => authorizedUsers.Any(authorizedUser => authorizedUser.Id == onlineUser.Value.Id))
+                                            .Select(x => x.Key)
+                                            .ToList();
+
+                    await BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceCameOnline", Device);
                 }
                 else
                 {
@@ -107,11 +109,18 @@ namespace Remotely.Server.Services
 
         public async Task DeviceHeartbeat(Device device)
         {
-            device.IsOnline = true;
-            device.LastOnline = DateTime.Now;
-            Device = device;
-            DataService.AddOrUpdateDevice(device);
-            await BrowserHub.Clients.Group(Device.OrganizationID).SendAsync("DeviceHeartbeat", Device);
+            DataService.AddOrUpdateDevice(device, out var updatedDevice);
+            Device = updatedDevice;
+            var onlineOrganizationUsers = BrowserSocketHub.ConnectionIdToUserLookup
+                                            .Where(x => x.Value.OrganizationID == Device.OrganizationID);
+
+            var authorizedUsers = DataService.GetUsersWithAccessToDevice(onlineOrganizationUsers.Select(x=>x.Value.Id), Device);
+            var connectionIds = onlineOrganizationUsers
+                                    .Where(onlineUser => authorizedUsers.Any(authorizedUser => authorizedUser.Id == onlineUser.Value.Id))
+                                    .Select(x => x.Key)
+                                    .ToList();
+
+            await BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceHeartbeat", Device);
         }
 
         public async Task DisplayConsoleMessage(string message, string requesterID)
@@ -127,12 +136,24 @@ namespace Remotely.Server.Services
             if (Device != null)
             {
                 DataService.DeviceDisconnected(Device.ID);
-                await this.Groups.RemoveFromGroupAsync(this.Context.ConnectionId, Device.OrganizationID);
+
                 Device.IsOnline = false;
-                await BrowserHub.Clients.Group(Device.OrganizationID).SendAsync("DeviceWentOffline", Device);
-                while (!ServiceConnections.TryRemove(Context.ConnectionId, out var device))
+
+                var onlineOrganizationUsers = BrowserSocketHub.ConnectionIdToUserLookup
+                                                   .Where(x => x.Value.OrganizationID == Device.OrganizationID);
+
+                var authorizedUsers = DataService.GetUsersWithAccessToDevice(onlineOrganizationUsers.Select(x => x.Value.Id), Device);
+                var connectionIds = onlineOrganizationUsers
+                                        .Where(onlineUser => authorizedUsers.Any(authorizedUser => authorizedUser.Id == onlineUser.Value.Id))
+                                        .Select(x => x.Key)
+                                        .ToList();
+
+                await BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceWentOffline", Device);
+
+                while (!ServiceConnections.TryRemove(Context.ConnectionId, out _))
                 {
-                    await Task.Delay(1000);
+                    DataService.WriteEvent("Retrying ServiceConnections.TryRemove in DeviceSocketHub.");
+                    await Task.Delay(100);
                 }
             }
             
