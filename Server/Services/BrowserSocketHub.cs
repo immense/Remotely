@@ -32,8 +32,9 @@ namespace Remotely.Server.Services
             AppConfig = appConfig;
         }
 
-		private ApplicationConfig AppConfig { get; }
-		private DataService DataService { get; }
+        public static ConcurrentDictionary<string, RemotelyUser> ConnectionIdToUserLookup { get; } = new ConcurrentDictionary<string, RemotelyUser>();
+        private ApplicationConfig AppConfig { get; }
+        private DataService DataService { get; }
 		private IHubContext<DeviceSocketHub> DeviceHub { get; }
         private RemotelyUser RemotelyUser
         {
@@ -59,71 +60,79 @@ namespace Remotely.Server.Services
             DataService.AddPermissionToDevices(RemotelyUser.Id, deviceIDs, groupName);
             await Clients.Caller.SendAsync("DisplayConsoleMessage", "Group added.");
         }
+        public async Task DeployScript(string fileID, string mode, string[] deviceIDs)
+        {
+            deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
+            var connections = GetActiveClientConnections(deviceIDs);
+            var commandContext = new CommandContext()
+            {
+                CommandMode = mode,
+                CommandText = Encoding.UTF8.GetString(DataService.GetSharedFiled(fileID).FileContents),
+                SenderConnectionID = Context.ConnectionId,
+                SenderUserID = Context.UserIdentifier,
+                TargetDeviceIDs = connections.Select(x => x.Value.ID).ToArray(),
+                OrganizationID = RemotelyUser.OrganizationID
+            };
+            DataService.AddOrUpdateCommandContext(commandContext);
+            await Clients.Caller.SendAsync("CommandContextCreated", commandContext);
+            foreach (var connection in connections)
+            {
+                await DeviceHub.Clients.Client(connection.Key).SendAsync("DeployScript", mode, fileID, commandContext.ID, Context.ConnectionId);
+            }
+        }
+
+        public async Task ExecuteCommandOnClient(string mode, string command, string[] deviceIDs)
+        {
+            deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
+            var connections = GetActiveClientConnections(deviceIDs);
+
+            var commandContext = new CommandContext()
+            {
+                CommandMode = mode,
+                CommandText = command,
+                SenderConnectionID = Context.ConnectionId,
+                SenderUserID = Context.UserIdentifier,
+                TargetDeviceIDs = connections.Select(x => x.Value.ID).ToArray(),
+                OrganizationID = RemotelyUser.Organization.ID
+            };
+            DataService.AddOrUpdateCommandContext(commandContext);
+            await Clients.Caller.SendAsync("CommandContextCreated", commandContext);
+            foreach (var connection in connections)
+            {
+                await DeviceHub.Clients.Client(connection.Key).SendAsync("ExecuteCommand", mode, command, commandContext.ID, Context.ConnectionId);
+            }
+        }
+
         public async Task GetGroups(string[] deviceIDs)
         {
             deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
             var result = DataService.GetDevicesAndPermissions(RemotelyUser.Id, deviceIDs);
             await Clients.Caller.SendAsync("GetGroupsResult", result);
         }
-        public async Task DeployScript(string fileID, string mode, string[] deviceIDs)
-		{
-			deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
-			var connections = GetActiveClientConnections(deviceIDs);
-			var commandContext = new CommandContext()
-			{
-				CommandMode = mode,
-				CommandText = Encoding.UTF8.GetString(DataService.GetSharedFiled(fileID).FileContents),
-				SenderConnectionID = Context.ConnectionId,
-				SenderUserID = Context.UserIdentifier,
-				TargetDeviceIDs = connections.Select(x => x.Value.ID).ToArray(),
-				OrganizationID = RemotelyUser.OrganizationID
-			};
-			DataService.AddOrUpdateCommandContext(commandContext);
-			await Clients.Caller.SendAsync("CommandContextCreated", commandContext);
-			foreach (var connection in connections)
-			{
-				await DeviceHub.Clients.Client(connection.Key).SendAsync("DeployScript", mode, fileID, commandContext.ID, Context.ConnectionId);
-			}
-		}
-
-		public async Task ExecuteCommandOnClient(string mode, string command, string[] deviceIDs)
-		{
-			deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
-			var connections = GetActiveClientConnections(deviceIDs);
-
-			var commandContext = new CommandContext()
-			{
-				CommandMode = mode,
-				CommandText = command,
-				SenderConnectionID = Context.ConnectionId,
-				SenderUserID = Context.UserIdentifier,
-				TargetDeviceIDs = connections.Select(x => x.Value.ID).ToArray(),
-				OrganizationID = RemotelyUser.Organization.ID
-			};
-			DataService.AddOrUpdateCommandContext(commandContext);
-			await Clients.Caller.SendAsync("CommandContextCreated", commandContext);
-			foreach (var connection in connections)
-			{
-				await DeviceHub.Clients.Client(connection.Key).SendAsync("ExecuteCommand", mode, command, commandContext.ID, Context.ConnectionId);
-			}
-		}
-
 		public override async Task OnConnectedAsync()
 		{
-			RemotelyUser = DataService.GetUserAndPermissionsByID(Context?.UserIdentifier);
-			if (IsConnectionValid()?.Result == false)
+			RemotelyUser = DataService.GetUserAndPermissionsByID(Context.UserIdentifier);
+			if (await IsConnectionValid() == false)
 			{
 				return;
 			}
-			await Groups.AddToGroupAsync(Context.ConnectionId, RemotelyUser.Organization.ID);
+            while (!ConnectionIdToUserLookup.TryAdd(Context.ConnectionId, RemotelyUser))
+            {
+                DataService.WriteEvent("Retrying ConnectionIdToUserLookup.TryAdd in BrowserSocketHub.");
+                await Task.Delay(100);
+            }
 			await Clients.Caller.SendAsync("UserOptions", RemotelyUser.UserOptions);
 			await base.OnConnectedAsync();
 		}
 
 		public override async Task OnDisconnectedAsync(Exception exception)
 		{
-			await Groups.RemoveFromGroupAsync(Context.ConnectionId, RemotelyUser.Organization.ID);
-			await base.OnDisconnectedAsync(exception);
+            while (!ConnectionIdToUserLookup.TryRemove(Context.ConnectionId, out _))
+            {
+                DataService.WriteEvent("Retrying ConnectionIdToUserLookup.TryRemove in BrowserSocketHub.");
+                await Task.Delay(100);
+            }
+            await base.OnDisconnectedAsync(exception);
 		}
 
 		public async Task RemoteControl(string deviceID)
@@ -142,8 +151,15 @@ namespace Remotely.Server.Services
 			}
 		}
 
-		public async Task RemoveGroup(string[] deviceIDs, string groupName)
-		{
+        public async Task RemoveDevices(string[] deviceIDs)
+        {
+            var filterDevices = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
+            DataService.RemoveDevices(filterDevices);
+            await Clients.Caller.SendAsync("RefreshDeviceList");
+        }
+
+        public async Task RemoveGroup(string[] deviceIDs, string groupName)
+        {
             groupName = groupName.Trim();
             deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
             if (!DataService.DoesGroupExist(RemotelyUser.Id, groupName))
@@ -153,12 +169,6 @@ namespace Remotely.Server.Services
             }
             DataService.RemovePermissionFromDevices(RemotelyUser.Id, deviceIDs, groupName);
             await Clients.Caller.SendAsync("DisplayConsoleMessage", "Group removed.");
-        }
-        public async Task RemoveDevices(string[] deviceIDs)
-        {
-            var filterDevices = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
-            DataService.RemoveDevices(filterDevices);
-            await Clients.Caller.SendAsync("RefreshDeviceList");
         }
         public async Task TransferFiles(List<string> fileIDs, string transferID, string[] deviceIDs)
         {

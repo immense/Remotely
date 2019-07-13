@@ -127,6 +127,7 @@ namespace Remotely.Server.Services
             };
             while (!SessionInfoList.TryAdd(Context.ConnectionId, SessionInfo))
             {
+                DataService.WriteEvent("Retrying SessionInfoList.TryAdd in RCDeviceSocketHub.");
                 await Task.Delay(100);
             }
             
@@ -136,6 +137,7 @@ namespace Remotely.Server.Services
         {
             while (!SessionInfoList.TryRemove(Context.ConnectionId, out _))
             {
+                DataService.WriteEvent("Retrying SessionInfoList.TryRemove in RCDeviceSocketHub.");
                 await Task.Delay(100);
             }
 

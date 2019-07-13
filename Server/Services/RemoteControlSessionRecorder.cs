@@ -89,6 +89,10 @@ namespace Remotely.Server.Services
                         }
                     }
                 }
+                catch (Exception ex)
+                {
+                    DataService.WriteEvent(ex);
+                }
                 finally
                 {
                     IsProcessing = false;

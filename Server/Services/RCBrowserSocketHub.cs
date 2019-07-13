@@ -116,23 +116,28 @@ namespace Remotely.Server.Services
             await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("MouseWheel", deltaX, deltaY, Context.ConnectionId);
         }
 
-        public override Task OnConnectedAsync()
+        public override async Task OnConnectedAsync()
         {
             if (Context.User.Identity.IsAuthenticated)
             {
                 var user = DataService.GetUserByName(Context.User.Identity.Name);
-                OrganizationConnectionList.TryAdd(Context.ConnectionId, user);
+                while (!OrganizationConnectionList.TryAdd(Context.ConnectionId, user))
+                {
+                    DataService.WriteEvent("Retrying OrganizationConnectionList.TryAdd in RCBrowserSocketHub.");
+                    await Task.Delay(100);
+                }
             }
-            return base.OnConnectedAsync();
+            await base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             if (Context.User.Identity.IsAuthenticated)
             {
-                while (!OrganizationConnectionList.TryRemove(Context.ConnectionId, out var user))
+                while (!OrganizationConnectionList.TryRemove(Context.ConnectionId, out _))
                 {
-                    await Task.Delay(1000);
+                    DataService.WriteEvent("Retrying OrganizationConnectionList.TryRemove in RCBrowserSocketHub.");
+                    await Task.Delay(100);
                 }
             }
             await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ViewerDisconnected", Context.ConnectionId);
