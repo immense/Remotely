@@ -6,6 +6,8 @@ A remote control and remote scripting solution, built with .NET Core and SignalR
 Website: https://remotely.lucency.co  
 Public Server: https://tryremotely.lucency.co (not intended for production use)
 
+Warning: Remotely will always be in a more-or-less prototype state.    I simply don't have the time, money, or desire to build a production-ready solution of this size for free.  Every minute I spend on Remotely is time I'm not spending with my family.  This is why Remotely is missing things such as automated tests, code signing, etc.  Thanks for your understanding!
+
 ## Build Instructions (Windows 10)  
 The following steps will configure your Windows 10 machine for building the Remotely server and clients.
 * Install Visual Studio 2019.
@@ -39,6 +41,8 @@ The following steps will configure your Windows 10 machine for building the Remo
 
 ## Hosting a Server (Ubuntu)
 * Ubuntu 18.04 and 19.04 have been tested.  The Linux server package might work with other distros after some alterations to the setup script.
+* The script is designed to install Remotely and Nginx on the same server.  You'll need to manually set up other configurations.
+    * A helpful user supplied an example Apache configuration, which can be found in the Utilities folder.
 * Run Remotely_Server_Setup.sh (with sudo), which is in the [Utilities folder in source control](https://raw.githubusercontent.com/Jay-Rad/Remotely/master/Utilities/Remotely_Server_Install.sh).
     * "App root" will be the directory in which the Remotely server files are placed (typically /var/www/remotely).
 	* This script is only for Ubuntu 18.04 and 19.04.
@@ -129,7 +133,7 @@ Below are examples of how to use the API for starting a remote control session.
 		}
 	}).then(response=>{
 		if (response.ok) {
-			fetch("https://localhost:44351/api/RemoteControl/Maker", {
+			fetch("https://localhost:44351/api/RemoteControl/b68c24b0-2c67-4524-ad28-dadea7a576a4", {
 				method: "get",
 				credentials: "include",
 				mode: "cors"
@@ -148,7 +152,7 @@ Below are examples of how to use the API for starting a remote control session.
 		method: "post",
 		credentials: "include",
 		mode: "cors",
-		body: '{"Email":"email@example.com", "Password":"P@ssword1", "DeviceName":"Maker"}',
+		body: '{"Email":"email@example.com", "Password":"P@ssword1", "DeviceID":"b68c24b0-2c67-4524-ad28-dadea7a576a4"}',
 		headers: {
 			"Content-Type": "application/json",
 		}
@@ -179,7 +183,7 @@ Below are examples of how to use the API for starting a remote control session.
 		var response = await client.PostAsync("https://localhost:44351/api/Login", stringContent);
 		if (response.IsSuccessStatusCode)
 		{
-			response = await client.GetAsync("https://localhost:44351/api/RemoteControl/Maker");
+			response = await client.GetAsync("https://localhost:44351/api/RemoteControl/b68c24b0-2c67-4524-ad28-dadea7a576a4");
 			if (response.IsSuccessStatusCode)
 			{
 				var remoteControlURL = await response.Content.ReadAsStringAsync();
@@ -201,7 +205,7 @@ Below are examples of how to use the API for starting a remote control session.
 
 
 	if ($Response.StatusCode -eq 200) {
-		$Response = Invoke-WebRequest -Uri "https://localhost:44351/api/RemoteControl/Maker" -WebSession $WebSession -Method Get -ContentType "application/json"
+		$Response = Invoke-WebRequest -Uri "https://localhost:44351/api/RemoteControl/b68c24b0-2c67-4524-ad28-dadea7a576a4" -WebSession $WebSession -Method Get -ContentType "application/json"
 		if ($Response.StatusCode -eq 200) {
 			Start-Process -FilePath $Response.Content
 		}

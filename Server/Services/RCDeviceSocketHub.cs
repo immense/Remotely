@@ -156,10 +156,12 @@ namespace Remotely.Server.Services
 
             await base.OnDisconnectedAsync(exception);
         }
-        public void ReceiveDeviceInfo(string serviceID, string machineName)
+
+        public void ReceiveDeviceInfo(string serviceID, string machineName, string deviceID)
         {
             SessionInfo.ServiceID = serviceID;
             SessionInfo.MachineName = machineName;
+            SessionInfo.DeviceID = deviceID;
         }
         public async Task SendMachineName(string machineName, string viewerID)
         {

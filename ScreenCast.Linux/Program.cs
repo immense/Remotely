@@ -28,7 +28,7 @@ namespace Remotely.ScreenCast.Linux
                 Conductor.SetMessageHandlers(new X11Input());
                 Conductor.ScreenCastInitiated += ScreenCastInitiated;
                 Conductor.ClipboardTransferred += Conductor_ClipboardTransferred;
-                Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName).Wait();
+                Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID).Wait();
                 Conductor.CasterSocket.NotifyRequesterUnattendedReady(Conductor.RequesterID).Wait();
                 Conductor.IdleTimer = new IdleTimer(Conductor.Viewers);
                 Conductor.IdleTimer.Start();

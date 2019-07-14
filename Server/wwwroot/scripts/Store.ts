@@ -1,6 +1,7 @@
 ﻿export const Store = new class {
-    InputHistoryPosition = -1;
     CommandCompletionPosition = -1;
+    CommandCompletionTimeout: number;
+    InputHistoryPosition = -1;
     InputHistoryItems: Array<string> = [];
     IsDisconnectExpected: boolean;
 }

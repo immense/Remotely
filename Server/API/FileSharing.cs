@@ -40,7 +40,8 @@ namespace Remotely.Server.API
             var fileIDs = new List<string>();
             foreach (var file in Request.Form.Files)
             {
-                var id = DataService.AddSharedFile(file);
+                var orgID = User.Identity.IsAuthenticated ? DataService.GetUserByName(User.Identity.Name).OrganizationID : null;
+                var id = DataService.AddSharedFile(file, orgID);
                 fileIDs.Add(id);
             }
             return fileIDs;

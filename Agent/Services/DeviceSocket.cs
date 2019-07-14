@@ -257,11 +257,11 @@ namespace Remotely.Agent.Services
 
                         if (Program.IsDebug)
                         {
-                            Process.Start(rcBinaryPath, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default");
+                            Process.Start(rcBinaryPath, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default");
                         }
                         else
                         {
-                            var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default", "default", true, out _);
+                            var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default", "default", true, out _);
                             if (!result)
                             {
                                 await hubConnection.InvokeAsync("DisplayConsoleMessage", "Remote control failed to start on target device.", requesterID);
@@ -276,7 +276,7 @@ namespace Remotely.Agent.Services
                         var psi = new ProcessStartInfo()
                         {
                             FileName = "sudo",
-                            Arguments = $"-u {username} {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default & disown"
+                            Arguments = $"-u {username} {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default & disown"
                         };
                         psi.Environment.Add("DISPLAY", ":0");
                         psi.Environment.Add("XAUTHORITY", $"{homeDir}/.Xauthority");
@@ -308,7 +308,7 @@ namespace Remotely.Agent.Services
                         Logger.Write("Restarting screen caster.");
                         if (Program.IsDebug)
                         {
-                            var proc = Process.Start(rcBinaryPath, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}");
+                            var proc = Process.Start(rcBinaryPath, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}");
                             var stopwatch = Stopwatch.StartNew();
                             while (stopwatch.Elapsed.TotalSeconds < 10)
                             {
@@ -321,7 +321,7 @@ namespace Remotely.Agent.Services
                         }
                         else
                         {
-                            var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}", "default", true, out var procInfo);
+                            var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}", "default", true, out var procInfo);
                             
                             if (result)
                             {
@@ -336,7 +336,7 @@ namespace Remotely.Agent.Services
                                     if (Process.GetProcessesByName(Path.GetFileNameWithoutExtension(rcBinaryPath))?.Where(x=>x.Id == procInfo.dwProcessId)?.Count() > 0 != true)
                                     {
                                         Logger.Write("Restarting screen caster after failed relaunch.");
-                                        result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}", "default", true, out procInfo);
+                                        result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}", "default", true, out procInfo);
                                     }
                                 }
                             }
@@ -357,7 +357,7 @@ namespace Remotely.Agent.Services
                         var psi = new ProcessStartInfo()
                         {
                             FileName = "sudo",
-                            Arguments = $"-u {username} {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)} & disown"
+                            Arguments = $"-u {username} {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)} & disown"
                         };
                         psi.Environment.Add("DISPLAY", ":0");
                         psi.Environment.Add("XAUTHORITY", $"{homeDir}/.Xauthority");

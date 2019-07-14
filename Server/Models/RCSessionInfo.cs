@@ -9,6 +9,7 @@ namespace Remotely.Server.Models
     public class RCSessionInfo
     {
         public string AttendedSessionID { get; set; }
+        public string DeviceID { get; set; }
         public string MachineName { get; set; }
         public RemoteControlMode Mode { get; set; }
         public string RCSocketID { get; set; }

@@ -14,5 +14,6 @@ namespace Remotely.Shared.Models
         public byte[] FileContents { get; set; }
         public DateTime Timestamp { get; set; } = DateTime.Now;
         public virtual Organization Organization { get; set; }
+        public string OrganizationID { get; set; }
     }
 }

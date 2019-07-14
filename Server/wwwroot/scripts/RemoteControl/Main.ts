@@ -10,7 +10,8 @@ var rcBrowserSockets = new RCBrowserSockets();
 
 export const RemoteControl = new Conductor(rcBrowserSockets,
     queryString["clientID"] ? decodeURIComponent(queryString["clientID"]) : "",
-    queryString["serviceID"] ? decodeURIComponent(queryString["serviceID"]) : "");
+    queryString["serviceID"] ? decodeURIComponent(queryString["serviceID"]) : "",
+    queryString["requesterName"] ? decodeURIComponent(queryString["requesterName"]) : "");
 
 export function ConnectToClient() {
     UI.ConnectButton.disabled = true;
