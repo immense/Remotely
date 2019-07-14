@@ -6,7 +6,7 @@ A remote control and remote scripting solution, built with .NET Core and SignalR
 Website: https://remotely.lucency.co  
 Public Server: https://tryremotely.lucency.co (not intended for production use)
 
-Warning: Remotely will always be in a more-or-less prototype state.    I simply don't have the time, money, or desire to build a production-ready solution of this size for free.  Every minute I spend on Remotely is time I'm not spending with my family.  This is why Remotely is missing things such as automated tests, code signing, etc.  Thanks for your understanding!
+*Warning: Remotely will always be in a more-or-less prototype state.    I simply don't have the time, money, or desire to build a production-ready solution of this size for free.  Every minute I spend on Remotely is time I'm not spending with my family.  This is why Remotely is missing things such as automated tests, code signing, etc.  Thanks for your understanding*!
 
 ## Build Instructions (Windows 10)  
 The following steps will configure your Windows 10 machine for building the Remotely server and clients.
