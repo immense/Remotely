@@ -40,10 +40,10 @@ namespace Remotely.Server.API
             {
                 return BadRequest();
             }
-            var result = DataService.AddPermissionToUser(User.Identity.Name, userID, permissionID.Trim());
-            if (!result.Item1)
+            var result = DataService.AddPermissionToUser(User.Identity.Name, userID, permissionID.Trim(), out var errorMessage);
+            if (!result)
             {
-                return BadRequest(result.Item2);
+                return BadRequest(errorMessage);
             }
             return Ok(permissionID);
         }
@@ -113,12 +113,12 @@ namespace Remotely.Server.API
             {
                 return BadRequest();
             }
-            var result = DataService.AddPermission(User.Identity.Name, permission);
-            if (!result.Item1)
+            var result = DataService.AddPermission(User.Identity.Name, permission, out var permissionID, out var errorMessage);
+            if (!result)
             {
-                return BadRequest(result.Item2);
+                return BadRequest(errorMessage);
             }
-            return Ok(result.Item2);
+            return Ok(permissionID);
         }
         [HttpDelete("RemovePermissionFromUser/{userID}/{permissionID}")]
         public IActionResult RemovePermissionFromUser(string userID, string permissionID)

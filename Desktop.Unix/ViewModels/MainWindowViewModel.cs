@@ -146,7 +146,7 @@ namespace Remotely.Desktop.Unix.ViewModels
                 return;
             }
 
-            await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName);
+            await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
             await Conductor.CasterSocket.GetSessionID();
         }
 

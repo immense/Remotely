@@ -12,9 +12,8 @@ import { BashCommands } from "./Commands/BashCommands.js";
 
 var commandCompletionDisplayTimeout;
 
-export function DisplayCommandCompletions(commands: Array<ConsoleCommand>, relevantText:string) {
-    window.clearTimeout(commandCompletionDisplayTimeout);
-    commandCompletionDisplayTimeout = window.setTimeout(() => {
+export function DisplayCommandCompletions(commands: Array<ConsoleCommand>, relevantText: string) {
+    Store.CommandCompletionTimeout = window.setTimeout(() => {
         commands.forEach(x => {
             var commandCompletionItem = document.createElement("div");
             commandCompletionItem.classList.add("command-completion-item");

@@ -56,7 +56,7 @@ namespace Remotely.ScreenCast.Win
                     //User32.SetThreadDesktop(inputDesktop);
                     //User32.CloseDesktop(inputDesktop);
                     conductor.Connection.InvokeAsync("SwitchingDesktops", conductor.Viewers.Keys.ToList()).Wait();
-                    var result = Win32Interop.OpenInteractiveProcess(Assembly.GetExecutingAssembly().Location + $" -mode {conductor.Mode.ToString()} -requester {conductor.RequesterID} -serviceid {conductor.ServiceID} -host {conductor.Host} -relaunch true -desktop {desktopName} -viewers {String.Join(",", conductor.Viewers.Keys.ToList())}", desktopName, true, out _);
+                    var result = Win32Interop.OpenInteractiveProcess(Assembly.GetExecutingAssembly().Location + $" -mode {conductor.Mode.ToString()} -requester {conductor.RequesterID} -serviceid {conductor.ServiceID} -deviceid {conductor.DeviceID} -host {conductor.Host} -relaunch true -desktop {desktopName} -viewers {String.Join(",", conductor.Viewers.Keys.ToList())}", desktopName, true, out _);
                     if (!result)
                     {
                         Logger.Write($"Desktop switch to {desktopName} failed.");
@@ -82,7 +82,7 @@ namespace Remotely.ScreenCast.Win
                 AudioCapturer = new AudioCapturer(Conductor);
                 CursorIconWatcher = new CursorIconWatcher(Conductor);
                 CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
-                Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName).Wait();
+                Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID).Wait();
                 CheckInitialDesktop();
                 CheckForRelaunch();
                 Conductor.IdleTimer = new IdleTimer(Conductor.Viewers);

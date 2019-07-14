@@ -33,11 +33,11 @@ namespace Remotely.Server.API
         public ApplicationConfig AppConfig { get; }
         public SignInManager<RemotelyUser> SignInManager { get; }
 
-        [HttpGet("{deviceName}")]
+        [HttpGet("{deviceID}")]
         [Authorize]
-        public async Task<IActionResult> Get(string deviceName)
+        public async Task<IActionResult> Get(string deviceID)
         {
-            return await InitiateRemoteControl(deviceName, HttpContext.User.Identity.Name);
+            return await InitiateRemoteControl(deviceID, HttpContext.User.Identity.Name);
         }
 
         [HttpPost]
@@ -51,7 +51,7 @@ namespace Remotely.Server.API
             if (result.Succeeded)
             {
                 DataService.WriteEvent($"API login successful for {rcRequest.Email}.");
-                return await InitiateRemoteControl(rcRequest.DeviceName, rcRequest.Email);
+                return await InitiateRemoteControl(rcRequest.DeviceID, rcRequest.Email);
             }
             else if (result.IsLockedOut)
             {
@@ -67,12 +67,12 @@ namespace Remotely.Server.API
             return BadRequest();
         }
 
-        private async Task<IActionResult> InitiateRemoteControl(string deviceName, string userName)
+        private async Task<IActionResult> InitiateRemoteControl(string deviceID, string userName)
         {
             var remotelyUser = DataService.GetUserByName(userName);
             var targetDevice = DeviceSocketHub.ServiceConnections.FirstOrDefault(x => 
                                     x.Value.OrganizationID == remotelyUser.OrganizationID &&
-                                    x.Value.DeviceName.ToLower() == deviceName.ToLower());
+                                    x.Value.ID.ToLower() == deviceID.ToLower());
 
             if (targetDevice.Value != null)
             {
@@ -84,24 +84,24 @@ namespace Remotely.Server.API
                         return BadRequest("There are already the maximum amount of active remote control sessions for your organization.");
                     }
 
-                    var existingSessions = RCDeviceSocketHub.SessionInfoList.Where(x => x.Value.MachineName == targetDevice.Value.DeviceName);
+                    var existingSessions = RCDeviceSocketHub.SessionInfoList.Where(x => x.Value.DeviceID == targetDevice.Value.ID);
 
                     await DeviceHub.Clients.Client(targetDevice.Key).SendAsync("RemoteControl", Request.HttpContext.Connection.Id, targetDevice.Key);
 
                     var stopWatch = Stopwatch.StartNew();
 
-                    while (!RCDeviceSocketHub.SessionInfoList.Values.Any(x=>x.MachineName == targetDevice.Value.DeviceName && !existingSessions.Any(y=>y.Key != x.RCSocketID)) && stopWatch.Elapsed.TotalSeconds < 5)
+                    while (!RCDeviceSocketHub.SessionInfoList.Values.Any(x=>x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y=>y.Key != x.RCSocketID)) && stopWatch.Elapsed.TotalSeconds < 5)
                     {
                         await Task.Delay(10);
                     }
 
-                    if (!RCDeviceSocketHub.SessionInfoList.Values.Any(x => x.MachineName == targetDevice.Value.DeviceName && !existingSessions.Any(y => y.Key != x.RCSocketID)))
+                    if (!RCDeviceSocketHub.SessionInfoList.Values.Any(x => x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y => y.Key != x.RCSocketID)))
                     {
                         return StatusCode(500, "The remote control process failed to start in time on the remote device.");
                     }
                     else
                     {
-                        var rcSession = RCDeviceSocketHub.SessionInfoList.Values.FirstOrDefault(x=>x.MachineName == targetDevice.Value.DeviceName && !existingSessions.Any(y=>y.Key != x.RCSocketID));
+                        var rcSession = RCDeviceSocketHub.SessionInfoList.Values.FirstOrDefault(x=>x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y=>y.Key != x.RCSocketID));
                         return Ok($"{HttpContext.Request.Scheme}://{Request.Host}/RemoteControl?clientID={rcSession.RCSocketID}&serviceID={targetDevice.Key}");
                     }
                 }

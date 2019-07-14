@@ -163,7 +163,7 @@ namespace Remotely.Desktop.Win.ViewModels
             }
 
             Conductor.SetMessageHandlers(new WinInput());
-            await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName);
+            await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
             await Conductor.CasterSocket.GetSessionID();
         }
 

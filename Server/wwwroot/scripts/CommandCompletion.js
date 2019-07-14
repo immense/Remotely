@@ -8,8 +8,7 @@ import { WinPSCommands } from "./Commands/WinPSCommands.js";
 import { BashCommands } from "./Commands/BashCommands.js";
 var commandCompletionDisplayTimeout;
 export function DisplayCommandCompletions(commands, relevantText) {
-    window.clearTimeout(commandCompletionDisplayTimeout);
-    commandCompletionDisplayTimeout = window.setTimeout(() => {
+    Store.CommandCompletionTimeout = window.setTimeout(() => {
         commands.forEach(x => {
             var commandCompletionItem = document.createElement("div");
             commandCompletionItem.classList.add("command-completion-item");

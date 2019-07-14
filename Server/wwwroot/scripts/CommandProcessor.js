@@ -8,6 +8,7 @@ import { DisplayCommandShortcuts, DisplayCommandCompletions, DisplayParameterCom
 import { Connection } from "./BrowserSockets.js";
 export function EvaluateCurrentCommandText() {
     UI.AutoSizeTextArea();
+    window.clearTimeout(Store.CommandCompletionTimeout);
     UI.CommandCompletionDiv.classList.add("hidden");
     UI.CommandInfoDiv.classList.add("hidden");
     UI.CommandCompletionDiv.innerHTML = "";

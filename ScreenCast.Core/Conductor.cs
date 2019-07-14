@@ -34,6 +34,7 @@ namespace Remotely.ScreenCast.Core
         public CasterSocket CasterSocket { get; private set; }
         public HubConnection Connection { get; private set; }
         public string CurrentDesktopName { get; set; }
+        public string DeviceID { get; private set; }
         public string Host { get; private set; }
         public IdleTimer IdleTimer { get; set; }
         public bool IsSwitchingDesktops { get; set; }
@@ -78,6 +79,7 @@ namespace Remotely.ScreenCast.Core
                 RequesterID = ArgDict["requester"];
                 CurrentDesktopName = ArgDict["desktop"];
                 ServiceID = ArgDict["serviceid"];
+                DeviceID = ArgDict["deviceid"];
             }
         }
 

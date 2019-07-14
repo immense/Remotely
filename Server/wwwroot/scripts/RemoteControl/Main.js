@@ -5,7 +5,7 @@ import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 import { Conductor } from "./Conductor.js";
 var queryString = Utilities.ParseSearchString();
 var rcBrowserSockets = new RCBrowserSockets();
-export const RemoteControl = new Conductor(rcBrowserSockets, queryString["clientID"] ? decodeURIComponent(queryString["clientID"]) : "", queryString["serviceID"] ? decodeURIComponent(queryString["serviceID"]) : "");
+export const RemoteControl = new Conductor(rcBrowserSockets, queryString["clientID"] ? decodeURIComponent(queryString["clientID"]) : "", queryString["serviceID"] ? decodeURIComponent(queryString["serviceID"]) : "", queryString["requesterName"] ? decodeURIComponent(queryString["requesterName"]) : "");
 export function ConnectToClient() {
     UI.ConnectButton.disabled = true;
     RemoteControl.ClientID = UI.SessionIDInput.value.split(" ").join("");

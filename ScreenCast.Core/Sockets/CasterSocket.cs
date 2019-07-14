@@ -60,9 +60,9 @@ namespace Remotely.ScreenCast.Core.Sockets
             await Connection.SendAsync("SendCursorChange", cursor, viewerIDs);
         }
 
-        public async Task SendDeviceInfo(string serviceID, string machineName)
+        public async Task SendDeviceInfo(string serviceID, string machineName, string deviceID)
         {
-            await Connection.SendAsync("ReceiveDeviceInfo", serviceID, machineName);
+            await Connection.SendAsync("ReceiveDeviceInfo", serviceID, machineName, deviceID);
         }
 
         public async Task SendMachineName(string machineName, string viewerID)
