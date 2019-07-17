@@ -1,0 +1,48 @@
+<IfModule mod_ssl.c>
+<VirtualHost *.443>
+        ServerName {FQDN}
+        ServerAdmin {Admin Email}
+	
+	#Forward once Websocket Connection has been upgraded.
+	RewriteEngine On
+	RewriteCond %{HTTP:Upgrade} =websocket [NC]
+	RewriteRule /(.*)           ws://localhost:5000/$1 [P,L]
+	RewriteCond %{HTTP:Upgrade} !=websocket [NC]
+	RewriteRule /(.*)           http://localhost:5000/$1 [P,L]
+
+	ProxyPreserveHost On
+	#Proxy Requests to Remotely Server
+	<LocationMatch "/">
+		ProxyPass http://localhost:5000/ 
+		ProxyPassReverse http://localhost:5000/
+	</LocationMatch>
+	<Location "/BrowserHub">
+		ProxyPass http://localhost:5000/
+		ProxyPassReverse http://localhost:5000/
+	</Location>
+
+	<LocationMatch "/DeviceHub">
+		ProxyPass http://localhost:5000/
+		ProxyPassReverse http://localhost:5000/
+	</LocationMatch>
+
+	<LocationMatch "/RCBrowserHub">
+		ProxyPass http://localhost:5000/
+		ProxyPassReverse http://localhost:5000/
+	</LocationMatch>
+
+	<LocationMatch "/RCDeviceHub">
+		ProxyPass http://localhost:5000/
+		ProxyPassReverse http://localhost:5000/
+	</LocationMatch>
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+        SSLCertificateFile {Path to fullchain.pem}
+	SSLCertificateKeyFile {Path to key.pem}
+	Include /etc/letsencrypt/options-ssl-apache.conf #Change this to wherever your apache options for LE are, or ignore if you don't use LE
+</VirtualHost>
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+</IfModule>
