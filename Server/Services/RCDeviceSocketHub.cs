@@ -215,6 +215,10 @@ namespace Remotely.Server.Services
 
         public async Task SwitchingDesktops(string[] viewerIDs)
         {
+            lock (ViewerList)
+            {
+                ViewerList.Clear();
+            }
             await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("SwitchingDesktops");
         }
 
