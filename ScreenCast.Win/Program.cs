@@ -62,6 +62,7 @@ namespace Remotely.ScreenCast.Win
                         Logger.Write($"Desktop switch to {desktopName} failed.");
                         conductor.CasterSocket.SendConnectionFailedToViewers(conductor.Viewers.Keys.ToList()).Wait();
                     }
+                    conductor.Viewers.Clear();
                 }
                 await Task.Delay(100);
             }
