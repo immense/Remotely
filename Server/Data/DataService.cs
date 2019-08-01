@@ -497,18 +497,20 @@ namespace Remotely.Server.Data
         {
             if (AppConfig.DataRetentionInDays > 0)
             {
+                var expirationDate = DateTime.Now - TimeSpan.FromDays(AppConfig.DataRetentionInDays);
+
                 var eventLogs = RemotelyContext.EventLogs
-                                    .Where(x => DateTime.Now - x.TimeStamp > TimeSpan.FromDays(AppConfig.DataRetentionInDays));
+                                    .Where(x => x.TimeStamp < expirationDate);
 
                 RemotelyContext.RemoveRange(eventLogs);
 
                 var commandContexts = RemotelyContext.CommandContexts
-                                        .Where(x => DateTime.Now - x.TimeStamp > TimeSpan.FromDays(AppConfig.DataRetentionInDays));
+                                        .Where(x => x.TimeStamp < expirationDate);
 
                 RemotelyContext.RemoveRange(commandContexts);
 
                 var sharedFiles = RemotelyContext.SharedFiles
-                                        .Where(x => DateTime.Now - x.Timestamp > TimeSpan.FromDays(AppConfig.DataRetentionInDays));
+                                        .Where(x => x.Timestamp < expirationDate);
 
                 RemotelyContext.RemoveRange(sharedFiles);
 
