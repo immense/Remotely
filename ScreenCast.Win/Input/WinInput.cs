@@ -11,6 +11,7 @@ namespace Remotely.ScreenCast.Win.Input
     {
         public uint SendLeftMouseDown(double percentX, double percentY, Viewer viewer)
         {
+            Win32Interop.SwitchToInputDesktop();
             var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
             // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
             var normalizedX = xyPercent.Item1 * 65535D;
@@ -21,6 +22,7 @@ namespace Remotely.ScreenCast.Win.Input
         }
         public uint SendLeftMouseUp(double percentX, double percentY, Viewer viewer)
         {
+            Win32Interop.SwitchToInputDesktop();
             var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
             // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
             var normalizedX = xyPercent.Item1 * 65535D;
@@ -31,6 +33,7 @@ namespace Remotely.ScreenCast.Win.Input
         }
         public uint SendRightMouseDown(double percentX, double percentY, Viewer viewer)
         {
+            Win32Interop.SwitchToInputDesktop();
             var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
             // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
             var normalizedX = xyPercent.Item1 * 65535D;
@@ -41,6 +44,7 @@ namespace Remotely.ScreenCast.Win.Input
         }
         public uint SendRightMouseUp(double percentX, double percentY, Viewer viewer)
         {
+            Win32Interop.SwitchToInputDesktop();
             var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
             // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
             var normalizedX = xyPercent.Item1 * 65535D;
@@ -51,6 +55,7 @@ namespace Remotely.ScreenCast.Win.Input
         }
         public uint SendMouseMove(double percentX, double percentY, Viewer viewer)
         {
+            Win32Interop.SwitchToInputDesktop();
             var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
             // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
             var normalizedX = xyPercent.Item1 * 65535D;
@@ -61,6 +66,7 @@ namespace Remotely.ScreenCast.Win.Input
         }
         public uint SendMouseWheel(int deltaY, Viewer viewer)
         {
+            Win32Interop.SwitchToInputDesktop();
             if (deltaY < 0)
             {
                 deltaY = -120;
@@ -75,6 +81,7 @@ namespace Remotely.ScreenCast.Win.Input
         }
         public void SendKeyDown(string key, Viewer viewer)
         {
+            Win32Interop.SwitchToInputDesktop();
             var keyCode = ConvertJavaScriptKeyToVirtualKey(key);
             var union = new InputUnion()
             {
@@ -91,6 +98,7 @@ namespace Remotely.ScreenCast.Win.Input
         }
         public void SendKeyUp(string key, Viewer viewer)
         {
+            Win32Interop.SwitchToInputDesktop();
             var keyCode = ConvertJavaScriptKeyToVirtualKey(key);
             var union = new InputUnion()
             {

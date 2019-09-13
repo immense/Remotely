@@ -24,15 +24,13 @@ namespace Remotely.Agent.Services
 
         private static HubConnection HubConnection { get; set; }
 
-        public static async void Connect()
+        public static async Task Connect()
         {
             ConnectionInfo = Utilities.GetConnectionInfo();
 
             HubConnection = new HubConnectionBuilder()
                 .WithUrl(ConnectionInfo.Host + "/DeviceHub")
                 .Build();
-
-            HubConnection.Closed += HubConn_Closed;
 
             RegisterMessageHandlers(HubConnection);
 
@@ -62,6 +60,8 @@ namespace Remotely.Agent.Services
             HeartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
             HeartbeatTimer.Start();
         }
+
+        public static bool IsConnected => HubConnection?.State == HubConnectionState.Connected;
 
         public static void SendHeartbeat()
         {
@@ -158,12 +158,6 @@ namespace Remotely.Agent.Services
         private static void HeartbeatTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             SendHeartbeat();
-        }
-
-        private static async Task HubConn_Closed(Exception arg)
-        {
-            await Task.Delay(new Random().Next(5000, 30000));
-            Connect();
         }
 
         private static void RegisterMessageHandlers(HubConnection hubConnection)

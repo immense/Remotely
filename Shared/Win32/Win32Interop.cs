@@ -12,6 +12,54 @@ namespace Remotely.Shared.Win32
 {
     public class Win32Interop
     {
+        public static string GetCurrentDesktop()
+        {
+            var inputDesktop = OpenInputDesktop();
+            byte[] deskBytes = new byte[256];
+            uint lenNeeded;
+            var success = GetUserObjectInformationW(inputDesktop, UOI_NAME, deskBytes, 256, out lenNeeded);
+            if (!success)
+            {
+                CloseDesktop(inputDesktop);
+                return "Default";
+            }
+            var desktopName = Encoding.Unicode.GetString(deskBytes.Take((int)lenNeeded).ToArray()).Replace("\0", "");
+            CloseDesktop(inputDesktop);
+            return desktopName;
+        }
+
+        public static uint GetRDPSession()
+        {
+            IntPtr ppSessionInfo = IntPtr.Zero;
+            Int32 count = 0;
+            Int32 retval = WTSAPI32.WTSEnumerateSessions(WTSAPI32.WTS_CURRENT_SERVER_HANDLE, 0, 1, ref ppSessionInfo, ref count);
+            Int32 dataSize = Marshal.SizeOf(typeof(WTSAPI32.WTS_SESSION_INFO));
+            var sessList = new List<WTSAPI32.WTS_SESSION_INFO>();
+            Int64 current = (Int64)ppSessionInfo;
+
+            if (retval != 0)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    WTSAPI32.WTS_SESSION_INFO sessInf = (WTSAPI32.WTS_SESSION_INFO)Marshal.PtrToStructure((System.IntPtr)current, typeof(WTSAPI32.WTS_SESSION_INFO));
+                    current += dataSize;
+                    sessList.Add(sessInf);
+                }
+            }
+            uint retVal = 0;
+            var rdpSession = sessList.Find(ses => ses.pWinStationName.ToLower().Contains("rdp") && ses.State == 0);
+            if (sessList.Exists(ses => ses.pWinStationName.ToLower().Contains("rdp") && ses.State == 0))
+            {
+                retVal = (uint)rdpSession.SessionID;
+            }
+            return retVal;
+        }
+
+        public static IntPtr OpenInputDesktop()
+        {
+            return User32.OpenInputDesktop(0, false, ACCESS_MASK.GENERIC_ALL);
+        }
+
         public static bool OpenInteractiveProcess(string applicationName, string desktopName, bool hiddenWindow, out PROCESS_INFORMATION procInfo)
         {
             uint winlogonPid = 0;
@@ -90,54 +138,17 @@ namespace Remotely.Shared.Win32
             return result;
         }
 
-        public static uint GetRDPSession()
-        {
-            IntPtr ppSessionInfo = IntPtr.Zero;
-            Int32 count = 0;
-            Int32 retval = WTSAPI32.WTSEnumerateSessions(WTSAPI32.WTS_CURRENT_SERVER_HANDLE, 0, 1, ref ppSessionInfo, ref count);
-            Int32 dataSize = Marshal.SizeOf(typeof(WTSAPI32.WTS_SESSION_INFO));
-            var sessList = new List<WTSAPI32.WTS_SESSION_INFO>();
-            Int64 current = (Int64)ppSessionInfo;
-
-            if (retval != 0)
-            {
-                for (int i = 0; i < count; i++)
-                {
-                    WTSAPI32.WTS_SESSION_INFO sessInf = (WTSAPI32.WTS_SESSION_INFO)Marshal.PtrToStructure((System.IntPtr)current, typeof(WTSAPI32.WTS_SESSION_INFO));
-                    current += dataSize;
-                    sessList.Add(sessInf);
-                }
-            }
-            uint retVal = 0;
-            var rdpSession = sessList.Find(ses => ses.pWinStationName.ToLower().Contains("rdp") && ses.State == 0);
-            if (sessList.Exists(ses => ses.pWinStationName.ToLower().Contains("rdp") && ses.State == 0))
-            {
-                retVal = (uint)rdpSession.SessionID;
-            }
-            return retVal;
-        }
-        public static IntPtr OpenInputDesktop()
-        {
-            return User32.OpenInputDesktop(0, false, ACCESS_MASK.GENERIC_ALL);
-        }
-        public static string GetCurrentDesktop()
-        {
-            var inputDesktop = OpenInputDesktop();
-            byte[] deskBytes = new byte[256];
-            uint lenNeeded;
-            var success = GetUserObjectInformationW(inputDesktop, UOI_NAME, deskBytes, 256, out lenNeeded);
-            if (!success)
-            {
-                CloseDesktop(inputDesktop);
-                return "Default";
-            }
-            var desktopName = Encoding.Unicode.GetString(deskBytes.Take((int)lenNeeded).ToArray()).Replace("\0", "");
-            CloseDesktop(inputDesktop);
-            return desktopName;
-        }
         public static void SetMonitorState(MonitorState state)
         {
             User32.SendMessage(0xFFFF, 0x112, 0xF170, (int)state);
+        }
+
+        public static void SwitchToInputDesktop()
+        {
+            var inputDesktop = OpenInputDesktop();
+            SwitchDesktop(inputDesktop);
+            SetThreadDesktop(inputDesktop);
+            CloseDesktop(inputDesktop);
         }
     }
 }

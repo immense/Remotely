@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.IO;
+using System.Threading;
 
 namespace Remotely.ScreenCast.Linux
 {
@@ -34,7 +35,7 @@ namespace Remotely.ScreenCast.Linux
                 Conductor.IdleTimer.Start();
                 while (true)
                 {
-                    System.Threading.Thread.Sleep(100);
+                    Thread.Sleep(1000);
                 }
             }
             catch (Exception ex)

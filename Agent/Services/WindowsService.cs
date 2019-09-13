@@ -14,6 +14,7 @@ namespace Remotely.Agent.Services
     {
         public WindowsService()
         {
+            CanHandleSessionChangeEvent = true;
             InitializeComponent();
         }
 
@@ -28,7 +29,6 @@ namespace Remotely.Agent.Services
                     var subkey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", true);
                     subkey.SetValue("SoftwareSASGeneration", "3", Microsoft.Win32.RegistryValueKind.DWord);
                 }
-                DeviceSocket.Connect();
             }
             catch (Exception ex)
             {
@@ -56,6 +56,21 @@ namespace Remotely.Agent.Services
                 Logger.Write(ex);
                 throw;
             }
+        }
+
+        protected override void OnSessionChange(SessionChangeDescription changeDescription)
+        {
+            Logger.Write($"Session changed.  Reason: {changeDescription.Reason}");
+            if (changeDescription.Reason == SessionChangeReason.ConsoleDisconnect ||
+                changeDescription.Reason == SessionChangeReason.RemoteDisconnect)
+            {
+                foreach (var screenCaster in Process.GetProcessesByName("Remotely_ScreenCast"))
+                {
+                    Logger.Write($"Session changed.  Kill process ID {screenCaster.Id}.");
+                    screenCaster.Kill();
+                }
+            }
+            base.OnSessionChange(changeDescription);
         }
     }
 }

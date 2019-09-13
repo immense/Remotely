@@ -9,17 +9,23 @@ using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Remotely.Agent
 {
     public class Program
     {
         public static bool IsDebug { get; set; }
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             try
             {
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
+#if DEBUG
+                IsDebug = true;
+#endif
+
                 SetWorkingDirectory();
                 var argDict = ProcessArgs(args);
 
@@ -33,34 +39,49 @@ namespace Remotely.Agent
                     return settings;
                 };
 
+
                 if (argDict.ContainsKey("update"))
                 {
                     Updater.CoreUpdate();
                 }
 
-                if (OSUtils.IsWindows)
+                if (!IsDebug && OSUtils.IsWindows)
                 {
-#if DEBUG
-                    IsDebug = true;
-                    DeviceSocket.Connect();
-#else
-                ServiceBase.Run(new WindowsService());
-#endif
-                }
-                else
-                {
-                    DeviceSocket.Connect();
+                    Task.Run(() =>
+                    {
+                        ServiceBase.Run(new WindowsService());
+                    });
                 }
 
-                while (true)
-                {
-                    System.Threading.Thread.Sleep(1000);
-                }
+                HandleConnection();
+
             }
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                throw;
+            }
+        }
+
+        private static void HandleConnection()
+        {
+            while (true)
+            {
+                try
+                {
+                    if (!DeviceSocket.IsConnected)
+                    {
+                        var waitTime = new Random().Next(1000, 30000);
+                        Logger.Write($"Websocket closed.  Reconnecting in {waitTime / 1000} seconds...");
+                        Task.Delay(waitTime).Wait();
+                        DeviceSocket.Connect().Wait();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                    HandleConnection();
+                }
+                Thread.Sleep(1000);
             }
         }
 
@@ -77,7 +98,6 @@ namespace Remotely.Agent
                 }
             }
         }
-
         private static Dictionary<string,string> ProcessArgs(string[] args)
         {
             var argDict = new Dictionary<string, string>();

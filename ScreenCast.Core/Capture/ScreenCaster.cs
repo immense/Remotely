@@ -10,6 +10,8 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Remotely.Shared.Services;
+using Remotely.Shared.Win32;
 
 namespace Remotely.ScreenCast.Core.Capture
 {
@@ -61,24 +63,27 @@ namespace Remotely.ScreenCast.Core.Capture
             };
 
             // TODO: SetThreadDesktop causes issues with input after switching.
-            //var desktopName = Win32Interop.GetCurrentDesktop();
+            var desktopName = string.Empty;
+            if (OSUtils.IsWindows)
+            {
+                desktopName = Win32Interop.GetCurrentDesktop();
+            }
+
             while (!viewer.DisconnectRequested)
             {
                 try
                 {
                     // TODO: SetThreadDesktop causes issues with input after switching.
-                    //var currentDesktopName = Win32Interop.GetCurrentDesktop();
-                    //if (desktopName.ToLower() != currentDesktopName.ToLower())
-                    //{
-                    //    desktopName = currentDesktopName;
-                    //    Logger.Write($"Switching to desktop {desktopName} in ScreenCaster.");
-                    //    var inputDesktop = Win32Interop.OpenInputDesktop();
-                    //    User32.SetThreadDesktop(inputDesktop);
-                    //    User32.CloseDesktop(inputDesktop);
-                    //    continue;
-                    //}
+                    var currentDesktopName = Win32Interop.GetCurrentDesktop();
+                    if (desktopName.ToLower() != currentDesktopName.ToLower())
+                    {
+                        desktopName = currentDesktopName;
+                        Logger.Write($"Switching to desktop {desktopName} in ScreenCaster.");
+                        Win32Interop.SwitchToInputDesktop();
+                        continue;
+                    }
 
-                    while (viewer.PendingFrames > 10 || conductor.IsSwitchingDesktops)
+                    while (viewer.PendingFrames > 10)
                     {
                         await Task.Delay(1);
                     }
@@ -135,6 +140,5 @@ namespace Remotely.ScreenCast.Core.Capture
             }
 
         }
-       
     }
 }
