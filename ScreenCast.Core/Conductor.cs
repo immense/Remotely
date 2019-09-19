@@ -37,19 +37,18 @@ namespace Remotely.ScreenCast.Core
         public string DeviceID { get; private set; }
         public string Host { get; private set; }
         public IdleTimer IdleTimer { get; set; }
-        public bool IsSwitchingDesktops { get; set; }
         public AppMode Mode { get; private set; }
         public string RequesterID { get; private set; }
         public string ServiceID { get; private set; }
         public ConcurrentDictionary<string, Viewer> Viewers { get; } = new ConcurrentDictionary<string, Viewer>();
-        public Task Connect()
+        public async Task Connect()
         {
             Connection = new HubConnectionBuilder()
                 .WithUrl($"{Host}/RCDeviceHub")
                 .AddMessagePackProtocol()
                 .Build();
 
-            return Connection.StartAsync();
+            await Connection.StartAsync();
         }
 
         public void ProcessArgs(string[] args)

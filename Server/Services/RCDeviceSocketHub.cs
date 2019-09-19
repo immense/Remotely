@@ -213,14 +213,6 @@ namespace Remotely.Server.Services
             await RCBrowserHub.Clients.Clients(viewerID).SendAsync("ViewerRemoved");
         }
 
-        public async Task SwitchingDesktops(string[] viewerIDs)
-        {
-            lock (ViewerList)
-            {
-                ViewerList.Clear();
-            }
-            await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("SwitchingDesktops");
-        }
 
         public void ViewerDisconnected(string viewerID)
         {
