@@ -161,9 +161,6 @@ export class RCBrowserSockets {
             this.Connection.stop();
             this.Connect();
         });
-        hubConnection.on("SwitchingDesktops", () => {
-            UI.ShowMessage("Switching desktops...");
-        });
         hubConnection.on("Reconnecting", () => {
             UI.ShowMessage("Reconnecting...");
         });

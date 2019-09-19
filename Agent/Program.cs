@@ -16,44 +16,15 @@ namespace Remotely.Agent
     public class Program
     {
         public static bool IsDebug { get; set; }
+
         public static void Main(string[] args)
         {
             try
             {
-                AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-#if DEBUG
-                IsDebug = true;
-#endif
+                Task.Run(()=> { Init(args); });
 
-                SetWorkingDirectory();
-                var argDict = ProcessArgs(args);
-
-                JsonConvert.DefaultSettings = () =>
-                {
-                    var settings = new JsonSerializerSettings();
-                    settings.Error = (sender, arg) =>
-                    {
-                        arg.ErrorContext.Handled = true;
-                    };
-                    return settings;
-                };
-
-
-                if (argDict.ContainsKey("update"))
-                {
-                    Updater.CoreUpdate();
-                }
-
-                if (!IsDebug && OSUtils.IsWindows)
-                {
-                    Task.Run(() =>
-                    {
-                        ServiceBase.Run(new WindowsService());
-                    });
-                }
-
-                HandleConnection();
+                Thread.Sleep(Timeout.Infinite);
 
             }
             catch (Exception ex)
@@ -62,7 +33,52 @@ namespace Remotely.Agent
             }
         }
 
-        private static void HandleConnection()
+        private static async void Init(string[] args)
+        {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
+#if DEBUG
+            IsDebug = true;
+#endif
+
+            SetWorkingDirectory();
+            var argDict = ProcessArgs(args);
+
+            JsonConvert.DefaultSettings = () =>
+            {
+                var settings = new JsonSerializerSettings();
+                settings.Error = (sender, arg) =>
+                {
+                    arg.ErrorContext.Handled = true;
+                };
+                return settings;
+            };
+
+
+            if (argDict.ContainsKey("update"))
+            {
+                Updater.CoreUpdate();
+            }
+
+            if (!IsDebug && OSUtils.IsWindows)
+            {
+                _ = Task.Run(() =>
+                {
+                    ServiceBase.Run(new WindowsService());
+                });
+            }
+
+            try
+            {
+                await DeviceSocket.Connect();
+            }
+            finally
+            {
+                await HandleConnection();
+            }
+        }
+
+        private static async Task HandleConnection()
         {
             while (true)
             {
@@ -72,16 +88,15 @@ namespace Remotely.Agent
                     {
                         var waitTime = new Random().Next(1000, 30000);
                         Logger.Write($"Websocket closed.  Reconnecting in {waitTime / 1000} seconds...");
-                        Task.Delay(waitTime).Wait();
-                        DeviceSocket.Connect().Wait();
+                        await Task.Delay(waitTime);
+                        await DeviceSocket.Connect();
                     }
                 }
                 catch (Exception ex)
                 {
                     Logger.Write(ex);
-                    HandleConnection();
                 }
-                Thread.Sleep(1000);
+                Thread.Sleep(100);
             }
         }
 

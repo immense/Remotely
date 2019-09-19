@@ -62,7 +62,6 @@ namespace Remotely.ScreenCast.Core.Capture
                 await conductor.CasterSocket.SendScreenSize(bounds.Width, bounds.Height, viewerID);
             };
 
-            // TODO: SetThreadDesktop causes issues with input after switching.
             var desktopName = string.Empty;
             if (OSUtils.IsWindows)
             {
@@ -73,7 +72,6 @@ namespace Remotely.ScreenCast.Core.Capture
             {
                 try
                 {
-                    // TODO: SetThreadDesktop causes issues with input after switching.
                     var currentDesktopName = Win32Interop.GetCurrentDesktop();
                     if (desktopName.ToLower() != currentDesktopName.ToLower())
                     {

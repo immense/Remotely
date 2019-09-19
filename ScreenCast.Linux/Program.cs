@@ -25,18 +25,18 @@ namespace Remotely.ScreenCast.Linux
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
                 Conductor = new Conductor();
                 Conductor.ProcessArgs(args);
-                Conductor.Connect().Wait();
-                Conductor.SetMessageHandlers(new X11Input());
-                Conductor.ScreenCastInitiated += ScreenCastInitiated;
-                Conductor.ClipboardTransferred += Conductor_ClipboardTransferred;
-                Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID).Wait();
-                Conductor.CasterSocket.NotifyRequesterUnattendedReady(Conductor.RequesterID).Wait();
-                Conductor.IdleTimer = new IdleTimer(Conductor.Viewers);
-                Conductor.IdleTimer.Start();
-                while (true)
+                Conductor.Connect().ContinueWith(async (task) =>
                 {
-                    Thread.Sleep(1000);
-                }
+                    Conductor.SetMessageHandlers(new X11Input());
+                    Conductor.ScreenCastInitiated += ScreenCastInitiated;
+                    Conductor.ClipboardTransferred += Conductor_ClipboardTransferred;
+                    await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
+                    await Conductor.CasterSocket.NotifyRequesterUnattendedReady(Conductor.RequesterID);
+                    Conductor.IdleTimer = new IdleTimer(Conductor.Viewers);
+                    Conductor.IdleTimer.Start();
+                });
+
+                Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception ex)
             {
