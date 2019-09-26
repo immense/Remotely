@@ -33,10 +33,7 @@ namespace Remotely.Agent.Services
                 winPS.ProcessIdleTimeout = new System.Timers.Timer(600000); // 10 minutes.
                 winPS.ProcessIdleTimeout.AutoReset = false;
                 winPS.ProcessIdleTimeout.Elapsed += winPS.ProcessIdleTimeout_Elapsed;
-                while (!Sessions.TryAdd(connectionID, winPS))
-                {
-                    Thread.Sleep(1000);
-                }
+                Sessions.AddOrUpdate(connectionID, winPS, (id, w) => winPS);
                 winPS.ProcessIdleTimeout.Start();
                 return winPS;
             }
@@ -44,11 +41,7 @@ namespace Remotely.Agent.Services
 
         private void ProcessIdleTimeout_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            WindowsPS outResult;
-            while (!Sessions.TryRemove(ConnectionID, out outResult))
-            {
-                Thread.Sleep(1000);
-            }
+            Sessions.Remove(ConnectionID, out var outResult);
             outResult.PSProc.Kill();
         }
 

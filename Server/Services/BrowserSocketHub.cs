@@ -116,22 +116,15 @@ namespace Remotely.Server.Services
 			{
 				return;
 			}
-            while (!ConnectionIdToUserLookup.TryAdd(Context.ConnectionId, RemotelyUser))
-            {
-                DataService.WriteEvent("Retrying ConnectionIdToUserLookup.TryAdd in BrowserSocketHub.");
-                await Task.Delay(100);
-            }
-			await Clients.Caller.SendAsync("UserOptions", RemotelyUser.UserOptions);
+            ConnectionIdToUserLookup.AddOrUpdate(Context.ConnectionId, RemotelyUser, (id, ru) => RemotelyUser);
+
+            await Clients.Caller.SendAsync("UserOptions", RemotelyUser.UserOptions);
 			await base.OnConnectedAsync();
 		}
 
 		public override async Task OnDisconnectedAsync(Exception exception)
 		{
-            while (!ConnectionIdToUserLookup.TryRemove(Context.ConnectionId, out _))
-            {
-                DataService.WriteEvent("Retrying ConnectionIdToUserLookup.TryRemove in BrowserSocketHub.");
-                await Task.Delay(100);
-            }
+            ConnectionIdToUserLookup.Remove(Context.ConnectionId, out _);
             await base.OnDisconnectedAsync(exception);
 		}
 

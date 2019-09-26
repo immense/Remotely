@@ -35,10 +35,7 @@ namespace Remotely.Agent.Services
                 bash.ProcessIdleTimeout = new System.Timers.Timer(600000); // 10 minutes.
                 bash.ProcessIdleTimeout.AutoReset = false;
                 bash.ProcessIdleTimeout.Elapsed += bash.ProcessIdleTimeout_Elapsed;
-                while (!Sessions.TryAdd(connectionID, bash))
-                {
-                    Thread.Sleep(1000);
-                }
+                Sessions.AddOrUpdate(connectionID, bash, (id, b) => bash);
                 bash.ProcessIdleTimeout.Start();
                 return bash;
             }
@@ -46,11 +43,7 @@ namespace Remotely.Agent.Services
 
         private void ProcessIdleTimeout_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            Bash outResult;
-            while (!Sessions.TryRemove(ConnectionID, out outResult))
-            {
-                Thread.Sleep(1000);
-            }
+            Sessions.Remove(ConnectionID, out var outResult);
             outResult.BashProc.Kill();
         }
 

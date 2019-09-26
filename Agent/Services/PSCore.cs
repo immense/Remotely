@@ -30,15 +30,9 @@ namespace Remotely.Agent.Services
                 psCore.ProcessIdleTimeout.AutoReset = false;
                 psCore.ProcessIdleTimeout.Elapsed += (sender, args) =>
                 {
-                    while (!Sessions.TryRemove(connectionID, out var pSCore))
-                    {
-                        System.Threading.Thread.Sleep(1000);
-                    }
+                    Sessions.Remove(connectionID, out var pSCore);
                 };
-                while (!Sessions.TryAdd(connectionID, psCore))
-                {
-                    System.Threading.Thread.Sleep(1000);
-                }
+                Sessions.AddOrUpdate(connectionID, psCore, (id, p) => psCore);
                 psCore.ProcessIdleTimeout.Start();
                 return psCore;
             }

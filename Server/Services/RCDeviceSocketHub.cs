@@ -125,21 +125,13 @@ namespace Remotely.Server.Services
                 RCSocketID = Context.ConnectionId,
                 StartTime = DateTime.Now
             };
-            while (!SessionInfoList.TryAdd(Context.ConnectionId, SessionInfo))
-            {
-                DataService.WriteEvent("Retrying SessionInfoList.TryAdd in RCDeviceSocketHub.");
-                await Task.Delay(100);
-            }
-            
+            SessionInfoList.AddOrUpdate(Context.ConnectionId, SessionInfo, (id, si) => SessionInfo);
+
             await base.OnConnectedAsync();
         }
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            while (!SessionInfoList.TryRemove(Context.ConnectionId, out _))
-            {
-                DataService.WriteEvent("Retrying SessionInfoList.TryRemove in RCDeviceSocketHub.");
-                await Task.Delay(100);
-            }
+            SessionInfoList.Remove(Context.ConnectionId, out _);
 
             if (SessionInfo.Mode == Shared.Enums.RemoteControlMode.Normal)
             {

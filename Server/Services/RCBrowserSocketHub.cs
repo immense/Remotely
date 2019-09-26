@@ -121,11 +121,7 @@ namespace Remotely.Server.Services
             if (Context.User.Identity.IsAuthenticated)
             {
                 var user = DataService.GetUserByName(Context.User.Identity.Name);
-                while (!OrganizationConnectionList.TryAdd(Context.ConnectionId, user))
-                {
-                    DataService.WriteEvent("Retrying OrganizationConnectionList.TryAdd in RCBrowserSocketHub.");
-                    await Task.Delay(100);
-                }
+                OrganizationConnectionList.AddOrUpdate(Context.ConnectionId, user, (id, r) => user);
             }
             await base.OnConnectedAsync();
         }
@@ -134,11 +130,7 @@ namespace Remotely.Server.Services
         {
             if (Context.User.Identity.IsAuthenticated)
             {
-                while (!OrganizationConnectionList.TryRemove(Context.ConnectionId, out _))
-                {
-                    DataService.WriteEvent("Retrying OrganizationConnectionList.TryRemove in RCBrowserSocketHub.");
-                    await Task.Delay(100);
-                }
+                OrganizationConnectionList.Remove(Context.ConnectionId, out _);
             }
             await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ViewerDisconnected", Context.ConnectionId);
 
