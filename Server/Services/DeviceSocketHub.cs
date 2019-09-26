@@ -77,11 +77,7 @@ namespace Remotely.Server.Services
                 if (DataService.AddOrUpdateDevice(device, out var updatedDevice))
                 {
                     Device = updatedDevice;
-                    while (!ServiceConnections.TryAdd(Context.ConnectionId, Device))
-                    {
-                        DataService.WriteEvent("Retrying ServiceConnections.TryAdd in DeviceSocketHub.");
-                        await Task.Delay(100);
-                    }
+                    ServiceConnections.AddOrUpdate(Context.ConnectionId, Device, (id, d) => Device);
 
                     var onlineOrganizationUsers = BrowserSocketHub.ConnectionIdToUserLookup
                                                     .Where(x => x.Value.OrganizationID == Device.OrganizationID);
@@ -150,11 +146,7 @@ namespace Remotely.Server.Services
 
                 await BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceWentOffline", Device);
 
-                while (!ServiceConnections.TryRemove(Context.ConnectionId, out _))
-                {
-                    DataService.WriteEvent("Retrying ServiceConnections.TryRemove in DeviceSocketHub.");
-                    await Task.Delay(100);
-                }
+                ServiceConnections.Remove(Context.ConnectionId, out _);
             }
             
             await base.OnDisconnectedAsync(exception);

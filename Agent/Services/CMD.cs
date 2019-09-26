@@ -35,10 +35,7 @@ namespace Remotely.Agent.Services
                 cmd.ProcessIdleTimeout = new System.Timers.Timer(600000); // 10 minutes.
                 cmd.ProcessIdleTimeout.AutoReset = false;
                 cmd.ProcessIdleTimeout.Elapsed += cmd.ProcessIdleTimeout_Elapsed;
-                while (!Sessions.TryAdd(connectionID, cmd))
-                {
-                    Thread.Sleep(1000);
-                }
+                Sessions.AddOrUpdate(connectionID, cmd, (id, c) => cmd);
                 cmd.ProcessIdleTimeout.Start();
                 return cmd;
             }
@@ -46,11 +43,7 @@ namespace Remotely.Agent.Services
 
         private void ProcessIdleTimeout_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            CMD outResult;
-            while (!Sessions.TryRemove(ConnectionID, out outResult))
-            {
-                Thread.Sleep(1000);
-            }
+            Sessions.Remove(ConnectionID, out var outResult);
             outResult.CMDProc.Kill();
         }
 

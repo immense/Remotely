@@ -24,7 +24,6 @@ namespace Remotely.ScreenCast.Core.Capture
         {
             Viewer viewer;
             byte[] encodedImageBytes;
-            var success = false;
            
 
             Logger.Write($"Starting screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}. Capturer: {capturer.GetType().ToString()}.  App Mode: {conductor.Mode}  Desktop: {conductor.CurrentDesktopName}");
@@ -38,10 +37,7 @@ namespace Remotely.ScreenCast.Core.Capture
                 HasControl = true
             };
 
-            while (!success)
-            {
-                success = conductor.Viewers.TryAdd(viewerID, viewer);
-            }
+            conductor.Viewers.AddOrUpdate(viewerID, viewer, (id, v) => viewer);
 
             if (conductor.Mode == Enums.AppMode.Normal)
             {
@@ -123,11 +119,7 @@ namespace Remotely.ScreenCast.Core.Capture
                 }
             }
             Logger.Write($"Ended screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}.");
-            success = false;
-            while (!success)
-            {
-                success = conductor.Viewers.TryRemove(viewerID, out _);
-            }
+            conductor.Viewers.TryRemove(viewerID, out _);
 
             capturer.Dispose();
 
