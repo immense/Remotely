@@ -27,6 +27,8 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Newtonsoft.Json;
 using System.Net;
 using Microsoft.Extensions.Hosting;
+using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
 
 namespace Remotely.Server
 {
@@ -144,6 +146,11 @@ namespace Remotely.Server
                 })
                 .AddMessagePackProtocol();
 
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Remotely API", Version = "v1" });
+            });
+
             services.AddLogging();
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<EmailSender>();
@@ -180,6 +187,13 @@ namespace Remotely.Server
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Remotely API V1");
             });
 
             app.UseRouting();
