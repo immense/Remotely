@@ -95,7 +95,7 @@ var commands: Array<ConsoleCommand> = [
                 AddConsoleOutput("No devices are selected.");
                 return;
             };
-            var output = `<div>Permission Groups:</div>
+            var output = `<div>Version Results:</div>
                             <table class="console-device-table table table-responsive">
                             <thead><tr>
                             <th>Device Name</th><th>Agent Version</th>
