@@ -58,6 +58,7 @@ namespace Remotely.Server.Data
                 existingDevice.ProcessorCount = device.ProcessorCount;
                 existingDevice.TotalMemory = device.TotalMemory;
                 existingDevice.TotalStorage = device.TotalStorage;
+                existingDevice.AgentVersion = device.AgentVersion;
                 updatedDevice = existingDevice;
             }
             else
