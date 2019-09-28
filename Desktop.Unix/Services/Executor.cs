@@ -15,7 +15,9 @@ namespace Remotely.Desktop.Unix.Services
             IsExecutable = isExecutable;
         }
 
+#pragma warning disable
         public event EventHandler CanExecuteChanged;
+#pragma warning restore
 
         private Action<object> ExecuteAction { get; set; }
 

@@ -20,10 +20,10 @@ namespace Remotely.Server.Services
         private static ConcurrentDictionary<string, RecordingSessionState> SessionStates { get; } = new ConcurrentDictionary<string, RecordingSessionState>();
         private static object LockObject { get; } = new object();
 
-        private IHostingEnvironment HostingEnv { get; }
+        private IWebHostEnvironment HostingEnv { get; }
         private DataService DataService { get; }
 
-        public RemoteControlSessionRecorder(IHostingEnvironment hostingEnv, DataService dataService)
+        public RemoteControlSessionRecorder(IWebHostEnvironment hostingEnv, DataService dataService)
         {
             HostingEnv = hostingEnv;
             DataService = dataService;

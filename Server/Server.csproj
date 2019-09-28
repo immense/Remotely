@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
     <UserSecretsId>aspnet-DoXM_Server-C4DA754F-DF49-46C8-9091-A7EC11A0D311</UserSecretsId>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
@@ -60,15 +60,18 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="1.1.5" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.2.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.6" />
-    <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="2.2.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="3.0.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.3.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="3.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" PrivateAssets="All" />
     <PackageReference Include="NETStandard.Library" Version="2.0.3" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.4" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
-    <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
+    <PackageReference Include="System.Drawing.Common" Version="4.6.0" />
   </ItemGroup>
 
 
@@ -88,8 +91,6 @@
     <None Include="wwwroot\lib\signalr\signalr.js.map" />
     <None Include="wwwroot\lib\signalr\signalr.min.js" />
     <None Include="wwwroot\lib\signalr\signalr.min.js.map" />
-    <None Include="wwwroot\lib\types\jquery\LICENSE" />
-    <None Include="wwwroot\lib\types\jquery\README.md" />
     <None Include="wwwroot\scripts\Models\CommandContext.ts">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -110,7 +111,6 @@
 
 
   <ItemGroup>
-    <TypeScriptCompile Include="wwwroot\lib\types\jquery\index.d.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\CommandCompletion.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Commands\BashCommands.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Commands\WinPSCommands.ts" />

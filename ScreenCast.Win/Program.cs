@@ -25,6 +25,8 @@ using NAudio.Wave;
 using Remotely.Shared.Services;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Microsoft.Win32;
+using Remotely_ScreenCast.Win.Capture;
 
 namespace Remotely.ScreenCast.Win
 {
@@ -48,12 +50,15 @@ namespace Remotely.ScreenCast.Win
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
                 Conductor = new Conductor();
                 Conductor.ProcessArgs(args);
+
+                Conductor.ScreenCastInitiated += ScreenCastInitiated;
+                Conductor.AudioToggled += AudioToggled;
+                Conductor.ClipboardTransferred += Conductor_ClipboardTransferred;
+                Conductor.ScreenCastEnded += Conductor_ScreenCastEnded;
+
                 Conductor.Connect().ContinueWith(async (task) =>
                 {
                     Conductor.SetMessageHandlers(new WinInput());
-                    Conductor.ScreenCastInitiated += ScreenCastInitiated;
-                    Conductor.AudioToggled += AudioToggled;
-                    Conductor.ClipboardTransferred += Conductor_ClipboardTransferred;
                     AudioCapturer = new AudioCapturer(Conductor);
                     CursorIconWatcher = new CursorIconWatcher(Conductor);
                     CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
@@ -73,6 +78,11 @@ namespace Remotely.ScreenCast.Win
                 Logger.Write(ex);
                 throw;
             }
+        }
+
+        private static void Conductor_ScreenCastEnded(object sender, EventArgs e)
+        {
+            WinVisualFx.RestoreSetting();
         }
 
         private static void AudioToggled(object sender, bool toggledOn)
@@ -174,6 +184,7 @@ namespace Remotely.ScreenCast.Win
                 capturer = new BitBltCapture();
             }
             await Conductor.CasterSocket.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
+            WinVisualFx.SetHighPerformance();
             ScreenCaster.BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, capturer, Conductor);
         }
     }

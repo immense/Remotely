@@ -17,6 +17,9 @@ namespace Remotely.ScreenCast.Core
 {
     public class Conductor
     {
+
+        public event EventHandler ScreenCastEnded;
+
         public event EventHandler<bool> AudioToggled;
 
         public event EventHandler<string> ClipboardTransferred;
@@ -95,6 +98,11 @@ namespace Remotely.ScreenCast.Core
         internal void InvokeClipboardTransfer(string transferText)
         {
             ClipboardTransferred?.Invoke(null, transferText);
+        }
+
+        internal void InvokeScreenCastEnded()
+        {
+            ScreenCastEnded?.Invoke(null, null);
         }
 
         internal void InvokeScreenCastInitiated(ScreenCastRequest viewerIdAndRequesterName)
