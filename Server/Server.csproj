@@ -59,7 +59,6 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="3.0.0" />
@@ -154,14 +153,6 @@
       <DependentUpon>WinPSCommands.ts</DependentUpon>
     </Content>
   </ItemGroup>
-
-
-  <ItemGroup>
-    <Reference Include="System.Drawing">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.Drawing.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 
   <ItemGroup>
     <None Update="CurrentVersion.txt">

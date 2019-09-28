@@ -127,10 +127,10 @@ namespace Remotely.Server
                 });
             }
 
-            services.AddMvcCore()
+            services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0).AddJsonOptions(options =>
                 {
-                    
+                    options.JsonSerializerOptions.PropertyNamingPolicy = new PascalCase();
                 });
 
             services.AddSignalR(options =>
@@ -139,7 +139,7 @@ namespace Remotely.Server
                 })
                 .AddJsonProtocol(options =>
                 {
-                   
+                    options.PayloadSerializerOptions.PropertyNamingPolicy = new PascalCase();
                 })
                 .AddMessagePackProtocol();
 
@@ -233,12 +233,6 @@ namespace Remotely.Server
 
         private void ConfigureStaticFiles(IApplicationBuilder app)
         {
-            JsonConvert.DefaultSettings = () =>
-            {
-                var settings = new JsonSerializerSettings();
-                settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                return settings;
-            };
             var provider = new FileExtensionContentTypeProvider();
             // Add new mappings
             provider.Mappings[".ps1"] = "application/octet-stream";
