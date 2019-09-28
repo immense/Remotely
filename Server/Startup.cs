@@ -252,8 +252,10 @@ namespace Remotely.Server
             // Add new mappings
             provider.Mappings[".ps1"] = "application/octet-stream";
             provider.Mappings[".exe"] = "application/octet-stream";
+            provider.Mappings[".dll"] = "application/octet-stream";
             provider.Mappings[".appimage"] = "application/octet-stream";
             provider.Mappings[".zip"] = "application/octet-stream";
+            provider.Mappings[".config"] = "application/octet-stream";
             app.UseStaticFiles();
             app.UseStaticFiles(new StaticFileOptions()
             {
