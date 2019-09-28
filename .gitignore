@@ -268,4 +268,4 @@ __pycache__/
 /Server/ffmpeg.exe
 /Server/Properties/PublishProfiles
 *.msi
-/Server/wwwroot/Downloads/WinDesktop
+/Server/wwwroot/Downloads/WinDesktop/*
