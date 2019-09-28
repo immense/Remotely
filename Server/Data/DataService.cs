@@ -285,14 +285,14 @@ namespace Remotely.Server.Data
             // Users within the target device's organization, where user ID is in the list of IDs passed in, and
             // user is either an admin, the target device has no permissions assigned, or the target device is in a
             // permission group that the user is also in.
-            var authorizedUsers = RemotelyContext.Users.Where(x => 
+            var targetUsers = RemotelyContext.Users.Where(x => 
                                     x.OrganizationID == device.OrganizationID && 
-                                    userIDs.Contains(x.Id) &&
-                                    (
-                                        x.IsAdministrator || 
-                                        targetDevice.DevicePermissionLinks.Count == 0 || 
-                                        targetDevice.DevicePermissionLinks.Any(y => y.PermissionGroup.UserPermissionLinks.Any(z=>z.RemotelyUserID == x.Id))
-                                    ));
+                                    userIDs.Contains(x.Id)).ToList();
+
+            var authorizedUsers = targetUsers.Where(x =>
+                                    x.IsAdministrator ||
+                                    targetDevice.DevicePermissionLinks.Count == 0 ||
+                                    targetDevice.DevicePermissionLinks.Any(y => y.PermissionGroup.UserPermissionLinks.Any(z => z.RemotelyUserID == x.Id)));
 
             return authorizedUsers.ToList();
         }
