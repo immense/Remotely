@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Remotely.Shared.Models
 {
@@ -18,7 +18,7 @@ namespace Remotely.Shared.Models
         public ICollection<PSCoreCommandResult> PSCoreResults { get; set; } = new List<PSCoreCommandResult>();
         public ICollection<GenericCommandResult> CommandResults { get; set; } = new List<GenericCommandResult>();
         public DateTime TimeStamp { get; set; } = DateTime.Now;
-        [IgnoreDataMember]
+        [JsonIgnore]
         public virtual Organization Organization { get; set; }
         public string OrganizationID { get; set; }
     }

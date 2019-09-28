@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Remotely.ScreenCast.Core.Services
@@ -44,7 +44,7 @@ namespace Remotely.ScreenCast.Core.Services
                             fi = new FileInfo(path);
                         }
                     }
-                    File.AppendAllText(path, JsonConvert.SerializeObject(jsoninfo) + Environment.NewLine);
+                    File.AppendAllText(path, JsonSerializer.Serialize(jsoninfo) + Environment.NewLine);
                 }
             }
             catch { }
@@ -88,7 +88,7 @@ namespace Remotely.ScreenCast.Core.Services
                                 fi = new FileInfo(path);
                             }
                         }
-                        File.AppendAllText(path, JsonConvert.SerializeObject(jsonError) + Environment.NewLine);
+                        File.AppendAllText(path, JsonSerializer.Serialize(jsonError) + Environment.NewLine);
                         exception = exception.InnerException;
                     }
                 }
