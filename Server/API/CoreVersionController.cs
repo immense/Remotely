@@ -10,12 +10,12 @@ namespace Remotely.Server.API
     [Route("api/[controller]")]
     public class CoreVersionController : Controller
     {
-        public CoreVersionController(IHostingEnvironment hostingEnv)
+        public CoreVersionController(IWebHostEnvironment hostingEnv)
         {
             this.HostingEnv = hostingEnv;
         }
 
-        public IHostingEnvironment HostingEnv { get; }
+        public IWebHostEnvironment HostingEnv { get; }
 
         // GET: api/<controller>
         [HttpGet()]

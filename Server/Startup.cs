@@ -27,12 +27,13 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Swashbuckle.AspNetCore.Swagger;
 using Newtonsoft.Json;
 using System.Net;
+using Microsoft.Extensions.Hosting;
 
 namespace Remotely.Server
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, IHostingEnvironment env)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
             IsDev = env.IsDevelopment();
@@ -73,7 +74,7 @@ namespace Remotely.Server
 
             services.AddIdentity<RemotelyUser, IdentityRole>(options => options.Stores.MaxLengthForKeys = 128)
                 .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultUI(UIFramework.Bootstrap4)
+                .AddDefaultUI()
                 .AddDefaultTokenProviders();
 
             var remoteControlAuthentication = Configuration.GetSection("ApplicationOptions:RemoteControlRequiresAuthentication").Get<bool>();
@@ -128,10 +129,9 @@ namespace Remotely.Server
             }
 
             services.AddMvcCore()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(options =>
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0).AddJsonOptions(options =>
                 {
-                    options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
-                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    
                 });
 
             services.AddSignalR(options =>
@@ -140,8 +140,7 @@ namespace Remotely.Server
                 })
                 .AddJsonProtocol(options =>
                 {
-                    options.PayloadSerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
-                    options.PayloadSerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                   
                 })
                 .AddMessagePackProtocol();
 
@@ -160,12 +159,11 @@ namespace Remotely.Server
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ApplicationDbContext context, DataService dataService)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext context, DataService dataService)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
             }
             else
             {
@@ -189,30 +187,37 @@ namespace Remotely.Server
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
 
+            app.UseRouting();
+
             app.UseAuthentication();
 
-            app.UseSignalR(routes =>
+
+            app.UseEndpoints(routeBuilder =>
             {
-                routes.MapHub<BrowserSocketHub>("/BrowserHub", options =>
+                routeBuilder.MapHub<BrowserSocketHub>("/BrowserHub", options =>
                 {
                     options.ApplicationMaxBufferSize = 500000;
                     options.TransportMaxBufferSize = 500000;
                 });
-                routes.MapHub<DeviceSocketHub>("/DeviceHub", options =>
+                routeBuilder.MapHub<DeviceSocketHub>("/DeviceHub", options =>
                 {
                     options.ApplicationMaxBufferSize = 500000;
                     options.TransportMaxBufferSize = 500000;
                 });
-                routes.MapHub<RCDeviceSocketHub>("/RCDeviceHub", options =>
+                routeBuilder.MapHub<RCDeviceSocketHub>("/RCDeviceHub", options =>
                 {
                     options.ApplicationMaxBufferSize = 2000000;
                     options.TransportMaxBufferSize = 2000000;
                 });
-                routes.MapHub<RCBrowserSocketHub>("/RCBrowserHub", options =>
+                routeBuilder.MapHub<RCBrowserSocketHub>("/RCBrowserHub", options =>
                 {
                     options.ApplicationMaxBufferSize = 2000000;
                     options.TransportMaxBufferSize = 2000000;
                 });
+
+                routeBuilder.MapRazorPages();
+                routeBuilder.MapControllers();
+                
             });
 
             app.UseSwagger();
@@ -222,7 +227,7 @@ namespace Remotely.Server
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Remotely API V1");
             });
             app.UseCors("TrustedOriginPolicy");
-            app.UseMvcWithDefaultRoute();
+
             try
             {
                 context.Database.Migrate();
