@@ -17,7 +17,7 @@ dpkg -i packages-microsoft-prod.deb
 add-apt-repository universe
 apt-get install -y apt-transport-https
 apt-get update
-apt-get install -y aspnetcore-runtime-2.2
+apt-get install -y aspnetcore-runtime-3.0
 rm packages-microsoft-prod.deb
 
 
