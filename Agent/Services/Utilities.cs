@@ -16,7 +16,7 @@ namespace Remotely.Agent.Services
         {
             if (!File.Exists("ConnectionInfo.json"))
             {
-                throw new Exception("No connection info available.  Please create ConnectionInfo.json file with appropriate values.");
+                Logger.Write(new Exception("No connection info available.  Please create ConnectionInfo.json file with appropriate values."));
             }
             return JsonConvert.DeserializeObject<ConnectionInfo>(File.ReadAllText("ConnectionInfo.json"));
         }

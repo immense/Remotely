@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.Json.Serialization;
 
 namespace Remotely.Shared.Models
 {
@@ -15,6 +16,8 @@ namespace Remotely.Shared.Models
         public string AgentVersion { get; set; }
         public string CurrentUser { get; set; }
         public string DeviceName { get; set; }
+
+        [JsonIgnore]
         public virtual ICollection<DevicePermissionLink> DevicePermissionLinks { get; set; } = new List<DevicePermissionLink>();
         public List<Drive> Drives { get; set; }
 
