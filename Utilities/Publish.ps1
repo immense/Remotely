@@ -138,11 +138,12 @@ Get-ChildItem -Path "$Root\ScreenCast.Win\bin\x64\Release\" -Exclude "*.xml" | C
 
 
 # Publish Windows GUI App
-$PublishDir = "$Root\Desktop.Win\publish"
+$PublishDir = "$Root\Desktop.Win\bin\Release\app.publish"
 &"$MSBuildPath" "$Root\Desktop.Win" /t:Publish /p:Configuration=Release /p:Platform=AnyCPU
 # Copy to download folder.
+Get-ChildItem -Path "$Root\Server\wwwroot\Downloads\WinDesktop" | Remove-Item -Force -Recurse
 Get-ChildItem -Path "$PublishDir" | Move-Item -Destination "$Root\Server\wwwroot\Downloads\WinDesktop" -Force
-Rename-Item -Path "$Root\Server\wwwroot\Downloads\WinDesktop\setup.exe" -NewName "Remotely_Setup.exe"
+Rename-Item -Path "$Root\Server\wwwroot\Downloads\WinDesktop\setup.exe" -NewName "Remotely_Setup.exe" -Force
 
 
 # Compress Core clients.

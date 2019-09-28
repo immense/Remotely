@@ -18,10 +18,9 @@ The following steps will configure your Windows 10 machine for building the Remo
 	* Link: https://marketplace.visualstudio.com/items?itemName=visualstudioclient.MicrosoftVisualStudio2017InstallerProjects
 * Clone the git repository and open the solution in Visual Studio.
 * Run Publish.ps1 in the Utilities folder.
-    * Example: powershell -f [path]\Publish.ps1 -outdir C:\inetpub\remotely -rid win10-x86
+    * Example: powershell -f [path]\Publish.ps1 -outdir C:\inetpub\remotely -rid win10-x86 -hostname https://mysite.mydomain.com
     * The output folder will now contain the server, with the clients in the Downloads folder.
-	* By default, the screen-sharing desktop app prompts for a host URL and can be changed thereafter.
-		* To hard-code an initial URL, set the Host value in /Desktop.Win/Services/Config.cs to the server's URL (same for the Desktop.Unix project).
+	* The above hostname will be hardcoded in the screen-sharing desktop apps, but can be changed via the options menu.
 
 ## Hosting a Server (Windows)
 * Create a site in IIS that will run Remotely.
