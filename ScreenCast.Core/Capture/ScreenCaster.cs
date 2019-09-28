@@ -126,7 +126,6 @@ namespace Remotely.ScreenCast.Core.Capture
             // Close if no one is viewing.
             if (conductor.Viewers.Count == 0 && conductor.Mode == Enums.AppMode.Unattended)
             {
-                conductor.InvokeScreenCastEnded();
                 Environment.Exit(0);
             }
 

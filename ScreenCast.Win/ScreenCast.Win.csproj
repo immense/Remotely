@@ -250,7 +250,6 @@
     <Compile Include="Capture\BitBltCapture.cs" />
     <Compile Include="Capture\CursorIconWatcher.cs" />
     <Compile Include="Capture\DXCapture.cs" />
-    <Compile Include="Capture\WinVisualFx.cs" />
     <Compile Include="Input\WinInput.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -289,8 +288,8 @@
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Debug (
   if $(PlatformName) == Any CPU (
-      md "$(SolutionDir)Agent\bin\Debug\netcoreapp2.2\ScreenCast\"
-      copy /y "$(TargetDir)\*" "$(SolutionDir)Agent\bin\Debug\netcoreapp2.2\ScreenCast\"
+      md "$(SolutionDir)Agent\bin\Debug\netcoreapp3.0\ScreenCast\"
+      copy /y "$(TargetDir)\*" "$(SolutionDir)Agent\bin\Debug\netcoreapp3.0\ScreenCast\"
   )
 )</PostBuildEvent>
   </PropertyGroup>

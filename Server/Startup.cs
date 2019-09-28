@@ -136,6 +136,7 @@ namespace Remotely.Server
             services.AddSignalR(options =>
                 {
                     options.EnableDetailedErrors = IsDev;
+                    options.MaximumReceiveMessageSize = 20000000;
                 })
                 .AddJsonProtocol(options =>
                 {

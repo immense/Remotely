@@ -26,7 +26,6 @@ using Remotely.Shared.Services;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.Win32;
-using Remotely_ScreenCast.Win.Capture;
 
 namespace Remotely.ScreenCast.Win
 {
@@ -54,7 +53,6 @@ namespace Remotely.ScreenCast.Win
                 Conductor.ScreenCastInitiated += ScreenCastInitiated;
                 Conductor.AudioToggled += AudioToggled;
                 Conductor.ClipboardTransferred += Conductor_ClipboardTransferred;
-                Conductor.ScreenCastEnded += Conductor_ScreenCastEnded;
 
                 Conductor.Connect().ContinueWith(async (task) =>
                 {
@@ -78,11 +76,6 @@ namespace Remotely.ScreenCast.Win
                 Logger.Write(ex);
                 throw;
             }
-        }
-
-        private static void Conductor_ScreenCastEnded(object sender, EventArgs e)
-        {
-            WinVisualFx.RestoreSetting();
         }
 
         private static void AudioToggled(object sender, bool toggledOn)
@@ -184,7 +177,6 @@ namespace Remotely.ScreenCast.Win
                 capturer = new BitBltCapture();
             }
             await Conductor.CasterSocket.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
-            WinVisualFx.SetHighPerformance();
             ScreenCaster.BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, capturer, Conductor);
         }
     }
