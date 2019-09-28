@@ -41,8 +41,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desktop.Unix", "Desktop.Unix\Desktop.Unix.csproj", "{FF7FD66A-B3E2-4D39-A457-A00C94EDE9E6}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Desktop.Win.Installer", "Desktop.Win.Installer\Desktop.Win.Installer.vdproj", "{943613A9-3B59-4929-B5D3-4B1D95D7E4C1}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -149,15 +147,6 @@ Global
 		{FF7FD66A-B3E2-4D39-A457-A00C94EDE9E6}.Release|x64.Build.0 = Release|x64
 		{FF7FD66A-B3E2-4D39-A457-A00C94EDE9E6}.Release|x86.ActiveCfg = Release|x86
 		{FF7FD66A-B3E2-4D39-A457-A00C94EDE9E6}.Release|x86.Build.0 = Release|x86
-		{943613A9-3B59-4929-B5D3-4B1D95D7E4C1}.Debug|Any CPU.ActiveCfg = Debug
-		{943613A9-3B59-4929-B5D3-4B1D95D7E4C1}.Debug|x64.ActiveCfg = Debug
-		{943613A9-3B59-4929-B5D3-4B1D95D7E4C1}.Debug|x86.ActiveCfg = Debug
-		{943613A9-3B59-4929-B5D3-4B1D95D7E4C1}.Release|Any CPU.ActiveCfg = Release
-		{943613A9-3B59-4929-B5D3-4B1D95D7E4C1}.Release|Any CPU.Build.0 = Release
-		{943613A9-3B59-4929-B5D3-4B1D95D7E4C1}.Release|x64.ActiveCfg = Release
-		{943613A9-3B59-4929-B5D3-4B1D95D7E4C1}.Release|x64.Build.0 = Release
-		{943613A9-3B59-4929-B5D3-4B1D95D7E4C1}.Release|x86.ActiveCfg = Release
-		{943613A9-3B59-4929-B5D3-4B1D95D7E4C1}.Release|x86.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
