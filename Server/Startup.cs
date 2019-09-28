@@ -24,7 +24,6 @@ using Remotely.Shared.Services;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Cors.Infrastructure;
-using Swashbuckle.AspNetCore.Swagger;
 using Newtonsoft.Json;
 using System.Net;
 using Microsoft.Extensions.Hosting;
@@ -144,11 +143,6 @@ namespace Remotely.Server
                 })
                 .AddMessagePackProtocol();
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Info { Title = "Remotely API", Version = "v1" });
-            });
-
             services.AddLogging();
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<EmailSender>();
@@ -191,6 +185,8 @@ namespace Remotely.Server
 
             app.UseAuthentication();
 
+            app.UseAuthorization();
+
 
             app.UseEndpoints(routeBuilder =>
             {
@@ -220,12 +216,6 @@ namespace Remotely.Server
                 
             });
 
-            app.UseSwagger();
-
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Remotely API V1");
-            });
             app.UseCors("TrustedOriginPolicy");
 
             try

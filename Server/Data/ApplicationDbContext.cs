@@ -40,7 +40,7 @@ namespace Remotely.Server.Data
             base.OnModelCreating(builder);
 
             builder.Entity<IdentityUser>().ToTable("RemotelyUsers");
-            builder.Entity<RemotelyUser>().ToTable("RemotelyUsers");
+            //builder.Entity<RemotelyUser>().ToTable("RemotelyUsers");
 
             builder.Entity<Organization>()
                 .HasMany(x => x.Devices)

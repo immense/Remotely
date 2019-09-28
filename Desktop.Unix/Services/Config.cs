@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Remotely.Desktop.Unix.Services
@@ -25,7 +25,7 @@ namespace Remotely.Desktop.Unix.Services
             {
                 try
                 {
-                    return JsonConvert.DeserializeObject<Config>(File.ReadAllText(ConfigFile));
+                    return JsonSerializer.Deserialize<Config>(File.ReadAllText(ConfigFile));
                 }
                 catch
                 {
@@ -40,7 +40,7 @@ namespace Remotely.Desktop.Unix.Services
             try
             {
                 Directory.CreateDirectory(ConfigFolder);
-                File.WriteAllText(ConfigFile, JsonConvert.SerializeObject(this));
+                File.WriteAllText(ConfigFile, JsonSerializer.Serialize(this));
             }
             catch
             {

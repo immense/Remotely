@@ -1,4 +1,3 @@
-declare module server {
 	interface commandContext {
 		iD: string;
 		commandMode: string;
@@ -9,6 +8,16 @@ declare module server {
 		pSCoreResults: any[];
 		commandResults: any[];
 		timeStamp: Date;
+		organization: {
+			iD: string;
+			organizationName: string;
+			remotelyUsers: any[];
+			devices: any[];
+			commandContexts: .commandContext[];
+			eventLogs: any[];
+			permissionGroups: any[];
+			inviteLinks: any[];
+			sharedFiles: any[];
+		};
 		organizationID: string;
 	}
-}
