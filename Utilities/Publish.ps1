@@ -82,7 +82,7 @@ if ($Hostname.Length -gt 0) {
     Replace-LineInFile -FilePath "$Root\Desktop.Unix\Services\Config.cs" -MatchPattern "public string Host " -ReplaceLineWith "public string Host { get; set; } = `"$($Hostname)`";" -MaxCount 1
 }
 else {
-    Write-Host "ERROR: No hostname parameter was specified.  Application auto-updates will default to the public test server.  Please supply your server's hostname."
+    Write-Host "`nERROR: No hostname parameter was specified.  Application auto-updates will default to the public test server.  Please supply your server's hostname.`n" -ForegroundColor Red
     pause
     return;
 }
@@ -142,6 +142,7 @@ $PublishDir = "$Root\Desktop.Win\publish"
 &"$MSBuildPath" "$Root\Desktop.Win" /t:Publish /p:Configuration=Release /p:Platform=AnyCPU
 # Copy to download folder.
 Get-ChildItem -Path "$PublishDir" | Move-Item -Destination "$Root\Server\wwwroot\Downloads\WinDesktop" -Force
+Rename-Item -Path "$Root\Server\wwwroot\Downloads\WinDesktop\setup.exe" -NewName "Remotely_Setup.exe"
 
 
 # Compress Core clients.
