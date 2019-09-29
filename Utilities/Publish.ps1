@@ -78,6 +78,7 @@ Set-Content -Path "$Root\Server\CurrentVersion.txt" -Value $CurrentVersion.Trim(
 # Update hostname.
 if ($Hostname.Length -gt 0) {
     Replace-LineInFile -FilePath "$Root\Desktop.Win\Desktop.Win.csproj" -MatchPattern "<InstallUrl>" -ReplaceLineWith "<InstallUrl>$($Hostname)/Downloads/WinDesktop/</InstallUrl>" -MaxCount 1
+    Replace-LineInFile -FilePath "$Root\Desktop.Win\Desktop.Win.csproj" -MatchPattern "<UpdateUrl>" -ReplaceLineWith "<UpdateUrl>$($Hostname)/Downloads/WinDesktop/</UpdateUrl>" -MaxCount 1
     Replace-LineInFile -FilePath "$Root\Desktop.Win\Services\Config.cs" -MatchPattern "public string Host " -ReplaceLineWith "public string Host { get; set; } = `"$($Hostname)`";" -MaxCount 1
     Replace-LineInFile -FilePath "$Root\Desktop.Unix\Services\Config.cs" -MatchPattern "public string Host " -ReplaceLineWith "public string Host { get; set; } = `"$($Hostname)`";" -MaxCount 1
 }
@@ -138,13 +139,8 @@ Get-ChildItem -Path "$Root\ScreenCast.Win\bin\x64\Release\" -Exclude "*.xml" | C
 
 
 # Publish Windows GUI App
-$PublishDir = "$Root\Desktop.Win\bin\Release\app.publish"
-&"$MSBuildPath" "$Root\Desktop.Win" /t:Publish /p:Configuration=Release /p:Platform=AnyCPU
-# Copy to download folder.
-if (Test-Path -Path "$Root\Server\wwwroot\Downloads\WinDesktop") {
-    Get-ChildItem -Path "$Root\Server\wwwroot\Downloads\WinDesktop" | Remove-Item -Force -Recurse
-}
-Get-ChildItem -Path "$PublishDir" | Move-Item -Destination "$Root\Server\wwwroot\Downloads\WinDesktop" -Force
+$PublishDir = "$Root\Desktop.Win\publish\"
+&"$MSBuildPath" "$Root\Desktop.Win" /t:Publish /p:Configuration=Release /p:Platform=AnyCPU /p:PublishDir="$Root\Server\wwwroot\Downloads\WinDesktop\"
 Rename-Item -Path "$Root\Server\wwwroot\Downloads\WinDesktop\setup.exe" -NewName "Remotely_Setup.exe" -Force
 
 
