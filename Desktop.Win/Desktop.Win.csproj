@@ -29,13 +29,14 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>false</MapFileExtensions>
     <InstallUrl>https://tryremotely.lucency.co/Downloads/WinDesktop/</InstallUrl>
+    <UpdateUrl>https://tryremotely.lucency.co/Downloads/WinDesktop/</UpdateUrl>
     <SupportUrl>https://lucency.co/Contact</SupportUrl>
     <ErrorReportUrl>https://lucency.co/Contact</ErrorReportUrl>
     <ProductName>Remotely Desktop</ProductName>
     <PublisherName>Translucency Software</PublisherName>
     <SuiteName>Remotely</SuiteName>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <ApplicationVersion>1.0.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
