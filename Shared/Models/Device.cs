@@ -76,6 +76,7 @@ namespace Remotely.Shared.Models
                 OSArchitecture = RuntimeInformation.OSArchitecture,
                 OSDescription = RuntimeInformation.OSDescription,
                 Is64Bit = Environment.Is64BitOperatingSystem,
+                IsOnline = true,
                 Drives = DriveInfo.GetDrives().Where(x => x.IsReady).Select(x => new Drive()
                 {
                     DriveFormat = x.DriveFormat,
