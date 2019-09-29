@@ -17,16 +17,15 @@ The following steps will configure your Windows 10 machine for building the Remo
 * Install the Visual Studio Installer Projects extension.
 	* Link: https://marketplace.visualstudio.com/items?itemName=visualstudioclient.MicrosoftVisualStudio2017InstallerProjects
 * Clone the git repository and open the solution in Visual Studio.
-* Build (in Release configuration) the Desktop.Win and ScreenCast.Win projects.
-	* By default, the screen-sharing desktop app prompts for a host URL and can be changed thereafter.  To hard-code a URL, set the ForceHost value in /RDesktop.Win/ViewModels/MainWindowViewModel.cs to the server's URL.
-* Run Publish.ps1 in the Utilities folder.
-    * Example: powershell -f [path]\Publish.ps1 -outdir C:\inetpub\remotely -rid win10-x86 -hostname https://mysite.mydomain.com
+* Run Publish.ps1 in the [Utilities folder in source control](https://raw.githubusercontent.com/Jay-Rad/Remotely/master/Utilities/Install-RemotelyServer.ps1).
+    * Example: powershell -f [path]\Publish.ps1 -outdir C:\inetpub\remotely -rid win10-x64 -hostname https://mysite.mydomain.com
     * The output folder will now contain the server, with the clients in the Downloads folder.
 	* The above hostname will be hardcoded in the screen-sharing desktop apps, but can be changed via the options menu.
 
 ## Hosting a Server (Windows)
+* Build the Remotely server and clients using the above steps.
 * Create a site in IIS that will run Remotely.
-* Run Install-RemotelyServer.ps1 (as an administrator), which is in the [Utilities folder in source control](https://raw.githubusercontent.com/Jay-Rad/Remotely/master/Utilities/Install-RemotelyServer.ps1).
+* Copy the server files from above to the site folder.
 * Download and install the .NET Core Runtime (not the SDK).
 	* Link: https://dotnet.microsoft.com/download
 	* This includes the Hosting Bundle for Windows, which allows you to run ASP.NET Core in IIS.
@@ -42,11 +41,12 @@ The following steps will configure your Windows 10 machine for building the Remo
 
 ## Hosting a Server (Ubuntu)
 * Ubuntu 18.04 and 19.04 have been tested.  The Linux server package might work with other distros after some alterations to the setup script.
-* The script is designed to install Remotely and Nginx on the same server.  You'll need to manually set up other configurations.
-    * A helpful user supplied an example Apache configuration, which can be found in the Utilities folder.
+* Build the Remotely server and clients using the above steps with RuntimeIdentifier "linux-x64".
+* Copy the files to /var/www/remotely (or other location where they will be served).
 * Run Remotely_Server_Setup.sh (with sudo), which is in the [Utilities folder in source control](https://raw.githubusercontent.com/Jay-Rad/Remotely/master/Utilities/Remotely_Server_Install.sh).
-    * "App root" will be the directory in which the Remotely server files are placed (typically /var/www/remotely).
-	* This script is only for Ubuntu 18.04 and 19.04.
+	* The script is designed to install Remotely and Nginx on the same server, running Ubuntu 18.04 or 19.04.  You'll need to manually set up other configurations.
+    * A helpful user supplied an example Apache configuration, which can be found in the Utilities folder.
+    * The script will prompt for the "App root" location, which is the above directory where the server files are located.
 	* The script installs the .NET Core runtime, as well as other dependencies.
 	* Certbot is used in this script and will install an SSL certificate for your site.  Your server needs to have a public domain name that is accessible from the internet for this to work.
 		* More information: https://letsencrypt.org/, https://certbot.eff.org/
@@ -67,7 +67,7 @@ The following steps will configure your Windows 10 machine for building the Remo
 
 ## Remote Control Requirements
 * Windows: Only the latest version of Windows 10 is tested.
-	* Requires .NET Framework 4.7.2.
+	* Requires .NET Framework 4.8.
 	* Windows 2016/2019 should work as well, but isn't tested regularly.
 * Linux: Only Ubuntu 18.04+ is tested.
 	* Your account must be set to auto login for unattended remote control to work.
