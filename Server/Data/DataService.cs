@@ -460,7 +460,8 @@ namespace Remotely.Server.Data
 
         internal string AddSharedFile(IFormFile file, string organizationID)
         {
-            var expiredFiles = RemotelyContext.SharedFiles.Where(x => DateTime.Now - x.Timestamp > TimeSpan.FromDays(AppConfig.DataRetentionInDays));
+            var expirationDate = DateTime.Now.AddDays(-AppConfig.DataRetentionInDays);
+            var expiredFiles = RemotelyContext.SharedFiles.Where(x => x.Timestamp < expirationDate);
             RemotelyContext.RemoveRange(expiredFiles);
 
             byte[] fileContents;
