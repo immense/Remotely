@@ -6,7 +6,7 @@ A remote control and remote scripting solution, built with .NET Core and SignalR
 Website: https://remotely.lucency.co  
 Public Server: https://tryremotely.lucency.co (not intended for production use)
 
-*Warning: Remotely will always be in a more-or-less prototype state.    I simply don't have the time, money, or desire to build a production-ready solution of this size for free.  Every minute I spend on Remotely is time I'm not spending with my family.  This is why Remotely is missing things such as automated tests, code signing, etc.  Thanks for your understanding*!
+*Notice: Remotely is currently in maintenance mode and will likely stay in a more-or-less prototype state.*
 
 ## Build Instructions (Windows 10)  
 The following steps will configure your Windows 10 machine for building the Remotely server and clients.
@@ -14,8 +14,6 @@ The following steps will configure your Windows 10 machine for building the Remo
     * Link: https://visualstudio.microsoft.com/downloads/
 * Install the latest .NET Core SDK.
     * Link: https://dotnet.microsoft.com/download
-* Install the Visual Studio Installer Projects extension.
-	* Link: https://marketplace.visualstudio.com/items?itemName=visualstudioclient.MicrosoftVisualStudio2017InstallerProjects
 * Clone the git repository and open the solution in Visual Studio.
 * Run Publish.ps1 in the [Utilities folder in source control](https://raw.githubusercontent.com/Jay-Rad/Remotely/master/Utilities/Install-RemotelyServer.ps1).
     * Example: powershell -f [path]\Publish.ps1 -outdir C:\inetpub\remotely -rid win10-x64 -hostname https://mysite.mydomain.com
