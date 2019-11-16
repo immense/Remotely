@@ -41,6 +41,8 @@ namespace Remotely.Server.Data
 
         public bool AddOrUpdateDevice(Device device, out Device updatedDevice)
         {
+            device.LastOnline = DateTime.Now;
+
             var existingDevice = RemotelyContext.Devices.Find(device.ID);
             if (existingDevice != null)
             {
@@ -51,7 +53,6 @@ namespace Remotely.Server.Data
                 existingDevice.FreeStorage = device.FreeStorage;
                 existingDevice.Is64Bit = device.Is64Bit;
                 existingDevice.IsOnline = true;
-                existingDevice.LastOnline = DateTime.Now;
                 existingDevice.OSArchitecture = device.OSArchitecture;
                 existingDevice.OSDescription = device.OSDescription;
                 existingDevice.Platform = device.Platform;
