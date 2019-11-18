@@ -140,6 +140,9 @@ Get-ChildItem -Path "$Root\ScreenCast.Win\bin\x64\Release\" -Exclude "*.xml" | C
 
 # Publish Windows GUI App
 $PublishDir = "$Root\Server\wwwroot\Downloads\WinDesktop\"
+if (!(Test-Path -Path $PublishDir)) {
+    New-Item -Path $PublishDir -ItemType Directory
+}
 Get-ChildItem -Path $PublishDir | ForEach-Object {
     Remove-Item -Path $_.FullName -Force -Recurse
 }
