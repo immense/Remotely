@@ -269,3 +269,4 @@ __pycache__/
 /Server/Properties/PublishProfiles
 *.msi
 /Server/wwwroot/Downloads/WinDesktop/*
+/Server/CurrentVersion.txt
