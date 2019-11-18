@@ -23,6 +23,9 @@ $OutDir = ""
 $RID = ""
 $Hostname = ""
 $MSBuildPath = (Get-ChildItem -Path "${env:ProgramFiles(x86)}\Microsoft Visual Studio\" -Recurse -Filter "MSBuild.exe" -File)[0].FullName
+$Root = (Get-Item -Path $PSScriptRoot).Parent.FullName
+
+Set-Location -Path $Root
 
 
 #region Functions
@@ -68,9 +71,6 @@ for ($i = 0; $i -lt $args.Count; $i++)
     }
 }
 
-$Root = (Get-Item -Path $PSScriptRoot).Parent.FullName
-
-Set-Location -Path $Root
 
 # Add Current Version file to root content folder for client update checks.
 Set-Content -Path "$Root\Server\CurrentVersion.txt" -Value $CurrentVersion.Trim() -Encoding UTF8 -Force
@@ -90,7 +90,7 @@ else {
 
     
 # Clear publish folders.
-if ((Test-Path -Path "$Root\Agent\bin\Release\netcoreapp\win10-x64\publish") -eq $true) {
+if ((Test-Path -Path "$Root\Agent\bin\Release\netcoreapp3.0\win10-x64\publish") -eq $true) {
 	Get-ChildItem -Path "$Root\Agent\bin\Release\netcoreapp3.0\win10-x64\publish" | Remove-Item -Force -Recurse
 }
 if ((Test-Path -Path  "$Root\Agent\bin\Release\netcoreapp3.0\win10-x86\publish" ) -eq $true) {
@@ -139,8 +139,11 @@ Get-ChildItem -Path "$Root\ScreenCast.Win\bin\x64\Release\" -Exclude "*.xml" | C
 
 
 # Publish Windows GUI App
-$PublishDir = "$Root\Desktop.Win\publish\"
-&"$MSBuildPath" "$Root\Desktop.Win" /t:Publish /p:Configuration=Release /p:Platform=AnyCPU /p:PublishDir="$Root\Server\wwwroot\Downloads\WinDesktop\"
+$PublishDir = "$Root\Server\wwwroot\Downloads\WinDesktop\"
+Get-ChildItem -Path $PublishDir | ForEach-Object {
+    Remove-Item -Path $_.FullName -Force -Recurse
+}
+&"$MSBuildPath" "$Root\Desktop.Win" /t:Publish /p:Configuration=Release /p:Platform=AnyCPU /p:PublishDir="$PublishDir"
 Rename-Item -Path "$Root\Server\wwwroot\Downloads\WinDesktop\setup.exe" -NewName "Remotely_Setup.exe" -Force
 
 
