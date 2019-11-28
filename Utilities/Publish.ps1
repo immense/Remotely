@@ -8,7 +8,7 @@
    Copyright ©  2019 Translucency Software.  All rights reserved.
 .EXAMPLE
    Run it from the Utilities folder (located in the solution directory).
-   Or run "powershell -f PublishClients.ps1 -rid win10-x64 -outdir path\to\dir -hostname https://mysite.mydomain.com
+   Or run "powershell -f Publish.ps1 -rid win10-x64 -outdir path\to\dir -hostname https://mysite.mydomain.com
 #>
 
 $ErrorActionPreference = "Stop"
