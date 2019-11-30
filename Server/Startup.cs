@@ -146,10 +146,11 @@ namespace Remotely.Server
                 })
                 .AddMessagePackProtocol();
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Remotely API", Version = "v1" });
-            });
+            // TODO: Re-enable when Swagger works when building for Linux on Windows.
+            //services.AddSwaggerGen(c =>
+            //{
+            //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Remotely API", Version = "v1" });
+            //});
 
             services.AddLogging();
             services.AddScoped<IEmailSender, EmailSender>();
@@ -189,12 +190,13 @@ namespace Remotely.Server
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
 
-            app.UseSwagger();
+            // TODO: Re-enable when Swagger works when building for Linux on Windows.
+            //app.UseSwagger();
 
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Remotely API V1");
-            });
+            //app.UseSwaggerUI(c =>
+            //{
+            //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Remotely API V1");
+            //});
 
             app.UseRouting();
 
