@@ -5,7 +5,7 @@
    Publishes the Remotely clients.
    To deploy the server, supply the following arguments: -rid win10-x64 -outdir path\to\dir -hostname https://mysite.mydomain.com
 .COPYRIGHT
-   Copyright ©  2019 Translucency Software.  All rights reserved.
+   Copyright ï¿½  2019 Translucency Software.  All rights reserved.
 .EXAMPLE
    Run it from the Utilities folder (located in the solution directory).
    Or run "powershell -f Publish.ps1 -rid win10-x64 -outdir path\to\dir -hostname https://mysite.mydomain.com
@@ -90,32 +90,32 @@ else {
 
     
 # Clear publish folders.
-if ((Test-Path -Path "$Root\Agent\bin\Release\netcoreapp3.0\win10-x64\publish") -eq $true) {
-	Get-ChildItem -Path "$Root\Agent\bin\Release\netcoreapp3.0\win10-x64\publish" | Remove-Item -Force -Recurse
+if ((Test-Path -Path "$Root\Agent\bin\Release\netcoreapp3.1\win10-x64\publish") -eq $true) {
+	Get-ChildItem -Path "$Root\Agent\bin\Release\netcoreapp3.1\win10-x64\publish" | Remove-Item -Force -Recurse
 }
-if ((Test-Path -Path  "$Root\Agent\bin\Release\netcoreapp3.0\win10-x86\publish" ) -eq $true) {
-	Get-ChildItem -Path  "$Root\Agent\bin\Release\netcoreapp3.0\win10-x86\publish" | Remove-Item -Force -Recurse
+if ((Test-Path -Path  "$Root\Agent\bin\Release\netcoreapp3.1\win10-x86\publish" ) -eq $true) {
+	Get-ChildItem -Path  "$Root\Agent\bin\Release\netcoreapp3.1\win10-x86\publish" | Remove-Item -Force -Recurse
 }
-if ((Test-Path -Path "$Root\Agent\bin\Release\netcoreapp3.0\linux-x64\publish") -eq $true) {
-	Get-ChildItem -Path "$Root\Agent\bin\Release\netcoreapp3.0\linux-x64\publish" | Remove-Item -Force -Recurse
+if ((Test-Path -Path "$Root\Agent\bin\Release\netcoreapp3.1\linux-x64\publish") -eq $true) {
+	Get-ChildItem -Path "$Root\Agent\bin\Release\netcoreapp3.1\linux-x64\publish" | Remove-Item -Force -Recurse
 }
 
 
 # Publish Core clients.
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win10-x64 --configuration Release --output "$Root\Agent\bin\Release\netcoreapp3.0\win10-x64\publish" "$Root\Agent"
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64 --configuration Release --output "$Root\Agent\bin\Release\netcoreapp3.0\linux-x64\publish" "$Root\Agent"
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win10-x86 --configuration Release --output "$Root\Agent\bin\Release\netcoreapp3.0\win10-x86\publish" "$Root\Agent"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win10-x64 --configuration Release --output "$Root\Agent\bin\Release\netcoreapp3.1\win10-x64\publish" "$Root\Agent"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64 --configuration Release --output "$Root\Agent\bin\Release\netcoreapp3.1\linux-x64\publish" "$Root\Agent"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win10-x86 --configuration Release --output "$Root\Agent\bin\Release\netcoreapp3.1\win10-x86\publish" "$Root\Agent"
 
-New-Item -Path "$Root\Agent\bin\Release\netcoreapp3.0\win10-x64\publish\ScreenCast\" -ItemType Directory -Force
-New-Item -Path "$Root\Agent\bin\Release\netcoreapp3.0\win10-x86\publish\ScreenCast\" -ItemType Directory -Force
-New-Item -Path "$Root\Agent\bin\Release\netcoreapp3.0\linux-x64\publish\ScreenCast\" -ItemType Directory -Force
+New-Item -Path "$Root\Agent\bin\Release\netcoreapp3.1\win10-x64\publish\ScreenCast\" -ItemType Directory -Force
+New-Item -Path "$Root\Agent\bin\Release\netcoreapp3.1\win10-x86\publish\ScreenCast\" -ItemType Directory -Force
+New-Item -Path "$Root\Agent\bin\Release\netcoreapp3.1\linux-x64\publish\ScreenCast\" -ItemType Directory -Force
 
 
 # Publish Linux ScreenCaster
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64  --configuration Release --output "$Root\Agent\bin\Release\netcoreapp3.0\linux-x64\publish\ScreenCast\" "$Root\ScreenCast.Linux\"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64  --configuration Release --output "$Root\Agent\bin\Release\netcoreapp3.1\linux-x64\publish\ScreenCast\" "$Root\ScreenCast.Linux\"
 
 # Publish Linux GUI App
-$PublishDir = "$Root\Desktop.Unix\bin\Release\netcoreapp3.0\linux-x64\publish\"
+$PublishDir = "$Root\Desktop.Unix\bin\Release\netcoreapp3.1\linux-x64\publish\"
 dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64  --configuration Release --output "$PublishDir" "$Root\Desktop.Unix\"
 # Compress Linux GUI App
 Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely_Desktop.Unix.zip" -CompressionLevel Optimal -Force
@@ -129,13 +129,13 @@ Move-Item -Path "$PublishDir\Remotely_Desktop.Unix.zip" -Destination "$Root\Serv
 &"$MSBuildPath" "$Root\ScreenCast.Win" /t:Build /p:Configuration=Release /p:Platform=x86
 
 # Copy 32-bit .NET Framework ScreenCaster to Agent output folder.
-Get-ChildItem -Path "$Root\ScreenCast.Win\bin\x86\Release\" -Exclude "*.xml" | Copy-Item -Destination ".\Agent\bin\Release\netcoreapp3.0\win10-x86\publish\ScreenCast\" -Force
+Get-ChildItem -Path "$Root\ScreenCast.Win\bin\x86\Release\" -Exclude "*.xml" | Copy-Item -Destination ".\Agent\bin\Release\netcoreapp3.1\win10-x86\publish\ScreenCast\" -Force
 
 # Build .NET Framework ScreenCaster (64-bit)
 &"$MSBuildPath" "$Root\ScreenCast.Win" /t:Build /p:Configuration=Release /p:Platform=x64
 
 # Copy 64-bit .NET Framework ScreenCaster to Agent output folder.
-Get-ChildItem -Path "$Root\ScreenCast.Win\bin\x64\Release\" -Exclude "*.xml" | Copy-Item -Destination ".\Agent\bin\Release\netcoreapp3.0\win10-x64\publish\ScreenCast\" -Force
+Get-ChildItem -Path "$Root\ScreenCast.Win\bin\x64\Release\" -Exclude "*.xml" | Copy-Item -Destination ".\Agent\bin\Release\netcoreapp3.1\win10-x64\publish\ScreenCast\" -Force
 
 
 # Publish Windows GUI App
@@ -151,21 +151,21 @@ Rename-Item -Path "$Root\Server\wwwroot\Downloads\WinDesktop\setup.exe" -NewName
 
 
 # Compress Core clients.
-$PublishDir =  "$Root\Agent\bin\Release\netcoreapp3.0\win10-x64\publish"
+$PublishDir =  "$Root\Agent\bin\Release\netcoreapp3.1\win10-x64\publish"
 Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Win10-x64.zip" -CompressionLevel Optimal -Force
 while ((Test-Path -Path "$PublishDir\Remotely-Win10-x64.zip") -eq $false){
     Start-Sleep -Seconds 1
 }
 Move-Item -Path "$PublishDir\Remotely-Win10-x64.zip" -Destination "$Root\Server\wwwroot\Downloads\Remotely-Win10-x64.zip" -Force
 
-$PublishDir =  "$Root\Agent\bin\Release\netcoreapp3.0\win10-x86\publish"
+$PublishDir =  "$Root\Agent\bin\Release\netcoreapp3.1\win10-x86\publish"
 Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Win10-x86.zip" -CompressionLevel Optimal -Force
 while ((Test-Path -Path "$PublishDir\Remotely-Win10-x86.zip") -eq $false){
     Start-Sleep -Seconds 1
 }
 Move-Item -Path "$PublishDir\Remotely-Win10-x86.zip" -Destination "$Root\Server\wwwroot\Downloads\Remotely-Win10-x86.zip" -Force
 
-$PublishDir =  "$Root\Agent\bin\Release\netcoreapp3.0\linux-x64\publish"
+$PublishDir =  "$Root\Agent\bin\Release\netcoreapp3.1\linux-x64\publish"
 Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Linux.zip" -CompressionLevel Optimal -Force
 while ((Test-Path -Path "$PublishDir\Remotely-Linux.zip") -eq $false){
     Start-Sleep -Seconds 1
