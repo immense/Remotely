@@ -35,7 +35,7 @@ The following steps will configure your Windows 10 machine for building the Remo
 * If the site will be public-facing, configure your bindings in IIS.
 * An SSL certificate for HTTPS is recommended.  You can install one for free using Let's Encrypt.
 	* Resources: https://letsencrypt.org/, https://certifytheweb.com/
-* Documentation for hosting in IIS can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/iis/index?view=aspnetcore-3.0
+* Documentation for hosting in IIS can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/iis/index?view=aspnetcore-3.1
 
 ## Hosting a Server (Ubuntu)
 * Ubuntu 18.04 and 19.04 have been tested.  The Linux server package might work with other distros after some alterations to the setup script.
@@ -50,7 +50,7 @@ The following steps will configure your Windows 10 machine for building the Remo
 		* More information: https://letsencrypt.org/, https://certbot.eff.org/
 * Change values in appsettings.json for your environment.
 * After creating your account on the website, you can set "AllowSelfRegistration" to false in appsettings.json to disable registration.
-* Documentation for hosting behind Nginx can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx?view=aspnetcore-3.0
+* Documentation for hosting behind Nginx can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx?view=aspnetcore-3.1
 
 ## Logging
 * On clients, logs are kept in %temp%\Remotely_Logs.txt.
@@ -61,7 +61,7 @@ The following steps will configure your Windows 10 machine for building the Remo
 * On Windows Servers, the above logs can also be written to the Windows Event Log.
 	* This is enabled in appsettings.json by setting EnableWindowsEventLog to true.
 * You can configure logging levels and other settings in appsetttings.json.
-	* More information: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-3.0
+	* More information: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-3.1
 
 ## Remote Control Requirements
 * Windows: Only the latest version of Windows 10 is tested.

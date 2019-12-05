@@ -270,3 +270,5 @@ __pycache__/
 *.msi
 /Server/wwwroot/Downloads/WinDesktop/*
 /Server/CurrentVersion.txt
+/Server/wwwroot/scripts/**/*.js
+/Server/wwwroot/scripts/**/*.map

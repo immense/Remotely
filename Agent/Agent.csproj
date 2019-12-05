@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Copyright>Copyright ©  2019 Translucency Software</Copyright>
@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Management.Infrastructure" Version="1.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.0" />
     <PackageReference Include="Microsoft.PowerShell.Commands.Diagnostics" Version="6.2.3" />
     <PackageReference Include="Microsoft.PowerShell.Commands.Management" Version="6.2.3" />
     <PackageReference Include="Microsoft.PowerShell.Commands.Utility" Version="6.2.3" />
@@ -31,7 +31,7 @@
     <PackageReference Include="Microsoft.WSMan.Runtime" Version="6.2.3" />
     <PackageReference Include="NETStandard.Library" Version="2.0.3" />
     <PackageReference Include="System.Management.Automation" Version="6.2.3" />
-    <PackageReference Include="System.ServiceProcess.ServiceController" Version="4.6.0" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="4.7.0" />
   </ItemGroup>
 
   <ItemGroup>
