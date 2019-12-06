@@ -8,9 +8,9 @@ namespace Remotely.Shared.Win32
         [StructLayout(LayoutKind.Sequential)]
         public struct WTS_SESSION_INFO
         {
-            public Int32 SessionID;
+            public uint SessionID;
             [MarshalAs(UnmanagedType.LPStr)]
-            public String pWinStationName;
+            public string pWinStationName;
             public WTS_CONNECTSTATE_CLASS State;
         }
         public enum WTS_CONNECTSTATE_CLASS

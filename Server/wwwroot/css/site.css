@@ -71,9 +71,6 @@ h6 {
 }
 
 
-#tabContentWrapper {
-    overflow: auto;
-}
 #gridControlsWrapper {
     text-align: right;
     margin-bottom: 5px;
@@ -144,7 +141,7 @@ h6 {
 
 .console-block textarea {
     border: none;
-    width: 100%;
+    width: calc(100% - 5px);
     height: 22px;
     resize: none;
 }
@@ -216,9 +213,9 @@ span.label.code {
 }
 .float-message {
     position: fixed;
-    top: 50%;
+    top: 20px;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, 0);
     padding: 10px;
     font-size: 1.25em;
     font-weight: bold;
@@ -230,20 +227,18 @@ span.label.code {
     user-select: none;
     pointer-events: none;
     animation-name: float-message;
-    animation-delay: 1s;
-    animation-duration: 2s;
+    animation-delay: 2s;
+    animation-duration: .5s;
     animation-fill-mode: forwards;
     animation-timing-function: ease-in;
 }
 
 @keyframes float-message {
     from {
-        opacity: 1;
-        top: 50%;
+        transform: translate(-50%, 0);
     }
 
     to {
-        opacity: 0;
-        top: 0;
+        transform: translate(-50%, calc(-100% - 25px));
     }
 }

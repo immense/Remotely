@@ -30,29 +30,28 @@ namespace Remotely.Shared.Win32
 
         public static uint GetRDPSession()
         {
+            var consoleSessionId = Kernel32.WTSGetActiveConsoleSessionId();
+            uint activeSessionId = 0;
             IntPtr ppSessionInfo = IntPtr.Zero;
-            Int32 count = 0;
-            Int32 retval = WTSAPI32.WTSEnumerateSessions(WTSAPI32.WTS_CURRENT_SERVER_HANDLE, 0, 1, ref ppSessionInfo, ref count);
-            Int32 dataSize = Marshal.SizeOf(typeof(WTSAPI32.WTS_SESSION_INFO));
-            var sessList = new List<WTSAPI32.WTS_SESSION_INFO>();
-            Int64 current = (Int64)ppSessionInfo;
+            var count = 0;
+            var enumSessionResult = WTSAPI32.WTSEnumerateSessions(WTSAPI32.WTS_CURRENT_SERVER_HANDLE, 0, 1, ref ppSessionInfo, ref count);
+            var dataSize = Marshal.SizeOf(typeof(WTSAPI32.WTS_SESSION_INFO));
+            var current = ppSessionInfo;
 
-            if (retval != 0)
+            if (enumSessionResult != 0)
             {
                 for (int i = 0; i < count; i++)
                 {
-                    WTSAPI32.WTS_SESSION_INFO sessInf = (WTSAPI32.WTS_SESSION_INFO)Marshal.PtrToStructure((System.IntPtr)current, typeof(WTSAPI32.WTS_SESSION_INFO));
+                    WTSAPI32.WTS_SESSION_INFO sessionInfo = (WTSAPI32.WTS_SESSION_INFO)Marshal.PtrToStructure((System.IntPtr)current, typeof(WTSAPI32.WTS_SESSION_INFO));
                     current += dataSize;
-                    sessList.Add(sessInf);
+                    if (sessionInfo.State == WTSAPI32.WTS_CONNECTSTATE_CLASS.WTSActive && sessionInfo.SessionID != consoleSessionId)
+                    {
+                        activeSessionId = sessionInfo.SessionID;
+                    }
                 }
             }
-            uint retVal = 0;
-            var rdpSession = sessList.Find(ses => ses.pWinStationName.ToLower().Contains("rdp") && ses.State == 0);
-            if (sessList.Exists(ses => ses.pWinStationName.ToLower().Contains("rdp") && ses.State == 0))
-            {
-                retVal = (uint)rdpSession.SessionID;
-            }
-            return retVal;
+            
+            return activeSessionId;
         }
 
         public static IntPtr OpenInputDesktop()

@@ -228,9 +228,9 @@ footer a {
 
 .float-message {
     position: fixed;
-    top: 50%;
+    top: 20px;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, 0);
     padding: 10px;
     font-size: 1.25em;
     font-weight: bold;
@@ -242,24 +242,21 @@ footer a {
     user-select: none;
     pointer-events: none;
     animation-name: float-message;
-    animation-delay: 1s;
-    animation-duration: 2s;
+    animation-delay: 2s;
+    animation-duration: .5s;
     animation-fill-mode: forwards;
     animation-timing-function: ease-in;
 }
 
 @keyframes float-message {
     from {
-        opacity: 1;
-        top: 50%;
+        transform: translate(-50%, 0);
     }
 
     to {
-        opacity: 0;
-        top: 0;
+        transform: translate(-50%, calc(-100% - 25px));
     }
 }
-
 
 .modal-prompt {
     position: fixed;
