@@ -51,16 +51,16 @@ export function AddOrUpdateDevice(device: Device) {
                     <td>${device.TotalStorage.toLocaleString()}</td>
                     <td>${Math.round(device.FreeMemory * 100)}%</td>
                     <td>${device.TotalMemory.toLocaleString()}</td>
-                    <td><input type="text" class="device-tag" value="${device.Tags}" /></td>`;
+                    <td><span class="fas fa-edit device-edit-button" style="font-size:1.5em" /></td>`;
 
 
-    (recordRow.querySelector(".device-tag") as HTMLInputElement).onchange = (ev) => {
-        var newTag = (ev.currentTarget as HTMLInputElement).value;
-        DataSource.find(x => x.ID == device.ID).Tags = newTag;
-        var deviceTagInput = document.getElementById(device.ID).querySelector(".device-tag") as HTMLInputElement;
-        deviceTagInput.value = newTag;
-        deviceTagInput.setAttribute("value", newTag);
-        BrowserSockets.Connection.invoke("UpdateTags", device.ID, newTag);
+    (recordRow.querySelector(".device-edit-button") as HTMLButtonElement).onclick = (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        UI.ShowModal(
+            "Edit Device",
+            `Some body stuff.`,
+            `<button type="button" class="btn btn-primary" data-dismiss="modal">Save</button>`);
     };
     UpdateDeviceCounts();
 }

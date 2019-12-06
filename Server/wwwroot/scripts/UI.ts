@@ -88,7 +88,7 @@ export function FloatMessage(message: string) {
         messageDiv.remove();
     }, 5000);
 }
-export function ShowModal(title: string, message: string, buttonsHTML: string = "", onDismissCallback: VoidFunction = null) {
+export function ShowModal(title: string, modalBodyHtml: string, buttonsHTML: string = "", onDismissCallback: VoidFunction = null) {
     var modalID = Utilities.CreateGUID();
     var modalHTML = `<div id="${modalID}" class="modal fade in" tabindex="-1" role="dialog">
           <div class="modal-dialog" role="document">
@@ -100,7 +100,7 @@ export function ShowModal(title: string, message: string, buttonsHTML: string = 
                 </button>
               </div>
               <div class="modal-body">
-                ${message}
+                ${modalBodyHtml}
               </div>
               <div class="modal-footer">
                 ${buttonsHTML}
