@@ -718,7 +718,7 @@ namespace Remotely.Server.Data
             RemotelyContext.SaveChanges();
         }
 
-        internal void UpdateTags(string deviceID, string tag)
+        internal void UpdateDevice(string deviceID, string tag)
         {
             RemotelyContext.Devices.Find(deviceID).Tags = tag;
             RemotelyContext.SaveChanges();

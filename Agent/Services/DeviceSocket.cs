@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Reflection;
 using Remotely.Shared.Win32;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Remotely.Agent.Services
 {
@@ -30,6 +31,7 @@ namespace Remotely.Agent.Services
 
             HubConnection = new HubConnectionBuilder()
                 .WithUrl(ConnectionInfo.Host + "/DeviceHub")
+                .AddMessagePackProtocol()
                 .Build();
 
             RegisterMessageHandlers(HubConnection);

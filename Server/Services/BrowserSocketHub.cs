@@ -190,17 +190,17 @@ namespace Remotely.Server.Services
             DataService.RemoveDevices(deviceIDs);
             await Clients.Caller.SendAsync("RefreshDeviceList");
         }
-        public async Task UpdateTags(string deviceID, string tag)
+        public async Task UpdateDevice(string deviceID, string tags)
         {
             if (DataService.DoesUserHaveAccessToDevice(deviceID, RemotelyUser))
             {
-                if (tag.Length > 200)
+                if (tags.Length > 200)
                 {
-                    await Clients.Caller.SendAsync("DisplayConsoleMessage", $"Tag must be 200 characters or less. Supplied length is {tag.Length}.");
+                    await Clients.Caller.SendAsync("DisplayConsoleMessage", $"Tag must be 200 characters or less. Supplied length is {tags.Length}.");
                     return;
                 }
-                DataService.UpdateTags(deviceID, tag);
-                await Clients.Caller.SendAsync("DisplayConsoleMessage", "Tag updated successfully.");
+                DataService.UpdateDevice(deviceID, tags);
+                await Clients.Caller.SendAsync("DisplayConsoleMessage", "Device updated successfully.");
             }
         }
 

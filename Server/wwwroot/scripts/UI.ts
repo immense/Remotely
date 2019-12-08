@@ -88,7 +88,7 @@ export function FloatMessage(message: string) {
         messageDiv.remove();
     }, 5000);
 }
-export function ShowModal(title: string, modalBodyHtml: string, buttonsHTML: string = "", onDismissCallback: VoidFunction = null) {
+export function ShowModal(title: string, modalBodyHtml: string, buttonsHTML: string = "", onDismissCallback: VoidFunction = null) : HTMLDivElement {
     var modalID = Utilities.CreateGUID();
     var modalHTML = `<div id="${modalID}" class="modal fade in" tabindex="-1" role="dialog">
           <div class="modal-dialog" role="document">
@@ -123,6 +123,7 @@ export function ShowModal(title: string, modalBodyHtml: string, buttonsHTML: str
         }
     });
     $("#" + modalID)["modal"]();
+    return wrapperDiv;
 };
 
 export function ValidateInput(inputElement: HTMLInputElement) {
