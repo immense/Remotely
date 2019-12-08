@@ -1445,7 +1445,7 @@ __webpack_require__.r(__webpack_exports__);
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 // Version token that will be replaced by the prepack command
 /** The version of the SignalR client. */
-var VERSION = "3.0.0";
+var VERSION = "3.1.0";
 
 
 
@@ -1689,6 +1689,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
 })();
 // This is an empty implementation of the NodeHttpClient that will be included in browser builds so the output file will be smaller
 
+/** @private */
 var NodeHttpClient = /** @class */ (function (_super) {
     __extends(NodeHttpClient, _super);
     // @ts-ignore: Need ILogger to compile, but unused variables generate errors
@@ -2375,8 +2376,17 @@ var HubConnection = /** @class */ (function () {
                         break;
                     case _IHubProtocol__WEBPACK_IMPORTED_MODULE_1__["MessageType"].Close:
                         this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_2__["LogLevel"].Information, "Close message received from server.");
-                        // We don't want to wait on the stop itself.
-                        this.stopPromise = this.stopInternal(message.error ? new Error("Server returned an error on close: " + message.error) : undefined);
+                        var error = message.error ? new Error("Server returned an error on close: " + message.error) : undefined;
+                        if (message.allowReconnect === true) {
+                            // It feels wrong not to await connection.stop() here, but processIncomingData is called as part of an onreceive callback which is not async,
+                            // this is already the behavior for serverTimeout(), and HttpConnection.Stop() should catch and log all possible exceptions.
+                            // tslint:disable-next-line:no-floating-promises
+                            this.connection.stop(error);
+                        }
+                        else {
+                            // We cannot await stopInternal() here, but subsequent calls to stop() will await this if stopInternal() is still ongoing.
+                            this.stopPromise = this.stopInternal(error);
+                        }
                         break;
                     default:
                         this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_2__["LogLevel"].Warning, "Invalid message type: " + message.type + ".");
@@ -3425,6 +3435,7 @@ var HttpConnection = /** @class */ (function () {
     function HttpConnection(url, options) {
         if (options === void 0) { options = {}; }
         this.features = {};
+        this.negotiateVersion = 1;
         _Utils__WEBPACK_IMPORTED_MODULE_5__["Arg"].isRequired(url, "url");
         this.logger = Object(_Utils__WEBPACK_IMPORTED_MODULE_5__["createLogger"])(options.logger);
         this.baseUrl = this.resolveUrl(url);
@@ -3667,7 +3678,6 @@ var HttpConnection = /** @class */ (function () {
                         if (redirects === MAX_REDIRECTS && negotiateResponse.url) {
                             throw new Error("Negotiate redirection limit exceeded.");
                         }
-                        this.connectionId = negotiateResponse.connectionId;
                         return [4 /*yield*/, this.createTransport(url, this.options.transport, negotiateResponse, transferFormat)];
                     case 10:
                         _a.sent();
@@ -3696,7 +3706,7 @@ var HttpConnection = /** @class */ (function () {
     };
     HttpConnection.prototype.getNegotiationResponse = function (url) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, headers, token, negotiateUrl, response, e_5;
+            var _a, headers, token, negotiateUrl, response, negotiateResponse, e_5;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -3725,7 +3735,13 @@ var HttpConnection = /** @class */ (function () {
                         if (response.statusCode !== 200) {
                             return [2 /*return*/, Promise.reject(new Error("Unexpected status code returned from negotiate " + response.statusCode))];
                         }
-                        return [2 /*return*/, JSON.parse(response.content)];
+                        negotiateResponse = JSON.parse(response.content);
+                        if (!negotiateResponse.negotiateVersion || negotiateResponse.negotiateVersion < 1) {
+                            // Negotiate version 0 doesn't use connectionToken
+                            // So we set it equal to connectionId so all our logic can use connectionToken without being aware of the negotiate version
+                            negotiateResponse.connectionToken = negotiateResponse.connectionId;
+                        }
+                        return [2 /*return*/, negotiateResponse];
                     case 5:
                         e_5 = _b.sent();
                         this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Error, "Failed to complete negotiation with the server: " + e_5);
@@ -3735,29 +3751,31 @@ var HttpConnection = /** @class */ (function () {
             });
         });
     };
-    HttpConnection.prototype.createConnectUrl = function (url, connectionId) {
-        if (!connectionId) {
+    HttpConnection.prototype.createConnectUrl = function (url, connectionToken) {
+        if (!connectionToken) {
             return url;
         }
-        return url + (url.indexOf("?") === -1 ? "?" : "&") + ("id=" + connectionId);
+        return url + (url.indexOf("?") === -1 ? "?" : "&") + ("id=" + connectionToken);
     };
     HttpConnection.prototype.createTransport = function (url, requestedTransport, negotiateResponse, requestedTransferFormat) {
         return __awaiter(this, void 0, void 0, function () {
-            var connectUrl, transportExceptions, transports, _i, transports_1, endpoint, transportOrError, ex_1, ex_2, message;
+            var connectUrl, transportExceptions, transports, negotiate, _i, transports_1, endpoint, transportOrError, ex_1, ex_2, message;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        connectUrl = this.createConnectUrl(url, negotiateResponse.connectionId);
+                        connectUrl = this.createConnectUrl(url, negotiateResponse.connectionToken);
                         if (!this.isITransport(requestedTransport)) return [3 /*break*/, 2];
                         this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Debug, "Connection was provided an instance of ITransport, using that directly.");
                         this.transport = requestedTransport;
                         return [4 /*yield*/, this.startTransport(connectUrl, requestedTransferFormat)];
                     case 1:
                         _a.sent();
+                        this.connectionId = negotiateResponse.connectionId;
                         return [2 /*return*/];
                     case 2:
                         transportExceptions = [];
                         transports = negotiateResponse.availableTransports || [];
+                        negotiate = negotiateResponse;
                         _i = 0, transports_1 = transports;
                         _a.label = 3;
                     case 3:
@@ -3771,30 +3789,31 @@ var HttpConnection = /** @class */ (function () {
                     case 4:
                         if (!this.isITransport(transportOrError)) return [3 /*break*/, 12];
                         this.transport = transportOrError;
-                        if (!!negotiateResponse.connectionId) return [3 /*break*/, 9];
+                        if (!!negotiate) return [3 /*break*/, 9];
                         _a.label = 5;
                     case 5:
                         _a.trys.push([5, 7, , 8]);
                         return [4 /*yield*/, this.getNegotiationResponse(url)];
                     case 6:
-                        negotiateResponse = _a.sent();
+                        negotiate = _a.sent();
                         return [3 /*break*/, 8];
                     case 7:
                         ex_1 = _a.sent();
                         return [2 /*return*/, Promise.reject(ex_1)];
                     case 8:
-                        connectUrl = this.createConnectUrl(url, negotiateResponse.connectionId);
+                        connectUrl = this.createConnectUrl(url, negotiate.connectionToken);
                         _a.label = 9;
                     case 9:
                         _a.trys.push([9, 11, , 12]);
                         return [4 /*yield*/, this.startTransport(connectUrl, requestedTransferFormat)];
                     case 10:
                         _a.sent();
+                        this.connectionId = negotiate.connectionId;
                         return [2 /*return*/];
                     case 11:
                         ex_2 = _a.sent();
                         this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Error, "Failed to start the transport '" + endpoint.transport + "': " + ex_2);
-                        negotiateResponse.connectionId = undefined;
+                        negotiate = undefined;
                         transportExceptions.push(endpoint.transport + " failed: " + ex_2);
                         if (this.connectionState !== "Connecting " /* Connecting */) {
                             message = "Failed to select transport before stop() was called.";
@@ -3924,7 +3943,7 @@ var HttpConnection = /** @class */ (function () {
         }
         // Setting the url to the href propery of an anchor tag handles normalization
         // for us. There are 3 main cases.
-        // 1. Relative  path normalization e.g "b" -> "http://localhost:5000/a/b"
+        // 1. Relative path normalization e.g "b" -> "http://localhost:5000/a/b"
         // 2. Absolute path normalization e.g "/a/b" -> "http://localhost:5000/a/b"
         // 3. Networkpath reference normalization e.g "//localhost:5000/a/b" -> "http://localhost:5000/a/b"
         var aTag = window.document.createElement("a");
@@ -3940,6 +3959,10 @@ var HttpConnection = /** @class */ (function () {
         }
         negotiateUrl += "negotiate";
         negotiateUrl += index === -1 ? "" : url.substring(index);
+        if (negotiateUrl.indexOf("negotiateVersion") === -1) {
+            negotiateUrl += index === -1 ? "?" : "&";
+            negotiateUrl += "negotiateVersion=" + this.negotiateVersion;
+        }
         return negotiateUrl;
     };
     return HttpConnection;
@@ -3948,6 +3971,7 @@ var HttpConnection = /** @class */ (function () {
 function transportMatches(requestedTransport, actualTransport) {
     return !requestedTransport || ((actualTransport & requestedTransport) !== 0);
 }
+/** @private */
 var TransportSendQueue = /** @class */ (function () {
     function TransportSendQueue(transport) {
         this.transport = transport;
@@ -4671,6 +4695,7 @@ var WebSocketTransport = /** @class */ (function () {
                             url = url.replace(/^http/, "ws");
                             var webSocket;
                             var cookies = _this.httpClient.getCookieString(url);
+                            var opened = false;
                             if (_Utils__WEBPACK_IMPORTED_MODULE_2__["Platform"].isNode && cookies) {
                                 // Only pass cookies when in non-browser environments
                                 webSocket = new _this.webSocketConstructor(url, undefined, {
@@ -4690,6 +4715,7 @@ var WebSocketTransport = /** @class */ (function () {
                             webSocket.onopen = function (_event) {
                                 _this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"].Information, "WebSocket connected to " + url + ".");
                                 _this.webSocket = webSocket;
+                                opened = true;
                                 resolve();
                             };
                             webSocket.onerror = function (event) {
@@ -4709,7 +4735,24 @@ var WebSocketTransport = /** @class */ (function () {
                                     _this.onreceive(message.data);
                                 }
                             };
-                            webSocket.onclose = function (event) { return _this.close(event); };
+                            webSocket.onclose = function (event) {
+                                // Don't call close handler if connection was never established
+                                // We'll reject the connect call instead
+                                if (opened) {
+                                    _this.close(event);
+                                }
+                                else {
+                                    var error = null;
+                                    // ErrorEvent is a browser only type we need to check if the type exists before using it
+                                    if (typeof ErrorEvent !== "undefined" && event instanceof ErrorEvent) {
+                                        error = event.error;
+                                    }
+                                    else {
+                                        error = new Error("There was an error with the transport.");
+                                    }
+                                    reject(error);
+                                }
+                            };
                         })];
                 }
             });

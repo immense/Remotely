@@ -3,6 +3,8 @@ import { Device } from "./Models/Device.js";
 import { Main } from "./Main.js";
 import { DeviceGrid } from "./UI.js";
 import * as BrowserSockets from "./BrowserSockets.js";
+import { CreateGUID } from "./Utilities.js";
+
 
 export var DataSource: Array<Device> = new Array<Device>();
 
@@ -57,13 +59,11 @@ export function AddOrUpdateDevice(device: Device) {
     (recordRow.querySelector(".device-edit-button") as HTMLButtonElement).onclick = (ev) => {
         ev.preventDefault();
         ev.stopPropagation();
-        UI.ShowModal(
-            "Edit Device",
-            `Some body stuff.`,
-            `<button type="button" class="btn btn-primary" data-dismiss="modal">Save</button>`);
+        EditDevice(device);
     };
     UpdateDeviceCounts();
 }
+
 export function GetSelectedDevices(): Device[] {
     var devices = new Array<Device>();
     DeviceGrid.querySelectorAll(".row-selected").forEach(row => {
@@ -127,4 +127,30 @@ export function UpdateDeviceCounts() {
     ) {
         UI.AddConsoleOutput(`Your selection contains offline computers.  Your commands will only be sent to those that are online.`);
     }
+}
+
+function EditDevice(device: Device) {
+    var modalWrapper = UI.ShowModal(
+        "Edit Device",
+        `
+        <div class="form-group row">
+            <label for="device-name" class="col-sm-2 col-form-label">Device:</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="device-name" readonly value="${device.DeviceName}" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="tags" class="col-sm-2 col-form-label">Tags:</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="device-tags" value="${device.Tags}" />
+            </div>
+        </div>
+`,
+        `<button id="save-button" type="button" class="btn btn-primary" data-dismiss="modal">Save</button>`);
+
+    modalWrapper.querySelector("#save-button").addEventListener("click", (ev) => {
+        var newTags = modalWrapper.querySelector<HTMLInputElement>("#device-tags").value;
+        DataSource.find(x => x.ID == device.ID).Tags = newTags;
+        BrowserSockets.Connection.invoke("UpdateDevice", device.ID, newTags);
+    });
 }

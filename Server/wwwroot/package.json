@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "name": "asp.net",
+  "private": true,
+  "devDependencies": {
+    "@types/jquery": "^3.3.31"
+  },
+  "dependencies": {
+    "@microsoft/signalr": "^3.1.0",
+    "@microsoft/signalr-protocol-msgpack": "^3.1.0",
+    "@types/node": "^12.12.14",
+    "msgpack5": "^4.2.1"
+  }
+}

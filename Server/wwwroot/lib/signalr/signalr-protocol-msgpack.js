@@ -125,7 +125,7 @@ __webpack_require__.r(__webpack_exports__);
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 // Version token that will be replaced by the prepack command
 /** The version of the SignalR Message Pack protocol library. */
-var VERSION = "1.1.0";
+var VERSION = "3.1.0";
 
 
 
@@ -140,8 +140,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var buffer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(buffer__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var msgpack5__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(6);
 /* harmony import */ var msgpack5__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(msgpack5__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7);
-/* harmony import */ var _aspnet_signalr__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7);
+/* harmony import */ var _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _BinaryMessageFormat__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(8);
 /* harmony import */ var _Utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(9);
 // Copyright (c) .NET Foundation. All rights reserved.
@@ -155,7 +155,7 @@ __webpack_require__.r(__webpack_exports__);
 // constant encoding of the ping message
 // see: https://github.com/aspnet/SignalR/blob/dev/specs/HubProtocol.md#ping-message-encoding-1
 // Don't use Uint8Array.from as IE does not support it
-var SERIALIZED_PING_MESSAGE = new Uint8Array([0x91, _aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Ping]);
+var SERIALIZED_PING_MESSAGE = new Uint8Array([0x91, _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Ping]);
 /** Implements the MessagePack Hub Protocol */
 var MessagePackHubProtocol = /** @class */ (function () {
     function MessagePackHubProtocol() {
@@ -164,11 +164,14 @@ var MessagePackHubProtocol = /** @class */ (function () {
         /** The version of the protocol. */
         this.version = 1;
         /** The TransferFormat of the protocol. */
-        this.transferFormat = _aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__["TransferFormat"].Binary;
+        this.transferFormat = _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["TransferFormat"].Binary;
+        this.errorResult = 1;
+        this.voidResult = 2;
+        this.nonVoidResult = 3;
     }
     /** Creates an array of HubMessage objects from the specified serialized representation.
      *
-     * @param {ArrayBuffer | Buffer} input An ArrayBuffer containing the serialized representation.
+     * @param {ArrayBuffer | Buffer} input An ArrayBuffer or Buffer containing the serialized representation.
      * @param {ILogger} logger A logger that will be used to log messages that occur during parsing.
      */
     MessagePackHubProtocol.prototype.parseMessages = function (input, logger) {
@@ -177,7 +180,7 @@ var MessagePackHubProtocol = /** @class */ (function () {
             throw new Error("Invalid input for MessagePack hub protocol. Expected an ArrayBuffer or Buffer.");
         }
         if (logger === null) {
-            logger = _aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__["NullLogger"].instance;
+            logger = _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["NullLogger"].instance;
         }
         var messages = _BinaryMessageFormat__WEBPACK_IMPORTED_MODULE_3__["BinaryMessageFormat"].parse(input);
         var hubMessages = [];
@@ -198,15 +201,18 @@ var MessagePackHubProtocol = /** @class */ (function () {
      */
     MessagePackHubProtocol.prototype.writeMessage = function (message) {
         switch (message.type) {
-            case _aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Invocation:
+            case _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Invocation:
                 return this.writeInvocation(message);
-            case _aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].StreamInvocation:
+            case _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].StreamInvocation:
                 return this.writeStreamInvocation(message);
-            case _aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].StreamItem:
-            case _aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Completion:
-                throw new Error("Writing messages of type '" + message.type + "' is not supported.");
-            case _aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Ping:
+            case _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].StreamItem:
+                return this.writeStreamItem(message);
+            case _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Completion:
+                return this.writeCompletion(message);
+            case _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Ping:
                 return _BinaryMessageFormat__WEBPACK_IMPORTED_MODULE_3__["BinaryMessageFormat"].write(SERIALIZED_PING_MESSAGE);
+            case _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].CancelInvocation:
+                return this.writeCancelInvocation(message);
             default:
                 throw new Error("Invalid message type.");
         }
@@ -222,19 +228,19 @@ var MessagePackHubProtocol = /** @class */ (function () {
         }
         var messageType = properties[0];
         switch (messageType) {
-            case _aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Invocation:
+            case _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Invocation:
                 return this.createInvocationMessage(this.readHeaders(properties), properties);
-            case _aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].StreamItem:
+            case _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].StreamItem:
                 return this.createStreamItemMessage(this.readHeaders(properties), properties);
-            case _aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Completion:
+            case _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Completion:
                 return this.createCompletionMessage(this.readHeaders(properties), properties);
-            case _aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Ping:
+            case _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Ping:
                 return this.createPingMessage(properties);
-            case _aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Close:
+            case _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Close:
                 return this.createCloseMessage(properties);
             default:
                 // Future protocol changes can add message types, old clients can ignore them
-                logger.log(_aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__["LogLevel"].Information, "Unknown message type '" + messageType + "' ignored.");
+                logger.log(_microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["LogLevel"].Information, "Unknown message type '" + messageType + "' ignored.");
                 return null;
         }
     };
@@ -245,8 +251,9 @@ var MessagePackHubProtocol = /** @class */ (function () {
         }
         return {
             // Close messages have no headers.
+            allowReconnect: properties.length >= 3 ? properties[2] : undefined,
             error: properties[1],
-            type: _aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Close,
+            type: _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Close,
         };
     };
     MessagePackHubProtocol.prototype.createPingMessage = function (properties) {
@@ -256,7 +263,7 @@ var MessagePackHubProtocol = /** @class */ (function () {
         }
         return {
             // Ping messages have no headers.
-            type: _aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Ping,
+            type: _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Ping,
         };
     };
     MessagePackHubProtocol.prototype.createInvocationMessage = function (headers, properties) {
@@ -270,16 +277,18 @@ var MessagePackHubProtocol = /** @class */ (function () {
                 arguments: properties[4],
                 headers: headers,
                 invocationId: invocationId,
+                streamIds: [],
                 target: properties[3],
-                type: _aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Invocation,
+                type: _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Invocation,
             };
         }
         else {
             return {
                 arguments: properties[4],
                 headers: headers,
+                streamIds: [],
                 target: properties[3],
-                type: _aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Invocation,
+                type: _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Invocation,
             };
         }
     };
@@ -292,7 +301,7 @@ var MessagePackHubProtocol = /** @class */ (function () {
             headers: headers,
             invocationId: properties[2],
             item: properties[3],
-            type: _aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].StreamItem,
+            type: _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].StreamItem,
         };
     };
     MessagePackHubProtocol.prototype.createCompletionMessage = function (headers, properties) {
@@ -300,20 +309,17 @@ var MessagePackHubProtocol = /** @class */ (function () {
         if (properties.length < 4) {
             throw new Error("Invalid payload for Completion message.");
         }
-        var errorResult = 1;
-        var voidResult = 2;
-        var nonVoidResult = 3;
         var resultKind = properties[3];
-        if (resultKind !== voidResult && properties.length < 5) {
+        if (resultKind !== this.voidResult && properties.length < 5) {
             throw new Error("Invalid payload for Completion message.");
         }
         var error;
         var result;
         switch (resultKind) {
-            case errorResult:
+            case this.errorResult:
                 error = properties[4];
                 break;
-            case nonVoidResult:
+            case this.nonVoidResult:
                 result = properties[4];
                 break;
         }
@@ -322,20 +328,48 @@ var MessagePackHubProtocol = /** @class */ (function () {
             headers: headers,
             invocationId: properties[2],
             result: result,
-            type: _aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Completion,
+            type: _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Completion,
         };
         return completionMessage;
     };
     MessagePackHubProtocol.prototype.writeInvocation = function (invocationMessage) {
         var msgpack = msgpack5__WEBPACK_IMPORTED_MODULE_1__();
-        var payload = msgpack.encode([_aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Invocation, invocationMessage.headers || {}, invocationMessage.invocationId || null,
-            invocationMessage.target, invocationMessage.arguments]);
+        var payload = msgpack.encode([_microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Invocation, invocationMessage.headers || {}, invocationMessage.invocationId || null,
+            invocationMessage.target, invocationMessage.arguments, invocationMessage.streamIds]);
         return _BinaryMessageFormat__WEBPACK_IMPORTED_MODULE_3__["BinaryMessageFormat"].write(payload.slice());
     };
     MessagePackHubProtocol.prototype.writeStreamInvocation = function (streamInvocationMessage) {
         var msgpack = msgpack5__WEBPACK_IMPORTED_MODULE_1__();
-        var payload = msgpack.encode([_aspnet_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].StreamInvocation, streamInvocationMessage.headers || {}, streamInvocationMessage.invocationId,
-            streamInvocationMessage.target, streamInvocationMessage.arguments]);
+        var payload = msgpack.encode([_microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].StreamInvocation, streamInvocationMessage.headers || {}, streamInvocationMessage.invocationId,
+            streamInvocationMessage.target, streamInvocationMessage.arguments, streamInvocationMessage.streamIds]);
+        return _BinaryMessageFormat__WEBPACK_IMPORTED_MODULE_3__["BinaryMessageFormat"].write(payload.slice());
+    };
+    MessagePackHubProtocol.prototype.writeStreamItem = function (streamItemMessage) {
+        var msgpack = msgpack5__WEBPACK_IMPORTED_MODULE_1__();
+        var payload = msgpack.encode([_microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].StreamItem, streamItemMessage.headers || {}, streamItemMessage.invocationId,
+            streamItemMessage.item]);
+        return _BinaryMessageFormat__WEBPACK_IMPORTED_MODULE_3__["BinaryMessageFormat"].write(payload.slice());
+    };
+    MessagePackHubProtocol.prototype.writeCompletion = function (completionMessage) {
+        var msgpack = msgpack5__WEBPACK_IMPORTED_MODULE_1__();
+        var resultKind = completionMessage.error ? this.errorResult : completionMessage.result ? this.nonVoidResult : this.voidResult;
+        var payload;
+        switch (resultKind) {
+            case this.errorResult:
+                payload = msgpack.encode([_microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Completion, completionMessage.headers || {}, completionMessage.invocationId, resultKind, completionMessage.error]);
+                break;
+            case this.voidResult:
+                payload = msgpack.encode([_microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Completion, completionMessage.headers || {}, completionMessage.invocationId, resultKind]);
+                break;
+            case this.nonVoidResult:
+                payload = msgpack.encode([_microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Completion, completionMessage.headers || {}, completionMessage.invocationId, resultKind, completionMessage.result]);
+                break;
+        }
+        return _BinaryMessageFormat__WEBPACK_IMPORTED_MODULE_3__["BinaryMessageFormat"].write(payload.slice());
+    };
+    MessagePackHubProtocol.prototype.writeCancelInvocation = function (cancelInvocationMessage) {
+        var msgpack = msgpack5__WEBPACK_IMPORTED_MODULE_1__();
+        var payload = msgpack.encode([_microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].CancelInvocation, cancelInvocationMessage.headers || {}, cancelInvocationMessage.invocationId]);
         return _BinaryMessageFormat__WEBPACK_IMPORTED_MODULE_3__["BinaryMessageFormat"].write(payload.slice());
     };
     MessagePackHubProtocol.prototype.readHeaders = function (properties) {
@@ -2304,6 +2338,7 @@ __webpack_require__.r(__webpack_exports__);
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 // Not exported from index.
+/** @private */
 var BinaryMessageFormat = /** @class */ (function () {
     function BinaryMessageFormat() {
     }

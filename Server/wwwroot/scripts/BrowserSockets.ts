@@ -10,6 +10,7 @@ import { UserOptions } from "./Models/UserOptions.js";
 import { UserSettings } from "./UserSettings.js";
 import { Main } from "./Main.js";
 
+
 export var Connection: any;
 export var ServiceID: string;
 export var Connected: boolean;
@@ -18,6 +19,7 @@ export function Connect() {
     var signalR = window["signalR"];
     Connection = new signalR.HubConnectionBuilder()
         .withUrl("/BrowserHub")
+        .withHubProtocol(new signalR.protocols.msgpack.MessagePackHubProtocol())
         .configureLogging(signalR.LogLevel.Information)
         .build();
 
