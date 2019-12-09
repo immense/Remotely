@@ -54,11 +54,11 @@ namespace Remotely.Server.Services
             deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
             if (!DataService.DoesGroupExist(RemotelyUser.Id, groupName))
             {
-                await Clients.Caller.SendAsync("DisplayConsoleMessage", "Permission group does not exist.");
+                await Clients.Caller.SendAsync("DisplayMessage", "Permission group does not exist.", "Permission group does not exist.");
                 return;
             }
             DataService.AddPermissionToDevices(RemotelyUser.Id, deviceIDs, groupName);
-            await Clients.Caller.SendAsync("DisplayConsoleMessage", "Group added.");
+            await Clients.Caller.SendAsync("DisplayMessage", "Group added.");
         }
         public async Task DeployScript(string fileID, string mode, string[] deviceIDs)
         {
@@ -136,7 +136,7 @@ namespace Remotely.Server.Services
 				var currentUsers = RCBrowserSocketHub.OrganizationConnectionList.Count(x => x.Value.OrganizationID == RemotelyUser.OrganizationID);
 				if (currentUsers >= AppConfig.RemoteControlSessionLimit)
 				{
-					await Clients.Caller.SendAsync("DisplayConsoleMessage", $"There are already the maximum amount of active remote control sessions for your organization.");
+					await Clients.Caller.SendAsync("DisplayMessage", $"There are already the maximum amount of active remote control sessions for your organization.");
 					return;
 				}
 				await this.Clients.Caller.SendAsync("ServiceID", targetDevice.Key);
@@ -157,11 +157,11 @@ namespace Remotely.Server.Services
             deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
             if (!DataService.DoesGroupExist(RemotelyUser.Id, groupName))
             {
-                await Clients.Caller.SendAsync("DisplayConsoleMessage", "Permission group does not exist.");
+                await Clients.Caller.SendAsync("DisplayMessage", "Permission group does not exist.");
                 return;
             }
             DataService.RemovePermissionFromDevices(RemotelyUser.Id, deviceIDs, groupName);
-            await Clients.Caller.SendAsync("DisplayConsoleMessage", "Group removed.");
+            await Clients.Caller.SendAsync("DisplayMessage", "Group removed.", "Group removed.");
         }
         public async Task TransferFiles(List<string> fileIDs, string transferID, string[] deviceIDs)
         {
@@ -196,11 +196,11 @@ namespace Remotely.Server.Services
             {
                 if (tags.Length > 200)
                 {
-                    await Clients.Caller.SendAsync("DisplayConsoleMessage", $"Tag must be 200 characters or less. Supplied length is {tags.Length}.");
+                    await Clients.Caller.SendAsync("DisplayMessage", $"Tag must be 200 characters or less. Supplied length is {tags.Length}.", "Tag must be under 200 characters.");
                     return;
                 }
                 DataService.UpdateDevice(deviceID, tags);
-                await Clients.Caller.SendAsync("DisplayConsoleMessage", "Device updated successfully.");
+                await Clients.Caller.SendAsync("DisplayMessage", "Device updated successfully.", "Device updated.");
             }
         }
 

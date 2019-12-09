@@ -1,7 +1,7 @@
 ﻿import { RCBrowserSockets } from "./RCBrowserSockets.js";
 import { GetDistanceBetween } from "../Utilities.js";
 import { ConnectToClient, RemoteControl } from "./Main.js";
-import { FloatMessage } from "../UI.js";
+import { PopupMessage } from "../UI.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 import { Point } from "../Models/Point.js";
 
@@ -69,7 +69,7 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
         ClipboardTransferTextArea.value = "";
         ClipboardTransferTextArea.blur();
         ClipboardTransferBar.classList.remove("open");
-        FloatMessage("Clipboard sent!");
+        PopupMessage("Clipboard sent!");
     });
     ConnectButton.addEventListener("click", (ev) => {
         ConnectToClient();
@@ -128,7 +128,7 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
         input.select();
         document.execCommand("copy", false, location.href);
         input.remove();
-        FloatMessage("Link copied to clipboard.");
+        PopupMessage("Link copied to clipboard.");
 
     });
     KeyboardButton.addEventListener("click", (ev) => {
