@@ -177,13 +177,12 @@ function clickStartRemoteControlButton() {
     document.getElementById("startRemoteControlButton").addEventListener("click", function (e) {
         var selectedDevices = DataGrid.GetSelectedDevices();
         if (selectedDevices.length == 0) {
-            UI.FloatMessage("You must select a device first.");
+            UI.PopupMessage("You must select a device first.");
         }
         else if (selectedDevices.length > 1) {
-            UI.FloatMessage("You must select only one device to control.");
+            UI.PopupMessage("You must select only one device to control.");
         }
         else {
-            UI.FloatMessage("Starting remote control...");
             WebCommands.find(x => x.Name == "RemoteControl").Execute([]);
         }
     })

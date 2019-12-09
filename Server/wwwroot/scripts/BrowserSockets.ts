@@ -79,8 +79,13 @@ function applyMessageHandlers(hubConnection) {
         AddCommandResultsHarness(result);
         UpdateResultsCount(result.CommandContextID);
     });
-    hubConnection.on("DisplayConsoleMessage", (message: string) => {
-        UI.AddConsoleOutput(message);
+    hubConnection.on("DisplayMessage", (consoleMessage: string, popupMessage: string) => {
+        if (consoleMessage) {
+            UI.AddConsoleOutput(consoleMessage);
+        }
+        if (popupMessage) {
+            UI.PopupMessage(popupMessage);
+        }
     });
     hubConnection.on("DisplayConsoleHTML", (message: string) => {
         UI.AddConsoleHTML(message);

@@ -79,7 +79,7 @@ export function AutoSizeTextArea() {
     ConsoleTextArea.style.height = "1px";
     ConsoleTextArea.style.height = Math.max(12, ConsoleTextArea.scrollHeight) + "px";
 }
-export function FloatMessage(message: string) {
+export function PopupMessage(message: string) {
     var messageDiv = document.createElement("div");
     messageDiv.classList.add("float-message");
     messageDiv.innerHTML = message;

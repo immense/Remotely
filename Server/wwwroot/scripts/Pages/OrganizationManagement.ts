@@ -1,4 +1,4 @@
-﻿import { ShowModal, ValidateInput, FloatMessage } from "../UI.js";
+﻿import { ShowModal, ValidateInput, PopupMessage } from "../UI.js";
 
 document.getElementById("permissionHelpButton").addEventListener("click", (ev) => {
     ShowModal("Permissions", `Permission groups can be used to restrict access to computers.<br><br>
@@ -269,7 +269,7 @@ document.getElementById("sendInviteButton").addEventListener("click", (ev) => {
     xhr.open("post", location.origin + `/api/OrganizationManagement/SendInvite/`);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send(JSON.stringify({ InvitedUser: invitedUser, IsAdmin: isAdmin }));
-    FloatMessage("Sending invite...");
+    PopupMessage("Sending invite...");
 });
 document.getElementById("inviteUserInput").addEventListener("keypress", (e) => {
     if (e.key.toLowerCase() == "enter") {

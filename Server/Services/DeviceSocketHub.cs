@@ -119,9 +119,9 @@ namespace Remotely.Server.Services
             await BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceHeartbeat", Device);
         }
 
-        public async Task DisplayConsoleMessage(string message, string requesterID)
+        public async Task DisplayMessage(string consoleMessage, string popupMessage, string requesterID)
         {
-			await BrowserHub.Clients.Client(requesterID).SendAsync("DisplayConsoleMessage", message);
+			await BrowserHub.Clients.Client(requesterID).SendAsync("DisplayMessage", consoleMessage, popupMessage);
 		}
 		public override Task OnConnectedAsync()
 		{
