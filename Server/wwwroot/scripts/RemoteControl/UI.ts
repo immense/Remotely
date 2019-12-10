@@ -46,6 +46,7 @@ var startPinchPoint1: Point;
 var startPinchPoint2: Point;
 var isMenuButtonDragging: boolean;
 var startMenuDraggingY: number;
+var startLongPressTimeout: number;
 
 export function ApplyInputHandlers(sockets: RCBrowserSockets) {
     AudioButton.addEventListener("click", (ev) => {
@@ -223,26 +224,27 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
             sockets.SendTap(percentX, percentY);
         }
     });
-    ScreenViewer.addEventListener("dblclick", function (e) {
-        if (currentPointerDevice == "mouse") {
-            return;
-        }
-        var percentX = e.offsetX / ScreenViewer.clientWidth;
-        var percentY = e.offsetY / ScreenViewer.clientHeight;
-        sockets.SendMouseDown(2, percentX, percentY);
-        sockets.SendMouseUp(2, percentX, percentY);
-    });
 
     ScreenViewer.addEventListener("touchstart", function (e) {
-        if (e.touches.length > 1) {
+        currentTouchCount = e.touches.length;
+
+        if (currentTouchCount == 1) {
+            startLongPressTimeout = window.setTimeout(() => {
+                var percentX = e.touches[0].pageX / ScreenViewer.clientWidth;
+                var percentY = e.touches[0].pageY / ScreenViewer.clientHeight;
+                sockets.SendMouseDown(2, percentX, percentY);
+                sockets.SendMouseUp(2, percentX, percentY);
+            }, 1000);
+        }
+
+        if (currentTouchCount > 1) {
             cancelNextViewerClick = true;
         }
-        if (e.touches.length == 2) {
+        if (currentTouchCount == 2) {
             startPinchPoint1 = { X: e.touches[0].pageX, Y: e.touches[0].pageY, IsEmpty: false };
             startPinchPoint2 = { X: e.touches[1].pageX, Y: e.touches[1].pageY, IsEmpty: false };
         }
         isDragging = false;
-        currentTouchCount = e.touches.length;
         KeyboardButton.removeAttribute("hidden");
         var focusedInput = document.querySelector("input:focus") as HTMLInputElement;
         if (focusedInput) {
@@ -252,6 +254,9 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
 
     ScreenViewer.addEventListener("touchmove", function (e) {
         currentTouchCount = e.touches.length;
+
+        clearTimeout(startLongPressTimeout);
+        
         var percentX = (e.touches[0].pageX - ScreenViewer.getBoundingClientRect().left) / ScreenViewer.clientWidth;
         var percentY = (e.touches[0].pageY - ScreenViewer.getBoundingClientRect().top) / ScreenViewer.clientHeight;
 
@@ -271,6 +276,8 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
     });
     ScreenViewer.addEventListener("touchend", function (e) {
         currentTouchCount = e.touches.length;
+
+        clearTimeout(startLongPressTimeout);
 
         if (e.touches.length == 1 && !isPinchZooming) {
             isDragging = true;

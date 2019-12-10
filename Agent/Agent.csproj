@@ -16,6 +16,10 @@
     <Platforms>AnyCPU;x86;x64</Platforms>
     <AssemblyName>Remotely_Agent</AssemblyName>
     <RootNamespace>Agent</RootNamespace>
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishTrimmed>true</PublishTrimmed>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>
