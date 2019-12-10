@@ -1,10 +1,9 @@
 ﻿body {
-    color: rgb(180,180,180);
-    background: rgb(20,20,20) !important;
+
 }
 
 nav.navbar.navbar-dark.bg-dark {
-    background-color: #222222 !important;
+    background-color: #008cba !important
 }
 
 hr {
@@ -12,30 +11,29 @@ hr {
 }
 
 .console-prompt {
-    color: royalblue;
+    color: slategray;
 }
 
 .console-output {
-    color: limegreen;
+    color: forestgreen;
 }
 
 table, .table {
-    color: #fff;
+    color: #303030;
 }
 
 .table tbody tr td {
-    font-size: .9em;
+    padding: .5rem;
+    font-size: 14px;
 }
-
-
-.logo-subtitle {
-    font-size: .5em;
-}
-
 
 
 .navbar .navbar-header .navbar-brand {
     color: white;
+}
+
+.navbar .btn {
+    font-size: unset !important;
 }
 
 button.navbar-toggler:hover {
@@ -44,11 +42,13 @@ button.navbar-toggler:hover {
 }
 
 .logo-subtitle {
-    color: deepskyblue;
+    color: lightgray;
+    font-weight: 400;
+    font-size: .7em;
 }
 
 .table-hover > tbody > .record-row.row-selected {
-    color: limegreen;
+    color: #008cba;
 }
 
 #consoleStatusDiv select {
@@ -56,14 +56,14 @@ button.navbar-toggler:hover {
 }
 
 .console-status-value {
-    color: deepskyblue;
+    color: #008cba;
 }
 
 #qrCode img {
     border-color: white;
 }
 .help-wrapper {
-    color: whitesmoke;
+    color: rgb(20,20,20);
 }
 
 .extended-help {
@@ -71,7 +71,7 @@ button.navbar-toggler:hover {
 }
 
 .console-input-prompt {
-    color: deepskyblue;
+    color: slategray;
 }
 
 .console-input-prompt select {
@@ -80,7 +80,7 @@ button.navbar-toggler:hover {
 
 .console-block textarea {
     background-color: transparent;
-    color: white;
+    color: rgb(20,20,20);
 }
 .echo-input {
     color:gray;
@@ -90,26 +90,25 @@ button.navbar-toggler:hover {
 }
 
 #commandCompletionDiv {
-    color: white;
-    background-color: rgb(25, 25, 25);
+    color: rgb(20,20,20);
+    background-color: whitesmoke;
 }
 #commandInfoDiv {
-    color: white;
-    background-color: rgb(50, 50, 50);
+    color: rgb(20,20,20);
+    background-color: whitesmoke;
 }
 
 .command-completion-item.selected {
-    background-color: rgba(255,255,255,0.2);
+    background-color: rgba(20,20,20,0.2);
 }
 .command-completion-item:hover {
-    background-color: rgba(255,255,255,0.2);
+    background-color: rgba(20,20,20,0.2);
 }
-.command-harness-title{
-    color: whitesmoke;
-
+.command-harness-title {
+    color: rgb(20,20,20);
 }
 .fa-check-circle {
-    color: limegreen;
+    color: forestgreen;
 }
 
 .fa-times {

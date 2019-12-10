@@ -1,0 +1,293 @@
+﻿body {
+    background-color: rgb(225,225,225);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: rgb(25,25,25);
+    margin: 0;
+    padding: 0;
+}
+
+button {
+    cursor: pointer;
+    /*background-color: #008cba;*/
+    background-color: #017ea7;
+    color: white;
+    border-radius: 5px;
+    border: none;
+}
+
+
+button:hover {
+    background-color: #7dc7e0;
+}
+
+button:active {
+    background-color: #95d5ea;
+}
+
+button.toggled {
+    background-color: #60d8ff;
+}
+
+button[disabled] {
+    background-color: rgb(90,90,90);
+    color: gray;
+}
+
+.center-aligned {
+    text-align: center;
+}
+
+
+.option-button {
+    position: relative;
+    height: 40px;
+    margin: 5px 0;
+    width: 90%;
+}
+
+.horizontal-bar-button {
+    height: 35px;
+    margin: 5px;
+}
+
+.menu-options-header {
+    text-align: center;
+    color: lightgray;
+    margin: 20px 0 5px 0;
+    font-family: monospace;
+    font-size: .9em;
+}
+
+#menuButton {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    color: gray;
+    transform: translateY(-50%);
+    background-color: rgb(50,50,50);
+    font-size: 1.5em;
+    padding: 20px 5px;
+    border-radius: 0 3px 3px 0;
+    pointer-events: all;
+    cursor: pointer;
+    z-index: 3;
+    transition: .5s ease left;
+}
+#menuButton:hover {
+    color: white;
+}
+#menuButton:focus {
+    outline: none;
+}
+
+#menuButton.open {
+    left: 150px;
+    transform: translateY(-50%) rotateY(180deg);
+    border-radius: 3px 0 0 3px;
+    transition: .5s ease left;
+}
+
+#menuFrame {
+    position: absolute;
+    color: white;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background-color: rgb(50,50,50);
+    width: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    text-align: center;
+    opacity: 0;
+    z-index: 3;
+    transition: .5s ease all;
+}
+
+#menuFrame.open {
+    width: 150px;
+    opacity: 1;
+    transition: .5s ease all;
+}
+
+
+
+.horizontal-button-bar {
+    position: fixed;
+    background-color: rgb(90, 90, 90);
+    height: 0;
+    padding: 0;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    transition: all 250ms;
+    border-radius: 5px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.horizontal-button-bar.open {
+    height: auto;
+    min-height: 40px;
+    padding: 10px;
+    transition: all 250ms;
+}
+
+
+#screenViewer {
+    max-width: 99vw;
+    max-height: 99vh;
+    z-index: 1;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+}
+
+#connectBox {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid white;
+    border-radius: 5px;
+    background-color: rgb(60, 60, 60);
+    width: 300px;
+    color: white;
+    z-index: 2;
+    padding: 0 20px 20px 20px;
+}
+
+#connectBox button {
+    height: 30px;
+}
+
+#connectBox input {
+    width: 100%;
+}
+
+.remotely-header {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    animation: fadeout 3s ease 2s forwards;
+    z-index: -1;
+}
+
+@keyframes fadeout {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: .1;
+    }
+}
+
+.logo-subtitle {
+    font-size: .6em;
+    color: steelblue;
+}
+
+.logo-title {
+    font-size: 18px;
+    color: rgb(20,20,20);
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100vw;
+    text-align: center;
+    pointer-events: none;
+    z-index: -1;
+}
+
+footer a {
+    color: deepskyblue;
+}
+
+.footer-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    font-size: .9em;
+}
+
+.right-aligned {
+    text-align: right;
+}
+
+.form-block {
+    margin-bottom: 10px;
+}
+
+.status-message {
+    color: deepskyblue;
+    font-size: .9em;
+}
+
+.float-message {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    padding: 10px;
+    font-size: 1.25em;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, .75);
+    opacity: 1;
+    color: white;
+    z-index: 4;
+    border-radius: 5px;
+    user-select: none;
+    pointer-events: none;
+    animation-name: float-message;
+    animation-delay: 2s;
+    animation-duration: .5s;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease-in;
+}
+
+@keyframes float-message {
+    from {
+        transform: translate(-50%, 0);
+    }
+
+    to {
+        transform: translate(-50%, calc(-100% - 25px));
+    }
+}
+
+.modal-prompt {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px;
+    background-color: rgb(60, 60, 60);
+    border: 2px solid white;
+    border-radius: 5px;
+    box-shadow: 10px 10px 5px rgba(50,50,50,0.9);
+    z-index: 3;
+    min-height: 100px;
+    color: white;
+}
+.modal-prompt input {
+    margin-top: 15px;
+    width: 100%;
+}
+.buttons-footer {
+    text-align: right;
+    margin-top: 10px
+}
+.buttons-footer button {
+    height: 30px;
+    width: 60px;
+    margin-left: 10px;
+}
+
+#touchKeyboardTextArea {
+    position: fixed;
+    top: -100%;
+}

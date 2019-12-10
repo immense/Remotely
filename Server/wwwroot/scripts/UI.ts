@@ -122,7 +122,7 @@ export function ShowModal(title: string, modalBodyHtml: string, buttonsHTML: str
             (ev.currentTarget as HTMLElement).parentElement.remove();
         }
     });
-    $("#" + modalID)["modal"]();
+    $("#" + modalID).modal("show");
     return wrapperDiv;
 };
 
