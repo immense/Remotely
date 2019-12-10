@@ -152,14 +152,21 @@ function inputOnCommandTextArea() {
 function inputOnFilterTextBox() {
     document.querySelector("#gridFilter").addEventListener("input", (e) => {
         var currentText = (e.currentTarget as HTMLInputElement).value.toLowerCase();
-        UI.DeviceGrid.querySelectorAll("tbody tr").forEach((row: HTMLTableRowElement) => {
-            if (row.innerHTML.toLowerCase().indexOf(currentText) == -1) {
+        for (var i = 0; i < DataGrid.DataSource.length; i++) {
+            for (var key in DataGrid.DataSource[i]) {
+                var value = DataGrid.DataSource[i][key];
+                if (!value) {
+                    continue;
+                }
+                
+                var row = document.getElementById(DataGrid.DataSource[i].ID);
+                if (DataGrid.DataSource[i][key].toString().toLowerCase().includes(currentText)) {
+                    row.classList.remove("hidden");
+                    break;
+                }
                 row.classList.add("hidden");
             }
-            else {
-                row.classList.remove("hidden");
-            }
-        })
+        }
     })
 }
 function consoleTabSelected() {

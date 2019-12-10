@@ -63,14 +63,6 @@ export function AddOrUpdateDevice(device: Device) {
     };
     UpdateDeviceCounts();
 }
-
-export function GetSelectedDevices(): Device[] {
-    var devices = new Array<Device>();
-    DeviceGrid.querySelectorAll(".row-selected").forEach(row => {
-        devices.push(DataSource.find(x => x.ID == row.id));
-    });
-    return devices;
-};
 export function ClearAllData() {
     DataSource.splice(0, DataSource.length);
     UI.DeviceGrid.querySelectorAll(".record-row").forEach(row => {
@@ -78,6 +70,13 @@ export function ClearAllData() {
     });
     UpdateDeviceCounts();
 }
+export function GetSelectedDevices(): Device[] {
+    var devices = new Array<Device>();
+    DeviceGrid.querySelectorAll(".row-selected").forEach(row => {
+        devices.push(DataSource.find(x => x.ID == row.id));
+    });
+    return devices;
+};
 export function RefreshGrid() {
     ClearAllData();
     var xhr = new XMLHttpRequest();
@@ -149,8 +148,9 @@ function EditDevice(device: Device) {
         `<button id="save-button" type="button" class="btn btn-primary" data-dismiss="modal">Save</button>`);
 
     modalWrapper.querySelector("#save-button").addEventListener("click", (ev) => {
+        var foundDevice = DataSource.find(x => x.ID == device.ID);
         var newTags = modalWrapper.querySelector<HTMLInputElement>("#device-tags").value;
-        DataSource.find(x => x.ID == device.ID).Tags = newTags;
-        BrowserSockets.Connection.invoke("UpdateDevice", device.ID, newTags);
+        foundDevice.Tags = newTags;
+        BrowserSockets.Connection.invoke("UpdateDevice", foundDevice.ID, newTags);
     });
 }
