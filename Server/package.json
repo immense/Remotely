@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "name": "asp.net",
   "private": true,
-  "dependencies": {
+  "devDependencies": {
     "@microsoft/signalr": "^3.1.0",
     "@microsoft/signalr-protocol-msgpack": "^3.1.0",
     "@types/bootstrap": "^4.3.1",

@@ -82,6 +82,12 @@
 
 
   <ItemGroup>
+    <None Include="wwwroot\lib\%40types\bootstrap\LICENSE" />
+    <None Include="wwwroot\lib\%40types\bootstrap\README.md" />
+    <None Include="wwwroot\lib\%40types\jquery\LICENSE" />
+    <None Include="wwwroot\lib\%40types\jquery\README.md" />
+    <None Include="wwwroot\lib\%40types\sizzle\LICENSE" />
+    <None Include="wwwroot\lib\%40types\sizzle\README.md" />
     <None Include="wwwroot\lib\fontawesome\webfonts\fa-brands-400.svg" />
     <None Include="wwwroot\lib\fontawesome\webfonts\fa-brands-400.woff2" />
     <None Include="wwwroot\lib\fontawesome\webfonts\fa-regular-400.svg" />
@@ -115,6 +121,14 @@
 
 
   <ItemGroup>
+    <TypeScriptCompile Include="wwwroot\lib\%40types\bootstrap\index.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\dist\jquery.slim.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\index.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\JQuery.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\JQueryStatic.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\legacy.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\misc.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\%40types\sizzle\index.d.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\CommandCompletion.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Commands\BashCommands.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Commands\WinPSCommands.ts" />
