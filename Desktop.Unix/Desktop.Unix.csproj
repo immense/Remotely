@@ -6,10 +6,6 @@
     <AssemblyName>Remotely_Desktop</AssemblyName>
     <RootNamespace>Remotely.Desktop.Unix</RootNamespace>
     <Platforms>AnyCPU;x64;x86</Platforms>
-      <PublishSingleFile>true</PublishSingleFile>
-    <PublishTrimmed>true</PublishTrimmed>
-    <PublishReadyToRun>true</PublishReadyToRun>
-    <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Models\" />
