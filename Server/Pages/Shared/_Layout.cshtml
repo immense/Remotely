@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@inject Remotely.Server.Services.ApplicationConfig AppConfig;
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -12,8 +13,17 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link href="~/lib/fontawesome/css/all.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="~/css/Themes/cyborg.min.css" />
-    <link rel="stylesheet" href="~/css/Themes/cyborg.custom.css" asp-append-version="true" />
+
+    @if (AppConfig.Theme == "Light")
+    {
+        <link rel="stylesheet" href="~/css/Themes/yeti.min.css" />
+        <link rel="stylesheet" href="~/css/Themes/yeti.custom.css" asp-append-version="true" />
+    }
+    else
+    {
+        <link rel="stylesheet" href="~/css/Themes/cyborg.min.css" />
+        <link rel="stylesheet" href="~/css/Themes/cyborg.custom.css" asp-append-version="true" />
+    }
 
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>

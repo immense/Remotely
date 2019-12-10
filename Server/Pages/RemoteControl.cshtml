@@ -1,4 +1,5 @@
 ﻿@page
+@inject Remotely.Server.Services.ApplicationConfig AppConfig
 @model Remotely.Server.Pages.RemoteControlModel
 @{
     Layout = null;
@@ -17,7 +18,14 @@
     <link href="~/manifest-rc.json" rel="manifest" />
     <meta name="description" content="Remote access tools designed to get things done quickly." />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link href="~/css/remote-control.css" rel="stylesheet" asp-append-version="true" />
+    @if (AppConfig.Theme == "Light")
+    {
+        <link href="~/css/remote-control-light.css" rel="stylesheet" asp-append-version="true" />
+    }
+    else
+    {
+        <link href="~/css/remote-control-dark.css" rel="stylesheet" asp-append-version="true" />
+    }
     <link href="~/lib/fontawesome/css/all.min.css" rel="stylesheet" />
 
     <environment include="Development">

@@ -20,10 +20,6 @@ h6 {
 }
 
 
-.logo-subtitle {
-    font-size: .5em;
-}
-
 .login-frame {
     display: inline-block;
     margin-bottom: 150px;
@@ -65,9 +61,9 @@ h6 {
 .record-row {
     cursor: pointer;
 }
+
 .table tbody tr td {
     padding: .5rem;
-    font-size: .9em;
 }
 
 

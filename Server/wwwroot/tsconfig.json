@@ -5,8 +5,9 @@
     "removeComments": false,
     "sourceMap": true,
     "target": "es2017",
-    "module": "es2015",
-    "allowJs": false
+    "module": "ESNext",
+    "allowJs": false,
+    "moduleResolution": "node"
   },
   "exclude": [
     "node_modules",
