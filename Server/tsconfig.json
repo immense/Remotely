@@ -7,8 +7,7 @@
     "target": "es2017",
     "module": "ESNext",
     "allowJs": false,
-    "moduleResolution": "Node",
-    "typeRoots": [ "./wwwroot/lib/@types/" ]
+    "moduleResolution": "Node"
   },
   "exclude": [
     "node_modules",
