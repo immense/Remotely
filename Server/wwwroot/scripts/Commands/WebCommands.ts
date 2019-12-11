@@ -11,27 +11,7 @@ import { GetSelectedDevices } from "../DataGrid.js";
 
 
 var commands: Array<ConsoleCommand> = [
-    new ConsoleCommand(
-        "AddGroup",
-        [
-            new Parameter("group", "The group name to add.", "String")
-        ],
-        "Adds a permission group to the selected computer(s).",
-        "AddGroup -group Lab Devices",
-        "",
-        (parameters, paramDictionary) => {
-            var selectedDevices = Main.DataGrid.GetSelectedDevices();
-            if (selectedDevices.length == 0) {
-                AddConsoleOutput("No devices are selected.");
-                return;
-            };
-            if (!paramDictionary["group"]) {
-                AddConsoleOutput("A group name is required.");
-                return;
-            }
-            BrowserSockets.Connection.invoke("AddGroup", selectedDevices.map(x=>x.ID), paramDictionary["group"]);
-        }
-    ),
+
     new ConsoleCommand(
         "DeployScript",
         [
@@ -67,22 +47,6 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
-        "GetGroups",
-        [
-        ],
-        "Lists the permission group(s) that are applied to the selected computer(s).",
-        "GetGroups",
-        "",
-        (parameters, paramDictionary) => {
-            var selectedDevices = Main.DataGrid.GetSelectedDevices();
-            if (selectedDevices.length == 0) {
-                AddConsoleOutput("No devices are selected.");
-                return;
-            };
-            BrowserSockets.Connection.invoke("GetGroups", selectedDevices.map(x=>x.ID));
-        }
-    ),
-    new ConsoleCommand(
         "GetVersion",
         [
         ],
@@ -112,27 +76,6 @@ var commands: Array<ConsoleCommand> = [
             output += deviceList.join("");
             output += "</table>";
             UI.AddConsoleOutput(output);
-        }
-    ),
-    new ConsoleCommand(
-        "RemoveGroup",
-        [
-            new Parameter("group", "The group name to remove.", "String")
-        ],
-        "Removes a permission group to the selected computer(s).",
-        "RemoveGroup -group Lab Devices",
-        "",
-        (parameters, paramDictionary) => {
-            var selectedDevices = Main.DataGrid.GetSelectedDevices();
-            if (selectedDevices.length == 0) {
-                AddConsoleOutput("No devices are selected.");
-                return;
-            };
-            if (!paramDictionary["group"]) {
-                AddConsoleOutput("A group name is required.");
-                return;
-            }
-            BrowserSockets.Connection.invoke("RemoveGroup", selectedDevices.map(x => x.ID), paramDictionary["group"]);
         }
     ),
     new ConsoleCommand(

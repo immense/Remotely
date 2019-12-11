@@ -26,33 +26,6 @@
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-sm-8">
-
-            @* Permissions *@
-            <div class="form-group">
-                <label class="mb-1">Permission Groups</label>
-                <span id="permissionHelpButton" class="fas fa-question-circle pointer"></span>
-                <select id="permissionList" multiple class="form-control all-permissions-list mb-1">
-                    @foreach (var permission in Model.PermissionList)
-                    {
-                        <option value="@permission.ID">@permission.Name</option>
-                    }
-                </select>
-
-                <div class="text-right mb-3">
-                    <button id="removePermissionButton" type="button" class="btn btn-secondary">Remove</button>
-                </div>
-
-                <div class="input-group">
-                    <input id="permissionInput" placeholder="Add new permission" class="form-control" maxlength="100" />
-                    <span class="input-group-btn">
-                        <button id="addPermissionButton" type="button" class="btn btn-secondary">Add</button>
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <div class="row">
         <div class="col-sm-12">
@@ -65,7 +38,6 @@
                         <tr>
                             <th>User Name</th>
                             <th>Administrator</th>
-                            <th>Permissions</th>
                             <th>Remove</th>
                         </tr>
                     </thead>
@@ -82,7 +54,6 @@
                             {
                                 <td class="middle-aligned text-center">@Html.CheckBoxFor(x => x.Users[i].IsAdmin, new { user = Model.Users[i].ID, @class = "user-is-admin-checkbox" })</td>
                             }
-                            <td><button type="button" data-toggle="modal" data-target=".modal[user='@Model.Users[i].ID']" class="btn btn-primary">Permissions</button></td>
                             <td><button type="button" class="btn btn-danger remove-user-button" user="@Model.Users[i].ID">Remove</button></td>
                         </tr>
                         }
@@ -154,51 +125,6 @@
             </div>
         </div>
     </div>
-
-    @* Modals *@
-    @for (var i = 0; i < Model.Users.Count; i++)
-    {
-        <div user="@Model.Users[i].ID" class="modal fade">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Permissions <span class="small text-muted">for @Model.Users[i].UserName</span></h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <select multiple class="form-control user-permissions-list mb-1">
-                            @foreach (var permission in Model.Users[i].Permissions)
-                            {
-                                <option value="@permission.ID">@permission.Name</option>
-                            }
-                        </select>
-                        <div class="text-right mb-3">
-                            <button type="button" class="btn btn-secondary remove-permission-from-user-button" user="@Model.Users[i].ID">
-                                Remove
-                            </button>
-                        </div>
-                        <div class="input-group">
-                            <select class="form-control dropdown all-permissions-list">
-                                @foreach (var permission in Model.PermissionList)
-                                {
-                                    <option value="@permission.ID">@permission.Name</option>
-                                }
-                            </select>
-                            <span class="input-group-btn">
-                                <button type="button" class="btn btn-secondary add-permission-to-user-button" user="@Model.Users[i].ID">
-                                    Add
-                                </button>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    }
 }
 else
 {

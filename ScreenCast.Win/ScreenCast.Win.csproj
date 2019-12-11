@@ -277,8 +277,8 @@
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Debug (
   if $(PlatformName) == Any CPU (
-      md "$(SolutionDir)Agent\bin\Debug\netcoreapp3.1\win10-x64\ScreenCast\"
-      copy /y "$(TargetDir)\*" "$(SolutionDir)Agent\bin\Debug\netcoreapp3.1\win10-x64\ScreenCast\"
+      md "$(SolutionDir)Agent\bin\Debug\netcoreapp3.1\ScreenCast\"
+      copy /y "$(TargetDir)\*" "$(SolutionDir)Agent\bin\Debug\netcoreapp3.1\ScreenCast\"
   )
 )</PostBuildEvent>
   </PropertyGroup>

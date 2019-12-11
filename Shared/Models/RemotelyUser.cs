@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Remotely.Shared.Models
@@ -16,10 +17,9 @@ namespace Remotely.Shared.Models
         }
         public RemotelyUserOptions UserOptions { get; set; }
 
+        [JsonIgnore]
         public virtual Organization Organization { get; set; }
         public string OrganizationID { get; set; }
-
-        public virtual ICollection<UserPermissionLink> UserPermissionLinks { get; set; } = new List<UserPermissionLink>();
 
         public bool IsAdministrator { get; set; } = true;
     }
