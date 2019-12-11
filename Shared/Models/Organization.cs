@@ -16,7 +16,7 @@ namespace Remotely.Shared.Models
         public virtual ICollection<Device> Devices { get; set; }
         public virtual ICollection<CommandContext> CommandContexts { get; set; }
         public virtual ICollection<EventLog> EventLogs { get; set; }
-        public virtual ICollection<PermissionGroup> PermissionGroups { get; set; } = new List<PermissionGroup>();
+        public virtual ICollection<DeviceGroup> DeviceGroups { get; set; }
         public virtual ICollection<InviteLink> InviteLinks { get; set; }
         public virtual ICollection<SharedFile> SharedFiles { get; set; }
     }

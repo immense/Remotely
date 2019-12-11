@@ -30,10 +30,7 @@ namespace Remotely.Server.Data
 
         public DbSet<InviteLink> InviteLinks { get; set; }
 
-        public DbSet<PermissionGroup> PermissionGroups { get; set; }
-
-        public DbSet<UserPermissionLink> UserPermissionLinks { get; set; }
-        public DbSet<DevicePermissionLink> DevicePermissionLinks { get; set; }
+        public DbSet<DeviceGroup> DeviceGroups { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -53,9 +50,9 @@ namespace Remotely.Server.Data
             builder.Entity<Organization>()
                 .HasMany(x => x.EventLogs)
                 .WithOne(x => x.Organization);
-            builder.Entity<Organization>()
-                .HasMany(x => x.PermissionGroups)
-                .WithOne(x => x.Organization);
+            builder.Entity<DeviceGroup>()
+                .HasMany(x => x.Devices)
+                .WithOne(x => x.DeviceGroup);
             builder.Entity<Organization>()
               .HasMany(x => x.InviteLinks)
               .WithOne(x => x.Organization);
@@ -94,34 +91,6 @@ namespace Remotely.Server.Data
                 .HasConversion(
                     x => JsonConvert.SerializeObject(x),
                     x => JsonConvert.DeserializeObject<List<Drive>>(x));
-
-
-            builder.Entity<UserPermissionLink>()
-                .HasKey(x => new { x.PermissionGroupID, x.RemotelyUserID });
-
-            builder.Entity<UserPermissionLink>()
-                .HasOne(x => x.RemotelyUser)
-                .WithMany(y => y.UserPermissionLinks)
-                .HasForeignKey(x => x.RemotelyUserID);
-
-            builder.Entity<UserPermissionLink>()
-               .HasOne(x => x.PermissionGroup)
-               .WithMany(y => y.UserPermissionLinks)
-               .HasForeignKey(x => x.PermissionGroupID);
-
-
-            builder.Entity<DevicePermissionLink>()
-                .HasKey(x => new { x.PermissionGroupID, x.DeviceID });
-
-            builder.Entity<UserPermissionLink>()
-                .HasOne(x => x.RemotelyUser)
-                .WithMany(y => y.UserPermissionLinks)
-                .HasForeignKey(x => x.RemotelyUserID);
-
-            builder.Entity<UserPermissionLink>()
-               .HasOne(x => x.PermissionGroup)
-               .WithMany(y => y.UserPermissionLinks)
-               .HasForeignKey(x => x.PermissionGroupID);
 
         }
     }

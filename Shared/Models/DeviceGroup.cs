@@ -1,0 +1,24 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Text;
+using System.Text.Json.Serialization;
+
+namespace Remotely.Shared.Models
+{
+    public class DeviceGroup
+    {
+        [StringLength(200)]
+        public string Name { get; set; }
+
+        [Key]
+        public string ID { get; set; }
+
+        public virtual List<Device> Devices { get; set; }
+
+        [JsonIgnore]
+        public Organization Organization { get; set; }
+
+        public string OrganizationID { get; set; }
+    }
+}

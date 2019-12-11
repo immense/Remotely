@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using Remotely.Shared.ViewModels.Organization;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 {
@@ -23,9 +24,6 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         [StringLength(25)]
         public string OrganizationName { get; set; }
 
-        [Display(Name = "Permission Groups")]
-        public List<Permission> PermissionList { get; set; }
-
         [Display(Name = "Users")]
         public List<OrganizationUser> Users { get; set; }
 
@@ -42,33 +40,8 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
                 {
                     ID = x.Id,
                     IsAdmin = x.IsAdministrator,
-                    Permissions = x?.UserPermissionLinks?.Select(y => new Permission()
-                    {
-                        ID = y.PermissionGroupID,
-                        Name = y.PermissionGroup.Name
-                    })?.ToList(),
                     UserName = x.UserName
                 }).ToList();
-
-            foreach (var user in Users)
-            {
-                var permissions = DataService.GetUserPermissions(User.Identity.Name, user.ID);
-
-                if (permissions.Any())
-                {
-                    user.Permissions = permissions?.Select(x => new Permission
-                    {
-                        ID = x.PermissionGroupID,
-                        Name = x.PermissionGroup?.Name
-                    }).ToList();
-                }
-            }
-
-            PermissionList = DataService.GetAllPermissions(User.Identity.Name).Select(x => new Permission()
-            {
-                ID = x.ID,
-                Name = x.Name
-            }).ToList();
 
             Invites = DataService.GetAllInviteLinks(User.Identity.Name).Select(x => new Invite()
             {

@@ -24,9 +24,6 @@
     <Compile Update="Models\Device.cs">
       <Generator></Generator>
     </Compile>
-    <Compile Update="Models\DevicePermissionLink.cs">
-      <Generator></Generator>
-    </Compile>
     <Compile Update="Models\GenericCommandResult.cs">
       <LastGenOutput>GenericCommandResult.cs.d.ts</LastGenOutput>
       <Generator>DtsGenerator</Generator>

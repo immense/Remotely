@@ -48,18 +48,7 @@ namespace Remotely.Server.Services
             }
         }
         private SignInManager<RemotelyUser> SignInManager { get; }
-        public async Task AddGroup(string[] deviceIDs, string groupName)
-        {
-            groupName = groupName.Trim();
-            deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
-            if (!DataService.DoesGroupExist(RemotelyUser.Id, groupName))
-            {
-                await Clients.Caller.SendAsync("DisplayMessage", "Permission group does not exist.", "Permission group does not exist.");
-                return;
-            }
-            DataService.AddPermissionToDevices(RemotelyUser.Id, deviceIDs, groupName);
-            await Clients.Caller.SendAsync("DisplayMessage", "Group added.");
-        }
+
         public async Task DeployScript(string fileID, string mode, string[] deviceIDs)
         {
             deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
@@ -103,15 +92,10 @@ namespace Remotely.Server.Services
             }
         }
 
-        public async Task GetGroups(string[] deviceIDs)
-        {
-            deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
-            var result = DataService.GetDevicesAndPermissions(RemotelyUser.Id, deviceIDs);
-            await Clients.Caller.SendAsync("GetGroupsResult", result);
-        }
+
 		public override async Task OnConnectedAsync()
 		{
-			RemotelyUser = DataService.GetUserAndPermissionsByID(Context.UserIdentifier);
+			RemotelyUser = DataService.GetUserByID(Context.UserIdentifier);
 			if (await IsConnectionValid() == false)
 			{
 				return;
@@ -151,18 +135,7 @@ namespace Remotely.Server.Services
             await Clients.Caller.SendAsync("RefreshDeviceList");
         }
 
-        public async Task RemoveGroup(string[] deviceIDs, string groupName)
-        {
-            groupName = groupName.Trim();
-            deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
-            if (!DataService.DoesGroupExist(RemotelyUser.Id, groupName))
-            {
-                await Clients.Caller.SendAsync("DisplayMessage", "Permission group does not exist.");
-                return;
-            }
-            DataService.RemovePermissionFromDevices(RemotelyUser.Id, deviceIDs, groupName);
-            await Clients.Caller.SendAsync("DisplayMessage", "Group removed.", "Group removed.");
-        }
+
         public async Task TransferFiles(List<string> fileIDs, string transferID, string[] deviceIDs)
         {
             DataService.WriteEvent(new EventLog()
