@@ -13,6 +13,7 @@ export function AddOrUpdateDevices(devices: Array<Device>) {
         AddOrUpdateDevice(x);
     });
 }
+
 export function AddOrUpdateDevice(device: Device) {
     var existingIndex = DataSource.findIndex(x => x.ID == device.ID);
     if (existingIndex > -1) {

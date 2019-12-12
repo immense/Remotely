@@ -176,6 +176,13 @@ namespace Remotely.Server.Data
                             x.ID == deviceID);
         }
 
+        public List<DeviceGroup> GetDeviceGroupsForUserName(string username)
+        {
+            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == username);
+
+            return RemotelyContext.DeviceGroups.Where(x => x.OrganizationID == user.OrganizationID).ToList();
+        }
+
         public RemotelyUser GetUserByID(string userID)
         {
             if (userID == null)
@@ -349,7 +356,7 @@ namespace Remotely.Server.Data
                .FirstOrDefault(x => x.UserName == requesterUserName);
             var invite = requester.Organization.InviteLinks.FirstOrDefault(x => x.ID == inviteID);
             var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == invite.InvitedUser);
-            if (string.IsNullOrWhiteSpace(user.PasswordHash))
+            if (user != null && string.IsNullOrWhiteSpace(user.PasswordHash))
             {
                 RemotelyContext.Remove(user);
             }

@@ -1,0 +1,51 @@
+{
+  "_from": "@types/sizzle@*",
+  "_id": "@types/sizzle@2.3.2",
+  "_inBundle": false,
+  "_integrity": "sha512-7EJYyKTL7tFR8+gDbB6Wwz/arpGa0Mywk1TJbNzKzHtzbwVmY4HR9WqS5VV7dsBUKQmPNr192jHr/VpBluj/hg==",
+  "_location": "/@types/sizzle",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "@types/sizzle@*",
+    "name": "@types/sizzle",
+    "escapedName": "@types%2fsizzle",
+    "scope": "@types",
+    "rawSpec": "*",
+    "saveSpec": null,
+    "fetchSpec": "*"
+  },
+  "_requiredBy": [
+    "/@types/jquery"
+  ],
+  "_resolved": "https://registry.npmjs.org/@types/sizzle/-/sizzle-2.3.2.tgz",
+  "_shasum": "a811b8c18e2babab7d542b3365887ae2e4d9de47",
+  "_spec": "@types/sizzle@*",
+  "_where": "D:\\source\\repos\\Remotely\\Server\\node_modules\\@types\\jquery",
+  "bugs": {
+    "url": "https://github.com/DefinitelyTyped/DefinitelyTyped/issues"
+  },
+  "bundleDependencies": false,
+  "contributors": [
+    {
+      "name": "Leonard Thieu",
+      "url": "https://github.com/leonard-thieu"
+    }
+  ],
+  "dependencies": {},
+  "deprecated": false,
+  "description": "TypeScript definitions for sizzle",
+  "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped#readme",
+  "license": "MIT",
+  "main": "",
+  "name": "@types/sizzle",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DefinitelyTyped/DefinitelyTyped.git"
+  },
+  "scripts": {},
+  "typeScriptVersion": "2.3",
+  "typesPublisherContentHash": "8d6f2e333bcb6c7fa99469e7e62dcef4c794dc432ce09634cae186cbcc333d0e",
+  "version": "2.3.2"
+}

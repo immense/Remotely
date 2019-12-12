@@ -1,0 +1,56 @@
+{
+  "_from": "@types/bootstrap@^4.3.1",
+  "_id": "@types/bootstrap@4.3.1",
+  "_inBundle": false,
+  "_integrity": "sha512-n7Zv7Y+C98Yv4oqbyqGn3alCvNRCya2xMYzOdVEnmnFlu04MXQk1ntVrBhXzDkiwhZZYNkNfBZn2yhTnEh/mHQ==",
+  "_location": "/@types/bootstrap",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "@types/bootstrap@^4.3.1",
+    "name": "@types/bootstrap",
+    "escapedName": "@types%2fbootstrap",
+    "scope": "@types",
+    "rawSpec": "^4.3.1",
+    "saveSpec": null,
+    "fetchSpec": "^4.3.1"
+  },
+  "_requiredBy": [
+    "#DEV:/"
+  ],
+  "_resolved": "https://registry.npmjs.org/@types/bootstrap/-/bootstrap-4.3.1.tgz",
+  "_shasum": "15fa89a4d275b114a4eceb90909d4eb8b90d43f5",
+  "_spec": "@types/bootstrap@^4.3.1",
+  "_where": "D:\\source\\repos\\Remotely\\Server",
+  "bugs": {
+    "url": "https://github.com/DefinitelyTyped/DefinitelyTyped/issues"
+  },
+  "bundleDependencies": false,
+  "contributors": [
+    {
+      "name": "denisname",
+      "url": "https://github.com/denisname"
+    }
+  ],
+  "dependencies": {
+    "@types/jquery": "*",
+    "popper.js": "^1.14.1"
+  },
+  "deprecated": false,
+  "description": "TypeScript definitions for Bootstrap",
+  "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped#readme",
+  "license": "MIT",
+  "main": "",
+  "name": "@types/bootstrap",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+    "directory": "types/bootstrap"
+  },
+  "scripts": {},
+  "typeScriptVersion": "2.3",
+  "types": "index",
+  "typesPublisherContentHash": "4b0565169fc0c6fe3bf8da50a5d342621d05acc98962d4add778a13182bde0dc",
+  "version": "4.3.1"
+}
