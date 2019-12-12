@@ -1,10 +1,11 @@
 ﻿import { DevicePermissionLink } from "./DevicePermissionLink";
 
 export interface Device {
+    Alias: string;
     AgentVersion: string;
     CurrentUser: string;
     DeviceName: string;
-    DevicePermissionLinks: DevicePermissionLink[];
+    DeviceGroupID: string;
     Drives: any[];
     FreeMemory: number;
     FreeStorage: number;

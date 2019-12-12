@@ -46,6 +46,7 @@ export function AddOrUpdateDevice(device: Device) {
                             .replace("true", "<span class='fa fa-check-circle'></span>")
                             .replace("false", "<span class='fa fa-times'></span>")}</td>
                     <td>${device.DeviceName}</td>
+                    <td>${device.Alias}</td>
                     <td>${device.CurrentUser}</td>
                     <td>${new Date(device.LastOnline).toLocaleString()}</td>
                     <td>${device.Platform}</td>
@@ -60,9 +61,26 @@ export function AddOrUpdateDevice(device: Device) {
     (recordRow.querySelector(".device-edit-button") as HTMLButtonElement).onclick = (ev) => {
         ev.preventDefault();
         ev.stopPropagation();
-        EditDevice(device);
+        window.open(`${location.origin}/EditDevice?deviceID=${device.ID}`, "_blank");
     };
     UpdateDeviceCounts();
+}
+export function ApplyFilter(filterString: string) {
+    for (var i = 0; i < DataSource.length; i++) {
+        for (var key in DataSource[i]) {
+            var value = DataSource[i][key];
+            if (!value) {
+                continue;
+            }
+
+            var row = document.getElementById(DataSource[i].ID);
+            if (DataSource[i][key].toString().toLowerCase().includes(filterString)) {
+                row.classList.remove("hidden");
+                break;
+            }
+            row.classList.add("hidden");
+        }
+    }
 }
 export function ClearAllData() {
     DataSource.splice(0, DataSource.length);
@@ -132,31 +150,4 @@ export function UpdateDeviceCounts() {
     ) {
         UI.AddConsoleOutput(`Your selection contains offline computers.  Your commands will only be sent to those that are online.`);
     }
-}
-
-function EditDevice(device: Device) {
-    var modalWrapper = UI.ShowModal(
-        "Edit Device",
-        `
-        <div class="form-group row">
-            <label for="device-name" class="col-sm-2 col-form-label">Device:</label>
-            <div class="col-sm-10">
-                <input type="text" class="form-control" name="device-name" readonly value="${device.DeviceName}" />
-            </div>
-        </div>
-        <div class="form-group row">
-            <label for="tags" class="col-sm-2 col-form-label">Tags:</label>
-            <div class="col-sm-10">
-                <input type="text" class="form-control" id="device-tags" value="${device.Tags}" />
-            </div>
-        </div>
-`,
-        `<button id="save-button" type="button" class="btn btn-primary" data-dismiss="modal">Save</button>`);
-
-    modalWrapper.querySelector("#save-button").addEventListener("click", (ev) => {
-        var foundDevice = DataSource.find(x => x.ID == device.ID);
-        var newTags = modalWrapper.querySelector<HTMLInputElement>("#device-tags").value;
-        foundDevice.Tags = newTags;
-        BrowserSockets.Connection.invoke("UpdateDevice", foundDevice.ID, newTags);
-    });
 }
