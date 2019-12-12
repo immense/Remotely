@@ -1,14 +1,16 @@
 ﻿@page
 @inject Remotely.Server.Services.ApplicationConfig AppConfig
+@inject Remotely.Server.Data.DataService DataService
 @model RegisterModel
 @{
     ViewData["Title"] = "Register";
+    var organizationCount = DataService.GetOrganizationCount();
 }
 
 <h3>@ViewData["Title"]</h3>
 
 <div class="row">
-    @if (AppConfig.AllowSelfRegistration)
+    @if (AppConfig.MaxOrganizationCount < 0 || organizationCount < AppConfig.MaxOrganizationCount)
     {
         <div class="col-md-4">
             <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
@@ -37,7 +39,7 @@
     else
     {
         <div class="col-sm-12">
-            <h5>Self-registration is disabled.</h5>
+            <h5>Registration is disabled.</h5>
 
         </div>
     }

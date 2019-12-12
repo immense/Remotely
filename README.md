@@ -27,11 +27,9 @@ The following steps will configure your Windows 10 machine for building the Remo
 * Download and install the .NET Core Runtime (not the SDK).
 	* Link: https://dotnet.microsoft.com/download
 	* This includes the Hosting Bundle for Windows, which allows you to run ASP.NET Core in IIS.
-	* Important: If you installed .NET Core Runtime before installing all the required IIS features (which is done in the script), you may need to run a repair on the .NET Core Runtime installation.
+	* Important: If you installed .NET Core Runtime before installing all the required IIS features, you may need to run a repair on the .NET Core Runtime installation.
 * Change values in appsettings.json for your environment.
 * If using SQLite configuration, make sure the ApplicationPool's account has write access to the DB file location.
-	* The script will do this for you, assuming all default settings.
-* After creating your account on the website, you can set "AllowSelfRegistration" to false in appsettings.json to disable registration.
 * If the site will be public-facing, configure your bindings in IIS.
 * An SSL certificate for HTTPS is recommended.  You can install one for free using Let's Encrypt.
 	* Resources: https://letsencrypt.org/, https://certifytheweb.com/
@@ -100,7 +98,8 @@ Note: To retain your settings between upgrades, copy your settings to appsetting
 
 * DefaultPrompt: The default prompt string you'll see for each line on the console.
 * DBProvider: Determines which of the three connection strings (at the top) will be used.  The appropriate DB provider for the database type is automatically loaded in code.
-* AllowSelfRegistration: Enable/disable the ability for people to create accounts.
+* MaxOrganizationCount: By default, one organization can exist on the server, which is created automatically when the first account is registered.  Afterward, self-registration will be disabled.
+    * Set this to -1 or increase it to a specific number to allow multi-tenancy.
 * RecordRemoteControlSessions: Whether or not to record remote control sessions.
 * RedirectToHTTPS: Whether ASP.NET Core will redirect all traffic from HTTP to HTTPS.  This is independent of Nginx and IIS configurations that do the same.
 * UseHSTS: Whether ASP.NET Core will use HTTP Strict Transport Security.
