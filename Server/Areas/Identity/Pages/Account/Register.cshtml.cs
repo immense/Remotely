@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Remotely.Server.Data;
+using Remotely.Server.Services;
 using Remotely.Shared.Models;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account
@@ -24,17 +26,23 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
         private readonly UserManager<RemotelyUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly DataService _dataService;
+        private readonly ApplicationConfig _appConfig;
 
         public RegisterModel(
             UserManager<RemotelyUser> userManager,
             SignInManager<RemotelyUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            DataService dataService,
+            ApplicationConfig appConfig)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _dataService = dataService;
+            _appConfig = appConfig;
         }
 
         [BindProperty]
@@ -71,6 +79,11 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
+            var organizationCount = _dataService.GetOrganizationCount();
+            if (_appConfig.MaxOrganizationCount > 0 && organizationCount >= _appConfig.MaxOrganizationCount)
+            {
+                return NotFound();
+            }
             returnUrl = returnUrl ?? Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)

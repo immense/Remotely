@@ -385,6 +385,11 @@ namespace Remotely.Server.Data
                     .RemotelyUsers;
         }
 
+        internal int GetOrganizationCount()
+        {
+            return RemotelyContext.Organizations.Count();
+        }
+
         internal string GetOrganizationName(string userName)
         {
             return RemotelyContext.Users
