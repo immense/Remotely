@@ -272,3 +272,5 @@ __pycache__/
 /Server/CurrentVersion.txt
 /Server/wwwroot/scripts/**/*.js
 /Server/wwwroot/scripts/**/*.map
+/Server/Server.db-shm
+/Server/Server.db-wal

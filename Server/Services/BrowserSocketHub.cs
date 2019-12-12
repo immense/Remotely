@@ -180,7 +180,7 @@ namespace Remotely.Server.Services
         private IEnumerable<KeyValuePair<string, Device>> GetActiveClientConnections(string[] deviceIDs)
         {
             return DeviceSocketHub.ServiceConnections.Where(x =>
-                x.Value.OrganizationID == RemotelyUser.Organization.ID &&
+                x.Value.OrganizationID == RemotelyUser.OrganizationID &&
                 deviceIDs.Contains(x.Value.ID)
             );
         }
