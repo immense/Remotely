@@ -1,6 +1,6 @@
 ﻿import { RCBrowserSockets } from "./RCBrowserSockets.js";
 import { GetDistanceBetween } from "../Utilities.js";
-import { ConnectToClient, RemoteControl } from "./Main.js";
+import { RemoteControl } from "./Main.js";
 import { PopupMessage } from "../UI.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 import { Point } from "../Models/Point.js";
@@ -73,7 +73,7 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
         PopupMessage("Clipboard sent!");
     });
     ConnectButton.addEventListener("click", (ev) => {
-        ConnectToClient();
+        RemoteControl.ConnectToClient();
     });
     CtrlAltDelButton.addEventListener("click", (ev) => {
         if (!RemoteControl.ServiceID) {
@@ -90,7 +90,7 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
     document.querySelectorAll("#sessionIDInput, #nameInput").forEach(x => {
         x.addEventListener("keypress", (ev: KeyboardEvent) => {
             if (ev.key.toLowerCase() == "enter") {
-                ConnectToClient();
+                RemoteControl.ConnectToClient();
             }
         })
     });

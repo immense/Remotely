@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Remotely.Shared.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Remotely.Server.Pages
 {
@@ -19,13 +20,19 @@ namespace Remotely.Server.Pages
         }
 
         public string DefaultPrompt { get; set; }
+        public List<SelectListItem> DeviceGroups { get; set; } = new List<SelectListItem>();
 
         public void OnGet()
         {
             if (User?.Identity?.IsAuthenticated == true)
             {
                 DefaultPrompt = DataService.GetDefaultPrompt(User.Identity.Name);
-
+                var groups = DataService.GetDeviceGroupsForUserName(User.Identity.Name);
+                DeviceGroups.Add(new SelectListItem("All", null));
+                if (groups?.Any() == true)
+                {
+                    DeviceGroups.AddRange(groups.Select(x => new SelectListItem(x.Name, x.ID)));
+                }
             }
             else
             {

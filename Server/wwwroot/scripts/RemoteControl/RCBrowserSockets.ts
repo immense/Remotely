@@ -7,7 +7,12 @@ import { Sound } from "../Sound.js";
 var signalR = window["signalR"];
 
 export class RCBrowserSockets {
-    Connection: any;
+    Connection = {
+        start: async () => { },
+        closedCallbacks: [],
+        invoke: (...rest) => { },
+        stop: () => { }
+    };
 
     Connect() {
         this.Connection = new signalR.HubConnectionBuilder()
