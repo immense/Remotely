@@ -82,7 +82,7 @@ namespace Remotely.Server.Services
                 SenderConnectionID = Context.ConnectionId,
                 SenderUserID = Context.UserIdentifier,
                 TargetDeviceIDs = connections.Select(x => x.Value.ID).ToArray(),
-                OrganizationID = RemotelyUser.Organization.ID
+                OrganizationID = RemotelyUser.OrganizationID
             };
             DataService.AddOrUpdateCommandContext(commandContext);
             await Clients.Caller.SendAsync("CommandContextCreated", commandContext);
