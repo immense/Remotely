@@ -6,7 +6,7 @@ import * as BrowserSockets from "./BrowserSockets.js";
 import { CreateGUID } from "./Utilities.js";
 
 
-export var DataSource: Array<Device> = new Array<Device>();
+export const DataSource: Array<Device> = new Array<Device>();
 
 export function AddOrUpdateDevices(devices: Array<Device>) {
     devices.forEach(x => {
@@ -103,6 +103,11 @@ export function RefreshGrid() {
     xhr.send();
 }
 export function ToggleSelectAll() {
+    var hiddenRows = DeviceGrid.querySelectorAll(".row-selected.hidden.row-selected");
+    hiddenRows.forEach(x => {
+        x.classList.remove("row-selected");
+    });
+
     var currentlySelected = DeviceGrid.querySelectorAll(".row-selected:not(.hidden)");
     if (currentlySelected.length > 0) {
         currentlySelected.forEach(elem => {
