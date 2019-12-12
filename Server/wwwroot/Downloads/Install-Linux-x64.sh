@@ -53,6 +53,7 @@ Description=The Remotely agent used for remote access.
 WorkingDirectory=/usr/local/bin/Remotely/
 ExecStart=/usr/local/bin/Remotely/Remotely_Agent
 Restart=always
+StartLimitIntervalSec=0
 RestartSec=10"
 
 [Install]
