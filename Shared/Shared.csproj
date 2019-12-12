@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Remotely_Shared</AssemblyName>
     <Platforms>AnyCPU;x64;x86</Platforms>
+    <RootNamespace>Remotely.Shared</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

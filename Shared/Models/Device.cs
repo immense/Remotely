@@ -14,11 +14,12 @@ namespace Remotely.Shared.Models
     public class Device
     {
         public string AgentVersion { get; set; }
+        [StringLength(100)]
+        public string Alias { get; set; }
         public string CurrentUser { get; set; }
-        public string DeviceName { get; set; }
-
         public virtual DeviceGroup DeviceGroup { get; set; }
-
+        public string DeviceGroupID { get; set; }
+        public string DeviceName { get; set; }
         public List<Drive> Drives { get; set; }
 
         public double FreeMemory { get; set; }

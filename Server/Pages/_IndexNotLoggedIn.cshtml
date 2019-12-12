@@ -1,6 +1,9 @@
 ﻿@inject Remotely.Server.Services.ApplicationConfig AppConfig
+@inject Remotely.Server.Data.DataService DataService
 @model IndexModel
-
+@{ 
+    var organizationCount = DataService.GetOrganizationCount();
+}
 <div class="console">
     <div id="consoleOutputDiv">
         <div class="console-block">
@@ -20,7 +23,7 @@
                 <a href="~/Identity/Account/Login" class="btn btn-primary btn-lg login-button">
                     Login
                 </a>
-                @if (AppConfig.AllowSelfRegistration)
+                @if (organizationCount < 0 || organizationCount < AppConfig.MaxOrganizationCount)
                 {
                     <br />
                     <br />

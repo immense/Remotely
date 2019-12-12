@@ -24,6 +24,30 @@ namespace Remotely.Server.Data
 
         private ApplicationDbContext RemotelyContext { get; set; }
 
+        public InviteLink AddInvite(string requesterUserName, Invite invite, string requestOrigin)
+        {
+            invite.InvitedUser = invite.InvitedUser.ToLower();
+
+            var requester = RemotelyContext.Users
+                .Include(x => x.Organization)
+                .ThenInclude(x => x.InviteLinks)
+                .Include(x => x.Organization)
+                .ThenInclude(x => x.RemotelyUsers)
+                .FirstOrDefault(x => x.UserName == requesterUserName);
+
+            var newInvite = new InviteLink()
+            {
+                DateSent = DateTime.Now,
+                InvitedUser = invite.InvitedUser,
+                IsAdmin = invite.IsAdmin,
+                Organization = requester.Organization,
+                ResetUrl = invite.ResetUrl
+            };
+            requester.Organization.InviteLinks.Add(newInvite);
+            RemotelyContext.SaveChanges();
+            return newInvite;
+        }
+
         public void AddOrUpdateCommandContext(CommandContext commandContext)
         {
             var existingContext = RemotelyContext.CommandContexts.Find(commandContext.ID);
@@ -80,6 +104,84 @@ namespace Remotely.Server.Data
             }
             RemotelyContext.SaveChanges();
             return true;
+        }
+
+        public string AddSharedFile(IFormFile file, string organizationID)
+        {
+            var expirationDate = DateTime.Now.AddDays(-AppConfig.DataRetentionInDays);
+            var expiredFiles = RemotelyContext.SharedFiles.Where(x => x.Timestamp < expirationDate);
+            RemotelyContext.RemoveRange(expiredFiles);
+
+            byte[] fileContents;
+            using (var stream = file.OpenReadStream())
+            {
+                using (var ms = new MemoryStream())
+                {
+                    stream.CopyTo(ms);
+                    fileContents = ms.ToArray();
+                }
+            }
+            var newEntity = RemotelyContext.Add(new SharedFile()
+            {
+                FileContents = fileContents,
+                FileName = file.FileName,
+                ContentType = file.ContentType,
+                OrganizationID = organizationID
+            });
+            RemotelyContext.SaveChanges();
+            return newEntity.Entity.ID;
+        }
+
+        public void ChangeUserIsAdmin(string requesterUserName, string targetUserID, bool isAdmin)
+        {
+            var requester = RemotelyContext.Users
+                .Include(x => x.Organization)
+                .ThenInclude(x => x.RemotelyUsers)
+                .FirstOrDefault(x => x.UserName == requesterUserName);
+
+            requester.Organization.RemotelyUsers.FirstOrDefault(x => x.Id == targetUserID).IsAdministrator = isAdmin;
+            RemotelyContext.SaveChanges();
+        }
+
+        public void CleanupOldRecords()
+        {
+            if (AppConfig.DataRetentionInDays > 0)
+            {
+                var expirationDate = DateTime.Now - TimeSpan.FromDays(AppConfig.DataRetentionInDays);
+
+                var eventLogs = RemotelyContext.EventLogs
+                                    .Where(x => x.TimeStamp < expirationDate);
+
+                RemotelyContext.RemoveRange(eventLogs);
+
+                var commandContexts = RemotelyContext.CommandContexts
+                                        .Where(x => x.TimeStamp < expirationDate);
+
+                RemotelyContext.RemoveRange(commandContexts);
+
+                var sharedFiles = RemotelyContext.SharedFiles
+                                        .Where(x => x.Timestamp < expirationDate);
+
+                RemotelyContext.RemoveRange(sharedFiles);
+
+                RemotelyContext.SaveChanges();
+            }
+        }
+
+        public void DeleteInvite(string requesterUserName, string inviteID)
+        {
+            var requester = RemotelyContext.Users
+               .Include(x => x.Organization)
+               .ThenInclude(x => x.InviteLinks)
+               .FirstOrDefault(x => x.UserName == requesterUserName);
+            var invite = requester.Organization.InviteLinks.FirstOrDefault(x => x.ID == inviteID);
+            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == invite.InvitedUser);
+            if (user != null && string.IsNullOrWhiteSpace(user.PasswordHash))
+            {
+                RemotelyContext.Remove(user);
+            }
+            RemotelyContext.Remove(invite);
+            RemotelyContext.SaveChanges();
         }
 
         public void DeviceDisconnected(string deviceID)
@@ -141,6 +243,26 @@ namespace Remotely.Server.Data
         }
 
 
+        public ICollection<InviteLink> GetAllInviteLinks(string userName)
+        {
+            return RemotelyContext.Users
+                   .Include(x => x.Organization)
+                   .ThenInclude(x => x.InviteLinks)
+                   .FirstOrDefault(x => x.UserName == userName)
+                   .Organization
+                   .InviteLinks;
+        }
+
+        public IEnumerable<RemotelyUser> GetAllUsers(string userName)
+        {
+            return RemotelyContext.Users
+                    .Include(x => x.Organization)
+                    .ThenInclude(x => x.RemotelyUsers)
+                    .FirstOrDefault(x => x.UserName == userName)
+                    .Organization
+                    .RemotelyUsers;
+        }
+
         public CommandContext GetCommandContext(string commandContextID, string userName)
         {
             var user = GetUserByName(userName);
@@ -183,6 +305,25 @@ namespace Remotely.Server.Data
             return RemotelyContext.DeviceGroups.Where(x => x.OrganizationID == user.OrganizationID).ToList();
         }
 
+        public int GetOrganizationCount()
+        {
+            return RemotelyContext.Organizations.Count();
+        }
+
+        public string GetOrganizationName(string userName)
+        {
+            return RemotelyContext.Users
+                   .Include(x => x.Organization)
+                   .FirstOrDefault(x => x.UserName == userName)
+                   .Organization
+                   .OrganizationName;
+        }
+
+        public SharedFile GetSharedFiled(string fileID)
+        {
+            return RemotelyContext.SharedFiles.Find(fileID);
+        }
+
         public RemotelyUser GetUserByID(string userID)
         {
             if (userID == null)
@@ -203,6 +344,13 @@ namespace Remotely.Server.Data
                 .FirstOrDefault(x => x.UserName == userName);
         }
 
+        public RemotelyUserOptions GetUserOptions(string userName)
+        {
+            return RemotelyContext.Users
+                    .FirstOrDefault(x => x.UserName == userName)
+                    .UserOptions;
+        }
+
         public List<RemotelyUser> GetUsersWithAccessToDevice(IEnumerable<string> userIDs, Device device)
         {
             var targetDevice = RemotelyContext.Devices
@@ -214,6 +362,36 @@ namespace Remotely.Server.Data
 
             return targetUsers.ToList();
         }
+        public bool JoinViaInvitation(string userName, string inviteID)
+        {
+            var invite = RemotelyContext.InviteLinks
+                .Include(x => x.Organization)
+                .ThenInclude(x => x.RemotelyUsers)
+                .FirstOrDefault(x =>
+                    x.InvitedUser.ToLower() == userName.ToLower() &&
+                    x.ID == inviteID);
+
+            if (invite == null)
+            {
+                return false;
+            }
+
+            var user = RemotelyContext.Users
+                .Include(x => x.Organization)
+                .FirstOrDefault(x => x.UserName == userName);
+
+            user.Organization = invite.Organization;
+            user.OrganizationID = invite.Organization.ID;
+            user.IsAdministrator = invite.IsAdmin;
+            invite.Organization.RemotelyUsers.Add(user);
+
+            RemotelyContext.SaveChanges();
+
+            RemotelyContext.InviteLinks.Remove(invite);
+            RemotelyContext.SaveChanges();
+            return true;
+        }
+
         public void RemoveDevices(string[] deviceIDs)
         {
             var devices = RemotelyContext.Devices
@@ -223,12 +401,66 @@ namespace Remotely.Server.Data
             RemotelyContext.SaveChanges();
         }
 
+        public void RemoveUserFromOrganization(string requesterUserName, string targetUserID)
+        {
+            var requester = RemotelyContext.Users
+                .Include(x => x.Organization)
+                .ThenInclude(x => x.RemotelyUsers)
+                .FirstOrDefault(x => x.UserName == requesterUserName);
+            var target = requester.Organization.RemotelyUsers.FirstOrDefault(x => x.Id == targetUserID);
+
+            var newOrganization = new Organization();
+            target.Organization = newOrganization;
+            RemotelyContext.Organizations.Add(newOrganization);
+            RemotelyContext.SaveChanges();
+        }
+
         public void SetAllDevicesNotOnline()
         {
             RemotelyContext.Devices.ForEachAsync(x =>
             {
                 x.IsOnline = false;
             }).Wait();
+            RemotelyContext.SaveChanges();
+        }
+
+        public void SetServerVerificationToken(string deviceID, string verificationToken)
+        {
+            var device = RemotelyContext.Devices.Find(deviceID);
+            if (device != null)
+            {
+                device.ServerVerificationToken = verificationToken;
+                RemotelyContext.SaveChanges();
+            }
+        }
+
+        public void UpdateDevice(string deviceID, string tag = null, string alias = null, string deviceGroupID = null)
+        {
+            var device = RemotelyContext.Devices.Find(deviceID);
+            if (device == null)
+            {
+                return;
+            }
+
+            device.Tags = tag ?? device.Tags;
+            device.DeviceGroupID = deviceGroupID ?? device.DeviceGroupID;
+            device.Alias = alias ?? device.Alias;
+            RemotelyContext.SaveChanges();
+        }
+
+        public void UpdateOrganizationName(string userName, string organizationName)
+        {
+            RemotelyContext.Users
+                .Include(x => x.Organization)
+                .FirstOrDefault(x => x.UserName == userName)
+                .Organization
+                .OrganizationName = organizationName;
+            RemotelyContext.SaveChanges();
+        }
+
+        public void UpdateUserOptions(string userName, RemotelyUserOptions options)
+        {
+            RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName).UserOptions = options;
             RemotelyContext.SaveChanges();
         }
 
@@ -259,232 +491,6 @@ namespace Remotely.Server.Data
                 Message = message,
                 TimeStamp = DateTime.Now
             });
-            RemotelyContext.SaveChanges();
-        }
-
-        internal InviteLink AddInvite(string requesterUserName, Invite invite, string requestOrigin)
-        {
-            invite.InvitedUser = invite.InvitedUser.ToLower();
-
-            var requester = RemotelyContext.Users
-                .Include(x => x.Organization)
-                .ThenInclude(x => x.InviteLinks)
-                .Include(x => x.Organization)
-                .ThenInclude(x => x.RemotelyUsers)
-                .FirstOrDefault(x => x.UserName == requesterUserName);
-
-            var newInvite = new InviteLink()
-            {
-                DateSent = DateTime.Now,
-                InvitedUser = invite.InvitedUser,
-                IsAdmin = invite.IsAdmin,
-                Organization = requester.Organization,
-                ResetUrl = invite.ResetUrl
-            };
-            requester.Organization.InviteLinks.Add(newInvite);
-            RemotelyContext.SaveChanges();
-            return newInvite;
-        }
-
-        internal string AddSharedFile(IFormFile file, string organizationID)
-        {
-            var expirationDate = DateTime.Now.AddDays(-AppConfig.DataRetentionInDays);
-            var expiredFiles = RemotelyContext.SharedFiles.Where(x => x.Timestamp < expirationDate);
-            RemotelyContext.RemoveRange(expiredFiles);
-
-            byte[] fileContents;
-            using (var stream = file.OpenReadStream())
-            {
-                using (var ms = new MemoryStream())
-                {
-                    stream.CopyTo(ms);
-                    fileContents = ms.ToArray();
-                }
-            }
-            var newEntity = RemotelyContext.Add(new SharedFile()
-            {
-                FileContents = fileContents,
-                FileName = file.FileName,
-                ContentType = file.ContentType,
-                OrganizationID = organizationID
-            });
-            RemotelyContext.SaveChanges();
-            return newEntity.Entity.ID;
-        }
-
-        internal void ChangeUserIsAdmin(string requesterUserName, string targetUserID, bool isAdmin)
-        {
-            var requester = RemotelyContext.Users
-                .Include(x => x.Organization)
-                .ThenInclude(x => x.RemotelyUsers)
-                .FirstOrDefault(x => x.UserName == requesterUserName);
-
-            requester.Organization.RemotelyUsers.FirstOrDefault(x => x.Id == targetUserID).IsAdministrator = isAdmin;
-            RemotelyContext.SaveChanges();
-        }
-
-        internal void CleanupOldRecords()
-        {
-            if (AppConfig.DataRetentionInDays > 0)
-            {
-                var expirationDate = DateTime.Now - TimeSpan.FromDays(AppConfig.DataRetentionInDays);
-
-                var eventLogs = RemotelyContext.EventLogs
-                                    .Where(x => x.TimeStamp < expirationDate);
-
-                RemotelyContext.RemoveRange(eventLogs);
-
-                var commandContexts = RemotelyContext.CommandContexts
-                                        .Where(x => x.TimeStamp < expirationDate);
-
-                RemotelyContext.RemoveRange(commandContexts);
-
-                var sharedFiles = RemotelyContext.SharedFiles
-                                        .Where(x => x.Timestamp < expirationDate);
-
-                RemotelyContext.RemoveRange(sharedFiles);
-
-                RemotelyContext.SaveChanges();
-            }
-        }
-
-        internal void DeleteInvite(string requesterUserName, string inviteID)
-        {
-            var requester = RemotelyContext.Users
-               .Include(x => x.Organization)
-               .ThenInclude(x => x.InviteLinks)
-               .FirstOrDefault(x => x.UserName == requesterUserName);
-            var invite = requester.Organization.InviteLinks.FirstOrDefault(x => x.ID == inviteID);
-            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == invite.InvitedUser);
-            if (user != null && string.IsNullOrWhiteSpace(user.PasswordHash))
-            {
-                RemotelyContext.Remove(user);
-            }
-            RemotelyContext.Remove(invite);
-            RemotelyContext.SaveChanges();
-        }
-
-
-        internal ICollection<InviteLink> GetAllInviteLinks(string userName)
-        {
-            return RemotelyContext.Users
-                   .Include(x => x.Organization)
-                   .ThenInclude(x => x.InviteLinks)
-                   .FirstOrDefault(x => x.UserName == userName)
-                   .Organization
-                   .InviteLinks;
-        }
-
-        internal IEnumerable<RemotelyUser> GetAllUsers(string userName)
-        {
-            return RemotelyContext.Users
-                    .Include(x => x.Organization)
-                    .ThenInclude(x => x.RemotelyUsers)
-                    .FirstOrDefault(x => x.UserName == userName)
-                    .Organization
-                    .RemotelyUsers;
-        }
-
-        internal int GetOrganizationCount()
-        {
-            return RemotelyContext.Organizations.Count();
-        }
-
-        internal string GetOrganizationName(string userName)
-        {
-            return RemotelyContext.Users
-                   .Include(x => x.Organization)
-                   .FirstOrDefault(x => x.UserName == userName)
-                   .Organization
-                   .OrganizationName;
-        }
-
-        internal SharedFile GetSharedFiled(string fileID)
-        {
-            return RemotelyContext.SharedFiles.Find(fileID);
-        }
-
-        internal RemotelyUserOptions GetUserOptions(string userName)
-        {
-            return RemotelyContext.Users
-                    .FirstOrDefault(x => x.UserName == userName)
-                    .UserOptions;
-        }
-
-
-
-        internal bool JoinViaInvitation(string userName, string inviteID)
-        {
-            var invite = RemotelyContext.InviteLinks
-                .Include(x => x.Organization)
-                .ThenInclude(x => x.RemotelyUsers)
-                .FirstOrDefault(x =>
-                    x.InvitedUser.ToLower() == userName.ToLower() &&
-                    x.ID == inviteID);
-
-            if (invite == null)
-            {
-                return false;
-            }
-
-            var user = RemotelyContext.Users
-                .Include(x => x.Organization)
-                .FirstOrDefault(x => x.UserName == userName);
-
-            user.Organization = invite.Organization;
-            user.OrganizationID = invite.Organization.ID;
-            user.IsAdministrator = invite.IsAdmin;
-            invite.Organization.RemotelyUsers.Add(user);
-
-            RemotelyContext.SaveChanges();
-
-            RemotelyContext.InviteLinks.Remove(invite);
-            RemotelyContext.SaveChanges();
-            return true;
-        }
-
-        internal void RemoveUserFromOrganization(string requesterUserName, string targetUserID)
-        {
-            var requester = RemotelyContext.Users
-                .Include(x => x.Organization)
-                .ThenInclude(x => x.RemotelyUsers)
-                .FirstOrDefault(x => x.UserName == requesterUserName);
-            var target = requester.Organization.RemotelyUsers.FirstOrDefault(x => x.Id == targetUserID);
-
-            var newOrganization = new Organization();
-            target.Organization = newOrganization;
-            RemotelyContext.Organizations.Add(newOrganization);
-            RemotelyContext.SaveChanges();
-        }
-        internal void SetServerVerificationToken(string deviceID, string verificationToken)
-        {
-            var device = RemotelyContext.Devices.Find(deviceID);
-            if (device != null)
-            {
-                device.ServerVerificationToken = verificationToken;
-                RemotelyContext.SaveChanges();
-            }
-        }
-
-        internal void UpdateOrganizationName(string userName, string organizationName)
-        {
-            RemotelyContext.Users
-                .Include(x => x.Organization)
-                .FirstOrDefault(x => x.UserName == userName)
-                .Organization
-                .OrganizationName = organizationName;
-            RemotelyContext.SaveChanges();
-        }
-
-        internal void UpdateDevice(string deviceID, string tag)
-        {
-            RemotelyContext.Devices.Find(deviceID).Tags = tag;
-            RemotelyContext.SaveChanges();
-        }
-
-        internal void UpdateUserOptions(string userName, RemotelyUserOptions options)
-        {
-            RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName).UserOptions = options;
             RemotelyContext.SaveChanges();
         }
     }
