@@ -66,6 +66,9 @@ h6 {
     padding: .5rem;
 }
 
+#tabContentWrapper {
+    overflow: auto;
+}
 
 #gridControlsWrapper {
     display: grid;
