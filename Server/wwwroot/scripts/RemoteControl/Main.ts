@@ -5,7 +5,6 @@ import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 
 
 var queryString = Utilities.ParseSearchString();
-var rcBrowserSockets = new RCBrowserSockets();
 
 export const RemoteControl = {
 
@@ -16,7 +15,7 @@ export const RemoteControl = {
     Mode: RemoteControlMode.None,
 
     Init: () => {
-        UI.ApplyInputHandlers(rcBrowserSockets);
+        UI.ApplyInputHandlers(RemoteControl.RCBrowserSockets);
         
         if (queryString["clientID"]) {
             RemoteControl.Mode = RemoteControlMode.Unattended;

@@ -46,7 +46,7 @@ export function AddOrUpdateDevice(device: Device) {
                             .replace("true", "<span class='fa fa-check-circle'></span>")
                             .replace("false", "<span class='fa fa-times'></span>")}</td>
                     <td>${device.DeviceName}</td>
-                    <td>${device.Alias}</td>
+                    <td>${device.Alias || ""}</td>
                     <td>${device.CurrentUser}</td>
                     <td>${new Date(device.LastOnline).toLocaleString()}</td>
                     <td>${device.Platform}</td>
