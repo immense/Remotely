@@ -18,6 +18,7 @@ export var TabContentWrapper = document.getElementById("tabContentWrapper") as H
 export var ConsoleFrame = document.getElementById("consoleFrame") as HTMLDivElement;
 export var ConsoleTab = document.getElementById("consoleTab") as HTMLAnchorElement;
 export var ConsoleAlert = document.getElementById("consoleAlert") as HTMLAnchorElement;
+export var DeviceGroupSelect = document.getElementById("deviceGroupSelect") as HTMLSelectElement;
 
 
 export function AddConsoleOutput(strOutputMessage:string) {
