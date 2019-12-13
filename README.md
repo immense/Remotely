@@ -110,6 +110,7 @@ Note: To retain your settings between upgrades, copy your settings to appsetting
 * TrustedCorsOrigins: For cross-origin API requests via JavaScript.  The websites listed in this array with be allowed to make requests to the API.  This does not grant authentication, which is still required on most endpoints.
 * KnownProxies: If your Nginx server is on a different machine and is forwarding requests to the Remotely server, you will need to add the IP of the Nginx server to this array.
 * Smpt*: SMTP settings for auto-generated system emails (such as registration and password reset).
+* Theme: The color theme to use for the site.  Values are "Light" or "Dark".
 
 ## API and Integrations
 Remotely has a basic API, which can be browsed at https://tryremotely.lucency.co/swagger (or your own server instance).  Most endpoints require authentication via the /api/Login, which in turn requires the AllowApiLogin option to be set to true in appsettings.json.  If you're not familiar with how CORS works, I recommend reading up on it before proceeding.
