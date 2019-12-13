@@ -19,8 +19,8 @@ namespace Remotely.Server.Pages
             DataService = dataService;
         }
 
+        public string AgentVersion { get; set; }
         public List<SelectListItem> DeviceGroups { get; } = new List<SelectListItem>();
-
         public string DeviceName { get; set; }
 
         [BindProperty]
@@ -39,6 +39,7 @@ namespace Remotely.Server.Pages
             {
                 var device = DataService.GetDeviceForUser(user.Id, deviceID);
                 DeviceName = device?.DeviceName;
+                AgentVersion = device.AgentVersion;
                 Input.Alias = device?.Alias;
                 Input.DeviceGroupID = device?.DeviceGroupID;
                 Input.Tags = device?.Tags;

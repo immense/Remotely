@@ -14,6 +14,73 @@ document.getElementById("invitesHelpButton").addEventListener("click", (ev) => {
         after they accept the invitation.`);
 });
 
+document.getElementById("deviceGroupHelpButton").addEventListener("click", (ev) => {
+    ShowModal("Device Groups", `Device groups can be used to organize and filter computers on the grid.`);
+});
+
+
+document.getElementById("removeDeviceGroupButton").addEventListener("click", (ev) => {
+    var selectList = document.getElementById("deviceGroupList") as HTMLSelectElement;
+    for (var i = 0; i < selectList.selectedOptions.length; i++) {
+        let selectedValue = selectList.selectedOptions[i].value;
+        let xhr = new XMLHttpRequest();
+        xhr.onload = (ev) => {
+            console.log(ev.srcElement);
+            if (xhr.status == 200) {
+                document.querySelectorAll(`.all-device-groups-list option[value='${selectedValue}']`).forEach(option => {
+                    option.remove();
+                })
+            }
+            else if (xhr.status == 400) {
+                ShowModal("Invalid Request", xhr.responseText);
+            }
+            else {
+                showError(xhr);
+            }
+        }
+        xhr.onerror = () => {
+            showError(xhr);
+        }
+        xhr.open("delete", location.origin + "/api/OrganizationManagement/DeviceGroup");
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify(selectedValue));
+    }
+
+});
+document.getElementById("deviceGroupInput").addEventListener("keypress", (e) => {
+    if (e.key.toLowerCase() == "enter") {
+        document.getElementById("addDeviceGroupButton").click();
+    }
+})
+document.getElementById("addDeviceGroupButton").addEventListener("click", () => {
+    var input = document.getElementById("deviceGroupInput") as HTMLInputElement;
+
+    if (input.checkValidity() && input.value.length > 0) {
+        var xhr = new XMLHttpRequest();
+        xhr.onload = () => {
+            if (xhr.status == 200) {
+                document.querySelectorAll(`.all-device-groups-list`).forEach((list: HTMLSelectElement) => {
+                    var newOption = new Option(input.value, xhr.responseText);
+                    list.options.add(newOption);
+                })
+                input.value = "";
+            }
+            else if (xhr.status == 400) {
+                ShowModal("Invalid Request", xhr.responseText);
+            }
+            else {
+                showError(xhr);
+            }
+        }
+        xhr.onerror = () => {
+            showError(xhr);
+        }
+        xhr.open("post", location.origin + "/api/OrganizationManagement/DeviceGroup");
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify({ Name: input.value }));
+    }
+})
+
 document.getElementById("organizationNameInput").addEventListener("input", (ev) => {
     var addon = (ev.currentTarget as HTMLInputElement).parentElement.querySelector(".fa");
     addon.classList.remove("fa-check-circle");

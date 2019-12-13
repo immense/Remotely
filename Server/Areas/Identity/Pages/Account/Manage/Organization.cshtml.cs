@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Remotely.Shared.ViewModels.Organization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 {
@@ -17,8 +18,10 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             DataService = dataService;
             UserManager = userManager;
         }
-        private DataService DataService { get; }
-        private UserManager<RemotelyUser> UserManager { get; }
+        public List<SelectListItem> DeviceGroups { get; } = new List<SelectListItem>();
+
+        [Display(Name = "Invites")]
+        public List<Invite> Invites { get; set; }
 
         [Display(Name = "Organization Name")]
         [StringLength(25)]
@@ -27,13 +30,14 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         [Display(Name = "Users")]
         public List<OrganizationUser> Users { get; set; }
 
-        [Display(Name = "Invites")]
-        public List<Invite> Invites { get; set; }
-
-
+        private DataService DataService { get; }
+        private UserManager<RemotelyUser> UserManager { get; }
         public void OnGet()
         {
             OrganizationName = DataService.GetOrganizationName(User.Identity.Name);
+
+            var groups = DataService.GetDeviceGroupsForUserName(User.Identity.Name);
+            DeviceGroups.AddRange(groups.Select(x => new SelectListItem(x.Name, x.ID)));
 
             Users = DataService.GetAllUsers(User.Identity.Name)
                 .Select(x => new OrganizationUser()

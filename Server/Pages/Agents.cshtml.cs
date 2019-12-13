@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Remotely.Server.Pages
 {
-    public class ClientsModel : PageModel
+    public class AgentsModel : PageModel
     {
         public void OnGet()
         {

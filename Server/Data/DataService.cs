@@ -24,6 +24,31 @@ namespace Remotely.Server.Data
 
         private ApplicationDbContext RemotelyContext { get; set; }
 
+        public bool AddDeviceGroup(string userName, DeviceGroup deviceGroup, out string deviceGroupID, out string errorMessage)
+        {
+            deviceGroupID = null;
+            errorMessage = null;
+            var organization = RemotelyContext.Users
+                .Include(x => x.Organization)
+                .ThenInclude(x => x.DeviceGroups)
+                .FirstOrDefault(x => x.UserName == userName)
+                .Organization;
+            if (organization.DeviceGroups.Any(x => x.Name.ToLower() == deviceGroup.Name.ToLower()))
+            {
+                errorMessage = "Device group already exists.";
+                return false;
+            }
+            var newDeviceGroup = new DeviceGroup()
+            {
+                Name = deviceGroup.Name,
+                Organization = organization
+            };
+            organization.DeviceGroups.Add(newDeviceGroup);
+            RemotelyContext.SaveChanges();
+            deviceGroupID = newDeviceGroup.ID;
+            return true;
+        }
+
         public InviteLink AddInvite(string requesterUserName, Invite invite, string requestOrigin)
         {
             invite.InvitedUser = invite.InvitedUser.ToLower();
@@ -105,7 +130,6 @@ namespace Remotely.Server.Data
             RemotelyContext.SaveChanges();
             return true;
         }
-
         public string AddSharedFile(IFormFile file, string organizationID)
         {
             var expirationDate = DateTime.Now.AddDays(-AppConfig.DataRetentionInDays);
@@ -168,6 +192,23 @@ namespace Remotely.Server.Data
             }
         }
 
+        public void DeleteDeviceGroup(string userName, string deviceGroupId)
+        {
+            var organization = RemotelyContext.Users
+                .Include(x => x.Organization)
+                .ThenInclude(x => x.DeviceGroups)
+                .ThenInclude(x => x.Devices)
+                .FirstOrDefault(x => x.UserName == userName)
+                .Organization;
+
+            var deviceGroup = organization.DeviceGroups.FirstOrDefault(x => x.ID == deviceGroupId);
+            deviceGroup.Devices.ForEach(x =>
+            {
+                x.DeviceGroup = null;
+            });
+            RemotelyContext.DeviceGroups.Remove(deviceGroup);
+            RemotelyContext.SaveChanges();
+        }
         public void DeleteInvite(string requesterUserName, string inviteID)
         {
             var requester = RemotelyContext.Users
@@ -434,7 +475,7 @@ namespace Remotely.Server.Data
             }
         }
 
-        public void UpdateDevice(string deviceID, string tag = null, string alias = null, string deviceGroupID = null)
+        public void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID)
         {
             var device = RemotelyContext.Devices.Find(deviceID);
             if (device == null)
@@ -442,9 +483,21 @@ namespace Remotely.Server.Data
                 return;
             }
 
-            device.Tags = tag ?? device.Tags;
-            device.DeviceGroupID = deviceGroupID ?? device.DeviceGroupID;
-            device.Alias = alias ?? device.Alias;
+            device.Tags = tag;
+            device.DeviceGroupID = deviceGroupID;
+            device.Alias = alias;
+            RemotelyContext.SaveChanges();
+        }
+
+        public void UpdateTags(string deviceID, string tags)
+        {
+            var device = RemotelyContext.Devices.Find(deviceID);
+            if (device == null)
+            {
+                return;
+            }
+
+            device.Tags = tags;
             RemotelyContext.SaveChanges();
         }
 
