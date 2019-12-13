@@ -15,6 +15,7 @@ export function ApplyInputEventHandlers() {
     clickToggleAllDevices();
     clickStartRemoteControlButton();
     consoleTabSelected();
+    deviceGroupSelectChanged();
 
     window.addEventListener("resize", ev => {
         PositionCommandCompletionWindow();
@@ -152,7 +153,7 @@ function inputOnCommandTextArea() {
 function inputOnFilterTextBox() {
     document.querySelector("#gridFilter").addEventListener("input", (e) => {
         var currentText = (e.currentTarget as HTMLInputElement).value.toLowerCase();
-        DataGrid.ApplyFilter(currentText);
+        DataGrid.ApplySearchFilter(currentText);
     })
 }
 function consoleTabSelected() {
@@ -179,4 +180,10 @@ function clickStartRemoteControlButton() {
             WebCommands.find(x => x.Name == "RemoteControl").Execute([]);
         }
     })
+}
+
+function deviceGroupSelectChanged() {
+    UI.DeviceGroupSelect.addEventListener("change", (ev) => {
+        DataGrid.ApplyGroupFilter(UI.DeviceGroupSelect.value);
+    });
 }

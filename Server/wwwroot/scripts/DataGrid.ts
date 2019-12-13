@@ -65,7 +65,18 @@ export function AddOrUpdateDevice(device: Device) {
     };
     UpdateDeviceCounts();
 }
-export function ApplyFilter(filterString: string) {
+export function ApplyGroupFilter(groupID: string) {
+    for (var i = 0; i < DataSource.length; i++) {
+        var row = document.getElementById(DataSource[i].ID);
+        if (!groupID || DataSource[i].DeviceGroupID == groupID) {
+            row.classList.remove("hidden");
+        }
+        else {
+            row.classList.add("hidden");
+        }
+    }
+}
+export function ApplySearchFilter(filterString: string) {
     for (var i = 0; i < DataSource.length; i++) {
         for (var key in DataSource[i]) {
             var value = DataSource[i][key];
@@ -74,7 +85,7 @@ export function ApplyFilter(filterString: string) {
             }
 
             var row = document.getElementById(DataSource[i].ID);
-            if (DataSource[i][key].toString().toLowerCase().includes(filterString)) {
+            if (value.toString().toLowerCase().includes(filterString)) {
                 row.classList.remove("hidden");
                 break;
             }
