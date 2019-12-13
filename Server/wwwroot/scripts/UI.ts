@@ -1,17 +1,5 @@
-﻿import * as CommandProcessor from "./CommandProcessor.js";
-import { UserSettings} from "./UserSettings.js";
+﻿import { UserSettings} from "./UserSettings.js";
 import * as Utilities from "./Utilities.js";
-import { Store } from "./Store.js";
-import { ConsoleCommand } from "./Models/ConsoleCommand.js";
-import { CommandLineParameter } from "./Models/CommandLineParameter.js";
-import { WebCommands } from "./Commands/WebCommands.js";
-import { Parameter } from "./Models/Parameter.js";
-import { PositionCommandCompletionWindow, HighlightCompletionWindowItem } from "./CommandCompletion.js";
-import { PSCoreCommandResult } from "./Models/PSCoreCommandResult.js";
-import { CommandContext } from "./Models/CommandContext.js";
-import * as DataGrid from "./DataGrid.js";
-import { CreateCommandHarness, AddPSCoreResultsHarness, UpdateResultsCount, AddCommandResultsHarness } from "./ResultsParser.js";
-import { GenericCommandResult } from "./Models/GenericCommandResult.js";
 import { GetSelectedDevices } from "./DataGrid.js";
 
 
@@ -30,6 +18,7 @@ export var TabContentWrapper = document.getElementById("tabContentWrapper") as H
 export var ConsoleFrame = document.getElementById("consoleFrame") as HTMLDivElement;
 export var ConsoleTab = document.getElementById("consoleTab") as HTMLAnchorElement;
 export var ConsoleAlert = document.getElementById("consoleAlert") as HTMLAnchorElement;
+export var DeviceGroupSelect = document.getElementById("deviceGroupSelect") as HTMLSelectElement;
 
 
 export function AddConsoleOutput(strOutputMessage:string) {
@@ -63,7 +52,6 @@ export function AddConsoleHTML(html: string) {
     ConsoleFrame.scrollTop = ConsoleFrame.scrollHeight;
 }
 export function AddTransferHarness(transferID: string, totalDevices:number) {
-    GetSelectedDevices()
     var transferHarness = document.createElement("div");
     transferHarness.id = transferID;
     transferHarness.classList.add("command-harness");

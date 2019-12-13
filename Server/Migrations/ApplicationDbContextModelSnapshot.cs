@@ -14,20 +14,23 @@ namespace Remotely.Server.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062");
+                .HasAnnotation("ProductVersion", "3.1.0");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken();
+                        .IsConcurrencyToken()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
+                        .HasColumnType("TEXT")
                         .HasMaxLength(256);
 
                     b.Property<string>("NormalizedName")
+                        .HasColumnType("TEXT")
                         .HasMaxLength(256);
 
                     b.HasKey("Id");
@@ -42,14 +45,18 @@ namespace Remotely.Server.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
 
-                    b.Property<string>("ClaimType");
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("ClaimValue");
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("RoleId")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -61,42 +68,57 @@ namespace Remotely.Server.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
                 {
                     b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
+                        .HasColumnType("TEXT");
 
-                    b.Property<int>("AccessFailedCount");
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken();
+                        .IsConcurrencyToken()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Discriminator")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
+                        .HasColumnType("TEXT")
                         .HasMaxLength(256);
 
-                    b.Property<bool>("EmailConfirmed");
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<bool>("LockoutEnabled");
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<DateTimeOffset?>("LockoutEnd");
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("NormalizedEmail")
+                        .HasColumnType("TEXT")
                         .HasMaxLength(256);
 
                     b.Property<string>("NormalizedUserName")
+                        .HasColumnType("TEXT")
                         .HasMaxLength(256);
 
-                    b.Property<string>("PasswordHash");
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("PhoneNumber");
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("TEXT");
 
-                    b.Property<bool>("PhoneNumberConfirmed");
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<string>("SecurityStamp");
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("TEXT");
 
-                    b.Property<bool>("TwoFactorEnabled");
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("UserName")
+                        .HasColumnType("TEXT")
                         .HasMaxLength(256);
 
                     b.HasKey("Id");
@@ -116,14 +138,18 @@ namespace Remotely.Server.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
 
-                    b.Property<string>("ClaimType");
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("ClaimValue");
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -135,15 +161,19 @@ namespace Remotely.Server.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
+                        .HasColumnType("TEXT")
                         .HasMaxLength(128);
 
                     b.Property<string>("ProviderKey")
+                        .HasColumnType("TEXT")
                         .HasMaxLength(128);
 
-                    b.Property<string>("ProviderDisplayName");
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -154,9 +184,11 @@ namespace Remotely.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.Property<string>("UserId");
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("RoleId");
+                    b.Property<string>("RoleId")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -167,15 +199,19 @@ namespace Remotely.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.Property<string>("UserId");
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("LoginProvider")
+                        .HasColumnType("TEXT")
                         .HasMaxLength(128);
 
                     b.Property<string>("Name")
+                        .HasColumnType("TEXT")
                         .HasMaxLength(128);
 
-                    b.Property<string>("Value");
+                    b.Property<string>("Value")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
@@ -185,25 +221,34 @@ namespace Remotely.Server.Migrations
             modelBuilder.Entity("Remotely.Shared.Models.CommandContext", b =>
                 {
                     b.Property<string>("ID")
-                        .ValueGeneratedOnAdd();
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("CommandMode");
+                    b.Property<string>("CommandMode")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("CommandResults");
+                    b.Property<string>("CommandResults")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("CommandText");
+                    b.Property<string>("CommandText")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("OrganizationID");
+                    b.Property<string>("OrganizationID")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("PSCoreResults");
+                    b.Property<string>("PSCoreResults")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("SenderConnectionID");
+                    b.Property<string>("SenderConnectionID")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("SenderUserID");
+                    b.Property<string>("SenderUserID")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("TargetDeviceIDs");
+                    b.Property<string>("TargetDeviceIDs")
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("TimeStamp");
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("ID");
 
@@ -215,81 +260,120 @@ namespace Remotely.Server.Migrations
             modelBuilder.Entity("Remotely.Shared.Models.Device", b =>
                 {
                     b.Property<string>("ID")
-                        .ValueGeneratedOnAdd();
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("AgentVersion");
+                    b.Property<string>("AgentVersion")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("CurrentUser");
+                    b.Property<string>("Alias")
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(100);
 
-                    b.Property<string>("DeviceName");
+                    b.Property<string>("CurrentUser")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("Drives");
+                    b.Property<string>("DeviceGroupID")
+                        .HasColumnType("TEXT");
 
-                    b.Property<double>("FreeMemory");
+                    b.Property<string>("DeviceName")
+                        .HasColumnType("TEXT");
 
-                    b.Property<double>("FreeStorage");
+                    b.Property<string>("Drives")
+                        .HasColumnType("TEXT");
 
-                    b.Property<bool>("Is64Bit");
+                    b.Property<double>("FreeMemory")
+                        .HasColumnType("REAL");
 
-                    b.Property<bool>("IsOnline");
+                    b.Property<double>("FreeStorage")
+                        .HasColumnType("REAL");
 
-                    b.Property<DateTime>("LastOnline");
+                    b.Property<bool>("Is64Bit")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<int>("OSArchitecture");
+                    b.Property<bool>("IsOnline")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<string>("OSDescription");
+                    b.Property<DateTime>("LastOnline")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("OrganizationID");
+                    b.Property<int>("OSArchitecture")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<string>("Platform");
+                    b.Property<string>("OSDescription")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int>("ProcessorCount");
+                    b.Property<string>("OrganizationID")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("ServerVerificationToken");
+                    b.Property<string>("Platform")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ProcessorCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ServerVerificationToken")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Tags")
+                        .HasColumnType("TEXT")
                         .HasMaxLength(200);
 
-                    b.Property<double>("TotalMemory");
+                    b.Property<double>("TotalMemory")
+                        .HasColumnType("REAL");
 
-                    b.Property<double>("TotalStorage");
+                    b.Property<double>("TotalStorage")
+                        .HasColumnType("REAL");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("DeviceGroupID");
 
                     b.HasIndex("OrganizationID");
 
                     b.ToTable("Devices");
                 });
 
-            modelBuilder.Entity("Remotely.Shared.Models.DevicePermissionLink", b =>
+            modelBuilder.Entity("Remotely.Shared.Models.DeviceGroup", b =>
                 {
-                    b.Property<string>("PermissionGroupID");
+                    b.Property<string>("ID")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("DeviceID");
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(200);
 
-                    b.HasKey("PermissionGroupID", "DeviceID");
+                    b.Property<string>("OrganizationID")
+                        .HasColumnType("TEXT");
 
-                    b.HasIndex("DeviceID");
+                    b.HasKey("ID");
 
-                    b.ToTable("DevicePermissionLinks");
+                    b.HasIndex("OrganizationID");
+
+                    b.ToTable("DeviceGroups");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.EventLog", b =>
                 {
                     b.Property<string>("ID")
-                        .ValueGeneratedOnAdd();
+                        .HasColumnType("TEXT");
 
-                    b.Property<int>("EventType");
+                    b.Property<int>("EventType")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<string>("Message");
+                    b.Property<string>("Message")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("OrganizationID");
+                    b.Property<string>("OrganizationID")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("Source");
+                    b.Property<string>("Source")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("StackTrace");
+                    b.Property<string>("StackTrace")
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("TimeStamp");
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("ID");
 
@@ -301,17 +385,22 @@ namespace Remotely.Server.Migrations
             modelBuilder.Entity("Remotely.Shared.Models.InviteLink", b =>
                 {
                     b.Property<string>("ID")
-                        .ValueGeneratedOnAdd();
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("DateSent");
+                    b.Property<DateTime>("DateSent")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("InvitedUser");
+                    b.Property<string>("InvitedUser")
+                        .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsAdmin");
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<string>("OrganizationID");
+                    b.Property<string>("OrganizationID")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("ResetUrl");
+                    b.Property<string>("ResetUrl")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("ID");
 
@@ -323,9 +412,10 @@ namespace Remotely.Server.Migrations
             modelBuilder.Entity("Remotely.Shared.Models.Organization", b =>
                 {
                     b.Property<string>("ID")
-                        .ValueGeneratedOnAdd();
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("OrganizationName")
+                        .HasColumnType("TEXT")
                         .HasMaxLength(25);
 
                     b.HasKey("ID");
@@ -333,37 +423,25 @@ namespace Remotely.Server.Migrations
                     b.ToTable("Organizations");
                 });
 
-            modelBuilder.Entity("Remotely.Shared.Models.PermissionGroup", b =>
-                {
-                    b.Property<string>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("OrganizationID");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("OrganizationID");
-
-                    b.ToTable("PermissionGroups");
-                });
-
             modelBuilder.Entity("Remotely.Shared.Models.SharedFile", b =>
                 {
                     b.Property<string>("ID")
-                        .ValueGeneratedOnAdd();
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("ContentType");
+                    b.Property<string>("ContentType")
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("FileContents");
+                    b.Property<byte[]>("FileContents")
+                        .HasColumnType("BLOB");
 
-                    b.Property<string>("FileName");
+                    b.Property<string>("FileName")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("OrganizationID");
+                    b.Property<string>("OrganizationID")
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("Timestamp");
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("ID");
 
@@ -372,79 +450,73 @@ namespace Remotely.Server.Migrations
                     b.ToTable("SharedFiles");
                 });
 
-            modelBuilder.Entity("Remotely.Shared.Models.UserPermissionLink", b =>
-                {
-                    b.Property<string>("PermissionGroupID");
-
-                    b.Property<string>("RemotelyUserID");
-
-                    b.HasKey("PermissionGroupID", "RemotelyUserID");
-
-                    b.HasIndex("RemotelyUserID");
-
-                    b.ToTable("UserPermissionLinks");
-                });
-
             modelBuilder.Entity("Remotely.Shared.Models.RemotelyUser", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
-                    b.Property<bool>("IsAdministrator");
+                    b.Property<bool>("IsAdministrator")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<string>("OrganizationID");
+                    b.Property<string>("OrganizationID")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("UserOptions");
+                    b.Property<string>("UserOptions")
+                        .HasColumnType("TEXT");
 
                     b.HasIndex("OrganizationID");
-
-                    b.ToTable("RemotelyUsers");
 
                     b.HasDiscriminator().HasValue("RemotelyUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.CommandContext", b =>
@@ -456,22 +528,20 @@ namespace Remotely.Server.Migrations
 
             modelBuilder.Entity("Remotely.Shared.Models.Device", b =>
                 {
+                    b.HasOne("Remotely.Shared.Models.DeviceGroup", "DeviceGroup")
+                        .WithMany("Devices")
+                        .HasForeignKey("DeviceGroupID");
+
                     b.HasOne("Remotely.Shared.Models.Organization", "Organization")
                         .WithMany("Devices")
                         .HasForeignKey("OrganizationID");
                 });
 
-            modelBuilder.Entity("Remotely.Shared.Models.DevicePermissionLink", b =>
+            modelBuilder.Entity("Remotely.Shared.Models.DeviceGroup", b =>
                 {
-                    b.HasOne("Remotely.Shared.Models.Device", "Device")
-                        .WithMany("DevicePermissionLinks")
-                        .HasForeignKey("DeviceID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Remotely.Shared.Models.PermissionGroup", "PermissionGroup")
-                        .WithMany("DevicePermissionLinks")
-                        .HasForeignKey("PermissionGroupID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                    b.HasOne("Remotely.Shared.Models.Organization", "Organization")
+                        .WithMany("DeviceGroups")
+                        .HasForeignKey("OrganizationID");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.EventLog", b =>
@@ -488,31 +558,11 @@ namespace Remotely.Server.Migrations
                         .HasForeignKey("OrganizationID");
                 });
 
-            modelBuilder.Entity("Remotely.Shared.Models.PermissionGroup", b =>
-                {
-                    b.HasOne("Remotely.Shared.Models.Organization", "Organization")
-                        .WithMany("PermissionGroups")
-                        .HasForeignKey("OrganizationID");
-                });
-
             modelBuilder.Entity("Remotely.Shared.Models.SharedFile", b =>
                 {
                     b.HasOne("Remotely.Shared.Models.Organization", "Organization")
                         .WithMany("SharedFiles")
                         .HasForeignKey("OrganizationID");
-                });
-
-            modelBuilder.Entity("Remotely.Shared.Models.UserPermissionLink", b =>
-                {
-                    b.HasOne("Remotely.Shared.Models.PermissionGroup", "PermissionGroup")
-                        .WithMany("UserPermissionLinks")
-                        .HasForeignKey("PermissionGroupID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Remotely.Shared.Models.RemotelyUser", "RemotelyUser")
-                        .WithMany("UserPermissionLinks")
-                        .HasForeignKey("RemotelyUserID")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.RemotelyUser", b =>

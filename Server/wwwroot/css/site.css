@@ -66,9 +66,14 @@ h6 {
     padding: .5rem;
 }
 
+#tabContentWrapper {
+    overflow: auto;
+}
 
 #gridControlsWrapper {
-    text-align: right;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-column-gap: 20px;
     margin-bottom: 5px;
     margin-right: 5px;
     padding-top: 3px;

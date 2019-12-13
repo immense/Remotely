@@ -48,18 +48,7 @@ namespace Remotely.Server.Services
             }
         }
         private SignInManager<RemotelyUser> SignInManager { get; }
-        public async Task AddGroup(string[] deviceIDs, string groupName)
-        {
-            groupName = groupName.Trim();
-            deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
-            if (!DataService.DoesGroupExist(RemotelyUser.Id, groupName))
-            {
-                await Clients.Caller.SendAsync("DisplayMessage", "Permission group does not exist.", "Permission group does not exist.");
-                return;
-            }
-            DataService.AddPermissionToDevices(RemotelyUser.Id, deviceIDs, groupName);
-            await Clients.Caller.SendAsync("DisplayMessage", "Group added.");
-        }
+
         public async Task DeployScript(string fileID, string mode, string[] deviceIDs)
         {
             deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
@@ -93,7 +82,7 @@ namespace Remotely.Server.Services
                 SenderConnectionID = Context.ConnectionId,
                 SenderUserID = Context.UserIdentifier,
                 TargetDeviceIDs = connections.Select(x => x.Value.ID).ToArray(),
-                OrganizationID = RemotelyUser.Organization.ID
+                OrganizationID = RemotelyUser.OrganizationID
             };
             DataService.AddOrUpdateCommandContext(commandContext);
             await Clients.Caller.SendAsync("CommandContextCreated", commandContext);
@@ -103,15 +92,10 @@ namespace Remotely.Server.Services
             }
         }
 
-        public async Task GetGroups(string[] deviceIDs)
-        {
-            deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
-            var result = DataService.GetDevicesAndPermissions(RemotelyUser.Id, deviceIDs);
-            await Clients.Caller.SendAsync("GetGroupsResult", result);
-        }
+
 		public override async Task OnConnectedAsync()
 		{
-			RemotelyUser = DataService.GetUserAndPermissionsByID(Context.UserIdentifier);
+			RemotelyUser = DataService.GetUserByID(Context.UserIdentifier);
 			if (await IsConnectionValid() == false)
 			{
 				return;
@@ -151,18 +135,7 @@ namespace Remotely.Server.Services
             await Clients.Caller.SendAsync("RefreshDeviceList");
         }
 
-        public async Task RemoveGroup(string[] deviceIDs, string groupName)
-        {
-            groupName = groupName.Trim();
-            deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
-            if (!DataService.DoesGroupExist(RemotelyUser.Id, groupName))
-            {
-                await Clients.Caller.SendAsync("DisplayMessage", "Permission group does not exist.");
-                return;
-            }
-            DataService.RemovePermissionFromDevices(RemotelyUser.Id, deviceIDs, groupName);
-            await Clients.Caller.SendAsync("DisplayMessage", "Group removed.", "Group removed.");
-        }
+
         public async Task TransferFiles(List<string> fileIDs, string transferID, string[] deviceIDs)
         {
             DataService.WriteEvent(new EventLog()
@@ -190,7 +163,7 @@ namespace Remotely.Server.Services
             DataService.RemoveDevices(deviceIDs);
             await Clients.Caller.SendAsync("RefreshDeviceList");
         }
-        public async Task UpdateDevice(string deviceID, string tags)
+        public async Task UpdateTags(string deviceID, string tags)
         {
             if (DataService.DoesUserHaveAccessToDevice(deviceID, RemotelyUser))
             {
@@ -199,7 +172,7 @@ namespace Remotely.Server.Services
                     await Clients.Caller.SendAsync("DisplayMessage", $"Tag must be 200 characters or less. Supplied length is {tags.Length}.", "Tag must be under 200 characters.");
                     return;
                 }
-                DataService.UpdateDevice(deviceID, tags);
+                DataService.UpdateTags(deviceID, tags);
                 await Clients.Caller.SendAsync("DisplayMessage", "Device updated successfully.", "Device updated.");
             }
         }
@@ -207,7 +180,7 @@ namespace Remotely.Server.Services
         private IEnumerable<KeyValuePair<string, Device>> GetActiveClientConnections(string[] deviceIDs)
         {
             return DeviceSocketHub.ServiceConnections.Where(x =>
-                x.Value.OrganizationID == RemotelyUser.Organization.ID &&
+                x.Value.OrganizationID == RemotelyUser.OrganizationID &&
                 deviceIDs.Contains(x.Value.ID)
             );
         }

@@ -6,13 +6,14 @@ import * as BrowserSockets from "./BrowserSockets.js";
 import { CreateGUID } from "./Utilities.js";
 
 
-export var DataSource: Array<Device> = new Array<Device>();
+export const DataSource: Array<Device> = new Array<Device>();
 
 export function AddOrUpdateDevices(devices: Array<Device>) {
     devices.forEach(x => {
         AddOrUpdateDevice(x);
     });
 }
+
 export function AddOrUpdateDevice(device: Device) {
     var existingIndex = DataSource.findIndex(x => x.ID == device.ID);
     if (existingIndex > -1) {
@@ -45,6 +46,7 @@ export function AddOrUpdateDevice(device: Device) {
                             .replace("true", "<span class='fa fa-check-circle'></span>")
                             .replace("false", "<span class='fa fa-times'></span>")}</td>
                     <td>${device.DeviceName}</td>
+                    <td>${device.Alias || ""}</td>
                     <td>${device.CurrentUser}</td>
                     <td>${new Date(device.LastOnline).toLocaleString()}</td>
                     <td>${device.Platform}</td>
@@ -59,9 +61,37 @@ export function AddOrUpdateDevice(device: Device) {
     (recordRow.querySelector(".device-edit-button") as HTMLButtonElement).onclick = (ev) => {
         ev.preventDefault();
         ev.stopPropagation();
-        EditDevice(device);
+        window.open(`${location.origin}/EditDevice?deviceID=${device.ID}`, "_blank");
     };
     UpdateDeviceCounts();
+}
+export function ApplyGroupFilter(groupID: string) {
+    for (var i = 0; i < DataSource.length; i++) {
+        var row = document.getElementById(DataSource[i].ID);
+        if (!groupID || DataSource[i].DeviceGroupID == groupID) {
+            row.classList.remove("hidden");
+        }
+        else {
+            row.classList.add("hidden");
+        }
+    }
+}
+export function ApplySearchFilter(filterString: string) {
+    for (var i = 0; i < DataSource.length; i++) {
+        for (var key in DataSource[i]) {
+            var value = DataSource[i][key];
+            if (!value) {
+                continue;
+            }
+
+            var row = document.getElementById(DataSource[i].ID);
+            if (value.toString().toLowerCase().includes(filterString)) {
+                row.classList.remove("hidden");
+                break;
+            }
+            row.classList.add("hidden");
+        }
+    }
 }
 export function ClearAllData() {
     DataSource.splice(0, DataSource.length);
@@ -102,6 +132,11 @@ export function RefreshGrid() {
     xhr.send();
 }
 export function ToggleSelectAll() {
+    var hiddenRows = DeviceGrid.querySelectorAll(".row-selected.hidden.row-selected");
+    hiddenRows.forEach(x => {
+        x.classList.remove("row-selected");
+    });
+
     var currentlySelected = DeviceGrid.querySelectorAll(".row-selected:not(.hidden)");
     if (currentlySelected.length > 0) {
         currentlySelected.forEach(elem => {
@@ -126,31 +161,4 @@ export function UpdateDeviceCounts() {
     ) {
         UI.AddConsoleOutput(`Your selection contains offline computers.  Your commands will only be sent to those that are online.`);
     }
-}
-
-function EditDevice(device: Device) {
-    var modalWrapper = UI.ShowModal(
-        "Edit Device",
-        `
-        <div class="form-group row">
-            <label for="device-name" class="col-sm-2 col-form-label">Device:</label>
-            <div class="col-sm-10">
-                <input type="text" class="form-control" name="device-name" readonly value="${device.DeviceName}" />
-            </div>
-        </div>
-        <div class="form-group row">
-            <label for="tags" class="col-sm-2 col-form-label">Tags:</label>
-            <div class="col-sm-10">
-                <input type="text" class="form-control" id="device-tags" value="${device.Tags}" />
-            </div>
-        </div>
-`,
-        `<button id="save-button" type="button" class="btn btn-primary" data-dismiss="modal">Save</button>`);
-
-    modalWrapper.querySelector("#save-button").addEventListener("click", (ev) => {
-        var foundDevice = DataSource.find(x => x.ID == device.ID);
-        var newTags = modalWrapper.querySelector<HTMLInputElement>("#device-tags").value;
-        foundDevice.Tags = newTags;
-        BrowserSockets.Connection.invoke("UpdateDevice", foundDevice.ID, newTags);
-    });
 }

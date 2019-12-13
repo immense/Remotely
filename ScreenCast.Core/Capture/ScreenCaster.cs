@@ -68,13 +68,16 @@ namespace Remotely.ScreenCast.Core.Capture
             {
                 try
                 {
-                    var currentDesktopName = Win32Interop.GetCurrentDesktop();
-                    if (desktopName.ToLower() != currentDesktopName.ToLower())
+                    if (OSUtils.IsWindows)
                     {
-                        desktopName = currentDesktopName;
-                        Logger.Write($"Switching to desktop {desktopName} in ScreenCaster.");
-                        Win32Interop.SwitchToInputDesktop();
-                        continue;
+                        var currentDesktopName = Win32Interop.GetCurrentDesktop();
+                        if (desktopName.ToLower() != currentDesktopName.ToLower())
+                        {
+                            desktopName = currentDesktopName;
+                            Logger.Write($"Switching to desktop {desktopName} in ScreenCaster.");
+                            Win32Interop.SwitchToInputDesktop();
+                            continue;
+                        }
                     }
 
                     while (viewer.PendingFrames > 10)

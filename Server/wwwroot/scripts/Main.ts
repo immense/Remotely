@@ -37,9 +37,3 @@ var remotely = {
 
 export const Main = remotely;
 window["Remotely"] = remotely;
-
-window.onload = (ev) => {
-    remotely.Init();
-    document.querySelector(".loading-frame").remove();
-    document.querySelector(".work-area").classList.remove("hidden");
-}

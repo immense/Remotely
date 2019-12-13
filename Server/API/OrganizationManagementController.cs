@@ -10,6 +10,7 @@ using Remotely.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Remotely.Shared.ViewModels.Organization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -29,24 +30,7 @@ namespace Remotely.Server.API
         private DataService DataService { get; }
         private EmailSender EmailSender { get; }
         private UserManager<RemotelyUser> UserManager { get; }
-        [HttpPost("AddUserPermission/{userID}")]
-        public IActionResult AddUserPermission(string userID, [FromBody]string permissionID)
-        {
-            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
-            {
-                return Unauthorized();
-            }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-            var result = DataService.AddPermissionToUser(User.Identity.Name, userID, permissionID.Trim(), out var errorMessage);
-            if (!result)
-            {
-                return BadRequest(errorMessage);
-            }
-            return Ok(permissionID);
-        }
+
 
         [HttpPost("ChangeIsAdmin/{userID}")]
         public IActionResult ChangeIsAdmin(string userID, [FromBody]bool isAdmin)
@@ -90,20 +74,21 @@ namespace Remotely.Server.API
             DataService.UpdateOrganizationName(User.Identity.Name, organizationName.Trim());
             return Ok("ok");
         }
-        [HttpDelete("Permission")]
-        public IActionResult Permission([FromBody]string permissionID)
+
+        [HttpDelete("DeviceGroup")]
+        public IActionResult DeviceGroup([FromBody]string deviceGroupID)
         {
             if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
             {
                 return Unauthorized();
             }
 
-            DataService.DeletePermission(User.Identity.Name, permissionID.Trim());
+            DataService.DeleteDeviceGroup(User.Identity.Name, deviceGroupID.Trim());
             return Ok("ok");
         }
 
-        [HttpPost("Permission")]
-        public IActionResult Permission([FromBody]Permission permission)
+        [HttpPost("DeviceGroup")]
+        public IActionResult DeviceGroup([FromBody]DeviceGroup deviceGroup)
         {
             if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
             {
@@ -113,25 +98,13 @@ namespace Remotely.Server.API
             {
                 return BadRequest();
             }
-            var result = DataService.AddPermission(User.Identity.Name, permission, out var permissionID, out var errorMessage);
+            var result = DataService.AddDeviceGroup(User.Identity.Name, deviceGroup, out var deviceGroupID, out var errorMessage);
             if (!result)
             {
                 return BadRequest(errorMessage);
             }
-            return Ok(permissionID);
+            return Ok(deviceGroupID);
         }
-        [HttpDelete("RemovePermissionFromUser/{userID}/{permissionID}")]
-        public IActionResult RemovePermissionFromUser(string userID, string permissionID)
-        {
-            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
-            {
-                return Unauthorized();
-            }
-
-            DataService.RemovePermissionFromUser(User.Identity.Name, userID, permissionID.Trim());
-            return Ok("ok");
-        }
-
         [HttpDelete("RemoveUserFromOrganization/{userID}")]
         public IActionResult RemoveUserFromOrganization(string userID)
         {
@@ -143,6 +116,7 @@ namespace Remotely.Server.API
             DataService.RemoveUserFromOrganization(User.Identity.Name, userID);
             return Ok("ok");
         }
+
         [HttpPost("SendInvite")]
         public async Task<IActionResult> SendInvite([FromBody]Invite invite)
         {

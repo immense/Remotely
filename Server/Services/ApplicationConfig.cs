@@ -15,12 +15,12 @@ namespace Remotely.Server.Services
             Config = config;
         }
         public bool AllowApiLogin => bool.Parse(Config["ApplicationOptions:AllowApiLogin"]);
-        public bool AllowSelfRegistration => bool.Parse(Config["ApplicationOptions:AllowSelfRegistration"]);
         public double DataRetentionInDays => double.Parse(Config["ApplicationOptions:DataRetentionInDays"]);
         public string DBProvider => Config["ApplicationOptions:DBProvider"];
         public string DefaultPrompt => Config["ApplicationOptions:DefaultPrompt"];
         public bool EnableWindowsEventLog => bool.Parse(Config["ApplicationOptions:EnableWindowsEventLog"]);
         public string[] KnownProxies => Config.GetSection("ApplicationOptions:KnownProxies").Get<string[]>();
+        public int MaxOrganizationCount => int.Parse(Config["ApplicationOptions:MaxOrganizationCount"]);
         public bool RecordRemoteControlSessions => bool.Parse(Config["ApplicationOptions:RecordRemoteControlSessions"]);
         public bool RedirectToHTTPS => bool.Parse(Config["ApplicationOptions:RedirectToHTTPS"]);
         public bool RemoteControlRequiresAuthentication => bool.Parse(Config["ApplicationOptions:RemoteControlRequiresAuthentication"]);

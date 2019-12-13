@@ -3,86 +3,25 @@
 <div class="work-area hidden">
     <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a id="consoleTab" class="nav-link active show" href="#consoleFrame" data-toggle="tab">
+            <a class="nav-link active show" href="#dataGridFrame" data-toggle="tab">
+                Grid
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a id="consoleTab" class="nav-link" href="#consoleFrame" data-toggle="tab">
                 Console
                 <span id="consoleAlert" class="badge badge-info badge-pill align-top" hidden>
                     <i class="fa fa-exclamation" aria-hidden="true"></i>
                 </span>
-             </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#dataGridFrame" data-toggle="tab">
-                Grid
             </a>
         </li>
+
     </ul>
     <div id="tabContentWrapper">
-        <div class="tab-content h-100" style="overflow:auto">
-            <div id="consoleFrame" class="console tab-pane fade active show in">
-                <div>
-                    <div id="consoleOutputDiv">
-                        <div class="console-block">
-                            <div class="console-prompt">@Model.DefaultPrompt</div>
-                            <div class="console-output">Authentication successful.</div>
-                        </div>
-                    </div>
-
-                    <div class="console-block">
-                        <div class="console-input-prompt">@Model.DefaultPrompt</div>
-                        <div>
-                            <textarea id="consoleTextArea" spellcheck="false" maxlength="100000"></textarea>
-                        </div>
-                    </div>
-                    <div id="commandCompletionWrapper">
-                        <div id="commandCompletionDiv" class="hidden">
-
-                        </div>
-                        <div id="commandInfoDiv" class="hidden">
-
-                        </div>
-                    </div>
-                </div>
-                <div id="consoleStatusDiv" class="row m-0">
-                    <div class="col-sm-6">
-                        <span>
-                            Command Mode:
-                        </span>
-                        <select id="commandModeSelect" class="console-status-value" title="Command Modes: Remotely interface, Windows PowerShell, PowerShell Core, Windows CMD Command Line, Linux BASH">
-                            <option value="Web">Web</option>
-                            <option value="PSCore">PSCore</option>
-                            <option value="WinPS">WinPS</option>
-                            <option value="CMD">CMD</option>
-                            <option value="Bash">Bash</option>
-                        </select>
-                    </div>
-                    <div class="col-sm-6">
-                        <span>
-                            Devices Selected:
-                        </span>
-                        <span id="devicesSelectedSpan" class="console-status-value">
-                            0
-                        </span>
-                    </div>
-                    <div class="clearfix"></div>
-                    <div class="col-sm-6">
-                        <span>
-                            Online Devices:
-                        </span>
-                        <span id="onlineDevicesSpan" class="console-status-value">
-                            0
-                        </span>
-                    </div>
-                    <div class="col-sm-6">
-                        <span>
-                            Total Devices:
-                        </span>
-                        <span id="totalDevicesSpan" class="console-status-value">
-                            0
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <partial name="_DataGrid" />
+        <div class="tab-content h-100">
+            <partial name="_DataGrid" model="Model" />
+            <partial name="_ConsoleFrame" model="Model" />
         </div>
     </div>
 
@@ -90,3 +29,10 @@
 </div>
 
 <script src="~/scripts/Main.js" type="module"></script>
+<script>
+    window.onload = (ev) => {
+        Remotely.Init();
+        document.querySelector(".loading-frame").remove();
+        document.querySelector(".work-area").classList.remove("hidden");
+    }
+</script>

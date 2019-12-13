@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Remotely_Shared</AssemblyName>
     <Platforms>AnyCPU;x64;x86</Platforms>
+    <RootNamespace>Remotely.Shared</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,9 +23,6 @@
       <Generator></Generator>
     </Compile>
     <Compile Update="Models\Device.cs">
-      <Generator></Generator>
-    </Compile>
-    <Compile Update="Models\DevicePermissionLink.cs">
       <Generator></Generator>
     </Compile>
     <Compile Update="Models\GenericCommandResult.cs">

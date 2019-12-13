@@ -14,11 +14,12 @@ namespace Remotely.Shared.Models
     public class Device
     {
         public string AgentVersion { get; set; }
+        [StringLength(100)]
+        public string Alias { get; set; }
         public string CurrentUser { get; set; }
+        public virtual DeviceGroup DeviceGroup { get; set; }
+        public string DeviceGroupID { get; set; }
         public string DeviceName { get; set; }
-
-        [JsonIgnore]
-        public virtual ICollection<DevicePermissionLink> DevicePermissionLinks { get; set; } = new List<DevicePermissionLink>();
         public List<Drive> Drives { get; set; }
 
         public double FreeMemory { get; set; }
@@ -33,6 +34,7 @@ namespace Remotely.Shared.Models
         public bool IsOnline { get; set; }
 
         public DateTime LastOnline { get; set; }
+        [JsonIgnore]
         public virtual Organization Organization { get; set; }
         public string OrganizationID { get; set; }
         public Architecture OSArchitecture { get; set; }
@@ -88,7 +90,7 @@ namespace Remotely.Shared.Models
                     VolumeLabel = x.VolumeLabel
                 }).ToList(),
                 OrganizationID = connectionInfo.OrganizationID,
-                CurrentUser = GetCurrentUser()
+                CurrentUser = DeviceInformation.GetCurrentUser()
             };
 
             if (systemDrive != null && systemDrive.TotalSize > 0 && systemDrive.TotalFreeSpace > 0)
@@ -102,11 +104,11 @@ namespace Remotely.Shared.Models
 
             if (OSUtils.IsWindows)
             {
-                totalMemory = GetWinMemoryInGB();
+                totalMemory = DeviceInformation.GetWinMemoryInGB();
             }
             else if (OSUtils.IsLinux)
             {
-                totalMemory = GetLinxMemoryInGB();
+                totalMemory = DeviceInformation.GetLinxMemoryInGB();
             }
           
             if (totalMemory.Item2 > 0)
@@ -127,82 +129,5 @@ namespace Remotely.Shared.Models
             return device;
         }
 
-
-        private static string GetCurrentUser()
-        {
-            try
-            {
-                if (OSUtils.IsWindows)
-                {
-                    var session = CimSession.Create(null);
-                    var computerSystem = session.EnumerateInstances("root\\cimv2", "CIM_ComputerSystem");
-                    var username = computerSystem.FirstOrDefault().CimInstanceProperties["UserName"].Value ?? "";
-                    return username as string;
-                }
-                else if (OSUtils.IsLinux)
-                {
-                    var users = OSUtils.StartProcessWithResults("users", "");
-                    var username = users?.Split()?.FirstOrDefault()?.Trim();
-                    return $"{Environment.UserDomainName}\\{username}";
-                }
-                throw new Exception("Unsupported operating system.");
-            }
-            catch
-            {
-                return "Error Retrieving";
-            }
-        }
-
-        private static Tuple<double, double> GetLinxMemoryInGB()
-        {
-            try
-            {
-                var results = OSUtils.StartProcessWithResults("cat", "/proc/meminfo");
-                var resultsArr = results.Split('n');
-                var freeKB = resultsArr
-                            .FirstOrDefault(x => x.StartsWith("FreeMem"))
-                            .Split(" ".ToCharArray(), 2)
-                            .Last() // 9168236 kB
-                            .Trim()
-                            .Split(' ')
-                            .First(); // 9168236
-
-                var totalKB = resultsArr
-                            .FirstOrDefault(x => x.StartsWith("MemTotal"))
-                            .Split(" ".ToCharArray(), 2)
-                            .Last() // 16637468 kB
-                            .Trim()
-                            .Split(' ')
-                            .First(); // 16637468
-
-                var freeGB = Math.Round((double.Parse(freeKB) / 1024 / 1024), 2);
-                var totalGB = Math.Round((double.Parse(totalKB) / 1024 / 1024), 2);
-
-                return new Tuple<double, double>(freeGB, totalGB);
-            }
-            catch
-            {
-                return new Tuple<double, double>(0, 0);
-            }
-        }
-
-        private static Tuple<double, double> GetWinMemoryInGB()
-        {
-            try
-            {
-                var session = CimSession.Create(null);
-                var cimOS = session.EnumerateInstances("root\\cimv2", "CIM_OperatingSystem");
-                var free = (ulong)(cimOS.FirstOrDefault()?.CimInstanceProperties["FreePhysicalMemory"]?.Value ?? 0);
-                var freeGB = Math.Round(((double)free / 1024 / 1024), 2);
-                var total = (ulong)(cimOS.FirstOrDefault()?.CimInstanceProperties["TotalVisibleMemorySize"]?.Value ?? 0);
-                var totalGB = Math.Round(((double)total / 1024 / 1024), 2);
-
-                return new Tuple<double, double>(freeGB, totalGB);
-            }
-            catch
-            {
-                return new Tuple<double, double>(0, 0);
-            }
-        }
     }
 }

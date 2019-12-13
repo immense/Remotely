@@ -15,7 +15,7 @@
     <PackageProjectUrl>https://remotely.lucency.co</PackageProjectUrl>
     <Platforms>AnyCPU;x86;x64</Platforms>
     <AssemblyName>Remotely_Agent</AssemblyName>
-    <RootNamespace>Agent</RootNamespace>
+    <RootNamespace>Remotely.Agent</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

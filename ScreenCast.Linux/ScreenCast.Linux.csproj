@@ -7,6 +7,7 @@
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
     <AssemblyName>Remotely_ScreenCast.Linux</AssemblyName>
     <Platforms>AnyCPU;x64;x86</Platforms>
+    <RootNamespace>Remotely.ScreenCast.Linux</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

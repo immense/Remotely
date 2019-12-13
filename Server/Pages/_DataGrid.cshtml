@@ -1,16 +1,29 @@
-﻿<div id="dataGridFrame" class="tab-pane fade">
+﻿@model IndexModel
+
+<div id="dataGridFrame" class="tab-pane fade active show in">
     <div id="deviceGridWrapper">
         <div id="gridControlsWrapper">
-            <button id="startRemoteControlButton" class="btn btn-sm btn-secondary">Remote Control</button>
-            <button id="toggleAllDevices" class="btn btn-sm btn-secondary">Select All</button>
-            <span>Filter:</span>
-            <input id="gridFilter" />
+            <div>
+                <label>Device Group:</label>
+                <select id="deviceGroupSelect" asp-items="Model.DeviceGroups" class="form-control" style="width: 200px">
+                    <option value="">All</option>
+                </select>
+            </div>
+            <div style="text-align: right">
+                <button id="startRemoteControlButton" class="btn btn-sm btn-secondary">Remote Control</button>
+                <button id="toggleAllDevices" class="btn btn-sm btn-secondary">Select All</button>
+                <div style="display: inline-block">
+                    <span>Filter:</span>
+                    <input id="gridFilter" />
+                </div>
+            </div>
         </div>
         <table id="deviceGrid" class="table table-responsive table-hover table-striped">
             <thead>
                 <tr>
                     <th>Online</th>
                     <th>Device Name</th>
+                    <th>Alias</th>
                     <th>Current User</th>
                     <th>Last Online</th>
                     <th>Platform</th>

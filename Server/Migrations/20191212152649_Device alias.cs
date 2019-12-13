@@ -2,20 +2,21 @@
 
 namespace Remotely.Server.Migrations
 {
-    public partial class DeviceAgentVersion : Migration
+    public partial class Devicealias : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "AgentVersion",
+                name: "Alias",
                 table: "Devices",
+                maxLength: 100,
                 nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "AgentVersion",
+                name: "Alias",
                 table: "Devices");
         }
     }

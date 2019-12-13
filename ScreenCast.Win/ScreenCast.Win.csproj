@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{2DCEA1F5-9B64-4EDB-9CD0-4D6675D96709}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Remotely_ScreenCast.Win</RootNamespace>
+    <RootNamespace>Remotely.ScreenCast.Win</RootNamespace>
     <AssemblyName>Remotely_ScreenCast</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -277,8 +277,8 @@
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Debug (
   if $(PlatformName) == Any CPU (
-      md "$(SolutionDir)Agent\bin\Debug\netcoreapp3.1\win10-x64\ScreenCast\"
-      copy /y "$(TargetDir)\*" "$(SolutionDir)Agent\bin\Debug\netcoreapp3.1\win10-x64\ScreenCast\"
+      md "$(SolutionDir)Agent\bin\Debug\netcoreapp3.1\ScreenCast\"
+      copy /y "$(TargetDir)\*" "$(SolutionDir)Agent\bin\Debug\netcoreapp3.1\ScreenCast\"
   )
 )</PostBuildEvent>
   </PropertyGroup>

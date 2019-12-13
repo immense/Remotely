@@ -18,7 +18,7 @@
     <link href="~/manifest-rc.json" rel="manifest" />
     <meta name="description" content="Remote access tools designed to get things done quickly." />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    @if (AppConfig.Theme == "Light")
+    @if (AppConfig.Theme.ToLower() == "light")
     {
         <link href="~/css/remote-control-light.css" rel="stylesheet" asp-append-version="true" />
     }
@@ -137,6 +137,11 @@
         </div>
     </footer>
     <script type="module" src="~/scripts/RemoteControl/Main.js">
+    </script>
+    <script>
+        window.onload = () => {
+            RemoteControl.Init();
+        }
     </script>
 </body>
 </html>
