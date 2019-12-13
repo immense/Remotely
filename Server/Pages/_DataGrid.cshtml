@@ -5,7 +5,9 @@
         <div id="gridControlsWrapper">
             <div>
                 <label>Device Group:</label>
-                <select asp-items="Model.DeviceGroups" class="form-control" style="width: 200px"></select>
+                <select asp-items="Model.DeviceGroups" class="form-control" style="width: 200px">
+                    <option value="">All</option>
+                </select>
             </div>
             <div style="text-align: right">
                 <button id="startRemoteControlButton" class="btn btn-sm btn-secondary">Remote Control</button>

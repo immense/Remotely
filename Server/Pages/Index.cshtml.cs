@@ -28,7 +28,6 @@ namespace Remotely.Server.Pages
             {
                 DefaultPrompt = DataService.GetDefaultPrompt(User.Identity.Name);
                 var groups = DataService.GetDeviceGroupsForUserName(User.Identity.Name);
-                DeviceGroups.Add(new SelectListItem("All", null));
                 if (groups?.Any() == true)
                 {
                     DeviceGroups.AddRange(groups.Select(x => new SelectListItem(x.Name, x.ID)));

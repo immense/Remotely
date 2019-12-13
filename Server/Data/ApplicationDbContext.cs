@@ -54,6 +54,9 @@ namespace Remotely.Server.Data
                 .HasMany(x => x.Devices)
                 .WithOne(x => x.DeviceGroup);
             builder.Entity<Organization>()
+                .HasMany(x => x.DeviceGroups)
+                .WithOne(x => x.Organization);
+            builder.Entity<Organization>()
               .HasMany(x => x.InviteLinks)
               .WithOne(x => x.Organization);
             builder.Entity<Organization>()

@@ -75,6 +75,36 @@ namespace Remotely.Server.API
             return Ok("ok");
         }
 
+        [HttpDelete("DeviceGroup")]
+        public IActionResult DeviceGroup([FromBody]string deviceGroupID)
+        {
+            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+            {
+                return Unauthorized();
+            }
+
+            DataService.DeleteDeviceGroup(User.Identity.Name, deviceGroupID.Trim());
+            return Ok("ok");
+        }
+
+        [HttpPost("DeviceGroup")]
+        public IActionResult DeviceGroup([FromBody]DeviceGroup deviceGroup)
+        {
+            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+            {
+                return Unauthorized();
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            var result = DataService.AddDeviceGroup(User.Identity.Name, deviceGroup, out var deviceGroupID, out var errorMessage);
+            if (!result)
+            {
+                return BadRequest(errorMessage);
+            }
+            return Ok(deviceGroupID);
+        }
         [HttpDelete("RemoveUserFromOrganization/{userID}")]
         public IActionResult RemoveUserFromOrganization(string userID)
         {

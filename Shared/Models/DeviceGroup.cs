@@ -12,7 +12,7 @@ namespace Remotely.Shared.Models
         public string Name { get; set; }
 
         [Key]
-        public string ID { get; set; }
+        public string ID { get; set; } = Guid.NewGuid().ToString();
 
         public virtual List<Device> Devices { get; set; }
 
