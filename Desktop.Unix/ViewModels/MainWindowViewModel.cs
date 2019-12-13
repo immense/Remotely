@@ -160,10 +160,6 @@ namespace Remotely.Desktop.Unix.ViewModels
             prompt.Owner = App.Current?.MainWindow;
             await prompt.ShowDialog(App.Current?.MainWindow);
             var result = HostNamePromptViewModel.Current.Host.TrimEnd("/".ToCharArray());
-            if (!result.StartsWith("https://") && !result.StartsWith("http://"))
-            {
-                result = $"https://{result}";
-            }
             if (result != Host)
             {
                 Host = result;

@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link href="~/lib/fontawesome/css/all.min.css" rel="stylesheet" />
 
-    @if (AppConfig.Theme == "Light")
+    @if (AppConfig.Theme.ToLower() == "light")
     {
         <link rel="stylesheet" href="~/css/Themes/yeti.min.css" />
         <link rel="stylesheet" href="~/css/Themes/yeti.custom.css" asp-append-version="true" />
