@@ -41,7 +41,7 @@ namespace Remotely.Shared.Services
                 var results = OSUtils.StartProcessWithResults("cat", "/proc/meminfo");
                 var resultsArr = results.Split("\n".ToCharArray());
                 var freeKB = resultsArr
-                            .FirstOrDefault(x => x.Trim().StartsWith("MemFree"))
+                            .FirstOrDefault(x => x.Trim().StartsWith("MemAvailable"))
                             .Trim()
                             .Split(" ".ToCharArray(), 2)
                             .Last() // 9168236 kB
