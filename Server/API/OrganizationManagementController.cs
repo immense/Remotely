@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Remotely.Shared.ViewModels.Organization;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,7 +21,7 @@ namespace Remotely.Server.API
     [Authorize]
     public class OrganizationManagementController : Controller
     {
-        public OrganizationManagementController(DataService dataService, UserManager<RemotelyUser> userManager, EmailSender emailSender)
+        public OrganizationManagementController(DataService dataService, UserManager<RemotelyUser> userManager, IEmailSender emailSender)
         {
             this.DataService = dataService;
             this.UserManager = userManager;
@@ -28,7 +29,7 @@ namespace Remotely.Server.API
         }
 
         private DataService DataService { get; }
-        private EmailSender EmailSender { get; }
+        private IEmailSender EmailSender { get; }
         private UserManager<RemotelyUser> UserManager { get; }
 
 

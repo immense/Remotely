@@ -24,8 +24,6 @@ namespace Remotely.Server.Services
 
         public Task SendEmailAsync(string email, string replyTo, string subject, string htmlMessage)
         {
-      
-
             try
             {
                 var mailClient = new SmtpClient();

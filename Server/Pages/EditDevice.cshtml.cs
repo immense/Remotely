@@ -34,6 +34,11 @@ namespace Remotely.Server.Pages
         public void OnGet(string deviceID, bool success)
         {
             SaveSucessful = success;
+            PopulateViewModel(deviceID);
+        }
+
+        private void PopulateViewModel(string deviceID)
+        {
             var user = DataService.GetUserByName(User.Identity.Name);
             if (user != null)
             {
@@ -53,6 +58,7 @@ namespace Remotely.Server.Pages
         {
             if (!ModelState.IsValid)
             {
+                PopulateViewModel(deviceID);
                 return Page();
             }
 
