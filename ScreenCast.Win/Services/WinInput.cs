@@ -4,8 +4,9 @@ using System;
 using Remotely.Shared.Win32;
 using static Remotely.Shared.Win32.User32;
 using Remotely.ScreenCast.Core.Capture;
+using Remotely.ScreenCast.Core.Interfaces;
 
-namespace Remotely.ScreenCast.Win.Input
+namespace Remotely.ScreenCast.Win.Services
 {
     public class WinInput : IKeyboardMouseInput
     {

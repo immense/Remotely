@@ -14,7 +14,7 @@ using System.Windows.Forms;
 using Remotely.Shared.Win32;
 using Remotely.Shared.Models;
 
-namespace Remotely.ScreenCast.Win.Capture
+namespace Remotely.ScreenCast.Win.Services
 {
     /// <summary>
     /// A class that can be used to watch for cursor icon changes.

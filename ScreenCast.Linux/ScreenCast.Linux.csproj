@@ -43,4 +43,8 @@
     <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Input\" />
+  </ItemGroup>
+
 </Project>
