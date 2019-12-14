@@ -5,25 +5,19 @@ using Remotely.ScreenCast.Core;
 using Remotely.ScreenCast.Core.Capture;
 using Remotely.ScreenCast.Core.Models;
 using Remotely.ScreenCast.Core.Services;
-using Remotely.ScreenCast.Win;
 using Remotely.ScreenCast.Win.Capture;
-using Remotely.ScreenCast.Win.Input;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Configuration;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Security.Principal;
-using System.Security.Claims;
 using System.Windows.Input;
-using System.Windows.Controls;
+using Remotely.ScreenCast.Win.Services;
+using Remotely.ScreenCast.Core.Interfaces;
 
 namespace Remotely.Desktop.Win.ViewModels
 {
@@ -34,21 +28,23 @@ namespace Remotely.Desktop.Win.ViewModels
         public MainWindowViewModel()
         {
             Current = this;
-            Conductor = new Conductor();
+
+            CursorIconWatcher = new CursorIconWatcher(Conductor);
+            CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
+
+            Conductor = new Conductor(
+                new WinInput(),
+                new WinAudioCapturer(),
+                new WinClipboardService(),
+                new WinScreenCaster(CursorIconWatcher));
+
             Conductor.SessionIDChanged += SessionIDChanged;
             Conductor.ViewerRemoved += ViewerRemoved;
             Conductor.ViewerAdded += ViewerAdded;
             Conductor.ScreenCastRequested += ScreenCastRequested;
-            Conductor.AudioToggled += AudioToggled;
-            Conductor.ClipboardTransferred += Conductor_ClipboardTransferred;
-            CursorIconWatcher = new CursorIconWatcher(Conductor);
-            CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
-            AudioCapturer = new AudioCapturer(Conductor);
         }
 
         public static MainWindowViewModel Current { get; private set; }
-
-        public AudioCapturer AudioCapturer { get; private set; }
 
         public ICommand ChangeServerCommand
         {
@@ -162,7 +158,6 @@ namespace Remotely.Desktop.Win.ViewModels
                 return;
             }
 
-            Conductor.SetMessageHandlers(new WinInput());
             await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
             await Conductor.CasterSocket.GetSessionID();
         }
@@ -186,27 +181,9 @@ namespace Remotely.Desktop.Win.ViewModels
             }
         }
 
-        private void AudioToggled(object sender, bool toggleOn)
-        {
-            if (toggleOn)
-            {
-                AudioCapturer.Start();
-            }
-            else
-            {
-                AudioCapturer.Stop();
-            }
-        }
-
-        private void Conductor_ClipboardTransferred(object sender, string transferredText)
-        {
-            Application.Current.Dispatcher.Invoke(() => {
-                Clipboard.SetText(transferredText);
-            });
-        }
         private async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)
         {
-            if (Conductor?.CasterSocket != null)
+            if (Conductor?.CasterSocket != null && Conductor?.Viewers?.Count > 0)
             {
                 await Conductor?.CasterSocket?.SendCursorChange(cursor, Conductor.Viewers.Keys.ToList());
             }
@@ -238,7 +215,7 @@ namespace Remotely.Desktop.Win.ViewModels
                             capturer = new BitBltCapture();
                         }
                         await Conductor.CasterSocket.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
-                        ScreenCaster.BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, capturer, Conductor);
+                        _ = ScreenCaster.BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, capturer);
                     });
                 }
             });

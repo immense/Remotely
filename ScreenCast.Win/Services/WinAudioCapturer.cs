@@ -8,23 +8,58 @@ using System.Threading.Tasks;
 using System.Timers;
 using NAudio.Wave;
 using Remotely.ScreenCast.Core;
+using Remotely.ScreenCast.Core.Interfaces;
 
-namespace Remotely.ScreenCast.Win.Capture
+namespace Remotely.ScreenCast.Win.Services
 {
-    public class AudioCapturer
+    public class WinAudioCapturer : IAudioCapturer
     {
-        public AudioCapturer(Conductor conductor)
-        {
-            Conductor = conductor;
-        }
         private WasapiLoopbackCapture Capturer { get; set; }
-        private WaveFormat TargetFormat { get; set; }
-        private Conductor Conductor { get; set; }
-
-        private List<byte> TempBuffer { get; set; } = new List<byte>();
         private Stopwatch SendTimer { get; set; }
+        private WaveFormat TargetFormat { get; set; }
+        private List<byte> TempBuffer { get; set; } = new List<byte>();
+        public void ToggleAudio(bool toggleOn)
+        {
+            if (toggleOn)
+            {
+                Start();
+            }
+            else
+            {
+                Stop();
+            }
+        }
 
-        public void Start()
+        private async void SendTempBuffer()
+        {
+            if (TempBuffer.Count == 0)
+            {
+                return;
+            }
+
+            using (var ms1 = new MemoryStream())
+            {
+                using (var wfw = new WaveFileWriter(ms1, Capturer.WaveFormat))
+                {
+                    wfw.Write(TempBuffer.ToArray(), 0, TempBuffer.Count);
+                }
+                TempBuffer.Clear();
+
+                // Resample to 16-bit so Firefox will play it.
+                using (var ms2 = new MemoryStream(ms1.ToArray()))
+                using (var wfr = new WaveFileReader(ms2))
+                using (var ms3 = new MemoryStream())
+                {
+                    using (var resampler = new MediaFoundationResampler(wfr, TargetFormat))
+                    {
+                        WaveFileWriter.WriteWavFileToStream(ms3, resampler);
+                    }
+                    await Conductor.Current.CasterSocket.SendAudioSample(ms3.ToArray(), Program.Conductor.Viewers.Keys.ToList());
+                }
+            }
+        }
+
+        private void Start()
         {
             try
             {
@@ -63,37 +98,7 @@ namespace Remotely.ScreenCast.Win.Capture
             }
             catch { }
         }
-
-        private async void SendTempBuffer()
-        {
-            if (TempBuffer.Count == 0)
-            {
-                return;
-            }
-
-            using (var ms1 = new MemoryStream())
-            {
-                using (var wfw = new WaveFileWriter(ms1, Capturer.WaveFormat))
-                {
-                    wfw.Write(TempBuffer.ToArray(), 0, TempBuffer.Count);
-                }
-                TempBuffer.Clear();
-
-                // Resample to 16-bit so Firefox will play it.
-                using (var ms2 = new MemoryStream(ms1.ToArray()))
-                using (var wfr = new WaveFileReader(ms2))
-                using (var ms3 = new MemoryStream())
-                {
-                    using (var resampler = new MediaFoundationResampler(wfr, TargetFormat))
-                    {
-                        WaveFileWriter.WriteWavFileToStream(ms3, resampler);
-                    }
-                    await Conductor.CasterSocket.SendAudioSample(ms3.ToArray(), Conductor.Viewers.Keys.ToList());
-                }
-            }
-        }
-
-        public void Stop()
+        private void Stop()
         {
             Capturer.StopRecording();
             SendTimer.Reset();

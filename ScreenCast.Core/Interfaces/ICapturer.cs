@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely.ScreenCast.Core.Capture
+namespace Remotely.ScreenCast.Core.Interfaces
 {
     public interface ICapturer : IDisposable
     {

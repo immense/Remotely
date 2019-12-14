@@ -12,16 +12,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Remotely.Shared.Services;
 using Remotely.Shared.Win32;
+using Remotely.ScreenCast.Core.Interfaces;
 
 namespace Remotely.ScreenCast.Core.Capture
 {
     public class ScreenCaster
     {
-        public static async void BeginScreenCasting(string viewerID,
+        public static async Task BeginScreenCasting(string viewerID,
                                                    string requesterName,
-                                                   ICapturer capturer,
-                                                   Conductor conductor)
+                                                   ICapturer capturer)
         {
+            var conductor = Conductor.Current;
             Viewer viewer;
             byte[] encodedImageBytes;
            
@@ -129,9 +130,9 @@ namespace Remotely.ScreenCast.Core.Capture
             // Close if no one is viewing.
             if (conductor.Viewers.Count == 0 && conductor.Mode == Enums.AppMode.Unattended)
             {
+                await conductor.CasterSocket.Disconnect();
                 Environment.Exit(0);
             }
-
         }
     }
 }

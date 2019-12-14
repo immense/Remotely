@@ -9,7 +9,7 @@ using System.Linq;
 using Remotely.ScreenCast.Linux.Capture;
 using Remotely.ScreenCast.Core.Models;
 
-namespace Remotely.ScreenCast.Linux.Input
+namespace Remotely.ScreenCast.Linux.Services
 {
     public class X11Input : IKeyboardMouseInput
     {

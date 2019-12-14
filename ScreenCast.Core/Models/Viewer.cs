@@ -1,4 +1,5 @@
 ﻿using Remotely.ScreenCast.Core.Capture;
+using Remotely.ScreenCast.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
