@@ -25,18 +25,18 @@ namespace Remotely.ScreenCast.Core.Sockets
             Conductor conductor, 
             IKeyboardMouseInput keyboardMouseInput,
             IScreenCaster screenCastService,
-            IAudioCapturer audioService,
+            IAudioCapturer audioCapturer,
             IClipboardService clipboardService)
         {
             Conductor = conductor;
             KeyboardMouseInput = keyboardMouseInput;
             ClipboardService = clipboardService;
-            AudioService = audioService;
-            ScreenCastService = screenCastService;
+            AudioCapturer = audioCapturer;
+            ScreenCaster = screenCastService;
         }
 
-        public IScreenCaster ScreenCastService { get; }
-        private IAudioCapturer AudioService { get; }
+        public IScreenCaster ScreenCaster { get; }
+        private IAudioCapturer AudioCapturer { get; }
         private IClipboardService ClipboardService { get; }
         private Conductor Conductor { get; }
         private HubConnection Connection { get; set; }
@@ -153,7 +153,7 @@ namespace Remotely.ScreenCast.Core.Sockets
             {
                 try
                 {
-                    ScreenCastService.BeginScreenCasting(new ScreenCastRequest() { ViewerID = viewerID, RequesterName = requesterName });
+                    ScreenCaster.BeginScreenCasting(new ScreenCastRequest() { ViewerID = viewerID, RequesterName = requesterName });
                 }
                 catch (Exception ex)
                 {
@@ -277,7 +277,7 @@ namespace Remotely.ScreenCast.Core.Sockets
             {
                 if (Conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
-                    AudioService.ToggleAudio(toggleOn);
+                    AudioCapturer.ToggleAudio(toggleOn);
                 }
             });
 

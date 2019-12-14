@@ -12,15 +12,19 @@ using System.Threading.Tasks;
 
 namespace Remotely.ScreenCast.Linux.Services
 {
-    public class LinuxScreenCaster : IScreenCaster
+    public class LinuxScreenCaster : ScreenCasterBase, IScreenCaster
     {
+        public LinuxScreenCaster(ICapturer capturer)
+            : base(capturer)
+        {
+
+        }
         public async Task BeginScreenCasting(ScreenCastRequest screenCastRequest)
         {
             try
             {
-                var capturer = new X11Capture();
                 await Conductor.Current.CasterSocket.SendCursorChange(new CursorInfo(null, Point.Empty, "default"), new List<string>() { screenCastRequest.ViewerID });
-                _ = ScreenCaster.BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, capturer);
+                _ = BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, Capturer);
             }
             catch (Exception ex)
             {

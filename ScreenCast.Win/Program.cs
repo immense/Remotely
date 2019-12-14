@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using Remotely.Shared.Win32;
 using System.Threading;
 using Remotely.ScreenCast.Win.Services;
+using Remotely.ScreenCast.Core.Interfaces;
+using Remotely.ScreenCast.Win.Capture;
 
 namespace Remotely.ScreenCast.Win
 {
@@ -33,7 +35,7 @@ namespace Remotely.ScreenCast.Win
                     new WinInput(), 
                     new WinAudioCapturer(), 
                     new WinClipboardService(), 
-                    new WinScreenCaster(CursorIconWatcher));
+                    new WinScreenCaster(CursorIconWatcher, GetCapturer()));
                 Conductor.ProcessArgs(args);
 
                 Conductor.Connect().ContinueWith(async (task) =>
@@ -56,8 +58,6 @@ namespace Remotely.ScreenCast.Win
                 throw;
             }
         }
-
- 
 
         private static async Task CheckForRelaunch()
         {
@@ -102,6 +102,28 @@ namespace Remotely.ScreenCast.Win
             Logger.Write((Exception)e.ExceptionObject);
         }
 
+        private static ICapturer GetCapturer()
+        {
+            ICapturer capturer;
+            try
+            {
+                if (Conductor.Current.Viewers.Count == 0)
+                {
+                    capturer = new DXCapture();
+                }
+                else
+                {
+                    capturer = new BitBltCapture();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+                capturer = new BitBltCapture();
+            }
+
+            return capturer;
+        }
         private static async Task HandleConnection(Conductor conductor)
         {
             while (true)

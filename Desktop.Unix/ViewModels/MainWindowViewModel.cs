@@ -40,7 +40,7 @@ namespace Remotely.Desktop.Unix.ViewModels
                 new X11Input(),
                 new LinuxAudioCapturer(),
                 new LinuxClipboardService(),
-                new LinuxScreenCaster());
+                new LinuxScreenCaster(new X11Capture()));
 
             Conductor.SessionIDChanged += SessionIDChanged;
             Conductor.ViewerRemoved += ViewerRemoved;
@@ -209,7 +209,7 @@ namespace Remotely.Desktop.Unix.ViewModels
                     }
 
                     await Conductor.CasterSocket.SendCursorChange(new CursorInfo(null, Point.Empty, "default"), new List<string>() { screenCastRequest.ViewerID });
-                        _ = ScreenCaster.BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, capturer);
+                        _ = Conductor.ScreenCaster.BeginScreenCasting(screenCastRequest);
                     });
                 }
             });
