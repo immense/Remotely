@@ -8,12 +8,9 @@ using System.Windows.Forms;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Drawing.Drawing2D;
-using System.Diagnostics;
-using System.Runtime.Serialization.Formatters.Binary;
 using Remotely.ScreenCast.Core.Services;
 using System.Threading;
-using Remotely.ScreenCast.Core.Capture;
+using Remotely.ScreenCast.Core.Interfaces;
 
 namespace Remotely.ScreenCast.Win.Capture
 {

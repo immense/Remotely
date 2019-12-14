@@ -234,11 +234,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Capture\AudioCapturer.cs" />
+    <Compile Include="Services\WinAudioCapturer.cs" />
     <Compile Include="Capture\BitBltCapture.cs" />
-    <Compile Include="Capture\CursorIconWatcher.cs" />
+    <Compile Include="Services\WinClipboardService.cs" />
+    <Compile Include="Services\CursorIconWatcher.cs" />
     <Compile Include="Capture\DXCapture.cs" />
-    <Compile Include="Input\WinInput.cs" />
+    <Compile Include="Services\WinScreenCaster.cs" />
+    <Compile Include="Services\WinInput.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

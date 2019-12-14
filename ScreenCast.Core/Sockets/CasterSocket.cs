@@ -14,22 +14,51 @@ using System.Net;
 using Remotely.ScreenCast.Core.Services;
 using Remotely.ScreenCast.Core.Input;
 using Remotely.Shared.Win32;
+using Remotely.ScreenCast.Core.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Remotely.ScreenCast.Core.Sockets
 {
     public class CasterSocket
     {
-        public CasterSocket(HubConnection hubConnection, Conductor conductor, IKeyboardMouseInput keyboardMouseInput)
+        public CasterSocket(
+            Conductor conductor, 
+            IKeyboardMouseInput keyboardMouseInput,
+            IScreenCaster screenCastService,
+            IAudioCapturer audioCapturer,
+            IClipboardService clipboardService)
         {
-            Connection = hubConnection;
             Conductor = conductor;
             KeyboardMouseInput = keyboardMouseInput;
-            ApplyConnectionHandlers();
+            ClipboardService = clipboardService;
+            AudioCapturer = audioCapturer;
+            ScreenCaster = screenCastService;
         }
 
-        public Conductor Conductor { get; }
-        public IKeyboardMouseInput KeyboardMouseInput { get; }
-        private HubConnection Connection { get; }
+        public IScreenCaster ScreenCaster { get; }
+        private IAudioCapturer AudioCapturer { get; }
+        private IClipboardService ClipboardService { get; }
+        private Conductor Conductor { get; }
+        private HubConnection Connection { get; set; }
+        private IKeyboardMouseInput KeyboardMouseInput { get; }
+        public async Task Connect(string host)
+        {
+            Connection = new HubConnectionBuilder()
+                .WithUrl($"{host}/RCDeviceHub")
+                .AddMessagePackProtocol()
+                .Build();
+
+            ApplyConnectionHandlers();
+
+            await Connection.StartAsync();
+        }
+
+        public async Task Disconnect()
+        {
+            await Connection.StopAsync();
+            await Connection.DisposeAsync();
+        }
+
         public async Task GetSessionID()
         {
             await Connection.SendAsync("GetSessionID");
@@ -44,7 +73,6 @@ namespace Remotely.ScreenCast.Core.Sockets
         {
             await Connection.SendAsync("NotifyViewersRelaunchedScreenCasterReady", viewerIDs);
         }
-
         public async Task SendAudioSample(byte[] buffer, List<string> viewerIDs)
         {
             await Connection.SendAsync("SendAudioSample", buffer, viewerIDs);
@@ -104,7 +132,7 @@ namespace Remotely.ScreenCast.Core.Sockets
                 {
                     if (Conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                     {
-                        Conductor.InvokeClipboardTransfer(transferText);
+                        ClipboardService.SetText(transferText);
                     }
                 }
                 catch (Exception ex)
@@ -125,7 +153,7 @@ namespace Remotely.ScreenCast.Core.Sockets
             {
                 try
                 {
-                    Conductor.InvokeScreenCastInitiated(new ScreenCastRequest() { ViewerID = viewerID, RequesterName = requesterName });
+                    ScreenCaster.BeginScreenCasting(new ScreenCastRequest() { ViewerID = viewerID, RequesterName = requesterName });
                 }
                 catch (Exception ex)
                 {
@@ -249,7 +277,7 @@ namespace Remotely.ScreenCast.Core.Sockets
             {
                 if (Conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
-                    Conductor.InvokeAudioToggled(toggleOn);
+                    AudioCapturer.ToggleAudio(toggleOn);
                 }
             });
 

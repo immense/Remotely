@@ -6,10 +6,11 @@ using Remotely.Desktop.Unix.Controls;
 using Remotely.Desktop.Unix.Services;
 using Remotely.ScreenCast.Core;
 using Remotely.ScreenCast.Core.Capture;
+using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Models;
 using Remotely.ScreenCast.Core.Services;
 using Remotely.ScreenCast.Linux.Capture;
-using Remotely.ScreenCast.Linux.Input;
+using Remotely.ScreenCast.Linux.Services;
 using Remotely.Shared.Models;
 using Remotely.Shared.Services;
 using System;
@@ -35,11 +36,15 @@ namespace Remotely.Desktop.Unix.ViewModels
         public MainWindowViewModel()
         {
             Current = this;
-            Conductor = new Conductor();
+            Conductor = new Conductor(
+                new X11Input(),
+                new LinuxAudioCapturer(),
+                new LinuxClipboardService(),
+                new LinuxScreenCaster(new X11Capture()));
+
             Conductor.SessionIDChanged += SessionIDChanged;
             Conductor.ViewerRemoved += ViewerRemoved;
             Conductor.ViewerAdded += ViewerAdded;
-            Conductor.ClipboardTransferred += Conductor_ClipboardTransferred;
             Conductor.ScreenCastRequested += ScreenCastRequested;
         }
 
@@ -136,11 +141,6 @@ namespace Remotely.Desktop.Unix.ViewModels
                 return;
             }
 
-            if (OSUtils.IsLinux)
-            {
-                Conductor.SetMessageHandlers(new X11Input());
-            }
-
             if (OSUtils.IsWindows)
             {
                 return;
@@ -201,15 +201,15 @@ namespace Remotely.Desktop.Unix.ViewModels
                 {
                     _ = Task.Run(async () =>
                     {
-                        ICapturer capturer = null;
+                    ICapturer capturer = null;
 
-                        if (OSUtils.IsLinux)
-                        {
-                            capturer = new X11Capture();
-                        }
-                        
-                        await Conductor.CasterSocket.SendCursorChange(new CursorInfo(null, Point.Empty, "default"), new List<string>() { screenCastRequest.ViewerID });
-                        ScreenCaster.BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, capturer, Conductor);
+                    if (OSUtils.IsLinux)
+                    {
+                        capturer = new X11Capture();
+                    }
+
+                    await Conductor.CasterSocket.SendCursorChange(new CursorInfo(null, Point.Empty, "default"), new List<string>() { screenCastRequest.ViewerID });
+                        _ = Conductor.ScreenCaster.BeginScreenCasting(screenCastRequest);
                     });
                 }
             });

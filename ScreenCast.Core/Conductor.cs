@@ -12,18 +12,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Remotely.ScreenCast.Core.Interfaces;
 
 namespace Remotely.ScreenCast.Core
 {
     public class Conductor
     {
+        public static Conductor Current { get; private set; }
+        public IScreenCaster ScreenCaster { get; }
 
-        public event EventHandler<bool> AudioToggled;
-
-        public event EventHandler<string> ClipboardTransferred;
-
-        public event EventHandler<ScreenCastRequest> ScreenCastInitiated;
-
+        public Conductor(IKeyboardMouseInput keyboardMouse,
+            IAudioCapturer audioService,
+            IClipboardService clipboardService,
+            IScreenCaster screenCaster)
+        {
+            Current = this;
+            ScreenCaster = screenCaster;
+            CasterSocket = new CasterSocket(this, keyboardMouse, screenCaster, audioService, clipboardService);
+        }
         public event EventHandler<ScreenCastRequest> ScreenCastRequested;
 
         public event EventHandler<string> SessionIDChanged;
@@ -44,12 +50,7 @@ namespace Remotely.ScreenCast.Core
         public ConcurrentDictionary<string, Viewer> Viewers { get; } = new ConcurrentDictionary<string, Viewer>();
         public async Task Connect()
         {
-            Connection = new HubConnectionBuilder()
-                .WithUrl($"{Host}/RCDeviceHub")
-                .AddMessagePackProtocol()
-                .Build();
-
-            await Connection.StartAsync();
+            await CasterSocket.Connect(Host);
         }
 
         public void ProcessArgs(string[] args)
@@ -83,39 +84,20 @@ namespace Remotely.ScreenCast.Core
             }
         }
 
-        public void SetMessageHandlers(IKeyboardMouseInput keyboardMouse)
-        {
-            CasterSocket = new CasterSocket(Connection, this, keyboardMouse);
-        }
-
-        internal void InvokeAudioToggled(bool toggleOn)
-        {
-            AudioToggled?.Invoke(null, toggleOn);
-        }
-
-        internal void InvokeClipboardTransfer(string transferText)
-        {
-            ClipboardTransferred?.Invoke(null, transferText);
-        }
-
-        internal void InvokeScreenCastInitiated(ScreenCastRequest viewerIdAndRequesterName)
-        {
-            ScreenCastInitiated?.Invoke(null, viewerIdAndRequesterName);
-        }
-        internal void InvokeScreenCastRequested(ScreenCastRequest viewerIdAndRequesterName)
+        public void InvokeScreenCastRequested(ScreenCastRequest viewerIdAndRequesterName)
         {
             ScreenCastRequested?.Invoke(null, viewerIdAndRequesterName);
         }
-        internal void InvokeSessionIDChanged(string sessionID)
+        public void InvokeSessionIDChanged(string sessionID)
         {
             SessionIDChanged?.Invoke(null, sessionID);
         }
 
-        internal void InvokeViewerAdded(Viewer viewer)
+        public void InvokeViewerAdded(Viewer viewer)
         {
             ViewerAdded?.Invoke(null, viewer);
         }
-        internal void InvokeViewerRemoved(string viewerID)
+        public void InvokeViewerRemoved(string viewerID)
         {
             ViewerRemoved?.Invoke(null, viewerID);
         }
