@@ -16,9 +16,14 @@ using Remotely.ScreenCast.Core.Interfaces;
 
 namespace Remotely.ScreenCast.Core.Capture
 {
-    public class ScreenCaster
+    public class ScreenCasterBase
     {
-        public static async Task BeginScreenCasting(string viewerID,
+        protected ICapturer Capturer { get; }
+        public ScreenCasterBase(ICapturer capturer)
+        {
+            Capturer = capturer;
+        }
+        public async Task BeginScreenCasting(string viewerID,
                                                    string requesterName,
                                                    ICapturer capturer)
         {

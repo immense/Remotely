@@ -19,14 +19,16 @@ namespace Remotely.ScreenCast.Core
     public class Conductor
     {
         public static Conductor Current { get; private set; }
+        public IScreenCaster ScreenCaster { get; }
 
         public Conductor(IKeyboardMouseInput keyboardMouse,
             IAudioCapturer audioService,
             IClipboardService clipboardService,
-            IScreenCaster screenCastService)
+            IScreenCaster screenCaster)
         {
             Current = this;
-            CasterSocket = new CasterSocket(this, keyboardMouse, screenCastService, audioService, clipboardService);
+            ScreenCaster = screenCaster;
+            CasterSocket = new CasterSocket(this, keyboardMouse, screenCaster, audioService, clipboardService);
         }
         public event EventHandler<ScreenCastRequest> ScreenCastRequested;
 

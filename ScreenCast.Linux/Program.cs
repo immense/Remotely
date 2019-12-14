@@ -3,6 +3,7 @@ using Remotely.ScreenCast.Core.Services;
 using System;
 using System.Threading;
 using Remotely.ScreenCast.Linux.Services;
+using Remotely.ScreenCast.Linux.Capture;
 
 namespace Remotely.ScreenCast.Linux
 {
@@ -18,7 +19,7 @@ namespace Remotely.ScreenCast.Linux
                     new X11Input(), 
                     new LinuxAudioCapturer(), 
                     new LinuxClipboardService(),
-                    new LinuxScreenCaster());
+                    new LinuxScreenCaster(new X11Capture()));
 
                 Conductor.ProcessArgs(args);
                 Conductor.Connect().ContinueWith(async (task) =>

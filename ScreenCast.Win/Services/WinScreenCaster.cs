@@ -14,9 +14,10 @@ using Remotely.ScreenCast.Win.Capture;
 
 namespace Remotely.ScreenCast.Win.Services
 {
-    public class WinScreenCaster : IScreenCaster
+    public class WinScreenCaster : ScreenCasterBase,  IScreenCaster
     {
-        public WinScreenCaster(CursorIconWatcher cursorIconWatcher)
+        public WinScreenCaster(CursorIconWatcher cursorIconWatcher, ICapturer capturer)
+            : base(capturer)
         {
             CursorIconWatcher = cursorIconWatcher;
         }
@@ -25,25 +26,8 @@ namespace Remotely.ScreenCast.Win.Services
 
         public async Task BeginScreenCasting(ScreenCastRequest screenCastRequest)
         {
-            ICapturer capturer;
-            try
-            {
-                if (Conductor.Current.Viewers.Count == 0)
-                {
-                    capturer = new DXCapture();
-                }
-                else
-                {
-                    capturer = new BitBltCapture();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
-                capturer = new BitBltCapture();
-            }
             await Conductor.Current.CasterSocket.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
-            _ = ScreenCaster.BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, capturer);
+            _ = BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, Capturer);
         }
     }
 }
