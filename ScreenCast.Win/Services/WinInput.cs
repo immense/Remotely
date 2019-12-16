@@ -5,6 +5,7 @@ using Remotely.Shared.Win32;
 using static Remotely.Shared.Win32.User32;
 using Remotely.ScreenCast.Core.Capture;
 using Remotely.ScreenCast.Core.Interfaces;
+using System.Windows.Forms;
 
 namespace Remotely.ScreenCast.Win.Services
 {
@@ -135,11 +136,7 @@ namespace Remotely.ScreenCast.Win.Services
         }
         public void SendText(string transferText, Viewer viewer)
         {
-            foreach (var key in transferText)
-            {
-                SendKeyDown(key.ToString(), viewer);
-                SendKeyUp(key.ToString(), viewer);
-            }
+            SendKeys.SendWait(transferText);
         }
 
         private VirtualKey ConvertJavaScriptKeyToVirtualKey(string key)
