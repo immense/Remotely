@@ -10,6 +10,13 @@ namespace Remotely.ScreenCast.Linux.Services
 {
     public class LinuxClipboardService : IClipboardService
     {
+        public event EventHandler<string> ClipboardTextChanged;
+
+        public void BeginWatching()
+        {
+            // Not implemented.
+        }
+
         public void SetText(string clipboardText)
         {
             var tempPath = Path.GetTempFileName();

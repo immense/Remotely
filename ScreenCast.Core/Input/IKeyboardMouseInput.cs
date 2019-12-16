@@ -17,5 +17,6 @@ namespace Remotely.ScreenCast.Core.Input
         uint SendRightMouseDown(double percentX, double percentY, Viewer viewer);
         uint SendRightMouseUp(double percentX, double percentY, Viewer viewer);
         uint SendMouseWheel(int deltaY, Viewer viewer);
+        void SendText(string transferText, Viewer viewer);
     }
 }

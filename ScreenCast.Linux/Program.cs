@@ -4,6 +4,7 @@ using System;
 using System.Threading;
 using Remotely.ScreenCast.Linux.Services;
 using Remotely.ScreenCast.Linux.Capture;
+using Remotely.ScreenCast.Core.Sockets;
 
 namespace Remotely.ScreenCast.Linux
 {
@@ -15,11 +16,9 @@ namespace Remotely.ScreenCast.Linux
             try
             {
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-                Conductor = new Conductor(
-                    new X11Input(), 
-                    new LinuxAudioCapturer(), 
-                    new LinuxClipboardService(),
-                    new LinuxScreenCaster());
+                var screenCaster = new LinuxScreenCaster();
+                var casterSocket = new CasterSocket(new X11Input(), screenCaster, new LinuxAudioCapturer(), new LinuxClipboardService());
+                Conductor = new Conductor(casterSocket, screenCaster);
 
                 Conductor.ProcessArgs(args);
                 Conductor.Connect().ContinueWith(async (task) =>

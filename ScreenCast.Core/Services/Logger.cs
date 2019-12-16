@@ -46,6 +46,7 @@ namespace Remotely.ScreenCast.Core.Services
                         }
                     }
                     File.AppendAllText(path, JsonSerializer.Serialize(jsoninfo) + Environment.NewLine);
+                    Console.WriteLine(message);
                 }
             }
             catch { }
@@ -90,6 +91,7 @@ namespace Remotely.ScreenCast.Core.Services
                             }
                         }
                         File.AppendAllText(path, JsonSerializer.Serialize(jsonError) + Environment.NewLine);
+                        Console.WriteLine(exception.Message);
                         exception = exception.InnerException;
                     }
                 }

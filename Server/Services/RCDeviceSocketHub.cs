@@ -52,6 +52,12 @@ namespace Remotely.Server.Services
                 Context.Items["CurrentScreenSize"] = value;
             }
         }
+        private DataService DataService { get; }
+
+        private IHubContext<DeviceSocketHub> DeviceHub { get; }
+
+        private IHubContext<RCBrowserSocketHub> RCBrowserHub { get; }
+
         private RCSessionInfo SessionInfo
         {
             get
@@ -70,13 +76,6 @@ namespace Remotely.Server.Services
                 Context.Items["SessionInfo"] = value;
             }
         }
-
-
-        private DataService DataService { get; }
-        private IHubContext<DeviceSocketHub> DeviceHub { get; }
-
-        private IHubContext<RCBrowserSocketHub> RCBrowserHub { get; }
-
         private List<string> ViewerList
         {
             get
@@ -155,15 +154,15 @@ namespace Remotely.Server.Services
             SessionInfo.MachineName = machineName;
             SessionInfo.DeviceID = deviceID;
         }
-        public async Task SendMachineName(string machineName, string viewerID)
-        {
-            await RCBrowserHub.Clients.Client(viewerID).SendAsync("ReceiveMachineName", machineName);
-        }
         public async Task SendAudioSample(byte[] buffer, List<string> viewerIDs)
         {
             await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("AudioSample", buffer);
         }
 
+        public async Task SendClipboardText(string clipboardText, List<string> viewerIDs)
+        {
+            await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("ClipboardTextChanged", clipboardText);
+        }
         public async Task SendConnectionFailedToViewers(List<string> viewerIDs)
         {
             await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("ConnectionFailed");
@@ -174,6 +173,10 @@ namespace Remotely.Server.Services
             await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("CursorChange", cursor);
         }
 
+        public async Task SendMachineName(string machineName, string viewerID)
+        {
+            await RCBrowserHub.Clients.Client(viewerID).SendAsync("ReceiveMachineName", machineName);
+        }
         public Task SendScreenCapture(byte[] captureBytes, string rcBrowserHubConnectionID, int left, int top, int width, int height, DateTime captureTime)
         {
             if (AppConfig.RecordRemoteControlSessions)

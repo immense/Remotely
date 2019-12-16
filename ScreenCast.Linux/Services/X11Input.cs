@@ -171,6 +171,15 @@ namespace Remotely.ScreenCast.Linux.Services
             }
         }
 
+        public void SendText(string transferText, Viewer viewer)
+        {
+            foreach (var key in transferText)
+            {
+                SendKeyDown(key.ToString(), viewer);
+                SendKeyUp(key.ToString(), viewer);
+            }
+        }
+
         private string ConvertJavaScriptKeyToX11Key(string key)
         {
             string keySym;
