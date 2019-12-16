@@ -110,7 +110,7 @@ export class RCBrowserSockets {
     private ApplyMessageHandlers(hubConnection) {
         hubConnection.on("ClipboardTextChanged", (clipboardText: string) => {
             Utilities.SetClipboardText(clipboardText);
-            UI.ClipboardTransferTextArea.innerHTML = clipboardText;
+            UI.ClipboardTransferTextArea.value = clipboardText;
             PopupMessage("Clipboard updated.");
         });
         hubConnection.on("ScreenCount", (primaryScreenIndex: number, screenCount: number) => {
