@@ -145,9 +145,9 @@ namespace Remotely.Server.Services
             await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("SelectScreen", screenIndex, Context.ConnectionId);
         }
 
-        public async Task SendClipboardTransfer(string transferText)
+        public async Task SendClipboardTransfer(string transferText, bool typeText)
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ClipboardTransfer", transferText, Context.ConnectionId);
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ClipboardTransfer", transferText, typeText, Context.ConnectionId);
         }
 
         public async Task SendLatencyUpdate(double latency)

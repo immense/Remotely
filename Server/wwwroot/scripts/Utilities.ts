@@ -85,3 +85,15 @@ export function RemoveFromArray(array: Array<any>, item: any) {
         array.splice(index, 1);
     }
 };
+
+export function SetClipboardText(text: string) {
+    var input = document.createElement("input");
+    input.style.position = "fixed";
+    input.style.top = "-1000px";
+    input.type = "text";
+    document.body.appendChild(input);
+    input.value = text;
+    input.select();
+    document.execCommand("copy", false);
+    input.remove();
+}

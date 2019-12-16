@@ -3,6 +3,7 @@ import * as UI from "./UI.js";
 import { RemoteControl } from "./Main.js";
 import { CursorInfo } from "../Models/CursorInfo.js";
 import { Sound } from "../Sound.js";
+import { PopupMessage } from "../UI.js";
 
 var signalR = window["signalR"];
 
@@ -103,10 +104,15 @@ export class RCBrowserSockets {
     SendToggleAudio(toggleOn: boolean) {
         this.Connection.invoke("SendToggleAudio", toggleOn);
     };
-    SendClipboardTransfer(text: string) {
-        this.Connection.invoke("SendClipboardTransfer", text);
+    SendClipboardTransfer(text: string, typeText: boolean) {
+        this.Connection.invoke("SendClipboardTransfer", text, typeText);
     }
     private ApplyMessageHandlers(hubConnection) {
+        hubConnection.on("ClipboardTextChanged", (clipboardText: string) => {
+            Utilities.SetClipboardText(clipboardText);
+            UI.ClipboardTransferTextArea.innerHTML = clipboardText;
+            PopupMessage("Clipboard updated.");
+        });
         hubConnection.on("ScreenCount", (primaryScreenIndex: number, screenCount: number) => {
             document.querySelector("#screenSelectBar").innerHTML = "";
             for (let i = 0; i < screenCount; i++) {

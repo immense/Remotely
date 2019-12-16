@@ -10,6 +10,7 @@ using System.Threading;
 using Remotely.ScreenCast.Win.Services;
 using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Win.Capture;
+using Remotely.ScreenCast.Core.Sockets;
 
 namespace Remotely.ScreenCast.Win
 {
@@ -31,11 +32,11 @@ namespace Remotely.ScreenCast.Win
             {
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
                 CursorIconWatcher = new CursorIconWatcher(Conductor);
-                Conductor = new Conductor(
-                    new WinInput(), 
-                    new WinAudioCapturer(), 
-                    new WinClipboardService(), 
-                    new WinScreenCaster(CursorIconWatcher));
+                var screenCaster = new WinScreenCaster(CursorIconWatcher);
+                var clipboardService = new WinClipboardService();
+                clipboardService.BeginWatching();
+                var casterSocket = new CasterSocket(new WinInput(), screenCaster, new WinAudioCapturer(), clipboardService);
+                Conductor = new Conductor(casterSocket, screenCaster);
                 Conductor.ProcessArgs(args);
 
                 Conductor.Connect().ContinueWith(async (task) =>

@@ -22,25 +22,29 @@ namespace Remotely.ScreenCast.Core.Sockets
     public class CasterSocket
     {
         public CasterSocket(
-            Conductor conductor, 
             IKeyboardMouseInput keyboardMouseInput,
             IScreenCaster screenCastService,
             IAudioCapturer audioCapturer,
             IClipboardService clipboardService)
         {
-            Conductor = conductor;
             KeyboardMouseInput = keyboardMouseInput;
             ClipboardService = clipboardService;
             AudioCapturer = audioCapturer;
             ScreenCaster = screenCastService;
+
+            ClipboardService.ClipboardTextChanged += ClipboardService_ClipboardTextChanged;
         }
 
         public IScreenCaster ScreenCaster { get; }
+
         private IAudioCapturer AudioCapturer { get; }
+
         private IClipboardService ClipboardService { get; }
-        private Conductor Conductor { get; }
+
         private HubConnection Connection { get; set; }
+
         private IKeyboardMouseInput KeyboardMouseInput { get; }
+
         public async Task Connect(string host)
         {
             Connection = new HubConnectionBuilder()
@@ -73,9 +77,15 @@ namespace Remotely.ScreenCast.Core.Sockets
         {
             await Connection.SendAsync("NotifyViewersRelaunchedScreenCasterReady", viewerIDs);
         }
+
         public async Task SendAudioSample(byte[] buffer, List<string> viewerIDs)
         {
             await Connection.SendAsync("SendAudioSample", buffer, viewerIDs);
+        }
+
+        public async Task SendClipboardText(string clipboardText, List<string> viewerIDs)
+        {
+            await Connection.SendAsync("SendClipboardText", clipboardText, viewerIDs);
         }
 
         public async Task SendConnectionFailedToViewers(List<string> viewerIDs)
@@ -97,6 +107,7 @@ namespace Remotely.ScreenCast.Core.Sockets
         {
             await Connection.SendAsync("SendMachineName", machineName, viewerID);
         }
+
         public async Task SendScreenCapture(byte[] captureBytes, string viewerID, int left, int top, int width, int height, DateTime captureTime)
         {
             await Connection.SendAsync("SendScreenCapture", captureBytes, viewerID, left, top, width, height, captureTime);
@@ -119,6 +130,7 @@ namespace Remotely.ScreenCast.Core.Sockets
 
         private void ApplyConnectionHandlers()
         {
+            var conductor = Conductor.Current;
             Connection.Closed += (ex) =>
             {
                 Logger.Write($"Connection closed.  Error: {ex?.Message}");
@@ -126,13 +138,20 @@ namespace Remotely.ScreenCast.Core.Sockets
                 return Task.CompletedTask;
             };
 
-            Connection.On("ClipboardTransfer", (string transferText, string viewerID) =>
+            Connection.On("ClipboardTransfer", (string transferText, bool typeText, string viewerID) =>
             {
                 try
                 {
-                    if (Conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                    if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                     {
-                        ClipboardService.SetText(transferText);
+                        if (typeText)
+                        {
+                            KeyboardMouseInput.SendText(transferText, viewer);
+                        }
+                        else
+                        {
+                            ClipboardService.SetText(transferText);
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -143,7 +162,7 @@ namespace Remotely.ScreenCast.Core.Sockets
 
             Connection.On("CtrlAltDel", async (string viewerID) =>
             {
-                if (Conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
                     await Connection.InvokeAsync("CtrlAltDel");
                 }
@@ -163,12 +182,12 @@ namespace Remotely.ScreenCast.Core.Sockets
 
             Connection.On("RequestScreenCast", (string viewerID, string requesterName) =>
             {
-                Conductor.InvokeScreenCastRequested(new ScreenCastRequest() { ViewerID = viewerID, RequesterName = requesterName });
+                conductor.InvokeScreenCastRequested(new ScreenCastRequest() { ViewerID = viewerID, RequesterName = requesterName });
             });
 
             Connection.On("KeyDown", (string key, string viewerID) =>
             {
-                if (Conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
                     KeyboardMouseInput.SendKeyDown(key, viewer);
                 }
@@ -176,7 +195,7 @@ namespace Remotely.ScreenCast.Core.Sockets
 
             Connection.On("KeyUp", (string key, string viewerID) =>
             {
-                if (Conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
                     KeyboardMouseInput.SendKeyUp(key, viewer);
                 }
@@ -184,7 +203,7 @@ namespace Remotely.ScreenCast.Core.Sockets
 
             Connection.On("KeyPress", async (string key, string viewerID) =>
             {
-                if (Conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
                     KeyboardMouseInput.SendKeyDown(key, viewer);
                     await Task.Delay(1);
@@ -194,7 +213,7 @@ namespace Remotely.ScreenCast.Core.Sockets
 
             Connection.On("MouseMove", (double percentX, double percentY, string viewerID) =>
             {
-                if (Conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
                     KeyboardMouseInput.SendMouseMove(percentX, percentY, viewer);
                 }
@@ -202,7 +221,7 @@ namespace Remotely.ScreenCast.Core.Sockets
 
             Connection.On("MouseDown", (int button, double percentX, double percentY, string viewerID) =>
             {
-                if (Conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
                     if (button == 0)
                     {
@@ -217,7 +236,7 @@ namespace Remotely.ScreenCast.Core.Sockets
 
             Connection.On("MouseUp", (int button, double percentX, double percentY, string viewerID) =>
             {
-                if (Conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
                     if (button == 0)
                     {
@@ -232,7 +251,7 @@ namespace Remotely.ScreenCast.Core.Sockets
 
             Connection.On("MouseWheel", (double deltaX, double deltaY, string viewerID) =>
             {
-                if (Conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
                     KeyboardMouseInput.SendMouseWheel(-(int)deltaY, viewer);
                 }
@@ -240,17 +259,17 @@ namespace Remotely.ScreenCast.Core.Sockets
 
             Connection.On("ViewerDisconnected", async (string viewerID) =>
             {
-                if (Conductor.Viewers.TryGetValue(viewerID, out var viewer))
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
                 {
                     viewer.DisconnectRequested = true;
                 }
                 await Connection.InvokeAsync("ViewerDisconnected", viewerID);
-                Conductor.InvokeViewerRemoved(viewerID);
+                conductor.InvokeViewerRemoved(viewerID);
 
             });
             Connection.On("LatencyUpdate", (double latency, string viewerID) =>
             {
-                if (Conductor.Viewers.TryGetValue(viewerID, out var viewer))
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
                 {
                     viewer.PendingFrames--;
                     viewer.Latency = latency;
@@ -259,7 +278,7 @@ namespace Remotely.ScreenCast.Core.Sockets
 
             Connection.On("SelectScreen", (int screenIndex, string viewerID) =>
             {
-                if (Conductor.Viewers.TryGetValue(viewerID, out var viewer))
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
                 {
                     viewer.Capturer.SetSelectedScreen(screenIndex);
                 }
@@ -267,7 +286,7 @@ namespace Remotely.ScreenCast.Core.Sockets
 
             Connection.On("QualityChange", (int qualityLevel, string viewerID) =>
             {
-                if (Conductor.Viewers.TryGetValue(viewerID, out var viewer))
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
                 {
                     viewer.ImageQuality = qualityLevel;
                 }
@@ -275,7 +294,7 @@ namespace Remotely.ScreenCast.Core.Sockets
 
             Connection.On("ToggleAudio", (bool toggleOn, string viewerID) =>
             {
-                if (Conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
                     AudioCapturer.ToggleAudio(toggleOn);
                 }
@@ -284,7 +303,7 @@ namespace Remotely.ScreenCast.Core.Sockets
 
             Connection.On("TouchDown", (string viewerID) =>
             {
-                if (Conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
                     //User32.GetCursorPos(out var point);
                     //Win32Interop.SendLeftMouseDown(point.X, point.Y);
@@ -292,7 +311,7 @@ namespace Remotely.ScreenCast.Core.Sockets
             });
             Connection.On("LongPress", (string viewerID) =>
             {
-                if (Conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
                     //User32.GetCursorPos(out var point);
                     //Win32Interop.SendRightMouseDown(point.X, point.Y);
@@ -301,7 +320,7 @@ namespace Remotely.ScreenCast.Core.Sockets
             });
             Connection.On("TouchMove", (double moveX, double moveY, string viewerID) =>
             {
-                if (Conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
                     //User32.GetCursorPos(out var point);
                     //Win32Interop.SendMouseMove(point.X + moveX, point.Y + moveY);
@@ -309,7 +328,7 @@ namespace Remotely.ScreenCast.Core.Sockets
             });
             Connection.On("TouchUp", (string viewerID) =>
             {
-                if (Conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
                     //User32.GetCursorPos(out var point);
                     //Win32Interop.SendLeftMouseUp(point.X, point.Y);
@@ -317,7 +336,7 @@ namespace Remotely.ScreenCast.Core.Sockets
             });
             Connection.On("Tap", (double percentX, double percentY, string viewerID) =>
             {
-                if (Conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
                     KeyboardMouseInput.SendLeftMouseDown(percentX, percentY, viewer);
                     KeyboardMouseInput.SendLeftMouseUp(percentX, percentY, viewer);
@@ -327,7 +346,7 @@ namespace Remotely.ScreenCast.Core.Sockets
             {
                 fileIDs.ForEach(id =>
                 {
-                    var url = $"{Conductor.Host}/API/FileSharing/{id}";
+                    var url = $"{conductor.Host}/API/FileSharing/{id}";
                     var webRequest = WebRequest.CreateHttp(url);
                     var response = webRequest.GetResponse();
                     var contentDisp = response.Headers["Content-Disposition"];
@@ -355,8 +374,17 @@ namespace Remotely.ScreenCast.Core.Sockets
 
             Connection.On("SessionID", (string sessionID) =>
             {
-                Conductor.InvokeSessionIDChanged(sessionID);
+                conductor.InvokeSessionIDChanged(sessionID);
             });
+        }
+
+        private async void ClipboardService_ClipboardTextChanged(object sender, string clipboardText)
+        {
+            var viewerIDs = Conductor.Current.Viewers.Keys.ToList();
+            if (viewerIDs.Any())
+            {
+                await SendClipboardText(clipboardText, viewerIDs);
+            }
         }
     }
 }

@@ -18,6 +18,7 @@ using System.Security.Principal;
 using System.Windows.Input;
 using Remotely.ScreenCast.Win.Services;
 using Remotely.ScreenCast.Core.Interfaces;
+using Remotely.ScreenCast.Core.Sockets;
 
 namespace Remotely.Desktop.Win.ViewModels
 {
@@ -32,11 +33,11 @@ namespace Remotely.Desktop.Win.ViewModels
             CursorIconWatcher = new CursorIconWatcher(Conductor);
             CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
 
-            Conductor = new Conductor(
-                new WinInput(),
-                new WinAudioCapturer(),
-                new WinClipboardService(),
-                new WinScreenCaster(CursorIconWatcher));
+            var screenCaster = new WinScreenCaster(CursorIconWatcher);
+            var clipboardService = new WinClipboardService();
+            clipboardService.BeginWatching();
+            var casterSocket = new CasterSocket(new WinInput(), screenCaster, new WinAudioCapturer(), clipboardService);
+            Conductor = new Conductor(casterSocket, screenCaster);
 
             Conductor.SessionIDChanged += SessionIDChanged;
             Conductor.ViewerRemoved += ViewerRemoved;

@@ -1,5 +1,5 @@
 ﻿import { RCBrowserSockets } from "./RCBrowserSockets.js";
-import { GetDistanceBetween } from "../Utilities.js";
+import { GetDistanceBetween, SetClipboardText } from "../Utilities.js";
 import { RemoteControl } from "./Main.js";
 import { PopupMessage } from "../UI.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
@@ -35,6 +35,7 @@ export var TouchKeyboardTextArea = document.getElementById("touchKeyboardTextAre
 export var ClipboardTransferBar = document.getElementById("clipboardTransferBar") as HTMLDivElement;
 export var ClipboardTransferTextArea = document.getElementById("clipboardTransferTextArea") as HTMLTextAreaElement;
 export var ClipboardTransferButton = document.getElementById("clipboardTransferButton") as HTMLButtonElement;
+export var ClipboardTransferTypeCheckbox = document.getElementById("clipboardTransferTypeCheckbox") as HTMLInputElement;
 
 var lastPointerMove = Date.now();
 var isDragging: boolean;
@@ -66,10 +67,8 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
         if (ClipboardTransferTextArea.value.length == 0) {
             return;
         }
-        sockets.SendClipboardTransfer(ClipboardTransferTextArea.value);
-        ClipboardTransferTextArea.value = "";
+        sockets.SendClipboardTransfer(ClipboardTransferTextArea.value, ClipboardTransferTypeCheckbox.checked);
         ClipboardTransferTextArea.blur();
-        ClipboardTransferBar.classList.remove("open");
         PopupMessage("Clipboard sent!");
     });
     ConnectButton.addEventListener("click", (ev) => {
@@ -120,15 +119,7 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
         else {
             url = `${location.origin}${location.pathname}?clientID=${RemoteControl.ClientID}&serviceID=${RemoteControl.ServiceID}`;
         }
-        var input = document.createElement("input");
-        input.style.position = "fixed";
-        input.style.top = "-1000px";
-        input.type = "text";
-        document.body.appendChild(input);
-        input.value = url;
-        input.select();
-        document.execCommand("copy", false, location.href);
-        input.remove();
+        SetClipboardText(url);
         PopupMessage("Link copied to clipboard.");
 
     });

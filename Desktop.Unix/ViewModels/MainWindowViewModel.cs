@@ -9,6 +9,7 @@ using Remotely.ScreenCast.Core.Capture;
 using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Models;
 using Remotely.ScreenCast.Core.Services;
+using Remotely.ScreenCast.Core.Sockets;
 using Remotely.ScreenCast.Linux.Capture;
 using Remotely.ScreenCast.Linux.Services;
 using Remotely.Shared.Models;
@@ -36,11 +37,9 @@ namespace Remotely.Desktop.Unix.ViewModels
         public MainWindowViewModel()
         {
             Current = this;
-            Conductor = new Conductor(
-                new X11Input(),
-                new LinuxAudioCapturer(),
-                new LinuxClipboardService(),
-                new LinuxScreenCaster());
+            var screenCaster = new LinuxScreenCaster();
+            var casterSocket = new CasterSocket(new X11Input(), screenCaster, new LinuxAudioCapturer(), new LinuxClipboardService());
+            Conductor = new Conductor(casterSocket, screenCaster);
 
             Conductor.SessionIDChanged += SessionIDChanged;
             Conductor.ViewerRemoved += ViewerRemoved;
