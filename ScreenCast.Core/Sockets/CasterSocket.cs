@@ -121,8 +121,8 @@ namespace Remotely.ScreenCast.Core.Sockets
         {
             Connection.Closed += (ex) =>
             {
-                Logger.Write($"Connection closed.  Error: {ex.Message}");
-                Environment.Exit(1);
+                Logger.Write($"Connection closed.  Error: {ex?.Message}");
+                Environment.Exit(0);
                 return Task.CompletedTask;
             };
 

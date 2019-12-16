@@ -188,7 +188,6 @@ namespace Remotely.Server
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
 
-            // TODO: Re-enable when Swagger works when building for Linux on Windows.
             app.UseSwagger();
 
             app.UseSwaggerUI(c =>

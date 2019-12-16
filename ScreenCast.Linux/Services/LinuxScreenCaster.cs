@@ -14,17 +14,12 @@ namespace Remotely.ScreenCast.Linux.Services
 {
     public class LinuxScreenCaster : ScreenCasterBase, IScreenCaster
     {
-        public LinuxScreenCaster(ICapturer capturer)
-            : base(capturer)
-        {
-
-        }
         public async Task BeginScreenCasting(ScreenCastRequest screenCastRequest)
         {
             try
             {
                 await Conductor.Current.CasterSocket.SendCursorChange(new CursorInfo(null, Point.Empty, "default"), new List<string>() { screenCastRequest.ViewerID });
-                _ = BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, Capturer);
+                _ = BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, new X11Capture());
             }
             catch (Exception ex)
             {
