@@ -40,7 +40,7 @@ namespace Remotely.Desktop.Unix.ViewModels
                 new X11Input(),
                 new LinuxAudioCapturer(),
                 new LinuxClipboardService(),
-                new LinuxScreenCaster(new X11Capture()));
+                new LinuxScreenCaster());
 
             Conductor.SessionIDChanged += SessionIDChanged;
             Conductor.ViewerRemoved += ViewerRemoved;

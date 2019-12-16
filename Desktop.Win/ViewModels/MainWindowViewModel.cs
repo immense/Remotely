@@ -36,7 +36,7 @@ namespace Remotely.Desktop.Win.ViewModels
                 new WinInput(),
                 new WinAudioCapturer(),
                 new WinClipboardService(),
-                new WinScreenCaster(CursorIconWatcher, GetCapturer()));
+                new WinScreenCaster(CursorIconWatcher));
 
             Conductor.SessionIDChanged += SessionIDChanged;
             Conductor.ViewerRemoved += ViewerRemoved;
@@ -189,28 +189,6 @@ namespace Remotely.Desktop.Win.ViewModels
             }
         }
 
-        private ICapturer GetCapturer()
-        {
-            ICapturer capturer;
-            try
-            {
-                if (Conductor.Current.Viewers.Count == 0)
-                {
-                    capturer = new DXCapture();
-                }
-                else
-                {
-                    capturer = new BitBltCapture();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
-                capturer = new BitBltCapture();
-            }
-
-            return capturer;
-        }
         private void ScreenCastRequested(object sender, ScreenCastRequest screenCastRequest)
         {
             App.Current.Dispatcher.Invoke(() =>

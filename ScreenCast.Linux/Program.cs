@@ -19,7 +19,7 @@ namespace Remotely.ScreenCast.Linux
                     new X11Input(), 
                     new LinuxAudioCapturer(), 
                     new LinuxClipboardService(),
-                    new LinuxScreenCaster(new X11Capture()));
+                    new LinuxScreenCaster());
 
                 Conductor.ProcessArgs(args);
                 Conductor.Connect().ContinueWith(async (task) =>
