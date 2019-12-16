@@ -4,6 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <RuntimeIdentifiers>win</RuntimeIdentifiers>
     <ProjectGuid>{486A238C-387B-49C5-A361-B86ACDB2572A}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Remotely.Desktop.Win</RootNamespace>
