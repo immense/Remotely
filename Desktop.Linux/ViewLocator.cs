@@ -1,9 +1,9 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using Remotely.Desktop.Unix.ViewModels;
+using Remotely.Desktop.Linux.ViewModels;
 
-namespace Remotely.Desktop.Unix
+namespace Remotely.Desktop.Linux
 {
     public class ViewLocator : IDataTemplate
     {

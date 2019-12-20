@@ -80,7 +80,7 @@ if ($Hostname.Length -gt 0) {
     Replace-LineInFile -FilePath "$Root\Desktop.Win\Desktop.Win.csproj" -MatchPattern "<InstallUrl>" -ReplaceLineWith "<InstallUrl>$($Hostname)/Downloads/WinDesktop/</InstallUrl>" -MaxCount 1
     Replace-LineInFile -FilePath "$Root\Desktop.Win\Desktop.Win.csproj" -MatchPattern "<UpdateUrl>" -ReplaceLineWith "<UpdateUrl>$($Hostname)/Downloads/WinDesktop/</UpdateUrl>" -MaxCount 1
     Replace-LineInFile -FilePath "$Root\Desktop.Win\Services\Config.cs" -MatchPattern "public string Host " -ReplaceLineWith "public string Host { get; set; } = `"$($Hostname)`";" -MaxCount 1
-    Replace-LineInFile -FilePath "$Root\Desktop.Unix\Services\Config.cs" -MatchPattern "public string Host " -ReplaceLineWith "public string Host { get; set; } = `"$($Hostname)`";" -MaxCount 1
+    Replace-LineInFile -FilePath "$Root\Desktop.Linux\Services\Config.cs" -MatchPattern "public string Host " -ReplaceLineWith "public string Host { get; set; } = `"$($Hostname)`";" -MaxCount 1
 }
 else {
     Write-Host "`nERROR: No hostname parameter was specified.  Application auto-updates will default to the public test server.  Please supply your server's hostname.`n" -ForegroundColor Red
@@ -115,14 +115,14 @@ New-Item -Path "$Root\Agent\bin\Release\netcoreapp3.1\linux-x64\publish\ScreenCa
 dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64  --configuration Release --output "$Root\Agent\bin\Release\netcoreapp3.1\linux-x64\publish\ScreenCast\" "$Root\ScreenCast.Linux\"
 
 # Publish Linux GUI App
-$PublishDir = "$Root\Desktop.Unix\bin\Release\netcoreapp3.1\linux-x64\publish\"
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64  --configuration Release --output "$PublishDir" "$Root\Desktop.Unix\"
+$PublishDir = "$Root\Desktop.Linux\bin\Release\netcoreapp3.1\linux-x64\publish\"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64  --configuration Release --output "$PublishDir" "$Root\Desktop.Linux\"
 # Compress Linux GUI App
-Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely_Desktop.Unix.zip" -CompressionLevel Optimal -Force
-while ((Test-Path -Path "$PublishDir\Remotely_Desktop.Unix.zip") -eq $false){
+Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely_Desktop.Linux.zip" -CompressionLevel Optimal -Force
+while ((Test-Path -Path "$PublishDir\Remotely_Desktop.Linux.zip") -eq $false){
     Start-Sleep -Seconds 1
 }
-Move-Item -Path "$PublishDir\Remotely_Desktop.Unix.zip" -Destination "$Root\Server\wwwroot\Downloads\Remotely_Desktop.Unix.zip" -Force
+Move-Item -Path "$PublishDir\Remotely_Desktop.Linux.zip" -Destination "$Root\Server\wwwroot\Downloads\Remotely_Desktop.Linux.zip" -Force
 
 
 # Build .NET Framework ScreenCaster (32-bit)

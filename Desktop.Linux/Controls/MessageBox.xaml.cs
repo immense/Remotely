@@ -1,10 +1,11 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Remotely.Desktop.Unix.ViewModels;
+using Remotely.Desktop.Linux.ViewModels;
+using Remotely.Desktop.Linux.Views;
 using System.Threading.Tasks;
 
-namespace Remotely.Desktop.Unix.Controls
+namespace Remotely.Desktop.Linux.Controls
 {
     public class MessageBox : Window
     {
@@ -29,11 +30,11 @@ namespace Remotely.Desktop.Unix.Controls
 
             messageBox.DataContext = viewModel;
 
-            await messageBox.ShowDialog(App.Current.MainWindow);
+            await messageBox.ShowDialog(MainWindow.Current);
 
             return viewModel.Result;
         }
-        private MessageBox()
+        public MessageBox()
         {
             this.InitializeComponent();
 #if DEBUG
@@ -46,7 +47,7 @@ namespace Remotely.Desktop.Unix.Controls
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
-            this.Icon = App.Current?.MainWindow?.Icon;
+            this.Icon = MainWindow.Current?.Icon;
         }
     }
 

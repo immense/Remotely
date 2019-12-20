@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace Remotely.Desktop.Unix.Services
+namespace Remotely.Desktop.Linux.Services
 {
     public class Executor : ICommand
     {

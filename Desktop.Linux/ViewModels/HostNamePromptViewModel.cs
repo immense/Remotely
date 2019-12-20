@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Controls;
 using ReactiveUI;
-using Remotely.Desktop.Unix.Services;
+using Remotely.Desktop.Linux.Services;
 
-namespace Remotely.Desktop.Unix.ViewModels
+namespace Remotely.Desktop.Linux.ViewModels
 {
     public class HostNamePromptViewModel : ViewModelBase
     {

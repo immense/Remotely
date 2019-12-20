@@ -1,12 +1,12 @@
 ﻿using Avalonia.Controls;
-using Remotely.Desktop.Unix.Controls;
-using Remotely.Desktop.Unix.Services;
+using Remotely.Desktop.Linux.Controls;
+using Remotely.Desktop.Linux.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Input;
 
-namespace Remotely.Desktop.Unix.ViewModels
+namespace Remotely.Desktop.Linux.ViewModels
 {
     public class MessageBoxViewModel : ViewModelBase
     {
