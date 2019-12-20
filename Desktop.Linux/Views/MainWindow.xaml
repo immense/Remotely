@@ -1,14 +1,14 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="clr-namespace:Remotely.Desktop.Unix.ViewModels;assembly=Remotely_Desktop"
+        xmlns:vm="clr-namespace:Remotely.Desktop.Linux.ViewModels;assembly=Remotely_Desktop"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="Remotely.Desktop.Unix.Views.MainWindow"
+        x:Class="Remotely.Desktop.Linux.Views.MainWindow"
         Icon="/Assets/favicon.ico"
         Title="Remotely" Height="275" Width="350" HasSystemDecorations="False">
     <Window.DataContext>
-        <vm:MainWindowViewModel/>
+      <vm:MainWindowViewModel />
     </Window.DataContext>
     <Grid>
         <StackPanel>

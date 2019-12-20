@@ -1,15 +1,18 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Remotely.Desktop.Unix.ViewModels;
+using Remotely.Desktop.Linux.ViewModels;
 using System.Threading.Tasks;
 
-namespace Remotely.Desktop.Unix.Views
+namespace Remotely.Desktop.Linux.Views
 {
     public class MainWindow : Window
     {
+        public static MainWindow Current { get; set; }
         public MainWindow()
         {
+            Current = this;
+
             InitializeComponent();
 #if DEBUG
             this.AttachDevTools();
@@ -18,23 +21,19 @@ namespace Remotely.Desktop.Unix.Views
 
         private void TitleBanner_PointerPressed(object sender, Avalonia.Input.PointerPressedEventArgs e)
         {
-            if (e.MouseButton == Avalonia.Input.MouseButton.Left)
+            if (e.GetCurrentPoint(this).Properties.PointerUpdateKind == Avalonia.Input.PointerUpdateKind.LeftButtonPressed)
             {
-                this.BeginMoveDrag();
+                this.BeginMoveDrag(e);
             }
         }
 
-        private async void InitializeComponent()
+        private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
 
             this.FindControl<Border>("TitleBanner").PointerPressed += TitleBanner_PointerPressed;
 
-            while (App.Current.MainWindow == null)
-            {
-                await Task.Delay(1);
-            }
-            await MainWindowViewModel.Current.Init();
+            _ = (this.DataContext as MainWindowViewModel).Init();
         }
     }
 }

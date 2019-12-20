@@ -1,8 +1,9 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Remotely.Desktop.Linux.Views;
 
-namespace Remotely.Desktop.Unix.Controls
+namespace Remotely.Desktop.Linux.Controls
 {
     public class HostNamePrompt : Window
     {
@@ -17,7 +18,7 @@ namespace Remotely.Desktop.Unix.Controls
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
-            this.Icon = App.Current?.MainWindow?.Icon;
+            this.Icon = MainWindow.Current?.Icon;
         }
     }
 }

@@ -2,8 +2,9 @@
 using Avalonia.Controls;
 using Avalonia.Threading;
 using ReactiveUI;
-using Remotely.Desktop.Unix.Controls;
-using Remotely.Desktop.Unix.Services;
+using Remotely.Desktop.Linux.Controls;
+using Remotely.Desktop.Linux.Services;
+using Remotely.Desktop.Linux.Views;
 using Remotely.ScreenCast.Core;
 using Remotely.ScreenCast.Core.Capture;
 using Remotely.ScreenCast.Core.Interfaces;
@@ -25,7 +26,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace Remotely.Desktop.Unix.ViewModels
+namespace Remotely.Desktop.Linux.ViewModels
 {
     public class MainWindowViewModel : ReactiveObject
     {
@@ -37,6 +38,10 @@ namespace Remotely.Desktop.Unix.ViewModels
         public MainWindowViewModel()
         {
             Current = this;
+            if (!OSUtils.IsLinux)
+            {
+                return;
+            }
             var screenCaster = new LinuxScreenCaster();
             var casterSocket = new CasterSocket(new X11Input(), screenCaster, new LinuxAudioCapturer(), new LinuxClipboardService());
             Conductor = new Conductor(casterSocket, screenCaster);
@@ -140,11 +145,6 @@ namespace Remotely.Desktop.Unix.ViewModels
                 return;
             }
 
-            if (OSUtils.IsWindows)
-            {
-                return;
-            }
-
             await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
             await Conductor.CasterSocket.GetSessionID();
         }
@@ -156,8 +156,8 @@ namespace Remotely.Desktop.Unix.ViewModels
             {
                 HostNamePromptViewModel.Current.Host = Host;
             }
-            prompt.Owner = App.Current?.MainWindow;
-            await prompt.ShowDialog(App.Current?.MainWindow);
+            prompt.Owner = MainWindow.Current;
+            await prompt.ShowDialog(MainWindow.Current);
             var result = HostNamePromptViewModel.Current.Host.TrimEnd("/".ToCharArray());
             if (result != Host)
             {
