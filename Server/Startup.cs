@@ -259,6 +259,7 @@ namespace Remotely.Server
             app.UseStaticFiles(new StaticFileOptions()
             {
                 FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Downloads")),
+                ServeUnknownFileTypes = true,
                 RequestPath = new PathString("/Downloads"),
                 ContentTypeProvider = provider,
                 DefaultContentType = "application/octet-stream"

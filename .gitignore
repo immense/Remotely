@@ -274,3 +274,4 @@ __pycache__/
 /Server/wwwroot/scripts/**/*.map
 /Server/Server.db-shm
 /Server/Server.db-wal
+/Server/wwwroot/Downloads/Remotely_Desktop
