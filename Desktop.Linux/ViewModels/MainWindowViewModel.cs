@@ -188,8 +188,10 @@ namespace Remotely.Desktop.Linux.ViewModels
                 var result = await MessageBox.Show($"You've received a connection request from {screenCastRequest.RequesterName}.  Accept?", "Connection Request", MessageBoxType.YesNo);
                 if (result == MessageBoxResult.Yes)
                 {
-                    await Conductor.CasterSocket.SendCursorChange(new CursorInfo(null, Point.Empty, "default"), new List<string>() { screenCastRequest.ViewerID });
-                        _ = Conductor.ScreenCaster.BeginScreenCasting(screenCastRequest);
+                    _ = Task.Run(async () =>
+                    {
+                        await Conductor.CasterSocket.SendCursorChange(new CursorInfo(null, Point.Empty, "default"), new List<string>() { screenCastRequest.ViewerID });
+                            _ = Conductor.ScreenCaster.BeginScreenCasting(screenCastRequest);
                     });
                 }
             });
