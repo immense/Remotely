@@ -190,15 +190,8 @@ namespace Remotely.Desktop.Linux.ViewModels
                 {
                     _ = Task.Run(async () =>
                     {
-                    ICapturer capturer = null;
-
-                    if (OSUtils.IsLinux)
-                    {
-                        capturer = new X11Capture();
-                    }
-
-                    await Conductor.CasterSocket.SendCursorChange(new CursorInfo(null, Point.Empty, "default"), new List<string>() { screenCastRequest.ViewerID });
-                        _ = Conductor.ScreenCaster.BeginScreenCasting(screenCastRequest);
+                        await Conductor.CasterSocket.SendCursorChange(new CursorInfo(null, Point.Empty, "default"), new List<string>() { screenCastRequest.ViewerID });
+                            _ = Conductor.ScreenCaster.BeginScreenCasting(screenCastRequest);
                     });
                 }
             });

@@ -46,7 +46,6 @@ namespace Remotely.ScreenCast.Win.Capture
                 {
                     duplicatedOutput?.Dispose();
                     Init();
-                    NeedsInit = false;
                 }
 
                 PreviousFrame = (Bitmap)CurrentFrame.Clone();
@@ -183,6 +182,8 @@ namespace Remotely.ScreenCast.Win.Capture
             };
             screenTexture = new Texture2D(device, textureDesc);
             duplicatedOutput = output1.DuplicateOutput(device);
+
+            NeedsInit = false;
         }
 
         public void SetSelectedScreen(int screenNumber)
