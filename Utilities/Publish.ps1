@@ -80,7 +80,10 @@ for ($i = 0; $i -lt $args.Count; $i++)
     }
 }
 
-if ((Test-Path -Path $CertificatePath) -eq $true -and $CertificatePassword.Length -gt 0) {
+if ($CertificatePath.Length -gt 0 -and 
+    (Test-Path -Path $CertificatePath) -eq $true -and 
+    $CertificatePassword.Length -gt 0) 
+{
     $SignAssemblies = $true
 }
 
