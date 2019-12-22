@@ -75,6 +75,8 @@
               VerticalContentAlignment="Stretch"
               HorizontalContentAlignment="Stretch"
               Margin="10,5"
+              Command="{Binding OpenOptionsMenu}"
+              CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}"
               >
         <Button.ContextMenu>
           <ContextMenu>

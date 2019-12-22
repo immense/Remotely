@@ -149,6 +149,14 @@ namespace Remotely.Desktop.Linux.ViewModels
             await Conductor.CasterSocket.GetSessionID();
         }
 
+        public ICommand OpenOptionsMenu => new Executor((param) =>
+        {
+            if (param is Button)
+            {
+                (param as Button).ContextMenu?.Open(param as Button);
+            }
+        });
+
         public async Task PromptForHostName()
         {
             var prompt = new HostNamePrompt();
@@ -158,39 +166,21 @@ namespace Remotely.Desktop.Linux.ViewModels
             }
             prompt.Owner = MainWindow.Current;
             await prompt.ShowDialog(MainWindow.Current);
-            var result = HostNamePromptViewModel.Current.Host.TrimEnd("/".ToCharArray());
+            var result = HostNamePromptViewModel.Current.Host;
+            if (!result.StartsWith("https://") && !result.StartsWith("http://"))
+            {
+                result = $"https://{result}";
+            }
             if (result != Host)
             {
-                Host = result;
+                Host = result.TrimEnd('/');
                 var config = Config.GetConfig();
                 config.Host = Host;
                 config.Save();
             }
         }
 
-        private void Conductor_ClipboardTransferred(object sender, string transferredText)
-        {
-            var tempPath = Path.GetTempFileName();
-            File.WriteAllText(tempPath, transferredText);
-            try
-            {
-                var psi = new ProcessStartInfo("bash", $"-c \"cat {tempPath} | xclip -i -selection clipboard\"")
-                {
-                    WindowStyle = ProcessWindowStyle.Hidden
-                };
-                var proc = Process.Start(psi);
-                proc.WaitForExit();
-
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
-            }
-            finally
-            {
-                File.Delete(tempPath);
-            }
-        }
+       
         private void ScreenCastRequested(object sender, ScreenCastRequest screenCastRequest)
         {
             Dispatcher.UIThread.InvokeAsync(async () =>
