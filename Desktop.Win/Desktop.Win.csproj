@@ -16,20 +16,18 @@
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
-    <InstallFrom>Web</InstallFrom>
-    <UpdateEnabled>true</UpdateEnabled>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
     <UpdateMode>Background</UpdateMode>
     <UpdateInterval>7</UpdateInterval>
     <UpdateIntervalUnits>Days</UpdateIntervalUnits>
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>false</MapFileExtensions>
-    <InstallUrl>https://tryremotely.lucency.co/Downloads/WinDesktop/</InstallUrl>
-    <UpdateUrl>https://tryremotely.lucency.co/Downloads/WinDesktop/</UpdateUrl>
     <SupportUrl>https://lucency.co/Contact</SupportUrl>
     <ErrorReportUrl>https://lucency.co/Contact</ErrorReportUrl>
     <ProductName>Remotely Desktop</ProductName>
@@ -107,7 +105,6 @@
   <PropertyGroup>
     <ManifestCertificateThumbprint>0A723650D9A0A3D7D0E4A15299984A95177F9DBD</ManifestCertificateThumbprint>
   </PropertyGroup>
-  <PropertyGroup />
   <ItemGroup>
     <Reference Include="MessagePack, Version=1.8.0.0, Culture=neutral, PublicKeyToken=b4a0369545f0a1be, processorArchitecture=MSIL">
       <HintPath>..\packages\MessagePack.1.8.80\lib\net47\MessagePack.dll</HintPath>
