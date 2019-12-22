@@ -5,7 +5,7 @@
    Publishes the Remotely clients.
    To deploy the server, supply the following arguments: -rid win10-x64 -outdir path\to\dir -hostname https://mysite.mydomain.com
 .COPYRIGHT
-   Copyright �  2019 Translucency Software.  All rights reserved.
+   Copyright 2019 Translucency Software.  All rights reserved.
 .EXAMPLE
    Run it from the Utilities folder (located in the solution directory).
    Or run "powershell -f Publish.ps1 -rid win10-x64 -outdir path\to\dir -hostname https://mysite.mydomain.com
@@ -24,6 +24,9 @@ $RID = ""
 $Hostname = ""
 $MSBuildPath = (Get-ChildItem -Path "${env:ProgramFiles(x86)}\Microsoft Visual Studio\" -Recurse -Filter "MSBuild.exe" -File)[0].FullName
 $Root = (Get-Item -Path $PSScriptRoot).Parent.FullName
+$CertificatePath = ""
+$CertificatePassword = ""
+$SignAssemblies = $false
 
 Set-Location -Path $Root
 
@@ -69,6 +72,16 @@ for ($i = 0; $i -lt $args.Count; $i++)
     elseif ($arg.Contains("hostname")){
         $Hostname = $args[$i+1]
     }
+    elseif ($arg.Contains("certificate")){
+        $CertificatePath = $args[$i+1]
+    }
+     elseif ($arg.Contains("certpassword")){
+        $CertificatePassword = $args[$i+1]
+    }
+}
+
+if ((Test-Path -Path $CertificatePath) -eq $true -and $CertificatePassword.Length -gt 0) {
+    $SignAssemblies = $true
 }
 
 
@@ -77,15 +90,11 @@ Set-Content -Path "$Root\Server\CurrentVersion.txt" -Value $CurrentVersion.Trim(
 
 # Update hostname.
 if ($Hostname.Length -gt 0) {
-    Replace-LineInFile -FilePath "$Root\Desktop.Win\Desktop.Win.csproj" -MatchPattern "<InstallUrl>" -ReplaceLineWith "<InstallUrl>$($Hostname)/Downloads/WinDesktop/</InstallUrl>" -MaxCount 1
-    Replace-LineInFile -FilePath "$Root\Desktop.Win\Desktop.Win.csproj" -MatchPattern "<UpdateUrl>" -ReplaceLineWith "<UpdateUrl>$($Hostname)/Downloads/WinDesktop/</UpdateUrl>" -MaxCount 1
     Replace-LineInFile -FilePath "$Root\Desktop.Win\Services\Config.cs" -MatchPattern "public string Host " -ReplaceLineWith "public string Host { get; set; } = `"$($Hostname)`";" -MaxCount 1
     Replace-LineInFile -FilePath "$Root\Desktop.Linux\Services\Config.cs" -MatchPattern "public string Host " -ReplaceLineWith "public string Host { get; set; } = `"$($Hostname)`";" -MaxCount 1
 }
 else {
-    Write-Host "`nERROR: No hostname parameter was specified.  Application auto-updates will default to the public test server.  Please supply your server's hostname.`n" -ForegroundColor Red
-    pause
-    return;
+    Write-Host "`nWARNING: No hostname parameter was specified.  The server name will need to be entered manually in the desktop client.`n" -ForegroundColor DarkYellow
 }
 
     
@@ -147,7 +156,13 @@ Get-ChildItem -Path $PublishDir | ForEach-Object {
     Remove-Item -Path $_.FullName -Force -Recurse
 }
 &"$MSBuildPath" "$Root\Desktop.Win" /t:Publish /p:Configuration=Release /p:Platform=AnyCPU /p:PublishDir="$PublishDir"
-Rename-Item -Path "$Root\Server\wwwroot\Downloads\WinDesktop\setup.exe" -NewName "Remotely_Setup.exe" -Force
+Rename-Item -Path "$PublishDir\setup.exe" -NewName "Remotely_Setup.exe" -Force
+if ($SignAssemblies) {
+    &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$PublishDir\Remotely_Setup.exe"
+    Get-ChildItem -Path $PublishDir -Filter "Remotely_Desktop.exe" -Recurse | ForEach-Object { 
+        &"$Root\Utilities\signtool.exe" sign /n "Translucency Software" /t http://timestamp.digicert.com "$($_.FullName)"
+    }
+}
 
 
 # Compress Core clients.
