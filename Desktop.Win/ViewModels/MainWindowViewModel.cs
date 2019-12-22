@@ -203,23 +203,6 @@ namespace Remotely.Desktop.Win.ViewModels
                 {
                     Task.Run(async () =>
                     {
-                        ICapturer capturer;
-                        try
-                        {
-                            if (Conductor.Viewers.Count == 0)
-                            {
-                                capturer = new DXCapture();
-                            }
-                            else
-                            {
-                                capturer = new BitBltCapture();
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Write(ex);
-                            capturer = new BitBltCapture();
-                        }
                         await Conductor.CasterSocket.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
                         _ = Conductor.ScreenCaster.BeginScreenCasting(screenCastRequest);
                     });
