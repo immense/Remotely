@@ -150,21 +150,12 @@ Get-ChildItem -Path "$Root\ScreenCast.Win\bin\x86\Release\" -Exclude "*.xml" | C
 Get-ChildItem -Path "$Root\ScreenCast.Win\bin\x64\Release\" -Exclude "*.xml" | Copy-Item -Destination ".\Agent\bin\Release\netcoreapp3.1\win10-x64\publish\ScreenCast\" -Force
 
 
-# Publish Windows GUI App
-$PublishDir = "$Root\Server\wwwroot\Downloads\WinDesktop\"
-if (!(Test-Path -Path $PublishDir)) {
-    New-Item -Path $PublishDir -ItemType Directory
-}
-Get-ChildItem -Path $PublishDir | ForEach-Object {
-    Remove-Item -Path $_.FullName -Force -Recurse
-}
-&"$MSBuildPath" "$Root\Desktop.Win" /t:Publish /p:Configuration=Release /p:Platform=AnyCPU /p:PublishDir="$PublishDir"
-Rename-Item -Path "$PublishDir\setup.exe" -NewName "Remotely_Setup.exe" -Force
+# Build Windows GUI App
+
+&"$MSBuildPath" "$Root\Desktop.Win" /t:Build /p:Configuration=Release /p:Platform=AnyCPU
+Move-Item -Path "$Root\Desktop.Win\bin\Release\Remotely_Desktop.exe" -Destination "$Root\Server\wwwroot\Downloads\Remotely_Desktop.exe"
 if ($SignAssemblies) {
-    &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$PublishDir\Remotely_Setup.exe"
-    Get-ChildItem -Path $PublishDir -Filter "Remotely_Desktop.exe" -Recurse | ForEach-Object { 
-        &"$Root\Utilities\signtool.exe" sign /n "Translucency Software" /t http://timestamp.digicert.com "$($_.FullName)"
-    }
+    &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Downloads\Remotely_Desktop.exe"
 }
 
 
