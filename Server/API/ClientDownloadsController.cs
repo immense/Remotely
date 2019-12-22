@@ -32,8 +32,8 @@ namespace Remotely.Server.API
         {
             var user = DataService.GetUserByName(User.Identity.Name);
             var fileContents = new List<string>();
-            var fileName = "";
-            var fileBytes = new byte[0];
+            string fileName;
+            byte[] fileBytes;
             switch (platformID)
             {
                 case "Win10-x64":
