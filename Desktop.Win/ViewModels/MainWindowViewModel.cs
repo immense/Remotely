@@ -172,10 +172,14 @@ namespace Remotely.Desktop.Win.ViewModels
             }
             prompt.Owner = App.Current?.MainWindow;
             prompt.ShowDialog();
-            var result = HostNamePromptViewModel.Current.Host.TrimEnd("/".ToCharArray());
+            var result = HostNamePromptViewModel.Current.Host;
+            if (!result.StartsWith("https://") && !result.StartsWith("http://"))
+            {
+                result = $"https://{result}";
+            }
             if (result != Host)
             {
-                Host = result;
+                Host = result.TrimEnd('/');
                 var config = Config.GetConfig();
                 config.Host = Host;
                 config.Save();
