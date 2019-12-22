@@ -129,12 +129,7 @@ dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runti
 # Publish Linux GUI App
 $PublishDir = "$Root\Desktop.Linux\bin\Release\netcoreapp3.1\linux-x64\publish\"
 dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64  --configuration Release --output "$PublishDir" "$Root\Desktop.Linux\"
-# Compress Linux GUI App
-Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely_Desktop.Linux.zip" -CompressionLevel Optimal -Force
-while ((Test-Path -Path "$PublishDir\Remotely_Desktop.Linux.zip") -eq $false){
-    Start-Sleep -Seconds 1
-}
-Move-Item -Path "$PublishDir\Remotely_Desktop.Linux.zip" -Destination "$Root\Server\wwwroot\Downloads\Remotely_Desktop.Linux.zip" -Force
+Move-Item -Path "$PublishDir\Remotely_Desktop" -Destination "$Root\Server\wwwroot\Downloads\Remotely_Desktop" -Force
 
 
 # Build .NET Framework ScreenCaster (32-bit)
@@ -153,7 +148,7 @@ Get-ChildItem -Path "$Root\ScreenCast.Win\bin\x64\Release\" -Exclude "*.xml" | C
 # Build Windows GUI App
 
 &"$MSBuildPath" "$Root\Desktop.Win" /t:Build /p:Configuration=Release /p:Platform=AnyCPU
-Move-Item -Path "$Root\Desktop.Win\bin\Release\Remotely_Desktop.exe" -Destination "$Root\Server\wwwroot\Downloads\Remotely_Desktop.exe"
+Move-Item -Path "$Root\Desktop.Win\bin\Release\Remotely_Desktop.exe" -Destination "$Root\Server\wwwroot\Downloads\Remotely_Desktop.exe" -Force
 if ($SignAssemblies) {
     &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Downloads\Remotely_Desktop.exe"
 }
