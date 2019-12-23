@@ -1,0 +1,1 @@
+{"version":3,"file":"Parameter.js","sourceRoot":"","sources":["Parameter.ts"],"names":[],"mappings":"AAAA,oDAAoD;AACpD,MAAM,OAAO,SAAS;IAClB,YAAY,IAAW,EAAE,OAAc,EAAE,aAAoB;QACzD,IAAI,CAAC,IAAI,GAAG,IAAI,CAAC;QACjB,IAAI,CAAC,OAAO,GAAG,OAAO,CAAC;QACvB,IAAI,CAAC,aAAa,GAAG,aAAa,CAAC;IACvC,CAAC;CAKJ"}
