@@ -1,5 +1,5 @@
 # Remotely
-[![Build status](https://dev.azure.com/translucency/Remotely/_apis/build/status/Remotely-All)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=13)
+[![Build Status](https://dev.azure.com/translucency/Remotely/_apis/build/status/Remotely-ReleaseBuild?branchName=master)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=17&branchName=master)
 
 A remote control and remote scripting solution, built with .NET Core and SignalR Core.
 
@@ -23,9 +23,10 @@ The following steps will configure your Windows 10 machine for building the Remo
 ## Hosting a Server (Windows)
 * Build the Remotely server and clients using the above steps.
 * Create a site in IIS that will run Remotely.
-* Copy the server files from above to the site folder.
-* Download and install the .NET Core Runtime (not the SDK).
-	* Link: https://dotnet.microsoft.com/download
+* Run Install-RemotelyServer.ps1 (as an administrator), which is in the [Utilities folder in source control](https://raw.githubusercontent.com/Jay-Rad/Remotely/master/Utilities/Install-RemotelyServer.ps1) and on the Releases page.
+    * Alternatively, you can build from source and copy the server files to the site folder.
+* Download and install the .NET Core Runtime (not the SDK) with the Hosting Bundle.
+	* Link: https://dotnet.microsoft.com/download/dotnet-core/current/runtime
 	* This includes the Hosting Bundle for Windows, which allows you to run ASP.NET Core in IIS.
 	* Important: If you installed .NET Core Runtime before installing all the required IIS features, you may need to run a repair on the .NET Core Runtime installation.
 * Change values in appsettings.json for your environment.
@@ -37,8 +38,6 @@ The following steps will configure your Windows 10 machine for building the Remo
 
 ## Hosting a Server (Ubuntu)
 * Ubuntu 18.04 and 19.04 have been tested.  The Linux server package might work with other distros after some alterations to the setup script.
-* Build the Remotely server and clients using the above steps with RuntimeIdentifier "linux-x64".
-* Copy the files to /var/www/remotely (or other location where they will be served).
 * Run Remotely_Server_Setup.sh (with sudo), which is in the [Utilities folder in source control](https://raw.githubusercontent.com/Jay-Rad/Remotely/master/Utilities/Remotely_Server_Install.sh).
 	* The script is designed to install Remotely and Nginx on the same server, running Ubuntu 18.04 or 19.04.  You'll need to manually set up other configurations.
     * A helpful user supplied an example Apache configuration, which can be found in the Utilities folder.
@@ -46,8 +45,8 @@ The following steps will configure your Windows 10 machine for building the Remo
 	* The script installs the .NET Core runtime, as well as other dependencies.
 	* Certbot is used in this script and will install an SSL certificate for your site.  Your server needs to have a public domain name that is accessible from the internet for this to work.
 		* More information: https://letsencrypt.org/, https://certbot.eff.org/
+	* Alternatively, you can build from source (using RuntimeIdentifier "linux-x64" for the server) and copy the server files to the site folder.
 * Change values in appsettings.json for your environment.
-* After creating your account on the website, you can set "AllowSelfRegistration" to false in appsettings.json to disable registration.
 * Documentation for hosting behind Nginx can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx?view=aspnetcore-3.1
 
 ## Logging
@@ -79,7 +78,7 @@ The following steps will configure your Windows 10 machine for building the Remo
 ## Remote Control on Mobile
 Ideally, you'd be doing remote control from an actual computer or laptop.  However, I've tried to make the remote control at least somewhat usable from a mobile device.  Here are the controls:
 * Left-click: Single tap
-* Right-click: Double tap
+* Right-click: Tap and hold
 * Click-and-drag: Tap and hold with one finger, tap and release a second finger (without pinch-zooming)
 	* The click-and-drag operation will begin where finger one is held.
 
