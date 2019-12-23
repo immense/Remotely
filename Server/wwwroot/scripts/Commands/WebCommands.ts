@@ -376,7 +376,7 @@ var commands: Array<ConsoleCommand> = [
         "RemoteControl",
         [],
         "Connect to a computer with Remotely Remote Control.",
-        "list",
+        "remotecontrol",
         "",
         () => {
             var selectedDevices = Main.DataGrid.GetSelectedDevices();
