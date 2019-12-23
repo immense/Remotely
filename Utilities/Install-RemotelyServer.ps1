@@ -264,15 +264,15 @@ while ($Success -eq $false) {
 
 ### Download Server Package ###
 try {
-    if ((Test-Path -Path "$env:TEMP\Server.zip")){
-        Remove-Item -Path "$env:TEMP\Server.zip" -Force
+    if ((Test-Path -Path "$env:TEMP\Remotely_Server_Win-x64.zip")){
+        Remove-Item -Path "$env:TEMP\Remotely_Server_Win-x64.zip" -Force
     }
     Wrap-Host "Downloading server package..."
 	[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    Invoke-WebRequest -Uri "https://remotely.lucency.co/Downloads/win-x64/Server.zip" -OutFile "$env:TEMP\Server.zip"
+    Invoke-WebRequest -Uri "https://github.com/Jay-Rad/Remotely/releases/latest/download/Remotely_Server_Win-x64.zip" -OutFile "$env:TEMP\Remotely_Server_Win-x64.zip"
     Wrap-Host "Extracting server files..."
 	[System.Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem") | Out-Null
-	[System.IO.Compression.ZipFile]::ExtractToDirectory("$env:TEMP\Server.zip", $InstallPath)
+	[System.IO.Compression.ZipFile]::ExtractToDirectory("$env:TEMP\Remotely_Server_Win-x64.zip", $InstallPath)
 }
 catch {
     Wrap-Host

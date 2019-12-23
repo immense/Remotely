@@ -29,7 +29,11 @@ apt-get -y install libc6-dev
 apt-get -y install libgdiplus
 
 
-# Site file/folder permissions.
+# Download and install Remotely files.
+mkdir -p $appRoot
+wget "https://github.com/Jay-Rad/Remotely/releases/latest/download/Remotely_Server_Linux-x64.zip"
+unzip -o Remotely_Server_Linux-x64.zip -d $appRoot
+rm Remotely_Server_Linux-x64.zip
 setfacl -R -m u:www-data:rwx $appRoot
 chown -R www-data:www-data $appRoot
 
