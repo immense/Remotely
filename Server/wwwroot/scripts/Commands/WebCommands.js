@@ -164,6 +164,7 @@ var commands = [
                 <ul style="list-style:none">
                     <li>IsOnline (true or false)</li>
                     <li>DeviceName (text)</li>
+                    <li>Alias (text)</li>
                     <li>CurrentUser (text)</li>
                     <li>LastOnline (date or date+time</li>
                     <li>Is64Bit (true or false)</li>
@@ -226,16 +227,16 @@ var commands = [
                     else {
                         switch (operator) {
                             case "=":
-                                lambda += `x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)].toString().toLowerCase() === "${value}".toString().toLowerCase() && `;
+                                lambda += `(x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)] || "").toString().toLowerCase() === "${value}".toString().toLowerCase() && `;
                                 break;
                             case "*":
-                                lambda += `x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)].toString().toLowerCase().search("${value}".toString().toLowerCase()) > -1 && `;
+                                lambda += `(x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)] || "").toString().toLowerCase().search("${value}".toString().toLowerCase()) > -1 && `;
                                 break;
                             case "!=":
-                                lambda += `x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)].toString().toLowerCase() !== "${value}".toString().toLowerCase() && `;
+                                lambda += `(x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)] || "").toString().toLowerCase() !== "${value}".toString().toLowerCase() && `;
                                 break;
                             case "!*":
-                                lambda += `x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)].toString().toLowerCase().search("${value}".toString().toLowerCase()) === -1 && `;
+                                lambda += `(x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)] || "").toString().toLowerCase().search("${value}".toString().toLowerCase()) === -1 && `;
                                 break;
                             case ">":
                                 lambda += `parseFloat(x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)]) > parseFloat("${value}") && `;
@@ -259,7 +260,14 @@ var commands = [
                     x.classList.remove("row-selected");
                 });
             }
-            var selectedDevices = Main.DataGrid.DataSource.filter(x => eval(lambda));
+            var selectedDevices = Main.DataGrid.DataSource.filter(x => {
+                try {
+                    return eval(lambda);
+                }
+                catch (_a) {
+                    return false;
+                }
+            });
             selectedDevices.forEach(x => {
                 document.getElementById(x.ID).classList.add("row-selected");
             });
