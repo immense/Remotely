@@ -18,4 +18,8 @@
     <ProjectReference Include="..\ScreenCast.Core\ScreenCast.Core.csproj" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if $(ConfigurationName) == Debug (&#xD;&#xA;  if $(PlatformName) == Any CPU (&#xD;&#xA;      md &quot;$(SolutionDir)Agent\bin\Debug\netcoreapp3.1\ScreenCast\&quot;&#xD;&#xA;      copy /y &quot;$(TargetDir)\*&quot; &quot;$(SolutionDir)Agent\bin\Debug\netcoreapp3.1\ScreenCast\&quot;&#xD;&#xA;  )&#xD;&#xA;)" />
+  </Target>
+
 </Project>
