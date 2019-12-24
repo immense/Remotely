@@ -16,6 +16,7 @@ export var ConsoleFrame = document.getElementById("consoleFrame");
 export var ConsoleTab = document.getElementById("consoleTab");
 export var ConsoleAlert = document.getElementById("consoleAlert");
 export var DeviceGroupSelect = document.getElementById("deviceGroupSelect");
+export var GridFilter = document.getElementById("gridFilter");
 export function AddConsoleOutput(strOutputMessage) {
     var outputBlock = document.createElement("div");
     outputBlock.classList.add("console-block");

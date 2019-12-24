@@ -275,7 +275,7 @@ var commands = [
         }
         Main.DataGrid.UpdateDeviceCounts();
     }),
-    new ConsoleCommand("RemoteControl", [], "Connect to a computer with Remotely Remote Control.", "list", "", () => {
+    new ConsoleCommand("RemoteControl", [], "Connect to a computer with Remotely Remote Control.", "remotecontrol", "", () => {
         var selectedDevices = Main.DataGrid.GetSelectedDevices();
         if (selectedDevices.length == 0) {
             UI.AddConsoleOutput("You must select a device first.");
