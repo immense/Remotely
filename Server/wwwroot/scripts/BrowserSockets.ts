@@ -7,8 +7,8 @@ import { CommandContext } from "./Models/CommandContext.js";
 import { CreateCommandHarness, AddCommandResultsHarness, AddPSCoreResultsHarness, UpdateResultsCount } from "./ResultsParser.js";
 import { Store } from "./Store.js";
 import { UserOptions } from "./Models/UserOptions.js";
-import { UserSettings } from "./UserSettings.js";
 import { Main } from "./Main.js";
+import { AddConsoleOutput, AddConsoleHTML } from "./Console.js";
 
 
 export var Connection: any;
@@ -28,7 +28,7 @@ export function Connect() {
     Connection.start().catch(err => {
         console.error(err.toString());
         Connected = false;
-        UI.AddConsoleOutput("Your connection was lost.  Refresh the page or enter a command to reconnect.");
+        AddConsoleOutput("Your connection was lost.  Refresh the page or enter a command to reconnect.");
     }).then(() => {
         Connected = true;
     })
@@ -38,7 +38,7 @@ export function Connect() {
             UI.ShowModal("Connection Failure",
                 "Your connection was lost. Click Reconnect to start a new session.",
                 `<button type="button" class="btn btn-secondary" onclick="location.reload()">Reconnect</button>`);
-            UI.AddConsoleOutput("Connection lost.");
+            AddConsoleOutput("Connection lost.");
         }
     });
 };
@@ -50,7 +50,7 @@ function applyMessageHandlers(hubConnection) {
         Main.UserSettings.CommandModeShortcuts.WinPS = options.CommandModeShortcutWinPS;
         Main.UserSettings.CommandModeShortcuts.Bash = options.CommandModeShortcutBash;
         Main.UserSettings.CommandModeShortcuts.CMD = options.CommandModeShortcutCMD;
-        UI.AddConsoleOutput("Console connected.");
+        AddConsoleOutput("Console connected.");
         DataGrid.RefreshGrid();
     });
     hubConnection.on("LockedOut", (args) => {
@@ -81,14 +81,14 @@ function applyMessageHandlers(hubConnection) {
     });
     hubConnection.on("DisplayMessage", (consoleMessage: string, popupMessage: string) => {
         if (consoleMessage) {
-            UI.AddConsoleOutput(consoleMessage);
+            AddConsoleOutput(consoleMessage);
         }
         if (popupMessage) {
             UI.PopupMessage(popupMessage);
         }
     });
     hubConnection.on("DisplayConsoleHTML", (message: string) => {
-        UI.AddConsoleHTML(message);
+        AddConsoleHTML(message);
     });
 
     hubConnection.on("TransferCompleted", (transferID: string) => {
@@ -145,7 +145,7 @@ function applyMessageHandlers(hubConnection) {
         xhr.send();
     });
     hubConnection.on("CommandContextCreated", (context: CommandContext) => {
-        UI.AddConsoleHTML(CreateCommandHarness(context).outerHTML);
+        AddConsoleHTML(CreateCommandHarness(context).outerHTML);
     });
     hubConnection.on("ServiceID", (serviceID: string) => {
         ServiceID = serviceID;

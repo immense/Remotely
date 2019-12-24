@@ -5,6 +5,7 @@ import { Store } from "./Store.js";
 import * as DataGrid from "./DataGrid.js";
 import * as BrowserSockets from "./BrowserSockets.js";
 import { WebCommands } from "./Commands/WebCommands.js";
+import { AddConsoleOutput } from "./Console.js";
 export function ApplyInputEventHandlers() {
     keyDownOnWindow();
     keyDownOnInputTextArea();
@@ -71,9 +72,9 @@ function keyDownOnInputTextArea() {
                     }
                     UI.CommandCompletionDiv.classList.add("hidden");
                     UI.CommandInfoDiv.classList.add("hidden");
-                    UI.AddConsoleOutput(`<span class="echo-input">${UI.ConsoleTextArea.value}</span>`);
+                    AddConsoleOutput(`<span class="echo-input">${UI.ConsoleTextArea.value}</span>`);
                     if (!BrowserSockets.Connected) {
-                        UI.AddConsoleOutput("Not connected.  Reconnecting...");
+                        AddConsoleOutput("Not connected.  Reconnecting...");
                         BrowserSockets.Connect();
                         return;
                     }

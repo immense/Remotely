@@ -6,7 +6,6 @@ import { CMDCommands } from "./Commands/CMDCommands.js";
 import { PSCoreCommands } from "./Commands/PSCoreCommands.js";
 import { WinPSCommands } from "./Commands/WinPSCommands.js";
 import { BashCommands } from "./Commands/BashCommands.js";
-var commandCompletionDisplayTimeout;
 export function DisplayCommandCompletions(commands, relevantText) {
     Store.CommandCompletionTimeout = window.setTimeout(() => {
         commands.forEach(x => {
