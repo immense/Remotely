@@ -2,6 +2,7 @@
 import { Device } from "./Models/Device.js";
 import { Main } from "./Main.js";
 import { DeviceGrid } from "./UI.js";
+import { AddConsoleOutput } from "./Console.js";
 
 
 export const DataSource: Array<Device> = new Array<Device>();
@@ -108,7 +109,7 @@ export function RefreshGrid() {
         if (xhr.status == 200) {
             var devices = JSON.parse(xhr.responseText);
             if (devices.length == 0) {
-                UI.AddConsoleOutput("It looks like you don't have the Remotely service installed on any devices.  You can get the install script from the Client Downloads page.");
+                AddConsoleOutput("It looks like you don't have the Remotely service installed on any devices.  You can get the install script from the Client Downloads page.");
             }
             else {
 
@@ -149,7 +150,7 @@ export function UpdateDeviceCounts() {
         x.IsOnline == false &&
         document.getElementById(x.ID).classList.contains("row-selected"))
     ) {
-        UI.AddConsoleOutput(`Your selection contains offline computers.  Your commands will only be sent to those that are online.`);
+        AddConsoleOutput(`Your selection contains offline computers.  Your commands will only be sent to those that are online.`);
     }
 }
 

@@ -1,7 +1,7 @@
-﻿export const UserSettings = new class {
-    PromptString = "~>";
+﻿export const UserSettings = {
+    PromptString: "~>",
 
-    CommandModeShortcuts = {
+    CommandModeShortcuts: {
         "Web": "/web",
         "PSCore": "/pscore",
         "WinPS": "/winps",

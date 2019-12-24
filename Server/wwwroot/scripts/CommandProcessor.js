@@ -6,8 +6,9 @@ import * as UI from "./UI.js";
 import { Store } from "./Store.js";
 import { DisplayCommandShortcuts, DisplayCommandCompletions, DisplayParameterCompletions, GetCommandCompletions } from "./CommandCompletion.js";
 import { Connection } from "./BrowserSockets.js";
+import { AutoSizeTextArea, AddConsoleOutput } from "./Console.js";
 export function EvaluateCurrentCommandText() {
-    UI.AutoSizeTextArea();
+    AutoSizeTextArea();
     window.clearTimeout(Store.CommandCompletionTimeout);
     UI.CommandCompletionDiv.classList.add("hidden");
     UI.CommandInfoDiv.classList.add("hidden");
@@ -98,7 +99,7 @@ export function ProcessCommand() {
                 matchingCommand.Execute(parameters);
             }
             else {
-                UI.AddConsoleOutput("Unknown command.");
+                AddConsoleOutput("Unknown command.");
             }
             break;
         case "PSCore":
@@ -109,15 +110,15 @@ export function ProcessCommand() {
             var windowsDevices = allDevices.filter(x => x.Platform.toLowerCase() == "windows");
             var linuxDevices = allDevices.filter(x => x.Platform.toLowerCase() == "linux");
             if (commandMode == "CMD" && linuxDevices.length > 0) {
-                UI.AddConsoleOutput("Linux devices will be excluded from CMD command.");
+                AddConsoleOutput("Linux devices will be excluded from CMD command.");
                 allDevices = windowsDevices;
             }
             if (commandMode == "Bash" && windowsDevices.length > 0) {
-                UI.AddConsoleOutput("Windows devices will be excluded from Bash command.");
+                AddConsoleOutput("Windows devices will be excluded from Bash command.");
                 allDevices = linuxDevices;
             }
             if (allDevices.length == 0) {
-                UI.AddConsoleOutput("At least one device must be selected to send commands.");
+                AddConsoleOutput("At least one device must be selected to send commands.");
                 return;
             }
             var deviceIDs = allDevices.map(value => value.ID);
