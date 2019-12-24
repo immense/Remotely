@@ -2,6 +2,11 @@ import * as UI from "./UI.js";
 import { Main } from "./Main.js";
 import { DeviceGrid } from "./UI.js";
 export const DataSource = new Array();
+export const FilterOptions = new class {
+    constructor() {
+        this.ShowAllGroups = true;
+    }
+};
 export function AddOrUpdateDevices(devices) {
     devices.forEach(x => {
         AddOrUpdateDevice(x);
@@ -55,31 +60,17 @@ export function AddOrUpdateDevice(device) {
     };
     UpdateDeviceCounts();
 }
-export function ApplyGroupFilter(groupID) {
+export function ApplyFilter() {
     for (var i = 0; i < DataSource.length; i++) {
         var row = document.getElementById(DataSource[i].ID);
-        if (!groupID || DataSource[i].DeviceGroupID == groupID) {
-            row.classList.remove("hidden");
-        }
-        else {
-            row.classList.add("hidden");
-        }
-    }
-}
-export function ApplySearchFilter(filterString) {
-    for (var i = 0; i < DataSource.length; i++) {
-        for (var key in DataSource[i]) {
-            var value = DataSource[i][key];
-            if (!value) {
+        if (FilterOptions.ShowAllGroups ||
+            (DataSource[i].DeviceGroupID || "") == (FilterOptions.GroupFilter || "")) {
+            if (!FilterOptions.SearchFilter || deviceMatchesFilter(DataSource[i])) {
+                row.classList.remove("hidden");
                 continue;
             }
-            var row = document.getElementById(DataSource[i].ID);
-            if (value.toString().toLowerCase().includes(filterString)) {
-                row.classList.remove("hidden");
-                break;
-            }
-            row.classList.add("hidden");
         }
+        row.classList.add("hidden");
     }
 }
 export function ClearAllData() {
@@ -146,5 +137,17 @@ export function UpdateDeviceCounts() {
         document.getElementById(x.ID).classList.contains("row-selected"))) {
         UI.AddConsoleOutput(`Your selection contains offline computers.  Your commands will only be sent to those that are online.`);
     }
+}
+function deviceMatchesFilter(device) {
+    for (var key in device) {
+        var value = device[key];
+        if (!value) {
+            continue;
+        }
+        if (value.toString().toLowerCase().includes(FilterOptions.SearchFilter.toLowerCase())) {
+            return true;
+        }
+    }
+    return false;
 }
 //# sourceMappingURL=DataGrid.js.map

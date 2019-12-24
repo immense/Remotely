@@ -151,9 +151,10 @@ function inputOnCommandTextArea() {
     });
 }
 function inputOnFilterTextBox() {
-    document.querySelector("#gridFilter").addEventListener("input", (e) => {
+    UI.GridFilter.addEventListener("input", (e) => {
         var currentText = (e.currentTarget as HTMLInputElement).value.toLowerCase();
-        DataGrid.ApplySearchFilter(currentText);
+        DataGrid.FilterOptions.SearchFilter = currentText;
+        DataGrid.ApplyFilter();
     })
 }
 function consoleTabSelected() {
@@ -184,6 +185,13 @@ function clickStartRemoteControlButton() {
 
 function deviceGroupSelectChanged() {
     UI.DeviceGroupSelect.addEventListener("change", (ev) => {
-        DataGrid.ApplyGroupFilter(UI.DeviceGroupSelect.value);
+        DataGrid.FilterOptions.GroupFilter = UI.DeviceGroupSelect.value;
+        if (UI.DeviceGroupSelect.selectedIndex == 0) {
+            DataGrid.FilterOptions.ShowAllGroups = true;
+        }
+        else {
+            DataGrid.FilterOptions.ShowAllGroups = false;
+        }
+        DataGrid.ApplyFilter();
     });
 }

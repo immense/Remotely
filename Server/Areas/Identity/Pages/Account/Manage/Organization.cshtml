@@ -28,12 +28,36 @@
     </div>
 
     <div class="row">
+        <div class="col-sm-8">
+
+            @* Device Groups *@
+            <div class="form-group">
+                <label class="mb-1">Device Groups</label>
+                <span id="deviceGroupHelpButton" class="fas fa-question-circle pointer"></span>
+                <select id="deviceGroupList" multiple asp-items="Model.DeviceGroups" class="form-control all-device-groups-list mb-1">
+                </select>
+
+                <div class="text-right mb-3">
+                    <button id="removeDeviceGroupButton" type="button" class="btn btn-secondary">Remove</button>
+                </div>
+
+                <div class="input-group">
+                    <input id="deviceGroupInput" placeholder="Add new device group" class="form-control" maxlength="200" />
+                    <span class="input-group-btn">
+                        <button id="addDeviceGroupButton" type="button" class="btn btn-secondary">Add</button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
         <div class="col-sm-12">
             @* Users *@
             <div class="form-group">
                 <label class="control-label">Users</label>
                 <span id="usersHelpButton" class="fas fa-question-circle pointer"></span>
-                <table class="table table-responsive table-striped table-hover">
+                <table class="table table-striped table-hover" style="max-height: 400px">
                     <thead>
                         <tr>
                             <th>User Name</th>
@@ -63,30 +87,6 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-sm-8">
-
-            @* Device Groups *@
-            <div class="form-group">
-                <label class="mb-1">Device Groups</label>
-                <span id="deviceGroupHelpButton" class="fas fa-question-circle pointer"></span>
-                <select id="deviceGroupList" multiple asp-items="Model.DeviceGroups" class="form-control all-device-groups-list mb-1">
-  
-                </select>
-
-                <div class="text-right mb-3">
-                    <button id="removeDeviceGroupButton" type="button" class="btn btn-secondary">Remove</button>
-                </div>
-
-                <div class="input-group">
-                    <input id="deviceGroupInput" placeholder="Add new device group" class="form-control" maxlength="200" />
-                    <span class="input-group-btn">
-                        <button id="addDeviceGroupButton" type="button" class="btn btn-secondary">Add</button>
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
 
     @* Invitations *@
     <div class="row">
@@ -94,7 +94,7 @@
             <div class="form-group">
                 <label class="control-label">Invitations</label>
                 <span id="invitesHelpButton" class="fas fa-question-circle pointer"></span>
-                <table id="invitesTable" class="table table-responsive table-striped table-hover">
+                <table id="invitesTable" class="table table-striped table-hover" style="max-height: 400px">
                     <thead>
                         <tr>
                             <th>Invited User</th>

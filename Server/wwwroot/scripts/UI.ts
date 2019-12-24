@@ -1,6 +1,5 @@
 ﻿import { UserSettings} from "./UserSettings.js";
 import * as Utilities from "./Utilities.js";
-import { GetSelectedDevices } from "./DataGrid.js";
 
 
 export var CommandCompletionDiv = document.querySelector("#commandCompletionDiv") as HTMLDivElement;
@@ -19,6 +18,7 @@ export var ConsoleFrame = document.getElementById("consoleFrame") as HTMLDivElem
 export var ConsoleTab = document.getElementById("consoleTab") as HTMLAnchorElement;
 export var ConsoleAlert = document.getElementById("consoleAlert") as HTMLAnchorElement;
 export var DeviceGroupSelect = document.getElementById("deviceGroupSelect") as HTMLSelectElement;
+export var GridFilter = document.getElementById("gridFilter") as HTMLInputElement;
 
 
 export function AddConsoleOutput(strOutputMessage:string) {
@@ -113,7 +113,6 @@ export function ShowModal(title: string, modalBodyHtml: string, buttonsHTML: str
     $("#" + modalID).modal("show");
     return wrapperDiv;
 };
-
 export function ValidateInput(inputElement: HTMLInputElement) {
     if (!inputElement.checkValidity()) {
         $(inputElement)["tooltip"]({
