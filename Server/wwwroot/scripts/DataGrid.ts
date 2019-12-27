@@ -2,11 +2,16 @@
 import { Device } from "./Models/Device.js";
 import { Main } from "./Main.js";
 import { DeviceGrid } from "./UI.js";
-import * as BrowserSockets from "./BrowserSockets.js";
-import { CreateGUID } from "./Utilities.js";
+import { AddConsoleOutput } from "./Console.js";
 
 
 export const DataSource: Array<Device> = new Array<Device>();
+export const FilterOptions = new class {
+    GroupFilter: string;
+    SearchFilter: string;
+    ShowAllGroups: boolean = true;
+};
+
 
 export function AddOrUpdateDevices(devices: Array<Device>) {
     devices.forEach(x => {
@@ -65,34 +70,20 @@ export function AddOrUpdateDevice(device: Device) {
     };
     UpdateDeviceCounts();
 }
-export function ApplyGroupFilter(groupID: string) {
+export function ApplyFilter() {
     for (var i = 0; i < DataSource.length; i++) {
         var row = document.getElementById(DataSource[i].ID);
-        if (!groupID || DataSource[i].DeviceGroupID == groupID) {
-            row.classList.remove("hidden");
-        }
-        else {
-            row.classList.add("hidden");
-        }
-    }
-}
-export function ApplySearchFilter(filterString: string) {
-    for (var i = 0; i < DataSource.length; i++) {
-        for (var key in DataSource[i]) {
-            var value = DataSource[i][key];
-            if (!value) {
+        if (FilterOptions.ShowAllGroups ||
+            (DataSource[i].DeviceGroupID || "") == (FilterOptions.GroupFilter || "")) {
+            if (!FilterOptions.SearchFilter || deviceMatchesFilter(DataSource[i])) {
+                row.classList.remove("hidden");
                 continue;
             }
-
-            var row = document.getElementById(DataSource[i].ID);
-            if (value.toString().toLowerCase().includes(filterString)) {
-                row.classList.remove("hidden");
-                break;
-            }
-            row.classList.add("hidden");
         }
+        row.classList.add("hidden");
     }
 }
+
 export function ClearAllData() {
     DataSource.splice(0, DataSource.length);
     UI.DeviceGrid.querySelectorAll(".record-row").forEach(row => {
@@ -118,7 +109,7 @@ export function RefreshGrid() {
         if (xhr.status == 200) {
             var devices = JSON.parse(xhr.responseText);
             if (devices.length == 0) {
-                UI.AddConsoleOutput("It looks like you don't have the Remotely service installed on any devices.  You can get the install script from the Client Downloads page.");
+                AddConsoleOutput("It looks like you don't have the Remotely service installed on any devices.  You can get the install script from the Client Downloads page.");
             }
             else {
 
@@ -159,6 +150,19 @@ export function UpdateDeviceCounts() {
         x.IsOnline == false &&
         document.getElementById(x.ID).classList.contains("row-selected"))
     ) {
-        UI.AddConsoleOutput(`Your selection contains offline computers.  Your commands will only be sent to those that are online.`);
+        AddConsoleOutput(`Your selection contains offline computers.  Your commands will only be sent to those that are online.`);
     }
+}
+
+function deviceMatchesFilter(device: Device) {
+    for (var key in device) {
+        var value = device[key];
+        if (!value) {
+            continue;
+        }
+        if (value.toString().toLowerCase().includes(FilterOptions.SearchFilter.toLowerCase())) {
+            return true;
+        }
+    }
+    return false;
 }

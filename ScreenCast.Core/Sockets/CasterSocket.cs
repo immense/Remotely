@@ -47,13 +47,18 @@ namespace Remotely.ScreenCast.Core.Sockets
 
         public async Task Connect(string host)
         {
+            if (Connection != null)
+            {
+                await Connection.StopAsync();
+                await Connection.DisposeAsync();
+            }
             Connection = new HubConnectionBuilder()
                 .WithUrl($"{host}/RCDeviceHub")
                 .AddMessagePackProtocol()
                 .Build();
 
             ApplyConnectionHandlers();
-
+            
             await Connection.StartAsync();
         }
 
@@ -134,7 +139,6 @@ namespace Remotely.ScreenCast.Core.Sockets
             Connection.Closed += (ex) =>
             {
                 Logger.Write($"Connection closed.  Error: {ex?.Message}");
-                Environment.Exit(0);
                 return Task.CompletedTask;
             };
 

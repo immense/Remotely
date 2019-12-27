@@ -29,6 +29,7 @@
     <Content Remove="wwwroot\scripts\Commands\PSCoreCommands.ts" />
     <Content Remove="wwwroot\scripts\Commands\WebCommands.ts" />
     <Content Remove="wwwroot\scripts\Commands\WinPSCommands.ts" />
+    <Content Remove="wwwroot\scripts\Console.ts" />
     <Content Remove="wwwroot\scripts\DataGrid.ts" />
     <Content Remove="wwwroot\scripts\Enums\RemoteControlMode.ts" />
     <Content Remove="wwwroot\scripts\InputEventHandlers.ts" />
@@ -134,6 +135,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\Commands\CMDCommands.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Commands\WebCommands.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Commands\PSCoreCommands.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Console.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\DataGrid.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Enums\RemoteControlMode.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\InputEventHandlers.ts" />

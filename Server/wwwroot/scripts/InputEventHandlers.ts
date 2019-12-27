@@ -5,6 +5,7 @@ import { Store } from "./Store.js";
 import * as DataGrid from "./DataGrid.js";
 import * as BrowserSockets from "./BrowserSockets.js";
 import { WebCommands } from "./Commands/WebCommands.js";
+import { AddConsoleOutput } from "./Console.js";
 
 
 export function ApplyInputEventHandlers() {
@@ -76,9 +77,9 @@ function keyDownOnInputTextArea() {
                     }
                     UI.CommandCompletionDiv.classList.add("hidden");
                     UI.CommandInfoDiv.classList.add("hidden");
-                    UI.AddConsoleOutput(`<span class="echo-input">${UI.ConsoleTextArea.value}</span>`);
+                    AddConsoleOutput(`<span class="echo-input">${UI.ConsoleTextArea.value}</span>`);
                     if (!BrowserSockets.Connected) {
-                        UI.AddConsoleOutput("Not connected.  Reconnecting...");
+                        AddConsoleOutput("Not connected.  Reconnecting...");
                         BrowserSockets.Connect();
                         return;
                     }
@@ -151,9 +152,10 @@ function inputOnCommandTextArea() {
     });
 }
 function inputOnFilterTextBox() {
-    document.querySelector("#gridFilter").addEventListener("input", (e) => {
+    UI.GridFilter.addEventListener("input", (e) => {
         var currentText = (e.currentTarget as HTMLInputElement).value.toLowerCase();
-        DataGrid.ApplySearchFilter(currentText);
+        DataGrid.FilterOptions.SearchFilter = currentText;
+        DataGrid.ApplyFilter();
     })
 }
 function consoleTabSelected() {
@@ -184,6 +186,13 @@ function clickStartRemoteControlButton() {
 
 function deviceGroupSelectChanged() {
     UI.DeviceGroupSelect.addEventListener("change", (ev) => {
-        DataGrid.ApplyGroupFilter(UI.DeviceGroupSelect.value);
+        DataGrid.FilterOptions.GroupFilter = UI.DeviceGroupSelect.value;
+        if (UI.DeviceGroupSelect.selectedIndex == 0) {
+            DataGrid.FilterOptions.ShowAllGroups = true;
+        }
+        else {
+            DataGrid.FilterOptions.ShowAllGroups = false;
+        }
+        DataGrid.ApplyFilter();
     });
 }

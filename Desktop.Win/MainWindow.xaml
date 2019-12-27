@@ -1,12 +1,16 @@
-﻿<Window
+﻿<Window x:Class="Remotely.Desktop.Win.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Remotely.Desktop.Win"
-        xmlns:ViewModels="clr-namespace:Remotely.Desktop.Win.ViewModels" x:Class="Remotely.Desktop.Win.MainWindow"
+        xmlns:ViewModels="clr-namespace:Remotely.Desktop.Win.ViewModels"
         mc:Ignorable="d"
-        Title="Remotely" Height="250" Width="350" MouseLeftButtonDown="Window_MouseLeftButtonDown" WindowStyle="None" ResizeMode="NoResize" Icon="favicon.ico" Loaded="Window_Loaded">
+        Title="Remotely" Height="250" Width="350" 
+        WindowStyle="None" 
+        ResizeMode="NoResize"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown"
+        Loaded="Window_Loaded" Icon="Remotely_Icon.png" >
     <Window.Resources>
         <DrawingBrush x:Key="GearBrush">
             <DrawingBrush.Drawing>
@@ -31,7 +35,7 @@
                         <TextBlock Foreground="DeepSkyBlue" FontWeight="Bold" FontSize="20" Margin="0,2,0,0">Remotely</TextBlock>
                         <TextBlock Foreground="White" FontSize="10"><Run Text="Do IT Remotely"/></TextBlock>
                     </StackPanel>
-                    <Button Style="{StaticResource TitlebarButton}" Click="CloseButton_Click" Content="X"/>
+                    <Button Style="{StaticResource TitlebarButton}" Click="CloseButton_Click" Content="X" />
                     <Button Style="{StaticResource TitlebarButton}" Click="MinimizeButton_Click" Content="_"/>
                 </DockPanel>
             </Border>

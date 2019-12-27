@@ -6,8 +6,6 @@
     <AssemblyName>Remotely_Desktop</AssemblyName>
     <RootNamespace>Remotely.Desktop.Linux</RootNamespace>
     <Platforms>AnyCPU;x64;x86</Platforms>
-    <PublishSingleFile>true</PublishSingleFile>
-    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Models\" />

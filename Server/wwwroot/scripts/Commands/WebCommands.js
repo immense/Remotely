@@ -4,7 +4,7 @@ import * as UI from "../UI.js";
 import * as BrowserSockets from "../BrowserSockets.js";
 import { Main } from "../Main.js";
 import * as DataGrid from "../DataGrid.js";
-import { AddConsoleOutput } from "../UI.js";
+import { AddConsoleHTML, AddConsoleOutput, AddTransferHarness } from "../Console.js";
 import { GetSelectedDevices } from "../DataGrid.js";
 var commands = [
     new ConsoleCommand("DeployScript", [
@@ -56,14 +56,14 @@ var commands = [
         });
         output += deviceList.join("");
         output += "</table>";
-        UI.AddConsoleOutput(output);
+        AddConsoleOutput(output);
     }),
     new ConsoleCommand("Clear", [], "Clears the output window of text.", "clear", "", (parameters, paramDictionary) => { UI.ConsoleOutputDiv.innerHTML = ""; }),
     new ConsoleCommand("Connect", [], "Connect or reconnect to the server.", "connect", "", (parameters, paramDictionary) => { BrowserSockets.Connect(); }),
     new ConsoleCommand("Echo", [
         new Parameter("message", "The text to display in the console.", "String")
     ], "Writes a message to the console window.", "echo -message This will appear in the console.", "", (parameters, paramDictionary) => {
-        UI.AddConsoleOutput(paramDictionary["message"]);
+        AddConsoleOutput(paramDictionary["message"]);
     }),
     new ConsoleCommand("ExpandResults", [], "Expands the results of the last scripting command.", "expandresults", "", (parameters, paramDictionary) => {
         $(UI.ConsoleOutputDiv).find(".command-harness").last().find(".collapse")['collapse']('show');
@@ -88,23 +88,23 @@ var commands = [
             return command.Name.toLowerCase() == (suppliedCommand.Value || "").toLowerCase();
         });
         if (result.length == 0) {
-            UI.AddConsoleOutput("No matching commands found.");
+            AddConsoleOutput("No matching commands found.");
         }
         else if (result.length == 1) {
-            UI.AddConsoleHTML("<br>" + result[0].FullHelp);
+            AddConsoleHTML("<br>" + result[0].FullHelp);
         }
         else {
             var outputText = "Multiple commands found: <br><br>";
             for (var i = 0; i < result.length; i++) {
                 outputText += result[i].Name + "<br>";
             }
-            UI.AddConsoleHTML(outputText);
+            AddConsoleHTML(outputText);
         }
     }),
     new ConsoleCommand("List", [], "Displays a list of the currently-selected devices.", "list", "", () => {
         var selectedDevices = Main.DataGrid.GetSelectedDevices();
         if (selectedDevices.length == 0) {
-            UI.AddConsoleOutput("No devices are selected.");
+            AddConsoleOutput("No devices are selected.");
             return;
         }
         var output = `<div>Selected Devices:</div>
@@ -131,12 +131,12 @@ var commands = [
         });
         output += deviceList.join("");
         output += "</table>";
-        UI.AddConsoleOutput(output);
+        AddConsoleOutput(output);
     }),
     new ConsoleCommand("Remove", [], "Removes the selected devices from the database.  (Note: This does not attempt to uninstall the client.  Use Uninstall.)", "remove", "", (parameters) => {
         var devices = DataGrid.GetSelectedDevices();
         if (devices.length == 0) {
-            UI.AddConsoleOutput("No devices are selected.");
+            AddConsoleOutput("No devices are selected.");
         }
         else {
             BrowserSockets.Connection.invoke("RemoveDevices", devices.map(x => x.ID));
@@ -164,6 +164,7 @@ var commands = [
                 <ul style="list-style:none">
                     <li>IsOnline (true or false)</li>
                     <li>DeviceName (text)</li>
+                    <li>Alias (text)</li>
                     <li>CurrentUser (text)</li>
                     <li>LastOnline (date or date+time</li>
                     <li>Is64Bit (true or false)</li>
@@ -179,19 +180,19 @@ var commands = [
             Main.DataGrid.DataSource.forEach(x => {
                 document.getElementById(x.ID).classList.add("row-selected");
             });
-            UI.AddConsoleOutput(`${GetSelectedDevices().length} devices selected.`);
+            AddConsoleOutput(`${GetSelectedDevices().length} devices selected.`);
         }
         if (typeof paramDictionary["none"] != "undefined") {
             Main.UI.DeviceGrid.querySelectorAll(".row-selected").forEach(x => {
                 x.classList.remove("row-selected");
             });
-            UI.AddConsoleOutput(`${GetSelectedDevices().length} devices selected.`);
+            AddConsoleOutput(`${GetSelectedDevices().length} devices selected.`);
         }
         if (typeof paramDictionary["online"] != "undefined") {
             Main.DataGrid.DataSource.filter(x => x.IsOnline).forEach(x => {
                 document.getElementById(x.ID).classList.add("row-selected");
             });
-            UI.AddConsoleOutput(`${GetSelectedDevices().length} devices selected.`);
+            AddConsoleOutput(`${GetSelectedDevices().length} devices selected.`);
         }
         if (typeof paramDictionary["filter"] != "undefined") {
             try {
@@ -211,7 +212,7 @@ var commands = [
                             case "*":
                             case "!=":
                             case "!*":
-                                UI.AddConsoleOutput("Only < and > operators can be used with dates.");
+                                AddConsoleOutput("Only < and > operators can be used with dates.");
                                 return;
                             case ">":
                                 lambda += `Date.parse(x[Object.keys(x).find(y=>y.toLowerCase().indexOf("${key}") > -1)]) > ${parsedDate} && `;
@@ -226,16 +227,16 @@ var commands = [
                     else {
                         switch (operator) {
                             case "=":
-                                lambda += `x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)].toString().toLowerCase() === "${value}".toString().toLowerCase() && `;
+                                lambda += `(x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)] || "").toString().toLowerCase() === "${value}".toString().toLowerCase() && `;
                                 break;
                             case "*":
-                                lambda += `x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)].toString().toLowerCase().search("${value}".toString().toLowerCase()) > -1 && `;
+                                lambda += `(x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)] || "").toString().toLowerCase().search("${value}".toString().toLowerCase()) > -1 && `;
                                 break;
                             case "!=":
-                                lambda += `x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)].toString().toLowerCase() !== "${value}".toString().toLowerCase() && `;
+                                lambda += `(x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)] || "").toString().toLowerCase() !== "${value}".toString().toLowerCase() && `;
                                 break;
                             case "!*":
-                                lambda += `x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)].toString().toLowerCase().search("${value}".toString().toLowerCase()) === -1 && `;
+                                lambda += `(x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)] || "").toString().toLowerCase().search("${value}".toString().toLowerCase()) === -1 && `;
                                 break;
                             case ">":
                                 lambda += `parseFloat(x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)]) > parseFloat("${value}") && `;
@@ -250,7 +251,7 @@ var commands = [
                 });
             }
             catch (ex) {
-                UI.AddConsoleOutput("Unable to parse filter.  Please check your syntax.");
+                AddConsoleOutput("Unable to parse filter.  Please check your syntax.");
                 return;
             }
             lambda = lambda.slice(0, lambda.lastIndexOf(" &&"));
@@ -259,25 +260,32 @@ var commands = [
                     x.classList.remove("row-selected");
                 });
             }
-            var selectedDevices = Main.DataGrid.DataSource.filter(x => eval(lambda));
+            var selectedDevices = Main.DataGrid.DataSource.filter(x => {
+                try {
+                    return eval(lambda);
+                }
+                catch (_a) {
+                    return false;
+                }
+            });
             selectedDevices.forEach(x => {
                 document.getElementById(x.ID).classList.add("row-selected");
             });
-            UI.AddConsoleOutput(`${GetSelectedDevices().length} devices selected.`);
+            AddConsoleOutput(`${GetSelectedDevices().length} devices selected.`);
         }
         Main.DataGrid.UpdateDeviceCounts();
     }),
-    new ConsoleCommand("RemoteControl", [], "Connect to a computer with Remotely Remote Control.", "list", "", () => {
+    new ConsoleCommand("RemoteControl", [], "Connect to a computer with Remotely Remote Control.", "remotecontrol", "", () => {
         var selectedDevices = Main.DataGrid.GetSelectedDevices();
         if (selectedDevices.length == 0) {
-            UI.AddConsoleOutput("You must select a device first.");
+            AddConsoleOutput("You must select a device first.");
             return;
         }
         if (selectedDevices.length > 1) {
-            UI.AddConsoleOutput("You can only initiate remote control on one device at a time.");
+            AddConsoleOutput("You can only initiate remote control on one device at a time.");
             return;
         }
-        UI.AddConsoleOutput("Launching remote control on client device...");
+        AddConsoleOutput("Launching remote control on client device...");
         BrowserSockets.Connection.invoke("RemoteControl", selectedDevices[0].ID);
     }),
     new ConsoleCommand("Uninstall", [], "Uninstalls the Remotely client from the selected devices.  Warning: This can't be undone from the web portal.  You would need to redeploy the client.", "uninstall", "", (parameters, parameterDict) => {
@@ -309,7 +317,7 @@ var commands = [
             return;
         }
         var transferID = Main.Utilities.CreateGUID();
-        UI.AddTransferHarness(transferID, selectedDevices.length);
+        AddTransferHarness(transferID, selectedDevices.length);
         var fileInput = document.createElement("input");
         fileInput.type = "file";
         fileInput.hidden = true;
@@ -326,7 +334,7 @@ var commands = [
 ];
 function uploadFiles(fileList) {
     return new Promise((resolve, reject) => {
-        UI.AddConsoleOutput("File upload started...");
+        AddConsoleOutput("File upload started...");
         var strPath = "/API/FileSharing/";
         var fd = new FormData();
         for (var i = 0; i < fileList.length; i++) {
@@ -336,20 +344,20 @@ function uploadFiles(fileList) {
         xhr.open('POST', strPath, true);
         xhr.addEventListener("load", function () {
             if (xhr.status === 200) {
-                UI.AddConsoleOutput("File upload completed.");
+                AddConsoleOutput("File upload completed.");
                 resolve(JSON.parse(xhr.responseText));
             }
             else {
-                UI.AddConsoleOutput("File upload failed.");
+                AddConsoleOutput("File upload failed.");
                 reject();
             }
         });
         xhr.addEventListener("error", () => {
-            UI.AddConsoleOutput("File upload failed.");
+            AddConsoleOutput("File upload failed.");
             reject();
         });
         xhr.addEventListener("progress", function (e) {
-            UI.AddConsoleOutput("File upload progress: " + String(isFinite(e.loaded / e.total) ? e.loaded / e.total : 0) + "%");
+            AddConsoleOutput("File upload progress: " + String(isFinite(e.loaded / e.total) ? e.loaded / e.total : 0) + "%");
         });
         xhr.send(fd);
     });
