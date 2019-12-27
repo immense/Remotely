@@ -18,10 +18,6 @@ apt-get -y install libgdiplus
 apt-get -y install libxtst-dev
 apt-get -y install xclip
 
-wget -q https://dot.net/v1/dotnet-install.sh
-chmod +x dotnet-install.sh
-sudo ./dotnet-install.sh --runtime dotnet
-
 mkdir -p /usr/local/bin/Remotely/
 cd /usr/local/bin/Remotely/
 

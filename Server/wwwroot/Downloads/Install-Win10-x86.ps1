@@ -63,8 +63,6 @@ function Uninstall-Remotely {
 }
 
 function Install-Remotely {
-    Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "$env:TEMP\dotnet-install.ps1"
-    &"$env:TEMP\dotnet-install.ps1" -runtime dotnet
 	if ((Test-Path -Path "$InstallPath") -eq $true){
 		if ((Test-Path -Path "$InstallPath\ConnectionInfo.json") -eq $true){
 			$ConnectionInfo = Get-Content -Path "$InstallPath\ConnectionInfo.json" | ConvertFrom-Json
