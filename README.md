@@ -10,6 +10,7 @@ Public Server: https://tryremotely.lucency.co (not intended for production use)
 
 ## Client Prerequisites:
 * Endpoint devices require the .NET Core runtime to be installed.
+	* For Windows, the Desktop Runtime is required.
     * Downlaod Link: https://dotnet.microsoft.com/download/dotnet-core/current/runtime
 
 ## Build Instructions (Windows 10)  
