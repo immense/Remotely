@@ -1,5 +1,6 @@
 # Remotely
 [![Build Status](https://dev.azure.com/translucency/Remotely/_apis/build/status/Remotely-ReleaseBuild?branchName=master)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=17&branchName=master)
+[![Donate](https://www.paypalobjects.com/webstatic/en_US/i/buttons/pp-acceptance-small.png)](https://paypal.me/translucency)
 
 A remote control and remote scripting solution, built with .NET Core and SignalR Core.
 
@@ -11,7 +12,7 @@ Public Server: https://tryremotely.lucency.co (not intended for production use)
 ## Client Prerequisites:
 * Endpoint devices require the .NET Core runtime to be installed.
 	* For Windows, the Desktop Runtime is required.
-    * Downlaod Link: https://dotnet.microsoft.com/download/dotnet-core/current/runtime
+    * Download Link: https://dotnet.microsoft.com/download/dotnet-core/current/runtime
 
 ## Build Instructions (Windows 10)  
 The following steps will configure your Windows 10 machine for building the Remotely server and clients.
