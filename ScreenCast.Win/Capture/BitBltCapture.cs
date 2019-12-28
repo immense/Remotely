@@ -24,8 +24,6 @@ namespace Remotely.ScreenCast.Win.Capture
         public bool CaptureFullscreen { get; set; } = true;
         public Bitmap CurrentFrame { get; set; }
         public Rectangle CurrentScreenBounds { get; set; } = Screen.PrimaryScreen.Bounds;
-        public bool IsCapturing { get; set; }
-        public int PauseForMilliseconds { get; set; }
         public Bitmap PreviousFrame { get; set; }
         public event EventHandler<Rectangle> ScreenChanged;
         public int SelectedScreen { get; private set; } = Screen.AllScreens.ToList().IndexOf(Screen.PrimaryScreen);
