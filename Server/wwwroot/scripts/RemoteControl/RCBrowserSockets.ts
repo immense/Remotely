@@ -49,8 +49,8 @@ export class RCBrowserSockets {
     SendScreenCastRequestToDevice() {
         this.Connection.invoke("SendScreenCastRequestToDevice", RemoteControl.ClientID, RemoteControl.RequesterName, RemoteControl.Mode);
     }
-    SendLatencyUpdate(latency: number) {
-        this.Connection.invoke("SendLatencyUpdate", latency);
+    SendLatencyUpdate(sentTime: Date) {
+        this.Connection.invoke("SendLatencyUpdate", sentTime);
     }
     SendSelectScreen(index: number) {
         this.Connection.invoke("SelectScreen", index);
@@ -138,8 +138,8 @@ export class RCBrowserSockets {
             UI.Screen2DContext.clearRect(0, 0, width, height);
         });
         hubConnection.on("ScreenCapture", (buffer: Uint8Array, left:number, top:number, width:number, height:number, captureTime: Date) => {
-            var latency = Date.now() - new Date(captureTime).getTime();
-            this.SendLatencyUpdate(latency);
+
+            this.SendLatencyUpdate(captureTime);
 
             var url = window.URL.createObjectURL(new Blob([buffer]));
             var img = document.createElement("img");
