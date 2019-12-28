@@ -44,7 +44,6 @@ namespace Remotely.ScreenCast.Win.Capture
             {
                 if (NeedsInit)
                 {
-                    duplicatedOutput?.Dispose();
                     Init();
                 }
 
@@ -58,17 +57,26 @@ namespace Remotely.ScreenCast.Win.Capture
 
                 while (duplicateFrameInformation.AccumulatedFrames < 1)
                 {
-                    duplicatedOutput.ReleaseFrame();
-                    duplicatedOutput.TryAcquireNextFrame(50, out duplicateFrameInformation, out screenResource);
+                    var result = duplicatedOutput.TryAcquireNextFrame(50, out duplicateFrameInformation, out screenResource);
+                    if (result.Failure)
+                    {
+                        try
+                        {
+                            duplicatedOutput.ReleaseFrame();
+                        }
+                        catch { }
+                    }
                 }
-
+            
                 // copy resource into memory that can be accessed by the CPU
                 using (var screenTexture2D = screenResource.QueryInterface<Texture2D>())
+                {
                     device.ImmediateContext.CopyResource(screenTexture2D, screenTexture);
+                }
 
                 // Get the desktop capture texture
                 var mapSource = device.ImmediateContext.MapSubresource(screenTexture, 0, MapMode.Read, SharpDX.Direct3D11.MapFlags.None);
-
+                
                 // Create Drawing.Bitmap
                 using (var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb))
                 {
@@ -137,6 +145,8 @@ namespace Remotely.ScreenCast.Win.Capture
 
         public void Init()
         {
+            Dispose();
+
             factory = new Factory1();
 
             //Get first adapter

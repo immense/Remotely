@@ -81,9 +81,11 @@ namespace Remotely.ScreenCast.Core.Capture
                         }
                     }
 
-                    while (viewer.PendingFrames > 10)
+                    
+
+                    while (viewer.PendingFrames > 10000 / viewer.Latency)
                     {
-                        await Task.Delay(1);
+                        await Task.Delay(10);
                     }
 
                     capturer.Capture();

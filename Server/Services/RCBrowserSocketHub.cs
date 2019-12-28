@@ -150,9 +150,9 @@ namespace Remotely.Server.Services
             await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ClipboardTransfer", transferText, typeText, Context.ConnectionId);
         }
 
-        public async Task SendLatencyUpdate(double latency)
+        public async Task SendLatencyUpdate(DateTime sentTime)
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("LatencyUpdate", latency, Context.ConnectionId);
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("LatencyUpdate", sentTime, Context.ConnectionId);
         }
 
         public async Task SendQualityChange(int qualityLevel)

@@ -31,27 +31,25 @@ namespace Remotely.ScreenCast.Win.Services
 
         private static ICapturer GetCapturer()
         {
-            return new BitBltCapture();
-            // TODO: DXCapture is leaking in the WPF app.
-            //ICapturer capturer;
-            //try
-            //{
-            //    if (Conductor.Current.Viewers.Count == 0)
-            //    {
-            //        capturer = new DXCapture();
-            //    }
-            //    else
-            //    {
-            //        capturer = new BitBltCapture();
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    Logger.Write(ex);
-            //    capturer = new BitBltCapture();
-            //}
+            ICapturer capturer;
+            try
+            {
+                if (Conductor.Current.Viewers.Count == 0)
+                {
+                    capturer = new DXCapture();
+                }
+                else
+                {
+                    capturer = new BitBltCapture();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+                capturer = new BitBltCapture();
+            }
 
-            //return capturer;
+            return capturer;
         }
     }
 }
