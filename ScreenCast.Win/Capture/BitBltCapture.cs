@@ -21,33 +21,14 @@ namespace Remotely.ScreenCast.Win.Capture
             Init();
         }
 
+        public event EventHandler<Rectangle> ScreenChanged;
+
         public bool CaptureFullscreen { get; set; } = true;
         public Bitmap CurrentFrame { get; set; }
         public Rectangle CurrentScreenBounds { get; set; } = Screen.PrimaryScreen.Bounds;
         public Bitmap PreviousFrame { get; set; }
-        public event EventHandler<Rectangle> ScreenChanged;
         public int SelectedScreen { get; private set; } = Screen.AllScreens.ToList().IndexOf(Screen.PrimaryScreen);
         private Graphics Graphic { get; set; }
-
-        private object ScreenLock { get; } = new object();
-
-        public void Capture()
-        {
-            try
-            {
-                lock (ScreenLock)
-                {
-                    PreviousFrame = (Bitmap)CurrentFrame.Clone();
-                    Graphic.CopyFromScreen(CurrentScreenBounds.Left, CurrentScreenBounds.Top, 0, 0, new Size(CurrentScreenBounds.Width, CurrentScreenBounds.Height));
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
-                Init();
-            }
-        }
-
         public void Dispose()
         {
             Graphic.Dispose();
@@ -55,6 +36,19 @@ namespace Remotely.ScreenCast.Win.Capture
             PreviousFrame.Dispose();
         }
 
+        public void GetNextFrame()
+        {
+            try
+            {
+                PreviousFrame = (Bitmap)CurrentFrame.Clone();
+                Graphic.CopyFromScreen(CurrentScreenBounds.Left, CurrentScreenBounds.Top, 0, 0, new Size(CurrentScreenBounds.Width, CurrentScreenBounds.Height));
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+                Init();
+            }
+        }
         public int GetScreenCount()
         {
             return Screen.AllScreens.Length;
@@ -78,21 +72,19 @@ namespace Remotely.ScreenCast.Win.Capture
             {
                 return;
             }
-            lock (ScreenLock)
+
+            if (GetScreenCount() >= screenNumber + 1)
             {
-                if (GetScreenCount() >= screenNumber + 1)
-                {
-                    SelectedScreen = screenNumber;
-                }
-                else
-                {
-                    SelectedScreen = 0;
-                }
-                CurrentScreenBounds = Screen.AllScreens[SelectedScreen].Bounds;
-                CaptureFullscreen = true;
-                Init();
-                ScreenChanged?.Invoke(this, CurrentScreenBounds);
+                SelectedScreen = screenNumber;
             }
+            else
+            {
+                SelectedScreen = 0;
+            }
+            CurrentScreenBounds = Screen.AllScreens[SelectedScreen].Bounds;
+            CaptureFullscreen = true;
+            Init();
+            ScreenChanged?.Invoke(this, CurrentScreenBounds);
         }
     }
 }

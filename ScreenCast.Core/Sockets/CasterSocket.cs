@@ -275,9 +275,9 @@ namespace Remotely.ScreenCast.Core.Sockets
             {
                 if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
                 {
-                    viewer.PendingFrames--;
                     var latency = DateTime.UtcNow - sentTime;
                     viewer.Latency = latency.TotalMilliseconds;
+                    viewer.PendingFrames = Math.Max(0, viewer.PendingFrames - 1);
                 }
             });
 

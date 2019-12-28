@@ -19,7 +19,7 @@ namespace Remotely.ScreenCast.Core.Interfaces
         int GetScreenCount();
         Rectangle GetVirtualScreenBounds();
 
-        void Capture();
+        void GetNextFrame();
         void Init();
     }
 }

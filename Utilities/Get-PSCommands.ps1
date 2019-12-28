@@ -50,4 +50,6 @@ $Cmdlets | ForEach-Object {
     $Error.Clear()
 }
 
+$Global:Commands = $Global:Commands -replace  "([^\\])\\([\w\d])", '$1\\$2'
+
 $Global:Commands | Out-File -FilePath "$env:USERPROFILE\Downloads\PS.txt"

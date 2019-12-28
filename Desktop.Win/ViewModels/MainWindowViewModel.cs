@@ -176,6 +176,7 @@ namespace Remotely.Desktop.Win.ViewModels
         {
             App.Current.Dispatcher.Invoke(() =>
             {
+                App.Current.MainWindow.Activate();
                 var result = MessageBox.Show(Application.Current.MainWindow, $"You've received a connection request from {screenCastRequest.RequesterName}.  Accept?", "Connection Request", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
