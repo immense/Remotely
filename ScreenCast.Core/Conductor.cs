@@ -20,6 +20,7 @@ namespace Remotely.ScreenCast.Core
     {
         public static Conductor Current { get; private set; }
         public IScreenCaster ScreenCaster { get; }
+        public bool IsDebug { get; }
 
         public Conductor(CasterSocket casterSocket,
             IScreenCaster screenCaster)
@@ -27,6 +28,9 @@ namespace Remotely.ScreenCast.Core
             Current = this;
             ScreenCaster = screenCaster;
             CasterSocket = casterSocket;
+#if DEBUG
+            IsDebug = true;
+#endif
         }
         public event EventHandler<ScreenCastRequest> ScreenCastRequested;
 

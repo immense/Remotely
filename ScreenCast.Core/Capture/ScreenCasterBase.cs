@@ -13,20 +13,53 @@ using System.Threading.Tasks;
 using Remotely.Shared.Services;
 using Remotely.Shared.Win32;
 using Remotely.ScreenCast.Core.Interfaces;
+using System.Diagnostics;
+using System.Threading;
 
 namespace Remotely.ScreenCast.Core.Capture
 {
     public class ScreenCasterBase
     {
+        Conductor conductor;
+        string desktopName = string.Empty;
+        byte[] encodedImageBytes;
+        Queue<DateTime> fpsQueue = new Queue<DateTime>();
+        Viewer viewer;
+        private static SemaphoreSlim ScreenLock { get; } = new SemaphoreSlim(1);
+
         public async Task BeginScreenCasting(string viewerID,
                                                    string requesterName,
                                                    ICapturer capturer)
         {
-            var conductor = Conductor.Current;
-            Viewer viewer;
-            byte[] encodedImageBytes;
-           
+            conductor = Conductor.Current;
 
+            await ScreenLock.WaitAsync();
+            await InitScreenCaster(viewerID, requesterName, capturer);
+            ScreenLock.Release();
+
+            while (!viewer.DisconnectRequested)
+            {
+                await ScreenLock.WaitAsync();
+                await ProcessCurrentFrame(capturer, viewerID);
+                ScreenLock.Release();
+            }
+
+
+            Logger.Write($"Ended screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}.");
+            conductor.Viewers.TryRemove(viewerID, out _);
+
+            capturer.Dispose();
+
+            // Close if no one is viewing.
+            if (conductor.Viewers.Count == 0 && conductor.Mode == Enums.AppMode.Unattended)
+            {
+                await conductor.CasterSocket.Disconnect();
+                Environment.Exit(0);
+            }
+        }
+
+        private async Task InitScreenCaster(string viewerID, string requesterName, ICapturer capturer)
+        {
             Logger.Write($"Starting screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}. Capturer: {capturer.GetType().ToString()}.  App Mode: {conductor.Mode}  Desktop: {conductor.CurrentDesktopName}");
 
             viewer = new Viewer()
@@ -59,81 +92,86 @@ namespace Remotely.ScreenCast.Core.Capture
                 await conductor.CasterSocket.SendScreenSize(bounds.Width, bounds.Height, viewerID);
             };
 
-            var desktopName = string.Empty;
             if (OSUtils.IsWindows)
             {
                 desktopName = Win32Interop.GetCurrentDesktop();
             }
+        }
 
-            while (!viewer.DisconnectRequested)
+        private async Task ProcessCurrentFrame(ICapturer capturer, string viewerID)
+        {
+            try
             {
-                try
+                WriteFps();
+
+                if (OSUtils.IsWindows)
                 {
-                    if (OSUtils.IsWindows)
+                    var currentDesktopName = Win32Interop.GetCurrentDesktop();
+                    if (desktopName.ToLower() != currentDesktopName.ToLower())
                     {
-                        var currentDesktopName = Win32Interop.GetCurrentDesktop();
-                        if (desktopName.ToLower() != currentDesktopName.ToLower())
-                        {
-                            desktopName = currentDesktopName;
-                            Logger.Write($"Switching to desktop {desktopName} in ScreenCaster.");
-                            Win32Interop.SwitchToInputDesktop();
-                            continue;
-                        }
-                    }
-
-                    
-
-                    while (viewer.PendingFrames > 10000 / viewer.Latency)
-                    {
-                        await Task.Delay(10);
-                    }
-
-                    capturer.Capture();
-
-                    var diffArea = ImageUtils.GetDiffArea(capturer.CurrentFrame, capturer.PreviousFrame, capturer.CaptureFullscreen);
-
-                    if (diffArea.IsEmpty)
-                    {
-                        continue;
-                    }
-
-                    using (var newImage = capturer.CurrentFrame.Clone(diffArea, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
-                    {
-                        if (capturer.CaptureFullscreen)
-                        {
-                            capturer.CaptureFullscreen = false;
-                        }
-                        
-                        encodedImageBytes = ImageUtils.EncodeBitmap(newImage, viewer.EncoderParams);
-
-                        if (encodedImageBytes?.Length > 0)
-                        {
-                            await conductor.CasterSocket.SendScreenCapture(encodedImageBytes, viewerID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, DateTime.UtcNow);
-                            viewer.PendingFrames++;
-                        }
+                        desktopName = currentDesktopName;
+                        Logger.Write($"Switching to desktop {desktopName} in ScreenCaster.");
+                        Win32Interop.SwitchToInputDesktop();
+                        return;
                     }
                 }
-                catch (Exception ex)
+
+
+                if (viewer.PendingFrames > 10)
                 {
-                    Logger.Write(ex);
+                    Logger.Write($"Throttling screen capture. Latency: {viewer.Latency}.  Pending Frames: {viewer.PendingFrames}");
+                    // This is to prevent dead-lock in case updates are missed from the browser.
+                    viewer.PendingFrames = Math.Max(0, viewer.PendingFrames - 1);
+                    await Task.Delay(100);
+                    return;
                 }
-                finally
+
+                capturer.GetNextFrame();
+
+                var diffArea = ImageUtils.GetDiffArea(capturer.CurrentFrame, capturer.PreviousFrame, capturer.CaptureFullscreen);
+
+                if (diffArea.IsEmpty)
                 {
-                    // TODO: Even after disposing of the bitmap, GC doesn't collect in time.  Memory usage soars quickly.
-                    // Need to revisit this later.
-                    GC.Collect();
+                    return;
+                }
+
+                using (var newImage = capturer.CurrentFrame.Clone(diffArea, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+                {
+                    if (capturer.CaptureFullscreen)
+                    {
+                        capturer.CaptureFullscreen = false;
+                    }
+
+                    encodedImageBytes = ImageUtils.EncodeBitmap(newImage, viewer.EncoderParams);
+
+                    if (encodedImageBytes?.Length > 0)
+                    {
+                        await conductor.CasterSocket.SendScreenCapture(encodedImageBytes, viewerID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, DateTime.UtcNow);
+                        viewer.PendingFrames++;
+                    }
                 }
             }
-            Logger.Write($"Ended screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}.");
-            conductor.Viewers.TryRemove(viewerID, out _);
-
-            capturer.Dispose();
-
-            // Close if no one is viewing.
-            if (conductor.Viewers.Count == 0 && conductor.Mode == Enums.AppMode.Unattended)
+            catch (Exception ex)
             {
-                await conductor.CasterSocket.Disconnect();
-                Environment.Exit(0);
+                Logger.Write(ex);
+            }
+            finally
+            {
+                // TODO: Even after disposing of the bitmap, GC doesn't collect in time.  Memory usage soars quickly.
+                // Need to revisit this later.
+                GC.Collect();
+            }
+        }
+        private void WriteFps()
+        {
+            if (Conductor.Current.IsDebug)
+            {
+                while (fpsQueue.Any() && DateTime.Now - fpsQueue.Peek() > TimeSpan.FromSeconds(1))
+                {
+                    fpsQueue.Dequeue();
+                }
+                fpsQueue.Enqueue(DateTime.Now);
+                Debug.WriteLine("Capture FPS: " + fpsQueue.Count);
             }
         }
     }

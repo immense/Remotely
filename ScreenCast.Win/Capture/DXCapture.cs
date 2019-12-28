@@ -3,6 +3,7 @@ using Remotely.ScreenCast.Core.Services;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
+using SharpDX.Mathematics.Interop;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -38,7 +39,7 @@ namespace Remotely.ScreenCast.Win.Capture
             Init();
         }
 
-        public void Capture()
+        public void GetNextFrame()
         {
             try
             {
@@ -53,27 +54,29 @@ namespace Remotely.ScreenCast.Win.Capture
                 OutputDuplicateFrameInformation duplicateFrameInformation;
 
                 // Try to get duplicated frame within given time is ms
-                duplicatedOutput.TryAcquireNextFrame(50, out duplicateFrameInformation, out screenResource);
+                duplicatedOutput.TryAcquireNextFrame(100, out duplicateFrameInformation, out screenResource);
 
-                while (duplicateFrameInformation.AccumulatedFrames < 1)
+                if (duplicateFrameInformation.AccumulatedFrames == 0)
                 {
-                    var result = duplicatedOutput.TryAcquireNextFrame(50, out duplicateFrameInformation, out screenResource);
-                    if (result.Failure)
+                    try
                     {
-                        try
-                        {
-                            duplicatedOutput.ReleaseFrame();
-                        }
-                        catch { }
+                        duplicatedOutput.ReleaseFrame();
                     }
+                    catch { }
+                    return;
                 }
-            
+
+                // TODO: Get dirty rects.
+                //RawRectangle[] dirtyRectsBuffer = new RawRectangle[duplicateFrameInformation.TotalMetadataBufferSize];
+                //duplicatedOutput.GetFrameDirtyRects(duplicateFrameInformation.TotalMetadataBufferSize, dirtyRectsBuffer, out var dirtyRectsSizeRequired);
+
+                
                 // copy resource into memory that can be accessed by the CPU
                 using (var screenTexture2D = screenResource.QueryInterface<Texture2D>())
                 {
                     device.ImmediateContext.CopyResource(screenTexture2D, screenTexture);
                 }
-
+                
                 // Get the desktop capture texture
                 var mapSource = device.ImmediateContext.MapSubresource(screenTexture, 0, MapMode.Read, SharpDX.Direct3D11.MapFlags.None);
                 

@@ -251,6 +251,9 @@ namespace Remotely.ScreenCast.Win.Services
                 case "F12":
                     keyCode = VirtualKey.F12;
                     break;
+                case "Meta":
+                    keyCode = VirtualKey.LWIN;
+                    break;
                 default:
                     keyCode = (VirtualKey)VkKeyScan(Convert.ToChar(key));
                     break;

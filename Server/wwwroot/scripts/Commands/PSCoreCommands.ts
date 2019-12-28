@@ -39,30 +39,6 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
-        `AddDscResourceProperty`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `AddDscResourcePropertyFromMetadata`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
         `Add-EtwTraceProvider`,
         [
 
@@ -76,6 +52,18 @@ var commands: Array<ConsoleCommand> = [
     ),
     new ConsoleCommand(
         `Add-InitiatorIdToMaskingSet`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Add-MpPreference`,
         [
 
         ],
@@ -315,6 +303,42 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
+        `Add-Printer`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Add-PrinterDriver`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Add-PrinterPort`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
         `Add-StorageFaultDomain`,
         [
 
@@ -400,6 +424,30 @@ var commands: Array<ConsoleCommand> = [
     ),
     new ConsoleCommand(
         `Add-VpnConnectionTriggerTrustedNetwork`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `AddDscResourceProperty`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `AddDscResourcePropertyFromMetadata`,
         [
 
         ],
@@ -618,30 +666,6 @@ var commands: Array<ConsoleCommand> = [
         `Connect-VirtualDisk`,
         [
 
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `ConvertFrom-SddlString`,
-        [
-            new Parameter(`Sddl`, `See help file for details.`, `System.String`),
-            new Parameter(`Type`, `See help file for details.`, `System.Object`),
-            new Parameter(`Verbose`, `See help file for details.`, `System.Management.Automation.SwitchParameter`),
-            new Parameter(`Debug`, `See help file for details.`, `System.Management.Automation.SwitchParameter`),
-            new Parameter(`ErrorAction`, `See help file for details.`, `System.Management.Automation.ActionPreference`),
-            new Parameter(`WarningAction`, `See help file for details.`, `System.Management.Automation.ActionPreference`),
-            new Parameter(`InformationAction`, `See help file for details.`, `System.Management.Automation.ActionPreference`),
-            new Parameter(`ErrorVariable`, `See help file for details.`, `System.String`),
-            new Parameter(`WarningVariable`, `See help file for details.`, `System.String`),
-            new Parameter(`InformationVariable`, `See help file for details.`, `System.String`),
-            new Parameter(`OutVariable`, `See help file for details.`, `System.String`),
-            new Parameter(`OutBuffer`, `See help file for details.`, `System.Int32`),
-            new Parameter(`PipelineVariable`, `See help file for details.`, `System.String`),
         ],
         `See help file for details.`,
         ``,
@@ -1024,6 +1048,18 @@ var commands: Array<ConsoleCommand> = [
     ),
     new ConsoleCommand(
         `Disable-NetAdapterSriov`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Disable-NetAdapterUso`,
         [
 
         ],
@@ -1611,6 +1647,18 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
+        `Enable-NetAdapterUso`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
         `Enable-NetAdapterVmq`,
         [
 
@@ -2055,6 +2103,18 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
+        `Get-AppBackgroundTask`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
         `Get-AppxLastError`,
         [
 
@@ -2236,18 +2296,6 @@ var commands: Array<ConsoleCommand> = [
     ),
     new ConsoleCommand(
         `Get-ComplexResourceQualifier`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `GetCompositeResource`,
         [
 
         ],
@@ -2547,18 +2595,6 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
-        `GetImplementingModulePath`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
         `Get-InitiatorId`,
         [
 
@@ -2655,18 +2691,6 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
-        `GetModule`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
         `Get-MofInstanceName`,
         [
 
@@ -2703,6 +2727,30 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
+        `Get-MpComputerStatus`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-MpPreference`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
         `Get-MpPreference`,
         [
 
@@ -2727,7 +2775,43 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
+        `Get-MpThreat`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
         `Get-MpThreatCatalog`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-MpThreatCatalog`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-MpThreatDetection`,
         [
 
         ],
@@ -2968,6 +3052,18 @@ var commands: Array<ConsoleCommand> = [
     ),
     new ConsoleCommand(
         `Get-NetAdapterStatistics`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-NetAdapterUso`,
         [
 
         ],
@@ -3783,66 +3879,6 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
-        `Get-NetVirtualizationCustomerRoute`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-NetVirtualizationGlobal`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-NetVirtualizationLookupRecord`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-NetVirtualizationProviderAddress`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-NetVirtualizationProviderRoute`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
         `Get-NetworkSwitchEthernetPort`,
         [
 
@@ -3963,18 +3999,6 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
-        `GetPatterns`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
         `Get-PcsvDevice`,
         [
 
@@ -4083,6 +4107,78 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
+        `Get-PrintConfiguration`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-Printer`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-PrinterDriver`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-PrinterPort`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-PrinterProperty`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-PrintJob`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
         `Get-PSCurrentConfigurationNode`,
         [
 
@@ -4180,18 +4276,6 @@ var commands: Array<ConsoleCommand> = [
     ),
     new ConsoleCommand(
         `Get-ResiliencySetting`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `GetResourceFromKeyword`,
         [
 
         ],
@@ -4767,18 +4851,6 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
-        `GetSyntax`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
         `Get-TargetPort`,
         [
 
@@ -4948,6 +5020,78 @@ var commands: Array<ConsoleCommand> = [
     ),
     new ConsoleCommand(
         `Get-WULastScanSuccessDate`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `GetCompositeResource`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `GetImplementingModulePath`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `GetModule`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `GetPatterns`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `GetResourceFromKeyword`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `GetSyntax`,
         [
 
         ],
@@ -5487,54 +5631,6 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
-        `New-NetVirtualizationCustomerRoute`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `New-NetVirtualizationLookupRecord`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `New-NetVirtualizationProviderAddress`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `New-NetVirtualizationProviderRoute`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
         `New-NetworkSwitchVlan`,
         [
 
@@ -5895,6 +5991,18 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
+        `Read-PrinterNfcTag`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
         `ReadEnvironmentFile`,
         [
 
@@ -6088,6 +6196,30 @@ var commands: Array<ConsoleCommand> = [
     ),
     new ConsoleCommand(
         `Remove-MpPreference`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Remove-MpPreference`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Remove-MpThreat`,
         [
 
         ],
@@ -6543,54 +6675,6 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
-        `Remove-NetVirtualizationCustomerRoute`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-NetVirtualizationLookupRecord`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-NetVirtualizationProviderAddress`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-NetVirtualizationProviderRoute`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
         `Remove-NetworkSwitchEthernetPortIPAddress`,
         [
 
@@ -6652,6 +6736,54 @@ var commands: Array<ConsoleCommand> = [
     ),
     new ConsoleCommand(
         `Remove-PhysicalDisk`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Remove-Printer`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Remove-PrinterDriver`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Remove-PrinterPort`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Remove-PrintJob`,
         [
 
         ],
@@ -7047,6 +7179,18 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
+        `Rename-Printer`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
         `Repair-FileIntegrity`,
         [
 
@@ -7287,6 +7431,18 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
+        `Restart-PrintJob`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
         `Restore-NetworkSwitchConfiguration`,
         [
 
@@ -7300,6 +7456,18 @@ var commands: Array<ConsoleCommand> = [
     ),
     new ConsoleCommand(
         `Resume-BitLocker`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Resume-PrintJob`,
         [
 
         ],
@@ -7384,18 +7552,6 @@ var commands: Array<ConsoleCommand> = [
     ),
     new ConsoleCommand(
         `Save-Script`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Select-NetVirtualizationNextHop`,
         [
 
         ],
@@ -7695,6 +7851,18 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
+        `Set-MpPreference`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
         `Set-NCSIPolicyConfiguration`,
         [
 
@@ -7876,6 +8044,18 @@ var commands: Array<ConsoleCommand> = [
     ),
     new ConsoleCommand(
         `Set-NetAdapterSriov`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Set-NetAdapterUso`,
         [
 
         ],
@@ -8427,66 +8607,6 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
-        `Set-NetVirtualizationCustomerRoute`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-NetVirtualizationGlobal`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-NetVirtualizationLookupRecord`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-NetVirtualizationProviderAddress`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-NetVirtualizationProviderRoute`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
         `Set-NetworkSwitchEthernetPortIPAddress`,
         [
 
@@ -8656,6 +8776,42 @@ var commands: Array<ConsoleCommand> = [
     ),
     new ConsoleCommand(
         `Set-PhysicalDisk`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Set-PrintConfiguration`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Set-Printer`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Set-PrinterProperty`,
         [
 
         ],
@@ -9051,6 +9207,18 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
+        `Start-AppBackgroundTask`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
         `Start-AutologgerConfig`,
         [
 
@@ -9076,6 +9244,30 @@ var commands: Array<ConsoleCommand> = [
     ),
     new ConsoleCommand(
         `Start-MpScan`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Start-MpScan`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Start-MpWDOScan`,
         [
 
         ],
@@ -9279,6 +9471,18 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
+        `Suspend-PrintJob`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
         `Sync-NetIPsecRule`,
         [
 
@@ -9448,6 +9652,18 @@ var commands: Array<ConsoleCommand> = [
     ),
     new ConsoleCommand(
         `Unlock-BitLocker`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Unregister-AppBackgroundTask`,
         [
 
         ],
@@ -9651,6 +9867,18 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
+        `Update-MpSignature`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
         `Update-NetIPsecRule`,
         [
 
@@ -9819,18 +10047,6 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
-        `WriteFile`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
         `Write-Log`,
         [
 
@@ -9867,6 +10083,18 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
+        `Write-PrinterNfcTag`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
         `Write-VolumeCache`,
         [
 
@@ -9879,7 +10107,31 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
+        `WriteFile`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
         `Add-AppxPackage`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Add-AppxProvisionedPackage`,
         [
 
         ],
@@ -9905,56 +10157,56 @@ var commands: Array<ConsoleCommand> = [
     new ConsoleCommand(
         `Add-Content`,
         [
-            new Parameter(`AsByteStream`, `{{Fill AsByteStream Description}}`, `SwitchParameter`),
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
+            new Parameter(`AsByteStream`, `Specifies that the content should be read as a stream of bytes. This parameter was introduced in PowerShell 6.0.
 
 
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you will be prompted for a password.
+A warning occurs when you use the AsByteStream parameter with the Encoding parameter. The AsByteStream parameter ignores any encoding and the output is returned as a stream of bytes.`, `SwitchParameter`),
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
+            new Parameter(`Encoding`, `Specifies the type of encoding for the target file. The default value is UTF8NoBOM .
 
 
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
-            new Parameter(`Encoding`, `Specifies the file encoding. The default is ASCII.
+Encoding is a dynamic parameter that the FileSystem provider adds to the "Add-Content" cmdlet. This parameter works only in file system drives.
 
 
-Valid values are:
+The acceptable values for this parameter are as follows:
 
 
-- ASCII : Uses the encoding for the ASCII (7-bit) character set. - BigEndianUnicode : Encodes in UTF-16 format using the big-endian byte order. - Default : Encodes using the default value: ASCII. - OEM : Uses the default encoding for MS-DOS and console programs. - Byte : Encodes a set of characters into a sequence of bytes. - String : Uses the encoding type for a string. - Unicode : Encodes in UTF-16 format using the little-endian byte order. - UTF7 : Encodes in UTF-7 format. - UTF8 : Encodes in UTF-8 format. - UTF8BOM : Encodes in UTF-8 format with Byte Order Mark (BOM) - UF8NOBOM : Encodes in UTF-8 format without Byte Order Mark (BOM) - UTF32 :  Encodes in UTF-32 format. - Unknown : The encoding type is unknown or invalid; the data can be treated as binary.
+- ASCII : Uses the encoding for the ASCII (7-bit) character set. - BigEndianUnicode : Encodes in UTF-16 format using the big-endian byte order. - OEM : Uses the default encoding for MS-DOS and console programs. - Unicode : Encodes in UTF-16 format using the little-endian byte order. - UTF7 : Encodes in UTF-7 format. - UTF8 : Encodes in UTF-8 format. - UTF8BOM : Encodes in UTF-8 format with Byte Order Mark (BOM) - UTF8NoBOM : Encodes in UTF-8 format without Byte Order Mark (BOM) - UTF32 : Encodes in UTF-32 format.
 
 
-Encoding is a dynamic parameter that the FileSystem provider adds to the "Add-Content" cmdlet. This parameter works only in file system drives.`, `Encoding`),
-            new Parameter(`Exclude`, `Omits the specified items. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcards are permitted.`, `String[]`),
-            new Parameter(`Filter`, `Specifies a filter in the provider's format or language. The value of this parameter qualifies the Path parameter. The syntax of the filter, including the use of wildcards, depends on the provider. Filters are more efficient than other parameters, because the provider applies them when retrieving the objects, rather than having PowerShell filter the objects after they are retrieved.`, `String`),
+Beginning with PowerShell 6.2, the Encoding parameter also allows numeric IDs of registered code pages (like "-Encoding 1251") or string names of registered code pages (like "-Encoding "windows-1251""). For more information, see the .NET documentation for Encoding.CodePage (/dotnet/api/system.text.encoding.codepage?view=netcore-2.2).`, `Encoding`),
+            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as " .txt". Wildcard characters are permitted. The Exclude * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C\\Windows" directory.`, `String[]`),
+            new Parameter(`Filter`, `Specifies a filter to qualify the Path parameter. The FileSystem (../Microsoft.PowerShell.Core/About/about_FileSystem_Provider.md)provider is the only installed PowerShell provider that supports the use of filters. You can find the syntax for the FileSystem filter language in about_Wildcards (../Microsoft.PowerShell.Core/About/about_Wildcards.md). Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
             new Parameter(`Force`, `Overrides the read-only attribute, allowing you to add content to a read-only file. For example, Force will override the read-only attribute or create directories to complete a file path, but it will not attempt to change file permissions.`, `SwitchParameter`),
-            new Parameter(`Include`, `Adds only the specified items. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcards are permitted.`, `String[]`),
-            new Parameter(`LiteralPath`, `Specifies the path to the items that receive the additional content. Unlike Path, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
-            new Parameter(`NoNewline`, `Indicates that this cmdlet does not add a new line/carriage return to the content.
+            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "" .txt"". Wildcard characters are permitted. The Include * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`LiteralPath`, `Specifies a path to one or more locations. The value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
+
+
+For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
+            new Parameter(`NoNewline`, `Indicates that this cmdlet does not add a new line or carriage return to the content.
 
 
 The string representations of the input objects are concatenated to form the output. No spaces or newlines are inserted between the output strings. No newline is added after the last output string.`, `SwitchParameter`),
             new Parameter(`PassThru`, `Returns an object representing the added content. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
-            new Parameter(`Path`, `Specifies the path to the items that receive the additional content. Wildcards are permitted. If you specify multiple paths, use commas to separate the paths.`, `String[]`),
-            new Parameter(`Stream`, `Specifies an alternative data stream for content. If the stream does not exist, this cmdlet creates it. Wildcard characters are not supported.
-
-
-Stream is a dynamic parameter that the FileSystem provider adds to "Add-Content". This parameter works only in file system drives.
+            new Parameter(`Path`, `Specifies the path to the items that receive the additional content. Wildcard characters are permitted. The paths must be paths to items, not to containers. For example, you must specify a path to one or more files, not a path to a directory. If you specify multiple paths, use commas to separate the paths.`, `String[]`),
+            new Parameter(`Stream`, `Specifies an alternative data stream for content. If the stream does not exist, this cmdlet creates it. Wildcard characters are not supported. Stream is a dynamic parameter that the FileSystem provider adds to "Add-Content". This parameter works only in file system drives.
 
 
 You can use the "Add-Content" cmdlet to change the content of the Zone.Identifier alternate data stream. However, we do not recommend this as a way to eliminate security checks that block files that are downloaded from the Internet. If you verify that a downloaded file is safe, use the "Unblock-File" cmdlet.
 
 
 This parameter was introduced in PowerShell 3.0.`, `String`),
-            new Parameter(`Value`, `Specifies the content to be added. Type a quoted string, such as "This data is for internal use only", or specify an object that contains content, such as the DateTime object that "Get-Date" generates.
+            new Parameter(`Value`, `Specifies the content to be added. Type a quoted string, such as **This data is for internal use only , or specify an object that contains content, such as the DateTime** object that "Get-Date" generates.
 
 
-You cannot specify the contents of a file by typing its path, because the path is just a string, but you can use a "Get-Content" command to get the content and pass it to the Value parameter.`, `Object[]`),
+You cannot specify the contents of a file by typing its path, because the path is just a string. You can use a "Get-Content" command to get the content and pass it to the Value parameter.`, `Object[]`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
         `Adds content to the specified items, such as adding words to a file.`,
-        `Add-Content [-Value] <Object[]> [-AsByteStream] [-Credential <PSCredential>] [-Encoding <Encoding>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] -LiteralPath <String[]> [-NoNewline] [-PassThru] [-Stream <String>] [-Confirm] [-WhatIf] [<CommonParameters>]
+        `Add-Content [-Value] <Object[]> [-AsByteStream] [-Credential <PSCredential>] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] -LiteralPath <String[]> [-NoNewline] [-PassThru] [-Stream <String>] [-Confirm] [-WhatIf] [<CommonParameters>]
 
-Add-Content [-Path] <String[]> [-Value] <Object[]> [-AsByteStream] [-Credential <PSCredential>] [-Encoding <Encoding>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] [-NoNewline] [-PassThru] [-Stream <String>] [-Confirm] [-WhatIf] [<CommonParameters>]`,
+Add-Content [-Path] <String[]> [-Value] <Object[]> [-AsByteStream] [-Credential <PSCredential>] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] [-NoNewline] [-PassThru] [-Stream <String>] [-Confirm] [-WhatIf] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -10008,19 +10260,19 @@ Add-Content [-Path] <String[]> [-Value] <Object[]> [-AsByteStream] [-Credential 
 - ScriptMethod
 
 
-- CopyMethod
+- CodeMethod
 
 
 
 
-For information about these values, see PSMemberTypes Enumeration (https://msdn.microsoft.com/library/system.management.automation.psmembertypes)in the MSDN library.
+For information about these values, see PSMemberTypes Enumeration (/dotnet/api/system.management.automation.psmembertypes)in the MSDN library.
 
 Not all objects have every type of member. If you specify a member type that the object does not have, PowerShell returns an error.`, `PSMemberTypes`),
             new Parameter(`Name`, `Specifies the name of the member that this cmdlet adds.`, `String`),
             new Parameter(`NotePropertyMembers`, `Specifies a hash table or ordered dictionary of note property names and values. Type a hash table or dictionary in which the keys are note property names and the values are note property values.
 
 
-For more information about hash tables and ordered dictionaries in PowerShell, see about_Hash_Tables.
+For more information about hash tables and ordered dictionaries in PowerShell, see about_Hash_Tables (../Microsoft.PowerShell.Core/About/about_Hash_Tables.md).
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `IDictionary`),
@@ -10041,22 +10293,28 @@ This parameter was introduced in Windows PowerShell 3.0.`, `Object`),
             new Parameter(`PassThru`, `Returns an object representing the item with which you are working. By default, this cmdlet does not generate any output.
 
 
-For most objects, Add-Member adds the new members to the input object. However, when the input object is a string, Add-Member cannot add the member to the input object. For these objects, use the PassThru parameter to create an output object.
+For most objects, "Add-Member" adds the new members to the input object. However, when the input object is a string, "Add-Member" cannot add the member to the input object. For these objects, use the PassThru parameter to create an output object.
 
 
-In Windows PowerShell 2.0, Add-Member added members only to the PSObject wrapper of objects, not to the object. Use the PassThru parameter to create an output object for any object that has a PSObject wrapper.`, `SwitchParameter`),
-            new Parameter(`SecondValue`, `Specifies optional additional information about AliasProperty , ScriptProperty , CodeProperty , or CodeMethod members. If used when adding an AliasProperty, this parameter must be a data type. A conversion to the specified data type is added to the value of the AliasProperty. For example, if you add an AliasProperty that provides an alternate name for a string property, you can also specify a SecondValue parameter of System.Int32 to indicate that the value of that string property should be converted to an integer when accessed by using the corresponding AliasProperty.
+In Windows PowerShell 2.0, "Add-Member" added members only to the PSObject wrapper of objects, not to the object. Use the PassThru parameter to create an output object for any object that has a PSObject wrapper.`, `SwitchParameter`),
+            new Parameter(`SecondValue`, `Specifies optional additional information about AliasProperty , ScriptProperty , CodeProperty , or CodeMethod members.
 
 
-You can use the SecondValue parameter to specify an additional ScriptBlock when adding a ScriptProperty member. In that case, the first ScriptBlock, specified in the Value parameter, is used to get the value of a variable. The second ScriptBlock, specified in the SecondValue parameter, is used to set the value of a variable.`, `Object`),
+If used when adding an AliasProperty , this parameter must be a data type. A conversion to the specified data type is added to the value of the AliasProperty .
+
+
+For example, if you add an AliasProperty that provides an alternate name for a string property, you can also specify a SecondValue parameter of System.Int32 to indicate that the value of that string property should be converted to an integer when accessed by using the corresponding AliasProperty .
+
+
+You can use the SecondValue parameter to specify an additional ScriptBlock when adding a ScriptProperty member. The first ScriptBlock , specified in the Value parameter, is used to get the value of a variable. The second ScriptBlock , specified in the SecondValue parameter, is used to set the value of a variable.`, `Object`),
+            new Parameter(`Value`, `Specifies the initial value of the added member. If you add an AliasProperty , CodeProperty , ScriptProperty or CodeMethod member, you can supply optional, additional information by using the SecondValue parameter.`, `Object`),
             new Parameter(`TypeName`, `Specifies a name for the type.
 
 
-When the type is a class in the System namespace or a type that has a type accelerator, you can enter the short name of the type. Otherwise, the full type name is required. This parameter is effective only when the input object is a PSObject .
+When the type is a class in the System namespace or a type that has a type accelerator, you can enter the short name of the type. Otherwise, the full type name is required. This parameter is effective only when the InputObject is a PSObject .
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `String`),
-            new Parameter(`Value`, `Specifies the initial value of the added member. If you add an AliasProperty , CodeProperty , ScriptProperty or CodeMethod member, you can supply optional, additional information by using the SecondValue parameter.`, `Object`),
         ],
         `Adds custom properties and methods to an instance of a PowerShell object.`,
         `Add-Member [-NotePropertyMembers] <IDictionary> [-Force] -InputObject <PSObject> [-PassThru] [-TypeName <String>] [<CommonParameters>]
@@ -10065,7 +10323,7 @@ Add-Member [-NotePropertyName] <String> [-NotePropertyValue] <Object> [-Force] -
 
 Add-Member [-MemberType] {AliasProperty | CodeProperty | Property | NoteProperty | ScriptProperty | Properties | PropertySet | Method | CodeMethod | ScriptMethod | Methods | ParameterizedProperty | MemberSet | Event | Dynamic | All} [-Name] <String> [[-Value] <Object>] [[-SecondValue] <Object>] [-Force] -InputObject <PSObject> [-PassThru] [-TypeName <String>] [<CommonParameters>]
 
-Add-Member -InputObject <PSObject> [-PassThru] -TypeName <String> [<CommonParameters>]`,
+Add-Member -InputObject <PSObject> [-PassThru] [-TypeName <String>] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -10074,57 +10332,50 @@ Add-Member -InputObject <PSObject> [-PassThru] -TypeName <String> [<CommonParame
     new ConsoleCommand(
         `Add-Type`,
         [
-            new Parameter(`AssemblyName`, `Specifies the name of an assembly that includes the types. "Add-Type" takes the types from the specified assembly. This parameter is required when you are creating types based on an assembly name.
+            new Parameter(`AssemblyName`, `Specifies the name of an assembly that includes the types. "Add-Type" takes the types from the specified assembly. This parameter is required when you're creating types based on an assembly name.
 
 
-Enter the full or simple name (also known as the "partial name") of an assembly. Wildcard characters are permitted in the assembly name. If you enter a simple or partial name, "Add-Type" resolves it to the full name, and then uses the full name to load the assembly.
+Enter the full or simple name, also known as the partial name, of an assembly. Wildcard characters are permitted in the assembly name. If you enter a simple or partial name, "Add-Type" resolves it to the full name, and then uses the full name to load the assembly.
 
 
-This parameter does not accept a path or a file name. To enter the path to the assembly dynamic-link library (DLL) file, use the Path parameter.`, `String[]`),
+This parameter doesn't accept a path or a file name. To enter the path to the assembly dynamic-link library (DLL) file, use the Path parameter.`, `String[]`),
             new Parameter(`CompilerOptions`, `Specifies the options for the source code compiler. These options are sent to the compiler without revision.
 
 
 This parameter allows you to direct the compiler to generate an executable file, embed resources, or set command-line options, such as the "/unsafe" option.
 
 
-You cannot use the CompilerOptions and ReferencedAssemblies parameters in the same command.`, `String[]`),
+You can't use the CompilerOptions and ReferencedAssemblies parameters in the same command.`, `String[]`),
             new Parameter(`IgnoreWarnings`, `Ignores compiler warnings. Use this parameter to prevent "Add-Type" from handling compiler warnings as errors.`, `SwitchParameter`),
-            new Parameter(`Language`, `Specifies the language that is used in the source code. The acceptable value for this parameter is CSharp.`, `Language`),
-            new Parameter(`LiteralPath`, `Specifies the path to source code files or assembly DLL files that contain the types. Unlike Path , the value of the LiteralPath parameter is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
+            new Parameter(`Language`, `Specifies the language that is used in the source code. The acceptable value for this parameter is CSharp .`, `Language`),
+            new Parameter(`LiteralPath`, `Specifies the path to source code files or assembly DLL files that contain the types. Unlike Path , the value of the LiteralPath parameter is used exactly as it's typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
             new Parameter(`MemberDefinition`, `Specifies new properties or methods for the class. "Add-Type" generates the template code that is required to support the properties or methods.
 
 
-On Windows, you can use this feature to make Platform Invoke (P/Invoke) calls to unmanaged functions in PowerShell. For more information, see the examples.`, `String[]`),
+On Windows, you can use this feature to make Platform Invoke (P/Invoke) calls to unmanaged functions in PowerShell.`, `String[]`),
             new Parameter(`Name`, `Specifies the name of the class to create. This parameter is required when generating a type from a member definition.
 
 
-The type name and namespace must be unique within a session. You cannot unload a type or change it. If you need to change the code for a type, you must change the name or start a new PowerShell session. Otherwise, the command fails.`, `String`),
+The type name and namespace must be unique within a session. You can't unload a type or change it. To change the code for a type, you must change the name or start a new PowerShell session. Otherwise, the command fails.`, `String`),
             new Parameter(`Namespace`, `Specifies a namespace for the type.
 
 
-If this parameter is not included in the command, the type is created in the Microsoft.PowerShell.Commands.AddType.AutoGeneratedTypes namespace. If the parameter is included in the command with an empty string value or a value of "$Null", the type is generated in the global namespace.`, `String`),
-            new Parameter(`OutputAssembly`, `Generates a DLL file for the assembly with the specified name in the location. Enter a path (optional) and file name. Wildcard characters are permitted. By default, "Add-Type" generates the assembly only in memory.`, `String`),
-            new Parameter(`OutputType`, `Specifies the output type of the output assembly. The acceptable values for this parameter are:
+If this parameter isn't included in the command, the type is created in the Microsoft.PowerShell.Commands.AddType.AutoGeneratedTypes namespace. If the parameter is included in the command with an empty string value or a value of "$Null", the type is generated in the global namespace.`, `String`),
+            new Parameter(`OutputAssembly`, `Generates a DLL file for the assembly with the specified name in the location. Enter an optional path and file name. Wildcard characters are permitted. By default, "Add-Type" generates the assembly only in memory.`, `String`),
+            new Parameter(`OutputType`, `Specifies the output type of the output assembly. By default, no output type is specified. This parameter is valid only when an output assembly is specified in the command. For more information about the values, see OutputAssemblyType Enumeration (/dotnet/api/microsoft.powershell.commands.outputassemblytype).
 
 
-- Library
+The acceptable values for this parameter are as follows:
 
 
 - ConsoleApplication
 
 
-- WindowsApplication
+- Library
 
 
-
-
-For more information about the values, see OutputAssemblyType Enumeration (https://msdn.microsoft.com/library/microsoft.powershell.commands.outputassemblytype)in the MSDN library.
-
-
-By default, no output type is specified.
-
-This parameter is valid only when an output assembly is specified in the command.`, `OutputAssemblyType`),
-            new Parameter(`PassThru`, `Returns a System.Runtime object that represents the types that were added. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
+- WindowsApplication`, `OutputAssemblyType`),
+            new Parameter(`PassThru`, `Returns a System.Runtime object that represents the types that were added. By default, this cmdlet doesn't generate any output.`, `SwitchParameter`),
             new Parameter(`Path`, `Specifies the path to source code files or assembly DLL files that contain the types.
 
 
@@ -10132,36 +10383,39 @@ If you submit source code files, "Add-Type" compiles the code in the files and c
 
 
 If you submit an assembly file, "Add-Type" takes the types from the assembly. To specify an in-memory assembly or the global assembly cache, use the AssemblyName parameter.`, `String[]`),
-            new Parameter(`ReferencedAssemblies`, `Specifies the assemblies upon which the type depends. By default, "Add-Type" references System.dll and System.Management.Automation.dll. The assemblies that you specify by using this parameter are referenced in addition to the default assemblies.
+            new Parameter(`ReferencedAssemblies`, `Specifies the assemblies upon which the type depends. By default, "Add-Type" references "System.dll" and "System.Management.Automation.dll". The assemblies that you specify by using this parameter are referenced in addition to the default assemblies.
 
 
-You cannot use the CompilerOptions and ReferencedAssemblies parameters in the same command.`, `String[]`),
+Beginning in PowerShell 6, ReferencedAssemblies doesn't include the default .NET assemblies. You must include a specific reference to them in the value passed to this parameter.
+
+
+You can't use the CompilerOptions and ReferencedAssemblies parameters in the same command.`, `String[]`),
             new Parameter(`TypeDefinition`, `Specifies the source code that contains the type definitions. Enter the source code in a string or here-string, or enter a variable that contains the source code. For more information about here-strings, see about_Quoting_Rules (../Microsoft.PowerShell.Core/about/about_Quoting_Rules.md).
 
 
-Include a namespace declaration in your type definition. If you omit the namespace declaration, your type might have the same name as another type or the shortcut for another type, causing an unintentional overwrite. For example, if you define a type called Exception, scripts that use Exception as the shortcut for System.Exception will fail.`, `String`),
-            new Parameter(`UsingNamespace`, `Specifies other namespaces that are required for the class. This is much like the Using keyword in C#.
+Include a namespace declaration in your type definition. If you omit the namespace declaration, your type might have the same name as another type or the shortcut for another type, causing an unintentional overwrite. For example, if you define a type called Exception , scripts that use Exception as the shortcut for System.Exception will fail.`, `String`),
+            new Parameter(`UsingNamespace`, `Specifies other namespaces that are required for the class. This is much like the C# keyword, "Using".
 
 
 By default, "Add-Type" references the System namespace. When the MemberDefinition parameter is used, "Add-Type" also references the System.Runtime.InteropServices namespace by default. The namespaces that you add by using the UsingNamespace parameter are referenced in addition to the default namespaces.`, `String[]`),
         ],
-        `Adds a Microsoft .NET Core type (a class) to a PowerShell session.`,
+        `Adds a Microsoft .NET Core class to a PowerShell session.`,
         `Add-Type -AssemblyName <String[]> [-IgnoreWarnings] [-PassThru] [<CommonParameters>]
 
-Add-Type [-TypeDefinition] <String> [-CompilerOptions <String[]>] [-IgnoreWarnings] [-Language {CSharp}] [-OutputAssembly <String>] [-OutputType {Library | ConsoleApplication | WindowsApplication}] [-PassThru] [-ReferencedAssemblies <String[]>] [<CommonParameters>]
+Add-Type [-TypeDefinition] <String> [-CompilerOptions <String[]>] [-IgnoreWarnings] [-Language {CSharp}] [-OutputAssembly <String>] [-OutputType {ConsoleApplication | Library | WindowsApplication}] [-PassThru] [-ReferencedAssemblies <String[]>] [<CommonParameters>]
 
-Add-Type [-Name] <String> [-MemberDefinition] <String[]> [-CompilerOptions <String[]>] [-IgnoreWarnings] [-Language {CSharp}] [-Namespace <String>] [-OutputAssembly <String>] [-OutputType {Library | ConsoleApplication | WindowsApplication}] [-PassThru] [-ReferencedAssemblies <String[]>] [-UsingNamespace <String[]>] [<CommonParameters>]
+Add-Type [-Name] <String> [-MemberDefinition] <String[]> [-CompilerOptions <String[]>] [-IgnoreWarnings] [-Language {CSharp}] [-Namespace <String>] [-OutputAssembly <String>] [-OutputType {ConsoleApplication | Library | WindowsApplication}] [-PassThru] [-ReferencedAssemblies <String[]>] [-UsingNamespace <String[]>] [<CommonParameters>]
 
-Add-Type [-Path] <String[]> [-CompilerOptions <String[]>] [-IgnoreWarnings] [-OutputAssembly <String>] [-OutputType {Library | ConsoleApplication | WindowsApplication}] [-PassThru] [-ReferencedAssemblies <String[]>] [<CommonParameters>]
+Add-Type [-Path] <String[]> [-CompilerOptions <String[]>] [-IgnoreWarnings] [-OutputAssembly <String>] [-OutputType {ConsoleApplication | Library | WindowsApplication}] [-PassThru] [-ReferencedAssemblies <String[]>] [<CommonParameters>]
 
-Add-Type [-CompilerOptions <String[]>] [-IgnoreWarnings] -LiteralPath <String[]> [-OutputAssembly <String>] [-OutputType {Library | ConsoleApplication | WindowsApplication}] [-PassThru] [-ReferencedAssemblies <String[]>] [<CommonParameters>]`,
+Add-Type [-CompilerOptions <String[]>] [-IgnoreWarnings] -LiteralPath <String[]> [-OutputAssembly <String>] [-OutputType {ConsoleApplication | Library | WindowsApplication}] [-PassThru] [-ReferencedAssemblies <String[]>] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
         }
     ),
     new ConsoleCommand(
-        `Add-VMAssignableDevice`,
+        `Add-WindowsCapability`,
         [
 
         ],
@@ -10173,7 +10427,7 @@ Add-Type [-CompilerOptions <String[]>] [-IgnoreWarnings] -LiteralPath <String[]>
         }
     ),
     new ConsoleCommand(
-        `Add-VMDvdDrive`,
+        `Add-WindowsDriver`,
         [
 
         ],
@@ -10185,7 +10439,7 @@ Add-Type [-CompilerOptions <String[]>] [-IgnoreWarnings] -LiteralPath <String[]>
         }
     ),
     new ConsoleCommand(
-        `Add-VMFibreChannelHba`,
+        `Add-WindowsImage`,
         [
 
         ],
@@ -10197,223 +10451,7 @@ Add-Type [-CompilerOptions <String[]>] [-IgnoreWarnings] -LiteralPath <String[]>
         }
     ),
     new ConsoleCommand(
-        `Add-VMGpuPartitionAdapter`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Add-VMGroupMember`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Add-VMHardDiskDrive`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Add-VMHostAssignableDevice`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Add-VMKeyStorageDrive`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Add-VMMigrationNetwork`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Add-VMNetworkAdapter`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Add-VMNetworkAdapterAcl`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Add-VMNetworkAdapterExtendedAcl`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Add-VMNetworkAdapterRoutingDomainMapping`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Add-VMPmemController`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Add-VMRemoteFx3dVideoAdapter`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Add-VMScsiController`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Add-VMStoragePath`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Add-VMSwitch`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Add-VMSwitchExtensionPortFeature`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Add-VMSwitchExtensionSwitchFeature`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Add-VMSwitchTeamMember`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Checkpoint-VM`,
+        `Add-WindowsPackage`,
         [
 
         ],
@@ -10434,13 +10472,7 @@ Stream is a dynamic parameter that the FileSystem provider adds to "Clear-Conten
 
 
 You can use the "Clear-Content" cmdlet to change the content of the Zone.Identifier alternate data stream. However, we do not recommend this as a way to eliminate security checks that block files that are downloaded from the Internet. If you verify that a downloaded file is safe, use the "Unblock-File" cmdlet.`, `String`),
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
-
-
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you will be prompted for a password.
-
-
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. To impersonate another > user, or elevate your credentials when running this cmdlet, use Invoke-Command.`, `PSCredential`),
             new Parameter(`Exclude`, `Specifies, as a string array, strings that this cmdlet omits from the path to the content. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcards are permitted.`, `String[]`),
             new Parameter(`Filter`, `Specifies a filter in the provider's format or language. The value of this parameter qualifies the Path parameter. The syntax of the filter, including the use of wildcards, depends on the provider. Filters are more efficient than other parameters, because the provider applies them when retrieving the objects, rather than having PowerShell filter the objects after they are retrieved.`, `String`),
             new Parameter(`Force`, `Forces the command to run without asking for user confirmation.`, `SwitchParameter`),
@@ -10462,26 +10494,29 @@ Clear-Content [-Path] <String[]> [-Stream <String>] [-Credential <PSCredential>]
     new ConsoleCommand(
         `Clear-History`,
         [
-            new Parameter(`CommandLine`, `Specifies commands that this cmdlet deletes. If you enter more than one string, Clear-History deletes commands that have any of the strings.`, `String[]`),
-            new Parameter(`Count`, `Specifies the number of history entries that this cmdlet clears, starting with the oldest entry in the history.
+            new Parameter(`CommandLine`, `Deletes command history from a PowerShell session. The string must be an exact match or use wildcards to match commands in the PowerShell session history displayed by "Get-History". If you enter more than one string, "Clear-History" deletes commands that match any of the strings. The CommandLine parameter can be used with Count .
 
 
-If you use the Count and Id parameters in the same command, the cmdlet clears the number of entries specified by the Count parameter, starting with the entry specified by the Id parameter. For example, if Count is 10 and Id is 30, Clear-History clears items 21 through 30 inclusive.
+For strings with a space, use single quotations. For more information, see about_Quoting_Rules (About/about_Quoting_Rules.md).`, `String[]`),
+            new Parameter(`Count`, `Specifies the number of history entries that "Clear-History" deletes. Commands are deleted in order, beginning with the oldest entry in the history.
 
 
-If you use the Count and CommandLine parameters in the same command, Clear-History clears the number of entries specified by the Count parameter, starting with the entry specified by the CommandLine parameter.`, `Int32`),
-            new Parameter(`Id`, `Specifies the history IDs of commands that this cmdlet deletes.
+The Count and Id parameters can be used together. The Count parameter specifies the number of commands to delete, inclusive of the specified Id . Beginning at the specified Id , commands are deleted in reverse sequential order. For example, if the Id is 30 and the Count is 10, "Clear-History" deletes items 21 through 30.
 
 
-To find the history ID of a command, use the Get-History cmdlet.`, `Int32[]`),
-            new Parameter(`Newest`, `Indicates that this cmdlet deletes the newest entries in the history. By default, Clear-History deletes the oldest entries in the history.`, `SwitchParameter`),
-            new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
-            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
+The Count and CommandLine parameters can be used together. Count specifies the number of commands to delete that match CommandLine parameter value. The commands are deleted in sequential order.`, `Int`),
+            new Parameter(`Id`, `Specifies the command history Id that "Clear-History" deletes. To display Id numbers, use the "Get-History" cmdlet. The Id numbers are sequential and commands keep their Id number throughout a PowerShell session. The Id parameter can be used with Count and Newest .`, `Int[]`),
+            new Parameter(`Newest`, `When the Newest parameter is used, "Clear-History" deletes the newest entries in the history. By default, "Clear-History" deletes the oldest entries in the history.
+
+
+The Newest parameter can be used with Id and Count . The Count parameter specifies the number of commands to delete, inclusive of the specified Id . Beginning at the specified Id , commands are deleted in sequential order. For example, if the Id is 30 and the Count is 10, "Clear-History" deletes items 30 through 39.`, `SwitchParameter`),
+            new Parameter(`Confirm`, `Prompts you for confirmation before running the "Clear-History" cmdlet.`, `SwitchParameter`),
+            new Parameter(`WhatIf`, `Shows what would happen if the "Clear-History" cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
-        `Deletes entries from the command history.`,
-        `Clear-History [[-Count] <Int32>] [-CommandLine <String[]>] [-Newest] [-Confirm] [-WhatIf] [<CommonParameters>]
+        `Deletes entries from the PowerShell command history.`,
+        `Clear-History [[-Count] <Int>] [-CommandLine <String[]>] [-Newest] [-Confirm] [-WhatIf] [<CommonParameters>]
 
-Clear-History [[-Id] <Int32[]>] [[-Count] <Int32>] [-Newest] [-Confirm] [-WhatIf] [<CommonParameters>]`,
+Clear-History [[-Id] <Int[]>] [[-Count] <Int>] [-Newest] [-Confirm] [-WhatIf] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -10490,22 +10525,16 @@ Clear-History [[-Id] <Int32[]>] [[-Count] <Int32>] [-Newest] [-Confirm] [-WhatIf
     new ConsoleCommand(
         `Clear-Item`,
         [
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
-
-
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you are prompted for a password.
-
-
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
-            new Parameter(`Exclude`, `Specifies, as a string array, items to exclude. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as *.txt. Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`Filter`, `Specifies a filter in the format or language of the provider. The value of this parameter qualifies the Path parameter.
-
-
-The syntax of the filter, including the use of wildcard characters, depends on the provider. Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
+            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as " .txt". Wildcard characters are permitted. The Exclude * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`Filter`, `Specifies a filter to qualify the Path parameter. The FileSystem (../Microsoft.PowerShell.Core/About/about_FileSystem_Provider.md)provider is the only installed PowerShell provider that supports the use of filters. You can find the syntax for the FileSystem filter language in about_Wildcards (../Microsoft.PowerShell.Core/About/about_Wildcards.md). Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
             new Parameter(`Force`, `Indicates that the cmdlet clears items that cannot otherwise be changed, such as read- only aliases. The cmdlet cannot clear constants. Implementation varies from provider to provider. For more information, see about_Providers (../Microsoft.PowerShell.Core/About/about_Providers.md). The cmdlet cannot override security restrictions, even when the Force parameter is used.`, `SwitchParameter`),
-            new Parameter(`Include`, `Specifies, as a string array, items to that this cmdlet clears. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`LiteralPath`, `Specifies the path to the items being cleared. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
-            new Parameter(`Path`, `Specifies the path to the items being cleared. Wildcards are permitted. This parameter is required, but the parameter name (Path) is optional.`, `String[]`),
+            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "" .txt"". Wildcard characters are permitted. The Include * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`LiteralPath`, `Specifies a path to one or more locations. The value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
+
+
+For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
+            new Parameter(`Path`, `Specifies the path to the items being cleared. Wildcard characters are permitted. This parameter is required, but the parameter name Path is optional.`, `String[]`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
@@ -10521,24 +10550,18 @@ Clear-Item [-Path] <String[]> [-Credential <PSCredential>] [-Exclude <String[]>]
     new ConsoleCommand(
         `Clear-ItemProperty`,
         [
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
-
-
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you are prompted for a password.
-
-
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
-            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`Filter`, `Specifies a filter in the format or language of the provider. The value of this parameter qualifies the Path parameter.
-
-
-The syntax of the filter, including the use of wildcard characters, depends on the provider. Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
+            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as " .txt". Wildcard characters are permitted. The Exclude * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`Filter`, `Specifies a filter to qualify the Path parameter. The FileSystem (../Microsoft.PowerShell.Core/About/about_FileSystem_Provider.md)provider is the only installed PowerShell provider that supports the use of filters. You can find the syntax for the FileSystem filter language in about_Wildcards (../Microsoft.PowerShell.Core/About/about_Wildcards.md). Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
             new Parameter(`Force`, `Indicates that this cmdlet deletes properties from items that cannot otherwise be accessed by the user. Implementation varies from provider to provider. For more information, see about_Providers (../Microsoft.PowerShell.Core/About/about_Providers.md).`, `SwitchParameter`),
-            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet clears. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as *.txt. Wildcards are permitted.`, `String[]`),
-            new Parameter(`LiteralPath`, `Specifies the path to the property being cleared. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
-            new Parameter(`Name`, `Specifies the name of the property to be cleared, such as the name of a registry value. Wildcards are not permitted.`, `String`),
+            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "" .txt"". Wildcard characters are permitted. The Include * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`LiteralPath`, `Specifies a path to one or more locations. The value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
+
+
+For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
+            new Parameter(`Name`, `Specifies the name of the property to be cleared, such as the name of a registry value. Wildcard characters are permitted.`, `String`),
             new Parameter(`PassThru`, `Returns an object representing the item with which you are working. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
-            new Parameter(`Path`, `Specifies the path to the property being cleared. Wildcards are permitted.`, `String[]`),
+            new Parameter(`Path`, `Specifies the path to the property being cleared. Wildcard characters are permitted.`, `String[]`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
@@ -10600,44 +10623,41 @@ You can also use a number relative to the current scope (0 through the number of
         }
     ),
     new ConsoleCommand(
+        `Clear-WindowsCorruptMountPoint`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
         `Compare-Object`,
         [
             new Parameter(`CaseSensitive`, `Indicates that comparisons should be case-sensitive.`, `SwitchParameter`),
             new Parameter(`Culture`, `Specifies the culture to use for comparisons.`, `String`),
             new Parameter(`DifferenceObject`, `Specifies the objects that are compared to the reference objects.`, `PSObject[]`),
-            new Parameter(`ExcludeDifferent`, `Indicates that this cmdlet displays only the characteristics of compared objects that are equal.`, `SwitchParameter`),
-            new Parameter(`IncludeEqual`, `Indicates that this cmdlet displays characteristics of compared objects that are equal. By default, only characteristics that differ between the reference and difference objects are displayed.`, `SwitchParameter`),
-            new Parameter(`PassThru`, `When you use the PassThru parameter, "Compare-Object" omits the "PSCustomObject" wrapper around the compared objects and returns the differing objects, unchanged.`, `SwitchParameter`),
+            new Parameter(`ExcludeDifferent`, `Indicates that this cmdlet displays only the characteristics of compared objects that are equal. The differences between the objects are discarded.
+
+
+Use ExcludeDifferent with IncludeEqual to display only the lines that match between the reference and difference objects.
+
+
+If ExcludeDifferent is specified without IncludeEqual , there's no output.`, `SwitchParameter`),
+            new Parameter(`IncludeEqual`, `IncludeEqual displays the matches between the reference and difference objects.
+
+
+By default, the output also includes the differences between the reference and difference objects.`, `SwitchParameter`),
+            new Parameter(`PassThru`, `When you use the PassThru parameter, "Compare-Object" omits the PSCustomObject wrapper around the compared objects and returns the differing objects, unchanged.`, `SwitchParameter`),
             new Parameter(`Property`, `Specifies an array of properties of the reference and difference objects to compare.`, `Object[]`),
             new Parameter(`ReferenceObject`, `Specifies an array of objects used as a reference for comparison.`, `PSObject[]`),
-            new Parameter(`SyncWindow`, `Specifies the number of adjacent objects that this cmdlet inspects while looking for a match in a collection of objects. This cmdlet examines adjacent objects when it does not find the object in the same position in a collection. The default value is "[Int32]::MaxValue", which means that this cmdlet examines the entire object collection.`, `Int32`),
+            new Parameter(`SyncWindow`, `Specifies the number of adjacent objects that "Compare-Object" inspects while looking for a match in a collection of objects. "Compare-Object" examines adjacent objects when it doesn't find the object in the same position in a collection. The default value is "[Int32]::MaxValue", which means that "Compare-Object" examines the entire object collection.`, `Int32`),
         ],
         `Compares two sets of objects.`,
         `Compare-Object [-ReferenceObject] <PSObject[]> [-DifferenceObject] <PSObject[]> [-CaseSensitive] [-Culture <String>] [-ExcludeDifferent] [-IncludeEqual] [-PassThru] [-Property <Object[]>] [-SyncWindow <Int32>] [<CommonParameters>]`,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Compare-VM`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Complete-VMFailover`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
         "",
         (parameters, paramDictionary) => {
 
@@ -10718,7 +10738,7 @@ Type the NetBIOS name, an IP address, or a fully qualified domain name of one co
             new Parameter(`ConfigurationName`, `Connects only to sessions that use the specified session configuration.
 
 
-Enter a configuration name or the fully qualified resource URI for a session configuration. If you specify only the configuration name, the following schema URI is prepended: http://schemas.microsoft.com/powershell. The configuration name of a session is stored in the ConfigurationName property of the session.
+Enter a configuration name or the fully qualified resource URI for a session configuration. If you specify only the configuration name, the following schema URI is prepended: "http://schemas.microsoft.com/powershell". The configuration name of a session is stored in the ConfigurationName property of the session.
 
 
 The value of this parameter is used to select and filter sessions. It does not change the session configuration that the session uses.
@@ -10750,7 +10770,13 @@ If the destination computer redirects the connection to a different URI, PowerSh
             new Parameter(`Credential`, `Specifies a user account that has permission to connect to the disconnected session. The default is the current user.
 
 
-Type a user name, such as User01 or Domain01\User01. Or, enter a PSCredential object, such as one generated by the Get-Credential cmdlet. If you type a user name, this cmdlet prompts you for a password.`, `PSCredential`),
+Type a user name, such as User01 or Domain01\\User01 , or enter a PSCredential object generated by the "Get-Credential" cmdlet. If you type a user name, you're prompted to enter the password.
+
+
+Credentials are stored in a PSCredential (/dotnet/api/system.management.automation.pscredential)object and the password is stored as a SecureString (/dotnet/api/system.security.securestring).
+
+
+> [!NOTE] > For more information about SecureString data protection, see > How secure is SecureString? (/dotnet/api/system.security.securestring#how-secure-is-securestring).`, `PSCredential`),
             new Parameter(`Id`, `Specifies the IDs of the disconnected sessions. The Id parameter works only when the disconnected session was previously connected to the current session.
 
 
@@ -10769,10 +10795,10 @@ The instance ID is stored in the InstanceID property of the PSSession .`, `Guid[
 Before using an alternate port, you must configure the WinRM listener on the remote computer to listen at that port. To configure the listener, type the following two commands at the PowerShell prompt:
 
 
-"Remove-Item -Path WSMan:\Localhost\listener\listener* -Recurse"
+"Remove-Item -Path WSMan:\\Localhost\\listener\\listener* -Recurse"
 
 
-"New-Item -Path WSMan:\Localhost\listener -Transport http -Address * -Port <port-number>"
+"New-Item -Path WSMan:\\Localhost\\listener -Transport http -Address * -Port <port-number>"
 
 
 Do not use the Port parameter unless you must. The port that is set in the command applies to all computers or sessions on which the command runs. An alternate port setting might prevent the command from running on all computers.`, `Int32`),
@@ -10814,33 +10840,9 @@ Connect-PSSession [-Id] <Int32[]> [-ThrottleLimit <Int32>] [-Confirm] [-WhatIf] 
 
 Connect-PSSession -InstanceId <Guid[]> [-ThrottleLimit <Int32>] [-Confirm] [-WhatIf] [<CommonParameters>]
 
-Connect-PSSession -Name <String[]> [-ThrottleLimit <Int32>] [-Confirm] [-WhatIf] [<CommonParameters>]
+Connect-PSSession [-Name <String[]>] [-ThrottleLimit <Int32>] [-Confirm] [-WhatIf] [<CommonParameters>]
 
 Connect-PSSession [-Session] <PSSession[]> [-ThrottleLimit <Int32>] [-Confirm] [-WhatIf] [<CommonParameters>]`,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Connect-VMNetworkAdapter`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Connect-VMSan`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
         "",
         (parameters, paramDictionary) => {
 
@@ -10853,6 +10855,21 @@ Connect-PSSession [-Session] <PSSession[]> [-ThrottleLimit <Int32>] [-Confirm] [
         ],
         `See help file for details.`,
         ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Convert-Path`,
+        [
+            new Parameter(`LiteralPath`, `Specifies, as a string array, the path to be converted. The value of the LiteralPath parameter is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
+            new Parameter(`Path`, `Specifies the PowerShell path to be converted.`, `String[]`),
+        ],
+        `Converts a path from a PowerShell path to a PowerShell provider path.`,
+        `Convert-Path -LiteralPath <String[]> [<CommonParameters>]
+
+Convert-Path [-Path] <String[]> [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -10897,13 +10914,17 @@ ConvertFrom-Csv [-InputObject] <PSObject[]> [-Header <String[]>] -UseCulture [<C
 
 
 - If the JSON contains a list with keys that only differ in casing. Without the switch, those keys   would be seen as identical keys and therefore only the last one would get used. - If the JSON contains a key that is an empty string. Without the switch, the cmdlet would throw an   error since a "PSCustomObject" does not allow for that but a hash table does. An example use case  where this can occurs are "project.lock.json" files. - Hash tables can be processed faster for certain data structures.`, `SwitchParameter`),
+            new Parameter(`Depth`, `Gets or sets the maximum depth the JSON input is allowed to have. By default, it is 1024.
+
+
+This parameter was introduced in PowerShell 6.2.`, `Int32`),
             new Parameter(`InputObject`, `Specifies the JSON strings to convert to JSON objects. Enter a variable that contains the string, or type a command or expression that gets the string. You can also pipe a string to "ConvertFrom-Json".
 
 
 The InputObject parameter is required, but its value can be an empty string. When the input object is an empty string, "ConvertFrom-Json" does not generate any output. The InputObject value cannot be "$null".`, `String`),
         ],
         `Converts a JSON-formatted string to a custom object or a hash table.`,
-        `ConvertFrom-Json [-InputObject] <String> [-AsHashtable] [<CommonParameters>]`,
+        `ConvertFrom-Json [-InputObject] <String> [-AsHashtable] [-Depth <Int32>] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -10912,19 +10933,61 @@ The InputObject parameter is required, but its value can be an empty string. Whe
     new ConsoleCommand(
         `ConvertFrom-Markdown`,
         [
-            new Parameter(`AsVT100EncodedString`, ``, `switch`),
-            new Parameter(`InputObject`, ``, `psobject`),
-            new Parameter(`LiteralPath`, ``, `string[]`),
-            new Parameter(`Path`, ``, `string[]`),
+            new Parameter(`AsVT100EncodedString`, `Specifies if the output should be encoded as a string with VT100 escape codes.`, `SwitchParameter`),
+            new Parameter(`InputObject`, `Specifies the object to be converted. When an object of type System.String is specified, the string is converted. When an object of type System.IO.FileInfo is specified, the contents of the file specified by the object are converted. Objects of any other type result in an error.`, `PSObject`),
+            new Parameter(`LiteralPath`, `Specifies a path to the file to be converted.`, `String[]`),
+            new Parameter(`Path`, `Specifies a path to the file to be converted.`, `String[]`),
         ],
-        `ConvertFrom-Markdown [-Path] <string[]> [-AsVT100EncodedString] [<CommonParameters>]
+        `Convert the contents of a string or a file to a MarkdownInfo object.`,
+        `ConvertFrom-Markdown [-AsVT100EncodedString] -InputObject <PSObject> [<CommonParameters>]
 
-ConvertFrom-Markdown -LiteralPath <string[]> [-AsVT100EncodedString] [<CommonParameters>]
+ConvertFrom-Markdown [-AsVT100EncodedString] -LiteralPath <String[]> [<CommonParameters>]
 
-ConvertFrom-Markdown -InputObject <psobject> [-AsVT100EncodedString] [<CommonParameters>]`,
-        `syntaxItem
-----------
-{@{name=ConvertFrom-Markdown; CommonParameters=True; parameter=System.Object[]}, @{name=ConvertFrom-Markdown; CommonP...`,
+ConvertFrom-Markdown [-Path] <String[]> [-AsVT100EncodedString] [<CommonParameters>]`,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `ConvertFrom-SddlString`,
+        [
+            new Parameter(`Sddl`, `Specifies the string representing the security descriptor in SDDL syntax.`, `String`),
+            new Parameter(`Type`, `Specifies the type of rights that SDDL string represents.
+
+
+The acceptable values for this parameter are:
+
+
+- FileSystemRights
+
+
+- RegistryRights
+
+
+- ActiveDirectoryRights
+
+
+- MutexRights
+
+
+- SemaphoreRights
+
+
+- CryptoKeyRights
+
+
+- EventWaitHandleRights
+
+
+
+
+By default cmdlet uses file system rights.
+
+CryptoKeyRights and ActiveDirectoryRights are not supported in PowerShell Core.`, `Object`),
+        ],
+        `Converts a SDDL string to a custom object.`,
+        `ConvertFrom-SddlString [-Sddl] <String> [-Type {FileSystemRights | RegistryRights | ActiveDirectoryRights | MutexRights | SemaphoreRights | CryptoKeyRights | EventWaitHandleRights}] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -10945,34 +11008,19 @@ ConvertFrom-Markdown -InputObject <psobject> [-AsVT100EncodedString] [<CommonPar
     new ConsoleCommand(
         `ConvertFrom-StringData`,
         [
-            new Parameter(`StringData`, `Specifies the string to be converted. You can use this parameter or pipe a string to ConvertFrom-StringData . The parameter name is optional.
+            new Parameter(`StringData`, `Specifies the string to be converted. You can use this parameter or pipe a string to "ConvertFrom-StringData". The parameter name is optional.
 
 
-The value of this parameter must be a string that is enclosed in single quotation marks, a string that is enclosed in double quotation marks, or a here-string that contains one or more key/value pairs. Each key/value pair must be on a separate line, or each pair must be separated by newline characters ("n).
+The value of this parameter must be a string that contains one or more key-value pairs. Each key-value pair must be on a separate line, or each pair must be separated by newline characters ("n).
 
 
-You can include comments in the string, but the comments cannot be on the same line as a key/value pair. The comments are not included in the hash table.
+You can include comments in the string, but the comments cannot be on the same line as a key-value pair. "ConvertFrom-StringData" ignores single-line comments. The "#" character must be the first non-whitespace character on the line. All characters on the line after the "#" are ignored. The comments are not included in the hash table.
 
 
-A here-string is a string consisting of one or more lines within which quotation marks are interpreted literally. For more information, see about_Quoting_Rules.`, `String`),
+A here-string is a string consisting of one or more lines. Quotation marks within the here-string are interpreted literally as part of the string data. For more information, see about_Quoting_Rules (../Microsoft.PowerShell.Core/About/about_Quoting_Rules.md).`, `String`),
         ],
         `Converts a string containing one or more key and value pairs to a hash table.`,
         `ConvertFrom-StringData [-StringData] <String> [<CommonParameters>]`,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Convert-Path`,
-        [
-            new Parameter(`LiteralPath`, `Specifies, as a string array, the path to be converted. The value of the LiteralPath parameter is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
-            new Parameter(`Path`, `Specifies the PowerShell path to be converted.`, `String[]`),
-        ],
-        `Converts a path from a PowerShell path to a PowerShell provider path.`,
-        `Convert-Path -LiteralPath <String[]> [<CommonParameters>]
-
-Convert-Path [-Path] <String[]> [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -10990,7 +11038,7 @@ This parameter was introduced in PowerShell 6.0.`, `SwitchParameter`),
             new Parameter(`NoTypeInformation`, `Removes the #TYPE information header from the output. This parameter became the default in PowerShell 6.0 and is included for backwards compatibility.`, `SwitchParameter`),
             new Parameter(`UseCulture`, `Uses the list separator for the current culture as the item delimiter. To find the list separator for a culture, use the following command: "(Get-Culture).TextInfo.ListSeparator".`, `SwitchParameter`),
         ],
-        `Converts objects into a series of comma-separated value (CSV) strings.`,
+        `Converts objects into a series of character-separated value (CSV) strings.`,
         `ConvertTo-Csv [-InputObject] <PSObject> [[-Delimiter] <Char>] [-IncludeTypeInformation] [-NoTypeInformation] [<CommonParameters>]
 
 ConvertTo-Csv [-InputObject] <PSObject> [-IncludeTypeInformation] [-NoTypeInformation] [-UseCulture] [<CommonParameters>]`,
@@ -11010,7 +11058,10 @@ The Table value generates an HTML table that resembles the PowerShell table form
 
 The List value generates a two-column HTML table for each object that resembles the PowerShell list format. The first column displays the property name; the second column displays the property value.`, `String`),
             new Parameter(`Body`, `Specifies the text to add after the opening <BODY> tag. By default, there is no text in that position.`, `String[]`),
-            new Parameter(`Charset`, `Specifies text to add to the opening <charset> tag. By default, there is no text in that position.`, `String`),
+            new Parameter(`Charset`, `Specifies text to add to the opening <charset> tag. By default, there is no text in that position.
+
+
+This parameter was introduced in PowerShell 6.0.`, `String`),
             new Parameter(`CssUri`, `Specifies the Uniform Resource Identifier (URI) of the cascading style sheet (CSS) that is applied to the HTML file. The URI is included in a style sheet link in the output.`, `Uri`),
             new Parameter(`Fragment`, `Generates only an HTML table. The HTML, HEAD, TITLE, and BODY tags are omitted.`, `SwitchParameter`),
             new Parameter(`Head`, `Specifies the content of the <HEAD> tag. The default is <title>HTML TABLE</title>. If you use the Head parameter, the Title parameter is ignored.`, `String[]`),
@@ -11018,7 +11069,10 @@ The List value generates a two-column HTML table for each object that resembles 
 
 
 If you use this parameter to submit multiple objects, such as all of the services on a computer, ConvertTo-Html creates a table that displays the properties of a collection or of an array of objects ( System.Object []). To create a table of the individual objects, use the pipeline operator to pipe the objects to ConvertTo-Html .`, `PSObject`),
-            new Parameter(`Meta`, `Specifies text to add to the opening <meta> tag. By default, there is no text in that position.`, `Hashtable`),
+            new Parameter(`Meta`, `Specifies text to add to the opening <meta> tag. By default, there is no text in that position.
+
+
+This parameter was introduced in PowerShell 6.0.`, `Hashtable`),
             new Parameter(`PostContent`, `Specifies text to add after the closing </TABLE> tag. By default, there is no text in that position.`, `String[]`),
             new Parameter(`PreContent`, `Specifies text to add before the opening <TABLE> tag. By default, there is no text in that position.`, `String[]`),
             new Parameter(`Property`, `Includes the specified properties of the objects in the HTML. The value of the Property parameter can be a new calculated property. To create a calculated property, use a hash table. Valid keys are:
@@ -11029,7 +11083,10 @@ If you use this parameter to submit multiple objects, such as all of the service
 
 - Expression <string> or <script block>`, `Object[]`),
             new Parameter(`Title`, `Specifies a title for the HTML file, that is, the text that appears between the <TITLE> tags.`, `String`),
-            new Parameter(`Transitional`, `Changes the DOCTYPE to XHTML Transitional DTD Default DOCTYPE is XHTML Strict DTD`, `SwitchParameter`),
+            new Parameter(`Transitional`, `Changes the DOCTYPE to XHTML Transitional DTD Default DOCTYPE is XHTML Strict DTD
+
+
+This parameter was introduced in PowerShell 6.0.`, `SwitchParameter`),
         ],
         `Converts Microsoft .NET Framework objects into HTML that can be displayed in a Web browser.`,
         `ConvertTo-Html [[-Property] <Object[]>] [[-Head] <String[]>] [[-Title] <String>] [[-Body] <String[]>] [-As {Table | List}] [-Charset <String>] [-CssUri <Uri>] [-InputObject <PSObject>] [-Meta <Hashtable>] [-PostContent <String[]>] [-PreContent <String[]>] [-Transitional] [<CommonParameters>]
@@ -11047,13 +11104,43 @@ ConvertTo-Html [[-Property] <Object[]>] [-As {Table | List}] [-Fragment] [-Input
             new Parameter(`Compress`, `Omits white space and indented formatting in the output string.`, `SwitchParameter`),
             new Parameter(`Depth`, `Specifies how many levels of contained objects are included in the JSON representation. The default value is 2.`, `Int32`),
             new Parameter(`EnumsAsStrings`, `Provides an alternative serialization option that converts all enumerations to their string representation.`, `SwitchParameter`),
-            new Parameter(`InputObject`, `Specifies the objects to convert to JSON format. Enter a variable that contains the objects, or type a command or expression that gets the objects. You can also pipe an object to ConvertTo-Json .
+            new Parameter(`EscapeHandling`, `Controls how certain characters are escaped in the resulting JSON output. By default, only control characters (like newline) are escaped.
 
 
-The InputObject parameter is required, but its value can be null ("$null") or an empty string. When the input object is "$null", ConvertTo-Json does not generate any output. When the input object is an empty string, ConvertTo-Json returns an empty string.`, `Object`),
+Acceptable values are:
+
+
+- Default - Only control characters are escaped.
+
+
+- EscapeNonAscii - All non-ASCII and control characters are escaped.
+
+
+- EscapeHtml - HTML ("<", ">", "&", "'", """) and control characters are escaped.
+
+
+
+
+This parameter was introduced in PowerShell 6.2.`, `NewtonSoft.Json.StringEscapeHandling`),
+            new Parameter(`InputObject`, `Specifies the objects to convert to JSON format. Enter a variable that contains the objects, or type a command or expression that gets the objects. You can also pipe an object to "ConvertTo-Json".
+
+
+The InputObject parameter is required, but its value can be null ("$null") or an empty string. When the input object is "$null", "ConvertTo-Json" does not generate any output. When the input object is an empty string, "ConvertTo-Json" returns an empty string.`, `Object`),
         ],
         `Converts an object to a JSON-formatted string.`,
-        `ConvertTo-Json [-InputObject] <Object> [-AsArray] [-Compress] [-Depth <Int32>] [-EnumsAsStrings] [<CommonParameters>]`,
+        `ConvertTo-Json [-InputObject] <Object> [-AsArray] [-Compress] [-Depth <Int32>] [-EnumsAsStrings] [-EscapeHandling <NewtonSoft.Json.StringEscapeHandling>] [<CommonParameters>]`,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `ConvertTo-ProcessMitigationPolicy`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
         "",
         (parameters, paramDictionary) => {
 
@@ -11111,49 +11198,34 @@ The default value can be overridden for the object type in the Types.ps1xml file
         }
     ),
     new ConsoleCommand(
-        `Convert-VHD`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
         `Copy-Item`,
         [
-            new Parameter(`Container`, `Indicates that this cmdlet preserves container objects during the copy operation.`, `SwitchParameter`),
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
-
-
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you are prompted for a password.
-
-
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
-            new Parameter(`Destination`, `Specifies the path to the new location. To rename a copied item, include the new name in the value.`, `String`),
-            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes from the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`Filter`, `Specifies a filter in the format or language of the provider. The value of this parameter qualifies the Path parameter.
-
-
-The syntax of the filter, including the use of wildcard characters, depends on the provider. Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
-            new Parameter(`Force`, `Indicates that this cmdlet copies items that cannot otherwise be changed, such as copying over a read-only file or alias.`, `SwitchParameter`),
-            new Parameter(`FromSession`, `Specifies the PSSession object from which a remote file is being copied. When you use this parameter, the Path and LiteralPath parameters refer to the local path on the remote machine.`, `PSSession`),
-            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`LiteralPath`, `Specifies a path to the item. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
-            new Parameter(`PassThru`, `Returns an object representing the item with which you are working. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
-            new Parameter(`Path`, `Specifies, as a string array, the path to the items to copy.`, `String[]`),
-            new Parameter(`Recurse`, `Indicates that this cmdlet performs a recursive copy.`, `SwitchParameter`),
-            new Parameter(`ToSession`, `Specifies the PSSession object to which a remote file is being copied. When you use this parameter, the Path and LiteralPath parameters refer to the local path on the remote machine.`, `PSSession`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
-            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
+            new Parameter(`Container`, `Indicates that this cmdlet preserves container objects during the copy operation. By default, the Container parameter is set to True .`, `SwitchParameter`),
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
+            new Parameter(`Destination`, `Specifies the path to the new location. The default is the current directory.
+
+
+To rename the item being copied, specify a new name in the value of the Destination parameter.`, `String`),
+            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as " .txt". Wildcard characters are permitted. The Exclude * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`Filter`, `Specifies a filter to qualify the Path parameter. The FileSystem (../Microsoft.PowerShell.Core/About/about_FileSystem_Provider.md)provider is the only installed PowerShell provider that supports the use of filters. You can find the syntax for the FileSystem filter language in about_Wildcards (../Microsoft.PowerShell.Core/About/about_Wildcards.md). Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they're retrieved.`, `String`),
+            new Parameter(`Force`, `Indicates that this cmdlet copies items that can't otherwise be changed, such as copying over a read-only file or alias.`, `SwitchParameter`),
+            new Parameter(`FromSession`, `Specifies the PSSession object from which a remote file is being copied. When you use this parameter, the Path and LiteralPath parameters refer to the local path on the remote machine.`, `PSSession`),
+            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "" .txt"". Wildcard characters are permitted. The Include * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`LiteralPath`, `Specifies a path to one or more locations. The value of LiteralPath is used exactly as it's typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
+
+
+For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
+            new Parameter(`PassThru`, `Returns an object that represents the item with which you're working. By default, this cmdlet doesn't generate any output.`, `SwitchParameter`),
+            new Parameter(`Path`, `Specifies, as a string array, the path to the items to copy. Wildcard characters are permitted.`, `String[]`),
+            new Parameter(`Recurse`, `Indicates that this cmdlet does a recursive copy.`, `SwitchParameter`),
+            new Parameter(`ToSession`, `Specifies the PSSession object to which a remote file is being copied. When you use this parameter, the Destination parameter refers to the local path on the remote machine.`, `PSSession`),
+            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet isn't run.`, `SwitchParameter`),
         ],
         `Copies an item from one location to another.`,
-        `Copy-Item [[-Destination] <String>] [-Container] [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-FromSession <PSSession>] [-Include <String[]>] -LiteralPath <String[]> [-PassThru] [-Recurse] [-ToSession <PSSession>] [-Confirm] [-WhatIf] [<CommonParameters>]
+        `Copy-Item [[-Destination] <String>] [-Confirm] [-Container] [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-FromSession <PSSession>] [-Include <String[]>] -LiteralPath <String[]> [-PassThru] [-Recurse] [-ToSession <PSSession>] [-WhatIf] [<CommonParameters>]
 
-Copy-Item [-Path] <String[]> [[-Destination] <String>] [-Container] [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-FromSession <PSSession>] [-Include <String[]>] [-PassThru] [-Recurse] [-ToSession <PSSession>] [-Confirm] [-WhatIf] [<CommonParameters>]`,
+Copy-Item [-Path] <String[]> [[-Destination] <String>] [-Confirm] [-Container] [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-FromSession <PSSession>] [-Include <String[]>] [-PassThru] [-Recurse] [-ToSession <PSSession>] [-WhatIf] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -11162,25 +11234,22 @@ Copy-Item [-Path] <String[]> [[-Destination] <String>] [-Container] [-Credential
     new ConsoleCommand(
         `Copy-ItemProperty`,
         [
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
-
-
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you are prompted for a password.
-
-
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
             new Parameter(`Destination`, `Specifies the path to the destination location.`, `String`),
-            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`Filter`, `Specifies a filter in the format or language of the provider. The value of this parameter qualifies the Path parameter.
+            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as " .txt". Wildcard characters are permitted. The Exclude * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`Filter`, `Specifies a filter to qualify the Path parameter. The FileSystem (../Microsoft.PowerShell.Core/About/about_FileSystem_Provider.md)provider is the only installed PowerShell provider that supports the use of filters. You can find the syntax for the FileSystem filter language in about_Wildcards (../Microsoft.PowerShell.Core/About/about_Wildcards.md). Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
+            new Parameter(`Force`, `Forces the command to run without asking for user confirmation. Implementation varies from provider to provider.
 
 
-The syntax of the filter, including the use of wildcard characters, depends on the provider. Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
-            new Parameter(`Force`, `Forces the command to run without asking for user confirmation. Implementation varies from provider to provider. For more information, see about_Providers (../Microsoft.PowerShell.Core/About/about_Providers.md).`, `SwitchParameter`),
-            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`LiteralPath`, `Specifies the path to the current location of the property. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
+For more information, see about_Providers (../Microsoft.PowerShell.Core/About/about_Providers.md).`, `SwitchParameter`),
+            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "" .txt"". Wildcard characters are permitted. The Include * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`LiteralPath`, `Specifies a path to one or more locations. The value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
+
+
+For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
             new Parameter(`Name`, `Specifies the name of the property to be copied.`, `String`),
             new Parameter(`PassThru`, `Returns an object representing the item with which you are working. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
-            new Parameter(`Path`, `Specifies, as a string array, the path to the property to be copied.`, `String[]`),
+            new Parameter(`Path`, `Specifies, as a string array, the path to the property to be copied. Wildcard characters are permitted.`, `String[]`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
@@ -11188,18 +11257,6 @@ The syntax of the filter, including the use of wildcard characters, depends on t
         `Copy-ItemProperty [-Destination] <String> [-Name] <String> [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] -LiteralPath <String[]> [-PassThru] [-Confirm] [-WhatIf] [<CommonParameters>]
 
 Copy-ItemProperty [-Path] <String[]> [-Destination] <String> [-Name] <String> [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] [-PassThru] [-Confirm] [-WhatIf] [<CommonParameters>]`,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Copy-VMFile`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
         "",
         (parameters, paramDictionary) => {
 
@@ -11218,7 +11275,7 @@ Copy-ItemProperty [-Path] <String[]> [-Destination] <String> [-Name] <String> [-
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
-        `Debugs a running background, remote, or Windows PowerShell Workflow job.`,
+        `Debugs a running background, remote, or PowerShell Workflow job.`,
         `Debug-Job [-Id] <Int32> [-Confirm] [-WhatIf] [<CommonParameters>]
 
 Debug-Job [-InstanceId] <Guid> [-Confirm] [-WhatIf] [<CommonParameters>]
@@ -11257,10 +11314,10 @@ Debug-Process [-Name] <String[]> [-Confirm] [-WhatIf] [<CommonParameters>]`,
     new ConsoleCommand(
         `Debug-Runspace`,
         [
-            new Parameter(`Id`, `Specifies the ID number of a runspace. You can run Get-Runspace to show runspace IDs.`, `Int32`),
-            new Parameter(`InstanceId`, `Specifies a runspace by its instance ID, a GUID that you can show by running Get-Runspace .`, `Guid`),
-            new Parameter(`Name`, `Specifies a runspace by its name. You can run Get-Runspace to show the names of runspaces.`, `String`),
-            new Parameter(`Runspace`, `Specifies a runspace object. The simplest way to provide a value for this parameter is to specify a variable that contains the results of a filtered Get-Runspace command.`, `Runspace`),
+            new Parameter(`Id`, `Specifies the ID number of a runspace. You can run "Get-Runspace" to show runspace IDs.`, `Int32`),
+            new Parameter(`InstanceId`, `Specifies a runspace by its instance ID, a GUID that you can show by running "Get-Runspace".`, `Guid`),
+            new Parameter(`Name`, `Specifies a runspace by its name. You can run "Get-Runspace" to show the names of runspaces.`, `String`),
+            new Parameter(`Runspace`, `Specifies a runspace object. The simplest way to provide a value for this parameter is to specify a variable that contains the results of a filtered "Get-Runspace" command.`, `Runspace`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
@@ -11278,12 +11335,39 @@ Debug-Runspace [-Runspace] <Runspace> [-Confirm] [-WhatIf] [<CommonParameters>]`
         }
     ),
     new ConsoleCommand(
-        `Debug-VM`,
+        `Delete-DeliveryOptimizationCache`,
         [
 
         ],
         `See help file for details.`,
         ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Disable-AppBackgroundTaskDiagnosticLog`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Disable-ExperimentalFeature`,
+        [
+            new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
+            new Parameter(`Name`, `The name or names of the experimental features to disable.`, `String[]`),
+            new Parameter(`Scope`, `Determines which "powershell.config.json" to update whether it affects all users or just the current user.`, `ConfigScope`),
+            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
+        ],
+        `Disable an experimental feature on startup of new instance of PowerShell.`,
+        `Disable-ExperimentalFeature [-Name] <String[]> [-Confirm] [-Scope {AllUsers | CurrentUser}] [-WhatIf] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -11326,7 +11410,7 @@ Disable-PSBreakpoint [-Id] <Int32[]> [-PassThru] [-Confirm] [-WhatIf] [<CommonPa
             new Parameter(`Force`, `Forces the command to run without asking for user confirmation.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
-        `Prevents remote users from running commands on the local computer.`,
+        `Prevents remote users from running commands in PowerShell on the local computer.`,
         `Disable-PSRemoting [-Confirm] [-Force] [-WhatIf] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
@@ -11337,11 +11421,11 @@ Disable-PSBreakpoint [-Id] <Int32[]> [-PassThru] [-Confirm] [-WhatIf] [<CommonPa
         `Disable-PSSessionConfiguration`,
         [
             new Parameter(`Force`, `Forces the command to run without asking for user confirmation.`, `SwitchParameter`),
-            new Parameter(`Name`, `Specifies an array of names of session configurations to disable. Enter one or more configuration names. Wildcard characters are permitted. You can also pipe a string that contains a configuration name or a session configuration object to Disable-PSSessionConfiguration .
+            new Parameter(`Name`, `Specifies an array of names of session configurations to disable. Enter one or more configuration names. Wildcard characters are permitted. You can also pipe a string that contains a configuration name or a session configuration object to "Disable-PSSessionConfiguration".
 
 
-If you omit this parameter, Disable-PSSessionConfiguration disables the Microsoft.PowerShell session configuration.`, `String[]`),
-            new Parameter(`NoServiceRestart`, ``, `SwitchParameter`),
+If you omit this parameter, "Disable-PSSessionConfiguration" disables the Microsoft.PowerShell session configuration.`, `String[]`),
+            new Parameter(`NoServiceRestart`, `Used to prevent the restart of the WSMan service. It is not necessary to restart the service to disable the configuration.`, `SwitchParameter`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
@@ -11390,103 +11474,19 @@ Disable-RunspaceDebug [[-RunspaceName] <String[]>] [<CommonParameters>]`,
         }
     ),
     new ConsoleCommand(
-        `Disable-VMConsoleSupport`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Disable-VMEventing`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Disable-VMIntegrationService`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Disable-VMMigration`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Disable-VMRemoteFXPhysicalVideoAdapter`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Disable-VMResourceMetering`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Disable-VMSwitchExtension`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Disable-VMTPM`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
         `Disable-WindowsErrorReporting`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Disable-WindowsOptionalFeature`,
         [
 
         ],
@@ -11578,30 +11578,6 @@ Disconnect-PSSession [-Session] <PSSession[]> [-IdleTimeoutSec <Int32>] [-Thrott
         }
     ),
     new ConsoleCommand(
-        `Disconnect-VMNetworkAdapter`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Disconnect-VMSan`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
         `Disconnect-WSMan`,
         [
 
@@ -11626,7 +11602,7 @@ Disconnect-PSSession [-Session] <PSSession[]> [-IdleTimeoutSec <Int32>] [-Thrott
         }
     ),
     new ConsoleCommand(
-        `Dismount-VHD`,
+        `Dismount-WindowsImage`,
         [
 
         ],
@@ -11638,12 +11614,27 @@ Disconnect-PSSession [-Session] <PSSession[]> [-IdleTimeoutSec <Int32>] [-Thrott
         }
     ),
     new ConsoleCommand(
-        `Dismount-VMHostAssignableDevice`,
+        `Enable-AppBackgroundTaskDiagnosticLog`,
         [
 
         ],
         `See help file for details.`,
         ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Enable-ExperimentalFeature`,
+        [
+            new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
+            new Parameter(`Name`, `The name or names of the experimental features to enable.`, `String[]`),
+            new Parameter(`Scope`, `Determines which "powershell.config.json" to update whether it affects all users or just the current user.`, `ConfigScope`),
+            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
+        ],
+        `Enable an experimental feature on startup of new instance of PowerShell.`,
+        `Enable-ExperimentalFeature [-Name] <String[]> [-Confirm] [-Scope {AllUsers | CurrentUser}] [-WhatIf] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -11664,11 +11655,11 @@ Disconnect-PSSession [-Session] <PSSession[]> [-IdleTimeoutSec <Int32>] [-Thrott
     new ConsoleCommand(
         `Enable-PSBreakpoint`,
         [
-            new Parameter(`Breakpoint`, `Specifies the breakpoints to enable. Enter a variable that contains breakpoint objects or a command that gets breakpoint objects, such as a Get-PSBreakpoint command. You can also pipe breakpoint objects to Enable-PSBreakpoint .`, `Breakpoint[]`),
-            new Parameter(`Id`, `Specifies breakpoint IDs that this cmdlet enables. The default value is all breakpoints. Enter the IDs or a variable that contains the IDs. You cannot use the pipeline to send IDs to Enable-PSBreakpoint . To find the ID of a breakpoint, use the Get-PSBreakpoint cmdlet.`, `Int32[]`),
-            new Parameter(`PassThru`, `Returns an object representing the item with which you are working. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
+            new Parameter(`Breakpoint`, `Specifies the breakpoints to enable. Provide a variable containing breakpoints or a command that gets breakpoint objects, such as "Get-PSBreakpoint". You can also pipe breakpoint objects to "Enable-PSBreakpoint".`, `Breakpoint[]`),
+            new Parameter(`Id`, `Specifies the Id numbers of the breakpoints to enable. The default value is all breakpoints. Provide the Id by number or in a variable. You can't pipe Id numbers to "Enable-PSBreakpoint". To find the Id of a breakpoint, use the "Get-PSBreakpoint" cmdlet.`, `Int32[]`),
+            new Parameter(`PassThru`, `Returns an object representing the breakpoint being enabled. By default, this cmdlet doesn't generate any output.`, `SwitchParameter`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
-            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
+            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet isn't run.`, `SwitchParameter`),
         ],
         `Enables the breakpoints in the current console.`,
         `Enable-PSBreakpoint [-Breakpoint] <Breakpoint[]> [-PassThru] [-Confirm] [-WhatIf] [<CommonParameters>]
@@ -11687,13 +11678,13 @@ Enable-PSBreakpoint [-Id] <Int32[]> [-PassThru] [-Confirm] [-WhatIf] [<CommonPar
             new Parameter(`SkipNetworkProfileCheck`, `Indicates that this cmdlet enables remoting on client versions of the Windows operating system when the computer is on a public network. This parameter enables a firewall rule for public networks that allows remote access only from computers in the same local subnet.
 
 
-This parameter does not affect server versions of the Windows operating system, which, by default, have a local subnet firewall rule for public networks. If the local subnet firewall rule is disabled on a server version, Enable-PSRemoting re-enables it, regardless of the value of this parameter.
+This parameter does not affect server versions of the Windows operating system, which, by default, have a local subnet firewall rule for public networks. If the local subnet firewall rule is disabled on a server version, "Enable-PSRemoting" re-enables it, regardless of the value of this parameter.
 
 
-To remove the local subnet restriction and enable remote access from all locations on public networks, use the Set-NetFirewallRule cmdlet in the NetSecurity module.
+To remove the local subnet restriction and enable remote access from all locations on public networks, use the "Set-NetFirewallRule" cmdlet in the NetSecurity module.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
+This parameter was introduced in PowerShell 3.0.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
         `Configures the computer to receive remote commands.`,
@@ -11713,25 +11704,25 @@ To prevent a restart and suppress the restart prompt, use the NoServiceRestart p
             new Parameter(`Name`, `Specifies the names of session configurations to enable. Enter one or more configuration names. Wildcard characters are permitted.
 
 
-You can also pipe a string that contains a configuration name or a session configuration object to Enable-PSSessionConfiguration .
+You can also pipe a string that contains a configuration name or a session configuration object to "Enable-PSSessionConfiguration".
 
 
-If you omit this parameter, Enable-PSSessionConfiguration enables the Microsoft.PowerShell session configuration.`, `String[]`),
+If you omit this parameter, "Enable-PSSessionConfiguration" enables the Microsoft.PowerShell session configuration.`, `String[]`),
             new Parameter(`NoServiceRestart`, `Indicates that the cmdlet does not restart the service.`, `SwitchParameter`),
             new Parameter(`SecurityDescriptorSddl`, `Specifies a security descriptor with which this cmdlet replaces the security descriptor on the session configuration.
 
 
-If you omit this parameter, Enable-PSSessionConfiguration only deletes the deny all item from the security descriptor.`, `String`),
-            new Parameter(`SkipNetworkProfileCheck`, `Indicates that this cmdlet enables the session configuration when the computer is on a public network. This parameter enables a firewall rule for public networks that allows remote access only from computers in the same local subnet. By default, Enable-PSSessionConfiguration fails on a public network.
+If you omit this parameter, "Enable-PSSessionConfiguration" only deletes the deny all item from the security descriptor.`, `String`),
+            new Parameter(`SkipNetworkProfileCheck`, `Indicates that this cmdlet enables the session configuration when the computer is on a public network. This parameter enables a firewall rule for public networks that allows remote access only from computers in the same local subnet. By default, "Enable-PSSessionConfiguration" fails on a public network.
 
 
-This parameter is designed for client versions of the Windows operating system. By default, server versions of the Windows operating system have a local subnet firewall rule for public networks. However, if the local subnet firewall rule is disabled on a server version of the Windows operating system, this parameter re-enables it.
+This parameter is designed for client versions of the Windows operating system. Server versions of the Windows operating system have a local subnet firewall rule for public networks. However, if the local subnet firewall rule is disabled on a server version of the Windows operating system, this parameter re-enables it.
 
 
-To remove the local subnet restriction and enable remote access from all locations on public networks, use the Set-NetFirewallRule cmdlet in the NetSecurity module. For more information, see Enable-PSRemoting.
+To remove the local subnet restriction and enable remote access from all locations on public networks, use the "Set-NetFirewallRule" cmdlet in the NetSecurity module. For more information, see "Enable-PSRemoting".
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
+This parameter was introduced in PowerShell 3.0.`, `SwitchParameter`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
@@ -11781,115 +11772,19 @@ Enable-RunspaceDebug [-RunspaceInstanceId] <Guid[]> [<CommonParameters>]`,
         }
     ),
     new ConsoleCommand(
-        `Enable-VMConsoleSupport`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Enable-VMEventing`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Enable-VMIntegrationService`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Enable-VMMigration`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Enable-VMRemoteFXPhysicalVideoAdapter`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Enable-VMReplication`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Enable-VMResourceMetering`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Enable-VMSwitchExtension`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Enable-VMTPM`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
         `Enable-WindowsErrorReporting`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Enable-WindowsOptionalFeature`,
         [
 
         ],
@@ -11915,20 +11810,26 @@ Enable-RunspaceDebug [-RunspaceInstanceId] <Guid[]> [<CommonParameters>]`,
     new ConsoleCommand(
         `Enter-PSHostProcess`,
         [
-            new Parameter(`AppDomainName`, ``, `String`),
-            new Parameter(`HostProcessInfo`, ``, `PSHostProcessInfo`),
-            new Parameter(`Id`, `Specifies a process by the process ID. To get a process ID, run the Get-Process cmdlet.`, `Int32`),
-            new Parameter(`Name`, `Specifies a process by the process name. To get a process name, run the Get-Process cmdlet. You can also get process names from the Properties dialog box of a process in Task Manager.`, `String`),
-            new Parameter(`Process`, `Specifies a process by the process object. The simplest way to use this parameter is to save the results of a Get-Process command that returns process that you want to enter in a variable, and then specify the variable as the value of this parameter.`, `Process`),
+            new Parameter(`AppDomainName`, `Specifies an application domain name to connect to if omitted, uses DefaultAppDomain . Use "Get-PSHostProcessInfo" to display the application domain names.`, `String`),
+            new Parameter(`HostProcessInfo`, `Specifies a PSHostProcessInfo object that can be connected to with PowerShell. Use "Get-PSHostProcessInfo" to get the object.`, `PSHostProcessInfo`),
+            new Parameter(`Id`, `Specifies a process by the process ID. To get a process ID, run the "Get-Process" cmdlet.`, `Int32`),
+            new Parameter(`Name`, `Specifies a process by the process name. To get a process name, run the "Get-Process" cmdlet. You can also get process names from the Properties dialog box of a process in Task Manager.`, `String`),
+            new Parameter(`Process`, `Specifies a process by the process object. The simplest way to use this parameter is to save the results of a "Get-Process" command that returns process that you want to enter in a variable, and then specify the variable as the value of this parameter.`, `Process`),
+            new Parameter(`CustomPipeName`, `Gets or sets the custom named pipe name to connect to. This is usually used in conjunction with "pwsh -CustomPipeName".
+
+
+This parameter was introduced in PowerShell 6.2.`, `String`),
         ],
         `Connects to and enters into an interactive session with a local process.`,
-        `Enter-PSHostProcess [-HostProcessInfo] <PSHostProcessInfo> [[-AppDomainName] <String>] [<CommonParameters>]
+        `Enter-PSHostProcess [-Id] <Int32> [[-AppDomainName] <String>] [<CommonParameters>]
 
-Enter-PSHostProcess [-Id] <Int32> [[-AppDomainName] <String>] [<CommonParameters>]
+Enter-PSHostProcess [-Process] <Process> [[-AppDomainName] <String>] [<CommonParameters>]
 
 Enter-PSHostProcess [-Name] <String> [[-AppDomainName] <String>] [<CommonParameters>]
 
-Enter-PSHostProcess [-Process] <Process> [[-AppDomainName] <String>] [<CommonParameters>]`,
+Enter-PSHostProcess [-HostProcessInfo] <PSHostProcessInfo> [[-AppDomainName] <String>] [<CommonParameters>]
+
+Enter-PSHostProcess -CustomPipeName <String> [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -12006,7 +11907,7 @@ Note: In Windows Vista and later versions of the Windows operating system, to in
             new Parameter(`ConfigurationName`, `Specifies the session configuration that is used for the interactive session.
 
 
-Enter a configuration name or the fully qualified resource URI for a session configuration. If you specify only the configuration name, the following schema URI is prepended: http://schemas.microsoft.com/powershell.
+Enter a configuration name or the fully qualified resource URI for a session configuration. If you specify only the configuration name, the following schema URI is prepended: "http://schemas.microsoft.com/powershell".
 
 
 When used with SSH, this specifies the subsystem to use on the target as defined in sshd_config. The default value for SSH is the "powershell" subsystem.
@@ -12039,10 +11940,13 @@ If the destination computer redirects the connection to a different URI, PowerSh
             new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
 
 
-Type a user name, such as "User01", "Domain01\User01", or "User@Domain.com", or enter a PSCredential object, such as one returned by the Get-Credential cmdlet.
+Type a user name, such as User01 or Domain01\\User01 , or enter a PSCredential object generated by the "Get-Credential" cmdlet. If you type a user name, you're prompted to enter the password.
 
 
-When you type a user name, this cmdlet prompts you for a password.`, `PSCredential`),
+Credentials are stored in a PSCredential (/dotnet/api/system.management.automation.pscredential)object and the password is stored as a SecureString (/dotnet/api/system.security.securestring).
+
+
+> [!NOTE] > For more information about SecureString data protection, see > How secure is SecureString? (/dotnet/api/system.security.securestring#how-secure-is-securestring).`, `PSCredential`),
             new Parameter(`EnableNetworkAccess`, `Indicates that this cmdlet adds an interactive security token to loopback sessions. The interactive token lets you run commands in the loopback session that get data from other computers. For example, you can run a command in the session that copies XML files from a remote computer to the local computer.
 
 
@@ -12102,7 +12006,7 @@ Before using an alternate port, you must configure the WinRM listener on the rem
 
 Do not use the Port parameter unless you must. The port setting in the command applies to all computers or sessions on which the command runs. An alternate port setting might prevent the command from running on all computers. SSH (HostName parameter set) To connect to a remote computer, the remote computer must be configured with the SSH service (SSHD) and must be listening on the port that the connection uses. The default port for SSH is 22.`, `Int32`),
             new Parameter(`RunAsAdministrator`, `Indicates that the PSSession runs as administrator.`, `SwitchParameter`),
-            new Parameter(`Session`, `Specifies a Windows PowerShell session ( PSSession ) to use for the interactive session. This parameter takes a session object. You can also use the Name , InstanceID , or ID parameters to specify a PSSession .
+            new Parameter(`Session`, `Specifies a PowerShell session ( PSSession ) to use for the interactive session. This parameter takes a session object. You can also use the Name , InstanceID , or ID parameters to specify a PSSession .
 
 
 Enter a variable that contains a session object or a command that creates or gets a session object, such as a New-PSSession or Get-PSSession command. You can also pipe a session object to Enter-PSSession . You can submit only one PSSession by using this parameter. If you enter a variable that contains more than one PSSession , the command fails.
@@ -12149,7 +12053,7 @@ This parameter was introduced in PowerShell 6.0.`, `String`),
             new Parameter(`UseSSL`, `Indicates that this cmdlet uses the Secure Sockets Layer (SSL) protocol to establish a connection to the remote computer. By default, SSL is not used.
 
 
-WS-Management encrypts all Windows PowerShell content transmitted over the network. The UseSSL parameter is an additional protection that sends the data across an HTTPS connection instead of an HTTP connection.
+WS-Management encrypts all PowerShell content transmitted over the network. The UseSSL parameter is an additional protection that sends the data across an HTTPS connection instead of an HTTP connection.
 
 
 If you use this parameter, but SSL is not available on the port that is used for the command, the command fails.`, `SwitchParameter`),
@@ -12161,9 +12065,9 @@ If you use this parameter, but SSL is not available on the port that is used for
 
 Enter-PSSession [-ComputerName] <String> [[-Credential] <PSCredential>] [-ApplicationName <String>] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-CertificateThumbprint <String>] [-ConfigurationName <String>] [-EnableNetworkAccess] [-Port <Int32>] [-SessionOption <PSSessionOption>] [-UseSSL] [<CommonParameters>]
 
-Enter-PSSession [-VMId] <Guid> [-Credential] <PSCredential> [-ConfigurationName <String>] [<CommonParameters>]
+Enter-PSSession [-VMId] <Guid> [[-Credential] <PSCredential>] [-ConfigurationName <String>] [<CommonParameters>]
 
-Enter-PSSession [-VMName] <String> [-Credential] <PSCredential> [-ConfigurationName <String>] [<CommonParameters>]
+Enter-PSSession [-VMName] <String> [[-Credential] <PSCredential>] [-ConfigurationName <String>] [<CommonParameters>]
 
 Enter-PSSession [-ContainerId] <String> [-ConfigurationName <String>] [-RunAsAdministrator] [<CommonParameters>]
 
@@ -12202,6 +12106,30 @@ Enter-PSSession [-Subsystem <String>] [<CommonParameters>]`,
         ],
         `Ends an interactive session with a remote computer.`,
         `Exit-PSSession [<CommonParameters>]`,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Expand-WindowsCustomDataImage`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Expand-WindowsImage`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
         "",
         (parameters, paramDictionary) => {
 
@@ -12282,55 +12210,35 @@ Export-Alias [-Path] <String> [[-Name] <String[]>] [-Append] [-As {Csv | Script}
     new ConsoleCommand(
         `Export-Clixml`,
         [
-            new Parameter(`Depth`, `Specifies how many levels of contained objects are included in the XML representation. The default value is 2.
+            new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
+            new Parameter(`Depth`, `Specifies how many levels of contained objects are included in the XML representation. The default value is "2".
 
 
-The default value can be overridden for the object type in the Types.ps1xml files. For more information, see about_Types.ps1xml.`, `Int32`),
-            new Parameter(`Encoding`, `Specifies the type of encoding for the target file. The acceptable values for this parameter are:
+The default value can be overridden for the object type in the "Types.ps1xml" files. For more information, see about_Types.ps1xml (../Microsoft.PowerShell.Core/About/about_Types.ps1xml.md).`, `Int32`),
+            new Parameter(`Encoding`, `Specifies the type of encoding for the target file. The default value is UTF8NoBOM .
 
 
-- ASCII
+The acceptable values for this parameter are as follows:
 
 
-- UTF8
+- ASCII : Uses the encoding for the ASCII (7-bit) character set. - BigEndianUnicode : Encodes in UTF-16 format using the big-endian byte order. - OEM : Uses the default encoding for MS-DOS and console programs. - Unicode : Encodes in UTF-16 format using the little-endian byte order. - UTF7 : Encodes in UTF-7 format. - UTF8 : Encodes in UTF-8 format. - UTF8BOM : Encodes in UTF-8 format with Byte Order Mark (BOM) - UTF8NoBOM : Encodes in UTF-8 format without Byte Order Mark (BOM) - UTF32 : Encodes in UTF-32 format.
 
 
-- UTF7
-
-
-- UTF32
-
-
-- Unicode
-
-
-- BigEndianUnicode
-
-
-- Default
-
-
-- OEM
-
-
-
-
-The default value is Unicode.`, `Encoding`),
+Beginning with PowerShell 6.2, the Encoding parameter also allows numeric IDs of registered code pages (like "-Encoding 1251") or string names of registered code pages (like "-Encoding "windows-1251""). For more information, see the .NET documentation for Encoding.CodePage (/dotnet/api/system.text.encoding.codepage?view=netcore-2.2).`, `Encoding`),
             new Parameter(`Force`, `Forces the command to run without asking for user confirmation.
 
 
 Causes the cmdlet to clear the read-only attribute of the output file if necessary. The cmdlet will attempt to reset the read-only attribute when the command completes.`, `SwitchParameter`),
-            new Parameter(`InputObject`, `Specifies the object to be converted. Enter a variable that contains the objects, or type a command or expression that gets the objects. You can also pipe objects to Export-Clixml .`, `PSObject`),
-            new Parameter(`LiteralPath`, `Specifies the path to the file where the XML representation of the object will be stored. Unlike Path , the value of the LiteralPath parameter is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell Windows PowerShell not to interpret any characters as escape sequences.`, `String`),
-            new Parameter(`NoClobber`, `Indicates that the cmdlet does not overwrite the contents of an existing file. By default, if a file exists in the specified path, Export-Clixml overwrites the file without warning.`, `SwitchParameter`),
+            new Parameter(`InputObject`, `Specifies the object to be converted. Enter a variable that contains the objects, or type a command or expression that gets the objects. You can also pipe objects to "Export-Clixml".`, `PSObject`),
+            new Parameter(`LiteralPath`, `Specifies the path to the file where the XML representation of the object will be stored. Unlike Path , the value of the LiteralPath parameter is used exactly as it's typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String`),
+            new Parameter(`NoClobber`, `Indicates that the cmdlet doesn't overwrite the contents of an existing file. By default, if a file exists in the specified path, "Export-Clixml" overwrites the file without warning.`, `SwitchParameter`),
             new Parameter(`Path`, `Specifies the path to the file where the XML representation of the object will be stored.`, `String`),
-            new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
-            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
+            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet isn't run.`, `SwitchParameter`),
         ],
         `Creates an XML-based representation of an object or objects and stores it in a file.`,
-        `Export-Clixml [-Depth <Int32>] [-Encoding <Encoding>] [-Force] -InputObject <PSObject> -LiteralPath <String> [-NoClobber] [-Confirm] [-WhatIf] [<CommonParameters>]
+        `Export-Clixml [-Confirm] [-Depth <Int32>] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Force] -InputObject <PSObject> -LiteralPath <String> [-NoClobber] [-WhatIf] [<CommonParameters>]
 
-Export-Clixml [-Path] <String> [-Depth <Int32>] [-Encoding <Encoding>] [-Force] -InputObject <PSObject> [-NoClobber] [-Confirm] [-WhatIf] [<CommonParameters>]`,
+Export-Clixml [-Path] <String> [-Confirm] [-Depth <Int32>] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Force] -InputObject <PSObject> [-NoClobber] [-WhatIf] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -12359,10 +12267,13 @@ This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
             new Parameter(`Encoding`, `Specifies the encoding for the exported CSV file. The default value is UTF8NoBOM .
 
 
-The acceptable values for this parameter are:
+The acceptable values for this parameter are as follows:
 
 
-- ASCII : Uses the encoding for the ASCII (7-bit) character set. - BigEndianUnicode : Encodes in UTF-16 format using the big-endian byte order. - Default : Encodes using the default value: ASCII. - OEM : Uses the default encoding for MS-DOS and console programs. - Byte : Encodes a set of characters into a sequence of bytes. - String : Uses the encoding type for a string. - Unicode : Encodes in UTF-16 format using the little-endian byte order. - UTF7 : Encodes in UTF-7 format. - UTF8 : Encodes in UTF-8 format. - UTF8BOM : Encodes in UTF-8 format with Byte Order Mark (BOM) - UF8NOBOM : Encodes in UTF-8 format without Byte Order Mark (BOM) - UTF32 :  Encodes in UTF-32 format. - Unknown : The encoding type is unknown or invalid; the data can be treated as binary.`, `Encoding`),
+- ASCII : Uses the encoding for the ASCII (7-bit) character set. - BigEndianUnicode : Encodes in UTF-16 format using the big-endian byte order. - OEM : Uses the default encoding for MS-DOS and console programs. - Unicode : Encodes in UTF-16 format using the little-endian byte order. - UTF7 : Encodes in UTF-7 format. - UTF8 : Encodes in UTF-8 format. - UTF8BOM : Encodes in UTF-8 format with Byte Order Mark (BOM) - UTF8NoBOM : Encodes in UTF-8 format without Byte Order Mark (BOM) - UTF32 : Encodes in UTF-32 format.
+
+
+Beginning with PowerShell 6.2, the Encoding parameter also allows numeric IDs of registered code pages (like "-Encoding 1251") or string names of registered code pages (like "-Encoding "windows-1251""). For more information, see the .NET documentation for Encoding.CodePage (/dotnet/api/system.text.encoding.codepage?view=netcore-2.2).`, `Encoding`),
             new Parameter(`Force`, `This parameter allows "Export-Csv" to overwrite files with the Read Only attribute.
 
 
@@ -12381,9 +12292,9 @@ This parameter was introduced in PowerShell 6.0.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Prevents the cmdlet from being processed or making changes. The output shows what would happen if the cmdlet were run.`, `SwitchParameter`),
         ],
         `Converts objects into a series of comma-separated value (CSV) strings and saves the strings to a file.`,
-        `Export-Csv [[-Path] <String>] [[-Delimiter] <Char>] [-Append] [-Encoding <Encoding>] [-Force] [-IncludeTypeInformation] -InputObject <PSObject> [-LiteralPath <String>] [-NoClobber] [-NoTypeInformation] [-Confirm] [-WhatIf] [<CommonParameters>]
+        `Export-Csv [[-Path] <String>] [[-Delimiter] <Char>] [-Append] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Force] [-IncludeTypeInformation] -InputObject <PSObject> [-LiteralPath <String>] [-NoClobber] [-NoTypeInformation] [-Confirm] [-WhatIf] [<CommonParameters>]
 
-Export-Csv [[-Path] <String>] [-Append] [-Encoding <Encoding>] [-Force] [-IncludeTypeInformation] -InputObject <PSObject> [-LiteralPath <String>] [-NoClobber] [-NoTypeInformation] [-UseCulture] [-Confirm] [-WhatIf] [<CommonParameters>]`,
+Export-Csv [[-Path] <String>] [-Append] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Force] [-IncludeTypeInformation] -InputObject <PSObject> [-LiteralPath <String>] [-NoClobber] [-NoTypeInformation] [-UseCulture] [-Confirm] [-WhatIf] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -12398,7 +12309,7 @@ Export-Csv [[-Path] <String>] [-Append] [-Encoding <Encoding>] [-Force] [-Includ
 
 Because script blocks contain code and can be used maliciously, they are not exported by default.`, `SwitchParameter`),
             new Parameter(`InputObject`, `Specifies the format data objects to be exported. Enter a variable that contains the objects or a command that gets the objects, such as a Get-FormatData command. You can also pipe the objects from Get-FormatData to Export-FormatData .`, `ExtendedTypeDefinition[]`),
-            new Parameter(`LiteralPath`, `Specifies a location for the output file. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell Windows PowerShell not to interpret any characters as escape sequences.`, `String`),
+            new Parameter(`LiteralPath`, `Specifies a location for the output file. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String`),
             new Parameter(`NoClobber`, `Indicates that the cmdlet does not overwrite existing files. By default, Export-FormatData overwrites files without warning unless the file has the read-only attribute.
 
 
@@ -12444,92 +12355,90 @@ You cannot create cmdlets in a script module file, but you can import cmdlets fr
             new Parameter(`AllowClobber`, `Exports the specified commands, even if they have the same names as commands in the current session.
 
 
-If you import a command with the same name as a command in the current session, the imported command hides or replaces the original commands. For more information, see about_Command_Precedence. Export-PSSession does not import commands that have the same names as commands in the current session. The default behavior is designed to prevent command name conflicts.`, `SwitchParameter`),
+If you export a command with the same name as a command in the current session, the exported command hides or replaces the original commands. For more information, see about_Command_Precedence (../Microsoft.PowerShell.Core/About/about_Command_Precedence.md).`, `SwitchParameter`),
             new Parameter(`ArgumentList`, `Exports the variant of the command that results from using the specified arguments (parameter values).
 
 
-For example, to export the variant of the Get-Item command in the certificate (Cert:) drive in the PSSession in $S, type "export-pssession -session $s -command get-item -argumentlist cert:".`, `Object[]`),
-            new Parameter(`Certificate`, `Specifies the client certificate that is used to sign the format files ( .Format.ps1xml) or script module files (.psm1) in the module that Export-PSSession * creates. Enter a variable that contains a certificate or a command or expression that gets the certificate.
+For example, to export the variant of the "Get-Item" command in the certificate (Cert:) drive in the PSSession in "$S", type "export-pssession -session $S -command get-item -argumentlist cert:".`, `Object[]`),
+            new Parameter(`Certificate`, `Specifies the client certificate that is used to sign the format files (*.Format.ps1xml) or script module files (.psm1) in the module that "Export-PSSession" creates. Enter a variable that contains a certificate or a command or expression that gets the certificate.
 
 
-To find a certificate, use the Get-PfxCertificate cmdlet or use the Get-ChildItem cmdlet in the Certificate (Cert:) drive. If the certificate is not valid or does not have sufficient authority, the command fails.`, `X509Certificate2`),
+To find a certificate, use the "Get-PfxCertificate" cmdlet or use the "Get-ChildItem" cmdlet in the Certificate (Cert:) drive. If the certificate is not valid or does not have sufficient authority, the command fails.`, `X509Certificate2`),
             new Parameter(`CommandName`, `Exports only the commands with the specified names or name patterns. Wildcards are permitted. Use CommandName or its alias, Name .
 
 
-By default, Export-PSSession exports all commands from the PSSession except for commands that have the same names as commands in the current session. This prevents imported commands from hiding or replacing commands in the current session. To export all commands, even those that hide or replace other commands, use the AllowClobber parameter.
+By default, "Export-PSSession" exports all commands from the PSSession except for commands that have the same names as commands in the current session. This prevents commands from being hidden or replaced by commands in the current session. To export all commands, even those that hide or replace other commands, use the AllowClobber parameter.
 
 
 If you use the CommandName parameter, the formatting files for the commands are not exported unless you use the FormatTypeName parameter. Similarly, if you use the FormatTypeName parameter, no commands are exported unless you use the CommandName parameter.`, `String[]`),
             new Parameter(`CommandType`, `Exports only the specified types of command objects. Use CommandType or its alias, Type .
 
 
-The acceptable values for this parameter are:
+The acceptable values for this parameter are as follows:
 
 
-- Alias: All PowerShell aliases in the current session.
+- Alias. All PowerShell aliases in the current session.
 
 
-- All: All command types.
+- All. All command types. It is the equivalent of "Get-Command -Name *".
 
 
-It is the equivalent of "get-command *". - Application. All files other than PowerShell files in paths listed in the Path environment variable ($env:path), including .txt, .exe, and .dll files. - Cmdlet. The cmdlets in the current session. "Cmdlet" is the default. - ExternalScript. All .ps1 files in the paths listed in the Path environment variable ($env:path). - Filter and Function. All PowerShell functions. - Script. Script blocks in the current session.`, `CommandTypes`),
-            new Parameter(`Encoding`, `Specifies the encoding for the output files. The acceptable values for this parameter are:
+- Application. All files other than PowerShell files in paths listed in the Path environment
 
 
-- Unicode
+variable ("$env:path"), including .txt, .exe, and .dll files. - Cmdlet. The cmdlets in the current session. Cmdlet is the default.
 
 
-- UTF7
+- Configuration. A PowerShell configuration. For more information, see about_Session_Configurations (../Microsoft.PowerShell.Core/About/about_Session_Configurations.md). - ExternalScript. All .ps1 files in the paths listed in the Path environment variable   ("$env:path"). - Filter and Function. All PowerShell functions.
 
 
-- UTF8
+- Script. Script blocks in the current session.
 
 
-- ASCII
+- Workflow. A PowerShell workflow. For more information, see about_Workflows (/powershell/module/psworkflow/about/about_workflows?view=powershell-5.1).`, `CommandTypes`),
+            new Parameter(`Encoding`, `Specifies the type of encoding for the target file. The default value is UTF8NoBOM .
 
 
-- UTF32
+The acceptable values for this parameter are as follows:
 
 
-- BigEndianUnicode
+- ASCII : Uses the encoding for the ASCII (7-bit) character set. - BigEndianUnicode : Encodes in UTF-16 format using the big-endian byte order. - OEM : Uses the default encoding for MS-DOS and console programs. - Unicode : Encodes in UTF-16 format using the little-endian byte order. - UTF7 : Encodes in UTF-7 format. - UTF8 : Encodes in UTF-8 format. - UTF8BOM : Encodes in UTF-8 format with Byte Order Mark (BOM) - UTF8NoBOM : Encodes in UTF-8 format without Byte Order Mark (BOM) - UTF32 : Encodes in UTF-32 format.
 
 
-- Default
-
-
-- OEM
-
-
-
-
-The default value is UTF-8.`, `Encoding`),
+Beginning with PowerShell 6.2, the Encoding parameter also allows numeric IDs of registered code pages (like "-Encoding 1251") or string names of registered code pages (like "-Encoding "windows-1251""). For more information, see the .NET documentation for Encoding.CodePage (/dotnet/api/system.text.encoding.codepage?view=netcore-2.2).`, `Encoding`),
             new Parameter(`Force`, `Overwrites one or more existing output files, even if the file has the read-only attribute.`, `SwitchParameter`),
-            new Parameter(`FormatTypeName`, `Exports formatting instructions only for the specified Microsoft .NET Framework types. Enter the type names. By default, Export-PSSession exports formatting instructions for all .NET Framework types that are not in the System.Management.Automation namespace.
+            new Parameter(`FormatTypeName`, `Exports formatting instructions only for the specified Microsoft .NET Framework types. Enter the type names. By default, "Export-PSSession" exports formatting instructions for all .NET Framework types that are not in the System.Management.Automation namespace.
 
 
-The value of this parameter must be the name of a type that is returned by a Get-FormatData command in the session from which the commands are being imported. To get all of the formatting data in the remote session, type "*".
+The value of this parameter must be the name of a type that is returned by a "Get-FormatData" command in the session from which the commands are being imported. To get all of the formatting data in the remote session, type "*".
 
 
 If you use the FormatTypeName parameter, no commands are exported unless you use the CommandName parameter.
 
 
-Similarly, if you use the CommandName parameter, the formatting files for the commands are not exported unless you use the FormatTypeName parameter.`, `String[]`),
-            new Parameter(`FullyQualifiedModule`, `Specifies modules with names that are specified in the form of ModuleSpecification objects (described in the Remarks section of ModuleSpecification Constructor (Hashtable) (https://msdn.microsoft.com/library/jj136290) in the MSDN library). For example, the FullyQualifiedModule parameter accepts a module name that is specified in the format @{ModuleName = "modulename"; ModuleVersion = "version_number"} or @{ModuleName = "modulename"; ModuleVersion = "version_number"; Guid = "GUID"}. ModuleName and ModuleVersion are required, but Guid is optional.
+If you use the CommandName parameter, the formatting files for the commands are not exported unless you use the FormatTypeName parameter.`, `String[]`),
+            new Parameter(`FullyQualifiedModule`, `Specifies modules with names that are specified in the form of ModuleSpecification objects. See the Remarks section of ModuleSpecification Constructor (Hashtable) (https://msdn.microsoft.com/library/jj136290).
 
 
-You cannot specify the FullyQualifiedModule parameter in the same command as a Module parameter; the two parameters are mutually exclusive.`, `ModuleSpecification[]`),
+For example, the FullyQualifiedModule parameter accepts a module name that is specified in either of these formats:
+
+
+"@{ModuleName = "modulename"; ModuleVersion = "version_number"}"
+
+
+"@{ModuleName = "modulename"; ModuleVersion = "version_number"; Guid = "GUID"}" ModuleName and ModuleVersion are required, but Guid is optional. You cannot specify the FullyQualifiedModule parameter in the same command as a Module parameter; the two parameters are mutually exclusive.`, `ModuleSpecification[]`),
             new Parameter(`Module`, `Exports only the commands in the specified PowerShell snap-ins and modules. Enter the snap-in and module names. Wildcards are not permitted.
 
 
-For more information, see about_PSSnapins and Import-Module.`, `String[]`),
-            new Parameter(`OutputModule`, `Specifies a path (optional) and name for the module that Export-PSSession creates. The default path is $home\Documents\WindowsPowerShell\Modules. This parameter is required.
+For more information, see "Import-Module" and about_PSSnapins (/powershell/module/microsoft.powershell.core/about/about_pssnapins?view=powershell-5.1).`, `String[]`),
+            new Parameter(`OutputModule`, `Specifies an optional path and name for the module created by "Export-PSSession". The default path is "$home\\Documents\\WindowsPowerShell\\Modules". This parameter is required.
 
 
-If the module subdirectory or any of the files that Export-PSSession creates already exist, the command fails. To overwrite existing files, use the Force parameter.`, `String`),
-            new Parameter(`Session`, `Specifies the PSSession from which the commands are exported. Enter a variable that contains a session object or a command that gets a session object, such as a Get-PSSession command. This parameter is required.`, `PSSession`),
+If the module subdirectory or any of the files that "Export-PSSession" creates already exist, the command fails. To overwrite existing files, use the Force parameter.`, `String`),
+            new Parameter(`Session`, `Specifies the PSSession from which the commands are exported. Enter a variable that contains a session object or a command that gets a session object, such as a "Get-PSSession" command. This parameter is required.`, `PSSession`),
         ],
-        `Imports commands from another session and saves them in a PowerShell module.`,
-        `Export-PSSession [-Session] <PSSession> [-OutputModule] <String> [[-CommandName] <String[]>] [[-FormatTypeName] <String[]>] [-AllowClobber] [-ArgumentList <Object[]>] [-Certificate <X509Certificate2>] [-CommandType {Alias | Function | Filter | Cmdlet | ExternalScript | Application | Script | Workflow | Configuration | All}] [-Encoding <Encoding>] [-Force] [-FullyQualifiedModule <ModuleSpecification[]>] [-Module <String[]>] [<CommonParameters>]`,
+        `Exports commands from another session and saves them in a PowerShell module.`,
+        `Export-PSSession [-Session] <PSSession> [-OutputModule] <String> [[-CommandName] <String[]>] [[-FormatTypeName] <String[]>] [-AllowClobber] [-ArgumentList <Object[]>] [-Certificate <X509Certificate2>] [-CommandType {Alias | All | Application | Cmdlet | Configuration | ExternalScript | Filter | Function | Script | Workflow}] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Force] [-FullyQualifiedModule <ModuleSpecification[]>] [-Module <String[]>] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -12560,7 +12469,7 @@ If the module subdirectory or any of the files that Export-PSSession creates alr
         }
     ),
     new ConsoleCommand(
-        `Export-VM`,
+        `Export-WindowsCapabilitySource`,
         [
 
         ],
@@ -12572,7 +12481,19 @@ If the module subdirectory or any of the files that Export-PSSession creates alr
         }
     ),
     new ConsoleCommand(
-        `Export-VMSnapshot`,
+        `Export-WindowsDriver`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Export-WindowsImage`,
         [
 
         ],
@@ -12703,49 +12624,56 @@ The value of the Property parameter can be a new calculated property. To create 
     new ConsoleCommand(
         `Format-Hex`,
         [
-            new Parameter(`Encoding`, `Specifies the type of character encoding used in the file that this cmdlet formats as hexadecimal. The acceptable values for this parameter are:
+            new Parameter(`Encoding`, `Specifies the encoding of the output. This only applies to "[string]" input. The parameter has no effect on numeric types. The default value is UTF8NoBOM .
 
 
-- Ascii
+The acceptable values for this parameter are as follows:
 
 
-- UTF32
+- ASCII : Uses the encoding for the ASCII (7-bit) character set. - BigEndianUnicode : Encodes in UTF-16 format using the big-endian byte order. - OEM : Uses the default encoding for MS-DOS and console programs. - Unicode : Encodes in UTF-16 format using the little-endian byte order. - UTF7 : Encodes in UTF-7 format. - UTF8 : Encodes in UTF-8 format. - UTF8BOM : Encodes in UTF-8 format with Byte Order Mark (BOM) - UTF8NoBOM : Encodes in UTF-8 format without Byte Order Mark (BOM) - UTF32 : Encodes in UTF-32 format.
 
 
-- UTF7
+Beginning with PowerShell 6.2, the Encoding parameter also allows numeric IDs of registered code pages (like "-Encoding 1251") or string names of registered code pages (like "-Encoding "windows-1251""). For more information, see the .NET documentation for Encoding.CodePage (/dotnet/api/system.text.encoding.codepage?view=netcore-2.2).`, `Encoding`),
+            new Parameter(`InputObject`, `Used for pipeline input. Pipeline input supports only certain scalar types and "[system.io.fileinfo]" instances for piping from "Get-ChildItem".
 
 
-- UTF8
+The supported scalar types are:
 
 
-- BigEndianUnicode
+- "[string]", "[char]"
 
 
-- Unicode
+- "[byte]", "[sbyte]"
 
 
+- "[int16]", "[uint16]", "[short]", "[ushort]"
 
 
-The default value is Unicode.`, `Encoding`),
-            new Parameter(`InputObject`, `Specifies the objects to be formatted. Enter a variable that contains the objects or type a command or expression that gets the objects.`, `PSObject`),
-            new Parameter(`LiteralPath`, `Specifies an array of literal paths of items. This parameter does not accept wildcard characters. To use wildcard characters, specify the Path parameter instead.
+- "[int]", "[uint]", "[int32]", "[uint32]",
 
 
-If this parameter includes escape characters, enclose the path in single quotation marks. PowerShell does not interpret any characters in a single quoted string as escape sequences. For more information, type "Get-Help about_Quoting_Rules".`, `String[]`),
-            new Parameter(`Path`, `Specifies an array of paths of items. This cmdlet returns a hexadecimal representation of the items that this parameter specifies.
+- "[long]", "[ulong]", "[int64]", "[uint64]"
 
 
-Use a dot (.) to specify the current location. Use the wildcard character (*) to specify all the items in the current location.`, `String[]`),
-            new Parameter(`Raw`, ``, `SwitchParameter`),
-            new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
-            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
+- "[single]", "[float]", "[double]"`, `PSObject`),
+            new Parameter(`LiteralPath`, `Specifies the complete path to a file. The value of LiteralPath is used exactly as it is typed. This parameter does not accept wildcard characters. To specify multiple paths to files, separate the paths with a comma. If the LiteralPath parameter includes escape characters, enclose the path in single quotation marks. PowerShell does not interpret any characters in a single quoted string as escape sequences. For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
+            new Parameter(`Path`, `Specifies the path to files. Use a dot (".") to specify the current location. The wildcard character (" ") is accepted and can be used to specify all the items in a location. If the Path * parameter includes escape characters, enclose the path in single quotation marks. To specify multiple paths to files, separate the paths with a comma.`, `String[]`),
+            new Parameter(`Raw`, `This parameter no longer does anything. It is retained for script compatibility.`, `SwitchParameter`),
+            new Parameter(`Offset`, `This represents the number of bytes to skip from being part of the hex output.
+
+
+This parameter was introduced in PowerShell 6.2.`, `Int64`),
+            new Parameter(`Count`, `This represents the number of bytes to include in the hex output.
+
+
+This parameter was introduced in PowerShell 6.2.`, `Int64`),
         ],
         `Displays a file or other input as hexadecimal.`,
-        `Format-Hex [-Encoding <Encoding>] -InputObject <PSObject> [-Raw] [-Confirm] [-WhatIf] [<CommonParameters>]
+        `Format-Hex [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] -InputObject <PSObject> [-Raw] [-Offset <Int64>] [-Count <Int64>] [<CommonParameters>]
 
-Format-Hex -LiteralPath <String[]> [-Confirm] [-WhatIf] [<CommonParameters>]
+Format-Hex -LiteralPath <String[]> [-Offset <Int64>] [-Count <Int64>] [<CommonParameters>]
 
-Format-Hex [-Path] <String[]> [-Confirm] [-WhatIf] [<CommonParameters>]`,
+Format-Hex [-Path] <String[]> [-Offset <Int64>] [-Count <Int64>] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -12792,10 +12720,13 @@ If you omit this parameter, the properties that appear in the display depend on 
 The value of the Property parameter can be a new calculated property. To create a calculated property, use a hash table. Valid keys are:
 
 
+- Name (or Label) <string>
+
+
 - Expression <string> or <script block>
 
 
-- Depth <int32>`, `Object[]`),
+- FormatString <string>`, `Object[]`),
             new Parameter(`ShowError`, `Indicates that the cmdlet sends errors through the pipeline. This parameter is rarely used, but can be used as a debugging aid when you are formatting expressions in a "Format-List" command, and the expressions do not appear to be working.`, `SwitchParameter`),
             new Parameter(`View`, `Specifies the name of an alternate list format or view. You cannot use the Property and View parameters in the same command.`, `String`),
         ],
@@ -12822,67 +12753,71 @@ The value of the Property parameter can be a new calculated property. To create 
         `Format-Table`,
         [
             new Parameter(`AutoSize`, `Indicates that the cmdlet adjusts the column size and number of columns based on the width of the data. By default, the column size and number are determined by the view.`, `SwitchParameter`),
-            new Parameter(`DisplayError`, `Indicates that the cmdlet displays errors at the command line. This parameter is rarely used, but can be used as a debugging aid when you are formatting expressions in a "Format-Table" command, and the expressions do not appear to be working.`, `SwitchParameter`),
-            new Parameter(`Expand`, `Specifies the format of the collection object, as well as the objects in the collection. This parameter is designed to format objects that support the ICollection (System.Collections) interface. The default value is EnumOnly . The acceptable values for this parameter are:
+            new Parameter(`DisplayError`, `Indicates that the cmdlet displays errors on the command line. This parameter can be used as a debugging aid when you're formatting expressions in a "Format-Table" command and need to troubleshoot the expressions.`, `SwitchParameter`),
+            new Parameter(`Expand`, `Specifies the format of the collection object and the objects in the collection. This parameter is designed to format objects that support the ICollection (/dotnet/api/system.collections.icollection)( System.Collections (/dotnet/api/system.collections))interface. The default value is EnumOnly . The acceptable values for this parameter are as follows:
 
 
-- EnumOnly: Displays the properties of the objects in the collection.
-
-
-- CoreOnly: Displays the properties of the collection object.
-
-
-- Both: Displays the properties of the collection object and the properties of objects in the
-
-
-collection.`, `String`),
-            new Parameter(`Force`, `Indicates that the cmdlet directs the cmdlet to display all of the error information. Use with the DisplayError or ShowError parameter. By default, when an error object is written to the error or display streams, only some of the error information is displayed.`, `SwitchParameter`),
+- EnumOnly : Displays the properties of the objects in the collection. - CoreOnly : Displays the properties of the collection object. - Both : Displays the properties of the collection object and the properties of objects in the   collection.`, `String`),
+            new Parameter(`Force`, `Indicates that the cmdlet directs the cmdlet to display all the error information. Use with the DisplayError or ShowError parameter. By default, when an error object is written to the error or display streams, only some of the error information is displayed.`, `SwitchParameter`),
             new Parameter(`GroupBy`, `Specifies sorted output in separate tables based on a property value. For example, you can use GroupBy to list services in separate tables based on their status.
 
 
-Enter an expression or a property of the output. The output must be sorted before you send it to "Format-Table".
+Enter an expression or a property. The GroupBy parameter expects that the objects are sorted. Use the "Sort-Object" cmdlet before using "Format-Table" to group the objects.
 
 
-The value of the GroupBy parameter can be a new calculated property. To create a calculated, property, use a hash table. Valid keys are:
+The value of the GroupBy parameter can be a new calculated property. To create a calculated, property, use a hash table. The valid keys are as follows:
 
 
-- Name (or Label) <string>
+- Name (or Label) = "<string>"
 
 
-- Expression <string> or <script block>
+- Expression = "<string>" or "<script block>"
 
 
-- FormatString <string>`, `Object`),
+- FormatString = "<string>"`, `Object`),
             new Parameter(`HideTableHeaders`, `Omits the column headings from the table.`, `SwitchParameter`),
             new Parameter(`InputObject`, `Specifies the objects to format. Enter a variable that contains the objects, or type a command or expression that gets the objects.`, `PSObject`),
-            new Parameter(`Property`, `Specifies the object properties that appear in the display and the order in which they appear. Type one or more property names (separated by commas), or use a hash table to display a calculated property. Wildcards are permitted.
+            new Parameter(`Property`, `Specifies the object properties that appear in the display and the order in which they appear. Type one or more property names, separated by commas, or use a hash table to display a calculated property. Wildcards are permitted.
 
 
-If you omit this parameter, the properties that appear in the display depend on the object being displayed. The parameter name "Property" is optional. You cannot use the Property and View parameters in the same command.
+If you omit this parameter, the properties that appear in the display depend on the first object's properties. For example, if the first object has PropertyA and PropertyB but subsequent objects have PropertyA , PropertyB , and PropertyC , then only the PropertyA and PropertyB headers will display.
 
 
-The value of the Property parameter can be a new calculated property. To create a calculated property, use a hash table. Valid keys are:
+The Property parameter is optional. You can't use the Property and View parameters in the same command.
 
 
-- Name (or Label) <string>
+The value of the Property parameter can be a new calculated property. To create a calculated property, use a hash table. The valid keys are as follows:
 
 
-- Expression <string> or <script block>
+- Name (or Label) = "<string>"
 
 
-- FormatString <string>
+- Expression = "<string>" or "<script block>"
 
 
-- Width <int32>
+- FormatString = "<string>"
 
 
-- Alignment (value can be "Left", "Center", or "Right")`, `Object[]`),
-            new Parameter(`ShowError`, `Sends errors through the pipeline. This parameter is rarely used, but can be used as a debugging aid when you are formatting expressions in a "Format-Table" command, and the expressions do not appear to be working.`, `SwitchParameter`),
-            new Parameter(`View`, `Specifies the name of an alternate table format or view. You cannot use the Property and View parameters in the same command.`, `String`),
+- Width = "<int32>"
+
+
+- Alignment = value can be Left, Center, or Right`, `Object[]`),
+            new Parameter(`RepeatHeader`, `Repeats displaying the header of a table after every screen full. The repeated header is useful when the output is piped to a pager such as "less" or "more" or paging with a screen reader.`, `SwitchParameter`),
+            new Parameter(`ShowError`, `This parameter sends errors through the pipeline. This parameter can be used as a debugging aid when you're formatting expressions in a "Format-Table" command and need to troubleshoot the expressions.`, `SwitchParameter`),
+            new Parameter(`View`, `Beginning in PowerShell 6, the default views are defined in PowerShell "C#" source code. The "*.format.ps1xml" files from PowerShell 5.1 and earlier versions don't exist in PowerShell 6 and later versions.
+
+
+The View parameter lets you specify an alternate format or custom view for the table. You can use the default PowerShell views or create custom views. For more information about how to create a custom view, see about_Format.ps1xml (../Microsoft.PowerShell.Core/About/about_Format.ps1xml.md).
+
+
+The alternate and custom views for the View parameter must use the table format, otherwise, "Format-Table" fails. If the alternate view is a list, use the "Format-List" cmdlet. If the alternate view isn't a list or a table, use the "Format-Custom" cmdlet.
+
+
+You can't use the Property and View parameters in the same command.`, `String`),
             new Parameter(`Wrap`, `Displays text that exceeds the column width on the next line. By default, text that exceeds the column width is truncated.`, `SwitchParameter`),
         ],
         `Formats the output as a table.`,
-        `Format-Table [[-Property] <Object[]>] [-AutoSize] [-DisplayError] [-Expand {CoreOnly | EnumOnly | Both}] [-Force] [-GroupBy <Object>] [-HideTableHeaders] [-InputObject <PSObject>] [-ShowError] [-View <String>] [-Wrap] [<CommonParameters>]`,
+        `Format-Table [[-Property] <Object[]>] [-AutoSize] [-DisplayError] [-Expand {CoreOnly | EnumOnly | Both}] [-Force] [-GroupBy <Object>] [-HideTableHeaders] [-InputObject <PSObject>] [-RepeatHeader] [-ShowError] [-View <String>] [-Wrap] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -12963,13 +12898,13 @@ The value of the Property parameter can be a new calculated property. To create 
     new ConsoleCommand(
         `Get-Alias`,
         [
-            new Parameter(`Definition`, `Specifies an array of aliases for the specified item. Enter the name of a cmdlet, function, script, file, or executable file.
+            new Parameter(`Definition`, `Gets the aliases for the specified item. Enter the name of a cmdlet, function, script, file, or executable file.
 
 
 This parameter is called Definition , because it searches for the item name in the Definition property of the alias object.`, `String[]`),
-            new Parameter(`Exclude`, `Specifies an array of items that this cmdlet omits. The value of this parameter qualifies the Name and Definition parameters. Enter a name, a definition, or a pattern, such as s*. Wildcards are permitted.`, `String[]`),
-            new Parameter(`Name`, `Specifies the aliases that this cmdlet gets. Wildcards are permitted. By default, "Get-Alias" retrieves all aliases defined for the current session. The parameter name Name is optional. The parameter values cannot be null or empty. You can also pipe alias names to "Get-Alias".`, `String[]`),
-            new Parameter(`Scope`, `Gets only the aliases in the specified scope. The acceptable values for this parameter are:
+            new Parameter(`Exclude`, `Omits the specified items. The value of this parameter qualifies the Name and Definition parameters. Enter a name, a definition, or a pattern, such as "s*". Wildcards are permitted.`, `String[]`),
+            new Parameter(`Name`, `Specifies the aliases that this cmdlet gets. Wildcards are permitted. By default, "Get-Alias" retrieves all aliases defined for the current session. The parameter name Name is optional. You can also pipe alias names to "Get-Alias".`, `String[]`),
+            new Parameter(`Scope`, `Specifies the scope for which this cmdlet gets aliases. The acceptable values for this parameter are:
 
 
 - Global
@@ -13034,6 +12969,18 @@ Get-Alias [[-Name] <String[]>] [-Exclude <String[]>] [-Scope <String>] [<CommonP
         }
     ),
     new ConsoleCommand(
+        `Get-AppxProvisionedPackage`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
         `Get-AppxVolume`,
         [
 
@@ -13069,98 +13016,79 @@ For example, to get non-system files (not directories) that are encrypted or com
 "Get-ChildItem -Attributes !Directory+!System+Encrypted, !Directory+!System+Compressed"
 
 
-To find files and folders with commonly used attributes, you can use the "-Attributes" parameter, or the "-Directory", "-File", "-Hidden", "-ReadOnly", and "-System" switch parameters.
+To find files and folders with commonly used attributes, use the Attributes parameter. Or, the parameters Directory , File , Hidden , ReadOnly , and System .
 
 
-The "-Attributes" parameter supports the following attributes:
+The Attributes parameter supports the following properties:
 
 
 - Archive - Compressed - Device - Directory - Encrypted - Hidden - IntegrityStream - Normal - NoScrubData - NotContentIndexed - Offline - ReadOnly - ReparsePoint - SparseFile - System - Temporary For a description of these attributes, see the FileAttributes Enumeration (/dotnet/api/system.io.fileattributes).
 
 
-Use the following operators to combine attributes:
+To combine attributes, use the following operators:
 
 
-- "!"   (NOT)
+- "!" (NOT)
 
 
-- "+"   (AND)
+- "+" (AND)
 
 
-- ","   (OR)
+- "," (OR)
 
 
 
 
-No spaces are permitted between an operator and its attribute. However, spaces are permitted before commas.
+Do not use spaces between an operator and its attribute. Spaces are accepted after commas.
 
 
-You can use the following abbreviations for commonly used attributes:
+For common attributes, use the following abbreviations:
 
 
-- "D"   (Directory)
+- "D" (Directory)
 
 
-- "H"   (Hidden)
+- "H" (Hidden)
 
 
-- "R"   (Read-only)
+- "R" (Read-only)
 
-- "S"   (System)`, `System.Management.Automation.FlagsExpression^1[System.IO.FileAttributes]`),
-            new Parameter(`Depth`, `This parameter, added in Windows Powershell 5.0 enables you to control the depth of recursion. You use both the "-Recurse" and the "-Depth" parameter to limit the recursion.`, `UInt32`),
-            new Parameter(`Directory`, `Gets directories (folders).
-
-
-To get only directories, use the "-Directory" parameter and omit the "-File" parameter. To exclude directories, use the "-File" parameter and omit the "-Directory" parameter, or use the "-Attributes" parameter.
+- "S" (System)`, `System.Management.Automation.FlagsExpression^1[System.IO.FileAttributes]`),
+            new Parameter(`Depth`, `This parameter was added in PowerShell 5.0 and enables you to control the depth of recursion. By default, "Get-ChildItem" displays the contents of the parent directory. The Depth parameter determines the number of subdirectory levels that are included in the recursion and displays the contents.
 
 
-To get directories, use the Directory parameter, its "ad" alias, or the Directory attribute of the "-Attributes" parameter.`, `SwitchParameter`),
-            new Parameter(`Exclude`, `Specifies, as a string array, a property or property that this cmdlet excludes from the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`File`, `Gets files.
+For example, "Depth 2" includes the Path parameter's directory, first level of subdirectories, and second level of subdirectories. By default directory names and file names are included in the output.
 
 
-To get only files, use the "-File" parameter and omit the Directory parameter. To exclude files, use the "-Directory" parameter and omit the "-File" parameter, or use the "-Attributes" parameter.
+> [!NOTE] > On a Windows computer from PowerShell or cmd.exe , you can display a graphical view of a > directory structure with the tree.com command.`, `UInt32`),
+            new Parameter(`Directory`, `To get a list of directories, use the Directory parameter or the Attributes parameter with the Directory property. You can use the Recurse parameter with Directory .`, `SwitchParameter`),
+            new Parameter(`Exclude`, `Specifies, as a string array, a property or property that this cmdlet excludes from the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as " .txt" or "A ". Wildcard characters are accepted.
 
 
-To get files, use the File parameter, its "af" alias, or the File value of the "-Attributes" parameter.`, `SwitchParameter`),
-            new Parameter(`Filter`, `Specifies a filter in the format or language of the provider. The value of this parameter qualifies the Path parameter.
+A trailing asterisk (" ") in the Path * parameter is optional. For example, "-Path C:\\Test\\Logs" or "-Path C:\\Test\\Logs\ ". If a trailing asterisk (" ") is included, the command recurses into the Path parameter's subdirectories. Without the asterisk (" "), the contents of the Path * parameter are displayed. More details are included in Example 5 and the Notes section.`, `String[]`),
+            new Parameter(`File`, `To get a list of files, use the File parameter. You can use the Recurse parameter with File .`, `SwitchParameter`),
+            new Parameter(`Filter`, `Specifies a filter to qualify the Path parameter. The FileSystem (../Microsoft.PowerShell.Core/About/about_FileSystem_Provider.md)provider is the only installed PowerShell provider that supports the use of filters. Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved. The filter string is passed to the .NET API to enumerate files. That API only supports "*" and "?" wildcards.`, `String`),
+            new Parameter(`FollowSymlink`, `By default, the "Get-ChildItem" cmdlet displays symbolic links to directories found during recursion, but does not recurse into them. Use the FollowSymlink parameter to search the directories that target those symbolic links. The FollowSymlink is a dynamic parameter and is supported only in the FileSystem provider.
 
 
-The syntax of the filter, including the use of wildcard characters, depends on the provider. Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
-            new Parameter(`FollowSymlink`, `{{Fill FollowSymlink Description}}`, `SwitchParameter`),
-            new Parameter(`FollowSymlink`, `By default, the "Get-ChildItem" cmdlet displays symbolic links to directories found during recursion, but does not recurse into them. Use the FollowSymlink switch to search the directories that those symbolic links target. The FollowSymlink is a dynamic parameter and it is supported only in the FileSystem provider.`, `SwitchParameter`),
-            new Parameter(`Force`, `Allows the cmdlet to get items that cannot otherwise not be accessed by the user, such as hidden or system files. Implementation varies among providers.
+This parameter was introduced in PowerShell 6.0.`, `SwitchParameter`),
+            new Parameter(`Force`, `Allows the cmdlet to get items that cannot otherwise not be accessed by the user, such as hidden or system files. The Force parameter does not override security restrictions. Implementation varies among providers. For more information, see about_Providers (../Microsoft.PowerShell.Core/About/about_Providers.md).`, `SwitchParameter`),
+            new Parameter(`Hidden`, `To get only hidden items, use the Hidden parameter or the Attributes parameter with the Hidden property. By default, "Get-ChildItem" does not display hidden items. Use the Force parameter to get hidden items.`, `SwitchParameter`),
+            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "" .txt"". Wildcard characters are permitted. The Include * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`LiteralPath`, `Specifies a path to one or more locations. The value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
 
 
-For more information, see about_Provider (../Microsoft.PowerShell.Core/About/about_Providers.md).
-
-
-Even when using the "-Force" parameter, the cmdlet cannot override security restrictions.`, `SwitchParameter`),
-            new Parameter(`Hidden`, `Gets only hidden files and directories (folders).  By default, "Get-ChildItem" gets only non-hidden items, but you can use the "-Force" parameter to include hidden items in the results.
-
-
-To get only hidden items, use the "-Hidden" parameter, its "h" or "ah" aliases, or the Hidden value of the "-Attributes" parameter. To exclude hidden items, omit the "-Hidden" parameter or use the "-Attributes" parameter.`, `SwitchParameter`),
-            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.
-
-
-The "-Include" parameter is effective only when the command includes the "-Recurse" parameter or the path leads to the contents of a directory, such as C:\Windows\ , where the "" "" wildcard character specifies the contents of the C:\Windows directory.`, `String[]`),
-            new Parameter(`LiteralPath`, `Specifies a path to one or more locations. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
-            new Parameter(`Name`, `Gets only the names of the items in the locations. If you pipe the output of this command to another command, only the item names are sent.`, `SwitchParameter`),
-            new Parameter(`Path`, `Specifies a path to one or more locations. Wildcards are permitted. The default location is the current directory (".").`, `String[]`),
-            new Parameter(`ReadOnly`, `Gets only read-only files and directories (folders).
-
-
-To get only read-only items, use the "-ReadOnly" parameter, its "ar" alias, or the ReadOnly value of the "-Attributes" parameter. To exclude read-only items, use the "-Attributes" parameter.`, `SwitchParameter`),
+For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
+            new Parameter(`Name`, `Gets only the names of the items in the location. The output is a string object that can be sent down the pipeline to other commands. Wildcards are permitted.`, `SwitchParameter`),
+            new Parameter(`Path`, `Specifies a path to one or more locations. Wildcards are accepted. The default location is the current directory (".").`, `String[]`),
+            new Parameter(`ReadOnly`, `To get only read-only items, use the ReadOnly parameter or the Attributes parameter ReadOnly property.`, `SwitchParameter`),
             new Parameter(`Recurse`, `Gets the items in the specified locations and in all child items of the locations.`, `SwitchParameter`),
-            new Parameter(`System`, `Gets only system files and directories (folders).
-
-
-To get only system files and folders, use the "-System" parameter, its "as" alias, or the System value of the "-Attributes" parameter. To exclude system files and folders, use the "-Attributes" parameter.`, `SwitchParameter`),
+            new Parameter(`System`, `Gets only system files and directories. To get only system files and folders, use the System parameter or Attributes parameter System property.`, `SwitchParameter`),
         ],
         `Gets the items and child items in one or more specified locations.`,
-        `Get-ChildItem [[-Filter] <String>] [-Attributes {ReadOnly | Hidden | System | Directory | Archive | Device | Normal | Temporary | SparseFile | ReparsePoint | Compressed | Offline | NotContentIndexed | Encrypted | IntegrityStream | NoScrubData}] [-Depth <UInt32>] [-Directory] [-Exclude <String[]>] [-File] [-FollowSymlink] [-FollowSymlink] [-Force] [-Hidden] [-Include <String[]>] -LiteralPath <String[]> [-Name] [-ReadOnly] [-Recurse] [-System] [<CommonParameters>]
+        `Get-ChildItem [[-Filter] <String>] [-Attributes {Archive | Compressed | Device | Directory | Encrypted | Hidden | IntegrityStream | Normal | NoScrubData | NotContentIndexed | Offline | ReadOnly | ReparsePoint | SparseFile | System | Temporary}] [-Depth <UInt32>] [-Directory] [-Exclude <String[]>] [-File] [-FollowSymlink] [-Force] [-Hidden] [-Include <String[]>] -LiteralPath <String[]> [-Name] [-ReadOnly] [-Recurse] [-System] [<CommonParameters>]
 
-Get-ChildItem [[-Path] <String[]>] [[-Filter] <String>] [-Attributes {ReadOnly | Hidden | System | Directory | Archive | Device | Normal | Temporary | SparseFile | ReparsePoint | Compressed | Offline | NotContentIndexed | Encrypted | IntegrityStream | NoScrubData}] [-Depth <UInt32>] [-Directory] [-Exclude <String[]>] [-File] [-FollowSymlink] [-FollowSymlink] [-Force] [-Hidden] [-Include <String[]>] [-Name] [-ReadOnly] [-Recurse] [-System] [<CommonParameters>]`,
+Get-ChildItem [[-Path] <String[]>] [[-Filter] <String>] [-Attributes {Archive | Compressed | Device | Directory | Encrypted | Hidden | IntegrityStream | Normal | NoScrubData | NotContentIndexed | Offline | ReadOnly | ReparsePoint | SparseFile | System | Temporary}] [-Depth <UInt32>] [-Directory] [-Exclude <String[]>] [-File] [-FollowSymlink] [-Force] [-Hidden] [-Include <String[]>] [-Name] [-ReadOnly] [-Recurse] [-System] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -13229,16 +13157,16 @@ Get-ChildItem [[-Path] <String[]>] [[-Filter] <String>] [-Attributes {ReadOnly |
     new ConsoleCommand(
         `Get-Command`,
         [
-            new Parameter(`All`, `Indicates that this cmdlet gets all commands, including commands of the same type that have the same name. By default, Get-Command gets only the commands that run when you type the command name.
+            new Parameter(`All`, `Indicates that this cmdlet gets all commands, including commands of the same type that have the same name. By default, "Get-Command" gets only the commands that run when you type the command name.
 
 
-For more information about the method that PowerShell uses to select the command to run when multiple commands have the same name, see about_Command_Precedence (About/about_Command_Precedence.md)in the TechNet library. For information about module-qualified command names and running commands that do not run by default because of a name conflict, see about_Modules (About/about_Modules.md).
+For more information about the method that PowerShell uses to select the command to run when multiple commands have the same name, see about_Command_Precedence (About/about_Command_Precedence.md). For information about module-qualified command names and running commands that do not run by default because of a name conflict, see about_Modules (About/about_Modules.md).
 
 
 This parameter was introduced in Windows PowerShell 3.0.
 
 
-In Windows PowerShell 2.0, Get-Command gets all commands by default.`, `SwitchParameter`),
+In Windows PowerShell 2.0, "Get-Command" gets all commands by default.`, `SwitchParameter`),
             new Parameter(`ArgumentList`, `Specifies an array of arguments. This cmdlet gets information about a cmdlet or function when it is used with the specified parameters ("arguments"). The alias for ArgumentList is Args .
 
 
@@ -13246,44 +13174,50 @@ To detect dynamic parameters that are available only when certain other paramete
 
 
 To detect the dynamic parameters that a provider adds to a cmdlet, set the value of the ArgumentList parameter to a path in the provider drive, such as WSMan:, HKLM:, or Cert:. When the command is a PowerShell provider cmdlet, enter only one path in each command. The provider cmdlets return only the dynamic parameters for the first path the value of ArgumentList . For information about the provider cmdlets, see about_Providers (About/about_Providers.md).`, `Object[]`),
-            new Parameter(`CommandType`, `Specifies the  types of commands that this cmdlet gets. Enter one or more command types. Use CommandType or its alias, Type . By default, Get-Command gets all cmdlets, functions, and aliases.
+            new Parameter(`CommandType`, `Specifies the types of commands that this cmdlet gets. Enter one or more command types. Use CommandType or its alias, Type . By default, "Get-Command" gets all cmdlets, functions, and aliases.
 
 
 The acceptable values for this parameter are:
 
 
-- Alias. Gets the aliases of all PowerShell commands.   For more information, see about_Aliases (About/about_Aliases.md). - All. Gets all command types. This parameter value is the equivalent of "Get-Command *".
+- Alias. Gets the aliases of all PowerShell commands. For more information, see about_Aliases (About/about_Aliases.md). - All. Gets all command types. This parameter value is the equivalent of "Get-Command *".
 
 
-- Application. Gets non-Windows-PowerShell files in paths listed in the Path environment variable ($env:path), including .txt, .exe, and .dll files. For more information about the Path environment variable, see about_Environment_Variables. - Cmdlet. Gets all cmdlets.
+- Application. Gets non-PowerShell files in paths listed in the Path environment   variable ($env:path), including .txt, .exe, and .dll files. For more information about the Path environment variable, see about_Environment_Variables. - Cmdlet. Gets all cmdlets.
 
 
-- ExternalScript. Gets all .ps1 files in the paths listed in the Path environment variable ($env:path). - Filter and Function. Gets all PowerShell advanced and simple functions and filters.
+- ExternalScript. Gets all .ps1 files in the paths listed in the Path environment variable   ($env:path). - Filter and Function. Gets all PowerShell advanced and simple functions and filters.
 
 
-- Script. Gets all script blocks. To get PowerShell scripts (.ps1 files), use the ExternalScript value.`, `CommandTypes`),
-            new Parameter(`FullyQualifiedModule`, `Specifies modules with names that are specified in the form of ModuleSpecification objects, described in the Remarks section of ModuleSpecification Constructor (Hashtable) (https://msdn.microsoft.com/library/jj136290)in the MSDN library. For example, the FullyQualifiedModule parameter accepts a module name that is specified in the format @{ModuleName = "modulename"; ModuleVersion = "version_number"} or @{ModuleName = "modulename"; ModuleVersion = "version_number"; Guid = "GUID"}. ModuleName and ModuleVersion are required, but Guid is optional.
+- Script. Gets all script blocks. To get PowerShell scripts (.ps1 files), use the ExternalScript
+
+
+value.`, `CommandTypes`),
+            new Parameter(`FullyQualifiedModule`, `Specifies modules with names that are specified in the form of ModuleSpecification objects, described in the Remarks section of ModuleSpecification Constructor (Hashtable) (/dotnet/api/microsoft.powershell.commands.modulespecification.-ctor?view=powershellsdk-1.1.0#Microsoft_PowerShell_Commands_ModuleSpecification__ctor_System_Collections_Hashtable_). For example, the FullyQualifiedModule parameter accepts a module name that is specified in one of the following formats:
+
+
+- "@{ModuleName = "modulename"; ModuleVersion = "version_number"}"
+
+
+- "@{ModuleName = "modulename"; ModuleVersion = "version_number"; Guid = "GUID"}" ModuleName and ModuleVersion are required, but Guid is optional.
 
 
 You cannot specify the FullyQualifiedModule parameter in the same command as a Module parameter. The two parameters are mutually exclusive.`, `ModuleSpecification[]`),
             new Parameter(`ListImported`, `Indicates that this cmdlet gets only commands in the current session.
 
 
-Starting in Windows PowerShell 3.0, by default, Get-Command gets all installed commands, including, but not limited to, the commands in the current session. In Windows PowerShell 2.0, it gets only commands in the current session.
+Starting in PowerShell 3.0, by default, "Get-Command" gets all installed commands, including, but not limited to, the commands in the current session. In PowerShell 2.0, it gets only commands in the current session.
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
-            new Parameter(`Module`, `Specifies an array of modules. This cmdlet gets the commands that came from the specified modules or snap-ins. Enter the names of modules or snap-ins, or enter snap-in or module objects.
+            new Parameter(`Module`, `Specifies an array of modules. This cmdlet gets the commands that came from the specified modules. Enter the names of modules or module objects.
 
 
-This parameter takes string values, but the value of this parameter can also be a PSModuleInfo or PSSnapinInfo object, such as the objects that the Get-Module, Get-PSSnapin, and Import-PSSession cmdlets return.
-
-
-You can refer to this parameter by its name, Module , or by its alias, PSSnapin . The parameter name that you choose has no effect on the command output.`, `String[]`),
+This parameter takes string values, but the value of this parameter can also be a PSModuleInfo object, such as the objects that the "Get-Module" and "Import-PSSession" cmdlets return.`, `String[]`),
             new Parameter(`Name`, `Specifies an array of names. This cmdlet gets only commands that have the specified name. Enter a name or name pattern. Wildcard characters are permitted.
 
 
-To get commands that have the same name, use the All parameter. When two commands have the same name, by default, Get-Command gets the command that runs when you type the command name.`, `String[]`),
+To get commands that have the same name, use the All parameter. When two commands have the same name, by default, "Get-Command" gets the command that runs when you type the command name.`, `String[]`),
             new Parameter(`Noun`, `Specifies an array of command nouns. This cmdlet gets commands, which include cmdlets, functions, and aliases, that have names that include the specified noun. Enter one or more nouns or noun patterns. Wildcard characters are permitted.`, `String[]`),
             new Parameter(`ParameterName`, `Specifies an array of parameter names. This cmdlet gets commands in the session that have the specified parameters. Enter parameter names or parameter aliases. Wildcard characters are supported.
 
@@ -13302,13 +13236,7 @@ This parameter was introduced in Windows PowerShell 3.0.`, `PSTypeName[]`),
             new Parameter(`ShowCommandInfo`, `Indicates that this cmdlet displays command information.
 
 
-For more information about the method that PowerShell uses to select the command to run when multiple commands have the same name, see about_Command_Precedence (About/about_Command_Precedence.md). For information about module-qualified command names and running commands that do not run by default because of a name conflict, see about_Modules (About/about_Modules.md).
-
-
-This parameter was introduced in Windows PowerShell 3.0.
-
-
-In Windows PowerShell 2.0, Get-Command gets all commands by default.`, `SwitchParameter`),
+This parameter was introduced in Windows PowerShell 5.0.`, `SwitchParameter`),
             new Parameter(`Syntax`, `Indicates that this cmdlet gets only the following specified data about the command:
 
 
@@ -13323,12 +13251,13 @@ In Windows PowerShell 2.0, Get-Command gets all commands by default.`, `SwitchPa
 
 - Scripts and applications or files. Gets the path and filename.`, `SwitchParameter`),
             new Parameter(`TotalCount`, `Specifies the number of commands to get. You can use this parameter to limit the output of a command.`, `Int32`),
+            new Parameter(`UseFuzzyMatching`, `Indicates using a fuzzy matching algorithm when finding commands. The order of the output is from closest match to least likely match. Wildcards should not be used with fuzzy matching as it will attempt to match commands that may contain those wildcard characters.`, `SwitchParameter`),
             new Parameter(`Verb`, `Specifies an array of command verbs. This cmdlet gets commands, which include cmdlets, functions, and aliases, that have names that include the specified verb. Enter one or more verbs or verb patterns. Wildcard characters are permitted.`, `String[]`),
         ],
         `Gets all commands.`,
-        `Get-Command [[-Name] <String[]>] [[-ArgumentList] <Object[]>] [-All] [-CommandType {Alias | Function | Filter | Cmdlet | ExternalScript | Application | Script | Workflow | Configuration | All}] [-FullyQualifiedModule <ModuleSpecification[]>] [-ListImported] [-Module <String[]>] [-ParameterName <String[]>] [-ParameterType <PSTypeName[]>] [-ShowCommandInfo] [-Syntax] [-TotalCount <Int32>] [<CommonParameters>]
+        `Get-Command [[-Name] <String[]>] [[-ArgumentList] <Object[]>] [-All] [-CommandType {Alias | Function | Filter | Cmdlet | ExternalScript | Application | Script | Workflow | Configuration | All}] [-FullyQualifiedModule <ModuleSpecification[]>] [-ListImported] [-Module <String[]>] [-ParameterName <String[]>] [-ParameterType <PSTypeName[]>] [-ShowCommandInfo] [-Syntax] [-TotalCount <Int32>] [-UseFuzzyMatching] [<CommonParameters>]
 
-Get-Command [[-ArgumentList] <Object[]>] [-All] [-FullyQualifiedModule <ModuleSpecification[]>] [-ListImported] [-Module <String[]>] [-Noun <String[]>] [-ParameterName <String[]>] [-ParameterType <PSTypeName[]>] [-ShowCommandInfo] [-Syntax] [-TotalCount <Int32>] [-Verb <String[]>] [<CommonParameters>]`,
+Get-Command [-Noun <String[]>] [-Verb <String[]>] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -13349,8 +13278,11 @@ Get-Command [[-ArgumentList] <Object[]>] [-All] [-FullyQualifiedModule <ModuleSp
     new ConsoleCommand(
         `Get-Content`,
         [
-            new Parameter(`Path`, `Specifies the path to an item. "Get-Content" gets the content of the item. Wildcards are permitted.`, `String[]`),
-            new Parameter(`LiteralPath`, `Specifies the path to an item. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell Windows PowerShell not to interpret any characters as escape sequences.`, `String[]`),
+            new Parameter(`Path`, `Specifies the path to an item where "Get-Content" gets the content. Wildcard characters are permitted. The paths must be paths to items, not to containers. For example, you must specify a path to one or more files, not a path to a directory.`, `String[]`),
+            new Parameter(`LiteralPath`, `Specifies a path to one or more locations. The value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
+
+
+For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
             new Parameter(`ReadCount`, `Specifies how many lines of content are sent through the pipeline at a time. The default value is 1. A value of 0 (zero) sends all of the content at one time.
 
 
@@ -13358,81 +13290,54 @@ This parameter does not change the content displayed, but it does affect the tim
             new Parameter(`TotalCount`, `Specifies the number of lines from the beginning of a file or other item. The default is -1 (all lines).
 
 
-You can use the "TotalCount" parameter name or its aliases, "First" or "Head".`, `Int64`),
-            new Parameter(`Tail`, `Specifies the number of lines from the end of a file or other item.
+You can use the TotalCount parameter name or its aliases, First or Head .`, `Int64`),
+            new Parameter(`Tail`, `Specifies the number of lines from the end of a file or other item. You can use the Tail parameter name or its alias, Last . This parameter was introduced in PowerShell 3.0.`, `Int32`),
+            new Parameter(`Filter`, `Specifies a filter to qualify the Path parameter. The FileSystem (../Microsoft.PowerShell.Core/About/about_FileSystem_Provider.md)provider is the only installed PowerShell provider that supports the use of filters. You can find the syntax for the FileSystem filter language in about_Wildcards (../Microsoft.PowerShell.Core/About/about_Wildcards.md). Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
+            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "" .txt"". Wildcard characters are permitted. The Include * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes in the operation. The value of this parameter qualifies the Path parameter.
 
 
-This parameter was introduced in Windows PowerShell 3.0.
+Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.
 
 
-You can use the Tail parameter name or its alias, Last .`, `Int32`),
-            new Parameter(`Filter`, `Specifies a filter in the provider's format or language. The value of this parameter qualifies the Path parameter. The syntax of the filter, including the use of wildcards, depends on the provider. Filters are more efficient than other parameters, because the provider applies them when this cmdlet gets the objects, rather than having Windows PowerShell filter the objects after they are retrieved.`, `String`),
-            new Parameter(`Include`, `Specifies, as a string array, the item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as *.txt. Wildcards are permitted.`, `String[]`),
-            new Parameter(`Exclude`, `Specifies, as a string array, the item or items that this cmdlet omits when performing the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as *.txt. Wildcards are permitted.`, `String[]`),
-            new Parameter(`Force`, `Overrides restrictions that prevent the command from succeeding, provided the changes do not compromise security. For example, Force will override the read-only attribute or create directories to complete a file path, but it will not attempt to change file permissions.`, `SwitchParameter`),
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
+The Exclude parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`Force`, `Force will override a read-only attribute or create directories to complete a file path. The Force parameter does not attempt to change file permissions or override security restrictions.`, `SwitchParameter`),
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
+            new Parameter(`Delimiter`, `Specifies the delimiter that "Get-Content" uses to divide the file into objects while it reads. The default is "\\n", the end-of-line character. When reading a text file, "Get-Content" returns a collection of string objects, each of which ends with an end-of-line character. When you enter a delimiter that does not exist in the file, "Get-Content" returns the entire file as a single, undelimited object.
 
 
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you will be prompted for a password.
+You can use this parameter to split a large file into smaller files by specifying a file separator, as the delimiter. The delimiter is preserved (not discarded) and becomes the last item in each file section. Delimiter is a dynamic parameter that the FileSystem provider adds to the "Get-Content" cmdlet. This parameter works only in file system drives.
 
 
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
-            new Parameter(`Delimiter`, `Specifies the delimiter that "Get-Content" uses to divide the file into objects while it reads. The default is "\n", the end-of-line character. When reading a text file, "Get-Content" returns a collection of string objects, each of which ends with an end-of-line character. When you enter a delimiter that does not exist in the file, "Get-Content" returns the entire file as a single, un-delimited object.
+> [!NOTE] > Currently, when the value of the Delimiter parameter is an empty string, "Get-Content" does > not return anything. This is a known issue. To force "Get-Content" to return the entire file as > a single, undelimited string. Enter a value that does not exist in the file.`, `String`),
+            new Parameter(`Wait`, `Keeps the file open after all existing lines have been output. While waiting, "Get-Content" checks the file once each second and outputs new lines if present. You can interrupt Wait by pressing CTRL+C . Waiting also ends if the file gets deleted, in which case a non-terminating error is reported. Wait is a dynamic parameter that the FileSystem provider adds to the "Get-Content" cmdlet. This parameter works only in file system drives. Wait cannot be combined with Raw .`, `SwitchParameter`),
+            new Parameter(`Raw`, `Ignores newline characters and returns the entire contents of a file in one string with the newlines preserved. By default, newline characters in a file are used as delimiters to separate the input into an array of strings. This parameter was introduced in PowerShell 3.0. Raw is a dynamic parameter that the FileSystem provider adds to the "Get-Content" cmdlet This parameter works only in file system drives.`, `SwitchParameter`),
+            new Parameter(`Encoding`, `Specifies the type of encoding for the target file. The default value is UTF8NoBOM .
 
 
-You can use this parameter to split a large file into smaller files by specifying a file separator, as the delimiter. The delimiter is preserved (not discarded) and becomes the last item in each file section.
+The acceptable values for this parameter are as follows:
 
 
-"-Delimiter" is a dynamic parameter that the FileSystem provider adds to the "Get-Content" cmdlet  This parameter works only in file system drives.
-
-
-> [!NOTE] > Currently, when the value of the "-Delimiter" parameter is an empty string, > "Get-Content" does not return anything. > This is a known issue > To force "Get-Content" to return the entire file as a single, un-delimited string, > enter a value that does not exist in the file.`, `String`),
-            new Parameter(`Wait`, `Keeps the file open after all existing lines have been output. While waiting, "Get-Content" checks the file once each second and outputs new lines if present. You can interrupt "-Wait" by pressing  CTRL+C. Waiting also ends if the file gets deleted, in which case a non-terminating error is reported.
-
-
-"-Wait" is a dynamic parameter that the FileSystem provider adds to the "Get-Content" cmdlet. This parameter works only in file system drives. "-Wait" cannot be combined with "-Raw"`, `SwitchParameter`),
-            new Parameter(`Raw`, `Ignores newline characters and returns the entire contents of a file in one string with the newlines preserved. By default, newline characters in a file are used as delimiters to separate the input into an array of strings.
-
-
-"-Raw" is a dynamic parameter that the FileSystem provider adds to the "Get-Content" cmdlet  This parameter works only in file system drives.
-
-
-This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
-            new Parameter(`Encoding`, `Specifies the file encoding  The default is UTF8NoBOM.
-
-
-Acceptable values are any valid "System.Text.Encoding" instance and the following strings are allowed:
-
-
-- ASCII : Uses the encoding for the ASCII (7-bit) character set. - BigEndianUnicode : Encodes in UTF-16 format using the big-endian byte order. - OEM : Uses UTF8NoBOM on non-Windows and the encoding for MS-DOS and console programs on Windows. - String : Uses Unicode encoding. - Unicode : Encodes in UTF-16 format using the little-endian byte order. - UTF7 : Encodes in UTF-7 format. - UTF8 : Encodes in UTF-8 format without Byte Order Mark (BOM). - UTF8BOM : Encodes in UTF-8 format with Byte Order Mark (BOM) - UF8NoBOM : Encodes in UTF-8 format without Byte Order Mark (BOM) - UTF32 :  Encodes in UTF-32 format. - Unknown : The encoding type is unknown, but is treated as Unicode.
+- ASCII : Uses the encoding for the ASCII (7-bit) character set. - BigEndianUnicode : Encodes in UTF-16 format using the big-endian byte order. - OEM : Uses the default encoding for MS-DOS and console programs. - Unicode : Encodes in UTF-16 format using the little-endian byte order. - UTF7 : Encodes in UTF-7 format. - UTF8 : Encodes in UTF-8 format. - UTF8BOM : Encodes in UTF-8 format with Byte Order Mark (BOM) - UTF8NoBOM : Encodes in UTF-8 format without Byte Order Mark (BOM) - UTF32 : Encodes in UTF-32 format.
 
 
 Encoding is a dynamic parameter that the FileSystem provider adds to the "Get-Content" cmdlet. This parameter is available only in file system drives.
 
 
-When reading from and writing to binary files, use the "-AsByteStream" parameter and a value of 0 for the ReadCount parameter. A ReadCount value of 0 reads the entire file in a single read operation. The default ReadCount value, 1, reads one byte in each read operation and converts each byte into a separate object, which causes errors when you use the "Set-Content" cmdlet to write the bytes to a file unless you use "-AsByteStream" parameter. For more information, see the examples.
+When reading from and writing to binary files, use the AsByteStream parameter and a value of 0 for the ReadCount parameter. A ReadCount value of 0 reads the entire file in a single read operation. The default ReadCount value, 1, reads one byte in each read operation and converts each byte into a separate object, which causes errors when you use the "Set-Content" cmdlet to write the bytes to a file unless you use AsByteStream parameter.
 
 
-> [!NOTE] > Beginning in PowerShell 6.0, the type of the Encoding parameter changed from > "FileSystemCmdletProviderEncoding" to "System.Text.Encoding", and Byte is no longer > a valid option for the "-Encoding" parameter. > You can use the "-AsByteStream" parameter to indicate that the content should be read and > output as a byte stream.`, `System.Text.Encoding`),
-            new Parameter(`Stream`, `Gets the contents of the specified alternate NTFS file stream from the file. Enter the stream name. Wildcards are not supported.
+Beginning with PowerShell 6.2, the Encoding parameter also allows numeric IDs of registered code pages (like "-Encoding 1251") or string names of registered code pages (like "-Encoding "windows-1251""). For more information, see the .NET documentation for Encoding.CodePage (/dotnet/api/system.text.encoding.codepage?view=netcore-2.2).`, `Encoding`),
+            new Parameter(`Stream`, `Gets the contents of the specified alternate NTFS file stream from the file. Enter the stream name. Wildcards are not supported. Stream is a dynamic parameter that the FileSystem provider adds to the "Get-Content" cmdlet. This parameter works only in file system drives on Windows systems. This parameter was introduced in Windows PowerShell 3.0.`, `String`),
+            new Parameter(`AsByteStream`, `Specifies that the content should be read as a stream of bytes. The AsByteStream parameter was introduced in Windows PowerShell 6.0.
 
 
-Stream is a dynamic parameter that the FileSystem provider adds to the "Get-Content" cmdlet. This parameter works only in file system drives on Windows systems.
-
-
-This parameter was introduced in Windows PowerShell 3.0.`, `String`),
-            new Parameter(`AsByteStream`, `Specifies that the content should be read as a stream of bytes.
-
-
-A warning occurs when you use the "-AsByteStream" parameter with the "-Encoding" parameter. The "-AsByteStream" parameter ignores any encoding and the output is returned as a stream of bytes.
-
-
-This parameter was introduced in Windows PowerShell 6.0.`, `SwitchParameter`),
+A warning occurs when you use the AsByteStream parameter with the Encoding parameter. The AsByteStream parameter ignores any encoding and the output is returned as a stream of bytes.`, `SwitchParameter`),
         ],
         `Gets the content of the item at the specified location.`,
-        `Get-Content [-Path] <String[]> [-ReadCount <Int64>] [-TotalCount <Int64>] [-Tail <Int32>] [-Filter <String>] [-Include <String[]>] [-Exclude <String[]>] [-Force] [-Credential <PSCredential>] [-Delimiter <String>] [-Wait] [-Raw] [-Encoding {A "System.Text.Encoding" object | ASCII | BigEndianUnicode | OEM | String | Unicode | UTF7 | UTF8 | UTF8BOM | UF8NoBOM | UTF32 | Unknown}] [-Stream <String>] [-AsByteStream] [<CommonParameters>]
+        `Get-Content [-Path] <String[]> [-ReadCount <Int64>] [-TotalCount <Int64>] [-Tail <Int32>] [-Filter <String>] [-Include <String[]>] [-Exclude <String[]>] [-Force] [-Credential <PSCredential>] [-Delimiter <String>] [-Wait] [-Raw] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Stream <String>] [-AsByteStream] [<CommonParameters>]
 
-Get-Content -LiteralPath <String[]> [-ReadCount <Int64>] [-TotalCount <Int64>] [-Tail <Int32>] [-Filter <String>] [-Include <String[]>] [-Exclude <String[]>] [-Force] [-Credential <PSCredential>] [-Delimiter <String>] [-Wait] [-Raw] [-Encoding {A "System.Text.Encoding" object | ASCII | BigEndianUnicode | OEM | String | Unicode | UTF7 | UTF8 | UTF8BOM | UF8NoBOM | UTF32 | Unknown}] [-Stream <String>] [-AsByteStream] [<CommonParameters>]`,
+Get-Content -LiteralPath <String[]> [-ReadCount <Int64>] [-TotalCount <Int64>] [-Tail <Int32>] [-Filter <String>] [-Include <String[]>] [-Exclude <String[]>] [-Force] [-Credential <PSCredential>] [-Delimiter <String>] [-Wait] [-Raw] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Stream <String>] [-AsByteStream] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -13465,10 +13370,25 @@ Get-Content -LiteralPath <String[]> [-ReadCount <Int64>] [-TotalCount <Int64>] [
     new ConsoleCommand(
         `Get-Culture`,
         [
+            new Parameter(`ListAvailable`, `Retrieves all cultures supported by the current operating system.
 
+
+This parameter was introduced in PowerShell 6.2.`, `SwitchParameter`),
+            new Parameter(`Name`, `Retrieve a specific culture based on the name.
+
+
+This parameter was introduced in PowerShell 6.2.`, `String[]`),
+            new Parameter(`NoUserOverrides`, `Ignore user changes for current culture.
+
+
+This parameter was introduced in PowerShell 6.2.`, `SwitchParameter`),
         ],
         `Gets the current culture set in the operating system.`,
-        `Get-Culture [<CommonParameters>]`,
+        `Get-Culture [-ListAvailable] [<CommonParameters>]
+
+Get-Culture [-Name <String[]>] [-NoUserOverrides] [<CommonParameters>]
+
+Get-Culture [-NoUserOverrides] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -13489,58 +13409,163 @@ Get-Content -LiteralPath <String[]> [-ReadCount <Int64>] [-TotalCount <Int64>] [
     new ConsoleCommand(
         `Get-Date`,
         [
-            new Parameter(`Date`, `Specifies a date and time. By default, "Get-Date" gets the current system date and time.
+            new Parameter(`Date`, `Specifies a date and time. Time is optional and if not specified, returns 00:00:00.
 
 
-Type the date in a format that is standard for the system locale, such as dd-MM-yyyy (German [Germany]) or MM/dd/yyyy (English [United States]).`, `DateTime`),
-            new Parameter(`Day`, `Specifies the day of the month that is displayed. Enter a value from 1 to 31. The default is the current day.
+Enter the date and time in a format that is standard for the system locale.
 
 
-If you specify a value that is greater than the number of days in the month, PowerShell adds the number of days to the month and displays the result. For example, ""Get-Date -Month 2 -Day 31"" displays "March 3", not "February 31".`, `Int32`),
+For example, in US English:
+
+
+"Get-Date -Date "6/25/2019 12:30:22"" returns Tuesday, June 25, 2019 12:30:22`, `DateTime`),
+            new Parameter(`Day`, `Specifies the day of the month that is displayed. Enter a value from 1 to 31.
+
+
+If the specified value is greater than the number of days in a month, PowerShell adds the number of days to the month. For example, "Get-Date -Month 2 -Day 31" displays March 3 , not February 31 .`, `Int32`),
             new Parameter(`DisplayHint`, `Determines which elements of the date and time are displayed.
 
 
-Valid values are:
+The accepted values are as follows:
 
 
-- Date : displays only the date - Time : displays only the time - DateTime : displays the date and time DateTime is the default. This parameter does not affect the DateTime object that "Get-Date" gets.`, `DisplayHintType`),
-            new Parameter(`Format`, `Displays the date and time in the Microsoft .NET Framework format indicated by the format specifier. Enter a format specifier. For a list of available format specifiers, see DateTimeFormatInfo Class (/dotnet/api/system.globalization.datetimeformatinfo).
+- Date : displays only the date - Time : displays only the time - DateTime : displays the date and time`, `DisplayHintType`),
+            new Parameter(`Format`, `Displays the date and time in the Microsoft .NET Framework format indicated by the format specifier. The Format parameter outputs a String object.
 
 
-When you use the "-Format" parameter, PowerShell gets only the properties of the DateTime object that it needs to display the date in the format that you specify. As a result, some of the properties and methods of DateTime objects might not be available.
+For a list of available .NET format specifiers, see Custom date and time format strings (/dotnet/standard/base-types/custom-date-and-time-format-strings?view=netframework-4.8).
 
 
-Starting in Windows PowerShell 5.0, you can use the following additional formats as values for the "-Format" parameter.
+When the Format parameter is used, "Get-Date" only gets the DateTime object's properties necessary to display the date. As a result, some of the properties and methods of DateTime objects might not be available.
 
 
-- FileDate. A file or path-friendly representation of the current date in local time. It is in the form of yyyyMMdd (case-sensitive, using a 4-digit year, 2-digit month, and 2-digit day). An example of results when you use this format is 20150302.
+Starting in PowerShell 5.0, you can use the following additional formats as values for the Format parameter.
 
 
-- FileDateUniversal. A file or path-friendly representation of the current date in universal time (UTC). It is in the form of yyyyMMddZ (case-sensitive, using a 4-digit year, 2-digit month, 2-digit day, and the letter "Z" as the UTC indicator). An example of results when you use this format is 20150302Z.
+- FileDate . A file or path-friendly representation of the current date in local time. The format   is "yyyyMMdd" (case-sensitive, using a 4-digit year, 2-digit month, and 2-digit day). For example:   20190627.
 
 
-- FileDateTime. A file or path-friendly representation of the current date and time in local time, in 24-hour format. It is in the form of yyyyMMddTHHmmssffff (case-sensitive, using a 4-digit year, 2-digit month, 2-digit day, the letter "T" as a time separator, 2-digit hour, 2-digit minute, 2-digit second, and 4-digit millisecond). An example of results when you use this format is 20150302T1240514987.
+- FileDateUniversal . A file or path-friendly representation of the current date in universal   time (UTC). The format is "yyyyMMddZ" (case-sensitive, using a 4-digit year, 2-digit month,   2-digit day, and the letter "Z" as the UTC indicator). For example: 20190627Z.
 
 
-- FileDateTimeUniversal. A file or path-friendly representation of the current date and time in universal time (UTC), in 24-hour format. It is in the form of yyyyMMddTHHmmssffffZ (case-sensitive, using a 4-digit year, 2-digit month, 2-digit day, the letter "T" as a time separator, 2-digit hour, 2-digit minute, 2-digit second, 4-digit millisecond, and the letter "Z" as the UTC indicator). An example of results when you use this format is 20150302T0840539947Z.`, `String`),
-            new Parameter(`Hour`, `Specifies the hour that is displayed. Enter a value from 0 to 23. The default is the current hour.`, `Int32`),
-            new Parameter(`Millisecond`, `Specifies the milliseconds in the date. Enter a value from 0 to 999. The default is the current number of milliseconds.
+- FileDateTime . A file or path-friendly representation of the current date and time in local   time, in 24-hour format. The format is "yyyyMMddTHHmmssffff" (case-sensitive, using a 4-digit   year, 2-digit month, 2-digit day, the letter "T" as a time separator, 2-digit hour, 2-digit   minute, 2-digit second, and 4-digit millisecond). For example: 20190627T0840107271.
 
 
-This parameter is introduced in Windows PowerShell 3.0.`, `Int32`),
-            new Parameter(`Minute`, `Specifies the minute that is displayed. Enter a value from 0 to 59. The default value is the current minutes.`, `Int32`),
-            new Parameter(`Month`, `Specifies the month that is displayed. Enter a value from 1 to 12. The default is the current month.`, `Int32`),
-            new Parameter(`Second`, `Specifies the second that is displayed. Enter a value from 0 to 59. The default is the current second.`, `Int32`),
-            new Parameter(`UFormat`, `Displays the date and time in UNIX format. For a list of the format specifiers, see the Notes section.
+- FileDateTimeUniversal . A file or path-friendly representation of the current date and time in   universal time (UTC), in 24-hour format. The format is "yyyyMMddTHHmmssffffZ" (case-sensitive,   using a 4-digit year, 2-digit month, 2-digit day, the letter "T" as a time separator, 2-digit   hour, 2-digit minute, 2-digit second, 4-digit millisecond, and the letter "Z" as the UTC   indicator). For example: 20190627T1540500718Z.`, `String`),
+            new Parameter(`Hour`, `Specifies the hour that is displayed. Enter a value from 0 to 23.`, `Int32`),
+            new Parameter(`Millisecond`, `Specifies the milliseconds in the date. Enter a value from 0 to 999.
 
 
-When you use the "-UFormat" parameter, PowerShell gets only the properties of the DateTime object that it needs to display the date in the format that you specify. As a result, some of the properties and methods of DateTime objects might not be available.`, `String`),
-            new Parameter(`Year`, `Specifies the year that is displayed. Enter a value from 1 to 9999. The default is the current year.`, `Int32`),
+This parameter was introduced in PowerShell 3.0.`, `Int32`),
+            new Parameter(`Minute`, `Specifies the minute that is displayed. Enter a value from 0 to 59.`, `Int32`),
+            new Parameter(`Month`, `Specifies the month that is displayed. Enter a value from 1 to 12.`, `Int32`),
+            new Parameter(`Second`, `Specifies the second that is displayed. Enter a value from 0 to 59.`, `Int32`),
+            new Parameter(`UFormat`, `Displays the date and time in UNIX format. The UFormat parameter outputs a string object. UFormat specifiers are preceded by a percent sign ("%"), for example, "%m", "%d", and "%Y". The Notes (#notes)section contains a table of valid UFormat specifiers .
+
+
+When the UFormat parameter is used, "Get-Date" only gets the DateTime object's properties necessary to display the date. As a result, some of the properties and methods of DateTime objects might not be available.`, `String`),
+            new Parameter(`Year`, `Specifies the year that is displayed. Enter a value from 1 to 9999.`, `Int32`),
         ],
         `Gets the current date and time.`,
         `Get-Date [[-Date] <DateTime>] [-Day <Int32>] [-DisplayHint {Date | Time | DateTime}] [-Format <String>] [-Hour <Int32>] [-Millisecond <Int32>] [-Minute <Int32>] [-Month <Int32>] [-Second <Int32>] [-Year <Int32>] [<CommonParameters>]
 
 Get-Date [[-Date] <DateTime>] [-Day <Int32>] [-DisplayHint {Date | Time | DateTime}] [-Hour <Int32>] [-Millisecond <Int32>] [-Minute <Int32>] [-Month <Int32>] [-Second <Int32>] [-UFormat <String>] [-Year <Int32>] [<CommonParameters>]`,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-DeliveryOptimizationLog`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-DeliveryOptimizationPerfSnap`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-DeliveryOptimizationPerfSnapThisMonth`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-DeliveryOptimizationStatus`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-DOConfig`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-DODownloadMode`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-DOPercentageMaxBackgroundBandwidth`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-DOPercentageMaxForegroundBandwidth`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
         "",
         (parameters, paramDictionary) => {
 
@@ -13592,13 +13617,10 @@ Get-EventSubscriber [-SubscriptionId] <Int32> [[-Force]] [<CommonParameters>]`,
     new ConsoleCommand(
         `Get-ExperimentalFeature`,
         [
-            new Parameter(`ListAvailable`, ``, `switch`),
-            new Parameter(`Name`, ``, `string[]`),
+            new Parameter(`Name`, `Name or names of specific experimental features to return.`, `String[]`),
         ],
-        `Get-ExperimentalFeature [[-Name] <string[]>] [-ListAvailable] [<CommonParameters>]`,
-        `syntaxItem
-----------
-{@{name=Get-ExperimentalFeature; CommonParameters=True; parameter=System.Object[]}}`,
+        `Gets experimental features.`,
+        `Get-ExperimentalFeature [[-Name] <String[]>] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -13648,7 +13670,7 @@ Get-FileHash [-Path] <String[]> [[-Algorithm] {SHA1 | SHA256 | SHA384 | SHA512 |
     new ConsoleCommand(
         `Get-FormatData`,
         [
-            new Parameter(`PowerShellVersion`, `Specify the version of PowerShell this cmdlet gets for the formatting data. Enter a two digit number seperated by a period.`, `Version`),
+            new Parameter(`PowerShellVersion`, `Specify the version of PowerShell this cmdlet gets for the formatting data. Enter a two digit number separated by a period.`, `Version`),
             new Parameter(`TypeName`, `Specifies the type names that this cmdlet gets for the formatting data. Enter the type names. Wildcards are permitted.`, `String[]`),
         ],
         `Gets the formatting data in the current session.`,
@@ -13661,7 +13683,10 @@ Get-FileHash [-Path] <String[]> [[-Algorithm] {SHA1 | SHA256 | SHA384 | SHA512 |
     new ConsoleCommand(
         `Get-Help`,
         [
-            new Parameter(`Category`, `Displays help only for items in the specified category and their aliases. The acceptable values for this parameter are:
+            new Parameter(`Category`, `Displays help only for items in the specified category and their aliases. Conceptual articles are in the HelpFile category.
+
+
+The acceptable values for this parameter are as follows:
 
 
 - Alias
@@ -13712,60 +13737,49 @@ Get-FileHash [-Path] <String[]> [[-Algorithm] {SHA1 | SHA256 | SHA384 | SHA512 |
 - Class
 
 
-- Configuration
-
-
-
-
-Conceptual topics are in the HelpFile category.`, `String[]`),
-            new Parameter(`Component`, `Displays commands with the specified component value, such as "Exchange." Enter a component name. Wildcard characters are permitted.
-
-
-This parameter has no effect on displays of conceptual ("About_") help.`, `String[]`),
-            new Parameter(`Detailed`, `Adds parameter descriptions and examples to the basic help display.
-
-
-This parameter is effective only when help files are for the command are installed on the computer. It has no effect on displays of conceptual ("About_") help.`, `SwitchParameter`),
+- Configuration`, `String[]`),
+            new Parameter(`Component`, `Displays commands with the specified component value, such as Exchange . Enter a component name. Wildcard characters are permitted. This parameter has no effect on displays of conceptual ( About_ ) help.`, `String[]`),
+            new Parameter(`Detailed`, `Adds parameter descriptions and examples to the basic help display. This parameter is effective only when the help files are installed on the computer. It has no effect on displays of conceptual ( About_ ) help.`, `SwitchParameter`),
             new Parameter(`Examples`, `Displays only the name, synopsis, and examples. To display only the examples, type "(Get-Help <cmdlet-name>).Examples".
 
 
-This parameter is effective only when help files are for the command are installed on the computer. It has no effect on displays of conceptual ("About_") help.`, `SwitchParameter`),
-            new Parameter(`Full`, `Displays the whole help topic for a cmdlet. This includes parameter descriptions and attributes, examples, input and output object types, and additional notes.
+This parameter is effective only when the help files are installed on the computer. It has no effect on displays of conceptual ( About_ ) help.`, `SwitchParameter`),
+            new Parameter(`Full`, `Displays the entire help article for a cmdlet. Full includes parameter descriptions and attributes, examples, input and output object types, and additional notes.
 
 
-This parameter is effective only when help files are for the command are installed on the computer. It has no effect on displays of conceptual ("About_") help.`, `SwitchParameter`),
-            new Parameter(`Functionality`, `Displays help for items with the specified functionality. Enter the functionality. Wildcard characters are permitted.
+This parameter is effective only when the help files are installed on the computer. It has no effect on displays of conceptual ( About_ ) help.`, `SwitchParameter`),
+            new Parameter(`Functionality`, `Displays help for items with the specified functionality. Enter the functionality. Wildcard characters are permitted. This parameter has no effect on displays of conceptual ( About_ ) help.`, `String[]`),
+            new Parameter(`Name`, `Gets help about the specified command or concept. Enter the name of a cmdlet, function, provider, script, or workflow, such as "Get-Member", a conceptual article name, such as "about_Objects", or an alias, such as "ls". Wildcard characters are permitted in cmdlet and provider names, but you can't use wildcard characters to find the names of function help and script help articles.
 
 
-This parameter has no effect on displays of conceptual ("About_") help.`, `String[]`),
-            new Parameter(`Name`, `Gets help about the specified command or concept. Enter the name of a cmdlet, function, provider, script, or workflow, such as "Get-Member", a conceptual topic name, such as "about_Objects", or an alias, such as "ls". Wildcard characters are permitted in cmdlet and provider names, but you cannot use wildcard characters to find the names of function help and script help topics.
+To get help for a script that isn't located in a path that's listed in the "$env:Path" environment variable, type the script's path and file name.
 
 
-To get help for a script that is not located in a path that is listed in the Path environment variable, type the path and file name of the script.
+If you enter the exact name of a help article, "Get-Help" displays the article contents.
 
 
-If you enter the exact name of a help topic, Get-Help displays the topic contents. If you enter a word or word pattern that appears in several help topic titles, Get-Help displays a list of the matching titles. If you enter a word that does not match any help topic titles, Get-Help displays a list of topics that include that word in their contents.
+If you enter a word or word pattern that appears in several help article titles, "Get-Help" displays a list of the matching titles.
 
 
-The names of conceptual topics, such as "about_Objects", must be entered in English, even in non-English versions of PowerShell.`, `String`),
-            new Parameter(`Online`, `Displays the online version of a help topic in the default Internet browser. This parameter is valid only for cmdlet, function, workflow and script help topics. You cannot use the Online parameter in Get-Help commands in a remote session.
+If you enter a word that doesn't match any help article titles, "Get-Help" displays a list of articles that include that word in their contents.
 
 
-For information about supporting this feature in help topics that you write, see about_Comment_Based_Help (About/about_Comment_Based_Help.md), and [Supporting Online Help](/powershell/developer/module/supporting-online-help), and [How to Write Cmdlet Help](https://go.microsoft.com/fwlink/?LinkID=123415)in the Microsoft Docs.`, `SwitchParameter`),
-            new Parameter(`Parameter`, `Displays only the detailed descriptions of the specified parameters. Wildcards are permitted.
+The names of conceptual articles, such as "about_Objects", must be entered in English, even in non-English versions of PowerShell.`, `String`),
+            new Parameter(`Online`, `Displays the online version of a help article in the default browser. This parameter is valid only for cmdlet, function, workflow, and script help articles. You can't use the Online parameter with "Get-Help" in a remote session.
 
 
-This parameter has no effect on displays of conceptual ("About_") help.`, `String`),
+For information about supporting this feature in help articles that you write, see about_Comment_Based_Help (./About/about_Comment_Based_Help.md), and Supporting Online Help (/powershell/scripting/developer/module/supporting-online-help), and Writing Help for PowerShell Cmdlets (/powershell/scripting/developer/help/writing-help-for-windows-powershell-cmdlets).`, `SwitchParameter`),
+            new Parameter(`Parameter`, `Displays only the detailed descriptions of the specified parameters. Wildcards are permitted. This parameter has no effect on displays of conceptual ( About_ ) help.`, `String`),
             new Parameter(`Path`, `Gets help that explains how the cmdlet works in the specified provider path. Enter a PowerShell provider path.
 
 
-This parameter gets a customized version of a cmdlet help topic that explains how the cmdlet works in the specified PowerShell provider path. This parameter is effective only for help about a provider cmdlet and only when the provider includes a custom version of the provider cmdlet help topic in its help file. To use this parameter, install the help file for the module that includes the provider.
+This parameter gets a customized version of a cmdlet help article that explains how the cmdlet works in the specified PowerShell provider path. This parameter is effective only for help about a provider cmdlet and only when the provider includes a custom version of the provider cmdlet help article in its help file. To use this parameter, install the help file for the module that includes the provider.
 
 
-To see the custom cmdlet help for a provider path, go to the provider path location and enter a Get-Help command or, from any path location, use the Path parameter of Get-Help to specify the provider path. You can also find custom cmdlet help online in the provider help section of the help topics.
+To see the custom cmdlet help for a provider path, go to the provider path location and enter a "Get-Help" command or, from any path location, use the Path parameter of "Get-Help" to specify the provider path. You can also find custom cmdlet help online in the provider help section of the help articles.
 
 
-For more information about PowerShell providers, see about_Providers (About/about_Providers.md).`, `String`),
+For more information about PowerShell providers, see about_Providers (./About/about_Providers.md).`, `String`),
             new Parameter(`Role`, `Displays help customized for the specified user role. Enter a role. Wildcard characters are permitted.
 
 
@@ -13781,30 +13795,6 @@ Get-Help [[-Name] <String>] [-Category {Alias | Cmdlet | Provider | General | FA
 Get-Help [[-Name] <String>] [-Category {Alias | Cmdlet | Provider | General | FAQ | Glossary | HelpFile | ScriptCommand | Function | Filter | ExternalScript | All | DefaultHelp | Workflow | DscResource | Class | Configuration}] [-Component <String[]>] [-Functionality <String[]>] -Online [-Path <String>] [-Role <String[]>] [<CommonParameters>]
 
 Get-Help [[-Name] <String>] [-Category {Alias | Cmdlet | Provider | General | FAQ | Glossary | HelpFile | ScriptCommand | Function | Filter | ExternalScript | All | DefaultHelp | Workflow | DscResource | Class | Configuration}] [-Component <String[]>] [-Functionality <String[]>] -Parameter <String> [-Path <String>] [-Role <String[]>] [<CommonParameters>]`,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-HgsTrace`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-HgsTraceFileData`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
         "",
         (parameters, paramDictionary) => {
 
@@ -13841,35 +13831,20 @@ In Windows PowerShell 2.0, by default, Get-History gets the 32 most recent entri
     new ConsoleCommand(
         `Get-Item`,
         [
-            new Parameter(`Stream`, `Gets the specified alternate NTFS file stream from the file. Enter the stream name. Wildcards are supported. To get all streams, use an asterisk (*). This parameter is not valid on folders.
-
-
-Stream is a dynamic parameter that the FileSystem provider adds to the "Get-Item" cmdlet. This parameter works only in file system drives.`, `String[]`),
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
-
-
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you are prompted for a password.
-
-
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
-            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.
-
-
-The Exclude parameter is effective only when the command includes the contents of an item, such as "C:\Windows*", where the wildcard character specifies the contents of the "C:\Windows" directory.`, `String[]`),
-            new Parameter(`Filter`, `Specifies a filter in the format or language of the provider. The value of this parameter qualifies the Path parameter.
-
-
-The syntax of the filter, including the use of wildcard characters, depends on the provider. Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
+            new Parameter(`Stream`, `Gets the specified alternate NTFS file stream from the file. Enter the stream name. Wildcards are supported. To get all streams, use an asterisk ("*"). This parameter is not valid on folders. Stream is a dynamic parameter that the FileSystem provider adds to the "Get-Item" cmdlet. This parameter works only in file system drives.`, `String[]`),
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
+            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as " .txt". Wildcard characters are permitted. The Exclude * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`Filter`, `Specifies a filter to qualify the Path parameter. The FileSystem (../Microsoft.PowerShell.Core/About/about_FileSystem_Provider.md)provider is the only installed PowerShell provider that supports the use of filters. You can find the syntax for the FileSystem filter language in about_Wildcards (../Microsoft.PowerShell.Core/About/about_Wildcards.md). Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
             new Parameter(`Force`, `Indicates that this cmdlet gets items that cannot otherwise be accessed, such as hidden items. Implementation varies from provider to provider. For more information, see about_Providers (../Microsoft.PowerShell.Core/About/about_Providers.md). Even using the Force parameter, the cmdlet cannot override security restrictions.`, `SwitchParameter`),
-            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.
+            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "" .txt"". Wildcard characters are permitted. The Include * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`LiteralPath`, `Specifies a path to one or more locations. The value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
 
 
-The Include parameter is effective only when the command includes the contents of an item, such as "C:\Windows*", where the wildcard character specifies the contents of the "C:\Windows" directory.`, `String[]`),
-            new Parameter(`LiteralPath`, `Specifies a path to the item. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
-            new Parameter(`Path`, `Specifies the path to an item. This cmdlet gets the item at the specified location. Wildcards are permitted. This parameter is required, but the parameter name ("Path") is optional.
+For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
+            new Parameter(`Path`, `Specifies the path to an item. This cmdlet gets the item at the specified location. Wildcard characters are permitted. This parameter is required, but the parameter name Path is optional.
 
 
-Use a dot ('.') to specify the current location. Use the wildcard character ('*') to specify all the items in the current location.`, `String[]`),
+Use a dot (".") to specify the current location. Use the wildcard character ("*") to specify all the items in the current location.`, `String[]`),
         ],
         `Gets the item at the specified location.`,
         `Get-Item [-Stream <String[]>] [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] -LiteralPath <String[]> [<CommonParameters>]
@@ -13883,22 +13858,16 @@ Get-Item [-Path] <String[]> [-Stream <String[]>] [-Credential <PSCredential>] [-
     new ConsoleCommand(
         `Get-ItemProperty`,
         [
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
+            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as " .txt". Wildcard characters are permitted. The Exclude * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`Filter`, `Specifies a filter to qualify the Path parameter. The FileSystem (../Microsoft.PowerShell.Core/About/about_FileSystem_Provider.md)provider is the only installed PowerShell provider that supports the use of filters. You can find the syntax for the FileSystem filter language in about_Wildcards (../Microsoft.PowerShell.Core/About/about_Wildcards.md). Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
+            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "" .txt"". Wildcard characters are permitted. The Include * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`LiteralPath`, `Specifies a path to one or more locations. The value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
 
 
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you are prompted for a password.
-
-
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
-            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes from the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`Filter`, `Specifies a filter in the format or language of the provider. The value of this parameter qualifies the Path parameter.
-
-
-The syntax of the filter, including the use of wildcard characters, depends on the provider. Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
-            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`LiteralPath`, `Specifies the path to the current location of the property. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
-            new Parameter(`Name`, `Specifies the name of the property or properties to retrieve.`, `String[]`),
-            new Parameter(`Path`, `Specifies the path to the item or items.`, `String[]`),
+For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
+            new Parameter(`Name`, `Specifies the name of the property or properties to retrieve. Wildcard characters are permitted.`, `String[]`),
+            new Parameter(`Path`, `Specifies the path to the item or items. Wildcard characters are permitted.`, `String[]`),
         ],
         `Gets the properties of a specified item.`,
         `Get-ItemProperty [[-Name] <String[]>] [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Include <String[]>] -LiteralPath <String[]> [<CommonParameters>]
@@ -13912,22 +13881,16 @@ Get-ItemProperty [-Path] <String[]> [[-Name] <String[]>] [-Credential <PSCredent
     new ConsoleCommand(
         `Get-ItemPropertyValue`,
         [
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
+            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as " .txt". Wildcard characters are permitted. The Exclude * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`Filter`, `Specifies a filter to qualify the Path parameter. The FileSystem (../Microsoft.PowerShell.Core/About/about_FileSystem_Provider.md)provider is the only installed PowerShell provider that supports the use of filters. You can find the syntax for the FileSystem filter language in about_Wildcards (../Microsoft.PowerShell.Core/About/about_Wildcards.md). Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
+            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "" .txt"". Wildcard characters are permitted. The Include * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`LiteralPath`, `Specifies a path to one or more locations. The value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
 
 
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you are prompted for a password.
-
-
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
-            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes from the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`Filter`, `Specifies a filter in the format or language of the provider. The value of this parameter qualifies the Path parameter.
-
-
-The syntax of the filter, including the use of wildcard characters, depends on the provider. Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
-            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`LiteralPath`, `Specifies the path to the current location of the property. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
-            new Parameter(`Name`, `Specifies the name of the property or properties to retrieve.`, `String[]`),
-            new Parameter(`Path`, `Specifies the path to the item or items.`, `String[]`),
+For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
+            new Parameter(`Name`, `Specifies the name of the property or properties to retrieve. Wildcard characters are permitted.`, `String[]`),
+            new Parameter(`Path`, `Specifies the path to the item or items. Wildcard characters are permitted.`, `String[]`),
         ],
         `Gets the value for one or more properties of a specified item.`,
         `Get-ItemPropertyValue [-Name] <String[]> [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Include <String[]>] -LiteralPath <String[]> [<CommonParameters>]
@@ -14351,23 +14314,6 @@ The CimSession parameter gets all modules in the CIMSession . However, you can i
 You cannot specify the FullyQualifiedName parameter in the same command as a Name parameter.`, `ModuleSpecification[]`),
             new Parameter(`ListAvailable`, `Indicates that this cmdlet gets all installed modules. "Get-Module" gets modules in paths listed in the PSModulePath environment variable. Without this parameter, "Get-Module" gets only the modules that are both listed in the PSModulePath environment variable, and that are loaded in the current session. ListAvailable does not return information about modules that are not found in the PSModulePath environment variable, even if those modules are loaded in the current session.`, `SwitchParameter`),
             new Parameter(`Name`, `Specifies names or name patterns of modules that this cmdlet gets. Wildcard characters are permitted. You can also pipe the names to "Get-Module". You cannot specify the FullyQualifiedName parameter in the same command as a Name parameter. Name cannot accept a module GUID as a value. To return modules by specifying a GUID, use FullyQualifiedName instead.`, `String[]`),
-            new Parameter(`PSEdition`, `Gets the modules that support specified edition of PowerShell.
-
-
-The acceptable values for this parameter are:
-
-
-- Desktop
-
-
-- Core
-
-
-
-
-The Get-Module cmdlet checks CompatiblePSEditions property of PSModuleInfo object for the specified value and returns only those modules that have it set.
-
-> [!NOTE] > - Desktop Edition: Built on .NET Framework and provides compatibility with scripts and modules targeting versions of PowerShell running on full footprint editions of Windows such as Server Core and Windows Desktop. > - Core Edition: Built on .NET Core and provides compatibility with scripts and modules targeting versions of PowerShell running on reduced footprint editions of Windows such as Nano Server and Windows IoT.`, `String`),
             new Parameter(`PSSession`, `Gets the modules in the specified user-managed PowerShell session ( PSSession ). Enter a variable that contains the session, a command that gets the session, such as a "Get-PSSession" command, or a command that creates the session, such as a "New-PSSession" command.
 
 
@@ -14388,15 +14334,54 @@ When you specify the Refresh parameter in a command, you must specify ListAvaila
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
+            new Parameter(`PSEdition`, `Gets the modules that support specified edition of PowerShell.
+
+
+The acceptable values for this parameter are:
+
+
+- Desktop
+
+
+- Core
+
+
+
+
+The Get-Module cmdlet checks CompatiblePSEditions property of PSModuleInfo object for the specified value and returns only those modules that have it set.
+
+> [!NOTE] > - Desktop Edition: Built on .NET Framework, applies to Windows PowerShell 5.1 and below on > most Windows editions. > - Core Edition: Built on .NET Core, applies to PowerShell Core 6.0 and above, as well as some > editions of Windows PowerShell 5.1 built for Windows IoT and Windows Nanoserver. > > The edition of the current PowerShell session can be found with the "$PSEdition" variable.`, `String`),
+            new Parameter(`SkipEditionCheck`, `Skips the check of the "CompatiblePSEditions" field.
+
+
+By default, Get-Module will omit modules in the "%windir%\\System32\\WindowsPowerShell\\v1.0\\Modules" directory that do not specify "Core" in the "CompatiblePSEditions" field. When this switch is set, modules without "Core" will be included, so that modules under the Windows PowerShell module path that are incompatible with PowerShell Core will be returned.
+
+
+On macOS and Linux, this parameter does nothing.
+
+
+See about_PowerShell_Editions (About/about_PowerShell_Editions.md)for more information.`, `SwitchParameter`),
         ],
         `Gets the modules that have been imported or that can be imported into the current session.`,
         `Get-Module [[-Name] <String[]>] [-All] [-FullyQualifiedName <ModuleSpecification[]>] [<CommonParameters>]
 
-Get-Module [[-Name] <String[]>] [-All] [-FullyQualifiedName <ModuleSpecification[]>] -ListAvailable [-PSEdition <String>] [-Refresh] [<CommonParameters>]
+Get-Module [[-Name] <String[]>] [-All] [-FullyQualifiedName <ModuleSpecification[]>] [-ListAvailable] [-Refresh] [-PSEdition <String>] [-SkipEditionCheck] [<CommonParameters>]
 
-Get-Module [[-Name] <String[]>] [-CimNamespace <String>] [-CimResourceUri <Uri>] -CimSession <CimSession> [-FullyQualifiedName <ModuleSpecification[]>] [-ListAvailable] [-Refresh] [<CommonParameters>]
+Get-Module [[-Name] <String[]>] [-CimNamespace <String>] [-CimResourceUri <Uri>] -CimSession <CimSession> [-FullyQualifiedName <ModuleSpecification[]>] [-ListAvailable] [-Refresh] [-SkipEditionCheck] [<CommonParameters>]
 
-Get-Module [[-Name] <String[]>] [-FullyQualifiedName <ModuleSpecification[]>] [-ListAvailable] [-PSEdition <String>] -PSSession <PSSession> [-Refresh] [<CommonParameters>]`,
+Get-Module [[-Name] <String[]>] [-FullyQualifiedName <ModuleSpecification[]>] [-ListAvailable] -PSSession <PSSession> [-Refresh] [-PSEdition <String>] [-SkipEditionCheck] [<CommonParameters>]`,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-NonRemovableAppsPolicy`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
         "",
         (parameters, paramDictionary) => {
 
@@ -14459,10 +14444,10 @@ Get-Module [[-Name] <String[]>] [-FullyQualifiedName <ModuleSpecification[]>] [-
 On Windows Vista and later versions of Windows, you must open PowerShell with the Run as administrator option to use this parameter on processes that you do not own.
 
 
-To get file version information for a process on a remote computer, use the Invoke-Command cmdlet.
+To get file version information for a process on a remote computer, use the "Invoke-Command" cmdlet.
 
 
-Using this parameter is equivalent to getting the MainModule.FileVersionInfo property of each process object. When you use this parameter, Get-Process returns a FileVersionInfo object (System.Diagnostics.FileVersionInfo), not a process object. So, you cannot pipe the output of the command to a cmdlet that expects a process object, such as Stop-Process.`, `SwitchParameter`),
+Using this parameter is equivalent to getting the MainModule.FileVersionInfo property of each process object. When you use this parameter, "Get-Process" returns a FileVersionInfo object System.Diagnostics.FileVersionInfo , not a process object. So, you cannot pipe the output of the command to a cmdlet that expects a process object, such as "Stop-Process".`, `SwitchParameter`),
             new Parameter(`Id`, `Specifies one or more processes by process ID (PID). To specify multiple IDs, use commas to separate the IDs. To find the PID of a process, type "Get-Process".`, `Int32[]`),
             new Parameter(`IncludeUserName`, `Indicates that the UserName value of the Process object is returned with results of the command.`, `SwitchParameter`),
             new Parameter(`InputObject`, `Specifies one or more process objects. Enter a variable that contains the objects, or type a command or expression that gets the objects.`, `Process[]`),
@@ -14472,10 +14457,10 @@ Using this parameter is equivalent to getting the MainModule.FileVersionInfo pro
 On Windows Vista and later versions of Windows, you must open PowerShell with the Run as administrator option to use this parameter on processes that you do not own.
 
 
-To get the modules that have been loaded by a process on a remote computer, use the Invoke-Command cmdlet.
+To get the modules that have been loaded by a process on a remote computer, use the "Invoke-Command" cmdlet.
 
 
-This parameter is equivalent to getting the Modules property of each process object. When you use this parameter, this cmdlet returns a ProcessModule object (System.Diagnostics.ProcessModule), not a process object. So, you cannot pipe the output of the command to a cmdlet that expects a process object, such as Stop-Process.
+This parameter is equivalent to getting the Modules property of each process object. When you use this parameter, this cmdlet returns a ProcessModule object System.Diagnostics.ProcessModule , not a process object. So, you cannot pipe the output of the command to a cmdlet that expects a process object, such as "Stop-Process".
 
 
 When you use both the Module and FileVersionInfo parameters in the same command, this cmdlet returns a FileVersionInfo object with information about the file version of all modules.`, `SwitchParameter`),
@@ -14493,6 +14478,18 @@ Get-Process -Id <Int32[]> -IncludeUserName [<CommonParameters>]
 Get-Process [[-Name] <String[]>] -IncludeUserName [<CommonParameters>]
 
 Get-Process -IncludeUserName -InputObject <Process[]> [<CommonParameters>]`,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-ProcessMitigation`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
         "",
         (parameters, paramDictionary) => {
 
@@ -14589,11 +14586,11 @@ Get-PSDrive [[-Name] <String[]>] [-PSProvider <String[]>] [-Scope <String>] [<Co
     new ConsoleCommand(
         `Get-PSHostProcessInfo`,
         [
-            new Parameter(`Id`, ``, `Int32[]`),
-            new Parameter(`Name`, ``, `String[]`),
-            new Parameter(`Process`, ``, `Process[]`),
+            new Parameter(`Id`, `Specifies a process by the process ID. To get a process ID, run the "Get-Process" cmdlet.`, `Int32[]`),
+            new Parameter(`Name`, `Specifies a process by the process name. To get a process name, run the "Get-Process" cmdlet.`, `String[]`),
+            new Parameter(`Process`, `Specifies a process by the process object. The simplest way to use this parameter is to save the results of a "Get-Process" command that returns process that you want to enter in a variable, and then specify the variable as the value of this parameter.`, `Process[]`),
         ],
-        ``,
+        `Gets process information about the PowerShell host.`,
         `Get-PSHostProcessInfo [-Id] <Int32[]> [<CommonParameters>]
 
 Get-PSHostProcessInfo [[-Name] <String[]>] [<CommonParameters>]
@@ -14619,10 +14616,11 @@ Get-PSHostProcessInfo [-Process] <Process[]> [<CommonParameters>]`,
     new ConsoleCommand(
         `Get-PSReadLineKeyHandler`,
         [
-
+            new Parameter(`Bound`, `Include functions that are bound.`, `SwitchParameter`),
+            new Parameter(`Unbound`, `Include functions that are unbound.`, `SwitchParameter`),
         ],
-        `See help file for details.`,
-        ``,
+        `Gets the key bindings for the PSReadLine module.`,
+        `Get-PSReadLineKeyHandler [-Bound] [-Unbound] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -14633,8 +14631,8 @@ Get-PSHostProcessInfo [-Process] <Process[]> [<CommonParameters>]`,
         [
 
         ],
-        `See help file for details.`,
-        ``,
+        `Returns the values for the options that can be configured.`,
+        `Get-PSReadLineOption [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -14757,10 +14755,19 @@ This parameter was introduced in Windows PowerShell 3.0.
 
 This parameter gets sessions only from computers that run Windows PowerShell 3.0 or later versions of Windows PowerShell or PowerShell Core. Earlier versions do not store sessions.`, `Uri[]`),
             new Parameter(`ContainerId`, `Specifies an array of IDs of containers. This cmdlet starts an interactive session with each of the specified containers. To see the containers that are available to you, use the Get-Container cmdlet.`, `String[]`),
-            new Parameter(`Credential`, `Specifies a user credential. This cmdlet runs the command with the permissions of the specified user. Specify a user account that has permission to connect to the remote computer and run a Get-PSSession command. The default is the current user. Type a user name, such as "User01", "Domain01\User01", or "User@Domain.com", or enter a PSCredential object, such as one returned by the Get-Credential cmdlet. When you type a user name, this cmdlet prompts you for a password.
+            new Parameter(`Credential`, `Specifies a user credential. This cmdlet runs the command with the permissions of the specified user. Specify a user account that has permission to connect to the remote computer and run a "Get-PSSession" command. The default is the current user.
 
 
-This parameter configures to the temporary connection that is created to run a Get-PSSession command with the ComputerName or ConnectionUri parameter.
+Type a user name, such as User01 or Domain01\\User01 , or enter a PSCredential object generated by the "Get-Credential" cmdlet. If you type a user name, you're prompted to enter the password.
+
+
+Credentials are stored in a PSCredential (/dotnet/api/system.management.automation.pscredential)object and the password is stored as a SecureString (/dotnet/api/system.security.securestring).
+
+
+> [!NOTE] > For more information about SecureString data protection, see > How secure is SecureString? (/dotnet/api/system.security.securestring#how-secure-is-securestring).
+
+
+This parameter configures to the temporary connection that is created to run a "Get-PSSession" command with the ComputerName or ConnectionUri parameter.
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `PSCredential`),
@@ -14785,10 +14792,10 @@ The friendly name of a session is stored in the Name property of the session.`, 
 Before using an alternate port, you must configure the WinRM listener on the remote computer to listen at that port. To configure the listener, type the following two commands at the PowerShell prompt:
 
 
-"Remove-Item -Path WSMan:\Localhost\listener\listener* -Recurse"
+"Remove-Item -Path WSMan:\\Localhost\\listener\\listener* -Recurse"
 
 
-"New-Item -Path WSMan:\Localhost\listener -Transport http -Address * -Port <port-number>"
+"New-Item -Path WSMan:\\Localhost\\listener -Transport http -Address * -Port <port-number>"
 
 
 This parameter configures to the temporary connection that is created to run a Get-PSSession command with the ComputerName or ConnectionUri parameter.
@@ -14807,7 +14814,7 @@ The default values for the options are determined by the value of the $PSSession
 The session option values take precedence over default values for sessions set in the $PSSessionOption preference variable and in the session configuration. However, they do not take precedence over maximum values, quotas or limits set in the session configuration.
 
 
-For a description of the session options, including the default values, see New-PSSessionOption. For information about the $PSSessionOption preference variable, see about_Preference_Variables (About/about_Preference_Variables.md)in the Microsoft TechNet library. For more information about session configurations, see about_Session_Configurations (About/about_Session_Configurations.md).`, `PSSessionOption`),
+For a description of the session options, including the default values, see "New-PSSessionOption". For information about the "$PSSessionOption" preference variable, see about_Preference_Variables (About/about_Preference_Variables.md). For more information about session configurations, see about_Session_Configurations (About/about_Session_Configurations.md).`, `PSSessionOption`),
             new Parameter(`State`, `Specifies a session state. This cmdlet gets only sessions in the specified state. The acceptable values for this parameter are: All, Opened, Disconnected, Closed, and Broken. The default value is All.
 
 
@@ -14838,21 +14845,21 @@ This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
         `Gets the PowerShell sessions on local and remote computers.`,
         `Get-PSSession [-ConnectionUri] <Uri[]> [-AllowRedirection] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-CertificateThumbprint <String>] [-ConfigurationName <String>] [-Credential <PSCredential>] [-Name <String[]>] [-SessionOption <PSSessionOption>] [-State {All | Opened | Disconnected | Closed | Broken}] [-ThrottleLimit <Int32>] [<CommonParameters>]
 
-Get-PSSession [-ConnectionUri] <Uri[]> [-AllowRedirection] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-CertificateThumbprint <String>] [-ConfigurationName <String>] [-Credential <PSCredential>] -InstanceId <Guid[]> [-SessionOption <PSSessionOption>] [-State {All | Opened | Disconnected | Closed | Broken}] [-ThrottleLimit <Int32>] [<CommonParameters>]
+Get-PSSession [-ConnectionUri] <Uri[]> [-AllowRedirection] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-CertificateThumbprint <String>] [-ConfigurationName <String>] [-Credential <PSCredential>] [-InstanceId <Guid[]>] [-SessionOption <PSSessionOption>] [-State {All | Opened | Disconnected | Closed | Broken}] [-ThrottleLimit <Int32>] [<CommonParameters>]
 
 Get-PSSession [-ComputerName] <String[]> [-ApplicationName <String>] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-CertificateThumbprint <String>] [-ConfigurationName <String>] [-Credential <PSCredential>] [-Name <String[]>] [-Port <Int32>] [-SessionOption <PSSessionOption>] [-State {All | Opened | Disconnected | Closed | Broken}] [-ThrottleLimit <Int32>] [-UseSSL] [<CommonParameters>]
 
-Get-PSSession [-ComputerName] <String[]> [-ApplicationName <String>] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-CertificateThumbprint <String>] [-ConfigurationName <String>] [-Credential <PSCredential>] -InstanceId <Guid[]> [-Port <Int32>] [-SessionOption <PSSessionOption>] [-State {All | Opened | Disconnected | Closed | Broken}] [-ThrottleLimit <Int32>] [-UseSSL] [<CommonParameters>]
+Get-PSSession [-ComputerName] <String[]> [-ApplicationName <String>] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-CertificateThumbprint <String>] [-ConfigurationName <String>] [-Credential <PSCredential>] [-InstanceId <Guid[]>] [-Port <Int32>] [-SessionOption <PSSessionOption>] [-State {All | Opened | Disconnected | Closed | Broken}] [-ThrottleLimit <Int32>] [-UseSSL] [<CommonParameters>]
 
-Get-PSSession [-ConfigurationName <String>] -InstanceId <Guid[]> [-State {All | Opened | Disconnected | Closed | Broken}] -VMName <String[]> [<CommonParameters>]
+Get-PSSession [-ConfigurationName <String>] [-InstanceId <Guid[]>] [-State {All | Opened | Disconnected | Closed | Broken}] -VMName <String[]> [<CommonParameters>]
 
 Get-PSSession [-ConfigurationName <String>] -ContainerId <String[]> [-Name <String[]>] [-State {All | Opened | Disconnected | Closed | Broken}] [<CommonParameters>]
 
-Get-PSSession [-ConfigurationName <String>] -ContainerId <String[]> -InstanceId <Guid[]> [-State {All | Opened | Disconnected | Closed | Broken}] [<CommonParameters>]
+Get-PSSession [-ConfigurationName <String>] -ContainerId <String[]> [-InstanceId <Guid[]>] [-State {All | Opened | Disconnected | Closed | Broken}] [<CommonParameters>]
 
 Get-PSSession [-ConfigurationName <String>] [-Name <String[]>] [-State {All | Opened | Disconnected | Closed | Broken}] -VMId <Guid[]> [<CommonParameters>]
 
-Get-PSSession [-ConfigurationName <String>] -InstanceId <Guid[]> [-State {All | Opened | Disconnected | Closed | Broken}] -VMId <Guid[]> [<CommonParameters>]
+Get-PSSession [-ConfigurationName <String>] [-InstanceId <Guid[]>] [-State {All | Opened | Disconnected | Closed | Broken}] -VMId <Guid[]> [<CommonParameters>]
 
 Get-PSSession [-ConfigurationName <String>] [-Name <String[]>] [-State {All | Opened | Disconnected | Closed | Broken}] -VMName <String[]> [<CommonParameters>]
 
@@ -14896,26 +14903,29 @@ Get-PSSession [-Name <String[]>] [<CommonParameters>]`,
     new ConsoleCommand(
         `Get-Random`,
         [
-            new Parameter(`Count`, `Specifies how many objects are returned. The default is 1. If the value of Count exceeds the number of objects in the collection, Get-Random returns all of the objects in random order.`, `Int32`),
-            new Parameter(`InputObject`, `Specifies a collection of objects. Get-Random gets randomly selected objects in random order from the collection. Enter the objects, a variable that contains the objects, or a command or expression that gets the objects. You can also pipe a collection of objects to Get-Random .`, `Object[]`),
-            new Parameter(`Maximum`, `Specifies a maximum value for the random number. Get-Random returns a value that is less than the maximum (not equal). Enter a 32-bit integer or a double-precision floating-point number, or an object that can be converted to an integer or double, such as a numeric string ("100"). On a 64-bit computer, you can also enter a 64-bit integer.
+            new Parameter(`Count`, `Specifies the number of random objects or numbers to return. The default is 1.
 
 
-The value of Maximum must be greater than (not equal to) the value of Minimum .
+When used with "InputObject", if the value of Count exceeds the number of objects in the collection, "Get-Random" returns all of the objects in random order.`, `Int32`),
+            new Parameter(`InputObject`, `Specifies a collection of objects. "Get-Random" gets randomly selected objects in random order from the collection up to the number specified by Count . Enter the objects, a variable that contains the objects, or a command or expression that gets the objects. You can also pipe a collection of objects to "Get-Random".`, `Object[]`),
+            new Parameter(`Maximum`, `Specifies a maximum value for the random number. "Get-Random" returns a value that is less than the maximum (not equal). Enter an integer, a double-precision floating-point number, or an object that can be converted to an integer or double, such as a numeric string ("100").
 
 
-If the value of Maximum or Minimum is a floating-point number, Get-Random returns a randomly selected floating-point number. If the value of Minimum is a double (a floating-point number), the default value of Maximum is Double.MaxValue. Otherwise, the default value is Int32.MaxValue.
+The value of Maximum must be greater than (not equal to) the value of Minimum . If the value of Maximum or Minimum is a floating-point number, "Get-Random" returns a randomly selected floating-point number.
 
 
-On a 64-bit computer, if the value of Minimum is a 32-bit integer, the default value of Maximum is Int32.MaxValue. If the value of Minimum is a double (a floating-point number), the default value of Maximum is Double.MaxValue. Otherwise, the default value is Int64.MaxValue.`, `Object`),
-            new Parameter(`Minimum`, `Specifies a minimum value for the random number. Enter a 32-bit integer or a double-precision floating-point number, or an object that can be converted to an integer or double, such as a numeric string ("100"). On a 64-bit computer, you can enter a 64-bit integer. The default value is 0 (zero).
+On a 64-bit computer, if the value of Minimum is a 32-bit integer, the default value of Maximum is Int32.MaxValue .
 
 
-The value of Minimum must be less than (not equal to) the value of Maximum . If the value of Maximum or Minimum is a floating-point number, Get-Random returns a randomly selected floating-point number.`, `Object`),
-            new Parameter(`SetSeed`, `Specifies a seed value for the random number generator. This seed value is used for the current command and for all subsequent Get-Random commands in the current session until you use SetSeed again or close the session. You cannot reset the seed to its default, clock-based value.
+If the value of Minimum is a double (a floating-point number), the default value of Maximum is Double.MaxValue . Otherwise, the default value is Int32.MaxValue .`, `Object`),
+            new Parameter(`Minimum`, `Specifies a minimum value for the random number. Enter an integer, a double-precision floating-point number, or an object that can be converted to an integer or double, such as a numeric string ("100"). The default value is 0 (zero).
 
 
-The SetSeed parameter is not required. By default, Get-Random uses the system clock to generate a seed value. Because SetSeed results in non-random behavior, it is typically used only when trying to reproduce behavior, such as when debugging or analyzing a script that includes Get-Random commands.`, `Int32`),
+The value of Minimum must be less than (not equal to) the value of Maximum . If the value of Maximum or Minimum is a floating-point number, "Get-Random" returns a randomly selected floating-point number.`, `Object`),
+            new Parameter(`SetSeed`, `Specifies a seed value for the random number generator. This seed value is used for the current command and for all subsequent "Get-Random" commands in the current session until you use SetSeed again or close the session. You cannot reset the seed to its default value.
+
+
+The SetSeed parameter is not required. By default, "Get-Random" uses the RandomNumberGenerator() (/dotnet/api/system.security.cryptography.randomnumbergenerator)method to generate a seed value. Because SetSeed results in non-random behavior, it is typically used only when trying to reproduce behavior, such as when debugging or analyzing a script that includes "Get-Random" commands.`, `Int32`),
         ],
         `Gets a random number, or selects objects randomly from a collection.`,
         `Get-Random [-InputObject] <Object[]> [-Count <Int32>] [-SetSeed <Int32>] [<CommonParameters>]
@@ -14996,19 +15006,13 @@ Get-RunspaceDebug [[-RunspaceName] <String[]>] [<CommonParameters>]`,
     new ConsoleCommand(
         `Get-Service`,
         [
-            new Parameter(`DependentServices`, `Indicates that this cmdlet gets only the services that depend upon the specified service.
-
-
-By default, this cmdlet gets all services.`, `SwitchParameter`),
-            new Parameter(`DisplayName`, `Specifies, as a string array, the display names of services to be retrieved. Wildcards are permitted. By default, this cmdlet gets all services on the computer.`, `String[]`),
+            new Parameter(`DependentServices`, `Indicates that this cmdlet gets only the services that depend upon the specified service.`, `SwitchParameter`),
+            new Parameter(`DisplayName`, `Specifies, as a string array, the display names of services to be retrieved. Wildcards are permitted.`, `String[]`),
             new Parameter(`Exclude`, `Specifies, as a string array, a service or services that this cmdlet excludes from the operation. The value of this parameter qualifies the Name parameter. Enter a name element or pattern, such as "s*". Wildcards are permitted.`, `String[]`),
             new Parameter(`Include`, `Specifies, as a string array, a service or services that this cmdlet includes in the operation. The value of this parameter qualifies the Name parameter. Enter a name element or pattern, such as "s*". Wildcards are permitted.`, `String[]`),
-            new Parameter(`InputObject`, `Specifies ServiceController objects representing the services to be retrieved. Enter a variable that contains the objects, or type a command or expression that gets the objects. You can also pipe a service object to this cmdlet.`, `ServiceController[]`),
-            new Parameter(`Name`, `Specifies the service names of services to be retrieved. Wildcards are permitted. By default, this cmdlet gets all of the services on the computer.`, `String[]`),
-            new Parameter(`RequiredServices`, `Indicates that this cmdlet gets only the services that this service requires.
-
-
-This parameter gets the value of the ServicesDependedOn property of the service. By default, this cmdlet gets all services.`, `SwitchParameter`),
+            new Parameter(`InputObject`, `Specifies ServiceController objects representing the services to be retrieved. Enter a variable that contains the objects, or type a command or expression that gets the objects. You can pipe a service object to this cmdlet.`, `ServiceController[]`),
+            new Parameter(`Name`, `Specifies the service names of services to be retrieved. Wildcards are permitted.`, `String[]`),
+            new Parameter(`RequiredServices`, `Indicates that this cmdlet gets only the services that this service requires. This parameter gets the value of the ServicesDependedOn property of the service.`, `SwitchParameter`),
         ],
         `Gets the services on the computer.`,
         `Get-Service [-DependentServices] -DisplayName <String[]> [-Exclude <String[]>] [-Include <String[]>] [-RequiredServices] [<CommonParameters>]
@@ -15088,6 +15092,18 @@ Get-TimeZone [[-Name] <String[]>] [<CommonParameters>]`,
         }
     ),
     new ConsoleCommand(
+        `Get-TroubleshootingPack`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
         `Get-TypeData`,
         [
             new Parameter(`TypeName`, `Specifies type data as an array only for the types with the specified names. By default, Get-TypeData gets all types in the session.
@@ -15117,11 +15133,11 @@ Enter type names or a name patterns. Full names, or name patterns with wildcard 
     new ConsoleCommand(
         `Get-Unique`,
         [
-            new Parameter(`AsString`, `Indicates that this cmdlet uses the data as a string. Without this parameter, data is treated as an object, so when you submit a collection of objects of the same type to Get-Unique , such as a collection of files, it returns just one (the first). You can use this parameter to find the unique values of object properties, such as the file names.`, `SwitchParameter`),
-            new Parameter(`InputObject`, `Specifies input for Get-Unique . Enter a variable that contains the objects or type a command or expression that gets the objects.
+            new Parameter(`AsString`, `Indicates that this cmdlet uses the data as a string. Without this parameter, data is treated as an object, so when you submit a collection of objects of the same type to "Get-Unique", such as a collection of files, it returns just one (the first). You can use this parameter to find the unique values of object properties, such as the file names.`, `SwitchParameter`),
+            new Parameter(`InputObject`, `Specifies input for "Get-Unique". Enter a variable that contains the objects or type a command or expression that gets the objects.
 
 
-This cmdlet treats the input submitted by using InputObject as a collection; it does not enumerate individual items in the collection. Because the collection is a single item, input submitted by using InputObject is always returned unchanged.`, `PSObject`),
+This cmdlet treats the input submitted by using InputObject as a collection. it does not enumerate individual items in the collection. Because the collection is a single item, input submitted by using InputObject is always returned unchanged.`, `PSObject`),
             new Parameter(`OnType`, `Indicates that this cmdlet returns only one object of each type.`, `SwitchParameter`),
         ],
         `Returns unique items from a sorted list.`,
@@ -15136,14 +15152,10 @@ Get-Unique [-InputObject <PSObject>] [-OnType] [<CommonParameters>]`,
     new ConsoleCommand(
         `Get-Uptime`,
         [
-            new Parameter(`Since`, ``, `switch`),
+            new Parameter(`Since`, `Cause the cmdlet to return a DateTime object representing the last time that the operating system was booted.`, `SwitchParameter`),
         ],
-        `Get-Uptime [<CommonParameters>]
-
-Get-Uptime [-Since] [<CommonParameters>]`,
-        `syntaxItem
-----------
-{@{name=Get-Uptime; CommonParameters=True; parameter=System.Object[]}, @{name=Get-Uptime; CommonParameters=True; para...`,
+        `Get the TimeSpan since last boot.`,
+        `Get-Uptime [-Since] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -15154,25 +15166,11 @@ Get-Uptime [-Since] [<CommonParameters>]`,
         [
             new Parameter(`Exclude`, `Specifies an array of items that this cmdlet excludes from the operation. Wildcards are permitted.`, `String[]`),
             new Parameter(`Include`, `Specifies an array of items upon which the cmdlet will act, excluding all others. Wildcards are permitted.`, `String[]`),
-            new Parameter(`Name`, `Specifies the name of the variable. Wildcards are permitted. You can also pipe a variable name to Get-Variable .`, `String[]`),
+            new Parameter(`Name`, `Specifies the name of the variable. Wildcards are permitted. You can also pipe a variable name to "Get-Variable".`, `String[]`),
             new Parameter(`Scope`, `Specifies the variables in the scope.The acceptable values for this parameter are:
 
 
-- Global
-
-
-- Local
-
-
-- Script
-
-
-- A number relative to the current scope (0 through the number of scopes, where 0 is the current scope and 1 is its parent)
-
-
-
-
-Local is the default. For more information, see about_Scopes.`, `String`),
+- Global - Local - Script - A number relative to the current scope (0 through the number of scopes, where 0 is the current scope and 1 is its parent) Local is the default. For more information, see about_Scopes (../Microsoft.PowerShell.Core/About/about_Scopes.md).`, `String`),
             new Parameter(`ValueOnly`, `Indicates that this cmdlet gets only the value of the variable.`, `SwitchParameter`),
         ],
         `Gets the variables in the current console.`,
@@ -15186,7 +15184,10 @@ Local is the default. For more information, see about_Scopes.`, `String`),
         `Get-Verb`,
         [
             new Parameter(`Verb`, `Gets only the specified verbs. Enter the name of a verb or a name pattern. Wildcards are allowed.`, `String[]`),
-            new Parameter(`Group`, `Gets only the specified groups. Enter the name of a group. Wildcards are not allowed.`, `String[]`),
+            new Parameter(`Group`, `Gets only the specified groups. Enter the name of a group. Wildcards are not allowed.
+
+
+This parameter was introduced in PowerShell 6.0.`, `String[]`),
         ],
         `Gets approved PowerShell verbs.`,
         `Get-Verb [[-Group] <String[]>] [[-Verb] {Common | Communications | Data | Diagnostic | Lifecycle | Other | Security}] [<CommonParameters>]`,
@@ -15196,7 +15197,7 @@ Local is the default. For more information, see about_Scopes.`, `String`),
         }
     ),
     new ConsoleCommand(
-        `Get-VHD`,
+        `Get-WheaMemoryPolicy`,
         [
 
         ],
@@ -15208,7 +15209,7 @@ Local is the default. For more information, see about_Scopes.`, `String`),
         }
     ),
     new ConsoleCommand(
-        `Get-VHDSet`,
+        `Get-WIMBootEntry`,
         [
 
         ],
@@ -15220,7 +15221,7 @@ Local is the default. For more information, see about_Scopes.`, `String`),
         }
     ),
     new ConsoleCommand(
-        `Get-VHDSnapshot`,
+        `Get-WinAcceptLanguageFromLanguageListOptOut`,
         [
 
         ],
@@ -15232,7 +15233,7 @@ Local is the default. For more information, see about_Scopes.`, `String`),
         }
     ),
     new ConsoleCommand(
-        `Get-VM`,
+        `Get-WinCultureFromLanguageListOptOut`,
         [
 
         ],
@@ -15244,7 +15245,7 @@ Local is the default. For more information, see about_Scopes.`, `String`),
         }
     ),
     new ConsoleCommand(
-        `Get-VMAssignableDevice`,
+        `Get-WinDefaultInputMethodOverride`,
         [
 
         ],
@@ -15256,679 +15257,7 @@ Local is the default. For more information, see about_Scopes.`, `String`),
         }
     ),
     new ConsoleCommand(
-        `Get-VMBios`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMComPort`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMConnectAccess`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMDvdDrive`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMFibreChannelHba`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMFirmware`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMFloppyDiskDrive`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMGpuPartitionAdapter`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMGroup`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMHardDiskDrive`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMHost`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMHostAssignableDevice`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMHostCluster`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMHostNumaNode`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMHostNumaNodeStatus`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMHostSupportedVersion`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMIdeController`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMIntegrationService`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMKeyProtector`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMKeyStorageDrive`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMMemory`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMMigrationNetwork`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMNetworkAdapter`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMNetworkAdapterAcl`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMNetworkAdapterExtendedAcl`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMNetworkAdapterFailoverConfiguration`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMNetworkAdapterIsolation`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMNetworkAdapterRdma`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMNetworkAdapterRoutingDomainMapping`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMNetworkAdapterTeamMapping`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMNetworkAdapterVlan`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMPartitionableGpu`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMPmemController`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMProcessor`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMRemoteFx3dVideoAdapter`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMRemoteFXPhysicalVideoAdapter`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMReplication`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMReplicationAuthorizationEntry`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMReplicationServer`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMResourcePool`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMSan`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMScsiController`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMSecurity`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMSnapshot`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMStoragePath`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMStorageSettings`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMSwitch`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMSwitchExtension`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMSwitchExtensionPortData`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMSwitchExtensionPortFeature`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMSwitchExtensionSwitchData`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMSwitchExtensionSwitchFeature`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMSwitchTeam`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMSystemSwitchExtension`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMSystemSwitchExtensionPortFeature`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMSystemSwitchExtensionSwitchFeature`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Get-VMVideo`,
+        `Get-WindowsCapability`,
         [
 
         ],
@@ -15952,6 +15281,30 @@ Local is the default. For more information, see about_Scopes.`, `String`),
         }
     ),
     new ConsoleCommand(
+        `Get-WindowsDriver`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-WindowsEdition`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
         `Get-WindowsErrorReporting`,
         [
 
@@ -15964,7 +15317,127 @@ Local is the default. For more information, see about_Scopes.`, `String`),
         }
     ),
     new ConsoleCommand(
+        `Get-WindowsImage`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-WindowsImageContent`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-WindowsOptionalFeature`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-WindowsPackage`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-WindowsSearchSetting`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
         `Get-WinEvent`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-WinHomeLocation`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-WinLanguageBarOption`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-WinSystemLocale`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-WinUILanguageOverride`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Get-WinUserLanguageList`,
         [
 
         ],
@@ -16000,18 +15473,6 @@ Local is the default. For more information, see about_Scopes.`, `String`),
         }
     ),
     new ConsoleCommand(
-        `Grant-VMConnectAccess`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
         `Group-Object`,
         [
             new Parameter(`AsHashTable`, `Indicates that this cmdlet returns the group as a hash table. The keys of the hash table are the property values by which the objects are grouped. The values of the hash table are the objects that have that property value.
@@ -16024,10 +15485,10 @@ By itself, the AsHashTable parameter returns each hash table in which each key i
             new Parameter(`InputObject`, `Specifies the objects to group. Enter a variable that contains the objects, or type a command or expression that gets the objects.
 
 
-When you use the InputObject parameter to submit a collection of objects to Group-Object , Group-Object receives one object that represents the collection. As a result, it creates a single group with that object as its member.
+When you use the InputObject parameter to submit a collection of objects to "Group-Object", "Group-Object" receives one object that represents the collection. As a result, it creates a single group with that object as its member.
 
 
-To group the objects in a collection, pipe the objects to Group-Object .`, `PSObject`),
+To group the objects in a collection, pipe the objects to "Group-Object".`, `PSObject`),
             new Parameter(`NoElement`, `Indicates that this cmdlet omits the members of a group from the results.`, `SwitchParameter`),
             new Parameter(`Property`, `Specifies the properties for grouping. The objects are arranged into groups based on the value of the specified property.
 
@@ -16051,7 +15512,7 @@ The value of the Property parameter can be a new calculated property. To create 
 
 
 If the corresponding alias is read-only, it will be displayed in the value of the Options property.`, `SwitchParameter`),
-            new Parameter(`LiteralPath`, `Specifies the path to a file that includes exported alias information. Unlike the Path parameter, the value of the LiteralPath parameter is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell Windows PowerShell not to interpret any characters as escape sequences.`, `String`),
+            new Parameter(`LiteralPath`, `Specifies the path to a file that includes exported alias information. Unlike the Path parameter, the value of the LiteralPath parameter is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String`),
             new Parameter(`PassThru`, `Returns an object representing the item with which you are working. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
             new Parameter(`Path`, `Specifies the path to a file that includes exported alias information. Wildcards are allowed but they must resolve to a single name.`, `String`),
             new Parameter(`Scope`, `Specifies the scope into which the aliases are imported. The acceptable values for this parameter are:
@@ -16100,9 +15561,9 @@ Import-Alias [-Path] <String> [-Force] [-PassThru] [-Scope <String>] [-Confirm] 
         `Import-Clixml`,
         [
             new Parameter(`First`, `Gets only the specified number of objects. Enter the number of objects to get.`, `UInt64`),
-            new Parameter(`IncludeTotalCount`, `Reports the total number of objects in the data set (an integer) followed by the selected objects. If the cmdlet cannot determine the total count, it displays "Unknown total count." The integer has an Accuracy property that indicates the reliability of the total count value. The value of Accuracy ranges from 0.0 to 1.0 where 0.0 means that the cmdlet could not count the objects, 1.0 means that the count is exact, and a value between 0.0 and 1.0 indicates an increasingly reliable estimate.`, `SwitchParameter`),
-            new Parameter(`LiteralPath`, `Specifies the XML files. Unlike Path , the value of the LiteralPath parameter is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
-            new Parameter(`Path`, `Specifies the XML files.`, `String[]`),
+            new Parameter(`IncludeTotalCount`, `Reports the total number of objects in the data set followed by the selected objects. If the cmdlet can't determine the total count, it displays Unknown total count . The integer has an Accuracy property that indicates the reliability of the total count value. The value of Accuracy ranges from "0.0" to "1.0" where "0.0" means that the cmdlet couldn't count the objects, "1.0" means that the count is exact, and a value between "0.0" and "1.0" indicates an increasingly reliable estimate.`, `SwitchParameter`),
+            new Parameter(`LiteralPath`, `Specifies the path to the XML files. Unlike Path , the value of the LiteralPath parameter is used exactly as it's typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
+            new Parameter(`Path`, `Specifies the path to the XML files.`, `String[]`),
             new Parameter(`Skip`, `Ignores the specified number of objects and then gets the remaining objects. Enter the number of objects to skip.`, `UInt64`),
         ],
         `Imports a CLIXML file and creates corresponding objects in PowerShell.`,
@@ -16136,13 +15597,16 @@ Enter a character, such as a colon (:). To specify a semicolon (;) enclose it in
 
 
 If you specify a character other than the actual string delimiter in the file, "Import-Csv" cannot create the objects from the CSV strings and will return the CSV strings.`, `Char`),
-            new Parameter(`Encoding`, `Specifies the encoding for the exported CSV file. The default value is UTF8NoBOM . This parameter was introduced in PowerShell 3.0.
+            new Parameter(`Encoding`, `Specifies the encoding for the imported CSV file. The default value is UTF8NoBOM .
 
 
-The acceptable values for this parameter are:
+The acceptable values for this parameter are as follows:
 
 
-- ASCII : Uses the encoding for the ASCII (7-bit) character set. - BigEndianUnicode : Encodes in UTF-16 format using the big-endian byte order. - Default : Encodes using the default value: ASCII. - OEM : Uses the default encoding for MS-DOS and console programs. - Byte : Encodes a set of characters into a sequence of bytes. - String : Uses the encoding type for a string. - Unicode : Encodes in UTF-16 format using the little-endian byte order. - UTF7 : Encodes in UTF-7 format. - UTF8 : Encodes in UTF-8 format. - UTF8BOM : Encodes in UTF-8 format with Byte Order Mark (BOM) - UF8NOBOM : Encodes in UTF-8 format without Byte Order Mark (BOM) - UTF32 :  Encodes in UTF-32 format. - Unknown : The encoding type is unknown or invalid; the data can be treated as binary.`, `Encoding`),
+- ASCII : Uses the encoding for the ASCII (7-bit) character set. - BigEndianUnicode : Encodes in UTF-16 format using the big-endian byte order. - OEM : Uses the default encoding for MS-DOS and console programs. - Unicode : Encodes in UTF-16 format using the little-endian byte order. - UTF7 : Encodes in UTF-7 format. - UTF8 : Encodes in UTF-8 format. - UTF8BOM : Encodes in UTF-8 format with Byte Order Mark (BOM) - UTF8NoBOM : Encodes in UTF-8 format without Byte Order Mark (BOM) - UTF32 : Encodes in UTF-32 format.
+
+
+Beginning with PowerShell 6.2, the Encoding parameter also allows numeric IDs of registered code pages (like "-Encoding 1251") or string names of registered code pages (like "-Encoding "windows-1251""). For more information, see the .NET documentation for Encoding.CodePage (/dotnet/api/system.text.encoding.codepage?view=netcore-2.2).`, `Encoding`),
             new Parameter(`Header`, `Specifies an alternate column header row for the imported file. The column header determines the property names of the objects created by "Import-Csv".
 
 
@@ -16158,9 +15622,13 @@ When using the Header parameter, delete the original header row from the CSV fil
             new Parameter(`UseCulture`, `Uses the list separator for the current culture as the item delimiter. To find the list separator for a culture, use the following command: "(Get-Culture).TextInfo.ListSeparator".`, `SwitchParameter`),
         ],
         `Creates table-like custom objects from the items in a comma-separated value (CSV) file.`,
-        `Import-Csv [[-Path] <String[]>] [[-Delimiter] <Char>] [-Encoding <Encoding>] [-Header <String[]>] [-LiteralPath <String[]>] [<CommonParameters>]
+        `Import-Csv [-Path] <String[]> [[-Delimiter] <Char>] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Header <String[]>] [<CommonParameters>]
 
-Import-Csv [[-Path] <String[]>] [-Encoding <Encoding>] [-Header <String[]>] [-LiteralPath <String[]>] -UseCulture [<CommonParameters>]`,
+Import-Csv [[-Delimiter] <Char>] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Header <String[]>] -LiteralPath <String[]> [<CommonParameters>]
+
+Import-Csv [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Header <String[]>] -LiteralPath <String[]> -UseCulture [<CommonParameters>]
+
+Import-Csv [-Path] <String[]> [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Header <String[]>] -UseCulture [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -16210,15 +15678,15 @@ The cmdlet searches for a subdirectory with the same name as the value of the UI
 
 
 Some modules automatically export selected aliases into your session when you import the module. This parameter lets you select from among the exported aliases.`, `String[]`),
-            new Parameter(`ArgumentList`, `Specifies an array of arguments, or parameter values, that are passed to a script module during the Import-Module command. This parameter is valid only when you are importing a script module.
+            new Parameter(`ArgumentList`, `Specifies an array of arguments, or parameter values, that are passed to a script module during the "Import-Module" command. This parameter is valid only when you are importing a script module.
 
 
 You can also refer to the ArgumentList parameter by its alias, args . For more information, see about_Aliases (About/about_Aliases.md).`, `Object[]`),
             new Parameter(`AsCustomObject`, `Indicates that this cmdlet returns a custom object with members that represent the imported module members. This parameter is valid only for script modules.
 
 
-When you use the AsCustomObject parameter, Import-Module imports the module members into the session and then returns a PSCustomObject object instead of a PSModuleInfo object. You can save the custom object in a variable and use dot notation to invoke the members.`, `SwitchParameter`),
-            new Parameter(`Assembly`, `Specifies an array of assembly objects. This cmdlet imports the cmdlets and providers implemented in the specified assembly objects. Enter a variable that contains assembly objects or a command that creates assembly objects. You can also pipe an assembly object to Import-Module .
+When you use the AsCustomObject parameter, "Import-Module" imports the module members into the session and then returns a PSCustomObject object instead of a PSModuleInfo object. You can save the custom object in a variable and use dot notation to invoke the members.`, `SwitchParameter`),
+            new Parameter(`Assembly`, `Specifies an array of assembly objects. This cmdlet imports the cmdlets and providers implemented in the specified assembly objects. Enter a variable that contains assembly objects or a command that creates assembly objects. You can also pipe an assembly object to "Import-Module".
 
 
 When you use this parameter, only the cmdlets and providers implemented by the specified assemblies are imported. If the module contains other files, they are not imported, and you might be missing important members of the module. Use this parameter for debugging and testing the module, or when you are instructed to use it by the module author.`, `Assembly[]`),
@@ -16236,10 +15704,13 @@ Use this parameter to import CIM modules from computers and devices that are not
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `Uri`),
-            new Parameter(`CimSession`, `Specifies a CIM session on the remote computer. Enter a variable that contains the CIM session or a command that gets the CIM session, such as a Get-CimSession (../CimCmdlets/Get-CimSession.md)command. Import-Module uses the CIM session connection to import modules from the remote computer into the current session. When you use the commands from the imported module in the current session, the commands actually run on the remote computer.
+            new Parameter(`CimSession`, `Specifies a CIM session on the remote computer. Enter a variable that contains the CIM session or a command that gets the CIM session, such as a Get-CimSession (../CimCmdlets/Get-CimSession.md)command.
 
 
-You can use this parameter to import modules from computers and devices that are not running the Windows operating system, and Windows computers that have PowerShell, but do not have PowerShell remoting enabled.
+"Import-Module" uses the CIM session connection to import modules from the remote computer into the current session. When you use the commands from the imported module in the current session, the commands actually run on the remote computer.
+
+
+You can use this parameter to import modules from computers and devices that are not running the Windows operating system, and Windows computers that have PowerShell, but don't have PowerShell remoting enabled.
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `CimSession`),
@@ -16253,12 +15724,15 @@ Some modules automatically export selected cmdlets into your session when you im
 By default, when a module that you import exports cmdlets or functions that have unapproved verbs in their names, PowerShell displays the following warning message:
 
 
-"WARNING: Some imported command names include unapproved verbs which might make them less discoverable. Use the Verbose parameter for more detail or type Get-Verb to see the list of approved verbs."
+> WARNING: Some imported command names include unapproved verbs which might make them less > discoverable. Use the Verbose parameter for more detail or type Get-Verb to see the list of > approved verbs.
 
 
 This message is only a warning. The complete module is still imported, including the non-conforming commands. Although the message is displayed to module users, the naming problem should be fixed by the module author.`, `SwitchParameter`),
             new Parameter(`Force`, `This parameter causes a module to be loaded, or reloaded, over top of the current one`, `SwitchParameter`),
-            new Parameter(`FullyQualifiedName`, `Specifies the fully qualified name of the module specification.`, `ModuleSpecification[]`),
+            new Parameter(`FullyQualifiedName`, `Specifies the fully qualified name of the module as a hash table. The value can be a combination of strings and hash tables. The hash table has the following keys.
+
+
+- "ModuleName" - Required Specifies the module name. - "GUID" - Optional Specifies the GUID of the module. - It's also Required to specify one of the three below keys. These keys   can't be used together.   - "ModuleVersion" - Specifies a minimum acceptable version of the module.   - "RequiredVersion" - Specifies an exact, required version of the module.   - "MaximumVersion" - Specifies the maximum acceptable version of the module.`, `ModuleSpecification[]`),
             new Parameter(`Function`, `Specifies an array of functions that this cmdlet imports from the module into the current session. Wildcard characters are permitted.
 
 
@@ -16266,21 +15740,24 @@ Some modules automatically export selected functions into your session when you 
             new Parameter(`Global`, `Indicates that this cmdlet imports modules into the global session state so they are available to all commands in the session.
 
 
-By default, when Import-Module cmdlet is called from the command prompt, script file, or scriptblock, all the commands are imported into the global session state.
+By default, when "Import-Module" cmdlet is called from the command prompt, script file, or scriptblock, all the commands are imported into the global session state.
 
 
-When invoked from another module, Import-Module cmdlet imports the commands in a module, including commands from nested modules, into the caller's session state.
+When invoked from another module, "Import-Module" cmdlet imports the commands in a module, including commands from nested modules, into the caller's session state.
+
+
+> [!TIP] > You should avoid calling "Import-Module" from within a module. Instead, declare the target module > as a nested module in the parent module's manifest. Declaring nested modules improves the > discoverability of dependencies.
 
 
 The Global parameter is equivalent to the Scope parameter with a value of Global.
 
 
 To restrict the commands that a module exports, use an "Export-ModuleMember" command in the script module.`, `SwitchParameter`),
-            new Parameter(`MaximumVersion`, `Specifies a maximum version. This cmdlet imports only a version of the module that is less than or equal to the specified value. If no version qualifies, Import-Module generates an error.`, `String`),
-            new Parameter(`MinimumVersion`, `Specifies a minimum version. This cmdlet imports only a version of the module that is greater than or equal to the specified value. If no version qualifies, Import-Module generates an error.
+            new Parameter(`MaximumVersion`, `Specifies a maximum version. This cmdlet imports only a version of the module that is less than or equal to the specified value. If no version qualifies, "Import-Module" generates an error.`, `String`),
+            new Parameter(`MinimumVersion`, `Specifies a minimum version. This cmdlet imports only a version of the module that is greater than or equal to the specified value. If no version qualifies, "Import-Module" generates an error.
 
 
-By default, Import-Module imports the module without checking the version number.
+By default, "Import-Module" imports the module without checking the version number.
 
 
 Use the MinimumVersion parameter name or its alias, Version.
@@ -16290,18 +15767,18 @@ To specify an exact version, use the RequiredVersion parameter. You can also use
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `Version`),
-            new Parameter(`ModuleInfo`, `Specifies an array of module objects to import. Enter a variable that contains the module objects, or a command that gets the module objects, such as the following command: "Get-Module -ListAvailable". You can also pipe module objects to Import-Module .`, `PSModuleInfo[]`),
-            new Parameter(`Name`, `Specifies the names of the modules to import. Enter the name of the module or the name of a file in the module, such as a .psd1, .psm1, .dll, or ps1 file. File paths are optional. Wildcard characters are not permitted. You can also pipe module names and file names to Import-Module .
+            new Parameter(`ModuleInfo`, `Specifies an array of module objects to import. Enter a variable that contains the module objects, or a command that gets the module objects, such as the following command: "Get-Module -ListAvailable". You can also pipe module objects to "Import-Module".`, `PSModuleInfo[]`),
+            new Parameter(`Name`, `Specifies the names of the modules to import. Enter the name of the module or the name of a file in the module, such as a .psd1, .psm1, .dll, or ps1 file. File paths are optional. Wildcard characters are not permitted. You can also pipe module names and file names to "Import-Module".
 
 
-If you omit a path, Import-Module looks for the module in the paths saved in the PSModulePath environment variable ($env:PSModulePath).
+If you omit a path, "Import-Module" looks for the module in the paths saved in the "$env:PSModulePath" environment variable.
 
 
 Specify only the module name whenever possible. When you specify a file name, only the members that are implemented in that file are imported. If the module contains other files, they are not imported, and you might be missing important members of the module.`, `String[]`),
-            new Parameter(`NoClobber`, `Indicates that this cmdlet does not import commands that have the same names as existing commands in the current session. By default, Import-Module imports all exported module commands.
+            new Parameter(`NoClobber`, `Indicates that this cmdlet does not import commands that have the same names as existing commands in the current session. By default, "Import-Module" imports all exported module commands.
 
 
-Commands that have the same names can hide or replace commands in the session. To avoid command name conflicts in a session, use the Prefix or NoClobber parameters. For more information about name conflicts and command precedence, see "Modules and Name Conflicts" in about_Modules and about_Command_Precedence.
+Commands that have the same names can hide or replace commands in the session. To avoid command name conflicts in a session, use the Prefix or NoClobber parameters. For more information about name conflicts and command precedence, see "Modules and Name Conflicts" in about_Modules (about/about_Modules.md)and about_Command_Precedence (about/about_Command_Precedence.md).
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
@@ -16312,24 +15789,27 @@ This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
 Use this parameter to avoid name conflicts that might occur when different members in the session have the same name. This parameter does not change the module, and it does not affect files that the module imports for its own use. These are known as nested modules. This cmdlet affects only the names of members in the current session.
 
 
-For example, if you specify the prefix UTC and then import a Get-Date cmdlet, the cmdlet is known in the session as Get-UTCDate , and it is not confused with the original Get-Date cmdlet.
+For example, if you specify the prefix UTC and then import a "Get-Date" cmdlet, the cmdlet is known in the session as "Get-UTCDate", and it is not confused with the original "Get-Date" cmdlet.
 
 
 The value of this parameter takes precedence over the DefaultCommandPrefix property of the module, which specifies the default prefix.`, `String`),
-            new Parameter(`PSSession`, `Specifies a Windows PowerShell user-managed session ( PSSession ) from which this cmdlet import modules into the current session. Enter a variable that contains a PSSession or a command that gets a PSSession , such as a Get-PSSession command.
+            new Parameter(`PSSession`, `Specifies a PowerShell user-managed session ( PSSession ) from which this cmdlet import modules into the current session. Enter a variable that contains a PSSession or a command that gets a PSSession , such as a "Get-PSSession" command.
 
 
-When you import a module from a different session into the current session, you can use the cmdlets from the module in the current session, just as you would use cmdlets from a local module. Commands that use the remote cmdlets actually run in the remote session, but the remoting details are managed in the background by Windows PowerShell.
+When you import a module from a different session into the current session, you can use the cmdlets from the module in the current session, just as you would use cmdlets from a local module. Commands that use the remote cmdlets actually run in the remote session, but the remoting details are managed in the background by PowerShell.
 
 
-This parameter uses the Implicit Remoting feature of Windows PowerShell. It is equivalent to using the Import-PSSession cmdlet to import particular modules from a session. Import-Module cannot import Windows PowerShell Core modules from another session. The Windows PowerShell Core modules have names that begin with Microsoft.PowerShell.
+This parameter uses the Implicit Remoting feature of PowerShell. It is equivalent to using the "Import-PSSession" cmdlet to import particular modules from a session.
+
+
+"Import-Module" cannot import PowerShell Core modules from another session. The PowerShell Core modules have names that begin with Microsoft.PowerShell.
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `PSSession`),
-            new Parameter(`RequiredVersion`, `Specifies a version of the module that this cmdlet imports. If the version is not installed, Import-Module generates an error.
+            new Parameter(`RequiredVersion`, `Specifies a version of the module that this cmdlet imports. If the version is not installed, "Import-Module" generates an error.
 
 
-By default, Import-Module imports the module without checking the version number.
+By default, "Import-Module" imports the module without checking the version number.
 
 
 To specify a minimum version, use the MinimumVersion parameter. You can also use the Module and Version parameters of the #Requires keyword to require a specific version of a module in a script.
@@ -16338,7 +15818,7 @@ To specify a minimum version, use the MinimumVersion parameter. You can also use
 This parameter was introduced in Windows PowerShell 3.0.
 
 
-Scripts that use RequiredVersion to import modules that are included with existing releases of the Windows operating system do not automatically run in future releases of the Windows operating system. This is because PowerShell module version numbers in future releases of the Windows operating system are higher than module version numbers in existing releases of the Windows operating system.`, `Version`),
+Scripts that use RequiredVersion to import modules that are included with existing releases of the Windows operating system don't automatically run in future releases of the Windows operating system. This is because PowerShell module version numbers in future releases of the Windows operating system are higher than module version numbers in existing releases of the Windows operating system.`, `Version`),
             new Parameter(`Scope`, `Specifies a scope into which this cmdlet imports the module.
 
 
@@ -16348,10 +15828,10 @@ The acceptable values for this parameter are:
 - Global . Available to all commands in the session. Equivalent to the Global parameter. - Local . Available only in the current scope.
 
 
-By default, when Import-Module cmdlet is called from the command prompt, script file, or scriptblock, all the commands are imported into the global session state. You can use the -Scope parameter with the value of Local to import module content into the script or scriptblock scope.
+By default, when "Import-Module" cmdlet is called from the command prompt, script file, or scriptblock, all the commands are imported into the global session state. You can use the -Scope parameter with the value of Local to import module content into the script or scriptblock scope.
 
 
-When invoked from another module, Import-Module cmdlet imports the commands in a module, including commands from nested modules, into the caller's session state. Specifying -Scope Global or -Global indicates that this cmdlet imports modules into the global session state so they are available to all commands in the session.
+When invoked from another module, "Import-Module" cmdlet imports the commands in a module, including commands from nested modules, into the caller's session state. Specifying "-Scope Global" or "-Global" indicates that this cmdlet imports modules into the global session state so they are available to all commands in the session.
 
 
 The Global parameter is equivalent to the Scope parameter with a value of Global.
@@ -16362,21 +15842,34 @@ This parameter was introduced in Windows PowerShell 3.0.`, `String`),
 
 
 Some modules automatically export selected variables into your session when you import the module. This parameter lets you select from among the exported variables.`, `String[]`),
+            new Parameter(`SkipEditionCheck`, `Skips the check on the "CompatiblePSEditions" field.
+
+
+Allows loading a module from the ""$($env:windir)\\System32\\WindowsPowerShell\\v1.0\\Modules"" module directory into PowerShell Core when that module does not specify "Core" in the "CompatiblePSEditions" manifest field.
+
+
+When importing a module from another path, this switch does nothing, since the check is not performed. On Linux and macOS, this switch does nothing.
+
+
+See about_PowerShell_Editions (About/about_PowerShell_Editions.md)for more information.
+
+
+> [!WARNING] > "Import-Module -SkipEditionCheck" is still likely to fail to import a module. Even if it does > succeed, invoking a command from the module may later fail when it tries to use an > incompatible API.`, `SwitchParameter`),
         ],
         `Adds modules to the current session.`,
-        `Import-Module [-Assembly] <Assembly[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-NoClobber] [-PassThru] [-Prefix <String>] [-Scope {Local | Global}] [-Variable <String[]>] [<CommonParameters>]
+        `Import-Module [-Assembly] <Assembly[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-NoClobber] [-PassThru] [-Prefix <String>] [-Scope {Local | Global}] [-Variable <String[]>] [-SkipEditionCheck] [<CommonParameters>]
 
-Import-Module [-Name] <String[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-CimNamespace <String>] [-CimResourceUri <Uri>] -CimSession <CimSession> [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-MaximumVersion <String>] [-MinimumVersion <Version>] [-NoClobber] [-PassThru] [-Prefix <String>] [-RequiredVersion <Version>] [-Scope {Local | Global}] [-Variable <String[]>] [<CommonParameters>]
+Import-Module [-Name] <String[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-CimNamespace <String>] [-CimResourceUri <Uri>] -CimSession <CimSession> [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-MaximumVersion <String>] [-MinimumVersion <Version>] [-NoClobber] [-PassThru] [-Prefix <String>] [-RequiredVersion <Version>] [-Scope {Local | Global}] [-Variable <String[]>] [-SkipEditionCheck] [<CommonParameters>]
 
-Import-Module [-FullyQualifiedName] <ModuleSpecification[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-NoClobber] [-PassThru] [-Prefix <String>] [-Scope {Local | Global}] [-Variable <String[]>] [<CommonParameters>]
+Import-Module [-FullyQualifiedName] <ModuleSpecification[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-NoClobber] [-PassThru] [-Prefix <String>] [-Scope {Local | Global}] [-Variable <String[]>] [-SkipEditionCheck] [<CommonParameters>]
 
-Import-Module [-FullyQualifiedName] <ModuleSpecification[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-NoClobber] [-PassThru] [-Prefix <String>] -PSSession <PSSession> [-Scope {Local | Global}] [-Variable <String[]>] [<CommonParameters>]
+Import-Module [-FullyQualifiedName] <ModuleSpecification[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-NoClobber] [-PassThru] [-Prefix <String>] -PSSession <PSSession> [-Scope {Local | Global}] [-Variable <String[]>] [-SkipEditionCheck] [<CommonParameters>]
 
-Import-Module [-Name] <String[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-MaximumVersion <String>] [-MinimumVersion <Version>] [-NoClobber] [-PassThru] [-Prefix <String>] [-RequiredVersion <Version>] [-Scope {Local | Global}] [-Variable <String[]>] [<CommonParameters>]
+Import-Module [-Name] <String[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-MaximumVersion <String>] [-MinimumVersion <Version>] [-NoClobber] [-PassThru] [-Prefix <String>] [-RequiredVersion <Version>] [-Scope {Local | Global}] [-Variable <String[]>] [-SkipEditionCheck] [<CommonParameters>]
 
-Import-Module [-Name] <String[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-MaximumVersion <String>] [-MinimumVersion <Version>] [-NoClobber] [-PassThru] [-Prefix <String>] -PSSession <PSSession> [-RequiredVersion <Version>] [-Scope {Local | Global}] [-Variable <String[]>] [<CommonParameters>]
+Import-Module [-Name] <String[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-MaximumVersion <String>] [-MinimumVersion <Version>] [-NoClobber] [-PassThru] [-Prefix <String>] -PSSession <PSSession> [-RequiredVersion <Version>] [-Scope {Local | Global}] [-Variable <String[]>] [-SkipEditionCheck] [<CommonParameters>]
 
-Import-Module [-ModuleInfo] <PSModuleInfo[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-NoClobber] [-PassThru] [-Prefix <String>] [-Scope {Local | Global}] [-Variable <String[]>] [<CommonParameters>]`,
+Import-Module [-ModuleInfo] <PSModuleInfo[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-NoClobber] [-PassThru] [-Prefix <String>] [-Scope {Local | Global}] [-Variable <String[]>] [-SkipEditionCheck] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -16397,10 +15890,10 @@ Import-Module [-ModuleInfo] <PSModuleInfo[]> [-Alias <String[]>] [-ArgumentList 
     new ConsoleCommand(
         `Import-PowerShellDataFile`,
         [
-            new Parameter(`LiteralPath`, ``, `String[]`),
-            new Parameter(`Path`, ``, `String[]`),
+            new Parameter(`LiteralPath`, `The path to the file being imported. All characters in the path are treated as literal values. Wildcard characters are not processed.`, `String[]`),
+            new Parameter(`Path`, `The path to the file being imported. Wildcards are allowed but only the first matching file is imported.`, `String[]`),
         ],
-        `Imports values from a .PSD1 file without invoking its contents`,
+        `Imports values from a .PSD1 file without invoking its contents.`,
         `Import-PowerShellDataFile [-LiteralPath] <String[]> [<CommonParameters>]
 
 Import-PowerShellDataFile [-Path] <String[]> [<CommonParameters>]`,
@@ -16440,7 +15933,7 @@ If you use the CommandName parameter, the formatting files for the commands are 
             new Parameter(`CommandType`, `Specifies the type of command objects. The default value is Cmdlet. Use CommandType or its alias, Type . The acceptable values for this parameter are:
 
 
-- Alias. The PowerShell aliases in the remote session. - All. The cmdlets and functions in the remote session. - Application. All the files other than Windows-PowerShell files in the paths that are listed in the Path environment variable ($env:path) in the remote session, including .txt, .exe, and .dll files. - Cmdlet. The cmdlets in the remote session. "Cmdlet" is the default. - ExternalScript. The .ps1 files in the paths listed in the Path environment variable ($env:path) in the remote session. - Filter and Function. The PowerShell functions in the remote session. - Script. The script blocks in the remote session.`, `CommandTypes`),
+- Alias. The PowerShell aliases in the remote session. - All. The cmdlets and functions in the remote session. - Application. All the files other than PowerShell files in the paths that are listed in the Path environment variable ($env:path) in the remote session, including .txt, .exe, and .dll files. - Cmdlet. The cmdlets in the remote session. "Cmdlet" is the default. - ExternalScript. The .ps1 files in the paths listed in the Path environment variable ($env:path) in the remote session. - Filter and Function. The PowerShell functions in the remote session. - Script. The script blocks in the remote session.`, `CommandTypes`),
             new Parameter(`DisableNameChecking`, `Indicates that this cmdlet suppresses the message that warns you when you import a cmdlet or function whose name includes an unapproved verb or a prohibited character.
 
 
@@ -16513,30 +16006,6 @@ For instance, if you specify the prefix Remote and then import a Get-Date cmdlet
         }
     ),
     new ConsoleCommand(
-        `Import-VM`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Import-VMInitialReplication`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
         `Initialize-Tpm`,
         [
 
@@ -16590,41 +16059,44 @@ For instance, if you specify the prefix Remote and then import a Get-Date cmdlet
             new Parameter(`AllowRedirection`, `Allows redirection of this connection to an alternate Uniform Resource Identifier (URI).
 
 
-When you use the ConnectionURI parameter, the remote destination can return an instruction to redirect to a different URI. By default, PowerShell does not redirect connections, but you can use this parameter to allow it to redirect the connection.
+When you use the ConnectionURI parameter, the remote destination can return an instruction to redirect to a different URI. By default, PowerShell doesn't redirect connections, but you can use this parameter to allow it to redirect the connection.
 
 
-You can also limit the number of times the connection is redirected by changing the MaximumConnectionRedirectionCount session option value. Use the MaximumRedirection parameter of the New-PSSessionOption cmdlet or set the MaximumConnectionRedirectionCount property of the $PSSessionOption preference variable. The default value is 5.`, `SwitchParameter`),
-            new Parameter(`ApplicationName`, `Specifies the application name segment of the connection URI. Use this parameter to specify the application name when you are not using the ConnectionURI parameter in the command.
+You can also limit the number of times the connection is redirected by changing the MaximumConnectionRedirectionCount session option value. Use the MaximumRedirection parameter of the "New-PSSessionOption" cmdlet or set the MaximumConnectionRedirectionCount property of the "$PSSessionOption" preference variable. The default value is 5.`, `SwitchParameter`),
+            new Parameter(`ApplicationName`, `Specifies the application name segment of the connection URI. Use this parameter to specify the application name when you aren't using the ConnectionURI parameter in the command.
 
 
-The default value is the value of the $PSSessionApplicationName preference variable on the local computer. If this preference variable is not defined, the default value is WSMAN. This value is appropriate for most uses. For more information, see about_Preference_Variables (About/about_Preference_Variables.md).
+The default value is the value of the "$PSSessionApplicationName" preference variable on the local computer. If this preference variable isn't defined, the default value is WSMAN. This value is appropriate for most uses. For more information, see about_Preference_Variables (./About/about_Preference_Variables.md).
 
 
 The WinRM service uses the application name to select a listener to service the connection request. The value of this parameter should match the value of the URLPrefix property of a listener on the remote computer.`, `String`),
-            new Parameter(`ArgumentList`, `Supplies the values of local variables in the command. The variables in the command are replaced by these values before the command is run on the remote computer. Enter the values in a comma-separated list. Values are associated with variables in the order that they are listed. The alias for ArgumentList is Args.
+            new Parameter(`ArgumentList`, `Supplies the values of local variables in the command. The variables in the command are replaced by these values before the command is run on the remote computer. Enter the values in a comma-separated list. Values are associated with variables in the order that they're listed. The alias for ArgumentList is Args.
 
 
-The values in the ArgumentList parameter can be actual values, such as 1024, or they can be references to local variables, such as $max.
+The values in the ArgumentList parameter can be actual values, such as 1024, or they can be references to local variables, such as "$max".
 
 
 To use local variables in a command, use the following command format:
 
 
-"{param($<name1>[, $<name2>]...) <command-with-local-variables>} -ArgumentList <value> -or- <local-variable>"
+"{param($<name1>[, $<name2>]...) <command-with-local-variables>} -ArgumentList <value>" -or- "<local-variable>"
 
 
-The param keyword lists the local variables that are used in the command. ArgumentList supplies the values of the variables, in the order that they are listed.`, `Object[]`),
+The param keyword lists the local variables that are used in the command. ArgumentList supplies the values of the variables, in the order that they're listed.`, `Object[]`),
             new Parameter(`AsJob`, `Indicates that this cmdlet runs the command as a background job on a remote computer. Use this parameter to run commands that take an extensive time to finish.
 
 
-When you use the AsJob parameter, the command returns an object that represents the job, and then displays the command prompt. You can continue to work in the session while the job finishes. To manage the job, use the Job cmdlets. To get the job results, use the Receive-Job cmdlet.
+When you use the AsJob parameter, the command returns an object that represents the job, and then displays the command prompt. You can continue to work in the session while the job finishes. To manage the job, use the "*-Job" cmdlets. To get the job results, use the "Receive-Job" cmdlet.
 
 
-The AsJob parameter resembles using the Invoke-Command cmdlet to run a Start-Job command remotely. However, with AsJob , the job is created on the local computer, even though the job runs on a remote computer, and the results of the remote job are automatically returned to the local computer.
+The AsJob parameter resembles using the "Invoke-Command" cmdlet to run a "Start-Job" cmdlet remotely. However, with AsJob , the job is created on the local computer, even though the job runs on a remote computer. The results of the remote job are automatically returned to the local computer.
 
 
 For more information about PowerShell background jobs, see about_Jobs (About/about_Jobs.md) and [about_Remote_Jobs](About/about_Remote_Jobs.md).`, `SwitchParameter`),
-            new Parameter(`Authentication`, `Specifies the mechanism that is used to authenticate the user's credentials. The acceptable values for this parameter are:
+            new Parameter(`Authentication`, `Specifies the mechanism that's used to authenticate the user's credentials. CredSSP authentication is available only in Windows Vista, Windows Server 2008, and later versions of the Windows operating system.
+
+
+The acceptable values for this parameter are as follows:
 
 
 - Default
@@ -16653,46 +16125,43 @@ For more information about PowerShell background jobs, see about_Jobs (About/abo
 The default value is Default.
 
 
-CredSSP authentication is available only in Windows Vista, Windows Server 2008, and later versions of the Windows operating system.
+For more information about the values of this parameter, see AuthenticationMechanism Enumeration (/dotnet/api/system.management.automation.runspaces.authenticationmechanism).
 
-
-For more information about the values of this parameter, see AuthenticationMechanism Enumeration (https://msdn.microsoft.com/library/system.management.automation.runspaces.authenticationmechanism)in the MSDN library.
-
-CAUTION: Credential Security Support Provider (CredSSP) authentication, in which the user's credentials are passed to a remote computer to be authenticated, is designed for commands that require authentication on more than one resource, such as accessing a remote network share. This mechanism increases the security risk of the remote operation. If the remote computer is compromised, the credentials that are passed to it can be used to control the network session.`, `AuthenticationMechanism`),
+> [!CAUTION] > Credential Security Support Provider (CredSSP) authentication, in which the user's credentials are > passed to a remote computer to be authenticated, is designed for commands that require > authentication on more than one resource, such as accessing a remote network share. This mechanism > increases the security risk of the remote operation. If the remote computer is compromised, the > credentials that are passed to it can be used to control the network session. For more > information, see > Credential Security Support Provider (/windows/win32/secauthn/credential-security-support-provider).`, `AuthenticationMechanism`),
             new Parameter(`CertificateThumbprint`, `Specifies the digital public key certificate (X509) of a user account that has permission to connect to the disconnected session. Enter the certificate thumbprint of the certificate.
 
 
-Certificates are used in client certificate-based authentication. They can be mapped only to local user accounts; they do not work with domain accounts.
+Certificates are used in client certificate-based authentication. They can be mapped only to local user accounts and they don't work with domain accounts.
 
 
-To get a certificate thumbprint, use a Get-Item or Get-ChildItem command in the PowerShell Cert: drive.`, `String`),
+To get a certificate thumbprint, use a "Get-Item" or "Get-ChildItem" command in the PowerShell Cert: drive.`, `String`),
             new Parameter(`ComputerName`, `Specifies the computers on which the command runs. The default is the local computer.
 
 
-When you use the ComputerName parameter, PowerShell creates a temporary connection that is used only to run the specified command and is then closed. If you need a persistent connection, use the Session parameter.
+When you use the ComputerName parameter, PowerShell creates a temporary connection that's used only to run the specified command and is then closed. If you need a persistent connection, use the Session parameter.
 
 
-Type the NETBIOS name, IP address, or fully qualified domain name of one or more computers in a comma-separated list. To specify the local computer, type the computer name, localhost, or a dot (.).
+Type the NETBIOS name, IP address, or fully qualified domain name of one or more computers in a comma-separated list. To specify the local computer, type the computer name, localhost, or a dot (".").
 
 
-To use an IP address in the value of ComputerName , the command must include the Credential parameter. Also, the computer must be configured for HTTPS transport or the IP address of the remote computer must be included in the WinRM TrustedHosts list on the local computer. For instructions for adding a computer name to the TrustedHosts list, see "How to Add a Computer to the Trusted Host List" in about_Remote_Troubleshooting.
+To use an IP address in the value of ComputerName , the command must include the Credential parameter. The computer must be configured for the HTTPS transport or the IP address of the remote computer must be included in the local computer's WinRM TrustedHosts list. For instructions to add a computer name to the TrustedHosts list, see [How to Add a Computer to the Trusted Host List](./about/about_remote_troubleshooting.md#how-to-add-a-computer-to-the-trusted-hosts-list).
 
 
-On Windows Vista and later versions of the Windows operating system, to include the local computer in the value of ComputerName , you must open PowerShell by using the Run as administrator option.`, `String[]`),
+On Windows Vista and later versions of the Windows operating system, to include the local computer in the value of ComputerName , you must run PowerShell using the Run as administrator option.`, `String[]`),
             new Parameter(`ConfigurationName`, `Specifies the session configuration that is used for the new PSSession .
 
 
-Enter a configuration name or the fully qualified resource URI for a session configuration. If you specify only the configuration name, the following schema URI is prepended: http://schemas.microsoft.com/PowerShell.
+Enter a configuration name or the fully qualified resource URI for a session configuration. If you specify only the configuration name, the following schema URI is prepended: "http://schemas.microsoft.com/PowerShell".
 
 
-When used with SSH, this specifies the subsystem to use on the target as defined in sshd_config. The default value for SSH is the "powershell" subsystem.
+When used with SSH, this parameter specifies the subsystem to use on the target as defined in "sshd_config". The default value for SSH is the "powershell" subsystem.
 
 
-The session configuration for a session is located on the remote computer. If the specified session configuration does not exist on the remote computer, the command fails.
+The session configuration for a session is located on the remote computer. If the specified session configuration doesn't exist on the remote computer, the command fails.
 
 
-The default value is the value of the $PSSessionConfigurationName preference variable on the local computer. If this preference variable is not set, the default is Microsoft.PowerShell. For more information, see about_Preference_Variables.`, `String`),
-            new Parameter(`ConnectionUri`, `Specifies a URI that defines the connection endpoint of the session. The URI must be fully qualified.
+The default value is the value of the "$PSSessionConfigurationName" preference variable on the local computer. If this preference variable isn't set, the default is Microsoft.PowerShell . For more information, see about_Preference_Variables (about/about_Preference_Variables.md).`, `String`),
+            new Parameter(`ConnectionUri`, `Specifies a Uniform Resource Identifier (URI) that defines the connection endpoint of the session. The URI must be fully qualified.
 
 
 The format of this string is as follows:
@@ -16707,10 +16176,10 @@ The default value is as follows:
 "http://localhost:5985/WSMAN"
 
 
-If you do not specify a connection URI, you can use the UseSSL and Port parameters to specify the connection URI values.
+If you don't specify a connection URI, you can use the UseSSL and Port parameters to specify the connection URI values.
 
 
-Valid values for the Transport segment of the URI are HTTP and HTTPS. If you specify a connection URI with a Transport segment, but do not specify a port, the session is created with standards ports: 80 for HTTP and 443 for HTTPS. To use the default ports for PowerShell remoting, specify port 5985 for HTTP or 5986 for HTTPS.
+Valid values for the Transport segment of the URI are HTTP and HTTPS. If you specify a connection URI with a Transport segment, but don't specify a port, the session is created with the standards ports: 80 for HTTP and 443 for HTTPS. To use the default ports for PowerShell remoting, specify port 5985 for HTTP or 5986 for HTTPS.
 
 
 If the destination computer redirects the connection to a different URI, PowerShell prevents the redirection unless you use the AllowRedirection parameter in the command.`, `Uri[]`),
@@ -16718,11 +16187,17 @@ If the destination computer redirects the connection to a different URI, PowerSh
             new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
 
 
-Type a user name, such as User01 or Domain01\User01. Or, enter a PSCredential object, such as one generated by the Get-Credential cmdlet. If you type a user name, this cmdlet prompts you for a password.`, `PSCredential`),
+Type a user name, such as User01 or Domain01\\User01 , or enter a PSCredential object generated by the "Get-Credential" cmdlet. If you type a user name, you're prompted to enter the password.
+
+
+Credentials are stored in a PSCredential (/dotnet/api/system.management.automation.pscredential)object and the password is stored as a SecureString (/dotnet/api/system.security.securestring).
+
+
+> [!NOTE] > For more information about SecureString data protection, see > How secure is SecureString? (/dotnet/api/system.security.securestring#how-secure-is-securestring).`, `PSCredential`),
             new Parameter(`EnableNetworkAccess`, `Indicates that this cmdlet adds an interactive security token to loopback sessions. The interactive token lets you run commands in the loopback session that get data from other computers. For example, you can run a command in the session that copies XML files from a remote computer to the local computer.
 
 
-A loopback session is a PSSession that originates and ends on the same computer. To create a loopback session, omit the ComputerName parameter or set its value to . (dot), localhost, or the name of the local computer.
+A loopback session is a PSSession that originates and ends on the same computer. To create a loopback session, omit the ComputerName parameter or set its value to dot ("."), localhost, or the name of the local computer.
 
 
 By default, loopback sessions are created by using a network token, which might not provide sufficient permission to authenticate to remote computers.
@@ -16731,21 +16206,21 @@ By default, loopback sessions are created by using a network token, which might 
 The EnableNetworkAccess parameter is effective only in loopback sessions. If you use EnableNetworkAccess when you create a session on a remote computer, the command succeeds, but the parameter is ignored.
 
 
-You can also allow remote access in a loopback session by using the CredSSP value of the Authentication parameter, which delegates the session credentials to other computers.
+You can allow remote access in a loopback session by using the CredSSP value of the Authentication parameter, which delegates the session credentials to other computers.
 
 
-To protect the computer from malicious access, disconnected loopback sessions that have interactive tokens, which are those created by using EnableNetworkAccess , can be reconnected only from the computer on which the session was created. Disconnected sessions that use CredSSP authentication can be reconnected from other computers. For more information, see Disconnect-PSSession.
+To protect the computer from malicious access, disconnected loopback sessions that have interactive tokens, which are those created by using EnableNetworkAccess , can be reconnected only from the computer on which the session was created. Disconnected sessions that use CredSSP authentication can be reconnected from other computers. For more information, see "Disconnect-PSSession".
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
-            new Parameter(`FilePath`, `Specifies a local script that this cmdlet runs on one or more remote computers. Enter the path and file name of the script, or pipe a script path to Invoke-Command . The script must reside on the local computer or in a directory that the local computer can access. Use ArgumentList to specify the values of parameters in the script.
+This parameter was introduced in PowerShell 3.0.`, `SwitchParameter`),
+            new Parameter(`FilePath`, `Specifies a local script that this cmdlet runs on one or more remote computers. Enter the path and file name of the script, or pipe a script path to "Invoke-Command". The script must reside on the local computer or in a directory that the local computer can access. Use ArgumentList to specify the values of parameters in the script.
 
 
 When you use this parameter, PowerShell converts the contents of the specified script file to a script block, transmits the script block to the remote computer, and runs it on the remote computer.`, `String`),
             new Parameter(`HideComputerName`, `Indicates that this cmdlet omits the computer name of each object from the output display. By default, the name of the computer that generated the object appears in the display.
 
 
-This parameter affects only the output display. It does not change the object.`, `SwitchParameter`),
+This parameter affects only the output display. It doesn't change the object.`, `SwitchParameter`),
             new Parameter(`HostName`, `Specifies an array of computer names for a Secure Shell (SSH) based connection. This is similar to the ComputerName parameter except that the connection to the remote computer is made using SSH rather than Windows WinRM.
 
 
@@ -16753,88 +16228,88 @@ This parameter was introduced in PowerShell 6.0.`, `String[]`),
             new Parameter(`InDisconnectedSession`, `Indicates that this cmdlet runs a command or script in a disconnected session.
 
 
-When you use the InDisconnectedSession parameter, Invoke-Command creates a persistent session on each remote computer, starts the command specified by the ScriptBlock or FilePath parameter, and then disconnects from the session. The commands continue to run in the disconnected sessions. InDisconnectedSession enables you to run commands without maintaining a connection to the remote sessions. Also, because the session is disconnected before any results are returned, InDisconnectedSession makes sure that all command results are returned to the reconnected session, instead of being split between sessions.
+When you use the InDisconnectedSession parameter, "Invoke-Command" creates a persistent session on each remote computer, starts the command specified by the ScriptBlock or FilePath parameter, and then disconnects from the session. The commands continue to run in the disconnected sessions. InDisconnectedSession enables you to run commands without maintaining a connection to the remote sessions. And, because the session is disconnected before any results are returned, InDisconnectedSession makes sure that all command results are returned to the reconnected session, instead of being split between sessions.
 
 
-You cannot use InDisconnectedSession with the Session parameter or the AsJob parameter.
+You can't use InDisconnectedSession with the Session parameter or the AsJob parameter.
 
 
-Commands that use InDisconnectedSession return a PSSession object that represents the disconnected session. They do not return the command output. To connect to the disconnected session, use the Connect-PSSession or Receive-PSSession cmdlets. To get the results of commands that ran in the session, use the Receive-PSSession cmdlet. To run commands that generate output in a disconnected session, set the value of the OutputBufferingMode session option to Drop. If you intend to connect to the disconnected session, set the idle time-out in the session so that it provides sufficient time for you to connect before deleting the session.
+Commands that use InDisconnectedSession return a PSSession object that represents the disconnected session. They don't return the command output. To connect to the disconnected session, use the "Connect-PSSession" or "Receive-PSSession" cmdlets. To get the results of commands that ran in the session, use the "Receive-PSSession" cmdlet. To run commands that generate output in a disconnected session, set the value of the OutputBufferingMode session option to Drop . If you intend to connect to the disconnected session, set the idle time-out in the session so that it provides sufficient time for you to connect before deleting the session.
 
 
-You can set the output buffering mode and idle time-out in the SessionOption parameter or in the $PSSessionOption preference variable. For more information about session options, see New-PSSessionOption and about_Preference_Variables.
+You can set the output buffering mode and idle time-out in the SessionOption parameter or in the "$PSSessionOption" preference variable. For more information about session options, see "New-PSSessionOption" and about_Preference_Variables (./about/about_preference_variables.md).
 
 
-For more information about the Disconnected Sessions feature, see about_Remote_Disconnected_Sessions.
+For more information about the Disconnected Sessions feature, see about_Remote_Disconnected_Sessions (about/about_Remote_Disconnected_Sessions.md).
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
+This parameter was introduced in PowerShell 3.0.`, `SwitchParameter`),
             new Parameter(`InputObject`, `Specifies input to the command. Enter a variable that contains the objects or type a command or expression that gets the objects.
 
 
-When using the InputObject parameter, use the $Input automatic variable in the value of the ScriptBlock parameter to represent the input objects.`, `PSObject`),
-            new Parameter(`JobName`, `Specifies a friendly name for the background job. By default, jobs are named Job<n>, where <n> is an ordinal number.
+When using the InputObject parameter, use the "$Input" automatic variable in the value of the ScriptBlock parameter to represent the input objects.`, `PSObject`),
+            new Parameter(`JobName`, `Specifies a friendly name for the background job. By default, jobs are named "Job<n>", where "<n>" is an ordinal number.
 
 
-If you use the JobName parameter in a command, the command is run as a job, and Invoke-Command returns a job object, even if you do not include AsJob in the command.
+If you use the JobName parameter in a command, the command is run as a job, and "Invoke-Command" returns a job object, even if you don't include AsJob in the command.
 
 
-For more information about PowerShell background jobs, see about_Jobs (About/about_Jobs.md).`, `String`),
+For more information about PowerShell background jobs, see about_Jobs (./About/about_Jobs.md).`, `String`),
             new Parameter(`KeyFilePath`, `Specifies a key file path used by Secure Shell (SSH) to authenticate a user on a remote computer.
 
 
-SSH allows user authentication to be performed via private/public keys as an alternative to basic password authentication. If the remote computer is configured for key authentication then this parameter can be used to provide the key that identifies the user.
+SSH allows user authentication to be performed via private and public keys as an alternative to basic password authentication. If the remote computer is configured for key authentication, then this parameter can be used to provide the key that identifies the user.
 
 
 This parameter was introduced in PowerShell 6.0.`, `String`),
-            new Parameter(`NoNewScope`, `Indicates that this cmdlet runs the specified command in the current scope. By default, Invoke-Command runs commands in their own scope.
+            new Parameter(`NoNewScope`, `Indicates that this cmdlet runs the specified command in the current scope. By default, "Invoke-Command" runs commands in their own scope.
 
 
 This parameter is valid only in commands that are run in the current session, that is, commands that omit both the ComputerName and Session parameters.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
+This parameter was introduced in PowerShell 3.0.`, `SwitchParameter`),
             new Parameter(`Port`, `Specifies the network port on the remote computer that is used for this command. To connect to a remote computer, the remote computer must be listening on the port that the connection uses. The default ports are 5985, which is the WinRM port for HTTP, and 5986, which is the WinRM port for HTTPS.
 
 
 Before using an alternate port, configure the WinRM listener on the remote computer to listen at that port. To configure the listener, type the following two commands at the PowerShell prompt:
 
 
-"Remove-Item -Path WSMan:\Localhost\listener\listener* -Recurse"
+"Remove-Item -Path WSMan:\\Localhost\\listener\\listener* -Recurse"
 
 
-"New-Item -Path WSMan:\Localhost\listener -Transport http -Address * -Port <port-number>"
+"New-Item -Path WSMan:\\Localhost\\listener -Transport http -Address * -Port <port-number>"
 
 
-Do not use the Port parameter unless you must. The port that is set in the command applies to all computers or sessions on which the command runs. An alternate port setting might prevent the command from running on all computers.`, `Int32`),
-            new Parameter(`RemoteDebug`, `{{Fill RemoteDebug Description}}`, `SwitchParameter`),
+Don't use the Port parameter unless you must. The port that is set in the command applies to all computers or sessions on which the command runs. An alternate port setting might prevent the command from running on all computers.`, `Int32`),
+            new Parameter(`RemoteDebug`, `Used to run the invoked command in debug mode in the remote PowerShell session.`, `SwitchParameter`),
             new Parameter(`RunAsAdministrator`, `Indicates that this cmdlet invokes a command as an Administrator.`, `SwitchParameter`),
-            new Parameter(`ScriptBlock`, `Specifies the commands to run. Enclose the commands in braces ( { } ) to create a script block. This parameter is required.
+            new Parameter(`ScriptBlock`, `Specifies the commands to run. Enclose the commands in curly braces "{ }" to create a script block. This parameter is required.
 
 
 By default, any variables in the command are evaluated on the remote computer. To include local variables in the command, use ArgumentList .`, `ScriptBlock`),
-            new Parameter(`Session`, `Specifies an array of sessions in which this cmdlet runs the command. Enter a variable that contains PSSession objects or a command that creates or gets the PSSession objects, such as a New-PSSession or Get-PSSession command.
+            new Parameter(`Session`, `Specifies an array of sessions in which this cmdlet runs the command. Enter a variable that contains PSSession objects or a command that creates or gets the PSSession objects, such as a "New-PSSession" or "Get-PSSession" command.
 
 
-When you create a PSSession , PowerShell establishes a persistent connection to the remote computer. Use a PSSession to run a series of related commands that share data. To run a single command or a series of unrelated commands, use the ComputerName parameter. For more information, see about_PSSessions.`, `PSSession[]`),
-            new Parameter(`SessionName`, `Specifies a friendly name for a disconnected session. You can use the name to refer to the session in subsequent commands, such as a Get-PSSession command. This parameter is valid only with the InDisconnectedSession parameter.
+When you create a PSSession , PowerShell establishes a persistent connection to the remote computer. Use a PSSession to run a series of related commands that share data. To run a single command or a series of unrelated commands, use the ComputerName parameter. For more information, see about_PSSessions (./About/about_PSSessions.md).`, `PSSession[]`),
+            new Parameter(`SessionName`, `Specifies a friendly name for a disconnected session. You can use the name to refer to the session in subsequent commands, such as a "Get-PSSession" command. This parameter is valid only with the InDisconnectedSession parameter.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `String[]`),
-            new Parameter(`SessionOption`, `Specifies advanced options for the session. Enter a SessionOption object, such as one that you create by using the New-PSSessionOption cmdlet, or a hash table in which the keys are session option names and the values are session option values.
+This parameter was introduced in PowerShell 3.0.`, `String[]`),
+            new Parameter(`SessionOption`, `Specifies advanced options for the session. Enter a SessionOption object, such as one that you create by using the "New-PSSessionOption" cmdlet, or a hash table in which the keys are session option names and the values are session option values.
 
 
-The default values for the options are determined by the value of the $PSSessionOption preference variable, if it is set. Otherwise, the default values are established by options set in the session configuration.
+The default values for the options are determined by the value of the "$PSSessionOption" preference variable, if it's set. Otherwise, the default values are established by options set in the session configuration.
 
 
-The session option values take precedence over default values for sessions set in the $PSSessionOption preference variable and in the session configuration. However, they do not take precedence over maximum values, quotas or limits set in the session configuration.
+The session option values take precedence over default values for sessions set in the "$PSSessionOption" preference variable and in the session configuration. However, they don't take precedence over maximum values, quotas, or limits set in the session configuration.
 
 
-For a description of the session options that includes the default values, see New-PSSessionOption . For information about the $PSSessionOption preference variable, see about_Preference_Variables (About/about_Preference_Variables.md). For more information about session configurations, see about_Session_Configurations (About/about_Session_Configurations.md).`, `PSSessionOption`),
-            new Parameter(`SSHConnection`, `This parameter takes an array of hashtables where each hashtable contains one or more connection parameters needed to establish a Secure Shell (SSH) connection (HostName, Port, UserName, KeyFilePath).
+For a description of the session options that includes the default values, see "New-PSSessionOption". For information about the "$PSSessionOption" preference variable, see about_Preference_Variables (About/about_Preference_Variables.md). For more information about session configurations, see about_Session_Configurations (About/about_Session_Configurations.md).`, `PSSessionOption`),
+            new Parameter(`SSHConnection`, `This parameter takes an array of hash tables where each hash table contains one or more connection parameters needed to establish a Secure Shell (SSH) connection (HostName, Port, UserName, KeyFilePath).
 
 
-The hashtable connection parameters are the same as defined for the HostName parameter set.
+The hash table connection parameters are the same as defined for the HostName parameter.
 
 
 The SSHConnection parameter is useful for creating multiple sessions where each session requires different connection information.
@@ -16844,7 +16319,7 @@ This parameter was introduced in PowerShell 6.0.`, `Hashtable[]`),
             new Parameter(`SSHTransport`, `Indicates that the remote connection is established using Secure Shell (SSH).
 
 
-By default PowerShell uses Windows WinRM to connect to a remote computer. This switch forces PowerShell to use the HostName parameter set for establishing an SSH based remote connection.
+By default PowerShell uses Windows WinRM to connect to a remote computer. This switch forces PowerShell to use the HostName parameter for establishing an SSH based remote connection.
 
 
 This parameter was introduced in PowerShell 6.0.`, `SwitchParameter`),
@@ -16855,46 +16330,46 @@ The throttle limit applies only to the current command, not to the session or to
             new Parameter(`UserName`, `Specifies the user name for the account used to run a command on the remote computer. User authentication method will depend on how Secure Shell (SSH) is configured on the remote computer.
 
 
-If SSH is configured for basic password authentication then you will be prompted for the user password.
+If SSH is configured for basic password authentication, then you'll be prompted for the user password.
 
 
-If SSH is configured for key based user authentication then a key file path can be provided via the KeyFilePath parameter and no password prompt will occur. Note that if the client user key file is located in an SSH known location then the KeyFilePath parameter is not needed for key based authentication, and user authentication will occur automatically based on the user name. See SSH documentation about key based user authentication for more information.
+If SSH is configured for key-based user authentication then a key file path can be provided via the KeyFilePath parameter and no password prompt will occur. If the client user key file is located in an SSH known location, then the KeyFilePath parameter isn't needed for key-based authentication, and user authentication will occur automatically based on the user name. For more information, see your platform's SSH documentation about key-based user authentication.
 
 
-This is not a required parameter. If no UserName parameter is specified then the current log on user name is used for the connection.
+This isn't a required parameter. If the UserName parameter isn't specified, then the current logged on user name is used for the connection.
 
 
 This parameter was introduced in PowerShell 6.0.`, `String`),
-            new Parameter(`UseSSL`, `Indicates that this cmdlet uses the Secure Sockets Layer (SSL) protocol to establish a connection to the remote computer. By default, SSL is not used.
+            new Parameter(`UseSSL`, `Indicates that this cmdlet uses the Secure Sockets Layer (SSL) protocol to establish a connection to the remote computer. By default, SSL isn't used.
 
 
-WS-Management encrypts all Windows PowerShell content transmitted over the network. The UseSSL parameter is an additional protection that sends the data across an HTTPS, instead of HTTP.
+WS-Management encrypts all PowerShell content transmitted over the network. The UseSSL parameter is an additional protection that sends the data across an HTTPS, instead of HTTP.
 
 
-If you use this parameter, but SSL is not available on the port that is used for the command, the command fails.`, `SwitchParameter`),
+If you use this parameter, but SSL isn't available on the port that's used for the command, the command fails.`, `SwitchParameter`),
             new Parameter(`VMId`, `Specifies an array of IDs of virtual machines.`, `Guid[]`),
             new Parameter(`VMName`, `Specifies an array of names of virtual machines.`, `String[]`),
         ],
         `Runs commands on local and remote computers.`,
-        `Invoke-Command [[-ConnectionUri] <Uri[]>] [-ScriptBlock] <ScriptBlock> [-AllowRedirection] [-ArgumentList <Object[]>] [-AsJob] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-CertificateThumbprint <String>] [-ConfigurationName <String>] [-Credential <PSCredential>] [-EnableNetworkAccess] [-HideComputerName] [-InDisconnectedSession] [-InputObject <PSObject>] [-JobName <String>] [-RemoteDebug] [-SessionOption <PSSessionOption>] [-ThrottleLimit <Int32>] [<CommonParameters>]
+        `Invoke-Command [[-ConnectionUri] <Uri[]>] [-ScriptBlock] <ScriptBlock> [-AllowRedirection] [-ArgumentList <Object[]>] [-AsJob] [-Authentication {Basic | Default | Credssp | Digest | Kerberos | Negotiate | NegotiateWithImplicitCredential}] [-CertificateThumbprint <String>] [-ConfigurationName <String>] [-Credential <PSCredential>] [-EnableNetworkAccess] [-HideComputerName] [-InDisconnectedSession] [-InputObject <PSObject>] [-JobName <String>] [-RemoteDebug] [-SessionOption <PSSessionOption>] [-ThrottleLimit <Int32>] [<CommonParameters>]
 
-Invoke-Command [[-ConnectionUri] <Uri[]>] [-FilePath] <String> [-AllowRedirection] [-ArgumentList <Object[]>] [-AsJob] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-ConfigurationName <String>] [-Credential <PSCredential>] [-EnableNetworkAccess] [-HideComputerName] [-InDisconnectedSession] [-InputObject <PSObject>] [-JobName <String>] [-RemoteDebug] [-SessionOption <PSSessionOption>] [-ThrottleLimit <Int32>] [<CommonParameters>]
+Invoke-Command [[-ConnectionUri] <Uri[]>] [-FilePath] <String> [-AllowRedirection] [-ArgumentList <Object[]>] [-AsJob] [-Authentication {Basic | Default | Credssp | Digest | Kerberos | Negotiate | NegotiateWithImplicitCredential}] [-ConfigurationName <String>] [-Credential <PSCredential>] [-EnableNetworkAccess] [-HideComputerName] [-InDisconnectedSession] [-InputObject <PSObject>] [-JobName <String>] [-RemoteDebug] [-SessionOption <PSSessionOption>] [-ThrottleLimit <Int32>] [<CommonParameters>]
 
-Invoke-Command [[-ComputerName] <String[]>] [-ScriptBlock] <ScriptBlock> [-ApplicationName <String>] [-ArgumentList <Object[]>] [-AsJob] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-CertificateThumbprint <String>] [-ConfigurationName <String>] [-Credential <PSCredential>] [-EnableNetworkAccess] [-HideComputerName] [-InDisconnectedSession] [-InputObject <PSObject>] [-JobName <String>] [-Port <Int32>] [-RemoteDebug] [-SessionName <String[]>] [-SessionOption <PSSessionOption>] [-ThrottleLimit <Int32>] [-UseSSL] [<CommonParameters>]
+Invoke-Command [[-ComputerName] <String[]>] [-ScriptBlock] <ScriptBlock> [-ApplicationName <String>] [-ArgumentList <Object[]>] [-AsJob] [-Authentication {Basic | Default | Credssp | Digest | Kerberos | Negotiate | NegotiateWithImplicitCredential}] [-CertificateThumbprint <String>] [-ConfigurationName <String>] [-Credential <PSCredential>] [-EnableNetworkAccess] [-HideComputerName] [-InDisconnectedSession] [-InputObject <PSObject>] [-JobName <String>] [-Port <Int32>] [-RemoteDebug] [-SessionName <String[]>] [-SessionOption <PSSessionOption>] [-ThrottleLimit <Int32>] [-UseSSL] [<CommonParameters>]
 
-Invoke-Command [[-ComputerName] <String[]>] [-FilePath] <String> [-ApplicationName <String>] [-ArgumentList <Object[]>] [-AsJob] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-ConfigurationName <String>] [-Credential <PSCredential>] [-EnableNetworkAccess] [-HideComputerName] [-InDisconnectedSession] [-InputObject <PSObject>] [-JobName <String>] [-Port <Int32>] [-RemoteDebug] [-SessionName <String[]>] [-SessionOption <PSSessionOption>] [-ThrottleLimit <Int32>] [-UseSSL] [<CommonParameters>]
+Invoke-Command [[-ComputerName] <String[]>] [-FilePath] <String> [-ApplicationName <String>] [-ArgumentList <Object[]>] [-AsJob] [-Authentication {Basic | Default | Credssp | Digest | Kerberos | Negotiate | NegotiateWithImplicitCredential}] [-ConfigurationName <String>] [-Credential <PSCredential>] [-EnableNetworkAccess] [-HideComputerName] [-InDisconnectedSession] [-InputObject <PSObject>] [-JobName <String>] [-Port <Int32>] [-RemoteDebug] [-SessionName <String[]>] [-SessionOption <PSSessionOption>] [-ThrottleLimit <Int32>] [-UseSSL] [<CommonParameters>]
 
 Invoke-Command [[-Session] <PSSession[]>] [-FilePath] <String> [-ArgumentList <Object[]>] [-AsJob] [-HideComputerName] [-InputObject <PSObject>] [-JobName <String>] [-RemoteDebug] [-ThrottleLimit <Int32>] [<CommonParameters>]
 
 Invoke-Command [-ScriptBlock] <ScriptBlock> [[-Session] <PSSession[]>] [-ArgumentList <Object[]>] [-AsJob] [-HideComputerName] [-InputObject <PSObject>] [-JobName <String>] [-RemoteDebug] [-ThrottleLimit <Int32>] [<CommonParameters>]
 
-Invoke-Command [-ScriptBlock] <ScriptBlock> [-VMId] <Guid[]> [-ArgumentList <Object[]>] [-AsJob] [-ConfigurationName <String>] -Credential <PSCredential> [-HideComputerName] [-InputObject <PSObject>] [-RemoteDebug] [-ThrottleLimit <Int32>] [<CommonParameters>]
+Invoke-Command [-ScriptBlock] <ScriptBlock> [-VMId] <Guid[]> [-ArgumentList <Object[]>] [-AsJob] [-ConfigurationName <String>] [-Credential <PSCredential>] [-HideComputerName] [-InputObject <PSObject>] [-RemoteDebug] [-ThrottleLimit <Int32>] [<CommonParameters>]
 
-Invoke-Command [-ScriptBlock] <ScriptBlock> [-ArgumentList <Object[]>] [-AsJob] [-ConfigurationName <String>] -Credential <PSCredential> [-HideComputerName] [-InputObject <PSObject>] [-RemoteDebug] [-ThrottleLimit <Int32>] -VMName <String[]> [<CommonParameters>]
+Invoke-Command [-ScriptBlock] <ScriptBlock> [-ArgumentList <Object[]>] [-AsJob] [-ConfigurationName <String>] [-Credential <PSCredential>] [-HideComputerName] [-InputObject <PSObject>] [-RemoteDebug] [-ThrottleLimit <Int32>] -VMName <String[]> [<CommonParameters>]
 
-Invoke-Command [-VMId] <Guid[]> [-FilePath] <String> [-ArgumentList <Object[]>] [-AsJob] [-ConfigurationName <String>] -Credential <PSCredential> [-HideComputerName] [-InputObject <PSObject>] [-RemoteDebug] [-ThrottleLimit <Int32>] [<CommonParameters>]
+Invoke-Command [-VMId] <Guid[]> [-FilePath] <String> [-ArgumentList <Object[]>] [-AsJob] [-ConfigurationName <String>] [-Credential <PSCredential>] [-HideComputerName] [-InputObject <PSObject>] [-RemoteDebug] [-ThrottleLimit <Int32>] [<CommonParameters>]
 
-Invoke-Command [-FilePath] <String> [-ArgumentList <Object[]>] [-AsJob] [-ConfigurationName <String>] -Credential <PSCredential> [-HideComputerName] [-InputObject <PSObject>] [-RemoteDebug] [-ThrottleLimit <Int32>] -VMName <String[]> [<CommonParameters>]
+Invoke-Command [-FilePath] <String> [-ArgumentList <Object[]>] [-AsJob] [-ConfigurationName <String>] [-Credential <PSCredential>] [-HideComputerName] [-InputObject <PSObject>] [-RemoteDebug] [-ThrottleLimit <Int32>] -VMName <String[]> [<CommonParameters>]
 
 Invoke-Command [-ScriptBlock] <ScriptBlock> [-ArgumentList <Object[]>] [-AsJob] [-HideComputerName] -HostName <String[]> [-InputObject <PSObject>] [-KeyFilePath <String>] [-Port <Int32>] [-RemoteDebug] [-SSHTransport {true}] [-UserName <String>] [<CommonParameters>]
 
@@ -16958,21 +16433,15 @@ If you type characters, Invoke-History matches the most recent commands first. I
     new ConsoleCommand(
         `Invoke-Item`,
         [
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
+            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as " .txt". Wildcard characters are permitted. The Exclude * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`Filter`, `Specifies a filter to qualify the Path parameter. The FileSystem (../Microsoft.PowerShell.Core/About/about_FileSystem_Provider.md)provider is the only installed PowerShell provider that supports the use of filters. You can find the syntax for the FileSystem filter language in about_Wildcards (../Microsoft.PowerShell.Core/About/about_Wildcards.md). Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
+            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "" .txt"". Wildcard characters are permitted. The Include * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`LiteralPath`, `Specifies a path to one or more locations. The value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
 
 
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you are prompted for a password.
-
-
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
-            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes from the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`Filter`, `Specifies a filter in the format or language of the provider. The value of this parameter qualifies the Path parameter.
-
-
-The syntax of the filter, including the use of wildcard characters, depends on the provider. Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
-            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`LiteralPath`, `Specifies a path to the item. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
-            new Parameter(`Path`, `Specifies the path to the selected item.`, `String[]`),
+For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
+            new Parameter(`Path`, `Specifies the path to the selected item. Wildcard characters are permitted.`, `String[]`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
@@ -16988,40 +16457,40 @@ Invoke-Item [-Path] <String[]> [-Credential <PSCredential>] [-Exclude <String[]>
     new ConsoleCommand(
         `Invoke-RestMethod`,
         [
-            new Parameter(`AllowUnencryptedAuthentication`, `Allows sending of credentials and secrets over unencrypted connections. By default, supplying -Credential or any -Authentication option with a -Uri that does not begin with "https://" will result in an error and the request will abort to prevent unintentionally communicating secrets in plain text over unencrypted connections. To override this behavior at your own risk, supply the -AllowUnencryptedAuthentication parameter.
+            new Parameter(`AllowUnencryptedAuthentication`, `Allows sending of credentials and secrets over unencrypted connections. By default, supplying Credential or any Authentication option with a Uri that does not begin with "https://" will result in an error and the request will abort to prevent unintentionally communicating secrets in plain text over unencrypted connections. To override this behavior at your own risk, supply the AllowUnencryptedAuthentication parameter.
 
 
-> [!WARNING] > Using this parameter is not secure and is not recommended. It is provided only > for compatibility with legacy systems that cannot provide encrypted > connections. Use at your own risk.
+> [!WARNING] > Using this parameter is not secure and is not recommended. It is provided only for compatibility > with legacy systems that cannot provide encrypted connections. Use at your own risk.
 
 
 This feature was added in PowerShell 6.0.0.`, `SwitchParameter`),
-            new Parameter(`Authentication`, `Specifies the explicit authentication type to use for the request. The default is None . -Authentication cannot be used with -UseDefaultCredentials .
+            new Parameter(`Authentication`, `Specifies the explicit authentication type to use for the request. The default is None . Authentication can't be used with UseDefaultCredentials .
 
 
 Available Authentication Options:
 
 
-- None : This is the default option when -Authentication is not supplied. No explicit authentication will be used. - Basic : Requires -Credential . The credentials will be used to send an RFC 7617 Basic Authentication "Authorization: Basic" header in the format of "base64(user:password)". - Bearer : Requires -Token . Will send and RFC 6750 "Authorization: Bearer" header with the supplied token. This is an alias for OAuth - OAuth : Requires -Token . Will send and RFC 6750 "Authorization: Bearer" header with the supplied token. This is an alias for Bearer Supplying -Authentication will override any "Authorization" headers supplied to -Headers or included in -WebSession .
+- None : This is the default option when Authentication is not supplied. No explicit   authentication will be used. - Basic : Requires Credential . The credentials will be used to send an RFC 7617 Basic   Authentication "Authorization: Basic" header in the format of "base64(user:password)". - Bearer : Requires Token . Will send and RFC 6750 "Authorization: Bearer" header with the   supplied token. This is an alias for OAuth - OAuth : Requires Token . Will send and RFC 6750 "Authorization: Bearer" header with the   supplied token. This is an alias for Bearer Supplying Authentication will override any "Authorization" headers supplied to Headers or included in WebSession .
 
 
 This feature was added in PowerShell 6.0.0.`, `WebAuthenticationType`),
             new Parameter(`Body`, `Specifies the body of the request. The body is the content of the request that follows the headers. You can also pipe a body value to "Invoke-RestMethod".
 
 
-The -Body parameter can be used to specify a list of query parameters or specify the content of the response.
+The Body parameter can be used to specify a list of query parameters or specify the content of the response.
 
 
-When the input is a GET request, and the body is an "IDictionary" (typically, a hash table), the body is added to the URI as query parameters. For other request types (such as POST), the body is set as the value of the request body in the standard name=value format.
+When the input is a GET request, and the body is an "IDictionary" (typically, a hash table), the body is added to the Uniform Resource Identifier (URI) as query parameters. For other request types (such as POST), the body is set as the value of the request body in the standard name=value format.
 
 
-When the body is a form, or it is the output of another "Invoke-WebRequest" call, PowerShell sets the request content to the form fields.
+When the body is a form, or it's the output of another "Invoke-WebRequest" call, PowerShell sets the request content to the form fields.
 
 
-The -Body parameter may also accept a "System.Net.Http.MultipartFormDataContent" object. This will facilitate "multipart/form-data" requests. When a "MultipartFormDataContent" object is supplied for -Body , any Content related headers supplied to the -ContentType , -Headers , or -WebSession parameters will be overridden by the Content headers of the "MultipartFormDataContent" object. This feature was added in PowerShell 6.0.0.`, `Object`),
+The Body parameter may also accept a System.Net.Http.MultipartFormDataContent object. This will facilitate "multipart/form-data" requests. When a MultipartFormDataContent object is supplied for Body , any content related headers supplied to the ContentType , Headers , or WebSession parameters will be overridden by the content headers of the "MultipartFormDataContent" object. This feature was added in PowerShell 6.0.0.`, `Object`),
             new Parameter(`Certificate`, `Specifies the client certificate that is used for a secure web request. Enter a variable that contains a certificate or a command or expression that gets the certificate.
 
 
-To find a certificate, use "Get-PfxCertificate" or use the "Get-ChildItem" cmdlet in the Certificate ("Cert:") drive. If the certificate is not valid or does not have sufficient authority, the command fails.`, `X509Certificate`),
+To find a certificate, use "Get-PfxCertificate" or use the "Get-ChildItem" cmdlet in the Certificate ("Cert:") drive. If the certificate isn't valid or doesn't have sufficient authority, the command fails.`, `X509Certificate`),
             new Parameter(`CertificateThumbprint`, `Specifies the digital public key certificate (X509) of a user account that has permission to send the request. Enter the certificate thumbprint of the certificate.
 
 
@@ -17035,22 +16504,25 @@ To get a certificate thumbprint, use the "Get-Item" or "Get-ChildItem" command i
             new Parameter(`ContentType`, `Specifies the content type of the web request.
 
 
-If this parameter is omitted and the request method is POST, "Invoke-RestMethod" sets the content type to "application/x-www-form-urlencoded". Otherwise, the content type is not specified in the call. -ContentType will be overridden when a "MultipartFormDataContent" object is supplied for -Body .`, `String`),
+If this parameter is omitted and the request method is POST, "Invoke-RestMethod" sets the content type to "application/x-www-form-urlencoded". Otherwise, the content type isn't specified in the call. ContentType will be overridden when a "MultipartFormDataContent" object is supplied for Body .`, `String`),
             new Parameter(`Credential`, `Specifies a user account that has permission to send the request. The default is the current user.
 
 
-Type a user name, such as "User01", "Domain01\User01", "User01@Domain.com", or enter a "PSCredential" object, such as one generated by the "Get-Credential" cmdlet. -Credential can be used alone or in conjunction with certain -Authentication options. When used alone, it will only supply credentials to the remote server if the remote server sends an authentication challenge request. When used with -Authentication options, the credentials will be explicitly sent.`, `PSCredential`),
-            new Parameter(`CustomMethod`, `Specifies custom method used for the web request. This can be used with the Request Method required by the endpoint is not an available option on the -Method . -Method and -CustomMethod cannot be used together.
+Type a user name, such as User01 or Domain01\\User01 , or enter a PSCredential object generated by the "Get-Credential" cmdlet. Credential can be used alone or in conjunction with certain Authentication parameter options. When used alone, it will only supply credentials to the remote server if the remote server sends an authentication challenge request. When used with Authentication options, the credentials will be explicitly sent.
+
+
+Credentials are stored in a PSCredential (/dotnet/api/system.management.automation.pscredential)object and the password is stored as a SecureString (/dotnet/api/system.security.securestring).
+
+
+> [!NOTE] > For more information about SecureString data protection, see > How secure is SecureString? (/dotnet/api/system.security.securestring#how-secure-is-securestring).`, `PSCredential`),
+            new Parameter(`CustomMethod`, `Specifies custom method used for the web request. This can be used with the Request Method required by the endpoint is not an available option on the Method . Method and CustomMethod cannot be used together.
 
 
 Example:
 
 
+"Invoke-WebRequest -uri 'https://api.contoso.com/widget/' -CustomMethod 'TEST'"
 
-
-
-
-Invoke-WebRequest -uri 'https://api.contoso.com/widget/' -CustomMethod 'TEST'
 
 This makes a "TEST" HTTP request to the API.
 
@@ -17060,7 +16532,10 @@ This feature was added in PowerShell 6.0.0.`, `String`),
             new Parameter(`FollowRelLink`, `Indicates the cmdlet should follow relation links.
 
 
-To set how many times to follow relation links, use the -MaximumFollowRelLink parameter.
+Some REST APIs support pagination via Relation Links per RFC5988 (https://tools.ietf.org/html/rfc5988#page-6). Instead of parsing the header to get the URL for the next page, you can have the cmdlet do this for you. To set how many times to follow relation links, use the MaximumFollowRelLink parameter.
+
+
+When using this switch, the cmdlet returns a collection of pages of results. Each page of results may contain multiple result items.
 
 
 This feature was added in PowerShell 6.0.0.`, `SwitchParameter`),
@@ -17070,7 +16545,7 @@ This feature was added in PowerShell 6.0.0.`, `SwitchParameter`),
 The keys of the dictionary will be used as the form field names. By default, form values will be converted to string values.
 
 
-If the value is a "System.IO.FileInfo" object, then the binary file contents will be submitted. The name of the file will be submitted as the "filename". The MIME will be set as "application/octet-stream". "Get-Item" can be used to simplify supplying the "System.IO.FileInfo" object.
+If the value is a System.IO.FileInfo object, then the binary file contents will be submitted. The name of the file will be submitted as the "filename". The MIME will be set as "application/octet-stream". "Get-Item" can be used to simplify supplying the System.IO.FileInfo object.
 
 
 
@@ -17078,7 +16553,7 @@ If the value is a "System.IO.FileInfo" object, then the binary file contents wil
 $Form = @{
 
 
-resume = Get-Item 'c:\Users\jdoe\Documents\John Doe.pdf'
+resume = Get-Item 'c:\\Users\\jdoe\\Documents\\John Doe.pdf'
 
 
 }
@@ -17086,7 +16561,7 @@ resume = Get-Item 'c:\Users\jdoe\Documents\John Doe.pdf'
 
 
 
-If the value is a collection type, such as an Array or List, the for field will be submitted multiple times. The values of the list will be treated as strings by default. If the value is a "System.IO.FileInfo" object, then the binary file contents will be submitted. Nested collections are not supported.
+If the value is a collection type, such as an Array or List, the for field will be submitted multiple times. The values of the list will be treated as strings by default. If the value is a System.IO.FileInfo object, then the binary file contents will be submitted. Nested collections aren't supported.
 
 
 
@@ -17096,31 +16571,32 @@ $Form = @{
 
 tags     = 'Vacation', 'Italy', '2017'
 
-pictures = Get-ChildItem 'c:\Users\jdoe\Pictures\Italy-2017\'
+
+pictures = Get-ChildItem 'c:\\Users\\jdoe\\Pictures\\2017-Italy\'
 
 }
 
 
 
 
-In the above example the "tags" field will be supplied 3 times in the form, once for each of "Vacation", "Italy", and "2017". The "pictures" field will also be submitted once for each file in the "2017-Italy" folder. The binary contents of the files in that folder will be submitted as the values.
+In the above example, the "tags" field will be supplied three times in the form, once for each of "Vacation", "Italy", and "2017". The "pictures" field will also be submitted once for each file in the "2017-Italy" folder. The binary contents of the files in that folder will be submitted as the values.
 
 
 This feature was added in PowerShell 6.1.0.`, `IDictionary`),
             new Parameter(`Headers`, `Specifies the headers of the web request. Enter a hash table or dictionary.
 
 
-To set UserAgent headers, use the -UserAgent parameter. You cannot use this parameter to specify "User-Agent" or cookie headers.
+To set UserAgent headers, use the UserAgent parameter. You cannot use this parameter to specify "User-Agent" or cookie headers.
 
 
-Content related headers, such as "Content-Type" will be overridden when a "MultipartFormDataContent" object is supplied for -Body .`, `IDictionary`),
+Content related headers, such as "Content-Type" will be overridden when a "MultipartFormDataContent" object is supplied for Body .`, `IDictionary`),
             new Parameter(`InFile`, `Gets the content of the web request from a file.
 
 
 Enter a path and file name. If you omit the path, the default is the current location.`, `String`),
-            new Parameter(`MaximumFollowRelLink`, `Specifies how many times to follow relation links if -FollowRelLink is used. A smaller value may be needed if the REST api throttles due to too many requests. The default value is "[Int32]::MaxValue". A value of 0 (zero) prevents following relation links.`, `Int32`),
+            new Parameter(`MaximumFollowRelLink`, `Specifies how many times to follow relation links if FollowRelLink is used. A smaller value may be needed if the REST api throttles due to too many requests. The default value is "[Int32]::MaxValue". A value of 0 (zero) prevents following relation links.`, `Int32`),
             new Parameter(`MaximumRedirection`, `Specifies how many times PowerShell redirects a connection to an alternate Uniform Resource Identifier (URI) before the connection fails. The default value is 5. A value of 0 (zero) prevents all redirection.`, `Int32`),
-            new Parameter(`MaximumRetryCount`, `Specifies how many times PowerShell retries a connection when a failure code between 400 and 599, inclusive or 304 is received. Also see "-RetryIntervalSec" parameter for specifying number of retries.`, `Int32`),
+            new Parameter(`MaximumRetryCount`, `Specifies how many times PowerShell retries a connection when a failure code between 400 and 599, inclusive or 304 is received. Also see RetryIntervalSec parameter for specifying number of retries.`, `Int32`),
             new Parameter(`Method`, `Specifies the method used for the web request. The acceptable values for this parameter are:
 
 
@@ -17156,16 +16632,19 @@ Enter a path and file name. If you omit the path, the default is the current loc
 
 
 
-The -CustomMethod parameter can be used for Request Methods not listed above.`, `WebRequestMethod`),
+The CustomMethod parameter can be used for Request Methods not listed above.`, `WebRequestMethod`),
             new Parameter(`NoProxy`, `Indicates that the cmdlet will not use a proxy to reach the destination.
 
 
-When you need to bypass the proxy configured in Internet Explorer, or a proxy specified in the environment, use this switch.`, `SwitchParameter`),
+When you need to bypass the proxy configured in Internet Explorer, or a proxy specified in the environment, use this switch.
+
+
+This parameter was introduced in PowerShell 6.0.`, `SwitchParameter`),
             new Parameter(`OutFile`, `Saves the response body in the specified output file. Enter a path and file name. If you omit the path, the default is the current location.
 
 
-By default, "Invoke-RestMethod" returns the results to the pipeline. To send the results to a file and to the pipeline, use the -Passthru parameter.`, `String`),
-            new Parameter(`PassThru`, `Returns the results, in addition to writing them to a file. This parameter is valid only when the -OutFile parameter is also used in the command.`, `SwitchParameter`),
+By default, "Invoke-RestMethod" returns the results to the pipeline. To send the results to a file and to the pipeline, use the Passthru parameter.`, `String`),
+            new Parameter(`PassThru`, `Returns the results, in addition to writing them to a file. This parameter is valid only when the OutFile parameter is also used in the command.`, `SwitchParameter`),
             new Parameter(`PreserveAuthorizationOnRedirect`, `Indicates the cmdlet should preserve the "Authorization" header, when present, across redirections.
 
 
@@ -17173,29 +16652,26 @@ By default, the cmdlet strips the "Authorization" header before redirecting. Spe
 
 
 This feature was added in PowerShell 6.0.0.`, `SwitchParameter`),
-            new Parameter(`Proxy`, `Uses a proxy server for the request, rather than connecting directly to the Internet resource. Enter the URI of a network proxy server.
+            new Parameter(`Proxy`, `Uses a proxy server for the request, rather than connecting directly to the internet resource. Enter the Uniform Resource Identifier (URI) of a network proxy server.
 
 
 This feature was added in PowerShell 6.0.0.`, `Uri`),
-            new Parameter(`ProxyCredential`, `Specifies a user account that has permission to use the proxy server that is specified by the -Proxy parameter. The default is the current user.
+            new Parameter(`ProxyCredential`, `Specifies a user account that has permission to use the proxy server that is specified by the Proxy parameter. The default is the current user.
 
 
-Type a user name, such as "User01" or "Domain01\User01", "User@Domain.Com", or enter a "PSCredential" object, such as one generated by the "Get-Credential" cmdlet.
+Type a user name, such as User01 or Domain01\\User01 , User@Domain.Com , or enter a "PSCredential" object, such as one generated by the "Get-Credential" cmdlet.
 
 
-This parameter is valid only when the -Proxy parameter is also used in the command. You cannot use the -ProxyCredential and -ProxyUseDefaultCredentials parameters in the same command.`, `PSCredential`),
-            new Parameter(`ProxyUseDefaultCredentials`, `Indicates that the cmdlet uses the credentials of the current user to access the proxy server that is specified by the -Proxy parameter.
+This parameter is valid only when the Proxy parameter is also used in the command. You can't use the ProxyCredential and ProxyUseDefaultCredentials parameters in the same command.`, `PSCredential`),
+            new Parameter(`ProxyUseDefaultCredentials`, `Indicates that the cmdlet uses the credentials of the current user to access the proxy server that is specified by the Proxy parameter.
 
 
-This parameter is valid only when the -Proxy parameter is also used in the command. You cannot use the -ProxyCredential and -ProxyUseDefaultCredentials parameters in the same command.`, `SwitchParameter`),
+This parameter is valid only when the Proxy parameter is also used in the command. You can't use the ProxyCredential and ProxyUseDefaultCredentials parameters in the same command.`, `SwitchParameter`),
             new Parameter(`ResponseHeadersVariable`, `Creates a Response Headers Dictionary and saves it in the value of the specified variable. The keys of the dictionary will contain the field names of the Response Header returned by the web server and the values will be the respective field values.
 
 
 This feature was added in PowerShell 6.0.0.`, `String`),
-            new Parameter(`Resume`, `Performs a best effort attempt to resume downloading a partial file. "-Resume" requires "-OutFile".
-
-
-"-Resume" only operates on the size of the local file and remote file and performs no other validation that the local file and the remote file are the same.
+            new Parameter(`Resume`, `Performs a best effort attempt to resume downloading a partial file. The Resume parameter requires the OutFile parameter. Resume only operates on the size of the local file and remote file and performs no other validation that the local file and the remote file are the same.
 
 
 If the local file size is smaller than the remote file size, then the cmdlet will attempt to resume downloading the file and append the remaining bytes to the end of the file.
@@ -17204,34 +16680,34 @@ If the local file size is smaller than the remote file size, then the cmdlet wil
 If the local file size is the same as the remote file size, then no action is taken and the cmdlet assumes the download already completed.
 
 
-If the local file size is larger than the remote file size, then the local file will be overwritten and the entire remote file will be completely re-downloaded. This behavior is the same as using "-OutFile" without "-Resume".
+If the local file size is larger than the remote file size, then the local file will be overwritten and the entire remote file will be completely re-downloaded. This behavior is the same as using OutFile without Resume .
 
 
-If the remote server does not support download resuming, then the local file will be overwritten and the entire remote file will be completely re-downloaded. This behavior is the same as using "-OutFile" without "-Resume".
+If the remote server does not support download resuming, then the local file will be overwritten and the entire remote file will be completely re-downloaded. This behavior is the same as using OutFile without Resume .
 
 
-If the local file does not exist, then the local file will be created and the entire remote file will be completely downloaded. This behavior is the same as using "-OutFile" without "-Resume".
+If the local file doesn't exist, then the local file will be created and the entire remote file will be completely downloaded. This behavior is the same as using OutFile without Resume .
 
 
 This feature was added in PowerShell 6.1.0.`, `SwitchParameter`),
-            new Parameter(`RetryIntervalSec`, `Specifies the interval between retries for the connection when a failure code between 400 and 599, inclusive or 304 is received. Also see "-MaximumRetryCount" parameter for specifying number of retries.`, `Int32`),
+            new Parameter(`RetryIntervalSec`, `Specifies the interval between retries for the connection when a failure code between 400 and 599, inclusive or 304 is received. Also see MaximumRetryCount parameter for specifying number of retries.`, `Int32`),
             new Parameter(`SessionVariable`, `Specifies a variable for which this cmdlet creates a web request session and saves it in the value. Enter a variable name without the dollar sign ("$") symbol.
 
 
 When you specify a session variable, "Invoke-WebRequest" creates a web request session object and assigns it to a variable with the specified name in your PowerShell session. You can use the variable in your session as soon as the command completes.
 
 
-Unlike a remote session, the web request session is not a persistent connection. It is an object that contains information about the connection and the request, including cookies, credentials, the maximum redirection value, and the user agent string. You can use it to share state and data among web requests.
+Unlike a remote session, the web request session isn't a persistent connection. It's an object that contains information about the connection and the request, including cookies, credentials, the maximum redirection value, and the user agent string. You can use it to share state and data among web requests.
 
 
-To use the web request session in subsequent web requests, specify the session variable in the value of the -WebSession parameter. PowerShell uses the data in the web request session object when establishing the new connection. To override a value in the web request session, use a cmdlet parameter, such as -UserAgent or -Credential . Parameter values take precedence over values in the web request session.
+To use the web request session in subsequent web requests, specify the session variable in the value of the WebSession parameter. PowerShell uses the data in the web request session object when establishing the new connection. To override a value in the web request session, use a cmdlet parameter, such as UserAgent or Credential . Parameter values take precedence over values in the web request session.
 
 
-You cannot use the -SessionVariable and -WebSession parameters in the same command.`, `String`),
-            new Parameter(`SkipCertificateCheck`, `Skips certificate validation checks. This includes all validations such as expiration, revocation, trusted root authority, etc.
+You can't use the SessionVariable and WebSession parameters in the same command.`, `String`),
+            new Parameter(`SkipCertificateCheck`, `Skips certificate validation checks that include all validations such as expiration, revocation, trusted root authority, etc.
 
 
-> [!WARNING] > Using this parameter is not secure and is not recommended. This switch is only > intended to be used against known hosts using a self-signed certificate for > testing purposes. Use at your own risk.
+> [!WARNING] > Using this parameter is not secure and is not recommended. This switch is only intended to be used > against known hosts using a self-signed certificate for testing purposes. Use at your own risk.
 
 
 This feature was added in PowerShell 6.0.0.`, `SwitchParameter`),
@@ -17241,11 +16717,11 @@ This feature was added in PowerShell 6.0.0.`, `SwitchParameter`),
 This switch should be used for sites that require header values that do not conform to standards. Specifying this switch disables validation to allow the value to be passed unchecked. When specified, all headers are added without validation.
 
 
-This will disable validation for values passed to the -ContentType , -Headers and -UserAgent parameters.
+This will disable validation for values passed to the ContentType , Headers, and UserAgent** parameters.
 
 
 This feature was added in PowerShell 6.0.0.`, `SwitchParameter`),
-            new Parameter(`SslProtocol`, `Sets the SSL/TLS protocols that are permissible for the web request. By default all, SSL/TLS protocols supported by the system are allowed. -SslProtocol allows for limiting to specific protocols for compliance purposes. -SslProtocol uses the "WebSslProtocol" Flag Enum. It is possible to supply more than one protocol using flag notation or combining multiple "WebSslProtocol" options with "-bor", however supplying multiple protocols is not supported on all platforms.
+            new Parameter(`SslProtocol`, `Sets the SSL/TLS protocols that are permissible for the web request. By default all, SSL/TLS protocols supported by the system are allowed. SslProtocol allows for limiting to specific protocols for compliance purposes. SslProtocol uses the "WebSslProtocol" Flag Enum. It is possible to supply more than one protocol using flag notation or combining multiple "WebSslProtocol" options with "-bor", however supplying multiple protocols is not supported on all platforms.
 
 
 > [!NOTE] > On non-Windows platforms it may not be possible to supply "'Tls, Tls12'" as an option.
@@ -17255,11 +16731,14 @@ This feature was added in PowerShell 6.0.0.`, `WebSslProtocol`),
             new Parameter(`TimeoutSec`, `Specifies how long the request can be pending before it times out. Enter a value in seconds. The default value, 0, specifies an indefinite time-out.
 
 
-A Domain Name System (DNS) query can take up to 15 seconds to return or time out. If your request contains a host name that requires resolution, and you set -TimeoutSec to a value greater than zero, but less than 15 seconds, it can take 15 seconds or more before a WebException is thrown, and your request times out.`, `Int32`),
-            new Parameter(`Token`, `The OAuth or Bearer token to include in the request. -Token is required by certain -Authentication options. It cannot be used independently. -Token takes a "SecureString" containing the token. To supply the token manually use the following:
+A Domain Name System (DNS) query can take up to 15 seconds to return or time out. If your request contains a host name that requires resolution, and you set TimeoutSec to a value greater than zero, but less than 15 seconds, it can take 15 seconds or more before a WebException is thrown, and your request times out.`, `Int32`),
+            new Parameter(`Token`, `The OAuth or Bearer token to include in the request. Token is required by certain Authentication options. It can't be used independently. Token takes a "SecureString" that contains the token. To supply the token, manually use the following:
 
 
-"Invoke-RestMethod -Uri $uri -Authentication OAuth -Token (Read-Host -AsSecureString)"`, `SecureString`),
+"Invoke-RestMethod -Uri $uri -Authentication OAuth -Token (Read-Host -AsSecureString)"
+
+
+This parameter was introduced in PowerShell 6.0.`, `SecureString`),
             new Parameter(`TransferEncoding`, `Specifies a value for the transfer-encoding HTTP response header. The acceptable values for this parameter are:
 
 
@@ -17276,38 +16755,38 @@ A Domain Name System (DNS) query can take up to 15 seconds to return or time out
 
 
 - Identity`, `String`),
-            new Parameter(`Uri`, `Specifies the Uniform Resource Identifier (URI) of the Internet resource to which the web request is sent. This parameter supports HTTP, HTTPS, FTP, and FILE values.
+            new Parameter(`Uri`, `Specifies the Uniform Resource Identifier (URI) of the internet resource to which the web request is sent. This parameter supports HTTP, HTTPS, FTP, and FILE values.
 
 
-This parameter is required. The parameter name ( -Uri ) is optional.`, `Uri`),
-            new Parameter(`UseBasicParsing`, `This parameter has been deprecated. Beginning with PowerShell 6.0.0, all Web requests use basic parsing only. This parameter is included for backwards compatibility only and any use of it will have no affect on the operation of the cmdlet.`, `SwitchParameter`),
-            new Parameter(`UseDefaultCredentials`, `Indicates that the cmdlet uses the credentials of the current user to send the web request. This cannot be used with -Authentication or -Credential and may not be supported on all platforms.`, `SwitchParameter`),
+This parameter is required. The parameter name ( Uri ) is optional.`, `Uri`),
+            new Parameter(`UseBasicParsing`, `This parameter has been deprecated. Beginning with PowerShell 6.0.0, all Web requests use basic parsing only. This parameter is included for backwards compatibility only and any use of it will have no effect on the operation of the cmdlet.`, `SwitchParameter`),
+            new Parameter(`UseDefaultCredentials`, `Indicates that the cmdlet uses the credentials of the current user to send the web request. This can't be used with Authentication or Credential and may not be supported on all platforms.`, `SwitchParameter`),
             new Parameter(`UserAgent`, `Specifies a user agent string for the web request.
 
 
 The default user agent is similar to "Mozilla/5.0 (Windows NT 10.0; Microsoft Windows 10.0.15063; en-US) PowerShell/6.0.0" with slight variations for each operating system and platform.
 
 
-To test a website with the standard user agent string that is used by most Internet browsers, use the properties of the PSUserAgent (/dotnet/api/microsoft.powershell.commands.psuseragent)class, such as Chrome, FireFox, InternetExplorer, Opera, and Safari.
+To test a website with the standard user agent string that is used by most internet browsers, use the properties of the PSUserAgent (/dotnet/api/microsoft.powershell.commands.psuseragent)class, such as Chrome, FireFox, InternetExplorer, Opera, and Safari.
 
 
 For example, the following command uses the user agent string for Internet Explorer.
 
 
-"Invoke-RestMethod -Uri http://website.com/ -UserAgent ([Microsoft.PowerShell.Commands.PSUserAgent]::InternetExplorer)"`, `String`),
+"Invoke-RestMethod -Uri https://website.com/ -UserAgent ([Microsoft.PowerShell.Commands.PSUserAgent]::InternetExplorer)"`, `String`),
             new Parameter(`WebSession`, `Specifies a web request session. Enter the variable name, including the dollar sign ("$").
 
 
-To override a value in the web request session, use a cmdlet parameter, such as -UserAgent or -Credential . Parameter values take precedence over values in the web request session. Content related headers, such as "Content-Type", will be also be overridden when a "MultipartFormDataContent" object is supplied for -Body .
+To override a value in the web request session, use a cmdlet parameter, such as UserAgent or Credential . Parameter values take precedence over values in the web request session. Content related headers, such as "Content-Type", will be also be overridden when a MultipartFormDataContent object is supplied for Body .
 
 
-Unlike a remote session, the web request session is not a persistent connection. It is an object that contains information about the connection and the request, including cookies, credentials, the maximum redirection value, and the user agent string. You can use it to share state and data among web requests.
+Unlike a remote session, the web request session isn't a persistent connection. It's an object that contains information about the connection and the request, including cookies, credentials, the maximum redirection value, and the user agent string. You can use it to share state and data among web requests.
 
 
-To create a web request session, enter a variable name (without a dollar sign) in the value of the -SessionVariable parameter of an "Invoke-WebRequest" command. "Invoke-WebRequest" creates the session and saves it in the variable. In subsequent commands, use the variable as the value of the -WebSession parameter.
+To create a web request session, enter a variable name, without a dollar sign, in the value of the SessionVariable parameter of an "Invoke-WebRequest" command. "Invoke-WebRequest" creates the session and saves it in the variable. In subsequent commands, use the variable as the value of the WebSession parameter.
 
 
-You cannot use the -SessionVariable and -WebSession parameters in the same command.`, `WebRequestSession`),
+You can't use the SessionVariable and WebSession parameters in the same command.`, `WebRequestSession`),
         ],
         `Sends an HTTP or HTTPS request to a RESTful web service.`,
         `Invoke-RestMethod [-Uri] <Uri> [-AllowUnencryptedAuthentication] [-Authentication {None | Basic | Bearer | OAuth}] [-Body <Object>] [-Certificate <X509Certificate>] [-CertificateThumbprint <String>] [-ContentType <String>] [-Credential <PSCredential>] -CustomMethod <String> [-DisableKeepAlive] [-FollowRelLink] [-Form <IDictionary>] [-Headers <IDictionary>] [-InFile <String>] [-MaximumFollowRelLink <Int32>] [-MaximumRedirection <Int32>] [-MaximumRetryCount <Int32>] -NoProxy [-OutFile <String>] [-PassThru] [-PreserveAuthorizationOnRedirect] [-ResponseHeadersVariable <String>] [-Resume] [-RetryIntervalSec <Int32>] [-SessionVariable <String>] [-SkipCertificateCheck] [-SkipHeaderValidation] [-SslProtocol {Default | Tls | Tls11 | Tls12}] [-TimeoutSec <Int32>] [-Token <SecureString>] [-TransferEncoding {chunked | compress | deflate | gzip | identity}] [-UseBasicParsing] [-UseDefaultCredentials] [-UserAgent <String>] [-WebSession <WebRequestSession>] [<CommonParameters>]
@@ -17323,43 +16802,55 @@ Invoke-RestMethod [-Uri] <Uri> [-AllowUnencryptedAuthentication] [-Authenticatio
         }
     ),
     new ConsoleCommand(
+        `Invoke-TroubleshootingPack`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
         `Invoke-WebRequest`,
         [
-            new Parameter(`AllowUnencryptedAuthentication`, `Allows sending of credentials and secrets over unencrypted connections. By default, supplying -Credential or any -Authentication option with a -Uri that does not begin with "https://" will result in an error and the request will abort to prevent unintentionally communicating secrets in plain text over unencrypted connections. To override this behavior at your own risk, supply the -AllowUnencryptedAuthentication parameter.
+            new Parameter(`AllowUnencryptedAuthentication`, `Allows sending of credentials and secrets over unencrypted connections. By default, supplying Credential or any Authentication option with a Uri that does not begin with "https://" results in an error and the request is aborted to prevent unintentionally communicating secrets in plain text over unencrypted connections. To override this behavior at your own risk, supply the AllowUnencryptedAuthentication parameter.
 
 
-> [!WARNING] > Using this parameter is not secure and is not recommended. It is provided only > for compatibility with legacy systems that cannot provide encrypted > connections. Use at your own risk.
+> [!WARNING] > Using this parameter is not secure and is not recommended. It is provided only for compatibility > with legacy systems that cannot provide encrypted connections. Use at your own risk.
 
 
 This feature was added in PowerShell 6.0.0.`, `SwitchParameter`),
-            new Parameter(`Authentication`, `Specifies the explicit authentication type to use for the request. The default is None . -Authentication cannot be used with -UseDefaultCredentials .
+            new Parameter(`Authentication`, `Specifies the explicit authentication type to use for the request. The default is None . Authentication cannot be used with UseDefaultCredentials .
 
 
 Available Authentication Options:
 
 
-- None : This is the default option when -Authentication is not supplied. No explicit authentication will be used. - Basic : Requires -Credential . The credentials will be used to send an RFC 7617 Basic Authentication "Authorization: Basic" header in the format of "base64(user:password)". - Bearer : Requires -Token . Will send and RFC 6750 "Authorization: Bearer" header with the supplied token. This is an alias for OAuth - OAuth : Requires -Token . Will send and RFC 6750 "Authorization: Bearer" header with the supplied token. This is an alias for Bearer Supplying -Authentication will override any "Authorization" headers supplied to -Headers or included in -WebSession .
+- None : This is the default option when Authentication isn't supplied; no explicit   authentication is used. - Basic : Requires Credential . The credentials are sent in an RFC 7617 Basic Authentication   header in the format of "base64(user:password)". - Bearer : Requires Token . Sends an RFC 6750 "Authorization: Bearer" header with the supplied   token. This is an alias for OAuth - OAuth : Requires Token . Sends an RFC 6750 "Authorization: Bearer" header with the supplied   token. This is an alias for Bearer Supplying Authentication overrides any "Authorization" headers supplied to Headers or included in WebSession .
 
 
 This feature was added in PowerShell 6.0.0.`, `WebAuthenticationType`),
             new Parameter(`Body`, `Specifies the body of the request. The body is the content of the request that follows the headers. You can also pipe a body value to "Invoke-WebRequest".
 
 
-The -Body parameter can be used to specify a list of query parameters or specify the content of the response.
+The Body parameter can be used to specify a list of query parameters or specify the content of the response.
 
 
-When the input is a GET request and the body is an "IDictionary" (typically, a hash table), the body is added to the URI as query parameters. For other request types (such as POST), the body is set as the value of the request body in the standard name=value format.
+When the input is a GET request and the body is an "IDictionary" (typically, a hash table), the body is added to the URI as query parameters. For other request types (such as POST), the body is set as the value of the request body in the standard "name=value" format.
 
 
-The -Body parameter may also accept a "System.Net.Http.MultipartFormDataContent" object. This will facilitate "multipart/form-data" requests. When a "MultipartFormDataContent" object is supplied for -Body , any Content related headers supplied to the -ContentType , -Headers , or -WebSession parameters will be overridden by the Content headers of the "MultipartFormDataContent" object. This feature was added in PowerShell 6.0.0.`, `Object`),
-            new Parameter(`Certificate`, `Specifies the client certificate that is used for a secure web request. Enter a variable that contains a certificate or a command or expression that gets the certificate.
+The Body parameter may also accept a "System.Net.Http.MultipartFormDataContent" object. This facilitates "multipart/form-data" requests. When a MultipartFormDataContent object is supplied for Body , any Content related headers supplied to the ContentType , Headers , or WebSession parameters is overridden by the Content headers of the MultipartFormDataContent object. This feature was added in PowerShell 6.0.0.`, `Object`),
+            new Parameter(`Certificate`, `Specifies the client certificate that's used for a secure web request. Enter a variable that contains a certificate or a command or expression that gets the certificate.
 
 
-To find a certificate, use "Get-PfxCertificate" or use the "Get-ChildItem" cmdlet in the Certificate ("Cert:") drive. If the certificate is not valid or does not have sufficient authority, the command fails.`, `X509Certificate`),
+To find a certificate, use "Get-PfxCertificate" or use the "Get-ChildItem" cmdlet in the Certificate ("Cert:") drive. If the certificate isn't valid or doesn't have sufficient authority, the command fails.`, `X509Certificate`),
             new Parameter(`CertificateThumbprint`, `Specifies the digital public key certificate (X509) of a user account that has permission to send the request. Enter the certificate thumbprint of the certificate.
 
 
-Certificates are used in client certificate-based authentication. They can be mapped only to local user accounts; they do not work with domain accounts.
+Certificates are used in client certificate-based authentication. They can be mapped only to local user accounts; they don't work with domain accounts.
 
 
 To get a certificate thumbprint, use the "Get-Item" or "Get-ChildItem" command in the PowerShell "Cert:" drive.
@@ -17369,35 +16860,35 @@ To get a certificate thumbprint, use the "Get-Item" or "Get-ChildItem" command i
             new Parameter(`ContentType`, `Specifies the content type of the web request.
 
 
-If this parameter is omitted and the request method is POST, "Invoke-WebRequest" sets the content type to "application/x-www-form-urlencoded". Otherwise, the content type is not specified in the call. -ContentType will be overridden when a "MultipartFormDataContent" object is supplied for -Body .`, `String`),
+If this parameter is omitted and the request method is POST, "Invoke-WebRequest" sets the content type to "application/x-www-form-urlencoded". Otherwise, the content type isn't specified in the call. ContentType is overridden when a MultipartFormDataContent object is supplied for Body .`, `String`),
             new Parameter(`Credential`, `Specifies a user account that has permission to send the request. The default is the current user.
 
 
-Type a user name, such as "User01", "Domain01\User01", "User01@Domain.com", or enter a "PSCredential" object, such as one generated by the "Get-Credential" cmdlet. -Credential can be used alone or in conjunction with certain -Authentication options. When used alone, it will only supply credentials to the remote server if the remote server sends an authentication challenge request. When used with -Authentication options, the credentials will be explicitly sent.`, `PSCredential`),
-            new Parameter(`CustomMethod`, `Specifies custom method used for the web request. This can be used with the Request Method required by the endpoint is not an available option on the -Method . -Method and -CustomMethod cannot be used together.
+Type a user name, such as User01 or Domain01\\User01 , or enter a PSCredential object generated by the "Get-Credential" cmdlet. Credential can be used alone or in conjunction with certain Authentication parameter options. When used alone, it only supplies credentials to the remote server if the remote server sends an authentication challenge request. When used with Authentication options, the credentials are explicitly sent.
 
 
-Example:
+Credentials are stored in a PSCredential (/dotnet/api/system.management.automation.pscredential)object and the password is stored as a SecureString (/dotnet/api/system.security.securestring).
 
 
+> [!NOTE] > For more information about SecureString data protection, see > How secure is SecureString? (/dotnet/api/system.security.securestring#how-secure-is-securestring).`, `PSCredential`),
+            new Parameter(`CustomMethod`, `Specifies a custom method used for the web request. This can be used if the Request Method required by the endpoint isn't an available option on the Method . Method and CustomMethod can't be used together.
 
 
+This example makes a "TEST" HTTP request to the API:
 
 
-Invoke-WebRequest -uri 'https://api.contoso.com/widget/' -CustomMethod 'TEST'
-
-This makes a "TEST" HTTP request to the API.
+"Invoke-WebRequest -uri 'https://api.contoso.com/widget/' -CustomMethod 'TEST'"
 
 
 This feature was added in PowerShell 6.0.0.`, `String`),
-            new Parameter(`DisableKeepAlive`, `Indicates that the cmdlet sets the KeepAlive value in the HTTP header to False. By default, KeepAlive is True. KeepAlive establishes a persistent connection to the server to facilitate subsequent requests.`, `SwitchParameter`),
-            new Parameter(`Form`, `Converts a dictionary to a "multipart/form-data" submission. "-Form" may not be used with "-Body". If "-ContentType" will be ignored.
+            new Parameter(`DisableKeepAlive`, `Indicates that the cmdlet sets the KeepAlive value in the HTTP header to False . By default, KeepAlive is True . KeepAlive establishes a persistent connection to the server to facilitate subsequent requests.`, `SwitchParameter`),
+            new Parameter(`Form`, `Converts a dictionary to a "multipart/form-data" submission. Form may not be used with Body . If ContentType is used, it's ignored.
 
 
-The keys of the dictionary will be used as the form field names. By default, form values will be converted to string values.
+The keys of the dictionary are used as the form field names. By default, form values are converted to string values.
 
 
-If the value is a "System.IO.FileInfo" object, then the binary file contents will be submitted. The name of the file will be submitted as the "filename". The MIME will be set as "application/octet-stream". "Get-Item" can be used to simplify supplying the "System.IO.FileInfo" object.
+If the value is a System.IO.FileInfo object, then the binary file contents are submitted. The name of the file is submitted as the filename property. The MIME type is set as "application/octet-stream". "Get-Item" can be used to simplify supplying the System.IO.FileInfo object.
 
 
 
@@ -17405,7 +16896,7 @@ If the value is a "System.IO.FileInfo" object, then the binary file contents wil
 $Form = @{
 
 
-resume = Get-Item 'c:\Users\jdoe\Documents\John Doe.pdf'
+resume = Get-Item 'c:\\Users\\jdoe\\Documents\\John Doe.pdf'
 
 
 }
@@ -17413,7 +16904,7 @@ resume = Get-Item 'c:\Users\jdoe\Documents\John Doe.pdf'
 
 
 
-If the value is a collection type, such Arrays or Lists, the for field will be submitted multiple times. The values of the list will be treated as strings by default. If the value is a "System.IO.FileInfo" object, then the binary file contents will be submitted. Nested collections are not supported.
+If the value is a collection type, such Arrays or Lists, the for field are submitted multiple times. The values of the list are treated as strings by default. If the value is a System.IO.FileInfo object, then the binary file contents are submitted. Nested collections aren't supported.
 
 
 
@@ -17423,30 +16914,28 @@ $Form = @{
 
 tags     = 'Vacation', 'Italy', '2017'
 
-pictures = Get-ChildItem 'c:\Users\jdoe\Pictures\Italy-2017\'
+
+pictures = Get-ChildItem 'c:\\Users\\jdoe\\Pictures\\2017-Italy\'
 
 }
 
 
 
 
-In the above example the "tags" field will be supplied 3 times in the form, once for each of "Vacation", "Italy", and "2017". The "pictures" field will also be submitted once for each file in the "2017-Italy" folder. The binary contents of the files in that folder will be submitted as the values.
+In the above example the "tags" field are supplied three times in the form, once for each of "Vacation", "Italy", and "2017". The "pictures" field is also submitted once for each file in the "2017-Italy" folder. The binary contents of the files in that folder are submitted as the values.
 
 
 This feature was added in PowerShell 6.1.0.`, `IDictionary`),
             new Parameter(`Headers`, `Specifies the headers of the web request. Enter a hash table or dictionary.
 
 
-To set UserAgent headers, use the -UserAgent parameter. You cannot use this parameter to specify "User-Agent" or cookie headers.
+To set UserAgent headers, use the UserAgent parameter. You can't use this parameter to specify User-Agent or cookie headers.
 
 
-Content related headers, such as "Content-Type" will be overridden when a "MultipartFormDataContent" object is supplied for -Body .`, `IDictionary`),
-            new Parameter(`InFile`, `Gets the content of the web request from a file.
-
-
-Enter a path and file name. If you omit the path, the default is the current location.`, `String`),
+Content related headers, such as "Content-Type" is overridden when a MultipartFormDataContent object is supplied for Body .`, `IDictionary`),
+            new Parameter(`InFile`, `Gets the content of the web request from a file. Enter a path and file name. If you omit the path, the default is the current location.`, `String`),
             new Parameter(`MaximumRedirection`, `Specifies how many times PowerShell redirects a connection to an alternate Uniform Resource Identifier (URI) before the connection fails. The default value is 5. A value of 0 (zero) prevents all redirection.`, `Int32`),
-            new Parameter(`MaximumRetryCount`, `Specifies how many times PowerShell retries a connection when a failure code between 400 and 599, inclusive or 304 is received. Also see "-RetryIntervalSec" parameter for specifying number of retries.`, `Int32`),
+            new Parameter(`MaximumRetryCount`, `Specifies how many times PowerShell retries a connection when a failure code between 400 and 599, inclusive or 304 is received. Also see RetryIntervalSec parameter for specifying number of retries.`, `Int32`),
             new Parameter(`Method`, `Specifies the method used for the web request. The acceptable values for this parameter are:
 
 
@@ -17482,19 +16971,13 @@ Enter a path and file name. If you omit the path, the default is the current loc
 
 
 
-The -CustomMethod parameter can be used for Request Methods not listed above.`, `WebRequestMethod`),
-            new Parameter(`NoProxy`, `Indicates that the cmdlet will not use a proxy to reach the destination.
-
-
-When you need to bypass the proxy configured in the environment, use this switch.
-
-
-This feature was added in PowerShell 6.0.0.`, `SwitchParameter`),
+The CustomMethod parameter can be used for Request Methods not listed above.`, `WebRequestMethod`),
+            new Parameter(`NoProxy`, `Indicates that the cmdlet shouldn't use a proxy to reach the destination. When you need to bypass the proxy configured in the environment, use this switch. This feature was added in PowerShell 6.0.0.`, `SwitchParameter`),
             new Parameter(`OutFile`, `Specifies the output file for which this cmdlet saves the response body. Enter a path and file name. If you omit the path, the default is the current location.
 
 
-By default, "Invoke-WebRequest" returns the results to the pipeline. To send the results to a file and to the pipeline, use the -Passthru parameter.`, `String`),
-            new Parameter(`PassThru`, `Indicates that the cmdlet returns the results, in addition to writing them to a file. This parameter is valid only when the -OutFile parameter is also used in the command.`, `SwitchParameter`),
+By default, "Invoke-WebRequest" returns the results to the pipeline. To send the results to a file and to the pipeline, use the Passthru parameter.`, `String`),
+            new Parameter(`PassThru`, `Indicates that the cmdlet returns the results, in addition to writing them to a file. This parameter is valid only when the OutFile parameter is also used in the command.`, `SwitchParameter`),
             new Parameter(`PreserveAuthorizationOnRedirect`, `Indicates the cmdlet should preserve the "Authorization" header, when present, across redirections.
 
 
@@ -17502,72 +16985,69 @@ By default, the cmdlet strips the "Authorization" header before redirecting. Spe
 
 
 This feature was added in PowerShell 6.0.0.`, `SwitchParameter`),
-            new Parameter(`Proxy`, `Specifies a proxy server for the request, rather than connecting directly to the Internet resource. Enter the URI of a network proxy server.`, `Uri`),
-            new Parameter(`ProxyCredential`, `Specifies a user account that has permission to use the proxy server that is specified by the -Proxy parameter. The default is the current user.
+            new Parameter(`Proxy`, `Specifies a proxy server for the request, rather than connecting directly to the internet resource. Enter the URI of a network proxy server.`, `Uri`),
+            new Parameter(`ProxyCredential`, `Specifies a user account that has permission to use the proxy server that is specified by the Proxy parameter. The default is the current user.
 
 
-Type a user name, such as "User01" or "Domain01\User01", "User@Domain.Com", or enter a "PSCredential" object, such as one generated by the "Get-Credential" cmdlet.
+Type a user name, such as User01 or Domain01\\User01 , User@Domain.Com , or enter a "PSCredential" object, such as one generated by the "Get-Credential" cmdlet.
 
 
-This parameter is valid only when the -Proxy parameter is also used in the command. You cannot use the -ProxyCredential and -ProxyUseDefaultCredentials parameters in the same command.`, `PSCredential`),
-            new Parameter(`ProxyUseDefaultCredentials`, `Indicates that the cmdlet uses the credentials of the current user to access the proxy server that is specified by the -Proxy parameter.
+This parameter is valid only when the Proxy parameter is also used in the command. You can't use the ProxyCredential and ProxyUseDefaultCredentials parameters in the same command.`, `PSCredential`),
+            new Parameter(`ProxyUseDefaultCredentials`, `Indicates that the cmdlet uses the credentials of the current user to access the proxy server that is specified by the Proxy parameter.
 
 
-This parameter is valid only when the -Proxy parameter is also used in the command. You cannot use the -ProxyCredential and -ProxyUseDefaultCredentials parameters in the same command.`, `SwitchParameter`),
-            new Parameter(`Resume`, `Performs a best effort attempt to resume downloading a partial file. "-Resume" requires "-OutFile".
+This parameter is valid only when the Proxy parameter is also used in the command. You can't use the ProxyCredential and ProxyUseDefaultCredentials parameters in the same command.`, `SwitchParameter`),
+            new Parameter(`Resume`, `Performs a best effort attempt to resume downloading a partial file. Resume requires OutFile . Resume only operates on the size of the local file and remote file and performs no other validation that the local file and the remote file are the same.
 
 
-"-Resume" only operates on the size of the local file and remote file and performs no other validation that the local file and the remote file are the same.
-
-
-If the local file size is smaller than the remote file size, then the cmdlet will attempt to resume downloading the file and append the remaining bytes to the end of the file.
+If the local file size is smaller than the remote file size, then the cmdlet attempts to resume downloading the file and append the remaining bytes to the end of the file.
 
 
 If the local file size is the same as the remote file size, then no action is taken and the cmdlet assumes the download already complete.
 
 
-If the local file size is larger than the remote file size, then the local file will be overwritten and the entire remote file will be completely re-downloaded. This behavior is the same as using "-OutFile" without "-Resume".
+If the local file size is larger than the remote file size, then the local file is overwritten and the entire remote file is re-downloaded. This behavior is the same as using OutFile without Resume .
 
 
-If the remote server does not support download resuming, then the local file will be overwritten and the entire remote file will be completely re-downloaded. This behavior is the same as using "-OutFile" without "-Resume".
+If the remote server does not support download resuming, then the local file is overwritten and the entire remote file is re-downloaded. This behavior is the same as using OutFile without Resume .
 
 
-If the local file does not exist, then the local file will be created and the entire remote file will be completely downloaded. This behavior is the same as using "-OutFile" without "-Resume".
+If the local file does not exist, then the local file is created and the entire remote file is downloaded. This behavior is the same as using OutFile without Resume .
 
 
 This feature was added in PowerShell 6.1.0.`, `SwitchParameter`),
-            new Parameter(`RetryIntervalSec`, `Specifies the interval between retries for the connection when a failure code between 400 and 599, inclusive or 304 is received. Also see "-MaximumRetryCount" parameter for specifying number of retries.`, `Int32`),
+            new Parameter(`RetryIntervalSec`, `Specifies the interval between retries for the connection when a failure code between 400 and 599, inclusive or 304 is received. Also see MaximumRetryCount parameter for specifying number of retries.`, `Int32`),
             new Parameter(`SessionVariable`, `Specifies a variable for which this cmdlet creates a web request session and saves it in the value. Enter a variable name without the dollar sign ("$") symbol.
 
 
 When you specify a session variable, "Invoke-WebRequest" creates a web request session object and assigns it to a variable with the specified name in your PowerShell session. You can use the variable in your session as soon as the command completes.
 
 
-Unlike a remote session, the web request session is not a persistent connection. It is an object that contains information about the connection and the request, including cookies, credentials, the maximum redirection value, and the user agent string. You can use it to share state and data among web requests.
+Unlike a remote session, the web request session is not a persistent connection. It's an object that contains information about the connection and the request, including cookies, credentials, the maximum redirection value, and the user agent string. You can use it to share state and data among web requests.
 
 
-To use the web request session in subsequent web requests, specify the session variable in the value of the -WebSession parameter. PowerShell uses the data in the web request session object when establishing the new connection. To override a value in the web request session, use a cmdlet parameter, such as -UserAgent or -Credential . Parameter values take precedence over values in the web request session.
+To use the web request session in subsequent web requests, specify the session variable in the value of the WebSession parameter. PowerShell uses the data in the web request session object when establishing the new connection. To override a value in the web request session, use a cmdlet parameter, such as UserAgent or Credential . Parameter values take precedence over values in the web request session.
 
 
-You cannot use the -SessionVariable and -WebSession parameters in the same command.`, `String`),
+You can't use the SessionVariable and WebSession parameters in the same command.`, `String`),
             new Parameter(`SkipCertificateCheck`, `Skips certificate validation checks. This includes all validations such as expiration, revocation, trusted root authority, etc.
 
 
-> [!WARNING] > Using this parameter is not secure and is not recommended. This switch is only > intended to be used against known hosts using a self-signed certificate for > testing purposes. Use at your own risk.
+> [!WARNING] > Using this parameter is not secure and is not recommended. This switch is only intended to be used > against known hosts using a self-signed certificate for testing purposes. Use at your own risk.
 
 
 This feature was added in PowerShell 6.0.0.`, `SwitchParameter`),
             new Parameter(`SkipHeaderValidation`, `Indicates the cmdlet should add headers to the request without validation.
 
 
-This switch should be used for sites that require header values that do not conform to standards. Specifying this switch disables validation to allow the value to be passed unchecked.  When specified, all headers are added without validation.
+This switch should be used for sites that require header values that do not conform to standards. Specifying this switch disables validation to allow the value to be passed unchecked. When specified, all headers are added without validation.
 
 
-This will disable validation for values passed to the -ContentType , -Headers and -UserAgent parameters.
+This switch disables validation for values passed to the ContentType , Headers and UserAgent parameters.
 
 
 This feature was added in PowerShell 6.0.0.`, `SwitchParameter`),
-            new Parameter(`SslProtocol`, `Sets the SSL/TLS protocols that are permissible for the web request. By default all, SSL/TLS protocols supported by the system are allowed. -SslProtocol allows for limiting to specific protocols for compliance purposes. -SslProtocol uses the "WebSslProtocol" Flag Enum. It is possible to supply more than one protocol using flag notation or combining multiple "WebSslProtocol" options with "-bor", however supplying multiple protocols is not supported on all platforms.
+            new Parameter(`SslProtocol`, `Sets the SSL/TLS protocols that are permissible for the web request. By default all, SSL/TLS protocols supported by the system are allowed. SslProtocol allows for limiting to specific protocols for compliance purposes. SslProtocol uses the WebSslProtocol Flag Enum. It is possible to supply more than one protocol using flag notation or combining multiple WebSslProtocol options with bor , however supplying multiple protocols is not supported on all platforms.
 
 
 > [!NOTE] > On non-Windows platforms it may not be possible to supply "'Tls, Tls12'" as an option.
@@ -17577,11 +17057,14 @@ This feature was added in PowerShell 6.0.0.`, `WebSslProtocol`),
             new Parameter(`TimeoutSec`, `Specifies how long the request can be pending before it times out. Enter a value in seconds. The default value, 0, specifies an indefinite time-out.
 
 
-A Domain Name System (DNS) query can take up to 15 seconds to return or time out. If your request contains a host name that requires resolution, and you set -TimeoutSec to a value greater than zero, but less than 15 seconds, it can take 15 seconds or more before a WebException is thrown, and your request times out.`, `Int32`),
-            new Parameter(`Token`, `The OAuth or Bearer token to include in the request. -Token is required by certain -Authentication options. It cannot be used independently. -Token takes a "SecureString" containing the token. To supply the token manually use the following:
+A Domain Name System (DNS) query can take up to 15 seconds to return or time out. If your request contains a host name that requires resolution, and you set TimeoutSec to a value greater than zero, but less than 15 seconds, it can take 15 seconds or more before a WebException is thrown, and your request times out.`, `Int32`),
+            new Parameter(`Token`, `The OAuth or Bearer token to include in the request. Token is required by certain Authentication options. It cannot be used independently. Token takes a "SecureString" containing the token. To supply the token manually use the following:
 
 
-"Invoke-WebRequest -Uri $uri -Authentication OAuth -Token (Read-Host -AsSecureString)"`, `SecureString`),
+"Invoke-WebRequest -Uri $uri -Authentication OAuth -Token (Read-Host -AsSecureString)"
+
+
+This parameter was introduced in PowerShell 6.0.`, `SecureString`),
             new Parameter(`TransferEncoding`, `Specifies a value for the transfer-encoding HTTP response header. The acceptable values for this parameter are:
 
 
@@ -17598,42 +17081,42 @@ A Domain Name System (DNS) query can take up to 15 seconds to return or time out
 
 
 - Identity`, `String`),
-            new Parameter(`Uri`, `Specifies the Uniform Resource Identifier (URI) of the Internet resource to which the web request is sent. Enter a URI. This parameter supports HTTP or HTTPS only.
+            new Parameter(`Uri`, `Specifies the Uniform Resource Identifier (URI) of the internet resource to which the web request is sent. Enter a URI. This parameter supports HTTP or HTTPS only.
 
 
-This parameter is required. The parameter name ( -Uri ) is optional.`, `Uri`),
-            new Parameter(`UseBasicParsing`, `This parameter has been deprecated. Beginning with PowerShell 6.0.0, all Web requests use basic parsing only. This parameter is included for backwards compatibility only and any use of it will have no effect on the operation of the cmdlet.`, `SwitchParameter`),
-            new Parameter(`UseDefaultCredentials`, `Indicates that the cmdlet uses the credentials of the current user to send the web request. This cannot be used with -Authentication or -Credential and may not be supported on all platforms.`, `SwitchParameter`),
+This parameter is required. The parameter name Uri is optional.`, `Uri`),
+            new Parameter(`UseBasicParsing`, `This parameter has been deprecated. Beginning with PowerShell 6.0.0, all Web requests use basic parsing only. This parameter is included for backwards compatibility only and any use of it has no effect on the operation of the cmdlet.`, `SwitchParameter`),
+            new Parameter(`UseDefaultCredentials`, `Indicates that the cmdlet uses the credentials of the current user to send the web request. This can't be used with Authentication or Credential and may not be supported on all platforms.`, `SwitchParameter`),
             new Parameter(`UserAgent`, `Specifies a user agent string for the web request.
 
 
 The default user agent is similar to "Mozilla/5.0 (Windows NT 10.0; Microsoft Windows 10.0.15063; en-US) PowerShell/6.0.0" with slight variations for each operating system and platform.
 
 
-To test a website with the standard user agent string that is used by most Internet browsers, use the properties of the PSUserAgent (/dotnet/api/microsoft.powershell.commands.psuseragent)class, such as Chrome, FireFox, InternetExplorer, Opera, and Safari.
+To test a website with the standard user agent string that is used by most internet browsers, use the properties of the PSUserAgent (/dotnet/api/microsoft.powershell.commands.psuseragent)class, such as Chrome, FireFox, InternetExplorer, Opera, and Safari.
 
 
-For example, the following command uses the user agent string for Internet Explorer
+For example, the following command uses the user agent string for Internet Explorer:
 
 
 
 
-Invoke-WebRequest -Uri http://website.com/ -UserAgent ([Microsoft.PowerShell.Commands.PSUserAgent]::InternetExplorer)`, `String`),
+Invoke-WebRequest -Uri https://website.com/ -UserAgent ([Microsoft.PowerShell.Commands.PSUserAgent]::InternetExplorer)`, `String`),
             new Parameter(`WebSession`, `Specifies a web request session. Enter the variable name, including the dollar sign ("$").
 
 
-To override a value in the web request session, use a cmdlet parameter, such as -UserAgent or -Credential . Parameter values take precedence over values in the web request session. Content related headers, such as "Content-Type", will be also be overridden when a "MultipartFormDataContent" object is supplied for -Body .
+To override a value in the web request session, use a cmdlet parameter, such as UserAgent or Credential . Parameter values take precedence over values in the web request session. Content related headers, such as "Content-Type", are also be overridden when a MultipartFormDataContent object is supplied for Body .
 
 
-Unlike a remote session, the web request session is not a persistent connection. It is an object that contains information about the connection and the request, including cookies, credentials, the maximum redirection value, and the user agent string. You can use it to share state and data among web requests.
+Unlike a remote session, the web request session isn't a persistent connection. It's an object that contains information about the connection and the request, including cookies, credentials, the maximum redirection value, and the user agent string. You can use it to share state and data among web requests.
 
 
-To create a web request session, enter a variable name (without a dollar sign) in the value of the -SessionVariable parameter of an "Invoke-WebRequest" command. "Invoke-WebRequest" creates the session and saves it in the variable. In subsequent commands, use the variable as the value of the -WebSession parameter.
+To create a web request session, enter a variable name, without a dollar sign, in the value of the SessionVariable parameter of an "Invoke-WebRequest" command. "Invoke-WebRequest" creates the session and saves it in the variable. In subsequent commands, use the variable as the value of the WebSession parameter.
 
 
-You cannot use the -SessionVariable and -WebSession parameters in the same command.`, `WebRequestSession`),
+You can't use the SessionVariable and WebSession parameters in the same command.`, `WebRequestSession`),
         ],
-        `Gets content from a web page on the Internet.`,
+        `Gets content from a web page on the internet.`,
         `Invoke-WebRequest [-Uri] <Uri> [-AllowUnencryptedAuthentication] [-Authentication {None | Basic | Bearer | OAuth}] [-Body <Object>] [-Certificate <X509Certificate>] [-CertificateThumbprint <String>] [-ContentType <String>] [-Credential <PSCredential>] -CustomMethod <String> [-DisableKeepAlive] [-Form <IDictionary>] [-Headers <IDictionary>] [-InFile <String>] [-MaximumRedirection <Int32>] [-MaximumRetryCount <Int32>] [-OutFile <String>] [-PassThru] [-PreserveAuthorizationOnRedirect] [-Proxy <Uri>] [-ProxyCredential <PSCredential>] [-ProxyUseDefaultCredentials] [-Resume] [-RetryIntervalSec <Int32>] [-SessionVariable <String>] [-SkipCertificateCheck] [-SkipHeaderValidation] [-SslProtocol {Default | Tls | Tls11 | Tls12}] [-TimeoutSec <Int32>] [-Token <SecureString>] [-TransferEncoding {chunked | compress | deflate | gzip | identity}] [-UseBasicParsing] [-UseDefaultCredentials] [-UserAgent <String>] [-WebSession <WebRequestSession>] [<CommonParameters>]
 
 Invoke-WebRequest [-Uri] <Uri> [-AllowUnencryptedAuthentication] [-Authentication {None | Basic | Bearer | OAuth}] [-Body <Object>] [-Certificate <X509Certificate>] [-CertificateThumbprint <String>] [-ContentType <String>] [-Credential <PSCredential>] -CustomMethod <String> [-DisableKeepAlive] [-Form <IDictionary>] [-Headers <IDictionary>] [-InFile <String>] [-MaximumRedirection <Int32>] [-MaximumRetryCount <Int32>] -NoProxy [-OutFile <String>] [-PassThru] [-PreserveAuthorizationOnRedirect] [-Resume] [-RetryIntervalSec <Int32>] [-SessionVariable <String>] [-SkipCertificateCheck] [-SkipHeaderValidation] [-SslProtocol {Default | Tls | Tls11 | Tls12}] [-TimeoutSec <Int32>] [-Token <SecureString>] [-TransferEncoding {chunked | compress | deflate | gzip | identity}] [-UseBasicParsing] [-UseDefaultCredentials] [-UserAgent <String>] [-WebSession <WebRequestSession>] [<CommonParameters>]
@@ -17666,13 +17149,7 @@ Invoke-WebRequest [-Uri] <Uri> [-AllowUnencryptedAuthentication] [-Authenticatio
 
 This parameter is specified with the "ValueFromRemainingArguments" property which enables joining an indefinite number of paths.`, `String[]`),
             new Parameter(`ChildPath`, `Specifies the elements to append to the value of the "Path" parameter. Wildcards are permitted. The "ChildPath" parameter is required, although the parameter name ("ChildPath") is optional.`, `String`),
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
-
-
-Type a user name, such as User01 or Domain01\User01. Or, enter a "PSCredential" object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you will be prompted for a password.
-
-
-This parameter is not supported by any providers installed with PowerShell.`, `PSCredential`),
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
             new Parameter(`Path`, `Specifies the main path (or paths) to which the child-path is appended. Wildcards are permitted.
 
 
@@ -17687,6 +17164,30 @@ The value of "Path" determines which provider joins the paths and adds the path 
         ],
         `Combines a path and a child path into a single path.`,
         `Join-Path [-Path] <String[]> [-ChildPath] <String> [[-AdditionalChildPath] <String[]>] [-Credential <PSCredential>] [-Resolve] [<CommonParameters>]`,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Join-String`,
+        [
+            new Parameter(`DoubleQuote`, `Wraps the string value of each pipeline object in double-quotes.`, `SwitchParameter`),
+            new Parameter(`FormatString`, `A format string that specifies how each item should be formatted.`, `String`),
+            new Parameter(`InputObject`, `Specifies the text to be joined. Enter a variable that contains the text, or type a command or expression that gets the objects to join into strings.`, `PSObject`),
+            new Parameter(`OutputPrefix`, `Text that's inserted before the output string. The string can contain special characters such as carriage return ("" "r ""), newline ("" "n ""), and tab ("" "t "").`, `String`),
+            new Parameter(`OutputSuffix`, `Text that's appended to the output string. The string can contain special characters such as carriage return ("" "r ""), newline ("" "n ""), and tab ("" "t "").`, `String`),
+            new Parameter(`Property`, `The name of a property, or a property expression, that will project the pipeline object to text.`, `PSPropertyExpression`),
+            new Parameter(`Separator`, `Text or characters such as a comma or semicolon that's inserted between the text for each pipeline object.`, `String`),
+            new Parameter(`SingleQuote`, `Wraps the string value of each pipeline object in single quotes.`, `SwitchParameter`),
+            new Parameter(`UseCulture`, `Uses the list separator for the current culture as the item delimiter. To find the list separator for a culture, use the following command: "(Get-Culture).TextInfo.ListSeparator".`, `SwitchParameter`),
+        ],
+        `Combines objects from the pipeline into a single string.`,
+        `Join-String [[-Property] <PSPropertyExpression>] [[-Separator] <String>] [-DoubleQuote] [-InputObject <PSObject>] [-OutputPrefix <String>] [-OutputSuffix <String>] [-UseCulture] [<CommonParameters>]
+
+Join-String [[-Property] <PSPropertyExpression>] [[-Separator] <String>] [-FormatString <String>] [-InputObject <PSObject>] [-OutputPrefix <String>] [-OutputSuffix <String>] [-UseCulture] [<CommonParameters>]
+
+Join-String [[-Property] <PSPropertyExpression>] [[-Separator] <String>] [-InputObject <PSObject>] [-OutputPrefix <String>] [-OutputSuffix <String>] [-SingleQuote] [-UseCulture] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -17709,73 +17210,37 @@ The value of "Path" determines which provider joins the paths and adds the path 
         `Measure-Object`,
         [
             new Parameter(`Average`, `Indicates that the cmdlet displays the average value of the specified properties.`, `SwitchParameter`),
-            new Parameter(`Character`, `Indicates that the cmdlet counts the number of characters in the input object.`, `SwitchParameter`),
-            new Parameter(`IgnoreWhiteSpace`, `Indicates that the cmdlet ignores white space in word counts and character counts. By default, white space is not ignored.`, `SwitchParameter`),
+            new Parameter(`Character`, `Indicates that the cmdlet counts the number of characters in the input objects.
+
+
+> [!NOTE] > The Word , Char and Line switches count inside each input object, as well as across > input objects. See Example 7.`, `SwitchParameter`),
+            new Parameter(`IgnoreWhiteSpace`, `Indicates that the cmdlet ignores white space in character counts. By default, white space is not ignored.`, `SwitchParameter`),
             new Parameter(`InputObject`, `Specifies the objects to be measured. Enter a variable that contains the objects, or type a command or expression that gets the objects.
 
 
-When you use the InputObject parameter with "Measure-Object", instead of piping command results to "Measure-Object", the InputObject value-even if the value is a collection that is the result of a command, such as "-InputObject (Get-Process)"-is treated as a single object. Because InputObject cannot return individual properties from an array or collection of objects, it is recommended that if you use "Measure-Object" to measure a collection of objects for those objects that have specific values in defined properties, you use "Measure-Object" in the pipeline, as shown in the examples in this topic.`, `PSObject`),
-            new Parameter(`Line`, `Indicates that the cmdlet counts the number of lines in the input object.`, `SwitchParameter`),
+When you use the InputObject parameter with "Measure-Object", instead of piping command results to "Measure-Object", the InputObject value is treated as a single object.
+
+
+It is recommended that you use "Measure-Object" in the pipeline if you want to measure a collection of objects based on whether the objects have specific values in defined properties.`, `PSObject`),
+            new Parameter(`Line`, `Indicates that the cmdlet counts the number of lines in the input objects.
+
+
+> [!NOTE] > The Word , Char and Line switches count inside each input object, as well as across > input objects. See Example 7.`, `SwitchParameter`),
             new Parameter(`Maximum`, `Indicates that the cmdlet displays the maximum value of the specified properties.`, `SwitchParameter`),
             new Parameter(`Minimum`, `Indicates that the cmdlet displays the minimum value of the specified properties.`, `SwitchParameter`),
-            new Parameter(`Property`, `Specifies one or more numeric properties to measure. The default is the Count property of the object.`, `PSPropertyExpression[]`),
+            new Parameter(`Property`, `Specifies one or more properties to measure. If you do not specify any other measures, "Measure-Object" counts the objects that have the properties you specify.`, `PSPropertyExpression[]`),
             new Parameter(`StandardDeviation`, `Indicates that the cmdlet displays the standard deviation of the values of the specified properties.`, `SwitchParameter`),
             new Parameter(`Sum`, `Indicates that the cmdlet displays the sum of the values of the specified properties.`, `SwitchParameter`),
-            new Parameter(`AllStats`, `Indicates that the cmdlet displays all the statitics of the specified properties.`, `SwitchParameter`),
-            new Parameter(`Word`, `Indicates that the cmdlet counts the number of words in the input object.`, `SwitchParameter`),
+            new Parameter(`AllStats`, `Indicates that the cmdlet displays all the statistics of the specified properties.`, `SwitchParameter`),
+            new Parameter(`Word`, `Indicates that the cmdlet counts the number of words in the input objects.
+
+
+> [!NOTE] > The Word , Char and Line switches count inside each input object, as well as across > input objects. See Example 7.`, `SwitchParameter`),
         ],
         `Calculates the numeric properties of objects, and the characters, words, and lines in string objects, such as files of text.`,
         `Measure-Object [[-Property] <PSPropertyExpression[]>] [-Average] [-InputObject <PSObject>] [-Maximum] [-Minimum] [-StandardDeviation] [-Sum] [-AllStats] [<CommonParameters>]
 
 Measure-Object [[-Property] <PSPropertyExpression[]>] [-Character] [-IgnoreWhiteSpace] [-InputObject <PSObject>] [-Line] [-Word] [<CommonParameters>]`,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Measure-VM`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Measure-VMReplication`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Measure-VMResourcePool`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Merge-VHD`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
         "",
         (parameters, paramDictionary) => {
 
@@ -17794,19 +17259,7 @@ Measure-Object [[-Property] <PSPropertyExpression[]>] [-Character] [-IgnoreWhite
         }
     ),
     new ConsoleCommand(
-        `Mount-VHD`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Mount-VMHostAssignableDevice`,
+        `Mount-WindowsImage`,
         [
 
         ],
@@ -17832,27 +17285,21 @@ Measure-Object [[-Property] <PSPropertyExpression[]>] [-Character] [-IgnoreWhite
     new ConsoleCommand(
         `Move-Item`,
         [
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
-
-
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you are prompted for a password.
-
-
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
             new Parameter(`Destination`, `Specifies the path to the location where the items are being moved. The default is the current directory. Wildcards are permitted, but the result must specify a single location.
 
 
 To rename the item being moved, specify a new name in the value of the Destination parameter.`, `String`),
-            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes from the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`Filter`, `Specifies a filter in the format or language of the provider. The value of this parameter qualifies the Path parameter.
-
-
-The syntax of the filter, including the use of wildcard characters, depends on the provider. Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
+            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as " .txt". Wildcard characters are permitted. The Exclude * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`Filter`, `Specifies a filter to qualify the Path parameter. The FileSystem (../Microsoft.PowerShell.Core/About/about_FileSystem_Provider.md)provider is the only installed PowerShell provider that supports the use of filters. You can find the syntax for the FileSystem filter language in about_Wildcards (../Microsoft.PowerShell.Core/About/about_Wildcards.md). Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
             new Parameter(`Force`, `Forces the command to run without asking for user confirmation. Implementation varies from provider to provider. For more information, see about_Providers (../Microsoft.PowerShell.Core/About/about_Providers.md).`, `SwitchParameter`),
-            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet moves in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`LiteralPath`, `Specifies the path to the current location of the items. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
+            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "" .txt"". Wildcard characters are permitted. The Include * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`LiteralPath`, `Specifies a path to one or more locations. The value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
+
+
+For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
             new Parameter(`PassThru`, `Returns an object representing the item with which you are working. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
-            new Parameter(`Path`, `Specifies the path to the current location of the items. The default is the current directory. Wildcards are permitted.`, `String[]`),
+            new Parameter(`Path`, `Specifies the path to the current location of the items. The default is the current directory. Wildcard characters are permitted.`, `String[]`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
@@ -17868,25 +17315,19 @@ Move-Item [-Path] <String[]> [[-Destination] <String>] [-Credential <PSCredentia
     new ConsoleCommand(
         `Move-ItemProperty`,
         [
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
-
-
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you are prompted for a password.
-
-
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
             new Parameter(`Destination`, `Specifies the path to the destination location.`, `String`),
-            new Parameter(`Exclude`, `Specifies, as a string array, a property or property that this cmdlet excludes from the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`Filter`, `Specifies a filter in the format or language of the provider. The value of this parameter qualifies the Path parameter.
-
-
-The syntax of the filter, including the use of wildcard characters, depends on the provider. Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
+            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as " .txt". Wildcard characters are permitted. The Exclude * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`Filter`, `Specifies a filter to qualify the Path parameter. The FileSystem (../Microsoft.PowerShell.Core/About/about_FileSystem_Provider.md)provider is the only installed PowerShell provider that supports the use of filters. You can find the syntax for the FileSystem filter language in about_Wildcards (../Microsoft.PowerShell.Core/About/about_Wildcards.md). Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
             new Parameter(`Force`, `Forces the command to run without asking for user confirmation. Implementation varies from provider to provider. For more information, see about_Providers (../Microsoft.PowerShell.Core/About/about_Providers.md).`, `SwitchParameter`),
-            new Parameter(`Include`, `Specifies, as a string array, a property or property that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`LiteralPath`, `Specifies the path to the current location of the property. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
+            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "" .txt"". Wildcard characters are permitted. The Include * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`LiteralPath`, `Specifies a path to one or more locations. The value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
+
+
+For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
             new Parameter(`Name`, `Specifies the name of the property to be moved.`, `String[]`),
             new Parameter(`PassThru`, `Returns an object representing the item with which you are working. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
-            new Parameter(`Path`, `Specifies the path to the current location of the property. Wildcards are permitted.`, `String[]`),
+            new Parameter(`Path`, `Specifies the path to the current location of the property. Wildcard characters are permitted.`, `String[]`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
@@ -17894,30 +17335,6 @@ The syntax of the filter, including the use of wildcard characters, depends on t
         `Move-ItemProperty [-Destination] <String> [-Name] <String[]> [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] -LiteralPath <String[]> [-PassThru] [-Confirm] [-WhatIf] [<CommonParameters>]
 
 Move-ItemProperty [-Path] <String[]> [-Destination] <String> [-Name] <String[]> [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] [-PassThru] [-Confirm] [-WhatIf] [<CommonParameters>]`,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Move-VM`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Move-VMStorage`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
         "",
         (parameters, paramDictionary) => {
 
@@ -18059,27 +17476,9 @@ The value of this parameter appears in the SourceIdentifier property of the even
         }
     ),
     new ConsoleCommand(
-        `New-HgsTraceTarget`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
         `New-Item`,
         [
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
-
-
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you are prompted for a password.
-
-
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. To impersonate another > user or elevate your credentials when running this cmdlet, use "Invoke-Command".`, `PSCredential`),
             new Parameter(`Force`, `Forces this cmdlet to create an item that writes over an existing read-only item. Implementation varies from provider to provider. For more information, see about_Providers (../Microsoft.PowerShell.Core/About/about_Providers.md). Even using the Force parameter, the cmdlet cannot override security restrictions.`, `SwitchParameter`),
             new Parameter(`ItemType`, `Specifies the provider-specified type of the new item. The available values of this parameter depend on the current provider you are using.
 
@@ -18104,6 +17503,9 @@ If your location is in a "FileSystem" drive, the following values are allowed:
 
 
 
+> [!NOTE] > Creating a "SymbolicLink" type on Windows requires elevation as administrator. However, Windows 10 > (build 14972 or newer) with Developer Mode enabled no longer requires elevation creating symbolic > links.
+
+
 In a "Certificate" drive, these are the values you can specify:
 
 
@@ -18125,10 +17527,7 @@ For more information see about_Providers (../Microsoft.PowerShell.Core/About/abo
 
 
 You can specify the name of the new item in the Name or Path parameter value, and you can specify the path of the new item in Name or Path value.`, `String`),
-            new Parameter(`Path`, `Specifies the path of the location of the new item. Wildcard characters are permitted.
-
-
-You can specify the name of the new item in Name , or include it in Path .`, `String[]`),
+            new Parameter(`Path`, `Specifies the path of the location of the new item. Wildcard characters are permitted. You can specify the name of the new item in Name , or include it in Path .`, `String[]`),
             new Parameter(`Value`, `Specifies the value of the new item. You can also pipe a value to "New-Item".`, `Object`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
@@ -18136,7 +17535,7 @@ You can specify the name of the new item in Name , or include it in Path .`, `St
         `Creates a new item.`,
         `New-Item [[-Path] <String[]>] [-Credential <PSCredential>] [-Force] [-ItemType <String>] -Name <String> [-Value <Object>] [-Confirm] [-WhatIf] [<CommonParameters>]
 
-New-Item [-Path] <String[]> [-Credential <PSCredential>] [-Force] [-ItemType <String>] [-Value <Object>] [-Confirm] [-WhatIf] [<CommonParameters>]`,
+New-Item [[-Path] <String[]>] [-Credential <PSCredential>] [-Force] [-ItemType <String>] [-Value <Object>] [-Confirm] [-WhatIf] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -18145,23 +17544,17 @@ New-Item [-Path] <String[]> [-Credential <PSCredential>] [-Force] [-ItemType <St
     new ConsoleCommand(
         `New-ItemProperty`,
         [
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
-
-
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you are prompted for a password.
-
-
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
-            new Parameter(`Exclude`, `Specifies, as a string array, a property or property that this cmdlet excludes from the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`Filter`, `Specifies a filter in the format or language of the provider. The value of this parameter qualifies the Path parameter.
-
-
-The syntax of the filter, including the use of wildcard characters, depends on the provider. Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
+            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as " .txt". Wildcard characters are permitted. The Exclude * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`Filter`, `Specifies a filter to qualify the Path parameter. The FileSystem (../Microsoft.PowerShell.Core/About/about_FileSystem_Provider.md)provider is the only installed PowerShell provider that supports the use of filters. You can find the syntax for the FileSystem filter language in about_Wildcards (../Microsoft.PowerShell.Core/About/about_Wildcards.md). Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
             new Parameter(`Force`, `Forces the cmdlet to create a property on an object that cannot otherwise be accessed by the user. Implementation varies from provider to provider. For more information, see about_Providers (../Microsoft.PowerShell.Core/About/about_Providers.md).`, `SwitchParameter`),
-            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`LiteralPath`, `Specifies the path to the current location of the property. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
+            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "" .txt"". Wildcard characters are permitted. The Include * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`LiteralPath`, `Specifies a path to one or more locations. The value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
+
+
+For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
             new Parameter(`Name`, `Specifies a name for the new property. If the property is a registry entry, this parameter specifies the name of the entry.`, `String`),
-            new Parameter(`Path`, `Specifies the path of the item. This parameter identifies the item to which this cmdlet adds the new property.`, `String[]`),
+            new Parameter(`Path`, `Specifies the path of the item. Wildcard characters are permitted. This parameter identifies the item to which this cmdlet adds the new property.`, `String[]`),
             new Parameter(`PropertyType`, `Specifies the type of property that this cmdlet adds. The acceptable values for this parameter are:
 
 
@@ -18236,7 +17629,7 @@ The default value is an autogenerated name that starts with " _DynamicModule " a
             new Parameter(`AliasesToExport`, `Specifies the aliases that the module exports. Wildcards are permitted.
 
 
-You can use this parameter to restrict the aliases that are exported by the module. It can remove aliases from the list of exported aliases, but it cannot add aliases to the list.
+You can use this parameter to restrict the aliases that are exported by the module. It can remove aliases from the list of exported aliases, but it can't add aliases to the list.
 
 
 If you omit this parameter, "New-ModuleManifest" creates an AliasesToExport key with a value of "*" (all), meaning that all aliases defined in the module are exported by the manifest.`, `String[]`),
@@ -18248,7 +17641,7 @@ If you omit this parameter, "New-ModuleManifest" creates an Author key with the 
             new Parameter(`CmdletsToExport`, `Specifies the cmdlets that the module exports. Wildcards are permitted.
 
 
-You can use this parameter to restrict the cmdlets that are exported by the module. It can remove cmdlets from the list of exported cmdlets, but it cannot add cmdlets to the list.
+You can use this parameter to restrict the cmdlets that are exported by the module. It can remove cmdlets from the list of exported cmdlets, but it can't add cmdlets to the list.
 
 
 If you omit this parameter, "New-ModuleManifest" creates a CmdletsToExport key with a value of "*" (all), meaning that all cmdlets defined in the module are exported by the manifest.`, `String[]`),
@@ -18257,26 +17650,26 @@ If you omit this parameter, "New-ModuleManifest" creates a CmdletsToExport key w
 
 If you omit this parameter, "New-ModuleManifest" creates a CompanyName key with a value of "Unknown".`, `String`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
-            new Parameter(`CompatiblePSEditions`, `Specifies the compatible PSEditions of the module. For information about PSEdition, see Modules with compatible PowerShell Editions (/powershell/gallery/concepts/module-psedition-support).`, `String[]`),
+            new Parameter(`CompatiblePSEditions`, `Specifies the module's compatible PSEditions. For information about PSEdition, see Modules with compatible PowerShell Editions (/powershell/scripting/gallery/concepts/module-psedition-support).`, `String[]`),
             new Parameter(`Copyright`, `Specifies a copyright statement for the module.
 
 
 If you omit this parameter, "New-ModuleManifest" creates a Copyright key with a value of "(c) <year> <username>. All rights reserved." where "<year>" is the current year and "<username>" is the value of the Author key.`, `String`),
             new Parameter(`Description`, `Describes the contents of the module.`, `String`),
             new Parameter(`DotNetFrameworkVersion`, `Specifies the minimum version of the Microsoft .NET Framework that the module requires.`, `Version`),
-            new Parameter(`DscResourcesToExport`, `Specifies the DSC resources that the module exports. Wildcards are permitted.`, `String[]`),
+            new Parameter(`DscResourcesToExport`, `Specifies the Desired State Configuration (DSC) resources that the module exports. Wildcards are permitted.`, `String[]`),
             new Parameter(`FileList`, `Specifies all items that are included in the module.
 
 
-This key is designed to act as a module inventory. The files listed in the key are included when the module is published, but any functions are not automatically exported.`, `String[]`),
-            new Parameter(`FormatsToProcess`, `Specifies the formatting files (.ps1xml) that run when the module is imported.
+This key is designed to act as a module inventory. The files listed in the key are included when the module is published, but any functions aren't automatically exported.`, `String[]`),
+            new Parameter(`FormatsToProcess`, `Specifies the formatting files (".ps1xml") that run when the module is imported.
 
 
-When you import a module, Windows PowerShell runs the "Update-FormatData" cmdlet with the specified files. Because formatting files are not scoped, they affect all session states in the session.`, `String[]`),
+When you import a module, PowerShell runs the "Update-FormatData" cmdlet with the specified files. Because formatting files aren't scoped, they affect all session states in the session.`, `String[]`),
             new Parameter(`FunctionsToExport`, `Specifies the functions that the module exports. Wildcards are permitted.
 
 
-You can use this parameter to restrict the functions that are exported by the module. It can remove functions from the list of exported aliases, but it cannot add functions to the list.
+You can use this parameter to restrict the functions that are exported by the module. It can remove functions from the list of exported aliases, but it can't add functions to the list.
 
 
 If you omit this parameter, "New-ModuleManifest" creates an FunctionsToExport key with a value of "*" (all), meaning that all functions defined in the module are exported by the manifest.`, `String[]`),
@@ -18286,109 +17679,109 @@ If you omit this parameter, "New-ModuleManifest" creates an FunctionsToExport ke
 If you omit this parameter, "New-ModuleManifest" creates a GUID key in the manifest and generates a GUID for the value.
 
 
-To create a new GUID in Windows PowerShell, type "[guid]::NewGuid()".`, `Guid`),
-            new Parameter(`HelpInfoUri`, `Specifies the Internet address of the HelpInfo XML file for the module. Enter an Uniform Resource Identifier (URI) that begins with "http" or "https".
+To create a new GUID in PowerShell, type "[guid]::NewGuid()".`, `Guid`),
+            new Parameter(`HelpInfoUri`, `Specifies the internet address of the HelpInfo XML file for the module. Enter a Uniform Resource Identifier (URI) that begins with http or https .
 
 
-The HelpInfo XML file supports the Updatable Help feature that was introduced in Windows PowerShell 3.0. It contains information about the location of downloadable help files for the module and the version numbers of the newest help files for each supported locale.
+The HelpInfo XML file supports the Updatable Help feature that was introduced in PowerShell 3.0. It contains information about the location of downloadable help files for the module and the version numbers of the newest help files for each supported locale.
 
 
-For information about Updatable Help, see about_Updatable_Help (./About/about_Updatable_Help.md). For information about the HelpInfo XML file, see Supporting Updatable Help (/powershell/developer/module/supporting-updatable-help).
+For information about Updatable Help, see about_Updatable_Help (./About/about_Updatable_Help.md). For information about the HelpInfo XML file, see Supporting Updatable Help (/powershell/scripting/developer/module/supporting-updatable-help).
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `String`),
+This parameter was introduced in PowerShell 3.0.`, `String`),
             new Parameter(`IconUri`, `Specifies the URL of an icon for the module. The specified icon is displayed on the gallery web page for the module.`, `Uri`),
             new Parameter(`LicenseUri`, `Specifies the URL of licensing terms for the module.`, `Uri`),
             new Parameter(`ModuleList`, `Lists all modules that are included in this module.
 
 
-Enter each module name as a string or as a hash table with ModuleName and ModuleVersion keys. The hash table can also have an optional GUID key. You can combine strings and hash tables in the parameter value. For more information, see the examples.
+Enter each module name as a string or as a hash table with ModuleName and ModuleVersion keys. The hash table can also have an optional GUID key. You can combine strings and hash tables in the parameter value.
 
 
-This key is designed to act as a module inventory. The modules that are listed in the value of this key are not automatically processed.`, `Object[]`),
-            new Parameter(`ModuleVersion`, `Specifies the version of the module.
+This key is designed to act as a module inventory. The modules that are listed in the value of this key aren't automatically processed.`, `Object[]`),
+            new Parameter(`ModuleVersion`, `Specifies the module's version.
 
 
-This parameter is not required by the cmdlet, but a ModuleVersion key is required in the manifest. If you omit this parameter, "New-ModuleManifest" creates a ModuleVersion key with a value of "1.0".`, `Version`),
-            new Parameter(`NestedModules`, `Specifies script modules (.psm1) and binary modules (.dll) that are imported into the module's session state. The files in the NestedModules key run in the order in which they are listed in the value.
+This parameter isn't required, but a ModuleVersion key is required in the manifest. If you omit this parameter, "New-ModuleManifest" creates a ModuleVersion key with a value of 1.0.`, `Version`),
+            new Parameter(`NestedModules`, `Specifies script modules (".psm1") and binary modules (".dll") that are imported into the module's session state. The files in the NestedModules key run in the order in which they're listed in the value.
 
 
-Enter each module name as a string or as a hash table with ModuleName and ModuleVersion keys. The hash table can also have an optional GUID key. You can combine strings and hash tables in the parameter value. For more information, see the examples.
+Enter each module name as a string or as a hash table with ModuleName and ModuleVersion keys. The hash table can also have an optional GUID key. You can combine strings and hash tables in the parameter value.
 
 
-Typically, nested modules contain commands that the root module needs for its internal processing. By default, the commands in nested modules are exported from the module's session state into the caller's session state, but the root module can restrict the commands that it exports (for example, by using an Export-ModuleMember command).
+Typically, nested modules contain commands that the root module needs for its internal processing. By default, the commands in nested modules are exported from the module's session state into the caller's session state, but the root module can restrict the commands that it exports. For example, by using an "Export-ModuleMember" command.
 
 
-Nested modules in the module session state are available to the root module, but they are not returned by a "Get-Module" command in the caller's session state.
+Nested modules in the module session state are available to the root module, but they aren't returned by a "Get-Module" command in the caller's session state.
 
 
-Scripts (.ps1) that are listed in the NestedModules key are run in the module's session state, not in the caller's session state. To run a script in the caller's session state, list the script file name in the value of the ScriptsToProcess key in the manifest.`, `Object[]`),
-            new Parameter(`PassThru`, `Writes the resulting module manifest to the console, in addition to creating a .psd1 file. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
-            new Parameter(`Path`, `Specifies the path and file name of the new module manifest. Enter a path and file name with a .psd1 file name extension, such as "$pshome\Modules\MyModule\MyModule.psd1". This parameter is required.
+Scripts (".ps1") that are listed in the NestedModules key are run in the module's session state, not in the caller's session state. To run a script in the caller's session state, list the script file name in the value of the ScriptsToProcess key in the manifest.`, `Object[]`),
+            new Parameter(`PassThru`, `Writes the resulting module manifest to the console and creates a ".psd1" file. By default, this cmdlet doesn't generate any output.`, `SwitchParameter`),
+            new Parameter(`Path`, `Specifies the path and file name of the new module manifest. Enter a path and file name with a ".psd1" file name extension, such as "$pshome\\Modules\\MyModule\\MyModule.psd1". The Path parameter is required.
 
 
 If you specify the path to an existing file, "New-ModuleManifest" replaces the file without warning unless the file has the read-only attribute.
 
 
-The manifest should be located in the module's directory, and the manifest file name should be the same as the module directory name, but with a .psd1 file name extension.
+The manifest should be located in the module's directory, and the manifest file name should be the same as the module directory name, but with a ".psd1" file name extension.
 
 
 > [!NOTE] > You cannot use variables, such as "$PSHOME" or "$HOME", in response to a prompt for a Path > parameter value. To use a variable, include the Path parameter in the command.`, `String`),
-            new Parameter(`PowerShellHostName`, `Specifies the name of the PowerShell host program that the module requires. Enter the name of the host program, such as "Windows PowerShell ISE Host" or "ConsoleHost". Wildcards are not permitted.
+            new Parameter(`PowerShellHostName`, `Specifies the name of the PowerShell host program that the module requires. Enter the name of the host program, such as Windows PowerShell ISE Host or ConsoleHost . Wildcards aren't permitted.
 
 
 To find the name of a host program, in the program, type "$Host.Name".`, `String`),
             new Parameter(`PowerShellHostVersion`, `Specifies the minimum version of the PowerShell host program that works with the module. Enter a version number, such as 1.1.`, `Version`),
-            new Parameter(`PowerShellVersion`, `Specifies the minimum version of Windows PowerShell that works with this module. For example, you can enter 3.0, 4.0, or 5.0 as the value of this parameter.`, `Version`),
-            new Parameter(`PrivateData`, `Specifies data that is passed to the module when it is imported.`, `Object`),
+            new Parameter(`PowerShellVersion`, `Specifies the minimum version of PowerShell that works with this module. For example, you can enter 1.0, 2.0, or 3.0 as the parameter's value.`, `Version`),
+            new Parameter(`PrivateData`, `Specifies data that is passed to the module when it's imported.`, `Object`),
             new Parameter(`ProcessorArchitecture`, `Specifies the processor architecture that the module requires. Valid values are x86, AMD64, IA64, MSIL, and None (unknown or unspecified).`, `ProcessorArchitecture`),
             new Parameter(`ProjectUri`, `Specifies the URL of a web page about this project.`, `Uri`),
             new Parameter(`ReleaseNotes`, `Specifies release notes.`, `String`),
-            new Parameter(`RequiredAssemblies`, `Specifies the assembly (.dll) files that the module requires. Enter the assembly file names. PowerShell loads the specified assemblies before updating types or formats, importing nested modules, or importing the module file that is specified in the value of the RootModule key.
+            new Parameter(`RequiredAssemblies`, `Specifies the assembly (".dll") files that the module requires. Enter the assembly file names. PowerShell loads the specified assemblies before updating types or formats, importing nested modules, or importing the module file that is specified in the value of the RootModule key.
 
 
 Use this parameter to list all the assemblies that the module requires, including assemblies that must be loaded to update any formatting or type files that are listed in the FormatsToProcess or TypesToProcess keys, even if those assemblies are also listed as binary modules in the NestedModules key.`, `String[]`),
-            new Parameter(`RequiredModules`, `Specifies modules that must be in the global session state. If the required modules are not in the global session state, Windows PowerShell imports them. If the required modules are not available, the "Import-Module" command fails.
+            new Parameter(`RequiredModules`, `Specifies modules that must be in the global session state. If the required modules aren't in the global session state, PowerShell imports them. If the required modules aren't available, the "Import-Module" command fails.
 
 
-Enter each module name as a string or as a hash table with ModuleName and ModuleVersion keys. The hash table can also have an optional GUID key. You can combine strings and hash tables in the parameter value. For more information, see the examples.
+Enter each module name as a string or as a hash table with ModuleName and ModuleVersion keys. The hash table can also have an optional GUID key. You can combine strings and hash tables in the parameter value.
 
 
-In Windows PowerShell 2.0, "Import-Module" does not import required modules automatically. It just verifies that the required modules are in the global session state.`, `Object[]`),
-            new Parameter(`ScriptsToProcess`, `Specifies script (.ps1) files that run in the caller's session state when the module is imported. You can use these scripts to prepare an environment, just as you might use a login script.
+In PowerShell 2.0, "Import-Module" doesn't import required modules automatically. It just verifies that the required modules are in the global session state.`, `Object[]`),
+            new Parameter(`ScriptsToProcess`, `Specifies script (".ps1") files that run in the caller's session state when the module is imported. You can use these scripts to prepare an environment, just as you might use a login script.
 
 
 To specify scripts that run in the module's session state, use the NestedModules key.`, `String[]`),
             new Parameter(`Tags`, `Specifies an array of tags.`, `String[]`),
-            new Parameter(`TypesToProcess`, `Specifies the type files (.ps1xml) that run when the module is imported.
+            new Parameter(`TypesToProcess`, `Specifies the type files (".ps1xml") that run when the module is imported.
 
 
-When you import the module, Windows PowerShell runs the "Update-TypeData" cmdlet with the specified files. Because type files are not scoped, they affect all session states in the session.`, `String[]`),
+When you import the module, PowerShell runs the "Update-TypeData" cmdlet with the specified files. Because type files aren't scoped, they affect all session states in the session.`, `String[]`),
             new Parameter(`VariablesToExport`, `Specifies the variables that the module exports. Wildcards are permitted.
 
 
-You can use this parameter to restrict the variables that are exported by the module. It can remove variables from the list of exported variables, but it cannot add variables to the list.
+You can use this parameter to restrict the variables that are exported by the module. It can remove variables from the list of exported variables, but it can't add variables to the list.
 
 
-If you omit this parameter, "New-ModuleManifest" creates a VariablesToExport key with a value of "*" (all), meaning that all variables defined int the module are exported by the manifest.`, `String[]`),
-            new Parameter(`DefaultCommandPrefix`, `Specifies a prefix that is prepended to the nouns of all commands in the module when they are imported into a session. Enter a prefix string. Prefixes prevent command name conflicts in a user's session.
+If you omit this parameter, "New-ModuleManifest" creates a VariablesToExport key with a value of "*" (all), meaning that all variables defined in the module are exported by the manifest.`, `String[]`),
+            new Parameter(`DefaultCommandPrefix`, `Specifies a prefix that is prepended to the nouns of all commands in the module when they're imported into a session. Enter a prefix string. Prefixes prevent command name conflicts in a user's session.
 
 
 Module users can override this prefix by specifying the Prefix parameter of the "Import-Module" cmdlet.
 
 
-This parameter is introduced in Windows PowerShell 3.0.`, `String`),
-            new Parameter(`RootModule`, `Specifies the primary or "root" file of the module. Enter the file name of a script (.ps1), a script module (.psm1), a module manifest(.psd1), an assembly (.dll), a cmdlet definition XML file (.cdxml), or a workflow (.xaml). When the module is imported, the members that are exported from the root module file are imported into the caller's session state.
+This parameter was introduced in PowerShell 3.0.`, `String`),
+            new Parameter(`RootModule`, `Specifies the primary or root file of the module. Enter the file name of a script (".ps1"), a script module (".psm1"), a module manifest(".psd1"), an assembly (".dll"), a cmdlet definition XML file (".cdxml"), or a workflow (".xaml"). When the module is imported, the members that are exported from the root module file are imported into the caller's session state.
 
 
-If a module has a manifest file and no root file has been designated in the RootModule key, the manifest becomes the primary file for the module, and the module becomes a "manifest module" (ModuleType = Manifest).
+If a module has a manifest file and no root file was designated in the RootModule key, the manifest becomes the primary file for the module, and the module becomes a manifest module (ModuleType = Manifest).
 
 
-To export members from .psm1 or .dll files in a module that has a manifest, the names of those files must be specified in the values of the RootModule or NestedModules keys in the manifest. Otherwise, their members are not exported.
+To export members from ".psm1" or ".dll" files in a module that has a manifest, the names of those files must be specified in the values of the RootModule or NestedModules keys in the manifest. Otherwise, their members aren't exported.
 
 
-> [!NOTE] > In PowerShell 2.0, this key was called ModuleToProcess . You can use the "RootModule" parameter > name or its ModuleToProcess alias.`, `String`),
-            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
+> [!NOTE] > In PowerShell 2.0, this key was called ModuleToProcess . You can use the RootModule > parameter name or its ModuleToProcess alias.`, `String`),
+            new Parameter(`WhatIf`, `Shows what would happen if "New-ModuleManifest" runs. The cmdlet isn't run.`, `SwitchParameter`),
         ],
         `Creates a new module manifest.`,
         `New-ModuleManifest [-Path] <String> [-AliasesToExport <String[]>] [-Author <String>] [-ClrVersion <Version>] [-CmdletsToExport <String[]>] [-CompanyName <String>] [-Confirm] [-CompatiblePSEditions {Desktop | Core}] [-Copyright <String>] [-Description <String>] [-DotNetFrameworkVersion <Version>] [-DscResourcesToExport <String[]>] [-FileList <String[]>] [-FormatsToProcess <String[]>] [-FunctionsToExport <String[]>] [-Guid <Guid>] [-HelpInfoUri <String>] [-IconUri <Uri>] [-LicenseUri <Uri>] [-ModuleList <Object[]>] [-ModuleVersion <Version>] [-NestedModules <Object[]>] [-PassThru] [-PowerShellHostName <String>] [-PowerShellHostVersion <Version>] [-PowerShellVersion <Version>] [-PrivateData <Object>] [-ProcessorArchitecture {None | MSIL | X86 | IA64 | Amd64 | Arm}] [-ProjectUri <Uri>] [-ReleaseNotes <String>] [-RequiredAssemblies <String[]>] [-RequiredModules <Object[]>] [-ScriptsToProcess <String[]>] [-Tags <String[]>] [-TypesToProcess <String[]>] [-VariablesToExport <String[]>] [-DefaultCommandPrefix <String>] [-RootModule <String>] [-WhatIf] [<CommonParameters>]`,
@@ -18436,15 +17829,21 @@ To export members from .psm1 or .dll files in a module that has a manifest, the 
     new ConsoleCommand(
         `New-Object`,
         [
-            new Parameter(`ArgumentList`, `Specifies a list of arguments to pass to the constructor of the .NET Framework class. Separate elements in the list by using commas (,). The alias for ArgumentList is Args .`, `Object[]`),
+            new Parameter(`ArgumentList`, `Specifies an array of arguments to pass to the constructor of the .NET Framework class. If the constructor takes a single parameter that is an array, you must wrap that parameter inside another array. For example:
+
+
+"$cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate -ArgumentList (,$bytes)"
+
+
+The alias for ArgumentList is Args .`, `Object[]`),
             new Parameter(`ComObject`, `Specifies the programmatic identifier (ProgID) of the COM object.`, `String`),
             new Parameter(`Property`, `Sets property values and invokes methods of the new object.
 
 
-Enter a hash table in which the keys are the names of properties or methods and the values are property values or method arguments. New-Object creates the object and sets each property value and invokes each method in the order that they appear in the hash table.
+Enter a hash table in which the keys are the names of properties or methods and the values are property values or method arguments. "New-Object" creates the object and sets each property value and invokes each method in the order that they appear in the hash table.
 
 
-If the new object is derived from the PSObject class, and you specify a property that does not exist on the object, New-Object adds the specified property to the object as a NoteProperty. If the object is not a PSObject , the command generates a non-terminating error.`, `IDictionary`),
+If the new object is derived from the PSObject class, and you specify a property that does not exist on the object, "New-Object" adds the specified property to the object as a NoteProperty. If the object is not a PSObject , the command generates a non-terminating error.`, `IDictionary`),
             new Parameter(`Strict`, `Indicates that the cmdlet generates a non-terminating error when a COM object that you attempt to create uses an interop assembly. This feature distinguishes actual COM objects from .NET Framework objects with COM-callable wrappers.`, `SwitchParameter`),
             new Parameter(`TypeName`, `Specifies the fully qualified name of the .NET Framework class. You cannot specify both the TypeName parameter and the ComObject parameter.`, `String`),
         ],
@@ -18460,54 +17859,66 @@ New-Object [-ComObject] <String> [-Property <IDictionary>] [-Strict] [<CommonPar
     new ConsoleCommand(
         `New-PSDrive`,
         [
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
+            new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
+            new Parameter(`Credential`, `Specifies a user account that has permission to do this action. The default is the current user.
 
 
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, this cmdlet prompts you for a password.
+Since PowerShell 3.0, when the value of the Root parameter is a UNC path, you can use credentials to create file system drives.
 
 
-Starting in Windows PowerShell 3.0, when the value of the Root parameter is a UNC path, you can use credentials to create file system drives. This parameter is not supported by all PowerShell providers.`, `PSCredential`),
+Type a user name, such as User01 or Domain01\\User01 , or enter a PSCredential object generated by the "Get-Credential" cmdlet. If you type a user name, you're prompted to enter the password.
+
+
+Credentials are stored in a PSCredential (/dotnet/api/system.management.automation.pscredential)object and the password is stored as a SecureString (/dotnet/api/system.security.securestring).
+
+
+> [!NOTE] > For more information about SecureString data protection, see > How secure is SecureString? (/dotnet/api/system.security.securestring#how-secure-is-securestring).`, `PSCredential`),
             new Parameter(`Description`, `Specifies a brief text description of the drive. Type any string.
 
 
-To see the descriptions of all of the drives in the session, type "Get-PSDrive | Format-Table Name, Description". To see the description of a particular drives, type "(Get-PSDrive <DriveName>).Description".`, `String`),
-            new Parameter(`Name`, `Specifies a name for the new drive. For persistent mapped network drives, type a drive letter. For temporary PowerShell drives, type any valid string; you are not limited to drive letters.`, `String`),
-            new Parameter(`Persist`, `Indicates that this cmdlet creates a Windows mapped network drive. Mapped network drives are saved in Windows on the local computer. They are persistent, not session-specific, and can be viewed and managed in File Explorer and other tools.
+To see the descriptions of all the session's drives, "Get-PSDrive | Format-Table Name, Description".
 
 
-When you scope the command locally, that is, without dot-sourcing, the Persist parameter does not persist the creation of a PSDrive beyond the scope in which you run the command. If you run "New-PSDrive" inside a script, and you want the new drive to persist indefinitely, you must dot-source the script. For best results, to force a new drive to persist, specify Global as the value of the Scope parameter in addition to adding Persist to your command.
+To see the description of a particular drive, type "(Get-PSDrive <DriveName>).Description".`, `String`),
+            new Parameter(`Name`, `Specifies a name for the new drive. For persistent mapped network drives, use a drive letter. For temporary PowerShell drives, you aren't limited to drive letters, use any valid string.`, `String`),
+            new Parameter(`Persist`, `Indicates that this cmdlet creates a Windows mapped network drive. The Persist parameter is only available on Windows.
 
 
-The name of the drive must be a letter, such as 'D' or 'E'. The value of Root parameter must be a UNC path of a different computer. The value of the PSProvider parameter must be FileSystem.
+Mapped network drives are saved in Windows on the local computer. They're persistent, not session-specific, and can be viewed and managed in File Explorer and other tools.
+
+
+When you scope the command locally, without dot-sourcing, the Persist parameter doesn't persist the creation of a PSDrive beyond the scope in which you run the command. If you run "New-PSDrive" inside a script, and you want the new drive to persist indefinitely, you must dot-source the script. For best results, to force a new drive to persist, specify Global as the value of the Scope parameter and include Persist in your command.
+
+
+The name of the drive must be a letter, such as "D" or "E". The value of Root parameter must be a UNC path of a different computer. The PSProvider parameter's value must be "FileSystem".
 
 
 To disconnect a Windows mapped network drive, use the "Remove-PSDrive" cmdlet. When you disconnect a Windows mapped network drive, the mapping is permanently deleted from the computer, not just deleted from the current session.
 
 
-Mapped network drives are specific to a user account. Mapped drives created in elevated sessions or sessions using the credential of another user are not visible in sessions started using different credentials.`, `SwitchParameter`),
+Mapped network drives are specific to a user account. Mapped drives created in elevated sessions or sessions using the credential of another user aren't visible in sessions started using different credentials.`, `SwitchParameter`),
             new Parameter(`PSProvider`, `Specifies the PowerShell provider that supports drives of this kind.
 
 
-For example, if the drive is associated with a network share or file system directory, the PowerShell provider is FileSystem. If the drive is associated with a registry key, the provider is Registry.
+For example, if the drive is associated with a network share or file system directory, the PowerShell provider is "FileSystem". If the drive is associated with a registry key, the provider is "Registry".
 
 
-Temporary PowerShell drives can be associated with any PowerShell provider. Mapped network drives can be associated only with the FileSystem provider.
+Temporary PowerShell drives can be associated with any PowerShell provider. Mapped network drives can be associated only with the "FileSystem" provider.
 
 
 To see a list of the providers in your PowerShell session, use the "Get-PSProvider" cmdlet.`, `String`),
             new Parameter(`Root`, `Specifies the data store location to which a PowerShell drive is mapped.
 
 
-For example, specify a network share, such as \\Server01\Public, a local directory, such as C:\Program Files, or a registry key, such as HKLM:\Software\Microsoft.
+For example, specify a network share, such as "\\Server01\\Public", a local directory, such as "C:\\Program Files", or a registry key, such as "HKLM:\\Software\\Microsoft".
 
 
 Temporary PowerShell drives can be associated with a local or remote location on any supported provider drive. Mapped network drives can be associated only with a file system location on a remote computer.`, `String`),
-            new Parameter(`Scope`, `Specifies a scope for the drive. The acceptable values for this parameter are: Global, Local, and Script, or a number relative to the current scope. Scopes number 0 through the number of scopes. The current scope number is 0 and its parent is 1. For more information, see about_Scopes (../Microsoft.PowerShell.Core/About/about_Scopes.md).`, `String`),
-            new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
-            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
+            new Parameter(`Scope`, `Specifies a scope for the drive. The acceptable values for this parameter are: Global , Local , and Script , or a number relative to the current scope. Scopes number 0 through the number of scopes. The current scope number is 0 and its parent is 1. For more information, see about_Scopes (../Microsoft.PowerShell.Core/About/about_Scopes.md).`, `String`),
+            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet isn't run.`, `SwitchParameter`),
         ],
         `Creates temporary and persistent mapped network drives.`,
-        `New-PSDrive [-Name] <String> [-PSProvider] <String> [-Root] <String> [-Credential <PSCredential>] [-Description <String>] [-Persist] [-Scope <String>] [-Confirm] [-WhatIf] [<CommonParameters>]`,
+        `New-PSDrive [-Name] <String> [-PSProvider] <String> [-Root] <String> [-Confirm] [-Credential <PSCredential>] [-Description <String>] [-Persist] [-Scope <String>] [-WhatIf] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -18519,29 +17930,53 @@ Temporary PowerShell drives can be associated with a local or remote location on
             new Parameter(`AliasDefinitions`, `Adds the specified aliases to sessions that use the role capability file. Enter a hash table with the following keys:
 
 
-- Name. Name of the alias. This key is required. - Value. The command that the alias represents. This key is required. - Description. A text string that describes the alias. This key is optional. - Options. Alias options. This key is optional. The default value is None. The acceptable values for this parameter are: None, ReadOnly, Constant, Private, or AllScope.
+- Name. Name of the alias. This key is required.
+
+
+- Value. The command that the alias represents. This key is required.
+
+
+- Description. A text string that describes the alias. This key is optional.
+
+
+- Options. Alias options. This key is optional. The default value is None. The acceptable values for
+
+
+this parameter are: None, ReadOnly, Constant, Private, or AllScope.
 
 
 For example: "@{Name="hlp";Value="Get-Help";Description="Gets help";Options="ReadOnly"}"`, `IDictionary[]`),
             new Parameter(`AssembliesToLoad`, `Specifies the assemblies to load into the sessions that use the role capability file.`, `String[]`),
             new Parameter(`Author`, `Specifies the user that created the role capability file.`, `String`),
             new Parameter(`CompanyName`, `Identifies the company that created the role capability file. The default value is Unknown.`, `String`),
-            new Parameter(`Copyright`, `Specifies a copyright for the role capability file. If you omit this parameter, New-PSRoleCapabilityFile generates a copyright statement by using the value of the Author parameter.`, `String`),
+            new Parameter(`Copyright`, `Specifies a copyright for the role capability file. If you omit this parameter, "New-PSRoleCapabilityFile" generates a copyright statement by using the value of the Author parameter.`, `String`),
             new Parameter(`Description`, `Specifies a description for the role capability file.`, `String`),
             new Parameter(`EnvironmentVariables`, `Specifies the environment variables for sessions that expose this role capability file. Enter a hash table in which the keys are the environment variable names and the values are the environment variable values.
 
 
-For example: "EnvironmentVariables=@{TestShare="\\Server01\TestShare"}"`, `IDictionary`),
+For example: "EnvironmentVariables=@{TestShare="\\Server01\\TestShare"}"`, `IDictionary`),
             new Parameter(`FormatsToProcess`, `Specifies the formatting files (.ps1xml) that run in sessions that use the role capability file. The value of this parameter must be a full or absolute path of the formatting files.`, `String[]`),
             new Parameter(`FunctionDefinitions`, `Adds the specified functions to sessions that expose the role capability. Enter a hash table with the following keys:
 
 
-- Name. Name of the function. This key is required. - ScriptBlock. Function body. Enter a script block. This key is required. - Options. Function options. This key is optional. The default value is None. The acceptable values for this parameter are: are None, ReadOnly, Constant, Private, or AllScope.
+- Name. Name of the function. This key is required.
 
 
-For example: "@{Name="Get-PowerShellProcess";ScriptBlock={Get-Process PowerShell};Options="AllScope"}"`, `IDictionary[]`),
-            new Parameter(`Guid`, `Specifies a unique identifier for the role capability file. If you omit this parameter, New-PSRoleCapabilityFile generates a GUID for the file. To create a new GUID in PowerShell, type "[guid]::NewGuid()".`, `Guid`),
-            new Parameter(`ModulesToImport`, `Specifies the modules that are automatically imported into sessions that use the role capability file. By default, all of the commands in listed modules are visible. When used with VisibleCmdlets or VisibleFunctions , the commands visible from the specified modules can be restricted.
+- ScriptBlock. Function body. Enter a script block. This key is required.
+
+
+- Options. Function options. This key is optional. The default value is None. The acceptable values
+
+
+for this parameter are: are None, ReadOnly, Constant, Private, or AllScope.
+
+
+For example:
+
+
+"@{Name="Get-PowerShellProcess";ScriptBlock={Get-Process PowerShell};Options="AllScope"}"`, `IDictionary[]`),
+            new Parameter(`Guid`, `Specifies a unique identifier for the role capability file. If you omit this parameter, "New-PSRoleCapabilityFile" generates a GUID for the file. To create a new GUID in PowerShell, type "[guid]::NewGuid()".`, `Guid`),
+            new Parameter(`ModulesToImport`, `Specifies the modules that are automatically imported into sessions that use the role capability file. By default, all the commands in listed modules are visible. When used with VisibleCmdlets or VisibleFunctions , the commands visible from the specified modules can be restricted.
 
 
 Each module used in the value of this parameter can be represented by a string or by a hash table. A module string consists only of the name of the module. A module hash table can include ModuleName , ModuleVersion , and GUID keys. Only the ModuleName key is required.
@@ -18551,13 +17986,22 @@ For example, the following value consists of a string and a hash table. Any comb
 
 
 ""TroubleshootingPack", @{ModuleName="PSDiagnostics"; ModuleVersion="1.0.0.0";GUID="c61d6278-02a3-4618-ae37-a524d40a7f44"}"`, `Object[]`),
-            new Parameter(`Path`, `Specifies the path and file name of the role capability file. The file must have a .psrc file name extension.`, `String`),
+            new Parameter(`Path`, `Specifies the path and filename of the role capability file. The file must have a ".psrc" filename extension.`, `String`),
             new Parameter(`ScriptsToProcess`, `Specifies scripts to add to sessions that use the role capability file. Enter the path and file names of the scripts. The value of this parameter must be a full or absolute path of the script file names.`, `String[]`),
-            new Parameter(`TypesToProcess`, `Specifies type files (.ps1xml) to add to sessions that use the role capability file. Enter the type file names. The value of this parameter must be a full or absolute path of the type file names.`, `String[]`),
+            new Parameter(`TypesToProcess`, `Specifies type files (.ps1xml) to add to sessions that use the role capability file. Enter the type filenames. The value of this parameter must be a full or absolute path of the type filenames.`, `String[]`),
             new Parameter(`VariableDefinitions`, `Specifies variables to add to sessions that use the role capability file. Enter a hash table with the following keys:
 
 
-- Name. Name of the variable. This key is required. - Value. Variable value. This key is required. - Options. Variable options. This key is optional. The default value is None. The acceptable values for this parameter are: are None, ReadOnly, Constant, Private, or AllScope.
+- Name. Name of the variable. This key is required.
+
+
+- Value. Variable value. This key is required.
+
+
+- Options. Variable options. This key is optional. The default value is None. The acceptable values
+
+
+for this parameter are: are None, ReadOnly, Constant, Private, or AllScope.
 
 
 For example: "@{Name="WarningPreference";Value="SilentlyContinue";Options="AllScope"}"`, `Object`),
@@ -18567,35 +18011,35 @@ For example: "@{Name="WarningPreference";Value="SilentlyContinue";Options="AllSc
 For example, to limit the available aliases to gm and gcm use this syntax: "VisibleAliases="gcm", "gp""
 
 
-When any Visible parameter is included in the role capability file, PowerShell removes the Import-Module cmdlet and its ipmo alias from the session.`, `String[]`),
+When any Visible parameter is included in the role capability file, PowerShell removes the "Import-Module" cmdlet and its "ipmo" alias from the session.`, `String[]`),
             new Parameter(`VisibleCmdlets`, `Limits the cmdlets in the session to those specified in the value of this parameter. Wildcard characters and Module Qualified Names are supported.
 
 
-By default, all cmdlets that the modules in the session export are visible in the session. Use the SessionType and ModulesToImport parameters to determine which modules and snap-ins are imported into the session. If no modules in ModulesToImport expose the cmdlet, New-PSRoleCapabilityFile will try load the appropriate module.
+By default, all cmdlets that the modules in the session export are visible in the session. Use the SessionType and ModulesToImport parameters to determine which modules and snap-ins are imported into the session. If no modules in ModulesToImport expose the cmdlet, "New-PSRoleCapabilityFile" tries to load the appropriate module.
 
 
-When any Visible parameter is included in the session configuration file, PowerShell removes the Import-Module cmdlet and its ipmo alias from the session.`, `Object[]`),
-            new Parameter(`VisibleExternalCommands`, `Limits the external binaries, scripts and commands that can be executed in the session to those specified in the value of this parameter. Wildcard characters are supported.
+When any Visible parameter is included in the session configuration file, PowerShell removes the "Import-Module" cmdlet and its "ipmo" alias from the session.`, `Object[]`),
+            new Parameter(`VisibleExternalCommands`, `Limits the external binaries, scripts and commands that can be executed in the session to those specified in the value of this parameter.
 
 
 By default, no external commands are visible in this session.
 
 
-When any Visible parameter is included in the session configuration file, PowerShell removes the Import-Module cmdlet and its ipmo alias from the session.`, `String[]`),
+When any Visible parameter is included in the session configuration file, PowerShell removes the "Import-Module" cmdlet and its "ipmo" alias from the session.`, `String[]`),
             new Parameter(`VisibleFunctions`, `Limits the functions in the session to those specified in the value of this parameter, plus any functions that you define in the FunctionDefinitions parameter. Wildcard characters are supported.
 
 
 By default, all functions exported by modules in the session are visible in that session. Use the SessionType and ModulesToImport parameters to determine which modules are imported into the session.
 
 
-When any Visible parameter is included in the session configuration file, PowerShell removes the Import-Module cmdlet and its ipmo alias from the session.`, `Object[]`),
+When any Visible parameter is included in the session configuration file, PowerShell removes the "Import-Module" cmdlet and its "ipmo" alias from the session.`, `Object[]`),
             new Parameter(`VisibleProviders`, `Limits the PowerShell providers in the session to those specified in the value of this parameter. Wildcard characters are supported.
 
 
 By default, all providers exported by a module in the session are visible in the session. Use the SessionType and ModulesToImport parameters to determine which modules are imported into the session.
 
 
-When any Visible parameter is included in the session configuration file, PowerShell removes the Import-Module cmdlet and its ipmo alias from the session.`, `String[]`),
+When any Visible parameter is included in the session configuration file, PowerShell removes the "Import-Module" cmdlet and its "ipmo" alias from the session.`, `String[]`),
         ],
         `Creates a file that defines a set of capabilities to be exposed through a session configuration.`,
         `New-PSRoleCapabilityFile [-Path] <String> [-AliasDefinitions <IDictionary[]>] [-AssembliesToLoad <String[]>] [-Author <String>] [-CompanyName <String>] [-Copyright <String>] [-Description <String>] [-EnvironmentVariables <IDictionary>] [-FormatsToProcess <String[]>] [-FunctionDefinitions <IDictionary[]>] [-Guid <Guid>] [-ModulesToImport <Object[]>] [-ScriptsToProcess <String[]>] [-TypesToProcess <String[]>] [-VariableDefinitions <Object>] [-VisibleAliases <String[]>] [-VisibleCmdlets <Object[]>] [-VisibleExternalCommands <String[]>] [-VisibleFunctions <Object[]>] [-VisibleProviders <String[]>] [<CommonParameters>]`,
@@ -18673,7 +18117,7 @@ To include the local computer in the value of the ComputerName parameter, start 
             new Parameter(`ConfigurationName`, `Specifies the session configuration that is used for the new PSSession .
 
 
-Enter a configuration name or the fully qualified resource URI for a session configuration. If you specify only the configuration name, the following schema URI is prepended: http://schemas.microsoft.com/PowerShell.
+Enter a configuration name or the fully qualified resource URI for a session configuration. If you specify only the configuration name, the following schema URI is prepended: "http://schemas.microsoft.com/PowerShell".
 
 
 When used with SSH, this specifies the subsystem to use on the target as defined in sshd_config. The default value for SSH is the "powershell" subsystem.
@@ -18703,13 +18147,16 @@ Valid values for the Transport segment of the URI are HTTP and HTTPS. If you spe
 
 If the destination computer redirects the connection to a different URI, PowerShell prevents the redirection unless you use the AllowRedirection parameter in the command.`, `Uri[]`),
             new Parameter(`ContainerId`, `Specifies an array of IDs of containers. This cmdlet starts an interactive session with each of the specified containers. To see the containers that are available to you, use the Get-Container cmdlet.`, `String[]`),
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
+            new Parameter(`Credential`, `Specifies a user account that has permission to do this action. The default is the current user.
 
 
-Type a user name, such as User01, Domain01\User01, or User@Domain.com, or enter a PSCredential object, such as one returned by the Get-Credential cmdlet.
+Type a user name, such as User01 or Domain01\\User01 , or enter a PSCredential object generated by the "Get-Credential" cmdlet. If you type a user name, you're prompted to enter the password.
 
 
-When you type a user name, this cmdlet prompts you for a password.`, `PSCredential`),
+Credentials are stored in a PSCredential (/dotnet/api/system.management.automation.pscredential)object and the password is stored as a SecureString (/dotnet/api/system.security.securestring).
+
+
+> [!NOTE] > For more information about SecureString data protection, see > How secure is SecureString? (/dotnet/api/system.security.securestring#how-secure-is-securestring).`, `PSCredential`),
             new Parameter(`EnableNetworkAccess`, `Indicates that this cmdlet adds an interactive security token to loopback sessions. The interactive token lets you run commands in the loopback session that get data from other computers. For example, you can run a command in the session that copies XML files from a remote computer to the local computer.
 
 
@@ -18815,7 +18262,7 @@ This parameter was introduced in PowerShell 6.0.`, `String`),
             new Parameter(`UseSSL`, `Indicates that this cmdlet uses the SSL protocol to establish a connection to the remote computer. By default, SSL is not used.
 
 
-WS-Management encrypts all Windows PowerShell content transmitted over the network. The UseSSL parameter offers an additional protection that sends the data across an HTTPS connection instead of an HTTP connection.
+WS-Management encrypts all PowerShell content transmitted over the network. The UseSSL parameter offers an additional protection that sends the data across an HTTPS connection instead of an HTTP connection.
 
 
 If you use this parameter, but SSL is not available on the port that is used for the command, the command fails.`, `SwitchParameter`),
@@ -18878,9 +18325,9 @@ If this parameter is not used, the default is the 'powershell' subsystem.`, `Str
 
 New-PSSession [[-ComputerName] <String[]>] [-ApplicationName <String>] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-CertificateThumbprint <String>] [-ConfigurationName <String>] [-Credential <PSCredential>] [-EnableNetworkAccess] [-Name <String[]>] [-Port <Int32>] [-SessionOption <PSSessionOption>] [-ThrottleLimit <Int32>] [-UseSSL] [<CommonParameters>]
 
-New-PSSession [-ConfigurationName <String>] -Credential <PSCredential> [-Name <String[]>] [-ThrottleLimit <Int32>] -VMName <String[]> [<CommonParameters>]
+New-PSSession [-ConfigurationName <String>] [-Credential <PSCredential>] [-Name <String[]>] [-ThrottleLimit <Int32>] -VMName <String[]> [<CommonParameters>]
 
-New-PSSession [-VMId] <Guid[]> [-ConfigurationName <String>] -Credential <PSCredential> [-Name <String[]>] [-ThrottleLimit <Int32>] [<CommonParameters>]
+New-PSSession [-VMId] <Guid[]> [-ConfigurationName <String>] [-Credential <PSCredential>] [-Name <String[]>] [-ThrottleLimit <Int32>] [<CommonParameters>]
 
 New-PSSession [-ConfigurationName <String>] -ContainerId <String[]> [-Name <String[]>] [-RunAsAdministrator] [-ThrottleLimit <Int32>] [<CommonParameters>]
 
@@ -18904,57 +18351,78 @@ New-PSSession [-Name <String[]>] -SSHConnection <hashtable> [<CommonParameters>]
             new Parameter(`AliasDefinitions`, `Adds the specified aliases to sessions that use the session configuration. Enter a hash table with the following keys:
 
 
-- Name. Name of the alias. This key is required. - Value. The command that the alias represents. This key is required. - Description. A text string that describes the alias. This key is optional. - Options. Alias options. This key is optional. The default value is None. The acceptable values for this parameter are: None, ReadOnly, Constant, Private, or AllScope.
+- Name - Name of the alias. This key is required.
 
 
-For example: "@{Name="hlp";Value="Get-Help";Description="Gets help";Options="ReadOnly"}"`, `IDictionary[]`),
+- Value - The command that the alias represents. This key is required.
+
+
+- Description - A text string that describes the alias. This key is optional.
+
+
+- Options - Alias options. This key is optional. The default value is None . The acceptable   values for this parameter are: None, ReadOnly, Constant, Private, or AllScope.
+
+
+For example: "@{Name='hlp';Value='Get-Help';Description='Gets help';Options='ReadOnly'}"`, `IDictionary[]`),
             new Parameter(`AssembliesToLoad`, `Specifies the assemblies to load into the sessions that use the session configuration.`, `String[]`),
             new Parameter(`Author`, `Specifies the author of the session configuration or the configuration file. The default is the current user. The value of this parameter is visible in the session configuration file, but it is not a property of the session configuration object.`, `String`),
-            new Parameter(`CompanyName`, `Specifies the company that created the session configuration or the configuration file. The default value is Unknown. The value of this parameter is visible in the session configuration file, but it is not a property of the session configuration object.`, `String`),
+            new Parameter(`CompanyName`, `Specifies the company that created the session configuration or the configuration file. The default value is Unknown . The value of this parameter is visible in the session configuration file, but it is not a property of the session configuration object.`, `String`),
             new Parameter(`Copyright`, `Specifies a copyright the session configuration file. The value of this parameter is visible in the session configuration file, but it is not a property of the session configuration object.
 
 
-If you omit this parameter, New-PSSessionConfigurationFile generates a copyright statement by using the value of the Author parameter.`, `String`),
+If you omit this parameter, "New-PSSessionConfigurationFile" generates a copyright statement by using the value of the Author parameter.`, `String`),
             new Parameter(`Description`, `Specifies a description of the session configuration or the session configuration file. The value of this parameter is visible in the session configuration file, but it is not a property of the session configuration object.`, `String`),
             new Parameter(`EnvironmentVariables`, `Adds environment variables to the session. Enter a hash table in which the keys are the environment variable names and the values are the environment variable values.
 
 
-For example: "EnvironmentVariables=@{TestShare="\\Server01\TestShare"}"`, `IDictionary`),
-            new Parameter(`ExecutionPolicy`, `Specifies the execution policy of sessions that use the session configuration. If you omit this parameter, the value of the ExecutionPolicy key in the session configuration file is Restricted. For information about execution policies in Windows PowerShell, see about_Execution_Policies (about/about_Execution_Policies.md).`, `ExecutionPolicy`),
+For example: "EnvironmentVariables=@{TestShare='\\Server01\\TestShare'}"`, `IDictionary`),
+            new Parameter(`ExecutionPolicy`, `Specifies the execution policy of sessions that use the session configuration. If you omit this parameter, the value of the ExecutionPolicy key in the session configuration file is Restricted . For information about execution policies in PowerShell, see about_Execution_Policies (about/about_Execution_Policies.md).`, `ExecutionPolicy`),
             new Parameter(`FormatsToProcess`, `Specifies the formatting files (.ps1xml) that run in sessions that use the session configuration. The value of this parameter must be a full or absolute path of the formatting files.`, `String[]`),
             new Parameter(`Full`, `Indicates that this operation includes all possible configuration properties in the session configuration file.`, `SwitchParameter`),
             new Parameter(`FunctionDefinitions`, `Adds the specified functions to sessions that use the session configuration. Enter a hash table with the following keys:
 
 
-- Name. Name of the function. This key is required. - ScriptBlock. Function body. Enter a script block. This key is required. - Options. Function options. This key is optional. The default value is None. The acceptable values for this parameter are: None, ReadOnly, Constant, Private, or AllScope.
+- Name - Name of the function. This key is required.
 
 
-For example: "@{Name="Get-PowerShellProcess";ScriptBlock={Get-Process PowerShell};Options="AllScope"}"`, `IDictionary[]`),
-            new Parameter(`GroupManagedServiceAccount`, `Configures sessions using this session configuration to run under the context of the specified Group Managed Service Account. The machine where this session configuration is registered must have permission to request the gMSA password in order for sessions to be created successfully. This field cannot be used in conjunction with the "-RunAsVirtualAccount" parameter.`, `String`),
-            new Parameter(`Guid`, `Specifies a unique identifier for the session configuration file. If you omit this parameter, New-PSSessionConfigurationFile generates a GUID for the file.To create a new GUID in Windows PowerShell, type ""[guid]::NewGuid()"".`, `Guid`),
-            new Parameter(`LanguageMode`, `Determines which elements of the Windows PowerShell language are permitted in sessions that use this session configuration. You can use this parameter to restrict the commands that particular users can run on the computer.
+- ScriptBlock - Function body. Enter a script block. This key is required.
+
+
+- Options - Function options. This key is optional. The default value is None . The acceptable   values for this parameter are: None, ReadOnly, Constant, Private, or AllScope.
+
+
+For example: "@{Name='Get-PowerShellProcess';ScriptBlock={Get-Process PowerShell};Options='AllScope'}"`, `IDictionary[]`),
+            new Parameter(`GroupManagedServiceAccount`, `Configures sessions using this session configuration to run under the context of the specified Group Managed Service Account. The machine where this session configuration is registered must have permission to request the gMSA password in order for sessions to be created successfully. This field cannot be used with the RunAsVirtualAccount parameter.`, `String`),
+            new Parameter(`Guid`, `Specifies a unique identifier for the session configuration file. If you omit this parameter, "New-PSSessionConfigurationFile" generates a GUID for the file. To create a new GUID in PowerShell, type "New-Guid".`, `Guid`),
+            new Parameter(`LanguageMode`, `Determines which elements of the PowerShell language are permitted in sessions that use this session configuration. You can use this parameter to restrict the commands that particular users can run on the computer.
 
 
 The acceptable values for this parameter are:
 
 
-- FullLanguage. All language elements are permitted. - ConstrainedLanguage. Commands that contain scripts to be evaluated are not allowed. The ConstrainedLanguage mode restricts user access to Microsoft .NET Framework types, objects, or methods. - NoLanguage. Users may run cmdlets and functions, but are not permitted to use any language elements, such as script blocks, variables, or operators. - RestrictedLanguage. Users may run cmdlets and functions, but are not permitted to use script blocks or variables except for the following permitted variables: $PSCulture, $PSUICulture, $True, $False, and $Null. Users may use only the basic comparison operators (-eq, -gt, -lt). Assignment statements, property references, and method calls are not permitted.
+- FullLanguage - All language elements are permitted.
+
+
+- ConstrainedLanguage - Commands that contain scripts to be evaluated are not allowed. The
+
+
+ConstrainedLanguage mode restricts user access to Microsoft .NET Framework types, objects, or   methods. - NoLanguage - Users may run cmdlets and functions, but are not permitted to use any language   elements, such as script blocks, variables, or operators. - RestrictedLanguage - Users may run cmdlets and functions, but are not permitted to use script   blocks or variables except for the following permitted variables: "$PSCulture", "$PSUICulture",   "$True", "$False", and "$Null". Users may use only the basic comparison operators ("-eq", "-gt",   "-lt"). Assignment statements, property references, and method calls are not permitted.
 
 
 The default value of the LanguageMode parameter depends on the value of the SessionType parameter.
 
 
-- Empty. NoLanguage
+- Empty - NoLanguage
 
 
-- RestrictedRemoteServer. NoLanguage
+- RestrictedRemoteServer - NoLanguage
 
 
-- Default. FullLanguage`, `PSLanguageMode`),
+- Default - FullLanguage`, `PSLanguageMode`),
             new Parameter(`ModulesToImport`, `Specifies the modules and snap-ins that are automatically imported into sessions that use the session configuration.
 
 
-By default, only the Microsoft.PowerShell.Core snap-in is imported into remote sessions, but unless the cmdlets are excluded, users can use the Import-Module and Add-PSSnapin cmdlets to add modules and snap-ins to the session.
+By default, only the Microsoft.PowerShell.Core snap-in is imported into remote sessions, but unless the cmdlets are excluded, users can use the "Import-Module" and "Add-PSSnapin" cmdlets to add modules and snap-ins to the session.
 
 
 Each module or snap-in in the value of this parameter can be represented by a string or as a hash table. A module string consists only of the name of the module or snap-in. A module hash table can include ModuleName , ModuleVersion , and GUID keys. Only the ModuleName key is required.
@@ -18963,19 +18431,19 @@ Each module or snap-in in the value of this parameter can be represented by a st
 For example, the following value consists of a string and a hash table. Any combination of strings and hash tables, in any order, is valid.
 
 
-""TroubleshootingPack", @{ModuleName="PSDiagnostics"; ModuleVersion="1.0.0.0";GUID="c61d6278-02a3-4618-ae37-a524d40a7f44"},"
+"'TroubleshootingPack', @{ModuleName='PSDiagnostics'; ModuleVersion='1.0.0.0';GUID='c61d6278-02a3-4618-ae37-a524d40a7f44'}"
 
 
-The value of the ModulesToImport parameter of the Register-PSSessionConfiguration cmdlet takes precedence over the value of the ModulesToImport key in the session configuration file.`, `Object[]`),
-            new Parameter(`MountUserDrive`, `Configures sessions that use this session configuration to expose the "User:" PSDrive. User drives are unique for each connecting user and allow users to copy data to/from PowerShell endpoints even if the File System provider is not exposed. User drive roots are created under "$env:LOCALAPPDATA\Microsoft\Windows\PowerShell\DriveRoots".
+The value of the ModulesToImport parameter of the "Register-PSSessionConfiguration" cmdlet takes precedence over the value of the ModulesToImport key in the session configuration file.`, `Object[]`),
+            new Parameter(`MountUserDrive`, `Configures sessions that use this session configuration to expose the "User:" PSDrive. User drives are unique for each connecting user and allow users to copy data to/from PowerShell endpoints even if the File System provider is not exposed. User drive roots are created under "$env:LOCALAPPDATA\\Microsoft\\Windows\\PowerShell\\DriveRoots".
 
 
-Contents in the user drive persist across user sessions and are not automatically removed. By default, users can only store up to 50MB of data in the user drive. This can be customized with the "-UserDriveMaximumSize" parameter.`, `SwitchParameter`),
-            new Parameter(`Path`, `Specifies the path and file name of the session configuration file. The file must have a .pssc file name extension.`, `String`),
-            new Parameter(`PowerShellVersion`, `Specifies the version of the Windows PowerShell engine in sessions that use the session configuration. The acceptable values for this parameter are: 2.0 and 3.0. If you omit this parameter, the PowerShellVersion key is commented-out and newest version of Windows PowerShell runs in the session.
+Contents in the user drive persist across user sessions and are not automatically removed. By default, users can only store up to 50MB of data in the user drive. This can be customized with the UserDriveMaximumSize parameter.`, `SwitchParameter`),
+            new Parameter(`Path`, `Specifies the path and filename of the session configuration file. The file must have a ".pssc" file name extension.`, `String`),
+            new Parameter(`PowerShellVersion`, `Specifies the version of the PowerShell engine in sessions that use the session configuration. The acceptable values for this parameter are: 2.0 and 3.0. If you omit this parameter, the PowerShellVersion key is commented-out and newest version of PowerShell runs in the session.
 
 
-The value of the PSVersion parameter of the Register-PSSessionConfiguration cmdlet takes precedence over the value of the PowerShellVersion key in the session configuration file.`, `Version`),
+The value of the PSVersion parameter of the "Register-PSSessionConfiguration" cmdlet takes precedence over the value of the PowerShellVersion key in the session configuration file.`, `Version`),
             new Parameter(`RequiredGroups`, `Specifies conditional access rules for users connecting to sessions that use this session configuration.
 
 
@@ -18992,63 +18460,69 @@ Example requiring users to belong to group A, or both groups B and C, to access 
 Enter a hash table in which the keys are the name of the security group and the values are hash tables that contain a list of role capabilities that should be made available to the security group.
 
 
-For example: "@{'Contoso\Level 2 Helpdesk Users' = @{ RoleCapabilities = 'Maintenance', 'ADHelpDesk' }}"`, `IDictionary`),
-            new Parameter(`RunAsVirtualAccount`, `Configures sessions using this session configuration to be run as the computer's (virtual) administrator account. This field cannot be used in conjunction with the "-GroupManagedServiceAccount" parameter.`, `SwitchParameter`),
+For example: "@{'Contoso\\Level 2 Helpdesk Users' = @{ RoleCapabilities = 'Maintenance', 'ADHelpDesk' }}"`, `IDictionary`),
+            new Parameter(`RunAsVirtualAccount`, `Configures sessions using this session configuration to be run as the computer's (virtual) administrator account. This field cannot be used with the GroupManagedServiceAccount parameter.`, `SwitchParameter`),
             new Parameter(`RunAsVirtualAccountGroups`, `Specifies the security groups to be associated with the virtual account when a session that uses the session configuration is run as a virtual account. If omitted, the virtual account belongs to Domain Admins on domain controllers and Administrators on all other computers.`, `String[]`),
             new Parameter(`SchemaVersion`, `Specifies the version of the session configuration file schema. The default value is "1.0.0.0".`, `Version`),
             new Parameter(`ScriptsToProcess`, `Adds the specified scripts to sessions that use the session configuration. Enter the path and file names of the scripts. The value of this parameter must be a full or absolute path of script file names.`, `String[]`),
             new Parameter(`SessionType`, `Specifies the type of session that is created by using the session configuration. The default value is Default. The acceptable values for this parameter are:
 
 
-- Empty. No modules or snap-ins are added to session by default. Use the parameters of this cmdlet to add modules, functions, scripts, and other features to the session. This option is designed for you to create custom sessions by adding selected command. If you do not add commands to an empty session, the session is limited to expressions and might not be usable. - Default. Adds the Microsoft.PowerShell.Core snap-in to the session. This snap-in includes the Import-Module and Add-PSSnapin cmdlets that users can use to import other modules and snap-ins unless you explicitly prohibit the use of the cmdlets. - RestrictedRemoteServer. Includes only the following proxy functions:  Exit-PSSession, Get-Command, Get-FormatData, Get-Help, Measure-Object, Out-Default, and Select-Object. Use the parameters of this cmdlet to add modules, functions, scripts, and other features to the session.`, `SessionType`),
+- Empty - No modules are added to session by default. Use the parameters of this cmdlet   to add modules, functions, scripts, and other features to the session. This option is designed for   you to create custom sessions by adding selected commands. If you do not add commands to an empty   session, the session is limited to expressions and might not be usable. - Default - Adds the Microsoft.PowerShell.Core module to the session. This module includes the   "Import-Module" cmdlet that users can use to import other modules unless you explicitly prohibit   this cmdlet. - RestrictedRemoteServer. Includes only the following proxy functions: "Exit-PSSession",   "Get-Command", "Get-FormatData", "Get-Help", "Measure-Object", "Out-Default", and "Select-Object".   Use the parameters of this cmdlet to add modules, functions, scripts, and other features to the   session.`, `SessionType`),
             new Parameter(`TranscriptDirectory`, `Specifies the directory to place session transcripts for sessions using this session configuration.`, `String`),
-            new Parameter(`TypesToProcess`, `Adds the specified type files (.ps1xml) to sessions that use the session configuration. Enter the type file names. The value of this parameter must be a full or absolute path of type file names.`, `String[]`),
-            new Parameter(`UserDriveMaximumSize`, `Specifies the maximum size for user drives exposed in sessions that use this session configuration. When omitted, the default size of each User: drive root is 50MB.
+            new Parameter(`TypesToProcess`, `Adds the specified ".ps1xml" type files to sessions that use the session configuration. Enter the type filenames. The value of this parameter must be a full or absolute path to type filenames.`, `String[]`),
+            new Parameter(`UserDriveMaximumSize`, `Specifies the maximum size for user drives exposed in sessions that use this session configuration. When omitted, the default size of each "User:" drive root is 50MB.
 
 
-This parameter should be used in conjunction with "-MountUserDrive".`, `Int64`),
+This parameter should be used with MountUserDrive .`, `Int64`),
             new Parameter(`VariableDefinitions`, `Adds the specified variables to sessions that use the session configuration. Enter a hash table with the following keys:
 
 
-- Name. Name of the variable. This key is required. - Value. Variable value. This key is required. - Options. Variable options. This key is optional. The default value is None. The acceptable values for this parameter are: None, ReadOnly, Constant, Private, or AllScope.
+- Name - Name of the variable. This key is required.
 
 
-For example: "@{Name="WarningPreference";Value="SilentlyContinue";Options="AllScope"}"`, `Object`),
-            new Parameter(`VisibleAliases`, `Limits the aliases in the session to those specified in the value of this parameter, plus any aliases that you define in the AliasDefinition parameter. Wildcard characters are supported. By default, all aliases that are defined by the Windows PowerShell engine and all aliases that modules export are visible in the session.
+- Value - Variable value. This key is required.
 
 
-For example: "VisibleAliases="gcm", "gp""
+- Options - Variable options. This key is optional. The default value is None . The acceptable   values for this parameter are: None, ReadOnly, Constant, Private, or AllScope.
 
 
-When any Visible parameter is included in the session configuration file, Windows PowerShell removes the Import-Module cmdlet and its ipmo alias from the session.`, `String[]`),
+For example: "@{Name='WarningPreference';Value='SilentlyContinue';Options='AllScope'}"`, `Object`),
+            new Parameter(`VisibleAliases`, `Limits the aliases in the session to those specified in the value of this parameter, plus any aliases that you define in the AliasDefinition parameter. Wildcard characters are supported. By default, all aliases that are defined by the PowerShell engine and all aliases that modules export are visible in the session.
+
+
+For example: "VisibleAliases='gcm', 'gp'"
+
+
+When any Visible parameter is included in the session configuration file, PowerShell removes the "Import-Module" cmdlet and its ipmo alias from the session.`, `String[]`),
             new Parameter(`VisibleCmdlets`, `Limits the cmdlets in the session to those specified in the value of this parameter. Wildcard characters and Module Qualified Names are supported.
 
 
 By default, all cmdlets that modules in the session export are visible in the session. Use the SessionType and ModulesToImport parameters to determine which modules and snap-ins are imported into the session. If no modules in ModulesToImport expose the cmdlet, the appropriate module will attempt to be autoloaded.
 
 
-When any Visible parameter is included in the session configuration file, Windows PowerShell removes the Import-Module cmdlet and its ipmo alias from the session.`, `Object[]`),
+When any Visible parameter is included in the session configuration file, PowerShell removes the "Import-Module" cmdlet and its ipmo alias from the session.`, `Object[]`),
             new Parameter(`VisibleExternalCommands`, `Limits the external binaries, scripts, and commands that can be executed in the session to those specified in the value of this parameter. Wildcard characters are supported.
 
 
 By default, no external commands are visible in the session.
 
 
-When any Visible parameter is included in the session configuration file, Windows PowerShell, removes the Import-Module cmdlet and its ipmo alias from the session.`, `String[]`),
+When any Visible parameter is included in the session configuration file, PowerShell, removes the "Import-Module" cmdlet and its ipmo alias from the session.`, `String[]`),
             new Parameter(`VisibleFunctions`, `Limits the functions in the session to those specified in the value of this parameter, plus any functions that you define in the FunctionDefinition parameter. Wildcard characters are supported.
 
 
 By default, all functions that modules in the session export are visible in the session. Use the SessionType and ModulesToImport parameters to determine which modules and snap-ins are imported into the session.
 
 
-When any Visible parameter is included in the session configuration file, Windows PowerShell removes the Import-Module cmdlet and its ipmo alias from the session.`, `Object[]`),
-            new Parameter(`VisibleProviders`, `Limits the Windows PowerShell providers in the session to those specified in the value of this parameter. Wildcard characters are supported.
+When any Visible parameter is included in the session configuration file, PowerShell removes the "Import-Module" cmdlet and its ipmo alias from the session.`, `Object[]`),
+            new Parameter(`VisibleProviders`, `Limits the PowerShell providers in the session to those specified in the value of this parameter. Wildcard characters are supported.
 
 
-By default, all providers that modules in the session export are visible in the session. Use the SessionType and ModulesToImport parameters to determine which modules and snap-ins are imported into the session.
+By default, all providers that modules in the session export are visible in the session. Use the SessionType and ModulesToImport parameters to determine which modules are imported into the session.
 
 
-When any Visible parameter is included in the session configuration file, Windows PowerShell removes the Import-Module cmdlet and its ipmo alias from the session.`, `String[]`),
+When any Visible parameter is included in the session configuration file, PowerShell removes the "Import-Module" cmdlet and its "ipmo" alias from the session.`, `String[]`),
         ],
         `Creates a file that defines a session configuration.`,
         `New-PSSessionConfigurationFile [-Path] <String> [-AliasDefinitions <IDictionary[]>] [-AssembliesToLoad <String[]>] [-Author <String>] [-CompanyName <String>] [-Copyright <String>] [-Description <String>] [-EnvironmentVariables <IDictionary>] [-ExecutionPolicy {Unrestricted | RemoteSigned | AllSigned | Restricted | Default | Bypass | Undefined}] [-FormatsToProcess <String[]>] [-Full] [-FunctionDefinitions <IDictionary[]>] [-GroupManagedServiceAccount <String>] [-Guid <Guid>] [-LanguageMode {FullLanguage | RestrictedLanguage | NoLanguage | ConstrainedLanguage}] [-ModulesToImport <Object[]>] [-MountUserDrive] [-PowerShellVersion <Version>] [-RequiredGroups <IDictionary>] [-RoleDefinitions <IDictionary>] [-RunAsVirtualAccount] [-RunAsVirtualAccountGroups <String[]>] [-SchemaVersion <Version>] [-ScriptsToProcess <String[]>] [-SessionType {Empty | RestrictedRemoteServer | Default}] [-TranscriptDirectory <String>] [-TypesToProcess <String[]>] [-UserDriveMaximumSize <Int64>] [-VariableDefinitions <Object>] [-VisibleAliases <String[]>] [-VisibleCmdlets <Object[]>] [-VisibleExternalCommands <String[]>] [-VisibleFunctions <Object[]>] [-VisibleProviders <String[]>] [<CommonParameters>]`,
@@ -19060,21 +18534,18 @@ When any Visible parameter is included in the session configuration file, Window
     new ConsoleCommand(
         `New-PSSessionOption`,
         [
-            new Parameter(`ApplicationArguments`, `Specifies a primitive dictionary that is sent to the remote session. Commands and scripts in the remote session, including startup scripts in the session configuration, can find this dictionary in the ApplicationArguments property of the $PSSenderInfo automatic variable. You can use this parameter to send data to the remote session.
+            new Parameter(`ApplicationArguments`, `Specifies a primitive dictionary that is sent to the remote session. Commands and scripts in the remote session, including startup scripts in the session configuration, can find this dictionary in the ApplicationArguments property of the "$PSSenderInfo" automatic variable. You can use this parameter to send data to the remote session.
 
 
-A primitive dictionary is like a hash table, but it contains keys that are case-insensitive strings and values that can be serialized and deserialized during PowerShell remoting handshakes. If you enter a hash table for the value of this parameter, PowerShell converts it to a primitive dictionary.
-
-
-For more information, see about_Hash_Tables (about/about_Hash_Tables.md), [about_Session_Configurations](About/about_Session_Configurations.md), and [about_Automatic_Variables](about/about_Automatic_Variables.md).`, `PSPrimitiveDictionary`),
-            new Parameter(`CancelTimeout`, `Determines how long PowerShell waits for a cancel operation (CTRL + C) to finish before ending it. Enter a value in milliseconds.
+For more information, see about_Hash_Tables (about/about_Hash_Tables.md), [about_Session_Configurations](About/about_Session_Configurations.md), and about_Automatic_Variables (about/about_Automatic_Variables.md).`, `PSPrimitiveDictionary`),
+            new Parameter(`CancelTimeout`, `Determines how long PowerShell waits for a cancel operation (CTRL+C) to finish before ending it. Enter a value in milliseconds.
 
 
 The default value is 60000 (one minute). A value of 0 (zero) means no time-out; the command continues indefinitely.`, `Int32`),
-            new Parameter(`Culture`, `Specifies the culture to use for the session. Enter a culture name in <languagecode2>-<country/regioncode2> format, such as ja-jP, a variable that contains a CultureInfo object, or a command that gets a CultureInfo object, such as Get-Culture.
+            new Parameter(`Culture`, `Specifies the culture to use for the session. Enter a culture name in "<languagecode2>-<country/regioncode2>" format (like "ja-JP"), a variable that contains a CultureInfo object, or a command that gets a CultureInfo object.
 
 
-The default value is $Null, and the culture that is set in the operating system is used in the session.`, `CultureInfo`),
+The default value is "$Null", and the culture that is set in the operating system is used in the session.`, `CultureInfo`),
             new Parameter(`IdleTimeout`, `Determines how long the session stays open if the remote computer does not receive any communication from the local computer. This includes the heartbeat signal. When the interval expires, the session closes.
 
 
@@ -19084,26 +18555,26 @@ The idle time-out value is of significant importance if you intend to disconnect
 Enter a value in milliseconds. The minimum value is 60000 (1 minute). The maximum is the value of the MaxIdleTimeoutms property of the session configuration. The default value, -1, does not set an idle time-out.
 
 
-The session uses the idle time-out that is set in the session options, if any. If none is set (-1), the session uses the value of the IdleTimeoutMs property of the session configuration or the WSMan shell time-out value ("WSMan:\<ComputerName>\Shell\IdleTimeout"), whichever is shortest.
+The session uses the idle time-out that is set in the session options, if any. If none is set (-1), the session uses the value of the IdleTimeoutMs property of the session configuration or the WSMan shell time-out value ("WSMan:<ComputerName>\\Shell\\IdleTimeout"), whichever is shortest.
 
 
 If the idle timeout set in the session options exceeds the value of the MaxIdleTimeoutMs property of the session configuration, the command to create a session fails.
 
 
-The IdleTimeoutMs value of the default Microsoft.PowerShell session configuration is 7200000 milliseconds (2 hours). Its MaxIdleTimeoutMs value is 2147483647 milliseconds (>24 days). The default value of the WSMan shell idle time-out ("WSMan:\<ComputerName>\Shell\IdleTimeout") is 7200000 milliseconds (2 hours).
+The IdleTimeoutMs value of the default Microsoft.PowerShell session configuration is 7200000 milliseconds (2 hours). Its MaxIdleTimeoutMs value is 2147483647 milliseconds (>24 days). The default value of the WSMan shell idle time-out ("WSMan:<ComputerName>\\Shell\\IdleTimeout") is 7200000 milliseconds (2 hours).
 
 
-The idle time-out value of a session can also be changed when disconnecting from a session or reconnecting to a session. For more information, see Disconnect-PSSession and Connect-PSSession.
+The idle time-out value of a session can also be changed when disconnecting from a session or reconnecting to a session. For more information, see "Disconnect-PSSession" and "Connect-PSSession".
 
 
 In Windows PowerShell 2.0, the default value of the IdleTimeout parameter is 240000 (4 minutes).`, `Int32`),
-            new Parameter(`IncludePortInSPN`, `Includes the port number in the Service Principal Name (SPN) used for Kerberos authentication, for example, "HTTP/<ComputerName>:5985". This option allows a client that uses a non-default SPN to authenticate against a remote computer that uses Kerberos authentication.
+            new Parameter(`IncludePortInSPN`, `Includes the port number in the Service Principal Name (SPN) used for Kerberos authentication, for example, "HTTP://<ComputerName>:5985". This option allows a client that uses a non-default SPN to authenticate against a remote computer that uses Kerberos authentication.
 
 
-The option is designed for enterprises where multiple services that support Kerberos authentication are running under different user accounts. For example, an IIS application that allows for Kerberos authentication can require the default SPN to be registered to a user account that differs from the computer account. In such cases, PowerShell remoting cannot use Kerberos to authenticate because it requires an SPN that is registered to the computer account. To resolve this problem, administrators can create different SPNs, such as by using Setspn.exe, that are registered to different user accounts and can distinguish between them by including the port number in the SPN.
+The option is designed for enterprises where multiple services that support Kerberos authentication are running under different user accounts. For example, an IIS application that allows for Kerberos authentication can require the default SPN to be registered to a user account that differs from the computer account. In such cases, PowerShell remoting cannot use Kerberos to authenticate because it requires an SPN that is registered to the computer account. To resolve this problem, administrators can create different SPNs, such as by using Setspn.exe , that are registered to different user accounts and can distinguish between them by including the port number in the SPN.
 
 
-For more information about Setspn.exe, see Setspn Overview (https://go.microsoft.com/fwlink/?LinkID=189413).
+For more information, see Setspn Overview (/previous-versions/windows/it-pro/windows-server-2003/cc773257(v=ws.10)).
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
@@ -19143,10 +18614,16 @@ If the output buffering mode is not set in the session or in the session configu
 If you omit this parameter, the value of the OutputBufferingMode of the session option object is None. A value of Block or Drop overrides the output buffering mode transport option set in the session configuration. The acceptable values for this parameter are:
 
 
-- Block. When the output buffer is full, execution is suspended until the buffer is clear. - Drop. When the output buffer is full, execution continues. As new output is saved, the oldest output is discarded. - None. No output buffering mode is specified.
+- Block. When the output buffer is full, execution is suspended until the buffer is clear.
 
 
-For more information about the output buffering mode transport option, see New-PSTransportOption.
+- Drop. When the output buffer is full, execution continues. As new output is saved, the oldest
+
+
+output is discarded. - None. No output buffering mode is specified.
+
+
+For more information about the output buffering mode transport option, see "New-PSTransportOption".
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `OutputBufferingMode`),
@@ -19172,12 +18649,12 @@ This parameter was introduced in Windows PowerShell 3.0.`, `OutputBufferingMode`
 
 The default value is None.
 
-For information about the values of this parameter, see ProxyAccessType Enumeration (https://msdn.microsoft.com/library/system.management.automation.remoting.proxyaccesstype)in the MSDN library.`, `ProxyAccessType`),
-            new Parameter(`ProxyAuthentication`, `Specifies the authentication method that is used for proxy resolution. The acceptable values for this parameter are: Basic,  Digest, and Negotiate. The default value is Negotiate.
+For information about the values of this parameter, see ProxyAccessType Enumeration (/dotnet/api/system.management.automation.remoting.proxyaccesstype?redirectedfrom=MSDN&view=powershellsdk-1.1.0).`, `ProxyAccessType`),
+            new Parameter(`ProxyAuthentication`, `Specifies the authentication method that is used for proxy resolution. The acceptable values for this parameter are: Basic , Digest , and Negotiate . The default value is Negotiate .
 
 
-For more information about the values of this parameter, see AuthenticationMechanism Enumeration (https://msdn.microsoft.com/library/system.management.automation.runspaces.authenticationmechanism)in the MSDN library.`, `AuthenticationMechanism`),
-            new Parameter(`ProxyCredential`, `Specifies the credentials to use for proxy authentication. Enter a variable that contains a PSCredential object or a command that gets a PSCredential object, such as a Get-Credential command. If this option is not set, no credentials are specified.`, `PSCredential`),
+For more information about the values of this parameter, see AuthenticationMechanism Enumeration (/dotnet/api/system.management.automation.runspaces.authenticationmechanism?redirectedfrom=MSDN&view=powershellsdk-1.1.0).`, `AuthenticationMechanism`),
+            new Parameter(`ProxyCredential`, `Specifies the credentials to use for proxy authentication. Enter a variable that contains a PSCredential object or a command that gets a PSCredential object, such as a "Get-Credential" command. If this option is not set, no credentials are specified.`, `PSCredential`),
             new Parameter(`SkipCACheck`, `Specifies that when it connects over HTTPS, the client does not validate that the server certificate is signed by a trusted certification authority (CA).
 
 
@@ -19190,10 +18667,16 @@ Use this option only for trusted computers.`, `SwitchParameter`),
             new Parameter(`UICulture`, `Specifies the UI culture to use for the session.
 
 
-Enter a culture name in <languagecode2>-<country/regioncode2> format, such as ja-jP, a variable that contains a CultureInfo object, or a command that gets a CultureInfo object, such as Get-Culture .
+Valid values include:
 
 
-The default value is $Null, and the UI culture that is set in the operating system when the session is created is used in the session.`, `CultureInfo`),
+- A culture name in "<languagecode2>-<country/regioncode2>" format, such as "ja-JP"
+
+
+- A variable that contains a CultureInfo object - A command that gets a CultureInfo object, such as "Get-Culture"
+
+
+The default value is "$null", and the UI culture that is set in the operating system when the session is created is used in the session.`, `CultureInfo`),
             new Parameter(`UseUTF16`, `Indicates that this cmdlet encodes the request in UTF16 format instead of UTF8 format.`, `SwitchParameter`),
         ],
         `Creates an object that contains advanced options for a PSSession.`,
@@ -19215,7 +18698,7 @@ The idle time-out value is of significant importance when the user intends to di
 The IdleTimeoutSec parameter corresponds to the IdleTimeoutMs property of a session configuration.
 
 
-Enter a value in seconds. The default value is 7200 (2 hours). The minimum value is 60 (1 minute). The maximum is the value of the IdleTimeout property of Shell objects in the WSMan configuration ("WSMan:\<ComputerName>\Shell\IdleTimeout"). The default value is 7200000 milliseconds (2 hours).
+Enter a value in seconds. The default value is 7200 (2 hours). The minimum value is 60 (1 minute). The maximum is the value of the IdleTimeout property of Shell objects in the WSMan configuration ("WSMan:\<ComputerName>\\Shell\\IdleTimeout"). The default value is 7200000 milliseconds (2 hours).
 
 
 If an idle time-out value is set in the session options and in the session configuration, value set in the session options takes precedence, but it cannot exceed the value of the MaxIdleTimeoutMs property of the session configuration. To set the value of the MaxIdleTimeoutMs property, use the MaxIdleTimeoutSec parameter.`, `Int32`),
@@ -19276,7 +18759,13 @@ Other session configurations have per-process time-out values. For example, the 
             new Parameter(`Credential`, `Specifies the account used by the service as the Service Logon Account (/windows/desktop/ad/about-service-logon-accounts).
 
 
-Type a user name, such as User01 or Domain01\User01, or enter a PSCredential object, such as one generated by the Get-Credential cmdlet. If you type a user name, this cmdlet prompts you for a password.`, `PSCredential`),
+Type a user name, such as User01 or Domain01\\User01 , or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, this cmdlet prompts you for a password.
+
+
+Credentials are stored in a PSCredential (/dotnet/api/system.management.automation.pscredential)object and the password is stored as a SecureString (/dotnet/api/system.security.securestring).
+
+
+> [!NOTE] > For more information about SecureString data protection, see > How secure is SecureString? (/dotnet/api/system.security.securestring#how-secure-is-securestring).`, `PSCredential`),
             new Parameter(`DependsOn`, `Specifies the names of other services upon which the new service depends. To enter multiple service names, use a comma to separate the names.`, `String[]`),
             new Parameter(`Description`, `Specifies a description of the service.`, `String`),
             new Parameter(`DisplayName`, `Specifies a display name for the service.`, `String`),
@@ -19284,10 +18773,10 @@ Type a user name, such as User01 or Domain01\User01, or enter a PSCredential obj
             new Parameter(`StartupType`, `Sets the startup type of the service. The acceptable values for this parameter are:
 
 
-- Manual. The service is started only manually, by a user, using the Service Control Manager, or by an application. - Automatic. The service is started or was started by the operating system, at system start-up. If an automatically started service depends on a manually started service, the manually started service is also started automatically at system startup. - Disabled. The service is disabled and cannot be started by a user or application.
+- Automatic - The service is started or was started by the operating system, at system start-up.   If an automatically started service depends on a manually started service, the manually started   service is also started automatically at system startup. - AutomaticDelayedStart - Starts shortly after the system boots. - Disabled - The service is disabled and cannot be started by a user or application. - InvalidValue - This value is not supported. Using this value results in an error. - Manual - The service is started only manually, by a user, using the Service Control Manager,   or by an application.
 
 
-The default value is Automatic.`, `ServiceStartupType`),
+The default value is Automatic .`, `ServiceStartupType`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
@@ -19319,10 +18808,10 @@ The default value is Automatic.`, `ServiceStartupType`),
             new Parameter(`Hours`, `Specifies the hours in the time span. The default value is zero.`, `Int32`),
             new Parameter(`Minutes`, `Specifies the minutes in the time span. The default value is 0.`, `Int32`),
             new Parameter(`Seconds`, `Specifies the length of the time span in seconds. The default value is 0.`, `Int32`),
-            new Parameter(`Start`, `Specifies the start of a time span. Enter a string that represents the date and time, such as "3/15/09" or a DateTime object, such as one from a Get-Date command. The default value is the current date and time.
+            new Parameter(`Start`, `Specifies the start of a time span. Enter a string that represents the date and time, such as "3/15/09" or a DateTime object, such as one from a "Get-Date" command. The default value is the current date and time.
 
 
-You can use Start or its alias, LastWriteTime. The LastWriteTime alias lets you pipe objects that have a LastWriteTime property, such as files in the file system (System.Io.FileIO), to the Start parameter of New-TimeSpan .`, `DateTime`),
+You can use Start or its alias, LastWriteTime . The LastWriteTime alias lets you pipe objects that have a LastWriteTime property, such as files in the file system "[System.Io.FileIO]", to the Start parameter of "New-TimeSpan".`, `DateTime`),
         ],
         `Creates a TimeSpan object.`,
         `New-TimeSpan [-Days <Int32>] [-Hours <Int32>] [-Minutes <Int32>] [-Seconds <Int32>] [<CommonParameters>]
@@ -19379,7 +18868,7 @@ When a variable is private, it does not appear in lists of variables, such as th
         }
     ),
     new ConsoleCommand(
-        `New-VFD`,
+        `New-WindowsCustomImage`,
         [
 
         ],
@@ -19391,79 +18880,7 @@ When a variable is private, it does not appear in lists of variables, such as th
         }
     ),
     new ConsoleCommand(
-        `New-VHD`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `New-VM`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `New-VMGroup`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `New-VMReplicationAuthorizationEntry`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `New-VMResourcePool`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `New-VMSan`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `New-VMSwitch`,
+        `New-WindowsImage`,
         [
 
         ],
@@ -19476,6 +18893,18 @@ When a variable is private, it does not appear in lists of variables, such as th
     ),
     new ConsoleCommand(
         `New-WinEvent`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `New-WinUserLanguageList`,
         [
 
         ],
@@ -19511,7 +18940,7 @@ When a variable is private, it does not appear in lists of variables, such as th
         }
     ),
     new ConsoleCommand(
-        `Optimize-VHD`,
+        `Optimize-AppxProvisionedPackages`,
         [
 
         ],
@@ -19523,7 +18952,7 @@ When a variable is private, it does not appear in lists of variables, such as th
         }
     ),
     new ConsoleCommand(
-        `Optimize-VHDSet`,
+        `Optimize-WindowsImage`,
         [
 
         ],
@@ -19538,7 +18967,7 @@ When a variable is private, it does not appear in lists of variables, such as th
         `Out-Default`,
         [
             new Parameter(`InputObject`, `Accepts input to the cmdlet.`, `PSObject`),
-            new Parameter(`Transcript`, ``, `SwitchParameter`),
+            new Parameter(`Transcript`, `Determines whether the output should be sent to PowerShell's transcription services.`, `SwitchParameter`),
         ],
         `Sends the output to the default formatter and to the default output cmdlet.`,
         `Out-Default [-InputObject <PSObject>] [-Transcript] [<CommonParameters>]`,
@@ -19550,62 +18979,31 @@ When a variable is private, it does not appear in lists of variables, such as th
     new ConsoleCommand(
         `Out-File`,
         [
-            new Parameter(`Append`, `Adds the output to the end of an existing file, instead of replacing the file contents.`, `SwitchParameter`),
-            new Parameter(`Encoding`, `Specifies the type of character encoding used in the file. The acceptable values for this parameter are:
+            new Parameter(`Append`, `Adds the output to the end of an existing file.`, `SwitchParameter`),
+            new Parameter(`Encoding`, `Specifies the type of encoding for the target file. The default value is UTF8NoBOM .
 
 
-- Unknown
+The acceptable values for this parameter are as follows:
 
 
-- String
+- ASCII : Uses the encoding for the ASCII (7-bit) character set. - BigEndianUnicode : Encodes in UTF-16 format using the big-endian byte order. - OEM : Uses the default encoding for MS-DOS and console programs. - Unicode : Encodes in UTF-16 format using the little-endian byte order. - UTF7 : Encodes in UTF-7 format. - UTF8 : Encodes in UTF-8 format. - UTF8BOM : Encodes in UTF-8 format with Byte Order Mark (BOM) - UTF8NoBOM : Encodes in UTF-8 format without Byte Order Mark (BOM) - UTF32 : Encodes in UTF-32 format.
 
 
-- Unicode
-
-
-- BigEndianUnicode
-
-
-- UTF8
-
-
-- UTF7
-
-
-- UTF32
-
-
-- ASCII
-
-
-- Default
-
-
-- OEM
-
-
-
-
-Unicode is the default.
-
-
-"Default" uses the encoding of the system's current ANSI code page.
-
-"OEM" uses the current original equipment manufacturer code page identifier for the operating system.`, `Encoding`),
+Beginning with PowerShell 6.2, the Encoding parameter also allows numeric IDs of registered code pages (like "-Encoding 1251") or string names of registered code pages (like "-Encoding "windows-1251""). For more information, see the .NET documentation for Encoding.CodePage (/dotnet/api/system.text.encoding.codepage?view=netcore-2.2).`, `Encoding`),
             new Parameter(`FilePath`, `Specifies the path to the output file.`, `String`),
-            new Parameter(`Force`, `Indicates that the cmdlet overwrites an existing read-only file. Even using the Force parameter, the cmdlet cannot override security restrictions.`, `SwitchParameter`),
+            new Parameter(`Force`, `Overrides the read-only attribute and overwrites an existing read-only file. The Force parameter does not override security restrictions.`, `SwitchParameter`),
             new Parameter(`InputObject`, `Specifies the objects to be written to the file. Enter a variable that contains the objects or type a command or expression that gets the objects.`, `PSObject`),
-            new Parameter(`LiteralPath`, `Specifies the path to the output file. Unlike FilePath , the value of the LiteralPath parameter is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String`),
-            new Parameter(`NoClobber`, `Indicates that the cmdlet will not overwrite an existing file. By default, if a file exists in the specified path, "Out-File" overwrites the file without warning. If both Append and NoClobber are used, the output is appended to the existing file.`, `SwitchParameter`),
+            new Parameter(`LiteralPath`, `Specifies the path to the output file. The LiteralPath parameter is used exactly as it is typed. Wildcard characters are not accepted. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences. For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String`),
+            new Parameter(`NoClobber`, `NoClobber prevents an existing file from being overwritten and displays a message that the file already exists. By default, if a file exists in the specified path, "Out-File" overwrites the file without warning.`, `SwitchParameter`),
             new Parameter(`NoNewline`, `Specifies that the content written to the file does not end with a newline character. The string representations of the input objects are concatenated to form the output. No spaces or newlines are inserted between the output strings. No newline is added after the last output string.`, `SwitchParameter`),
-            new Parameter(`Width`, `Specifies the number of characters in each line of output. Any additional characters are truncated, not wrapped. If you omit this parameter, the width is determined by the characteristics of the host. The default for the Windows PowerShell console is 80 characters.`, `Int32`),
+            new Parameter(`Width`, `Specifies the number of characters in each line of output. Any additional characters are truncated, not wrapped. If this parameter is not used, the width is determined by the characteristics of the host. The default for the PowerShell console is 80 characters.`, `Int`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
         `Sends output to a file.`,
-        `Out-File [-FilePath] <String> [[-Encoding] <Encoding>] [-Append] [-Force] [-InputObject <PSObject>] [-NoClobber] [-NoNewline] [-Width <Int32>] [-Confirm] [-WhatIf] [<CommonParameters>]
+        `Out-File [-FilePath] <String> [[-Encoding] {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Append] [-Force] [-InputObject <PSObject>] [-NoClobber] [-NoNewline] [-Width <Int>] [-Confirm] [-WhatIf] [<CommonParameters>]
 
-Out-File [[-Encoding] <Encoding>] [-Append] [-Force] [-InputObject <PSObject>] -LiteralPath <String> [-NoClobber] [-NoNewline] [-Width <Int32>] [-Confirm] [-WhatIf] [<CommonParameters>]`,
+Out-File [[-Encoding] {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Append] [-Force] [-InputObject <PSObject>] -LiteralPath <String> [-NoClobber] [-NoNewline] [-Width <Int>] [-Confirm] [-WhatIf] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -19615,7 +19013,13 @@ Out-File [[-Encoding] <Encoding>] [-Append] [-Force] [-InputObject <PSObject>] -
         `Out-Host`,
         [
             new Parameter(`InputObject`, `Specifies the objects that are written to the console. Enter a variable that contains the objects, or type a command or expression that gets the objects.`, `PSObject`),
-            new Parameter(`Paging`, `Indicates that this cmdlet displays one page of output at a time, and waits for user input before it displays the remaining pages, much like the traditional more command. By default, all of the output is displayed on a single page. The page size is determined by the characteristics of the host.`, `SwitchParameter`),
+            new Parameter(`Paging`, `Indicates that "Out-Host" displays one page of output at a time, and waits for user input before the remaining pages are displayed. By default, all the output is displayed on a single page. The page size is determined by the characteristics of the host.
+
+
+Press the <kbd>Space</kbd> bar to display the next page of output or the <kbd>Enter</kbd> key to view the next line of output. Press <kbd>Q</kbd> to quit. Paging is similar to the more command.
+
+
+> [!NOTE] > The Paging parameter isn't supported by the PowerShell ISE host.`, `SwitchParameter`),
         ],
         `Sends output to the command line.`,
         `Out-Host [-InputObject <PSObject>] [-Paging] [<CommonParameters>]`,
@@ -19640,12 +19044,12 @@ Out-File [[-Encoding] <Encoding>] [-Append] [-Force] [-InputObject <PSObject>] -
         `Out-String`,
         [
             new Parameter(`InputObject`, `Specifies the objects to be written to a string. Enter a variable that contains the objects, or type a command or expression that gets the objects.`, `PSObject`),
-            new Parameter(`NoNewline`, `Removes all newlines from formatter generated output. Note that newlines present as part of string objects are preserved`, `SwitchParameter`),
-            new Parameter(`Stream`, `Indicates that the cmdlet sends the strings for each object separately. By default, the strings for each object are accumulated and sent as a single string.
+            new Parameter(`NoNewline`, `Removes all newlines from output generated by the PowerShell formatter. Newlines that are part of the string objects are preserved.
 
 
-To use the Stream parameter, type "-Stream" or its alias, "ost".`, `SwitchParameter`),
-            new Parameter(`Width`, `Specifies the number of characters in each line of output. Any additional characters are truncated, not wrapped. The Width parameter applies only to objects that are being formatted. If you omit this parameter, the width is determined by the characteristics of the host program. The default value for the PowerShell console is 80 (characters).`, `Int32`),
+This parameter was introduced in PowerShell 6.0.`, `SwitchParameter`),
+            new Parameter(`Stream`, `Indicates that the cmdlet sends a separate string for each object. By default, the strings for each object are accumulated and sent as a single string.`, `SwitchParameter`),
+            new Parameter(`Width`, `Specifies the number of characters in each line of output. Any additional characters are truncated, not wrapped. The Width parameter applies only to objects that are being formatted. If you omit this parameter, the width is determined by the characteristics of the host program. The default value for the PowerShell console is 80 characters.`, `Int32`),
         ],
         `Sends objects to the host as a series of strings.`,
         `Out-String [-InputObject <PSObject>] [-NoNewline] [-Width <Int32>] [<CommonParameters>]
@@ -19687,7 +19091,7 @@ Without this parameter, Pop-Location pops a location from the current location s
     new ConsoleCommand(
         `Push-Location`,
         [
-            new Parameter(`LiteralPath`, `Specifies the path to the new location. Unlike the Path parameter, the value of the LiteralPath parameter is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell Windows PowerShell not to interpret any characters as escape sequences.`, `String`),
+            new Parameter(`LiteralPath`, `Specifies the path to the new location. Unlike the Path parameter, the value of the LiteralPath parameter is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String`),
             new Parameter(`PassThru`, `Passes an object representing the location to the pipeline. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
             new Parameter(`Path`, `Changes your location to the location specified by this path after it adds (pushes) the current location onto the top of the stack. Enter a path to any location whose provider supports this cmdlet. Wildcards are permitted. The parameter name is optional.`, `String`),
             new Parameter(`StackName`, `Specifies the location stack to which the current location is added. Enter a location stack name. If the stack does not exist, "Push-Location" creates it.
@@ -19726,7 +19130,7 @@ When you use this parameter, the output of the Read-Host cmdlet is a SecureStrin
     new ConsoleCommand(
         `Receive-Job`,
         [
-            new Parameter(`AutoRemoveJob`, `Indicates that this cmdlet deletes the job after it returns the job results. If the job has more results, the job is still deleted, but Receive-Job displays a message.
+            new Parameter(`AutoRemoveJob`, `Indicates that this cmdlet deletes the job after it returns the job results. If the job has more results, the job is still deleted, but "Receive-Job" displays a message.
 
 
 This parameter works only on custom job types. It is designed for instances of job types that save the job or the type outside of the session, such as instances of scheduled jobs.
@@ -19736,39 +19140,77 @@ This parameter cannot be used without the Wait parameter.
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
-            new Parameter(`ComputerName`, `Specifies an array of names of computers. This cmdlet gets the results of jobs that were run on the specified computers. Enter the computer names. Wildcard characters are supported. The default is all jobs in the current session.
+            new Parameter(`ComputerName`, `Specifies an array of names of computers.
 
 
-This parameter selects from among the job results that are stored on the local computer. It does not get data from remote computers. To get job results that are stored on remote computers, use the Invoke-Command cmdlet to run a Receive-Job command remotely.`, `String[]`),
-            new Parameter(`Force`, `Indicates that this cmdlet continues waiting if jobs are in the Suspended or Disconnected state. By default, the Wait parameter of Receive-Job returns, or terminates the wait, when jobs are in one of the following states:  Completed, Failed, Stopped, Suspended, or Disconnected.
+This parameter selects from among the job results that are stored on the local computer. It does not get data for jobs run on remote computers. To get job results that are stored on remote computers, use the "Invoke-Command" cmdlet to run a "Receive-Job" command remotely.`, `String[]`),
+            new Parameter(`Force`, `Indicates that this cmdlet continues waiting if jobs are in the Suspended or Disconnected state. By default, the Wait parameter of "Receive-Job" returns, or terminates the wait, when jobs are in one of the following states:
+
+
+- Completed
+
+
+- Failed
+
+
+- Stopped
+
+
+- Suspended
+
+
+- Disconnected.
+
+
 
 
 The Force parameter is valid only when the Wait parameter is also used in the command.
 
-
 This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
-            new Parameter(`Id`, `Specifies an array of IDs. This cmdlet gets the results of jobs with the specified IDs. The default is all jobs in the current session.
+            new Parameter(`Id`, `Specifies an array of IDs. This cmdlet gets the results of jobs with the specified IDs.
 
 
-The ID is an integer that uniquely identifies the job in the current session. It is easier to remember and type than the instance ID, but it is unique only in the current session. You can type one or more IDs separated by commas. To find the ID of a job, type "Get-Job" without parameters.`, `Int32[]`),
-            new Parameter(`InstanceId`, `Specifies an array of instance IDs. This cmdlet gets the results of jobs with the specified instance IDs. The default is all jobs in the current session.
+The ID is an integer that uniquely identifies the job in the current session. It is easier to remember and type than the instance ID, but it is unique only in the current session. You can type one or more IDs separated by commas. To find the ID of a job, use "Get-Job".`, `Int32[]`),
+            new Parameter(`InstanceId`, `Specifies an array of instance IDs. This cmdlet gets the results of jobs with the specified instance IDs.
 
 
-An instance ID is a GUID that uniquely identifies the job on the computer. To find the instance ID of a job, use the Get-Job cmdlet.`, `Guid[]`),
-            new Parameter(`Job`, `Specifies the job for which results are being retrieved. This parameter is required in a Receive-Job command. Enter a variable that contains the job or a command that gets the job. You can also pipe a job object to Receive-Job .`, `Job[]`),
-            new Parameter(`Keep`, `Indicates that this cmdlet saves the job results in the system, even after you have received them. By default, the job results are deleted when they are retrieved.
+An instance ID is a GUID that uniquely identifies the job on the computer. To find the instance ID of a job, use the "Get-Job" cmdlet.`, `Guid[]`),
+            new Parameter(`Job`, `Specifies the job for which results are being retrieved.
 
 
-To delete the results, use Receive-Job to receive them again without specifying Keep parameter, close the session, or use the Remove-Job cmdlet to delete the job from the session.`, `SwitchParameter`),
-            new Parameter(`Location`, `Specifies an array of locations. This cmdlet gets only the results of jobs in the specified locations. The default is all jobs in the current session.`, `String[]`),
-            new Parameter(`Name`, `Specifies an array of friendly names. This cmdlet gets the results of jobs that have the specified names. Wildcard characters are supported. The default is all jobs in the current session.`, `String[]`),
-            new Parameter(`NoRecurse`, `Indicates that this cmdlet gets results only from the specified job. By default, Receive-Job also gets the results of all child jobs of the specified job.`, `SwitchParameter`),
-            new Parameter(`Session`, `Specifies an array of sessions. This cmdlet gets the results of jobs that were run in the specified PowerShell session ( PSSession ). Enter a variable that contains the PSSession or a command that gets the PSSession , such as a Get-PSSession command. The default is all jobs in the current session.`, `PSSession[]`),
-            new Parameter(`Wait`, `Indicates that this cmdlet suppresses the command prompt until all job results are received. By default, Receive-Job immediately returns the available results.
+Enter a variable that contains the job or a command that gets the job. You can also pipe a job object to "Receive-Job".`, `Job[]`),
+            new Parameter(`Keep`, `Indicates that this cmdlet saves the aggregated stream data in the system, even after you have received them. By default, aggregated stream data is erased after viewed with "Receive-Job".
 
 
-By default, the Wait parameter waits until the job is in one of the following states: Completed, Failed, Stopped, Suspended, or Disconnected. To direct the Wait parameter to continue waiting if the job state is Suspended or Disconnected, use the Force parameter together with the Wait parameter.
+Closing the session, or removing the job with the "Remove-Job" cmdlet also deletes aggregated stream data.`, `SwitchParameter`),
+            new Parameter(`Location`, `Specifies an array of locations. This cmdlet gets only the results of jobs in the specified locations.`, `String[]`),
+            new Parameter(`Name`, `Specifies an array of friendly names. This cmdlet gets the results of jobs that have the specified names. Wildcard characters are supported.`, `String[]`),
+            new Parameter(`NoRecurse`, `Indicates that this cmdlet gets results only from the specified job. By default, "Receive-Job" also gets the results of all child jobs of the specified job.`, `SwitchParameter`),
+            new Parameter(`Session`, `Specifies an array of sessions. This cmdlet gets the results of jobs that were run in the specified PowerShell session ( PSSession ). Enter a variable that contains the PSSession or a command that gets the PSSession , such as a "Get-PSSession" command.`, `PSSession[]`),
+            new Parameter(`Wait`, `Indicates that this cmdlet suppresses the command prompt until all job results are received. By default, "Receive-Job" immediately returns the available results.
 
+
+By default, the Wait parameter waits until the job is in one of the following states:
+
+
+- Completed
+
+
+- Failed
+
+
+- Stopped
+
+
+- Suspended
+
+
+- Disconnected.
+
+
+
+
+To direct the Wait parameter to continue waiting if the job state is Suspended or Disconnected, use the Force parameter together with the Wait parameter.
 
 This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
             new Parameter(`WriteEvents`, `Indicates that this cmdlet reports changes in the job state while it waits for the job to finish.
@@ -19809,18 +19251,21 @@ Receive-Job [-Name] <String[]> [-AutoRemoveJob] [-Force] [-Keep] [-NoRecurse] [-
             new Parameter(`AllowRedirection`, `Indicates that this cmdlet allows redirection of this connection to an alternate Uniform Resource Identifier (URI).
 
 
-When you use the ConnectionURI parameter, the remote destination can return an instruction to redirect to a different URI. By default, PowerShell does not redirect connections, but you can use this parameter to enable it to redirect the connection.
+When you use the ConnectionURI parameter, the remote destination can return an instruction to redirect to a different URI. By default, PowerShell doesn't redirect connections, but you can use this parameter to enable it to redirect the connection.
 
 
-You can also limit the number of times the connection is redirected by changing the MaximumConnectionRedirectionCount session option value. Use the MaximumRedirection parameter of the New-PSSessionOption cmdlet or set the MaximumConnectionRedirectionCount property of the $PSSessionOption preference variable. The default value is 5.`, `SwitchParameter`),
+You can also limit the number of times the connection is redirected by changing the MaximumConnectionRedirectionCount session option value. Use the MaximumRedirection parameter of the "New-PSSessionOption" cmdlet or set the MaximumConnectionRedirectionCount property of the "$PSSessionOption" preference variable. The default value is 5.`, `SwitchParameter`),
             new Parameter(`ApplicationName`, `Specifies an application. This cmdlet connects only to sessions that use the specified application.
 
 
-Enter the application name segment of the connection URI. For example, in the following connection URI, the application name is WSMan: "http://localhost:5985/WSMAN". The application name of a session is stored in the Runspace.ConnectionInfo.AppName property of the session.
+Enter the application name segment of the connection URI. For example, in the following connection URI, WSMan is the application name: "http://localhost:5985/WSMAN".
 
 
-The value of this parameter is used to select and filter sessions. It does not change the application that the session uses.`, `String`),
-            new Parameter(`Authentication`, `Specifies the mechanism that is used to authenticate the credentials of the user in the command to reconnect to the disconnected session. The acceptable values for this parameter are:
+The application name of a session is stored in the Runspace.ConnectionInfo.AppName property of the session.
+
+
+The parameter's value is used to select and filter sessions. It doesn't change the application that the session uses.`, `String`),
+            new Parameter(`Authentication`, `Specifies the mechanism that's used to authenticate the user credentials in the command to reconnect to a disconnected session. The acceptable values for this parameter are:
 
 
 - Default
@@ -19849,37 +19294,43 @@ The value of this parameter is used to select and filter sessions. It does not c
 The default value is Default.
 
 
-For more information about the values of this parameter, see AuthenticationMechanism Enumeration (https://msdn.microsoft.com/library/system.management.automation.runspaces.authenticationmechanism)in the MSDN library.
+For more information about the values of this parameter, see AuthenticationMechanism Enumeration (/dotnet/api/system.management.automation.runspaces.authenticationmechanism).
 
-CAUTION: Credential Security Support Provider (CredSSP) authentication, in which the user credentials are passed to a remote computer to be authenticated, is designed for commands that require authentication on more than one resource, such as accessing a remote network share. This mechanism increases the security risk of the remote operation. If the remote computer is compromised, the credentials that are passed to it can be used to control the network session.`, `AuthenticationMechanism`),
+> [!CAUTION] > Credential Security Support Provider (CredSSP) authentication, in which the user credentials are > passed to a remote computer to be authenticated, is designed for commands that require > authentication on more than one resource, such as accessing a remote network share. This mechanism > increases the security risk of the remote operation. If the remote computer is compromised, the > credentials that are passed to it can be used to control the network session.`, `AuthenticationMechanism`),
             new Parameter(`CertificateThumbprint`, `Specifies the digital public key certificate (X509) of a user account that has permission to connect to the disconnected session. Enter the certificate thumbprint of the certificate.
 
 
-Certificates are used in client certificate-based authentication. They can be mapped only to local user accounts. They do not work with domain accounts.
+Certificates are used in client certificate-based authentication. Certificates can be mapped only to local user accounts, and don't work with domain accounts.
 
 
-To get a certificate thumbprint, use a Get-Item or Get-ChildItem command in the PowerShell Cert: drive.`, `String`),
-            new Parameter(`ComputerName`, `Specifies the computer on which the disconnected session is stored. Sessions are stored on the computer that is at the server-side, or receiving end of a connection. The default is the local computer.
+To get a certificate thumbprint, use a "Get-Item" or "Get-ChildItem" command in the PowerShell "Cert:" drive.`, `String`),
+            new Parameter(`ComputerName`, `Specifies the computer on which the disconnected session is stored. Sessions are stored on the computer that's at the server-side, or receiving end of a connection. The default is the local computer.
 
 
-Type the NetBIOS name, an IP address, or a fully qualified domain name of one computer. Wildcard characters are not permitted. To specify the local computer, type the computer name, localhost, or a dot (.)`, `String`),
+Type the NetBIOS name, an IP address, or a fully qualified domain name (FQDN) of one computer. Wildcard characters aren't permitted. To specify the local computer, type the computer name, a dot ("."), "$env:COMPUTERNAME", or localhost.`, `String`),
             new Parameter(`ConfigurationName`, `Specifies the name of a session configuration. This cmdlet connects only to sessions that use the specified session configuration.
 
 
-Enter a configuration name or the fully qualified resource URI for a session configuration. If you specify only the configuration name, the following schema URI is prepended: http://schemas.microsoft.com/powershell. The configuration name of a session is stored in the ConfigurationName property of the session.
+Enter a configuration name or the fully qualified resource URI for a session configuration. If you specify only the configuration name, the following schema URI is prepended:
 
 
-The value of this parameter is used to select and filter sessions. It does not change the session configuration that the session uses.
+"http://schemas.microsoft.com/powershell".
 
 
-For more information about session configurations, see about_Session_Configurations (About/about_Session_Configurations.md).`, `String`),
+The configuration name of a session is stored in the ConfigurationName property of the session.
+
+
+The parameter's value is used to select and filter sessions. It doesn't change the session configuration that the session uses.
+
+
+For more information about session configurations, see about_Session_Configurations (./About/about_Session_Configurations.md).`, `String`),
             new Parameter(`ConnectionUri`, `Specifies a URI that defines the connection endpoint that is used to reconnect to the disconnected session.
 
 
-The URI must be fully qualified. The format of this string is as follows:
+The URI must be fully qualified. The string's format is as follows:
 
 
-<Transport>://<ComputerName>:<Port>/<ApplicationName>
+"<Transport>://<ComputerName>:<Port>/<ApplicationName>"
 
 
 The default value is as follows:
@@ -19888,87 +19339,87 @@ The default value is as follows:
 "http://localhost:5985/WSMAN"
 
 
-"http://localhost:5985/WSMAN"
+If you don't specify a connection URI, you can use the UseSSL , ComputerName , Port , and ApplicationName parameters to specify the connection URI values.
 
 
-If you do not specify a connection URI, you can use the UseSSL , ComputerName , Port , and ApplicationName parameters to specify the connection URI values.
-
-
-Valid values for the Transport segment of the URI are HTTP and HTTPS. If you specify a connection URI with a Transport segment, but do not specify a port, the session is created with standards ports: 80 for HTTP and 443 for HTTPS. To use the default ports for Windows PowerShell remoting, specify port 5985 for HTTP or 5986 for HTTPS.
+Valid values for the Transport segment of the URI are HTTP and HTTPS. If you specify a connection URI with a Transport segment, but don't specify a port, the session is created with standard ports: 80 for HTTP and 443 for HTTPS. To use the default ports for PowerShell remoting, specify port 5985 for HTTP or 5986 for HTTPS.
 
 
 If the destination computer redirects the connection to a different URI, PowerShell prevents the redirection unless you use the AllowRedirection parameter in the command.`, `Uri`),
             new Parameter(`Credential`, `Specifies a user account that has permission to connect to the disconnected session. The default is the current user.
 
 
-Type a user name, such as User01 or Domain01\User01. Or, enter a PSCredential object, such as one generated by the Get-Credential cmdlet. If you type a user name, this cmdlet prompts you for a password.`, `PSCredential`),
-            new Parameter(`Id`, `Specifies the ID of the disconnected session. The Id parameter works only when the disconnected session was previously connected to the current session.
+Type a user name, such as User01 or Domain01\\User01 , or enter a PSCredential object generated by the "Get-Credential" cmdlet. If you type a user name, you're prompted to enter the password.
 
 
-This parameter is valid, but not effective, when the session is stored on the local computer, but was not connected to the current session.`, `Int32`),
-            new Parameter(`InstanceId`, `Specifies the instance ID of the disconnected session.
+Credentials are stored in a PSCredential (/dotnet/api/system.management.automation.pscredential)object and the password is stored as a SecureString (/dotnet/api/system.security.securestring).
 
 
-The instance ID is a GUID that uniquely identifies a PSSession on a local or remote computer.
+> [!NOTE] > For more information about SecureString data protection, see > How secure is SecureString? (/dotnet/api/system.security.securestring#how-secure-is-securestring).`, `PSCredential`),
+            new Parameter(`Id`, `Specifies the ID of a disconnected session. The Id parameter works only when the disconnected session was previously connected to the current session.
 
 
-The instance ID is stored in the InstanceID property of the PSSession .`, `Guid`),
-            new Parameter(`JobName`, `Specifies a friendly name for the job that Receive-PSSession returns. Receive-PSSession returns a job when the value of the OutTarget parameter is Job or the job that is running in the disconnected session was started in the current session.
+This parameter is valid, but not effective, when the session is stored on the local computer, but wasn't connected to the current session.`, `Int32`),
+            new Parameter(`InstanceId`, `Specifies the instance ID of the disconnected session. The instance ID is a GUID that uniquely identifies a PSSession on a local or remote computer. The instance ID is stored in the InstanceID property of the PSSession .`, `Guid`),
+            new Parameter(`JobName`, `Specifies a friendly name for the job that "Receive-PSSession" returns.
 
 
-If the job that is running in the disconnected session was started in the current session, PowerShell reuses the original job object in the session and ignores the value of the JobName parameter.
+"Receive-PSSession" returns a job when the value of the OutTarget parameter is Job or the job that's running in the disconnected session was started in the current session.
 
 
-If the job that is running in the disconnected session was started in a different session, PowerShell creates a new job object. It uses a default name, but you can use this parameter to change the name.
+If the job that's running in the disconnected session was started in the current session, PowerShell reuses the original job object in the session and ignores the value of the JobName parameter.
 
 
-If the default value or explicit value of the OutTarget parameter is not Job, the command succeeds, but the JobName parameter has no effect.`, `String`),
+If the job that's running in the disconnected session was started in a different session, PowerShell creates a new job object. It uses a default name, but you can use this parameter to change the name.
+
+
+If the default value or explicit value of the OutTarget parameter isn't Job, the command succeeds, but the JobName parameter has no effect.`, `String`),
             new Parameter(`Name`, `Specifies the friendly name of the disconnected session.`, `String`),
             new Parameter(`OutTarget`, `Determines how the session results are returned. The acceptable values for this parameter are:
 
 
-- Job. Returns the results asynchronously in a job object. You can use the JobName parameter to specify a name or new name for the job. - Host. Returns the results to the command line (synchronously). If the command is being resumed or the results consist of a large number of objects, the response might be delayed.
+- Job . Returns the results asynchronously in a job object. You can use the JobName parameter   to specify a name or new name for the job. - Host . Returns the results to the command line (synchronously). If the command is being resumed   or the results consist of a large number of objects, the response might be delayed.
 
 
-The default value of the OutTarget parameter is Host. However, if the command that is being received in disconnected session was started in the current session, the default value of the OutTarget parameter is the form in which the command was started. If the command was started as a job, it is returned as a job by default. Otherwise, it is returned to the host program by default.
+The default value of the OutTarget parameter is Host. If the command that's being received in a disconnected session was started in the current session, the default value of the OutTarget parameter is the form in which the command was started. If the command was started as a job, by default, it's returned as a job. Otherwise, it's returned to the host program by default.
 
 
 Typically, the host program displays returned objects at the command line without delay, but this behavior can vary.`, `OutTarget`),
-            new Parameter(`Port`, `Specifies the network port on the remote computer that is used to reconnect to the session. To connect to a remote computer, the remote computer must be listening on the port that the connection uses. The default ports are 5985, which is the WinRM port for HTTP, and 5986, which is the WinRM port for HTTPS.
+            new Parameter(`Port`, `Specifies the remote computer's network port that's used to reconnect to the session. To connect to a remote computer, it must be listening on the port that the connection uses. The default ports are 5985, which is the WinRM port for HTTP, and 5986, which is the WinRM port for HTTPS.
 
 
-Before using an alternate port, you must configure the WinRM listener on the remote computer to listen at that port. To configure the listener, type the following two commands at the PowerShell prompt:
+Before using an alternate port, you must configure the WinRM listener on the remote computer to listen on that port. To configure the listener, type the following two commands at the PowerShell prompt:
 
 
-"Remove-Item -Path WSMan:\Localhost\listener\listener* -Recurse"
+"Remove-Item -Path WSMan:\\Localhost\\listener\\listener* -Recurse"
 
 
-"New-Item -Path WSMan:\Localhost\listener -Transport http -Address * -Port <port-number>"
+"New-Item -Path WSMan:\\Localhost\\listener -Transport http -Address * -Port <port-number>"
 
 
-Do not use the Port parameter unless you must. The port that is set in the command applies to all computers or sessions on which the command runs. An alternate port setting might prevent the command from running on all computers.`, `Int32`),
-            new Parameter(`Session`, `Specifies the disconnected session. Enter a variable that contains the PSSession or a command that creates or gets the PSSession , such as a Get-PSSession command.`, `PSSession`),
-            new Parameter(`SessionOption`, `Specifies advanced options for the session. Enter a SessionOption object, such as one that you create by using the New-PSSessionOption cmdlet, or a hash table in which the keys are session option names and the values are session option values.
+Don't use the Port parameter unless it's necessary. The port that's set in the command applies to all computers or sessions on which the command runs. An alternate port setting might prevent the command from running on all computers.`, `Int32`),
+            new Parameter(`Session`, `Specifies the disconnected session. Enter a variable that contains the PSSession or a command that creates or gets the PSSession , such as a "Get-PSSession" command.`, `PSSession`),
+            new Parameter(`SessionOption`, `Specifies advanced options for the session. Enter a SessionOption object, such as one that you create by using the "New-PSSessionOption" cmdlet, or a hash table in which the keys are session option names and the values are session option values.
 
 
-The default values for the options are determined by the value of the $PSSessionOption preference variable, if it is set. Otherwise, the default values are established by options set in the session configuration.
+The default values for the options are determined by the value of the "$PSSessionOption" preference variable, if it's set. Otherwise, the default values are established by options set in the session configuration.
 
 
-The session option values take precedence over default values for sessions set in the $PSSessionOption preference variable and in the session configuration. However, they do not take precedence over maximum values, quotas or limits set in the session configuration.
+The session option values take precedence over default values for sessions set in the "$PSSessionOption" preference variable and in the session configuration. However, they don't take precedence over maximum values, quotas, or limits set in the session configuration.
 
 
-For a description of the session options that includes the default values, see New-PSSessionOption. For information about the $PSSessionOption preference variable, see about_Preference_Variables (About/about_Preference_Variables.md). For more information about session configurations, see about_Session_Configurations (About/about_Session_Configurations.md).`, `PSSessionOption`),
-            new Parameter(`UseSSL`, `Indicates that this cmdlet uses the Secure Sockets Layer (SSL) protocol to connect to the disconnected session. By default, SSL is not used.
+For a description of the session options that includes the default values, see "New-PSSessionOption". For information about the $PSSessionOption preference variable, see about_Preference_Variables (./About/about_Preference_Variables.md). For more information about session configurations, see about_Session_Configurations (./About/about_Session_Configurations.md).`, `PSSessionOption`),
+            new Parameter(`UseSSL`, `Indicates that this cmdlet uses the Secure Sockets Layer (SSL) protocol to connect to the disconnected session. By default, SSL isn't used.
 
 
 WS-Management encrypts all PowerShell content transmitted over the network. UseSSL is an additional protection that sends the data across an HTTPS connection instead of an HTTP connection.
 
 
-If you use this parameter, but SSL is not available on the port that is used for the command, the command fails.`, `SwitchParameter`),
+If you use this parameter and SSL isn't available on the port that's used for the command, the command fails.`, `SwitchParameter`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
-            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
+            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet isn't run.`, `SwitchParameter`),
         ],
-        `Gets results of commands in disconnected sessions.`,
+        `Gets results of commands in disconnected sessions`,
         `Receive-PSSession [-ConnectionUri] <Uri> [-AllowRedirection] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-CertificateThumbprint <String>] [-ConfigurationName <String>] [-Credential <PSCredential>] [-JobName <String>] -Name <String> [-OutTarget {Default | Host | Job}] [-SessionOption <PSSessionOption>] [-Confirm] [-WhatIf] [<CommonParameters>]
 
 Receive-PSSession [-ConnectionUri] <Uri> [-AllowRedirection] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-CertificateThumbprint <String>] [-ConfigurationName <String>] [-Credential <PSCredential>] -InstanceId <Guid> [-JobName <String>] [-OutTarget {Default | Host | Job}] [-SessionOption <PSSessionOption>] [-Confirm] [-WhatIf] [<CommonParameters>]
@@ -19992,13 +19443,31 @@ Receive-PSSession [-Session] <PSSession> [-JobName <String>] [-OutTarget {Defaul
     new ConsoleCommand(
         `Register-ArgumentCompleter`,
         [
-            new Parameter(`CommandName`, `Specifies the name of the command as an array.`, `String[]`),
+            new Parameter(`CommandName`, `Specifies the name of the commands as an array.`, `String[]`),
             new Parameter(`Native`, `Indicates that the argument completer is for a native command where PowerShell cannot complete parameter names.`, `SwitchParameter`),
-            new Parameter(`ParameterName`, `Specifies the name of the parameter whose argument is being completed.`, `String`),
-            new Parameter(`ScriptBlock`, `Specifies the commands to run. Enclose the commands in braces ( { } ) to create a script block. This parameter is required.`, `ScriptBlock`),
+            new Parameter(`ParameterName`, `Specifies the name of the parameter whose argument is being completed. The parameter name specified cannot be an enumerated value, such as the ForegroundColor parameter of the "Write-Host" cmdlet.
+
+
+For more information on enums, see about_Enum (./About/about_Enum.md).`, `String`),
+            new Parameter(`ScriptBlock`, `Specifies the commands to run to perform tab completion. The script block you provide should return the values that complete the input. The script block must unroll the values using the pipeline ("ForEach-Object", "Where-Object", etc.), or another suitable method. Returning an array of values causes PowerShell to treat the entire array as one tab completion value.
+
+
+The script block must accept the following parameters in the order specified below. The names of the parameters aren't important because PowerShell passes in the values by position.
+
+
+- "$commandName" (Position 0) - This parameter is set to the name of the   command for which the script block is providing tab completion. - "$parameterName" (Position 1) - This parameter is set to the parameter   whose value requires tab completion. - "$wordToComplete" (Position 2) - This parameter is set to value the user has provided before they   pressed <kbd>Tab</kbd>. Your script block should use this value to determine tab completion   values. - "$commandAst" (Position 3) - This parameter is set to the Abstract Syntax   Tree (AST) for the current input line. For more information, see Ast Class (/dotnet/api/system.management.automation.language.ast). - "$fakeBoundParameters" (Position 4) - This parameter is set to a hashtable containing the   "$PSBoundParameters" for the cmdlet, before the user pressed <kbd>Tab</kbd>. For more information,   see about_Automatic_Variables (./About/about_Automatic_Variables.md).
+
+
+When you specify the Native parameter, the script block must take the following parameters in the specified order. The names of the parameters aren't important because PowerShell passes in the values by position.
+
+
+- "$commandName" (Position 0) - This parameter is set to the name of the   command for which the script block is providing tab completion. - "$wordToComplete" (Position 1) - This parameter is set to value the user has   provided before they pressed <kbd>Tab</kbd>. Your script block should use this value   to determine tab completion values. - "$cursorPosition" (Position 2) - This parameter is set to the position of the cursor when the user   pressed <kbd>Tab</kbd>.
+
+
+You can also provide an ArgumentCompleter as a parameter attribute. For more information, see about_Functions_Advanced_Parameters (./About/about_Functions_Advanced_Parameters.md).`, `ScriptBlock`),
         ],
         `Registers a custom argument completer.`,
-        `Register-ArgumentCompleter -CommandName <String[]> [-Native] -ScriptBlock <ScriptBlock> [<CommonParameters>]
+        `Register-ArgumentCompleter [-CommandName <String[]>] [-Native] -ScriptBlock <ScriptBlock> [<CommonParameters>]
 
 Register-ArgumentCompleter [-CommandName <String[]>] -ParameterName <String> -ScriptBlock <ScriptBlock> [<CommonParameters>]`,
         "",
@@ -20059,35 +19528,29 @@ To view or cancel a subscription that was created with the SupportEvent paramete
     new ConsoleCommand(
         `Register-ObjectEvent`,
         [
-            new Parameter(`Action`, `Specifies commands to handle the events. The commands in the Action run when an event is raised, instead of sending the event to the event queue. Enclose the commands in braces ( { } ) to create a script block.
+            new Parameter(`Action`, `Specifies the commands to handle the event. The commands in the Action run when an event is raised, instead of sending the event to the event queue. Enclose the commands in braces ( { } ) to create a script block.
 
 
-The value of the Action parameter can include the $Event, $EventSubscriber, $Sender, $EventArgs, and $Args automatic variables, which provide information about the event to the Action script block. For more information, see about_Automatic_Variables.
+The value of the Action parameter can include the "$Event", "$EventSubscriber", "$Sender", "$EventArgs", and "$Args" automatic variables. These variables provide information about the event to the Action script block. For more information, see about_Automatic_Variables (../Microsoft.PowerShell.Core/About/about_Automatic_Variables.md).
 
 
-When you specify an action, Register-ObjectEvent returns an event job object that represents that action. You can use the Job cmdlets to manage the event job.`, `ScriptBlock`),
-            new Parameter(`EventName`, `Specifies the event to which you are subscribing. Enter the event name. This parameter is required.
+When you specify an action, "Register-ObjectEvent" returns an event job object that represents that action. You can use the Job cmdlets to manage the event job.`, `ScriptBlock`),
+            new Parameter(`EventName`, `Specifies the event to which you are subscribing.
 
 
-The value of this parameter is not a name that you select for the event subscription. It is the name of an event that the .NET Framework object exposes. For example, the ManagementEventWatcher class has events named EventArrived and Stopped. To find the event name of an event, use the Get-Member cmdlet.`, `String`),
+The value of this parameter must be the name of the event that the .NET object exposes. For example, the ManagementEventWatcher class has events named EventArrived and Stopped . To find the event name of an event, use the "Get-Member" cmdlet.`, `String`),
             new Parameter(`Forward`, `Indicates that the cmdlet sends events for this subscription to a remote session. Use this parameter when you are registering for events on a remote computer or in a remote session.`, `SwitchParameter`),
-            new Parameter(`InputObject`, `Specifies the .NET Framework object that generates the events. Enter a variable that contains the object, or type a command or expression that gets the object. This parameter is required.`, `PSObject`),
-            new Parameter(`MaxTriggerCount`, `Specifies the max trigger count.
-
-
-The value of the Action parameter can include the $Event, $EventSubscriber, $Sender, $EventArgs, and $Args automatic variables, which provide information about the event to the Action script block. For more information, see about_Automatic_Variables.
-
-
-When you specify an action, Register-ObjectEvent returns an event job object that represents that action. You can use the Job cmdlets to manage the event job.`, `Int32`),
+            new Parameter(`InputObject`, `Specifies the .NET object that generates the events. Enter a variable that contains the object, or type a command or expression that gets the object.`, `PSObject`),
+            new Parameter(`MaxTriggerCount`, `Specifies the maximum number of times an event can be triggered.`, `Int32`),
             new Parameter(`MessageData`, `Specifies any additional data to be associated with this event subscription. The value of this parameter appears in the MessageData property of all events associated with this subscription.`, `PSObject`),
             new Parameter(`SourceIdentifier`, `Specifies a name that you select for the subscription. The name that you select must be unique in the current session. The default value is the GUID that PowerShell assigns.
 
 
-The value of this parameter appears in the value of the SourceIdentifier property of the subcriber object and of all event objects associated with this subscription.`, `String`),
-            new Parameter(`SupportEvent`, `Indicates that the cmdlet hides the event subscription. Use this parameter when the current subscription is part of a more complex event registration mechanism and it should not be discovered independently.
+The value of this parameter appears in the value of the SourceIdentifier property of the subscriber object and all event objects associated with this subscription.`, `String`),
+            new Parameter(`SupportEvent`, `Indicates that the cmdlet hides the event subscription. Use this parameter when the current subscription is part of a more complex event registration mechanism and should not be discovered independently.
 
 
-To view or cancel a subscription that was created with the SupportEvent parameter, use the Force parameter of the Get-EventSubscriber and Unregister-Event cmdlets.`, `SwitchParameter`),
+To view or cancel a subscription that was created with the SupportEvent parameter, use the Force parameter of the "Get-EventSubscriber" and "Unregister-Event" cmdlets.`, `SwitchParameter`),
         ],
         `Subscribes to the events that are generated by a Microsoft .NET Framework object.`,
         `Register-ObjectEvent [-InputObject] <PSObject> [-EventName] <String> [[-SourceIdentifier] <String>] [[-Action] <ScriptBlock>] [-Forward] [-MaxTriggerCount <Int32>] [-MessageData <PSObject>] [-SupportEvent] [<CommonParameters>]`,
@@ -20114,17 +19577,17 @@ To view or cancel a subscription that was created with the SupportEvent paramete
             new Parameter(`AccessMode`, `Enables and disables the session configuration and determines whether it can be used for remote or local sessions on the computer. The acceptable values for this parameter are:
 
 
-- Disabled. Disables the session configuration. It cannot be used for remote or local access to the computer. - Local. Allows users of the local computer to use the session configuration to create a local loopback session on the same computer, but denies access to remote users. - Remote. Allows local and remote users to use the session configuration to create sessions and run commands on this computer.
+- Disabled. Disables the session configuration. It cannot be used for remote or local access to the   computer. - Local. Allows users of the local computer to use the session configuration to create a local   loopback session on the same computer, but denies access to remote users. - Remote. Allows local and remote users to use the session configuration to create sessions and run   commands on this computer.
 
 
 The default value is Remote.
 
 
-Other cmdlets can override the value of this parameter later. For example, the Enable-PSRemoting cmdlet allows for remote access to all session configurations, the Enable-PSSessionConfiguration cmdlet enables session configurations, and the Disable-PSRemoting cmdlet prevents remote access to all session configurations.
+Other cmdlets can override the value of this parameter later. For example, the "Enable-PSRemoting" cmdlet allows for remote access to all session configurations, the "Enable-PSSessionConfiguration" cmdlet enables session configurations, and the "Disable-PSRemoting" cmdlet prevents remote access to all session configurations.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `PSSessionConfigurationAccessMode`),
-            new Parameter(`ApplicationBase`, `Specifies the path of the assembly file ( .dll) that is specified in the value of the AssemblyName* parameter. Use this parameter when the value of the AssemblyName parameter does not include a path. The default is the current directory.`, `String`),
+This parameter was introduced in PowerShell 3.0.`, `PSSessionConfigurationAccessMode`),
+            new Parameter(`ApplicationBase`, `Specifies the path of the assembly file (*.dll) that is specified in the value of the AssemblyName parameter. Use this parameter when the value of the AssemblyName parameter does not include a path. The default is the current directory.`, `String`),
             new Parameter(`AssemblyName`, `Specifies the name of an assembly file (*.dll) in which the configuration type is defined. You can specify the path of the .dll in this parameter or in the value of the ApplicationBase parameter.
 
 
@@ -20132,7 +19595,7 @@ This parameter is required when you specify the ConfigurationTypeName parameter.
             new Parameter(`ConfigurationTypeName`, `Specifies the fully qualified name of the Microsoft .NET Framework type that is used for this configuration. The type that you specify must implement the System.Management.Automation.Remoting.PSSessionConfiguration class.
 
 
-To specify the assembly file (.dll) that implements the configuration type, specify the AssemblyName and ApplicationBase parameters.
+To specify the assembly file (*.dll) that implements the configuration type, specify the AssemblyName and ApplicationBase parameters.
 
 
 Creating a type lets you control more aspects of the session configuration, such as exposing or hiding certain parameters of cmdlets, or setting data size and object size limits that users cannot override.
@@ -20151,57 +19614,57 @@ If a data size limit is defined in the configuration type that is specified in t
 
 
 If an object size limit is defined in the configuration type that is specified in the ConfigurationTypeName parameter, the limit in the configuration type is used and the value of this parameter is ignored.`, `Double`),
-            new Parameter(`ModulesToImport`, `Specifies the modules and snap-ins that are automatically imported into sessions that use the session configuration.
+            new Parameter(`ModulesToImport`, `Specifies the modules that are automatically imported into sessions that use the session configuration.
 
 
-By default, only the Microsoft.PowerShell.Core snap-in is imported into sessions. Unless the cmdlets are excluded, you can use the Import-Module and Add-PSSnapin cmdlets to add modules and snap-ins to the session.
+By default, only Microsoft.PowerShell.Core is imported into sessions. Unless the cmdlets are excluded, you can use "Import-Module" to add modules to the session.
 
 
-The modules specified in this parameter value are imported in additions to modules that are specified by the SessionType parameter and those listed in the ModulesToImport key in the session configuration file (New-PSSessionConfigurationFile). However, settings in the session configuration file can hide the commands exported by modules or prevent users from using them.
+The modules specified in this parameter value are imported in additions to modules that are specified by the SessionType parameter and those listed in the ModulesToImport key in the session configuration file ("New-PSSessionConfigurationFile"). However, settings in the session configuration file can hide the commands exported by modules or prevent users from using them.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `Object[]`),
+This parameter was introduced in PowerShell 3.0.`, `Object[]`),
             new Parameter(`Name`, `Specifies a name for the session configuration. This parameter is required.`, `String`),
             new Parameter(`NoServiceRestart`, `Does not restart the WinRM service, and suppresses the prompt to restart the service.
 
 
-By default, when you run a Register-PSSessionConfiguration command, you are prompted to restart the WinRM service to make the new session configuration effective. Until the WinRM service is restarted, the new session configuration is not effective.
+By default, when you run a "Register-PSSessionConfiguration" command, you are prompted to restart the WinRM service to make the new session configuration effective. Until the WinRM service is restarted, the new session configuration is not effective.
 
 
-To restart the WinRM service without prompting, specify the Force parameter. To restart the WinRM service manually, use the Restart-Service cmdlet.`, `SwitchParameter`),
-            new Parameter(`Path`, `Specifies the path and file name of a session configuration file (.pssc), such as one created by the New-PSSessionConfigurationFile cmdlet. If you omit the path, the default is the current directory.
+To restart the WinRM service without prompting, specify the Force parameter. To restart the WinRM service manually, use the "Restart-Service" cmdlet.`, `SwitchParameter`),
+            new Parameter(`Path`, `Specifies the path and filename of a session configuration file (.pssc), such as one created by "New-PSSessionConfigurationFile". If you omit the path, the default is the current directory.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `String`),
+This parameter was introduced in PowerShell 3.0.`, `String`),
             new Parameter(`ProcessorArchitecture`, `Determines whether a 32-bit or 64-bit version of the PowerShell process is started in sessions that use this session configuration. The acceptable values for this parameter are: x86 (32-bit) and AMD64 (64-bit). The default value is determined by the processor architecture of the computer that hosts the session configuration.
 
 
 You can use this parameter to create a 32-bit session on a 64-bit computer. Attempts to create a 64-bit process on a 32-bit computer fail.`, `String`),
-            new Parameter(`PSVersion`, `Specifies the version of Windows PowerShell in sessions that use this session configuration.
+            new Parameter(`PSVersion`, `Specifies the version of PowerShell in sessions that use this session configuration.
 
 
 The value of this parameter takes precedence over the value of the PowerShellVersion key in the session configuration file.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `Version`),
+This parameter was introduced in PowerShell 3.0.`, `Version`),
             new Parameter(`RunAsCredential`, `Specifies credentials for commands in the session. By default, commands run with the permissions of the current user.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `PSCredential`),
+This parameter was introduced in PowerShell 3.0.`, `PSCredential`),
             new Parameter(`SecurityDescriptorSddl`, `Specifies a Security Descriptor Definition Language (SDDL) string for the configuration.
 
 
-This string determines the permissions that are required to use the new session configuration. To use a session configuration in a session, users must have at least Execute(Invoke) permission for the configuration.
+This string determines the permissions that are required to use the new session configuration. To use a session configuration in a session, users must have at least Execute (Invoke) permission for the configuration.
 
 
 If the security descriptor is complex, consider using the ShowSecurityDescriptorUI parameter instead of this parameter. You cannot use both parameters in the same command.
 
 
-If you omit this parameter, the root SDDL for the WinRM service is used for this configuration. To view or change the root SDDL, use the WSMan provider. For example "Get-Item wsman:\localhost\service\rootSDDL". For more information about the WSMan provider, type "Get-Help wsman".`, `String`),
+If you omit this parameter, the root SDDL for the WinRM service is used for this configuration. To view or change the root SDDL, use the WSMan provider. For example "Get-Item wsman:\\localhost\\service\\rootSDDL". For more information about the WSMan provider, type "Get-Help wsman".`, `String`),
             new Parameter(`SessionType`, `Specifies the type of session that is created by using the session configuration. The acceptable values for this parameter are:
 
 
-- Empty. No modules or snap-ins are added to session by default. Use the parameters of this cmdlet to add modules, functions, scripts, and other features to the session. - Default. Adds the Microsoft.PowerShell.Core snap-in to the session. This module includes the Import-Module and Add-PSSnapin cmdlets that users can use to import other modules and snap-ins unless you explicitly prohibit the use of the cmdlets. - RestrictedRemoteServer. Includes only the following cmdlets: Exit-PSSession, Get-Command, Get-FormatData, Get-Help, Measure-Object, Out-Default, and Select-Object. Use a script or assembly, or the keys in the session configuration file, to add modules, functions, scripts, and other features to the session.
+- Empty. No modules are added to session by default. Use the parameters of this cmdlet to add   modules, functions, scripts, and other features to the session. - Default. Adds Microsoft.PowerShell.Core to the session. This module includes the "Import-Module"   cmdlet that users can use to import other modules unless you explicitly prohibit the cmdlet. - RestrictedRemoteServer. Includes only the following cmdlets: "Exit-PSSession", "Get-Command",   "Get-FormatData", "Get-Help", "Measure-Object", "Out-Default", and "Select-Object". Use a script   or assembly, or the keys in the session configuration file, to add modules, functions, scripts,   and other features to the session.
 
 
 The default value is Default.
@@ -20210,25 +19673,25 @@ The default value is Default.
 The value of this parameter takes precedence over the value of the SessionType key in the session configuration file.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `PSSessionType`),
-            new Parameter(`SessionTypeOption`, `Specifies type-specific options for the session configuration. Enter a session type options object, such as the PSWorkflowExecutionOption object that the New-PSWorkflowExecutionOption cmdlet returns.
+This parameter was introduced in PowerShell 3.0.`, `PSSessionType`),
+            new Parameter(`SessionTypeOption`, `Specifies type-specific options for the session configuration. Enter a session type options object, such as the PSWorkflowExecutionOption object that the "New-PSWorkflowExecutionOption" cmdlet returns.
 
 
-The options of sessions that use the session configuration are determined by the values of session options and the session configuration options. Unless specified, options set in the session, such as by using the New-PSSessionOption cmdlet, take precedence over options set in the session configuration. However, session option values cannot exceed maximum values set in the session configuration.
+The options of sessions that use the session configuration are determined by the values of session options and the session configuration options. Unless specified, options set in the session, such as by using the "New-PSSessionOption" cmdlet, take precedence over options set in the session configuration. However, session option values cannot exceed maximum values set in the session configuration.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `PSSessionTypeOption`),
-            new Parameter(`ShowSecurityDescriptorUI`, `Indicates that this cmdlet displays a property sheet that helps you create the SDDL for the session configuration. The property sheet appears after you enter the Register-PSSessionConfiguration command and then restart the WinRM service.
+This parameter was introduced in PowerShell 3.0.`, `PSSessionTypeOption`),
+            new Parameter(`ShowSecurityDescriptorUI`, `Indicates that this cmdlet displays a property sheet that helps you create the SDDL for the session configuration. The property sheet appears after you enter the "Register-PSSessionConfiguration" command and then restart the WinRM service.
 
 
-When setting the permissions for the configuration, remember that users must have at least Execute(Invoke) permission to use the session configuration in a session.
+When setting the permissions for the configuration, remember that users must have at least Execute (Invoke) permission to use the session configuration in a session.
 
 
 You cannot use the SecurityDescriptorSDDL parameter and this parameter in the same command.`, `SwitchParameter`),
             new Parameter(`StartupScript`, `Specifies the fully qualified path of a PowerShell script. The specified script runs in the new session that uses the session configuration.
 
 
-You can use the script to additionally configure the session. If the script generates an error, even a non-terminating error, the session is not created and the New-PSSession command fails.`, `String`),
+You can use the script to additionally configure the session. If the script generates an error, even a non-terminating error, the session is not created and the "New-PSSession" command fails.`, `String`),
             new Parameter(`ThreadOptions`, `Specifies how threads are created and used when a command runs in the session. The acceptable values for this parameter are:
 
 
@@ -20246,17 +19709,17 @@ You can use the script to additionally configure the session. If the script gene
 
 
 
-The default value is UseCurrentThread.
+The default value is UseCurrentThread .
 
-For more information, see "PSThreadOptions Enumeration" in the Microsoft Developer Network (MSDN) library.`, `PSThreadOptions`),
+For more information, see PSThreadOptions Enumeration (/dotnet/api/system.management.automation.runspaces.psthreadoptions?view=powershellsdk-1.1.0).`, `PSThreadOptions`),
             new Parameter(`TransportOption`, `Specifies the transport option.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `PSTransportOption`),
+This parameter was introduced in PowerShell 3.0.`, `PSTransportOption`),
             new Parameter(`UseSharedProcess`, `Use only one process to host all sessions that are started by the same user and use the same session configuration. By default, each session is hosted in its own process.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
+This parameter was introduced in PowerShell 3.0.`, `SwitchParameter`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
@@ -20274,9 +19737,12 @@ Register-PSSessionConfiguration [-Name] <String> [-AccessMode {Disabled | Local 
     new ConsoleCommand(
         `Remove-Alias`,
         [
-            new Parameter(`Force`, `Indicates that the cmdlet removes an alias even if it is read-only. Even using the Force parameter, the cmdlet cannot remove a constant alias.`, `SwitchParameter`),
-            new Parameter(`Name`, `Specifies the name of the alias to be removed.`, `String[]`),
-            new Parameter(`Scope`, `Affects only the aliases in the specified scope. The acceptable values for this parameter are:
+            new Parameter(`Force`, `Indicates that the cmdlet removes an alias, including aliases with the Option property set to ReadOnly . The Force parameter can't remove an alias with an Option property set to Constant .`, `SwitchParameter`),
+            new Parameter(`Name`, `Specifies the name of the alias to remove.`, `String[]`),
+            new Parameter(`Scope`, `Affects only the aliases in the specified scope. The default scope is Local . For more information, see about_Scopes (../microsoft.powershell.core/about/about_scopes.md).
+
+
+The acceptable values for this parameter are:
 
 
 - Global
@@ -20288,12 +19754,10 @@ Register-PSSessionConfiguration [-Name] <String> [-AccessMode {Disabled | Local 
 - Script
 
 
-- A number relative to the current scope (0 through the number of scopes, where 0 is the current scope and 1 is its parent)
+- A number relative to the current scope (0 through the number of scopes, where 0 is the current
 
 
-
-
-Local is the default scope. For more information, see about_Scopes (../microsoft.powershell.core/about/about_scopes.md).`, `String`),
+scope and 1 is its parent)`, `String`),
         ],
         `Remove an alias from the current session.`,
         `Remove-Alias [-Name] <String[]> [-Force] [-Scope <String>] [<CommonParameters>]`,
@@ -20304,6 +19768,18 @@ Local is the default scope. For more information, see about_Scopes (../microsoft
     ),
     new ConsoleCommand(
         `Remove-AppxPackage`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Remove-AppxProvisionedPackage`,
         [
 
         ],
@@ -20377,21 +19853,15 @@ You can use "Remove-Item" to delete an alternative data stream. However, it is n
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `String[]`),
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
-
-
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you are prompted for a password.
-
-
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
-            new Parameter(`Exclude`, `Specifies items that this cmdlet omits. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as *.txt. Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`Filter`, `Specifies a filter in the format or language of the provider. The value of this parameter qualifies the Path parameter.
-
-
-The syntax of the filter, including the use of wildcard characters, depends on the provider. Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
+            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as " .txt". Wildcard characters are permitted. The Exclude * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`Filter`, `Specifies a filter to qualify the Path parameter. The FileSystem (../Microsoft.PowerShell.Core/About/about_FileSystem_Provider.md)provider is the only installed PowerShell provider that supports the use of filters. You can find the syntax for the FileSystem filter language in about_Wildcards (../Microsoft.PowerShell.Core/About/about_Wildcards.md). Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
             new Parameter(`Force`, `Forces the cmdlet to remove items that cannot otherwise be changed, such as hidden or read-only files or read-only aliases or variables. The cmdlet cannot remove constant aliases or variables. Implementation varies from provider to provider. For more information, see about_Providers (../Microsoft.PowerShell.Core/About/about_Providers.md). Even using the Force parameter, the cmdlet cannot override security restrictions.`, `SwitchParameter`),
-            new Parameter(`Include`, `Specifies items to delete. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`LiteralPath`, `Specifies a path of the items being removed. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
+            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "" .txt"". Wildcard characters are permitted. The Include * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`LiteralPath`, `Specifies a path to one or more locations. The value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
+
+
+For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
             new Parameter(`Path`, `Specifies a path of the items being removed. Wildcard characters are permitted.`, `String[]`),
             new Parameter(`Recurse`, `Indicates that this cmdlet deletes the items in the specified locations and in all child items of the locations.
 
@@ -20412,22 +19882,16 @@ Remove-Item [-Path] <String[]> [-Stream <String[]>] [-Credential <PSCredential>]
     new ConsoleCommand(
         `Remove-ItemProperty`,
         [
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
-
-
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you are prompted for a password.
-
-
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
-            new Parameter(`Exclude`, `Specifies items that this cmdlet omits. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`Filter`, `Specifies a filter in the format or language of the provider. The value of this parameter qualifies the Path parameter.
-
-
-The syntax of the filter, including the use of wildcard characters, depends on the provider. Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
+            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as " .txt". Wildcard characters are permitted. The Exclude * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`Filter`, `Specifies a filter to qualify the Path parameter. The FileSystem (../Microsoft.PowerShell.Core/About/about_FileSystem_Provider.md)provider is the only installed PowerShell provider that supports the use of filters. You can find the syntax for the FileSystem filter language in about_Wildcards (../Microsoft.PowerShell.Core/About/about_Wildcards.md). Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
             new Parameter(`Force`, `Forces the cmdlet to remove a property of an object that cannot otherwise be accessed by the user. Implementation varies from provider to provider. For more information, see about_Providers (../Microsoft.PowerShell.Core/About/about_Providers.md).`, `SwitchParameter`),
-            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`LiteralPath`, `Specifies the path to the current location of the property. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
-            new Parameter(`Name`, `Specifies the names of the properties to remove.`, `String[]`),
+            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "" .txt"". Wildcard characters are permitted. The Include * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`LiteralPath`, `Specifies a path to one or more locations. The value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
+
+
+For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
+            new Parameter(`Name`, `Specifies the names of the properties to remove. Wildcard characters are permitted.`, `String[]`),
             new Parameter(`Path`, `Specifies the path of the item whose properties are being removed. Wildcard characters are permitted.`, `String[]`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
@@ -20444,29 +19908,51 @@ Remove-ItemProperty [-Path] <String[]> [-Name] <String[]> [-Credential <PSCreden
     new ConsoleCommand(
         `Remove-Job`,
         [
-            new Parameter(`Command`, `Specifies an array of words that appear in commands. This cmdlet deletes jobs that include the specified words.`, `String[]`),
-            new Parameter(`Filter`, `Specifies a hash table of conditions. This cmdlet deletes jobs that satisfy all of the conditions. Enter a hash table where the keys are job properties and the values are job property values.
+            new Parameter(`Command`, `Deletes jobs that include the specified words in the command. You can enter a comma-separated array.`, `String[]`),
+            new Parameter(`Confirm`, `Prompts you for confirmation before "Remove-Job" is run.`, `SwitchParameter`),
+            new Parameter(`Filter`, `Deletes jobs that satisfy all the conditions established in the associated hash table. Enter a hash table where the keys are job properties and the values are job property values.
 
 
-This parameter works only on custom job types, such as workflow jobs and scheduled jobs. It does not work on standard background jobs, such as those created by using the Start-Job cmdlet. For information about support for this parameter, see the help topic for the job type.
+This parameter works only on custom job types, such as workflow jobs and scheduled jobs. It doesn't work on standard background jobs, such as those created by using the "Start-Job".
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `Hashtable`),
-            new Parameter(`Force`, `Indicates that this cmdlet deletes a job even if the status is Running. By default, this cmdlet does not delete running jobs.`, `SwitchParameter`),
-            new Parameter(`Id`, `Specifies an array of IDs of background jobs that this cmdlet deletes.
+This parameter is introduced in PowerShell 3.0.`, `Hashtable`),
+            new Parameter(`Force`, `Deletes a job even if the job's state is Running . If the Force parameter isn't specified, "Remove-Job" doesn't delete running jobs.`, `SwitchParameter`),
+            new Parameter(`Id`, `Deletes background jobs with the specified Id . You can enter a comma-separated array. The job's Id is a unique integer that identifies a job within the current session.
 
 
-The ID is an integer that uniquely identifies the job in the current session. It is easier to remember and type than the instance ID, but it is unique only in the current session. You can type one or more IDs, separated by commas. To find the ID of a job, type "Get-Job".`, `Int32[]`),
-            new Parameter(`InstanceId`, `Specifies an array of instance IDs of jobs that this cmdlet deletes.
+To find a job's Id , use "Get-Job" without parameters.`, `Int32[]`),
+            new Parameter(`InstanceId`, `Deletes jobs with the specified InstanceId . You can enter a comma-separated array. An InstanceId is a unique GUID that identifies a job.
 
 
-An instance ID is a GUID that uniquely identifies the job on the computer. To find the instance ID of a job, use the Get-Job cmdlet or display the job object.`, `Guid[]`),
-            new Parameter(`Job`, `Specifies the jobs to be deleted. Enter a variable that contains the jobs or a command that gets the jobs. You can also use a pipeline operator to submit jobs to this cmdlet.`, `Job[]`),
-            new Parameter(`Name`, `Specifies an array of friendly names of jobs that this cmdlet deletes. Wildcard characters are permitted.
+To find a job's InstanceId , use "Get-Job".`, `Guid[]`),
+            new Parameter(`Job`, `Specifies the jobs to be deleted. Enter a variable that contains the jobs or a command that gets the jobs. You can enter a comma-separated array.
 
 
-Because the friendly name is not guaranteed to be unique, even in the session, use the WhatIf and Confirm parameters when you delete jobs by name.`, `String[]`),
-            new Parameter(`State`, `Specifies the state of jobs to delete. The acceptable values for this parameter are:
+You can send job objects down the pipeline to "Remove-Job".`, `Job[]`),
+            new Parameter(`Name`, `Only deletes jobs with the specified friendly name. Wildcards are permitted. You can enter a comma-separated array.
+
+
+Friendly names for jobs aren't guaranteed to be unique, even within a PowerShell session. Use the WhatIf and Confirm parameters when you delete files by name.`, `String[]`),
+            new Parameter(`State`, `Only deletes jobs with the specified state. To delete jobs with a state of Running , use the Force parameter.
+
+
+Accepted values:
+
+
+- AtBreakpoint
+
+
+- Blocked
+
+
+- Completed
+
+
+- Disconnected
+
+
+- Failed
 
 
 - NotStarted
@@ -20475,22 +19961,7 @@ Because the friendly name is not guaranteed to be unique, even in the session, u
 - Running
 
 
-- Completed
-
-
-- Failed
-
-
 - Stopped
-
-
-- Blocked
-
-
-- Disconnected
-
-
-- Suspending
 
 
 - Stopping
@@ -20499,26 +19970,23 @@ Because the friendly name is not guaranteed to be unique, even in the session, u
 - Suspended
 
 
-
-
-To delete jobs with a state of Running, use the Force parameter.`, `JobState`),
-            new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
-            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
+- Suspending`, `JobState`),
+            new Parameter(`WhatIf`, `Shows what would happen if "Remove-Job" runs. The cmdlet isn't run.`, `SwitchParameter`),
         ],
         `Deletes a PowerShell background job.`,
         `Remove-Job [-Command <String[]>] [-Confirm] [-WhatIf] [<CommonParameters>]
 
-Remove-Job [-Filter] <Hashtable> [-Force] [-Confirm] [-WhatIf] [<CommonParameters>]
+Remove-Job [-Filter] <Hashtable> [-Confirm] [-Force] [-WhatIf] [<CommonParameters>]
 
-Remove-Job [-Id] <Int32[]> [-Force] [-Confirm] [-WhatIf] [<CommonParameters>]
+Remove-Job [-Id] <Int32[]> [-Confirm] [-Force] [-WhatIf] [<CommonParameters>]
 
-Remove-Job [-Job] <Job[]> [-Force] [-Confirm] [-WhatIf] [<CommonParameters>]
+Remove-Job [-Job] <Job[]> [-Confirm] [-Force] [-WhatIf] [<CommonParameters>]
 
-Remove-Job [-Name] <String[]> [-Force] [-Confirm] [-WhatIf] [<CommonParameters>]
+Remove-Job [-Name] <String[]> [-Confirm] [-Force] [-WhatIf] [<CommonParameters>]
 
-Remove-Job [-InstanceId] <Guid[]> [-Force] [-Confirm] [-WhatIf] [<CommonParameters>]
+Remove-Job [-InstanceId] <Guid[]> [-Confirm] [-Force] [-WhatIf] [<CommonParameters>]
 
-Remove-Job [-State] {NotStarted | Running | Completed | Failed | Stopped | Blocked | Suspended | Disconnected | Suspending | Stopping | AtBreakpoint} [-Confirm] [-WhatIf] [<CommonParameters>]`,
+Remove-Job [-State] {AtBreakpoint | Blocked | Completed | Disconnected | Failed | NotStarted | Running | Stopped | Stopping | Suspended | Suspending} [-Confirm] [-WhatIf] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -20627,10 +20095,13 @@ Remove-PSDrive [-Name] <String[]> [-Force] [-PSProvider <String[]>] [-Scope <Str
     new ConsoleCommand(
         `Remove-PSReadLineKeyHandler`,
         [
-
+            new Parameter(`Chord`, ``, `string[]`),
+            new Parameter(`ViMode`, ``, `ViMode`),
         ],
-        `See help file for details.`,
-        ``,
+        `Remove-PSReadLineKeyHandler [-Chord] <string[]> [-ViMode <ViMode>] [<CommonParameters>]`,
+        `syntaxItem
+----------
+{@{name=Remove-PSReadLineKeyHandler; CommonParameters=True; parameter=System.Object[]}}`,
         "",
         (parameters, paramDictionary) => {
 
@@ -20693,7 +20164,7 @@ Remove-PSSession -VMName <String[]> [-Confirm] [-WhatIf] [<CommonParameters>]`,
         `Remove-Service`,
         [
             new Parameter(`InputObject`, `Specifies ServiceController objects that represent the services to stop. Enter a variable that contains the objects, or type a command or expression that gets the objects.`, `ServiceController`),
-            new Parameter(`Name`, `Specifies the service names of the services to stop. Wildcard characters are permitted.`, `String`),
+            new Parameter(`Name`, `Specifies the service names of the services to remove. Wildcard characters are permitted.`, `String`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
@@ -20768,7 +20239,7 @@ Local is the default. For more information, see about_Scopes.`, `String`),
         }
     ),
     new ConsoleCommand(
-        `Remove-VHDSnapshot`,
+        `Remove-WindowsCapability`,
         [
 
         ],
@@ -20780,7 +20251,7 @@ Local is the default. For more information, see about_Scopes.`, `String`),
         }
     ),
     new ConsoleCommand(
-        `Remove-VM`,
+        `Remove-WindowsDriver`,
         [
 
         ],
@@ -20792,7 +20263,7 @@ Local is the default. For more information, see about_Scopes.`, `String`),
         }
     ),
     new ConsoleCommand(
-        `Remove-VMAssignableDevice`,
+        `Remove-WindowsImage`,
         [
 
         ],
@@ -20804,331 +20275,7 @@ Local is the default. For more information, see about_Scopes.`, `String`),
         }
     ),
     new ConsoleCommand(
-        `Remove-VMDvdDrive`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMFibreChannelHba`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMGpuPartitionAdapter`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMGroup`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMGroupMember`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMHardDiskDrive`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMHostAssignableDevice`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMKeyStorageDrive`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMMigrationNetwork`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMNetworkAdapter`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMNetworkAdapterAcl`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMNetworkAdapterExtendedAcl`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMNetworkAdapterRoutingDomainMapping`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMNetworkAdapterTeamMapping`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMPmemController`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMRemoteFx3dVideoAdapter`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMReplication`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMReplicationAuthorizationEntry`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMResourcePool`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMSan`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMSavedState`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMScsiController`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMSnapshot`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMStoragePath`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMSwitch`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMSwitchExtensionPortFeature`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMSwitchExtensionSwitchFeature`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Remove-VMSwitchTeamMember`,
+        `Remove-WindowsPackage`,
         [
 
         ],
@@ -21157,14 +20304,17 @@ Local is the default. For more information, see about_Scopes.`, `String`),
             new Parameter(`ComputerName`, `Renames the specified remote computer. The default is the local computer.
 
 
-Type the NetBIOS name, an IP address, or a fully qualified domain name of a remote computer. To specify the local computer, type the computer name, a dot (.), or localhost.
+Type the NetBIOS name, an IP address, or a fully qualified domain name of a remote computer. To specify the local computer, type the computer name, a dot ("."), or "localhost".
 
 
-This parameter does not rely on PowerShell remoting. You can use the ComputerName parameter of Rename-Computer even if your computer is not configured to run remote commands.`, `String`),
+This parameter does not rely on PowerShell remoting. You can use the ComputerName parameter of "Rename-Computer" even if your computer is not configured to run remote commands.`, `String`),
             new Parameter(`DomainCredential`, `Specifies a user account that has permission to connect to the domain. Explicit credentials are required to rename a computer that is joined to a domain.
 
 
-Type a user name, such as User01 or Domain01\User01, or enter a PSCredential object, such as one generated by the Get-Credential cmdlet. If you type a user name, this cmdlet prompts you for a password.
+Type a user name, such as "User01" or "Domain01\\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet.
+
+
+If you type a user name, this cmdlet prompts you for a password.
 
 
 To specify a user account that has permission to connect to the computer that is specified by the ComputerName parameter, use the LocalCredential parameter.`, `PSCredential`),
@@ -21172,43 +20322,30 @@ To specify a user account that has permission to connect to the computer that is
             new Parameter(`LocalCredential`, `Specifies a user account that has permission to connect to the computer specified by the ComputerName parameter. The default is the current user.
 
 
-Type a user name, such as User01 or Domain01\User01, or enter a PSCredential object, such as one generated by the Get-Credential cmdlet. If you type a user name, this cmdlet prompts you for a password.
+Type a user name, such as "User01" or "Domain01\\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet.
+
+
+If you type a user name, this cmdlet prompts you for a password.
 
 
 To specify a user account that has permission to connect to the domain, use the DomainCredential parameter.`, `PSCredential`),
-            new Parameter(`NewName`, `Specifies a new name for the computer. This parameter is required. The name cannot include control characters, leading or trailing spaces, or any of the following characters: / \\ [ ].`, `String`),
+            new Parameter(`NewName`, `Specifies a new name for the computer. This parameter is required.
+
+
+Standard names may contain letters ("a-z"), ("A-Z"), numbers ("0-9"), and hyphens ("-"), but no spaces or periods ("."). The name may not consist entirely of digits, and may not be longer than 63 characters`, `String`),
             new Parameter(`PassThru`, `Returns the results of the command. Otherwise, this cmdlet does not generate any output.`, `SwitchParameter`),
             new Parameter(`Restart`, `Indicates that this cmdlet restarts the computer that was renamed. A restart is often required to make the change effective.`, `SwitchParameter`),
             new Parameter(`WsmanAuthentication`, `Specifies the mechanism that is used to authenticate the user credentials when this cmdlet uses the WSMan protocol. The acceptable values for this parameter are:
 
 
-- Basic
+- Basic - CredSSP - Default - Digest - Kerberos - Negotiate The default value is Default .
 
 
-- CredSSP
+For more information about the values of this parameter, see AuthenticationMechanism Enumeration (/dotnet/api/system.management.automation.runspaces.authenticationmechanism).
 
 
-- Default
+> [!WARNING] > Credential Security Service Provider (CredSSP) authentication, in which the user > credentials are passed to a remote computer to be authenticated, is designed for commands that > require authentication on more than one resource, such as accessing a remote network share. > This mechanism increases the security risk of the remote operation. > If the remote computer is compromised, the credentials that are passed to it can be used to > control > the network session.
 
-
-- Digest
-
-
-- Kerberos
-
-
-- Negotiate
-
-
-
-
-The default value is Default.
-
-
-For more information about the values of this parameter, see AuthenticationMechanism Enumeration (https://msdn.microsoft.com/library/system.management.automation.runspaces.authenticationmechanism)in the MSDN library.
-
-
-Caution: Credential Security Service Provider (CredSSP) authentication, in which the user credentials are passed to a remote computer to be authenticated, is designed for commands that require authentication on more than one resource, such as accessing a remote network share. This mechanism increases the security risk of the remote operation. If the remote computer is compromised, the credentials that are passed to it can be used to control the network session.
 
 This parameter was introduced in Windows PowerShell 3.0.`, `String`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
@@ -21224,22 +20361,19 @@ This parameter was introduced in Windows PowerShell 3.0.`, `String`),
     new ConsoleCommand(
         `Rename-Item`,
         [
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. To impersonate another > user, or elevate your credentials when running this cmdlet, use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
+            new Parameter(`Force`, `Forces the cmdlet to rename items that can't otherwise be changed, such as hidden or read-only files or read-only aliases or variables. The cmdlet can't change constant aliases or variables. Implementation varies from provider to provider. For more information, see about_Providers (../Microsoft.PowerShell.Core/About/about_Providers.md).
 
 
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you are prompted for a password.
+Even using the Force parameter, the cmdlet can't override security restrictions.`, `SwitchParameter`),
+            new Parameter(`LiteralPath`, `Specifies a path to one or more locations. The value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
 
 
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
-            new Parameter(`Force`, `Forces the cmdlet to rename items that cannot otherwise be changed, such as hidden or read-only files or read-only aliases or variables. The cmdlet cannot change constant aliases or variables. Implementation varies from provider to provider. For more information, see about_Providers (../Microsoft.PowerShell.Core/About/about_Providers.md).
-
-
-Even using the Force parameter, the cmdlet cannot override security restrictions.`, `SwitchParameter`),
-            new Parameter(`LiteralPath`, `Specifies the path of the item to rename. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String`),
+For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String`),
             new Parameter(`NewName`, `Specifies the new name of the item. Enter only a name, not a path and name. If you enter a path that differs from the path that is specified in the Path parameter, "Rename-Item" generates an error. To rename and move an item, use "Move-Item".
 
 
-You cannot use wildcard characters in the value of the NewName parameter. To specify a name for multiple files, use the Replace operator in a regular expression. For more information about the Replace operator, see about_Comparison_Operators (../Microsoft.PowerShell.Core/About/about_Comparison_Operators.md).`, `String`),
+You can't use wildcard characters in the value of the NewName parameter. To specify a name for multiple files, use the Replace operator in a regular expression. For more information about the Replace operator, see about_Comparison_Operators (../Microsoft.PowerShell.Core/About/about_Comparison_Operators.md).`, `String`),
             new Parameter(`PassThru`, `Returns an object that represents the item to the pipeline. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
             new Parameter(`Path`, `Specifies the path of the item to rename.`, `String`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
@@ -21257,25 +20391,19 @@ Rename-Item [-Path] <String> [-NewName] <String> [-Credential <PSCredential>] [-
     new ConsoleCommand(
         `Rename-ItemProperty`,
         [
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
-
-
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you are prompted for a password.
-
-
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
-            new Parameter(`Exclude`, `Specifies items that this cmdlet omits. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`Filter`, `Specifies a filter in the format or language of the provider. The value of this parameter qualifies the Path parameter.
-
-
-The syntax of the filter, including the use of wildcard characters, depends on the provider. Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
+            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as " .txt". Wildcard characters are permitted. The Exclude * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`Filter`, `Specifies a filter to qualify the Path parameter. The FileSystem (../Microsoft.PowerShell.Core/About/about_FileSystem_Provider.md)provider is the only installed PowerShell provider that supports the use of filters. You can find the syntax for the FileSystem filter language in about_Wildcards (../Microsoft.PowerShell.Core/About/about_Wildcards.md). Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
             new Parameter(`Force`, `Forces the cmdlet to rename a property of an object that cannot otherwise be accessed by the user. Implementation varies from provider to provider. For more information, see about_Providers (../Microsoft.PowerShell.Core/About/about_Providers.md).`, `SwitchParameter`),
-            new Parameter(`Include`, `Specifies only those items upon which the cmdlet acts, excluding all others. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`LiteralPath`, `Specifies a path of the item property. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String`),
+            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "" .txt"". Wildcard characters are permitted. The Include * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`LiteralPath`, `Specifies a path to one or more locations. The value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
+
+
+For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String`),
             new Parameter(`Name`, `Specifies the current name of the property to rename.`, `String`),
             new Parameter(`NewName`, `Specifies the new name for the property.`, `String`),
             new Parameter(`PassThru`, `Returns an object that represents the item property. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
-            new Parameter(`Path`, `Specifies the path of the item to rename.`, `String`),
+            new Parameter(`Path`, `Specifies the path of the item to rename. Wildcard characters are permitted.`, `String`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
@@ -21313,127 +20441,7 @@ Rename-ItemProperty [-Path] <String> [-Name] <String> [-NewName] <String> [-Cred
         }
     ),
     new ConsoleCommand(
-        `Rename-VM`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Rename-VMGroup`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Rename-VMNetworkAdapter`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Rename-VMResourcePool`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Rename-VMSan`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Rename-VMSnapshot`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Rename-VMSwitch`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Repair-VM`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Reset-VMReplicationStatistics`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Reset-VMResourceMetering`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Resize-VHD`,
+        `Repair-WindowsImage`,
         [
 
         ],
@@ -21462,12 +20470,12 @@ Rename-ItemProperty [-Path] <String> [-Name] <String> [-NewName] <String> [-Cred
             new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
 
 
-Type a user name, such as User01 or Domain01\User01, or pass a PSCredential object. You can create a PSCredential object using the "Get-Credential" cmdlet. If you type a user name, this cmdlet prompts you for a password.
+Type a user name, such as User01 or Domain01\\User01, or pass a PSCredential object. You can create a PSCredential object using the "Get-Credential" cmdlet. If you type a user name, this cmdlet prompts you for a password.
 
 
 This parameter is not supported by any providers installed with PowerShell.`, `PSCredential`),
             new Parameter(`LiteralPath`, `Specifies the path to be resolved. The value of the LiteralPath parameter is used exactly as typed. No characters are interpreted as wildcard characters. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
-            new Parameter(`Path`, `Specifies the PowerShell path to resolve. This parameter is required. You can also pipe a path string to "Resolve-Path".`, `String[]`),
+            new Parameter(`Path`, `Specifies the PowerShell path to resolve. This parameter is required. You can also pipe a path string to "Resolve-Path". Wildcard characters are permitted.`, `String[]`),
             new Parameter(`Relative`, `Indicates that this cmdlet returns a relative path.`, `SwitchParameter`),
         ],
         `Resolves the wildcard characters in a path, and displays the path contents.`,
@@ -21482,67 +20490,79 @@ Resolve-Path [-Path] <String[]> [-Credential <PSCredential>] [-Relative] [<Commo
     new ConsoleCommand(
         `Restart-Computer`,
         [
-            new Parameter(`ComputerName`, `Specifies one or more computers. The default is the local computer.
+            new Parameter(`ComputerName`, `Specifies one computer name or a comma-separated array of computer names. "Restart-Computer" accepts ComputerName objects from the pipeline or variables.
 
 
-Type the NETBIOS name, an IP address, or a fully qualified domain name of a remote computer. To specify the local computer, type the computer name, a dot (.), or localhost.
+Type the NetBIOS name, an IP address, or a fully qualified domain name of a remote computer. To specify the local computer, type the computer name, a dot ".", or localhost.
 
 
-This parameter does not rely on PowerShell remoting. You can use the ComputerName parameter even if your computer is not configured to run remote commands.`, `String[]`),
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
+This parameter doesn't rely on PowerShell remoting. You can use the ComputerName parameter even if your computer isn't configured to run remote commands.
 
 
-Type a user name, such as User01 or Domain01\User01, or enter a PSCredential object, such as one generated by the Get-Credential cmdlet.`, `PSCredential`),
-            new Parameter(`Delay`, `Determines how often, in seconds, PowerShell queries the service that is specified by the For parameter to determine whether it is available after the computer is restarted. Specify a delay between queries, in seconds. The default value is 5 seconds.
+If the ComputerName parameter isn't specified, "Restart-Computer" restarts the local computer.`, `String[]`),
+            new Parameter(`Credential`, `Specifies a user account that has permission to do this action. The default is the current user.
+
+
+Type a user name, such as User01 or Domain01\\User01 , or enter a PSCredential object generated by the "Get-Credential" cmdlet. If you type a user name, you're prompted to enter the password.
+
+
+Credentials are stored in a PSCredential (/dotnet/api/system.management.automation.pscredential)object and the password is stored as a SecureString (/dotnet/api/system.security.securestring).
+
+
+> [!NOTE] > For more information about SecureString data protection, see > How secure is SecureString? (/dotnet/api/system.security.securestring#how-secure-is-securestring).`, `PSCredential`),
+            new Parameter(`Delay`, `Specifies the frequency of queries, in seconds. PowerShell queries the service specified by the For parameter to determine whether the service is available after the computer is restarted.
 
 
 This parameter is valid only together with the Wait and For parameters.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `Int16`),
-            new Parameter(`For`, `Specifies the behavior of PowerShell as it waits for the specified service or feature to become available after the computer restarts. This parameter is valid only with the Wait parameter.
+This parameter was introduced in Windows PowerShell 3.0.
+
+
+If the Delay parameter isn't specified, "Restart-Computer" uses a five second delay.`, `Int16`),
+            new Parameter(`For`, `Specifies the behavior of PowerShell as it waits for the specified service or feature to become available after the computer restarts. This parameter is only valid with the Wait parameter.
 
 
 The acceptable values for this parameter are:
 
 
-- Default. Waits for PowerShell to restart. - PowerShell. Can run commands in a PowerShell remote session on the computer. - WMI. Receives a reply to a Win32_ComputerSystem query for the computer. - WinRM. Can establish a remote session to the computer by using WS-Management.
+- Default : Waits for PowerShell to restart. - PowerShell : Can run commands in a PowerShell remote session on the computer. - WMI : Receives a reply to a Win32_ComputerSystem query for the computer. - WinRM : Can establish a remote session to the computer by using WS-Management.
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `WaitForServiceTypes`),
-            new Parameter(`Force`, `Forces an immediate restart of the computers.`, `SwitchParameter`),
-            new Parameter(`Timeout`, `Specifies the duration of the wait, in seconds. When the time-out elapses, Restart-Computer returns the command prompt, even if the computers are not restarted. The default value, -1, represents an indefinite time-out.
+            new Parameter(`Force`, `Forces an immediate restart of the computer.`, `SwitchParameter`),
+            new Parameter(`Timeout`, `Specifies the duration of the wait, in seconds. When the timeout elapses, "Restart-Computer" returns to the command prompt, even if the computers aren't restarted.
 
 
-The Timeout parameter is valid only with the Wait parameter.
+The Timeout parameter is only valid with the Wait parameter. Timeout overrides the Wait parameter's indefinite waiting period.
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `Int32`),
-            new Parameter(`Wait`, `Indicates that this cmdlet suppresses the PowerShell prompt and blocks the pipeline until all of the computers have restarted. You can use this parameter in a script to restart computers and then continue to process when the restart is finished.
+            new Parameter(`Wait`, `"Restart-Computer" suppresses the PowerShell prompt and blocks the pipeline until the computers have restarted. You can use this parameter in a script to restart computers and then continue to process when the restart is finished.
 
 
-By default, Wait waits indefinitely for the computers to restart, but you can use Timeout to adjust the timing and the For and Delay parameters to wait for particular services to be available on the restarted computers.
+The Wait parameter waits indefinitely for the computers to restart. You can use Timeout to adjust the timing and the For and Delay parameters to wait for particular services to become available on the restarted computers.
 
 
-The Wait parameter is not valid when you are restarting the local computer. If the value of the ComputerName parameter contains the names of remote computers and the local computer, Restart-Computer generates a non-terminating error for Wait on the local computer, but it waits for the remote computers to restart.
+The Wait parameter isn't valid when you're restarting the local computer. If the value of the ComputerName parameter contains the names of remote computers and the local computer, "Restart-Computer" generates a non-terminating error for Wait on the local computer, but waits for the remote computers to restart.
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
-            new Parameter(`WsmanAuthentication`, `Specifies the mechanism that is used to authenticate the user credentials when you use the WSMan protocol.
+            new Parameter(`WsmanAuthentication`, `Specifies the mechanism that is used to authenticate the user credentials. This parameter was introduced in Windows PowerShell 3.0.
 
 
-The acceptable values for this parameter are: Basic, CredSSP, Default, Digest, Kerberos, and Negotiate. The default value is Default. For more information about the values of this parameter, see AuthenticationMechanism Enumeration (https://msdn.microsoft.com/library/system.management.automation.runspaces.authenticationmechanism)in the MSDN library.
+The acceptable values for this parameter are: Basic , CredSSP , Default , Digest , Kerberos , and Negotiate .
 
 
-Caution: Credential Security Service Provider (CredSSP) authentication, in which the user credentials are passed to a remote computer to be authenticated, is designed for commands that require authentication on more than one resource, such as accessing a remote network share. This mechanism increases the security risk of the remote operation. If the remote computer is compromised, the credentials that are passed to it can be used to control the network session.
+For more information, see AuthenticationMechanism (/dotnet/api/system.management.automation.runspaces.authenticationmechanism).
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `String`),
-            new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
-            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
+> [!WARNING] > Credential Security Service Provider (CredSSP) authentication, in which the user credentials are > passed to a remote computer to be authenticated, is designed for commands that require > authentication on more than one resource, such as accessing a remote network share. This mechanism > increases the security risk of the remote operation. If the remote computer is compromised, the > credentials that are passed to it can be used to control the network session.`, `String`),
+            new Parameter(`Confirm`, `Prompts you for confirmation before running "Restart-Computer".`, `SwitchParameter`),
+            new Parameter(`WhatIf`, `Shows what would happen if the "Restart-Computer" runs. The "Restart-Computer" cmdlet isn't run.`, `SwitchParameter`),
         ],
-        `Restarts ("reboots") the operating system on local and remote computers.`,
-        `Restart-Computer [[-ComputerName] <String[]>] [[-Credential] <PSCredential>] [-Delay <Int16>] [-For {Wmi | WinRM | PowerShell}] [-Force] [-Timeout <Int32>] [-Wait] [-WsmanAuthentication {Default | Basic | Negotiate | CredSSP | Digest | Kerberos}] [-Confirm] [-WhatIf] [<CommonParameters>]`,
+        `Restarts the operating system on local and remote computers.`,
+        `Restart-Computer [[-ComputerName] <String[]>] [[-Credential] <PSCredential>] [-Delay <Int16>] [-For {Wmi | WinRM | PowerShell}] [-Force] [-Timeout <Int32>] [-Wait] [-WsmanAuthentication {Basic | CredSSP | Default | Digest | Kerberos | Negotiate}] [-Confirm] [-WhatIf] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -21551,9 +20571,9 @@ This parameter was introduced in Windows PowerShell 3.0.`, `String`),
     new ConsoleCommand(
         `Restart-Service`,
         [
-            new Parameter(`DisplayName`, `Specifies the display names of services to restarted. Wildcard carachters are permitted.`, `String[]`),
+            new Parameter(`DisplayName`, `Specifies the display names of services to restarted. Wildcard characters are permitted.`, `String[]`),
             new Parameter(`Exclude`, `Specifies services that this cmdlet omits. The value of this parameter qualifies the Name parameter. Enter a name element or pattern, such as s*. Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`Force`, `Restarts a service that has dependent services.`, `SwitchParameter`),
+            new Parameter(`Force`, `Forces the command to run without asking for user confirmation.`, `SwitchParameter`),
             new Parameter(`Include`, `Specifies services that this cmdlet restarts. The value of this parameter qualifies the Name parameter. Enter a name element or pattern, such as s*. Wildcard characters are permitted.`, `String[]`),
             new Parameter(`InputObject`, `Specifies ServiceController objects that represent the services to restart. Enter a variable that contains the objects, or type a command or expression that gets the objects.`, `ServiceController[]`),
             new Parameter(`Name`, `Specifies the service names of the services to restart.`, `String[]`),
@@ -21567,30 +20587,6 @@ This parameter was introduced in Windows PowerShell 3.0.`, `String`),
 Restart-Service [-InputObject] <ServiceController[]> [-Exclude <String[]>] [-Force] [-Include <String[]>] [-PassThru] [-Confirm] [-WhatIf] [<CommonParameters>]
 
 Restart-Service [-Name] <String[]> [-Exclude <String[]>] [-Force] [-Include <String[]>] [-PassThru] [-Confirm] [-WhatIf] [<CommonParameters>]`,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Restart-VM`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Restore-VMSnapshot`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
         "",
         (parameters, paramDictionary) => {
 
@@ -21620,48 +20616,21 @@ Resume-Service [-Name] <String[]> [-Exclude <String[]>] [-Include <String[]>] [-
         }
     ),
     new ConsoleCommand(
-        `Resume-VM`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Resume-VMReplication`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Revoke-VMConnectAccess`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
         `Save-Help`,
         [
             new Parameter(`Credential`, `Specifies a user credential. This cmdlet runs the command by using credentials of a user who has permission to access the file system location specified by the DestinationPath parameter. This parameter is valid only when the DestinationPath or LiteralPath parameter is used in the command.
 
 
-This parameter enables you to run Save-Help commands that use the DestinationPath parameter on remote computers. By providing explicit credentials, you can run the command on a remote computer and access a file share on a third computer without encountering an access denied error or using CredSSP authentication to delegate credentials.`, `PSCredential`),
+This parameter enables you to run "Save-Help" commands that use the DestinationPath parameter on remote computers. By providing explicit credentials, you can run the command on a remote computer and access a file share on a third computer without encountering an access denied error or using CredSSP authentication to delegate credentials.
+
+
+Type a user name, such as User01 or Domain01\\User01 , or enter a PSCredential object generated by the "Get-Credential" cmdlet. If you type a user name, you're prompted to enter the password.
+
+
+Credentials are stored in a PSCredential (/dotnet/api/system.management.automation.pscredential)object and the password is stored as a SecureString (/dotnet/api/system.security.securestring).
+
+
+> [!NOTE] > For more information about SecureString data protection, see > How secure is SecureString? (/dotnet/api/system.security.securestring#how-secure-is-securestring).`, `PSCredential`),
             new Parameter(`DestinationPath`, `Specifies the path of the folder in which the help files are saved. Do not specify a file name or file name extension.`, `String[]`),
             new Parameter(`Force`, `Indicates that this cmdlet does not follow the once-per-day limitation, skips version checking, and downloads files that exceed the 1 GB limit.
 
@@ -21728,7 +20697,7 @@ Save-Help [[-Module] <PSModuleInfo[]>] [[-UICulture] <CultureInfo[]>] [-Credenti
         }
     ),
     new ConsoleCommand(
-        `Save-VM`,
+        `Save-WindowsImage`,
         [
 
         ],
@@ -21742,44 +20711,43 @@ Save-Help [[-Module] <PSModuleInfo[]>] [[-UICulture] <CultureInfo[]>] [-Credenti
     new ConsoleCommand(
         `Select-Object`,
         [
-            new Parameter(`ExcludeProperty`, `Specifies the properties that this cmdlet excludes from the operation. Wildcards are permitted. This parameter is effective only when the command also includes the Property parameter.`, `String[]`),
+            new Parameter(`ExcludeProperty`, `Specifies the properties that this cmdlet excludes from the operation. Wildcards are permitted.
+
+
+Beginning in PowerShell 6, it is no longer required to include the Property parameter for ExcludeProperty to work.`, `String[]`),
             new Parameter(`ExpandProperty`, `Specifies a property to select, and indicates that an attempt should be made to expand that property.
 
 
 - If the specified property is an array, each value of the array is included in the output.
 
 
-- If the specified property is an object, the objects properties are expanded for every "InputObject"
+- If the specified property is an object, the objects properties are expanded for every InputObject In either case, the Type of objects output will match the Type of the expanded property.
 
 
+If the Property parameter is specified, "Select-Object" will attempt to add each selected property as a NoteProperty to every outputted object.
 
 
-In either case, the Type of objects output will match the Type of the expanded property.
-
-
-If the "Property" parameter is specified, "Select-Object" will attempt to add each selected property as a "NoteProperty" to every outputted object.
-
-> [!WARNING] > If you receive the error: Select : Property cannot be processed because property "<PropertyName>" already exists, consider the following. > Note that when using "-ExpandProperty", "Select-Object" can not replace an existing property. > This means: > - If the expanded object has a property of the same name, an error will occur. > - If the Selected object has a property of the same name as an Expanded objects property, an error will occur.`, `String`),
-            new Parameter(`First`, `Gets only the specified number of objects. Enter the number of objects to get.`, `Int32`),
-            new Parameter(`Index`, `Selects objects from an array based on their index values. Enter the indexes in a comma-separated list.
-
-
-Indexes in an array begin with 0, where 0 represents the first value and (n-1) represents the last value.`, `Int32[]`),
+> [!WARNING] > If you receive the error: Select : Property cannot be processed because property "<PropertyName>" > already exists, consider the following. > Note that when using "-ExpandProperty", "Select-Object" can not replace an existing property. > This means: > > - If the expanded object has a property of the same name, an error will occur. > - If the Selected object has a property of the same name as an Expanded objects property, an >   error will occur.`, `String`),
+            new Parameter(`First`, `Specifies the number of objects to select from the beginning of an array of input objects.`, `Int32`),
+            new Parameter(`Index`, `Selects objects from an array based on their index values. Enter the indexes in a comma-separated list. Indexes in an array begin with 0, where 0 represents the first value and (n-1) represents the last value.`, `Int32[]`),
             new Parameter(`InputObject`, `Specifies objects to send to the cmdlet through the pipeline. This parameter enables you to pipe objects to "Select-Object".
 
 
-When you use the InputObject parameter with "Select-Object", instead of piping command results to "Select-Object", the InputObject value-even if the value is a collection that is the result of a command, such as -InputObject (Get-Process)-is treated as a single object. Because InputObject cannot return individual properties from an array or collection of objects, it is recommended that if you use "Select-Object" to filter a collection of objects for those objects that have specific values in defined properties, you use "Select-Object" in the pipeline, as shown in the examples in this topic.`, `PSObject`),
+When you pass objects to the InputObject parameter, instead of using the pipeline, "Select-Object" treats the InputObject as a single object, even if the value is a collection. It is recommended that you use the pipeline when passing collections to "Select-Object".`, `PSObject`),
             new Parameter(`Last`, `Specifies the number of objects to select from the end of an array of input objects.`, `Int32`),
-            new Parameter(`Property`, `Specifies the properties to select.  These properties are added as "NoteProperty" members to the output objects. Wildcards are permitted.
+            new Parameter(`Property`, `Specifies the properties to select. These properties are added as NoteProperty members to the output objects. Wildcards are permitted.
 
 
-The value of the Property parameter can be a new calculated property. To create a calculated, property, use a hash table. Valid keys are:
+The value of the Property parameter can be a new calculated property. To create a calculated, property, use a hash table.
 
 
-- Name (or Label) <string>
+Valid keys are:
 
 
-- Expression <string> or <script block>`, `Object[]`),
+- Name (or Label): "<string>"
+
+
+- Expression "<string>" or "<script block>"`, `Object[]`),
             new Parameter(`Skip`, `Skips (does not select) the specified number of items. By default, the Skip parameter counts from the beginning of the array or list of objects, but if the command uses the Last parameter, it counts from the end of the list or array.
 
 
@@ -21811,89 +20779,72 @@ Select-Object [-Index <Int32[]>] [-InputObject <PSObject>] [-Unique] [-Wait] [<C
     new ConsoleCommand(
         `Select-String`,
         [
-            new Parameter(`AllMatches`, `Indicates that the cmdlet searches for more than one match in each line of text. Without this parameter, Select-String finds only the first match in each line of text.
+            new Parameter(`AllMatches`, `Indicates that the cmdlet searches for more than one match in each line of text. Without this parameter, "Select-String" finds only the first match in each line of text.
 
 
-When Select-String finds more than one match in a line of text, it still emits only one MatchInfo object for the line, but the Matches property of the object contains all of the matches.`, `SwitchParameter`),
-            new Parameter(`CaseSensitive`, `Indicates that the cmdlet makes matches case-sensitive. By default, matches are not case-sensitive.`, `SwitchParameter`),
-            new Parameter(`Context`, `Captures the specified number of lines before and after the line with the match. This allows you to view the match in context.
+When "Select-String" finds more than one match in a line of text, it still emits only one MatchInfo object for the line, but the Matches property of the object contains all of the matches.`, `SwitchParameter`),
+            new Parameter(`CaseSensitive`, `Indicates that the cmdlet matches are case-sensitive. By default, matches aren't case-sensitive.`, `SwitchParameter`),
+            new Parameter(`Context`, `Captures the specified number of lines before and after the line that matches the pattern.
 
 
-If you enter one number as the value of this parameter, that number determines the number of lines captured before and after the match. If you enter two numbers as the value, the first number determines the number of lines before the match and the second number determines the number of lines after the match.
+If you enter one number as the value of this parameter, that number determines the number of lines captured before and after the match. If you enter two numbers as the value, the first number determines the number of lines before the match and the second number determines the number of lines after the match. For example, "-Context 2,3".
 
 
-In the default display, lines with a match are indicated by a right angle bracket (ASCII 62) in the first column of the display. Unmarked lines are the context.
+In the default display, lines with a match are indicated by a right angle bracket (">") (ASCII 62) in the first column of the display. Unmarked lines are the context.
 
 
-This parameter does not change the number of objects generated by Select-String . Select-String generates one MatchInfo ( Microsoft.PowerShell.Commands.MatchInfo ) object for each match. The context is stored as an array of strings in the Context property of the object.
+The Context parameter doesn't change the number of objects generated by "Select-String". "Select-String" generates one MatchInfo (/dotnet/api/microsoft.powershell.commands.matchinfo)object for each match. The context is stored as an array of strings in the Context property of the object.
 
 
-When you pipe the output of a Select-String command to another Select-String command, the receiving command searches only the text in the matched line (the value of the Line property of the MatchInfo object), not the text in the context lines. As a result, the Context parameter is not valid on the receiving Select-String command.
+When the output of a "Select-String" command is sent down the pipeline to another "Select-String" command, the receiving command searches only the text in the matched line. The matched line is the value of the Line property of the MatchInfo object, not the text in the context lines. As a result, the Context parameter isn't valid on the receiving "Select-String" command.
 
 
-When the context includes a match, the MatchInfo object for each match includes all of the context lines, but the overlapping lines appear only once in the display.`, `Int32[]`),
-            new Parameter(`Encoding`, `Specifies the character encoding that Select-String should assume when searching the file. The default is UTF8.
+When the context includes a match, the MatchInfo object for each match includes all the context lines, but the overlapping lines appear only once in the display.`, `Int32[]`),
+            new Parameter(`Encoding`, `Specifies the type of encoding for the target file. The default value is UTF8NoBOM .
 
 
-The acceptable values for this parameter are:
+The acceptable values for this parameter are as follows:
 
 
-- Unicode
+- ASCII : Uses the encoding for the ASCII (7-bit) character set. - BigEndianUnicode : Encodes in UTF-16 format using the big-endian byte order. - OEM : Uses the default encoding for MS-DOS and console programs. - Unicode : Encodes in UTF-16 format using the little-endian byte order. - UTF7 : Encodes in UTF-7 format. - UTF8 : Encodes in UTF-8 format. - UTF8BOM : Encodes in UTF-8 format with Byte Order Mark (BOM) - UTF8NoBOM : Encodes in UTF-8 format without Byte Order Mark (BOM) - UTF32 : Encodes in UTF-32 format.
 
 
-- UTF7
-
-
-- UTF8
-
-
-- UTF32
-
-
-- ASCII
-
-
-- BigEndianUnicode
-
-
-- Default
-
-
-- OEM
-
-
-
-
-Default is the encoding of the system's current ANSI code page. OEM is the current original equipment manufacturer code page identifier for the operating system.`, `Encoding`),
-            new Parameter(`Exclude`, `Exclude the specified items. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as *.txt. Wildcards are permitted.`, `String[]`),
-            new Parameter(`Include`, `Specifies an array of items that the cmdlet excludes from the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as *.txt. Wildcards are permitted.`, `String[]`),
+Beginning with PowerShell 6.2, the Encoding parameter also allows numeric IDs of registered code pages (like "-Encoding 1251") or string names of registered code pages (like "-Encoding "windows-1251""). For more information, see the .NET documentation for Encoding.CodePage (/dotnet/api/system.text.encoding.codepage?view=netcore-2.2).`, `Encoding`),
+            new Parameter(`Exclude`, `Exclude the specified items. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcards are permitted.`, `String[]`),
+            new Parameter(`Include`, `Includes the specified items. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcards are permitted.`, `String[]`),
             new Parameter(`InputObject`, `Specifies the text to be searched. Enter a variable that contains the text, or type a command or expression that gets the text.
 
 
-Using the InputObject parameter is not the same as piping strings to Select-String . The differences are as follows:
+Using the InputObject parameter isn't the same as sending strings down the pipeline to "Select-String".
 
 
-- When you pipe more than one string (a collection) to Select-String , Select-String searches for the specified text in each string and returns each string that contains the search text. - When you use the InputObject parameter to submit a collection of strings, Select-String treats the collection as a single combined string and returns the strings as a unit if it finds the search text in any string.`, `PSObject`),
-            new Parameter(`List`, `Indicates that the cmdlet returns only the first match in each input file. By default, Select-String returns a MatchInfo object for each match it finds.`, `SwitchParameter`),
-            new Parameter(`LiteralPath`, `Specifies the path to the files to be searched. Unlike Path , the value of the LiteralPath parameter is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell Windows PowerShell not to interpret any characters as escape sequences.`, `String[]`),
-            new Parameter(`NotMatch`, `Indicates that the cmdlet finds text that does not match the specified pattern.`, `SwitchParameter`),
+When you pipe more than one string to the "Select-String" cmdlet, it searches for the specified text in each string and returns each string that contains the search text.
+
+
+When you use the InputObject parameter to submit a collection of strings, "Select-String" treats the collection as a single combined string. "Select-String" returns the strings as a unit if it finds the search text in any string.`, `PSObject`),
+            new Parameter(`List`, `Only the first instance of matching text is returned from each input file. This is the most efficient way to retrieve a list of files that have contents matching the regular expression.
+
+
+By default, "Select-String" returns a MatchInfo object for each match it finds.`, `SwitchParameter`),
+            new Parameter(`LiteralPath`, `Specifies the path to the files to be searched. The value of the LiteralPath parameter is used exactly as it's typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences. For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
+            new Parameter(`NotMatch`, `The NotMatch parameter finds text that doesn't match the specified pattern.`, `SwitchParameter`),
             new Parameter(`Path`, `Specifies the path to the files to search. Wildcards are permitted. The default location is the local directory.
 
 
-Specify files in the directory, such as log1.txt, .doc, or .*. If you specify only a directory, the command fails.`, `String[]`),
-            new Parameter(`Pattern`, `Specifies the text to find. Type a string or regular expression. If you type a string, use the SimpleMatch parameter.
+Specify files in the directory, such as "log1.txt", " .doc", or " .*". If you specify only a directory, the command fails.`, `String[]`),
+            new Parameter(`Pattern`, `Specifies the text to find on each line. Type a string or regular expression. If you type a string, use the SimpleMatch parameter.
 
 
-To learn about regular expressions, see about_Regular_Expressions.`, `String[]`),
-            new Parameter(`Quiet`, `Indicates that the cmdlet returns a Boolean value (True or False), instead of a MatchInfo object. The value is True if the pattern is found; otherwise, the value is False.`, `SwitchParameter`),
-            new Parameter(`SimpleMatch`, `Indicates that the cmdlet uses a simple match rather than a regular expression match. In a simple match, Select-String searches the input for the text in the Pattern parameter. It does not interpret the value of the Pattern parameter as a regular expression statement.`, `SwitchParameter`),
+To learn about regular expressions, see about_Regular_Expressions (../Microsoft.PowerShell.Core/About/about_Regular_Expressions.md).`, `String[]`),
+            new Parameter(`Quiet`, `Indicates that the cmdlet returns a Boolean value (True or False), instead of a MatchInfo object. The value is True if the pattern is found; otherwise the value is False.`, `SwitchParameter`),
+            new Parameter(`SimpleMatch`, `Indicates that the cmdlet uses a simple match rather than a regular expression match. In a simple match, "Select-String" searches the input for the text in the Pattern parameter. It doesn't interpret the value of the Pattern parameter as a regular expression statement.`, `SwitchParameter`),
         ],
         `Finds text in strings and files.`,
-        `Select-String [-Pattern] <String[]> [-AllMatches] [-CaseSensitive] [-Context <Int32[]>] [-Encoding <Encoding>] [-Exclude <String[]>] [-Include <String[]>] -InputObject <PSObject> [-List] [-NotMatch] [-Quiet] [-SimpleMatch] [<CommonParameters>]
+        `Select-String [-Pattern] <String[]> [-AllMatches] [-CaseSensitive] [-Context <Int32[]>] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Exclude <String[]>] [-Include <String[]>] -InputObject <PSObject> [-List] [-NotMatch] [-Quiet] [-SimpleMatch] [<CommonParameters>]
 
-Select-String [-Pattern] <String[]> [-AllMatches] [-CaseSensitive] [-Context <Int32[]>] [-Encoding <Encoding>] [-Exclude <String[]>] [-Include <String[]>] [-List] -LiteralPath <String[]> [-NotMatch] [-Quiet] [-SimpleMatch] [<CommonParameters>]
+Select-String [-Pattern] <String[]> [-AllMatches] [-CaseSensitive] [-Context <Int32[]>] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Exclude <String[]>] [-Include <String[]>] [-List] -LiteralPath <String[]> [-NotMatch] [-Quiet] [-SimpleMatch] [<CommonParameters>]
 
-Select-String [-Pattern] <String[]> [-Path] <String[]> [-AllMatches] [-CaseSensitive] [-Context <Int32[]>] [-Encoding <Encoding>] [-Exclude <String[]>] [-Include <String[]>] [-List] [-NotMatch] [-Quiet] [-SimpleMatch] [<CommonParameters>]`,
+Select-String [-Pattern] <String[]> [-Path] <String[]> [-AllMatches] [-CaseSensitive] [-Context <Int32[]>] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Exclude <String[]>] [-Include <String[]>] [-List] [-NotMatch] [-Quiet] [-SimpleMatch] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -21903,7 +20854,7 @@ Select-String [-Pattern] <String[]> [-Path] <String[]> [-AllMatches] [-CaseSensi
         `Select-Xml`,
         [
             new Parameter(`Content`, `Specifies a string that contains the XML to search. You can also pipe strings to Select-Xml .`, `String[]`),
-            new Parameter(`LiteralPath`, `Specifies the paths and file names of the XML files to search. Unlike Path , the value of the LiteralPath parameter is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell Windows PowerShell not to interpret any characters as escape sequences.`, `String[]`),
+            new Parameter(`LiteralPath`, `Specifies the paths and file names of the XML files to search. Unlike Path , the value of the LiteralPath parameter is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
             new Parameter(`Namespace`, `Specifies a hash table of the namespaces used in the XML. Use the format @{<namespaceName> = <namespaceValue>}.
 
 
@@ -21931,91 +20882,58 @@ Select-Xml [-XPath] <String> [-Xml] <XmlNode[]> [-Namespace <Hashtable>] [<Commo
     new ConsoleCommand(
         `Send-MailMessage`,
         [
-            new Parameter(`Attachments`, `Specifies the path and file names of files to be attached to the email message. You can use this parameter or pipe the paths and file names to Send-MailMessage .`, `String[]`),
-            new Parameter(`Bcc`, `Specifies the email addresses that receive a copy of the mail but are not listed as recipients of the message. Enter names (optional) and the email address, such as "Name <someone@example.com>".`, `String[]`),
-            new Parameter(`Body`, `Specifies the body of the email message.`, `String`),
-            new Parameter(`BodyAsHtml`, `Indicates that the value of the Body parameter contains HTML.`, `SwitchParameter`),
-            new Parameter(`Cc`, `Specifies the email addresses to which a carbon copy (CC) of the email message is sent. Enter names (optional) and the email address, such as "Name <someone@example.com>".`, `String[]`),
+            new Parameter(`Attachments`, `Specifies the path and file names of files to be attached to the email message. You can use this parameter or pipe the paths and file names to "Send-MailMessage".`, `String[]`),
+            new Parameter(`Bcc`, `Specifies the email addresses that receive a copy of the mail but are not listed as recipients of the message. Enter names (optional) and the email address, such as "Name <someone@fabrikam.com>".`, `String[]`),
+            new Parameter(`Body`, `Specifies the content of the email message.`, `String`),
+            new Parameter(`BodyAsHtml`, `Specifies that the value of the Body parameter contains HTML.`, `SwitchParameter`),
+            new Parameter(`Cc`, `Specifies the email addresses to which a carbon copy (CC) of the email message is sent. Enter names (optional) and the email address, such as "Name <someone@fabrikam.com>".`, `String[]`),
             new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
 
 
-Type a user name, such as User01 or Domain01\User01. Or, enter a PSCredential object, such as one from the Get-Credential cmdlet.`, `PSCredential`),
-            new Parameter(`DeliveryNotificationOption`, `Specifies the delivery notification options for the email message. You can specify multiple values. None is the default value. The alias for this parameter is dno .
+Type a user name, such as User01 or Domain01\\User01 . Or, enter a PSCredential object, such as one from the "Get-Credential" cmdlet.
 
 
-The delivery notifications are sent in an email message to the address specified in the value of the From parameter. The acceptable values for this parameter are:
+Credentials are stored in a PSCredential (/dotnet/api/system.management.automation.pscredential)object and the password is stored as a SecureString (/dotnet/api/system.security.securestring).
 
 
-- None. No notification.
+> [!NOTE] > For more information about SecureString data protection, see > How secure is SecureString? (/dotnet/api/system.security.securestring#how-secure-is-securestring).`, `PSCredential`),
+            new Parameter(`DeliveryNotificationOption`, `Specifies the delivery notification options for the email message. You can specify multiple values. None is the default value. The alias for this parameter is DNO .
 
 
-- OnSuccess. Notify if the delivery is successful.
+The delivery notifications are sent to the address in the From parameter.
 
 
-- OnFailure. Notify if the delivery is unsuccessful.
+The acceptable values for this parameter are as follows:
 
 
-- Delay. Notify if the delivery is delayed.
+- None : No notification. - OnSuccess : Notify if the delivery is successful. - OnFailure : Notify if the delivery is unsuccessful. - Delay : Notify if the delivery is delayed. - Never : Never notify.`, `DeliveryNotificationOptions`),
+            new Parameter(`Encoding`, `Specifies the type of encoding for the target file. The default value is UTF8NoBOM .
 
 
-- Never. Never notify.`, `DeliveryNotificationOptions`),
-            new Parameter(`Encoding`, `Specifies the encoding used for the body and subject. The acceptable values for this parameter are:
+The acceptable values for this parameter are as follows:
 
 
-- ASCII
+- ASCII : Uses the encoding for the ASCII (7-bit) character set. - BigEndianUnicode : Encodes in UTF-16 format using the big-endian byte order. - OEM : Uses the default encoding for MS-DOS and console programs. - Unicode : Encodes in UTF-16 format using the little-endian byte order. - UTF7 : Encodes in UTF-7 format. - UTF8 : Encodes in UTF-8 format. - UTF8BOM : Encodes in UTF-8 format with Byte Order Mark (BOM) - UTF8NoBOM : Encodes in UTF-8 format without Byte Order Mark (BOM) - UTF32 : Encodes in UTF-32 format.
 
 
-- UTF8
-
-
-- UTF7
-
-
-- UTF32
-
-
-- Unicode
-
-
-- BigEndianUnicode
-
-
-- Default
-
-
-- OEM
-
-
-
-
-ASCII is the default.`, `Encoding`),
-            new Parameter(`From`, `Specifies the address from which the mail is sent. Enter a name (optional) and email address, such as "Name <someone@example.com>". This parameter is required.`, `String`),
+Beginning with PowerShell 6.2, the Encoding parameter also allows numeric IDs of registered code pages (like "-Encoding 1251") or string names of registered code pages (like "-Encoding "windows-1251""). For more information, see the .NET documentation for Encoding.CodePage (/dotnet/api/system.text.encoding.codepage?view=netcore-2.2).`, `Encoding`),
+            new Parameter(`From`, `The From parameter is required. This parameter specifies the sender's email address. Enter a name (optional) and email address, such as "Name <someone@fabrikam.com>".`, `String`),
             new Parameter(`Port`, `Specifies an alternate port on the SMTP server. The default value is 25, which is the default SMTP port.`, `Int32`),
-            new Parameter(`Priority`, `Specifies the priority of the email message. The acceptable values for this parameter are:
+            new Parameter(`Priority`, `Specifies the priority of the email message. Normal is the default. The acceptable values for this parameter are Normal, High, and Low.`, `MailPriority`),
+            new Parameter(`ReplyTo`, `Specifies additional email addresses (other than the From address) to use to reply to this message. Enter names (optional) and the email address, such as "Name <someone@fabrikam.com>".
 
 
-- Normal
-
-
-- High
-
-
-- Low
-
-
-
-
-Normal is the default.`, `MailPriority`),
+This parameter was introduced in PowerShell 6.2.`, `String[]`),
             new Parameter(`SmtpServer`, `Specifies the name of the SMTP server that sends the email message.
 
 
-The default value is the value of the "$PSEmailServer" preference variable. If the preference variable is not set and this parameter is omitted, the command fails.`, `String`),
-            new Parameter(`Subject`, `Specifies the subject of the email message. This parameter is required.`, `String`),
-            new Parameter(`To`, `Specifies the addresses to which the mail is sent. Enter names (optional) and the email address, such as "Name <someone@example.com>". This parameter is required.`, `String[]`),
-            new Parameter(`UseSsl`, `Indicates that the cmdlet uses the Secure Sockets Layer (SSL) protocol to establish a connection to the remote computer to send mail. By default, SSL is not used.`, `SwitchParameter`),
+The default value is the value of the "$PSEmailServer" preference variable. If the preference variable is not set and this parameter is not used, the "Send-MailMessage" command fails.`, `String`),
+            new Parameter(`Subject`, `The Subject parameter is required. This parameter specifies the subject of the email message.`, `String`),
+            new Parameter(`To`, `The To parameter is required. This parameter specifies the recipient's email address. If there are multiple recipients, separate their addresses with a comma (","). Enter names (optional) and the email address, such as "Name <someone@fabrikam.com>".`, `String[]`),
+            new Parameter(`UseSsl`, `The Secure Sockets Layer (SSL) protocol is used to establish a secure connection to the remote computer to send mail. By default, SSL is not used.`, `SwitchParameter`),
         ],
         `Sends an email message.`,
-        `Send-MailMessage [-To] <String[]> [-Subject] <String> [[-Body] <String>] [[-SmtpServer] <String>] [-Attachments <String[]>] [-Bcc <String[]>] [-BodyAsHtml] [-Cc <String[]>] [-Credential <PSCredential>] [-DeliveryNotificationOption {None | OnSuccess | OnFailure | Delay | Never}] [-Encoding <Encoding>] -From <String> [-Port <Int32>] [-Priority {Normal | Low | High}] [-UseSsl] [<CommonParameters>]`,
+        `Send-MailMessage [-To] <String[]> [-Subject] <String> [[-Body] <String>] [[-SmtpServer] <String>] [-Attachments <String[]>] [-Bcc <String[]>] [-BodyAsHtml] [-Cc <String[]>] [-Credential <PSCredential>] [-DeliveryNotificationOption {None | OnSuccess | OnFailure | Delay | Never}] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] -From <String> [-Port <Int32>] [-Priority {Normal | High | Low}] [-ReplyTo <String[]>] [-UseSsl] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -22036,18 +20954,24 @@ The default value is the value of the "$PSEmailServer" preference variable. If t
     new ConsoleCommand(
         `Set-Alias`,
         [
-            new Parameter(`Description`, `Specifies a description of the alias. You can type any string. If the description includes spaces, enclose it quotation marks.`, `String`),
-            new Parameter(`Force`, `Indicates that the cmdlet will set a read-only alias. Use the Option parameter to create a read-only alias. The Force parameter cannot set a constant alias.`, `SwitchParameter`),
-            new Parameter(`Name`, `Specifies the new alias. You can use any alphanumeric characters in an alias, but the first character cannot be a number.`, `String`),
-            new Parameter(`Option`, `Sets the value of the Options property of the alias. The acceptable values for this parameter are:
+            new Parameter(`Description`, `Specifies a description of the alias. You can type any string. If the description includes spaces, enclose it single quotation marks.`, `String`),
+            new Parameter(`Force`, `Use the Force parameter to change or delete an alias that has the Option parameter set to ReadOnly .
 
 
-- None. Sets no options. (None is the default.) - ReadOnly. Can be deleted. Cannot be changed, except by using the Force parameter. - Constant. Cannot be deleted or changed. - Private. The alias is available only in the current scope. - AllScope. The alias is copied to any new scopes that are created. - Unspecified.
+The Force parameter cannot change or delete an alias with the Option parameter set to Constant .`, `SwitchParameter`),
+            new Parameter(`Name`, `Specifies the name of a new alias. An alias name can contain alphanumeric characters and hyphens. Alias names cannot be numeric, such as 123.`, `String`),
+            new Parameter(`Option`, `Sets the Option property value of the alias. Values such as ReadOnly and Constant protect an alias from unintended changes. To see the Option property of all aliases in the session, type "Get-Alias | Format-Table -Property Name, Options -Autosize".
 
 
-To see the Options property of all aliases in the session, type "get-alias | format-table -property name, options -autosize".`, `ScopedItemOptions`),
-            new Parameter(`PassThru`, `Returns an object representing the item with which you are working. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
-            new Parameter(`Scope`, `Specifies the scope in which this alias is valid. The acceptable values for this parameter are:
+The acceptable values for this parameter are as follows:
+
+
+- AllScope The alias is copied to any new scopes that are created. - Constant Cannot be changed or deleted. - None Sets no options and is the default. - Private The alias is available only in the current scope. - ReadOnly Cannot be changed or deleted unless the Force parameter is used. - Unspecified`, `ScopedItemOptions`),
+            new Parameter(`PassThru`, `Returns an object that represents the alias. Use a format cmdlet such as "Format-List" to display the object. By default, "Set-Alias" does not generate any output.`, `SwitchParameter`),
+            new Parameter(`Scope`, `Specifies the scope in which this alias is valid. The default value is Local . For more information, see about_Scopes (../Microsoft.PowerShell.Core/About/about_Scopes.md).
+
+
+The acceptable values are as follows:
 
 
 - Global
@@ -22056,21 +20980,31 @@ To see the Options property of all aliases in the session, type "get-alias | for
 - Local
 
 
-- Script
+- Private
 
 
-- A number relative to the current scope (0 through the number of scopes, where 0 is the current scope and 1 is its parent).
+- Numbered scopes
 
 
-
-
-Local is the default. For more information, see about_Scopes.`, `String`),
-            new Parameter(`Value`, `Specifies the name of the cmdlet or command element that is being aliased.`, `String`),
+- Script`, `String`),
+            new Parameter(`Value`, `Specifies the name of the cmdlet or command that the alias runs. The Value parameter is the alias's Definition property.`, `String`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
-        `Creates or changes an alias for a cmdlet or other command element in the current PowerShell session.`,
-        `Set-Alias [-Name] <String> [-Value] <String> [-Description <String>] [-Force] [-Option {None | ReadOnly | Constant | Private | AllScope | Unspecified}] [-PassThru] [-Scope <String>] [-Confirm] [-WhatIf] [<CommonParameters>]`,
+        `Creates or changes an alias for a cmdlet or other command in the current PowerShell session.`,
+        `Set-Alias [-Name] <String> [-Value] <String> [-Description <String>] [-Force] [-Option {AllScope | Constant | None | Private | ReadOnly | Unspecified}] [-PassThru] [-Scope {Global | Local | Private | Numbered scopes | Script}] [-Confirm] [-WhatIf] [<CommonParameters>]`,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Set-AppBackgroundTaskResourcePolicy`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
         "",
         (parameters, paramDictionary) => {
 
@@ -22078,6 +21012,18 @@ Local is the default. For more information, see about_Scopes.`, `String`),
     ),
     new ConsoleCommand(
         `Set-AppxDefaultVolume`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Set-AppXProvisionedDataFile`,
         [
 
         ],
@@ -22115,36 +21061,36 @@ Local is the default. For more information, see about_Scopes.`, `String`),
     new ConsoleCommand(
         `Set-Content`,
         [
-            new Parameter(`AsByteStream`, `{{Fill AsByteStream Description}}`, `SwitchParameter`),
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
+            new Parameter(`AsByteStream`, `Specifies that the content should be read as a stream of bytes. This parameter was introduced in PowerShell 6.0.
 
 
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you will be prompted for a password.
+A warning occurs when you use the AsByteStream parameter with the Encoding parameter. The AsByteStream parameter ignores any encoding and the output is returned as a stream of bytes.`, `SwitchParameter`),
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
+            new Parameter(`Encoding`, `Specifies the type of encoding for the target file. The default value is UTF8NoBOM .
 
 
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
-            new Parameter(`Encoding`, `Specifies the file encoding. The acceptable values for this parameter are:
+Encoding is a dynamic parameter that the FileSystem provider adds to "Set-Content". This parameter works only in file system drives.
 
 
-- ASCII : Uses the encoding for the ASCII (7-bit) character set. - BigEndianUnicode : Encodes in UTF-16 format using the big-endian byte order. - Default : Encodes using the default value: ASCII. - OEM : Uses the default encoding for MS-DOS and console programs. - Byte : Encodes a set of characters into a sequence of bytes. - String : Uses the encoding type for a string. - Unicode : Encodes in UTF-16 format using the little-endian byte order. - UTF7 : Encodes in UTF-7 format. - UTF8 : Encodes in UTF-8 format. - UTF8BOM : Encodes in UTF-8 format with Byte Order Mark (BOM) - UF8NOBOM : Encodes in UTF-8 format without Byte Order Mark (BOM) - UTF32 :  Encodes in UTF-32 format. - Unknown : The encoding type is unknown or invalid; the data can be treated as binary.
+The acceptable values for this parameter are as follows:
 
 
-The default value is ASCII.
+- ASCII : Uses the encoding for the ASCII (7-bit) character set. - BigEndianUnicode : Encodes in UTF-16 format using the big-endian byte order. - OEM : Uses the default encoding for MS-DOS and console programs. - Unicode : Encodes in UTF-16 format using the little-endian byte order. - UTF7 : Encodes in UTF-7 format. - UTF8 : Encodes in UTF-8 format. - UTF8BOM : Encodes in UTF-8 format with Byte Order Mark (BOM) - UTF8NoBOM : Encodes in UTF-8 format without Byte Order Mark (BOM) - UTF32 : Encodes in UTF-32 format.
 
 
-Encoding is a dynamic parameter that the FileSystem provider adds to "Set-Content". This parameter works only in file system drives.`, `Encoding`),
-            new Parameter(`Exclude`, `Omits the specified items. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcards are permitted.`, `String[]`),
-            new Parameter(`Filter`, `Specifies a filter in the format or language of the provider. The value of this parameter qualifies the Path parameter. The syntax of the filter, including the use of wildcard characters, depends on the provider. Filters are more efficient than other parameters, because the provider applies them when it is retrieving the objects, instead of having PowerShell filter the objects after they are retrieved.`, `String`),
-            new Parameter(`Force`, `Forces the cmdlet to set the contents of a file, even if the file is read-only. Implementation varies from provider to provider. For more information, see about_Providers (../Microsoft.PowerShell.Core/About/about_Providers.md). Using the "-Force" parameter does not override security restrictions.`, `SwitchParameter`),
-            new Parameter(`Include`, `Changes only the specified items. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcards are permitted.`, `String[]`),
-            new Parameter(`LiteralPath`, `Specifies the path of the item that receives the content. Unlike Path, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
+Beginning with PowerShell 6.2, the Encoding parameter also allows numeric IDs of registered code pages (like "-Encoding 1251") or string names of registered code pages (like "-Encoding "windows-1251""). For more information, see the .NET documentation for Encoding.CodePage (/dotnet/api/system.text.encoding.codepage?view=netcore-2.2).`, `Encoding`),
+            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as " .txt". Wildcard characters are permitted. The Exclude * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`Filter`, `Specifies a filter to qualify the Path parameter. The FileSystem (../Microsoft.PowerShell.Core/About/about_FileSystem_Provider.md)provider is the only installed PowerShell provider that supports the use of filters. You can find the syntax for the FileSystem filter language in about_Wildcards (../Microsoft.PowerShell.Core/About/about_Wildcards.md). Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
+            new Parameter(`Force`, `Forces the cmdlet to set the contents of a file, even if the file is read-only. Implementation varies from provider to provider. For more information, see about_Providers (../Microsoft.PowerShell.Core/About/about_Providers.md). The Force parameter does not override security restrictions.`, `SwitchParameter`),
+            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "" .txt"". Wildcard characters are permitted. The Include * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`LiteralPath`, `Specifies a path to one or more locations. The value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
+
+
+For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
             new Parameter(`NoNewline`, `The string representations of the input objects are concatenated to form the output. No spaces or newlines are inserted between the output strings. No newline is added after the last output string.`, `SwitchParameter`),
             new Parameter(`PassThru`, `Returns an object that represents the content. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
             new Parameter(`Path`, `Specifies the path of the item that receives the content. Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`Stream`, `Specifies an alternative data stream for content. If the stream does not exist, this cmdlet creates it. Wildcard characters are not supported.
-
-
-Stream is a dynamic parameter that the FileSystem provider adds to "Set-Content". This parameter works only in file system drives.
+            new Parameter(`Stream`, `Specifies an alternative data stream for content. If the stream does not exist, this cmdlet creates it. Wildcard characters are not supported. Stream is a dynamic parameter that the FileSystem provider adds to "Set-Content". This parameter works only in file system drives.
 
 
 You can use the "Set-Content" cmdlet to change the content of the Zone.Identifier alternate data stream. However, we do not recommend this as a way to eliminate security checks that block files that are downloaded from the Internet. If you verify that a downloaded file is safe, use the "Unblock-File" cmdlet.
@@ -22155,10 +21101,22 @@ This parameter was introduced in PowerShell 3.0.`, `String`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
-        `Writes or replaces the content in an item with new content.`,
-        `Set-Content [-Value] <Object[]> [-AsByteStream] [-Credential <PSCredential>] [-Encoding <Encoding>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] -LiteralPath <String[]> [-NoNewline] [-PassThru] [-Stream <String>] [-Confirm] [-WhatIf] [<CommonParameters>]
+        `Writes new content or replaces existing content in a file.`,
+        `Set-Content [-Value] <Object[]> [-AsByteStream] [-Credential <PSCredential>] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] -LiteralPath <String[]> [-NoNewline] [-PassThru] [-Stream <String>] [-Confirm] [-WhatIf] [<CommonParameters>]
 
-Set-Content [-Path] <String[]> [-Value] <Object[]> [-AsByteStream] [-Credential <PSCredential>] [-Encoding <Encoding>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] [-NoNewline] [-PassThru] [-Stream <String>] [-Confirm] [-WhatIf] [<CommonParameters>]`,
+Set-Content [-Path] <String[]> [-Value] <Object[]> [-AsByteStream] [-Credential <PSCredential>] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] [-NoNewline] [-PassThru] [-Stream <String>] [-Confirm] [-WhatIf] [<CommonParameters>]`,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Set-Culture`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
         "",
         (parameters, paramDictionary) => {
 
@@ -22167,18 +21125,18 @@ Set-Content [-Path] <String[]> [-Value] <Object[]> [-AsByteStream] [-Credential 
     new ConsoleCommand(
         `Set-Date`,
         [
-            new Parameter(`Adjust`, `Specifies the value for which this cmdlet adds or subtracts from the current date and time. can type an adjustment in standard date and time format for your locale or use the Adjust parameter to pass a TimeSpan object from New-TimeSpan to Set-Date .`, `TimeSpan`),
-            new Parameter(`Date`, `Changes the date and time to the specified values. You can type a new date in the short date format and a time in the standard time format for your locale. Or, you can pass a DateTime object from Get-Date.
+            new Parameter(`Adjust`, `Specifies the value for which this cmdlet adds or subtracts from the current date and time. can type an adjustment in standard date and time format for your locale or use the Adjust parameter to pass a TimeSpan object from "New-TimeSpan" to "Set-Date".`, `TimeSpan`),
+            new Parameter(`Date`, `Changes the date and time to the specified values. You can type a new date in the short date format and a time in the standard time format for your locale. Or, you can pass a DateTime object from "Get-Date".
 
 
-If you specify a date, but not a time, Set-Date changes the time to midnight on the specified date. If you specify only a time, it does not change the date.`, `DateTime`),
+If you specify a date, but not a time, "Set-Date" changes the time to midnight on the specified date. If you specify only a time, it does not change the date.`, `DateTime`),
             new Parameter(`DisplayHint`, `Specifies which elements of the date and time are displayed.The acceptable values for this parameter are:
 
 
-- Date. displays only the date. - Time. displays only the time. - DateTime. displays the date and time.
+- Date.   displays only the date. - Time.   displays only the time. - DateTime.   displays the date and time.
 
 
-This parameter affects only the display. It does not affect the DateTime object that Get-Date retrieves.`, `DisplayHintType`),
+This parameter affects only the display. It does not affect the DateTime object that "Get-Date" retrieves.`, `DisplayHintType`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
@@ -22186,6 +21144,54 @@ This parameter affects only the display. It does not affect the DateTime object 
         `Set-Date [-Adjust] <TimeSpan> [-DisplayHint {Date | Time | DateTime}] [-Confirm] [-WhatIf] [<CommonParameters>]
 
 Set-Date [-Date] <DateTime> [-DisplayHint {Date | Time | DateTime}] [-Confirm] [-WhatIf] [<CommonParameters>]`,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Set-DeliveryOptimizationStatus`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Set-DODownloadMode`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Set-DOPercentageMaxBackgroundBandwidth`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Set-DOPercentageMaxForegroundBandwidth`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
         "",
         (parameters, paramDictionary) => {
 
@@ -22206,21 +21212,15 @@ Set-Date [-Date] <DateTime> [-DisplayHint {Date | Time | DateTime}] [-Confirm] [
     new ConsoleCommand(
         `Set-Item`,
         [
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
-
-
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you are prompted for a password.
-
-
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
-            new Parameter(`Exclude`, `Specifies items that this cmdlet omits. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`Filter`, `Specifies a filter in the format or language of the provider. The value of this parameter qualifies the Path parameter.
-
-
-The syntax of the filter, including the use of wildcard characters, depends on the provider. Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
+            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as " .txt". Wildcard characters are permitted. The Exclude * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`Filter`, `Specifies a filter to qualify the Path parameter. The FileSystem (../Microsoft.PowerShell.Core/About/about_FileSystem_Provider.md)provider is the only installed PowerShell provider that supports the use of filters. You can find the syntax for the FileSystem filter language in about_Wildcards (../Microsoft.PowerShell.Core/About/about_Wildcards.md). Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
             new Parameter(`Force`, `Forces the cmdlet to set items that cannot otherwise be changed, such as read-only alias or variables. The cmdlet cannot change constant aliases or variables. Implementation varies from provider to provider. For more information, see about_Providers (../Microsoft.PowerShell.Core/About/about_Providers.md). Even using the Force parameter, the cmdlet cannot override security restrictions.`, `SwitchParameter`),
-            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`LiteralPath`, `Specifies a path of the location of the items. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
+            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "" .txt"". Wildcard characters are permitted. The Include * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`LiteralPath`, `Specifies a path to one or more locations. The value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
+
+
+For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
             new Parameter(`PassThru`, `Passes an object that represents the item to the pipeline. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
             new Parameter(`Path`, `Specifies a path of the location of the items. Wildcard characters are permitted.`, `String[]`),
             new Parameter(`Value`, `Specifies a new value for the item.`, `Object`),
@@ -22239,25 +21239,19 @@ Set-Item [-Path] <String[]> [[-Value] <Object>] [-Credential <PSCredential>] [-E
     new ConsoleCommand(
         `Set-ItemProperty`,
         [
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
-
-
-Type a user name, such as "User01" or "Domain01\User01", or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, you are prompted for a password.
-
-
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
-            new Parameter(`Exclude`, `Specifies those items upon which the cmdlet does not act, and includes all others. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
-            new Parameter(`Filter`, `Specifies a filter in the format or language of the provider. The value of this parameter qualifies the Path parameter.
-
-
-The syntax of the filter, including the use of wildcard characters, depends on the provider. Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
+            new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as " .txt". Wildcard characters are permitted. The Exclude * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
+            new Parameter(`Filter`, `Specifies a filter to qualify the Path parameter. The FileSystem (../Microsoft.PowerShell.Core/About/about_FileSystem_Provider.md)provider is the only installed PowerShell provider that supports the use of filters. You can find the syntax for the FileSystem filter language in about_Wildcards (../Microsoft.PowerShell.Core/About/about_Wildcards.md). Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
             new Parameter(`Force`, `Forces the cmdlet to set a property on items that cannot otherwise be accessed by the user. Implementation varies from provider to provider. For more information, see about_Providers (../Microsoft.PowerShell.Core/About/about_Providers.md).`, `SwitchParameter`),
-            new Parameter(`Include`, `Specifies only those items upon which the cmdlet acts, which excludes all others. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
+            new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "" .txt"". Wildcard characters are permitted. The Include * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
             new Parameter(`InputObject`, `Specifies the object that has the properties that this cmdlet changes. Enter a variable that contains the object or a command that gets the object.`, `PSObject`),
-            new Parameter(`LiteralPath`, `Specifies a path of the item property. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
+            new Parameter(`LiteralPath`, `Specifies a path to one or more locations. The value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
+
+
+For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
             new Parameter(`Name`, `Specifies the name of the property.`, `String`),
             new Parameter(`PassThru`, `Returns an object that represents the item property. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
-            new Parameter(`Path`, `Specifies the path of the items with the property to modify.`, `String[]`),
+            new Parameter(`Path`, `Specifies the path of the items with the property to modify. Wildcard characters are permitted.`, `String[]`),
             new Parameter(`Value`, `Specifies the value of the property.`, `Object`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
@@ -22305,13 +21299,16 @@ Set-ItemProperty [-Path] <String[]> [-Name] <String> [-Value] <Object> [-Credent
             new Parameter(`LiteralPath`, `Specifies a path of the location. The value of the LiteralPath parameter is used exactly as it is typed. No characters are interpreted as wildcard characters. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
 
 
-If the path is the "-" character, then the new working location will be the previous working location in history (if it exists). This is equivalent to using "Pop-Location" as if "Push-Location" had been executed prior. Similarly, if the path is the "+" character, then the new working location will be the next working location in history (if it exists).`, `String`),
-            new Parameter(`PassThru`, `Returns a System.Management.Automation.PathInfo object that represents the location. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
-            new Parameter(`Path`, `Specify the path of a new working location. If no path is provided, "Set-Location" will default to the current user's home directory. If the path is the "-" character, then the new working location will be the previous working location in history (if it exists). This is equivalent to using "Pop-Location" as if "Push-Location" had been executed prior. Similarly, if the path is the "+" character, then the new working location will be the next working location in history (if it exists).`, `String`),
+PowerShell keeps a history of the last 20 locations you have set. If the path is the "-" character, then the new working location will be the previous working location in history (if it exists). Similarly, if the path is the "+" character, then the new working location will be the next working location in history (if it exists). This is similar to using "Pop-Location" and "Push-Location" except that the history is a list, not a stack, and there is no way to display this history list.`, `String`),
+            new Parameter(`PassThru`, `Returns a PathInfo object that represents the location. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
+            new Parameter(`Path`, `Specify the path of a new working location. If no path is provided, "Set-Location" defaults to the current user's home directory. When wildcards are used, the cmdlet chooses the first path that matches the wildcard pattern.
+
+
+PowerShell keeps a history of the last 20 locations you have set. If the path is the "-" character, then the new working location will be the previous working location in history (if it exists). Similarly, if the path is the "+" character, then the new working location will be the next working location in history (if it exists). This is similar to using "Pop-Location" and "Push-Location" except that the history is a list, not a stack, and there is no way to display this history list.`, `String`),
             new Parameter(`StackName`, `Specifies the location stack name that this cmdlet makes the current location stack. Enter a location stack name. To indicate the unnamed default location stack, type "$null" or an empty string ("").
 
 
-The "*-Location" cmdlets act on the current stack unless you use the StackName parameter to specify a different stack.`, `String`),
+The " -Location" cmdlets act on the current stack unless you use the StackName * parameter to specify a different stack.`, `String`),
         ],
         `Sets the current working location to a specified location.`,
         `Set-Location -LiteralPath <String> [-PassThru] [<CommonParameters>]
@@ -22349,7 +21346,19 @@ Set-MarkdownOption -Theme <string> [-PassThru] [<CommonParameters>]
 Set-MarkdownOption [-InputObject] <psobject> [-PassThru] [<CommonParameters>]`,
         `syntaxItem
 ----------
-{@{name=Set-MarkdownOption; CommonParameters=True; parameter=System.Object[]}, @{name=Set-MarkdownOption; CommonParam...`,
+{@{name=Set-MarkdownOption; CommonParameters=True; parameter=System.Object[]}, @{name=Set-MarkdownOption; CommonParamet…`,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Set-NonRemovableAppsPolicy`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
         "",
         (parameters, paramDictionary) => {
 
@@ -22357,6 +21366,18 @@ Set-MarkdownOption [-InputObject] <psobject> [-PassThru] [<CommonParameters>]`,
     ),
     new ConsoleCommand(
         `Set-PackageSource`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Set-ProcessMitigation`,
         [
 
         ],
@@ -22379,7 +21400,7 @@ If this parameter is omitted, or no action is specified, execution stops at the 
 When the Action parameter is used, the Action script block runs at each breakpoint. Execution does not stop unless the script block includes the Break keyword. If you use the Continue keyword in the script block, execution resumes until the next breakpoint.
 
 
-For more information, see about_Script_Blocks, about_Break, and about_Continue.`, `ScriptBlock`),
+For more information, see about_Script_Blocks (../Microsoft.PowerShell.Core/About/about_Script_Blocks.md), about_Break (../Microsoft.PowerShell.Core/About/about_Break.md), and about_Continue (../Microsoft.PowerShell.Core/About/about_Continue.md).`, `ScriptBlock`),
             new Parameter(`Column`, `Specifies the column number of the column in the script file on which execution stops. Enter only one column number. The default is column 1.
 
 
@@ -22387,7 +21408,7 @@ The Column value is used with the value of the Line parameter to specify the bre
 
 
 Columns are counted from the top left margin beginning with column number 1 (not 0). If you specify a column that does not exist in the script, an error is not declared, but the breakpoint is never executed.`, `Int32`),
-            new Parameter(`Command`, `Sets a command breakpoint. Enter cmdlet names, such as Get-Process, or function names. Wildcards are permitted.
+            new Parameter(`Command`, `Sets a command breakpoint. Enter cmdlet names, such as "Get-Process", or function names. Wildcards are permitted.
 
 
 Execution stops just before each instance of each command is executed. If the command is a function, execution stops each time the function is called and at each BEGIN, PROCESS, and END section.`, `String[]`),
@@ -22395,24 +21416,24 @@ Execution stops just before each instance of each command is executed. If the co
 
 
 Lines are counted from the top left margin of the script file beginning with line number 1 (not 0). If you specify a blank line, execution stops before the next non-blank line. If the line is out of range, the breakpoint is never hit.`, `Int32[]`),
-            new Parameter(`Mode`, `Specifies the mode of access that triggers variable breakpoints. The default is Write.
+            new Parameter(`Mode`, `Specifies the mode of access that triggers variable breakpoints. The default is Write .
 
 
 This parameter is valid only when the Variable parameter is used in the command. The mode applies to all breakpoints set in the command. The acceptable values for this parameter are:
 
 
-- Write. Stops execution immediately before a new value is written to the variable. -  Read. Stops execution when the variable is read, that is, when its value is accessed, either to be assigned, displayed, or used. In read mode, execution does not stop when the value of the variable changes. -  ReadWrite. Stops execution when the variable is read or written.`, `VariableAccessMode`),
+- Write - Stops execution immediately before a new value is written to the variable. - Read - Stops execution when the variable is read, that is, when its value is accessed, either   to be assigned, displayed, or used. In read mode, execution does not stop when the value of the   variable changes. - ReadWrite - Stops execution when the variable is read or written.`, `VariableAccessMode`),
             new Parameter(`Script`, `Specifies an array of script files that this cmdlet sets a breakpoint in. Enter the paths and file names of one or more script files. If the files are in the current directory, you can omit the path. Wildcards are permitted.
 
 
 By default, variable breakpoints and command breakpoints are set on any command that runs in the current session. This parameter is required only when setting a line breakpoint.`, `String[]`),
-            new Parameter(`Variable`, `Specifies an array of variables that this cmdlet sets breakpoints on. Enter a comma-separated list of variables without dollar signs ($).
+            new Parameter(`Variable`, `Specifies an array of variables that this cmdlet sets breakpoints on. Enter a comma-separated list of variables without dollar signs ("$").
 
 
 Use the Mode parameter to determine the mode of access that triggers the breakpoints. The default mode, Write, stops execution just before a new value is written to the variable.`, `String[]`),
         ],
         `Sets a breakpoint on a line, command, or variable.`,
-        `Set-PSBreakpoint [-Script] <String[]> [-Line] <Int32[]> [[-Column] <Int32>] [-Action <ScriptBlock>] [<CommonParameters>]
+        `Set-PSBreakpoint [[-Script] <String[]>] [-Line] <Int32[]> [[-Column] <Int32>] [-Action <ScriptBlock>] [<CommonParameters>]
 
 Set-PSBreakpoint [[-Script] <String[]>] [-Action <ScriptBlock>] -Command <String[]> [<CommonParameters>]
 
@@ -22425,25 +21446,22 @@ Set-PSBreakpoint [[-Script] <String[]>] [-Action <ScriptBlock>] [-Mode {Read | W
     new ConsoleCommand(
         `Set-PSDebug`,
         [
-            new Parameter(`Off`, `Indicates that this cmdlet turns off all script debugging features.
+            new Parameter(`Off`, `Turns off all script debugging features.`, `SwitchParameter`),
+            new Parameter(`Step`, `Turns on script stepping. Before each line runs, PowerShell prompts you to stop, continue, or enter a new interpreter level to inspect the state of the script.
 
 
-A "Set-StrictMode -Off" command disables the verification set by a "Set-PSDebug -Strict" command. For more information, see Set-StrictMode.`, `SwitchParameter`),
-            new Parameter(`Step`, `Indicates that this cmdlet turns on script stepping. Before each line runs, PowerShell prompts you to stop, continue, or enter a new interpreter level to inspect the state of the script.
+Specifying the Step parameter automatically sets a trace level of "1".`, `SwitchParameter`),
+            new Parameter(`Strict`, `Specifies that variables must be assigned a value before being referenced in a script. If a variable is referenced before a value is assigned, PowerShell returns an exception error. This is equivalent to "Set-StrictMode -Version 1". For more information, see Set-StrictMode (Set-StrictMode.md).`, `SwitchParameter`),
+            new Parameter(`Trace`, `Specifies the trace level for each line in a script. Each line is traced as it's run.
 
 
-Specifying the Step parameter automatically sets a trace level of 1.`, `SwitchParameter`),
-            new Parameter(`Strict`, `Indicates that PowerShell returns an exception if a variable is referenced before a value is assigned to the variable.
-
-
-A "Set-StrictMode -Off" command disables the verification set by a "Set-PSDebug -Strict" command. For more information, see Set-StrictMode .`, `SwitchParameter`),
-            new Parameter(`Trace`, `Specifies the trace level. The acceptable values for this parameter are:
-
-
-- 1: Trace script lines as they run.
+The acceptable values for this parameter are as follows:
 
 
 - 0: Turn script tracing off.
+
+
+- 1: Trace script lines as they run.
 
 
 - 2: Trace script lines, variable assignments, function calls, and scripts.`, `Int32`),
@@ -22460,10 +21478,29 @@ Set-PSDebug [-Step] [-Strict] [-Trace <Int32>] [<CommonParameters>]`,
     new ConsoleCommand(
         `Set-PSReadLineKeyHandler`,
         [
+            new Parameter(`Chord`, `The key or sequence of keys to be bound to a Function or ScriptBlock. A single binding is specified with a single string. If the binding is a sequence of keys, the keys are separated with a comma, e.g. "Ctrl+X,Ctrl+X". Note that this parameter accepts multiple strings. Each string is a separate binding, not a sequence of keys for a single binding.`, `String[]`),
+            new Parameter(`ScriptBlock`, `The ScriptBlock is called when the Chord is entered. The ScriptBlock is passed one or sometimes two arguments. The first argument is the key pressed (a ConsoleKeyInfo.)  The second argument could be any object depending on the context.`, `ScriptBlock`),
+            new Parameter(`BriefDescription`, `A brief description of the key binding. Used in the output of cmdlet Get-PSReadLineKeyHandler.`, `String`),
+            new Parameter(`Description`, `A more verbose description of the key binding. Used in the output of the cmdlet Get-PSReadLineKeyHandler.`, `String`),
+            new Parameter(`Function`, `The name of an existing key handler provided by PSReadLine. This parameter allows one to rebind existing key bindings or to bind a handler provided by PSReadLine that is currently unbound.
 
+
+Using the ScriptBlock parameter, one can achieve equivalent functionality by calling the method directly from the ScriptBlock. This parameter is preferred though - it makes it easier to determine which functions are bound and unbound.`, `String`),
+            new Parameter(`ViMode`, `Specify which vi mode the binding applies to.
+
+
+Valid values are:
+
+
+-- Insert
+
+
+-- Command`, `ViMode`),
         ],
-        `See help file for details.`,
-        ``,
+        `Binds or rebinds keys to user defined or PSReadLine provided key handlers.`,
+        `Set-PSReadLineKeyHandler [-Chord] <String[]> [-ScriptBlock] <ScriptBlock> [-BriefDescription <String>] [-Description <String>] [-ViMode <ViMode>] [<CommonParameters>]
+
+Set-PSReadLineKeyHandler [-Chord] <String[]> [-Function] <String> [-ViMode <ViMode>] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -22472,10 +21509,194 @@ Set-PSDebug [-Step] [-Strict] [-Trace <Int32>] [<CommonParameters>]`,
     new ConsoleCommand(
         `Set-PSReadLineOption`,
         [
+            new Parameter(`EditMode`, `Specifies the command line editing mode. This will reset any key bindings set by Set-PSReadLineKeyHandler.
 
+
+Valid values are:
+
+
+-- Windows: Key bindings emulate PowerShell/cmd with some bindings emulating Visual Studio.
+
+
+-- Emacs: Key bindings emulate Bash or Emacs.
+
+
+-- Vi: Key bindings emulate Vi.`, `EditMode`),
+            new Parameter(`PromptText`, `When there is a parse error, PSReadLine changes a part of the prompt red. PSReadLine analyzes your prompt function to determine how it can change just the color of part of your prompt, but this analysis cannot be 100% reliable.
+
+
+Use this option if PSReadLine is changing your prompt in surprising ways, be sure to include any trailing whitespace.
+
+
+For example, if my prompt function looked like:
+
+
+function prompt { Write-Host -NoNewLine -ForegroundColor Yellow "$pwd"; return "# " }
+
+
+Then set:
+
+
+Set-PSReadLineOption -PromptText "# "`, `String`),
+            new Parameter(`ContinuationPrompt`, `Specifies the string displayed at the beginning of the second and subsequent lines when multi-line input is being entered. Defaults to '>> '. The empty string is valid.`, `String`),
+            new Parameter(`HistoryNoDuplicates`, `Repeated commands will usually be added to history to preserve ordering during recall, but typically you don't want to see the same command multiple times when recalling or searching the history.
+
+
+This option controls the recall behavior - duplicates will are still added to the history file, but if this option is set, only the most recent invocation will appear when recalling commands.`, `SwitchParameter`),
+            new Parameter(`AddToHistoryHandler`, `Specifies a ScriptBlock that can be used to control which commands get added to PSReadLine history.
+
+
+The ScriptBlock is passed the command line. If the ScriptBlock returns "$true", the command line is added to history, otherwise it is not.`, `Func[String, Boolean]`),
+            new Parameter(`CommandValidationHandler`, `Specifies a ScriptBlock that is called from ValidateAndAcceptLine. If an exception is thrown, validation fails and the error is reported.
+
+
+"ValidateAndAcceptLine" is used to avoid cluttering your history with commands that can't work, e.g. specifying parameters that do not exist.`, `Action[CommandAst]`),
+            new Parameter(`HistorySearchCursorMovesToEnd`, `When using "HistorySearchBackward" and "HistorySearchForward", the default behavior leaves the cursor at the end of the search string if any.
+
+
+To move the cursor to end of the line just like when there is no search string, set this option to "$true".`, `SwitchParameter`),
+            new Parameter(`MaximumHistoryCount`, `Specifies the maximum number of commands to save in PSReadLine history.
+
+
+Note that PSReadLine history is separate from PowerShell history.`, `Int32`),
+            new Parameter(`MaximumKillRingCount`, `Specifies the maximum number of items stored in the kill ring.`, `Int32`),
+            new Parameter(`ShowToolTips`, `When displaying possible completions, show tooltips in the list of completions.
+
+
+This option was not enabled by default in earliers versions of PSReadLine, but is enabled by default now. To disable, set this option to "$false".`, `SwitchParameter`),
+            new Parameter(`ExtraPromptLineCount`, `Use this option if your prompt spans more than one line.
+
+
+This option is needed less than in previous version of PSReadLine, but is useful when the "InvokePrompt" function is used.`, `Int32`),
+            new Parameter(`Colors`, `The Colors parameter is used to specify various colors used by PSReadLine.
+
+
+The argument is a Hashtable where the keys specify which element and the values specify the color.
+
+
+Colors can be either a value from ConsoleColor, e.g. [ConsoleColor]::Red, or a valid escape sequence. Valid escape sequences depend on your terminal, e.g. "$([char]0x1b)[91m" (Windows PowerShell) or ""e[91m" (PowerShell 6.0) specifies Red in most terminals. You can specify other escape sequences as well, including but not limited to:
+
+
+-- 256 color
+
+
+-- 24 bit color
+
+
+-- Foreground, background, or both
+
+
+-- Inverse, bold
+
+
+
+
+The valid keys include:
+
+
+-- ContinuationPrompt: The color of the continuation prompt.
+
+
+-- Emphasis: The emphasis color, e.g. the matching text when searching history.
+
+
+-- Error: The error color, e.g. in the prompt.
+
+
+-- Selection: The color to highlight the menu selection or selected text.
+
+
+-- Default: The default token color.
+
+
+-- Comment: The comment token color.
+
+
+-- Keyword: The keyword token color.
+
+
+-- String: The string token color.
+
+
+-- Operator: The operator token color.
+
+
+-- Variable: The variable token color.
+
+
+-- Command: The command token color.
+
+
+-- Parameter: The parameter token color.
+
+
+-- Type: The type token color.
+
+
+-- Number: The number token color.
+
+-- Member: The member name token color.`, `Hashtable`),
+            new Parameter(`DingTone`, `When BellStyle is set to Audible, specifies the tone of the beep.`, `Int32`),
+            new Parameter(`DingDuration`, `When BellStyle is set to Audible, specifies the duration of the beep.`, `Int32`),
+            new Parameter(`BellStyle`, `Specifies how PSReadLine should respond to various error and ambiguous conditions.
+
+
+Valid values are:
+
+
+-- Audible: a short beep
+
+
+-- Visible: a brief flash is performed
+
+
+-- None: no feedback`, `BellStyle`),
+            new Parameter(`CompletionQueryItems`, `Specifies the maximum number of completion items that will be shown without prompting.
+
+
+If the number of items to show is greater than this value, PSReadLine will prompt y/n before displaying the completion items.`, `Int32`),
+            new Parameter(`WordDelimiters`, `Specifies the characters that delimit words for functions like ForwardWord or KillWord.`, `string`),
+            new Parameter(`HistorySearchCaseSensitive`, `Specifies the searching history is case sensitive in functions like ReverseSearchHistory or HistorySearchBackward.`, `SwitchParameter`),
+            new Parameter(`HistorySaveStyle`, `Specifies how PSReadLine should save history.
+
+
+Valid values are:
+
+
+-- SaveIncrementally: save history after each command is executed - and share across multiple instances of PowerShell
+
+
+-- SaveAtExit: append history file when PowerShell exits
+
+
+-- SaveNothing: don't use a history file`, `HistorySaveStyle`),
+            new Parameter(`HistorySavePath`, `Specifies the path to the file where history is saved.`, `String`),
+            new Parameter(`AnsiEscapeTimeout`, `This option is specific to Windows when input is redirected, e.g. when running under "tmux" or "screen".
+
+
+With redirected input on Windows, many keys are sent as a sequence of characters starting with the Escape character, so it is, in general, impossible to distinguish between a single Escape followed by other key presses.
+
+
+The assumption is the terminal sends the characters quickly, faster than a user types, so PSReadLine waits for this timeout before concluding it won't see an escape sequence.
+
+
+You can experiment with this timeout if you see issues or random unexpected characters when you type.`, `int`),
+            new Parameter(`ViModeIndicator`, `This option sets the visual indication for the current mode in Vi mode - either insert mode or command mode.
+
+
+Valid values are:
+
+
+-- None - there is no indication
+
+
+-- Prompt - the prompt changes color
+
+
+-- Cursor - the cursor changes size`, `ViModeStyle`),
         ],
-        `See help file for details.`,
-        ``,
+        `Customizes the behavior of command line editing in PSReadLine.`,
+        `Set-PSReadLineOption [-EditMode <EditMode>] [-PromptText <String>] [-ContinuationPrompt <String>] [-HistoryNoDuplicates] [-AddToHistoryHandler <Func[String, Boolean]>] [-CommandValidationHandler <Action[CommandAst]>] [-HistorySearchCursorMovesToEnd] [-MaximumHistoryCount <Int32>] [-MaximumKillRingCount <Int32>] [-ShowToolTips] [-ExtraPromptLineCount <Int32>] [-Colors <Hashtable>] [-DingTone <Int32>] [-DingDuration <Int32>] [-BellStyle <BellStyle>] [-CompletionQueryItems <Int32>] [-WordDelimiters <string>] [-HistorySearchCaseSensitive] [-HistorySaveStyle <HistorySaveStyle>] [-HistorySavePath <String>] [-AnsiEscapeTimeout <int>] [-ViModeIndicator <ViModeStyle>] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -22487,21 +21708,21 @@ Set-PSDebug [-Step] [-Strict] [-Trace <Int32>] [<CommonParameters>]`,
             new Parameter(`AccessMode`, `Enables and disables the session configuration and determines whether it can be used for remote or local sessions on the computer. The acceptable values for this parameter are:
 
 
-- Disabled. Disables the session configuration. It cannot be used for remote or local access to the computer. This value sets the Enabled property of the session configuration (WSMan:\<ComputerName>\PlugIn\<SessionConfigurationName>\Enabled) to False. - Local. Adds a Network_Deny_All entry to security descriptor of the session configuration. Users of the local computer can use the session configuration to create a local loopback session on the same computer, but remote users are denied access. - Remote. Removes Deny_All and Network_Deny_All entries from the security descriptors of the session configuration. Users of local and remote computers can use the session configuration to create sessions and run commands on this computer.
+- Disabled. Disables the session configuration. It cannot be used for remote or local access to the   computer. This value sets the Enabled property of the session configuration   ("WSMan:<ComputerName>\\PlugIn<SessionConfigurationName>\\Enabled") to False . - Local. Adds a Network_Deny_All entry to security descriptor of the session configuration.   Users of the local computer can use the session configuration to create a local loopback session   on the same computer, but remote users are denied access. - Remote. Removes Deny_All and Network_Deny_All entries from the security descriptors of the   session configuration. Users of local and remote computers can use the session configuration to   create sessions and run commands on this computer.
 
 
-The default value is Remote.
+The default value is Remote .
 
 
-Other cmdlets can override the value of this parameter later. For example, the Enable-PSRemoting cmdlet enables all session configurations on the computer and permits remote access to them, and the Disable-PSRemoting cmdlet permits only local access to all session configurations on the computer.
+Other cmdlets can override the value of this parameter later. For example, the "Enable-PSRemoting" cmdlet enables all session configurations on the computer and permits remote access to them, and the "Disable-PSRemoting" cmdlet permits only local access to all session configurations on the computer.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `PSSessionConfigurationAccessMode`),
-            new Parameter(`ApplicationBase`, `Specifies the path of the assembly file ( .dll) that is specified in the value of the AssemblyName* parameter.`, `String`),
+This parameter was introduced in PowerShell 3.0.`, `PSSessionConfigurationAccessMode`),
+            new Parameter(`ApplicationBase`, `Specifies the path of the assembly file (*.dll) that is specified in the value of the AssemblyName parameter.`, `String`),
             new Parameter(`AssemblyName`, `Specifies the assembly name. This cmdlet creates a session configuration based on a class that is defined in an assembly.
 
 
-Enter the file name or full path of an assembly .dll file that defines a session configuration. If you enter only the file name, you can enter the path in the value of the ApplicationBase parameter.`, `String`),
+Enter the filename or full path of an assembly .dll file that defines a session configuration. If you enter only the file name, you can enter the path in the value of the ApplicationBase parameter.`, `String`),
             new Parameter(`ConfigurationTypeName`, `Specifies the type of the session configuration that is defined in the assembly in the AssemblyName parameter. The type that you specify must implement the System.Management.Automation.Remoting.PSSessionConfiguration class.
 
 
@@ -22521,16 +21742,16 @@ If an object size limit is defined in the configuration type that is specified i
             new Parameter(`ModulesToImport`, `Specifies the modules and snap-ins that are automatically imported into sessions that use the session configuration. Enter the module and snap-in names.
 
 
-By default, only the Microsoft.PowerShell.Core snap-in is imported into sessions, but unless the cmdlets are excluded, you can use the Import-Module and Add-PSSnapin cmdlets to add modules and snap-ins to the session.
+By default, only the Microsoft.PowerShell.Core snap-in is imported into sessions, but unless the cmdlets are excluded, you can use the "Import-Module" and Add-PSSnapin cmdlets to add modules and snap-ins to the session.
 
 
-The modules specified in this parameter value are imported in additions to modules specified in the session configuration file ( New-PSSessionConfigurationFile ). However, settings in the session configuration file can hide the commands exported by modules or prevent users from using them.
+The modules specified in this parameter value are imported in additions to modules specified in the session configuration file ("New-PSSessionConfigurationFile"). However, settings in the session configuration file can hide the commands exported by modules or prevent users from using them.
 
 
-The modules specified in this parameter value replace the list of modules specified by using the ModulesToImport parameter of the Register-PSSessionConfiguration cmdlet.
+The modules specified in this parameter value replace the list of modules specified by using the ModulesToImport parameter of the "Register-PSSessionConfiguration" cmdlet.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `Object[]`),
+This parameter was introduced in PowerShell 3.0.`, `Object[]`),
             new Parameter(`Name`, `Specifies the name of the session configuration that you want to change.
 
 
@@ -22538,46 +21759,46 @@ You cannot use this parameter to change the name of the session configuration.`,
             new Parameter(`NoServiceRestart`, `Does not restart the WinRM service, and suppresses the prompt to restart the service.
 
 
-By default, when you run Set-PSSessionConfiguration , you are prompted to restart the WinRM service to make the new session configuration effective. Until the WinRM service is restarted, the new session configuration is not effective.
+By default, when you run "Set-PSSessionConfiguration", you are prompted to restart the WinRM service to make the new session configuration effective. Until the WinRM service is restarted, the new session configuration is not effective.
 
 
-To restart the WinRM service without prompting, use the Force parameter. To restart the WinRM service manually, use the Restart-Service cmdlet.`, `SwitchParameter`),
-            new Parameter(`Path`, `Specifies the path of a session configuration file (.pssc), such as one created by the New-PSSessionConfigurationFile cmdlet. If you omit the path, the default is the current directory.
+To restart the WinRM service without prompting, use the Force parameter. To restart the WinRM service manually, use the "Restart-Service" cmdlet.`, `SwitchParameter`),
+            new Parameter(`Path`, `Specifies the path of a session configuration file (.pssc), such as one created by the "New-PSSessionConfigurationFile" cmdlet. If you omit the path, the default is the current directory.
 
 
-For information about how to modify a session configuration file, see the help topic for the New-PSSessionConfigurationFile cmdlet.
+For information about how to modify a session configuration file, see the help topic for the "New-PSSessionConfigurationFile" cmdlet.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `String`),
-            new Parameter(`PSVersion`, `Specifies the version of Windows PowerShell in sessions that use this session configuration.
+This parameter was introduced in PowerShell 3.0.`, `String`),
+            new Parameter(`PSVersion`, `Specifies the version of PowerShell in sessions that use this session configuration.
 
 
 The value of this parameter takes precedence over the value of the PowerShellVersion key in the session configuration file.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `Version`),
+This parameter was introduced in PowerShell 3.0.`, `Version`),
             new Parameter(`RunAsCredential`, `Specifies credentials for commands in the session. By default, commands run with the permissions of the current user.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `PSCredential`),
+This parameter was introduced in PowerShell 3.0.`, `PSCredential`),
             new Parameter(`SecurityDescriptorSddl`, `Specifies a different Security Descriptor Definition Language (SDDL) string for the configuration.
 
 
 This string determines the permissions that are required to use the new session configuration. To use a session configuration in a session, users must have at least Execute(Invoke) permission for the configuration.
 
 
-To use the default security descriptor for the configuration, enter an empty string ("") or a value of $Null. The default is the root SDDL in the WSMan: drive.
+To use the default security descriptor for the configuration, enter an empty string ("") or a value of "$Null". The default is the root SDDL in the WSMan: drive.
 
 
 If the security descriptor is complex, consider using the ShowSecurityDescriptorUI parameter instead of this one. You cannot use both parameters in the same command.`, `String`),
-            new Parameter(`SessionTypeOption`, `Specifies type-specific options for the session configuration. Enter a session type options object, such as the PSWorkflowExecutionOption object that the New-PSWorkflowExecutionOption cmdlet returns.
+            new Parameter(`SessionTypeOption`, `Specifies type-specific options for the session configuration. Enter a session type options object, such as the PSWorkflowExecutionOption object that the "New-PSWorkflowExecutionOption" cmdlet returns.
 
 
-The options of sessions that use the session configuration are determined by the values of session options and the session configuration options. Unless specified, options set in the session, such as by using the New-PSSessionOption cmdlet, take precedence over options set in the session configuration. However, session option values cannot exceed maximum values set in the session configuration.
+The options of sessions that use the session configuration are determined by the values of session options and the session configuration options. Unless specified, options set in the session, such as by using the "New-PSSessionOption" cmdlet, take precedence over options set in the session configuration. However, session option values cannot exceed maximum values set in the session configuration.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `PSSessionTypeOption`),
-            new Parameter(`ShowSecurityDescriptorUI`, `Indicates that this cmdlet a property sheet that helps you create a new SDDL for the session configuration. The property sheet appears after you run the Set-PSSessionConfiguration command and then restart the WinRM service.
+This parameter was introduced in PowerShell 3.0.`, `PSSessionTypeOption`),
+            new Parameter(`ShowSecurityDescriptorUI`, `Indicates that this cmdlet a property sheet that helps you create a new SDDL for the session configuration. The property sheet appears after you run the "Set-PSSessionConfiguration" command and then restart the WinRM service.
 
 
 When you set permissions to the configuration, remember that users must have at least Execute(Invoke) permission to use the session configuration in a session.
@@ -22587,10 +21808,10 @@ You cannot use the SecurityDescriptorSDDL parameter and this parameter in the sa
             new Parameter(`StartupScript`, `Specifies the startup script for the configuration. Enter the fully qualified path of a PowerShell script. The specified script runs in the new session that uses the session configuration.
 
 
-To delete a startup script from a session configuration, enter an empty string ("") or a value of $Null.
+To delete a startup script from a session configuration, enter an empty string ("") or a value of "$Null".
 
 
-You can use a startup script to further configure the user session. If the script generates an error, even a non-terminating error, the session is not created and the New-PSSession command fails.`, `String`),
+You can use a startup script to further configure the user session. If the script generates an error, even a non-terminating error, the session is not created and the "New-PSSession" command fails.`, `String`),
             new Parameter(`ThreadOptions`, `Specifies the thread options setting in the configuration. This setting defines how threads are created and used when a command is executed in the session. The acceptable values for this parameter are:
 
 
@@ -22608,20 +21829,20 @@ You can use a startup script to further configure the user session. If the scrip
 
 
 
-The default value is UseCurrentThread.
+The default value is UseCurrentThread .
 
-For more information, see "PSThreadOptions Enumeration" in the Microsoft Developer Network (MSDN) library.`, `PSThreadOptions`),
-            new Parameter(`TransportOption`, `Specifies the transport options for the session configuration. Enter a transport options object, such as the WSManConfigurationOption object that the New-PSTransportOption cmdlet returns.
-
-
-The options of sessions that use the session configuration are determined by the values of session options and the session configuration options. Unless specified, options set in the session, such as by using the New-PSSessionOption cmdlet, take precedence over options set in the session configuration. However, session option values cannot exceed maximum values set in the session configuration.
+For more information, see PSThreadOptions Enumeration (/dotnet/api/system.management.automation.runspaces.psthreadoptions).`, `PSThreadOptions`),
+            new Parameter(`TransportOption`, `Specifies the transport options for the session configuration. Enter a transport options object, such as the WSManConfigurationOption object that the "New-PSTransportOption" cmdlet returns.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `PSTransportOption`),
+The options of sessions that use the session configuration are determined by the values of session options and the session configuration options. Unless specified, options set in the session, such as by using the "New-PSSessionOption" cmdlet, take precedence over options set in the session configuration. However, session option values cannot exceed maximum values set in the session configuration.
+
+
+This parameter was introduced in PowerShell 3.0.`, `PSTransportOption`),
             new Parameter(`UseSharedProcess`, `Use only one process to host all sessions that are started by the same user and use the same session configuration. By default, each session is hosted in its own process.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
+This parameter was introduced in PowerShell 3.0.`, `SwitchParameter`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
@@ -22651,40 +21872,49 @@ Set-PSSessionConfiguration [-Name] <String> [-AccessMode {Disabled | Local | Rem
     new ConsoleCommand(
         `Set-Service`,
         [
-            new Parameter(`Credential`, `Specifies the credentials under which the service should be run.`, `PSCredential`),
+            new Parameter(`Confirm`, `Prompts you for confirmation before running "Set-Service".`, `SwitchParameter`),
+            new Parameter(`Credential`, `Specifies the account used by the service as the Service Logon Account (/windows/desktop/ad/about-service-logon-accounts).
+
+
+Type a user name, such as User01 or Domain01\\User01 , or enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, this cmdlet prompts you for a password.
+
+
+Credentials are stored in a PSCredential (/dotnet/api/system.management.automation.pscredential)object and the password is stored as a SecureString (/dotnet/api/system.security.securestring).
+
+
+> [!NOTE] > For more information about SecureString data protection, see > How secure is SecureString? (/dotnet/api/system.security.securestring#how-secure-is-securestring).
+
+
+This parameter was introduced in PowerShell 6.0.`, `PSCredential`),
             new Parameter(`Description`, `Specifies a new description for the service.
 
 
-The service description appears in Services in Computer Management. Description is not a property of the ServiceController object that "Get-Service" gets. To see the service description, use "Get-CimInstance" to get a Win32_Service object that represents the service.`, `String`),
+The service description appears in Computer Management, Services . The Description isn't a property of the "Get-Service" ServiceController object. To see the service description, use "Get-CimInstance" that returns a Win32_Service object that represents the service.`, `String`),
             new Parameter(`DisplayName`, `Specifies a new display name for the service.`, `String`),
-            new Parameter(`InputObject`, `Specifies a ServiceController object that represents the service to change. Enter a variable that contains the object, or type a command or expression that gets the object, such as a "Get-Service" command. You can also pipe a service object to "Set-Service".`, `ServiceController`),
-            new Parameter(`Name`, `Specifies the service name of the service to be changed. Wildcard characters are not permitted. You can also pipe a service name to "Set-Service".`, `String`),
-            new Parameter(`PassThru`, `Returns objects that represent the services that were changed. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
-            new Parameter(`StartupType`, `Specifies the start mode of the service. The acceptable values for this parameter are:
+            new Parameter(`Force`, `Specifies the Stop mode of the service. This parameter only works when "-Status Stopped" is used. If enabled, "Set-Service" stops the dependent services before the target service is stopped. By default, exceptions are raised when other running services depend on the target service.`, `SwitchParameter`),
+            new Parameter(`InputObject`, `Specifies a ServiceController object that represents the service to change. Enter a variable that contains the object, or type a command or expression that gets the object, such as a "Get-Service" command. You can use the pipeline to send a service object to "Set-Service".`, `ServiceController`),
+            new Parameter(`Name`, `Specifies the service name of the service to be changed. Wildcard characters aren't permitted. You can use the pipeline to send a service name to "Set-Service".`, `String`),
+            new Parameter(`PassThru`, `Returns a ServiceController object that represents the services that were changed. By default, "Set-Service" doesn't generate any output.`, `SwitchParameter`),
+            new Parameter(`StartupType`, `Specifies the start mode of the service.
 
 
-- Automatic. Start when the system boots.
+The acceptable values for this parameter are as follows:
 
 
-- AutomaticDelayedStart. Starts shortly after the system boots.
+- Automatic - The service is started or was started by the operating system, at system start-up.   If an automatically started service depends on a manually started service, the manually started   service is also started automatically at system startup. - AutomaticDelayedStart - Starts shortly after the system boots. - Disabled - The service is disabled and cannot be started by a user or application. - InvalidValue - Has no effect. The cmdlet does not return an error but the StartupType of the   service is not changed. - Manual - The service is started only manually, by a user, using the Service Control Manager,   or by an application.`, `ServiceStartupType`),
+            new Parameter(`Status`, `Specifies the status for the service.
 
 
-- Manual. Starts only when started by a user or program.
+The acceptable values for this parameter are as follows:
 
 
-- Disabled. Cannot be started.`, `ServiceStartupType`),
-            new Parameter(`Status`, `Specifies the status for the service. The acceptable values for this parameter are:
-
-
-- Running.   Starts the service. - Stopped.   Stops the service. - Paused.   Suspends the service.`, `String`),
-            new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
-            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
-            new Parameter(`Force`, `Specifies the Stop mode of the service. This parameter only works when "-Status Stopped" is used. If enabled, the cmdlet will stop the dependent services before stop the target service. By default, it will raise exception when other running services depends on the target service.`, `SwitchParameter`),
+- Paused . Suspends the service. - Running . Starts the service. - Stopped . Stops the service.`, `String`),
+            new Parameter(`WhatIf`, `Shows what would happen if "Set-Service" runs. The cmdlet isn't run.`, `SwitchParameter`),
         ],
         `Starts, stops, and suspends a service, and changes its properties.`,
-        `Set-Service [-InputObject] <ServiceController> [-Credential <PSCredential>] [-Description <String>] [-DisplayName <String>] [-PassThru] [-StartupType {Automatic | Manual | Disabled | AutomaticDelayedStart | InvalidValue}] [-Status {Running | Stopped | Paused}] [-Confirm] [-WhatIf] [-Force] [<CommonParameters>]
+        `Set-Service [-InputObject] <ServiceController> [-Confirm] [-Credential <PSCredential>] [-Description <String>] [-DisplayName <String>] [-Force] [-PassThru] [-StartupType {Automatic | AutomaticDelayedStart | Disabled | InvalidValue | Manual}] [-Status {Paused | Running | Stopped}] [-WhatIf] [<CommonParameters>]
 
-Set-Service [-Name] <String> [-Credential <PSCredential>] [-Description <String>] [-DisplayName <String>] [-PassThru] [-StartupType {Automatic | Manual | Disabled | AutomaticDelayedStart | InvalidValue}] [-Status {Running | Stopped | Paused}] [-Confirm] [-WhatIf] [-Force] [<CommonParameters>]`,
+Set-Service [-Name] <String> [-Confirm] [-Credential <PSCredential>] [-Description <String>] [-DisplayName <String>] [-Force] [-PassThru] [-StartupType {Automatic | AutomaticDelayedStart | Disabled | InvalidValue | Manual}] [-Status {Paused | Running | Stopped}] [-WhatIf] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -22693,42 +21923,14 @@ Set-Service [-Name] <String> [-Credential <PSCredential>] [-Description <String>
     new ConsoleCommand(
         `Set-StrictMode`,
         [
-            new Parameter(`Off`, `Indicates that this cmdlet turns strict mode off. This parameter also turns off "Set-PSDebug -Strict".`, `SwitchParameter`),
-            new Parameter(`Version`, `Specifies the conditions that cause an error in strict mode.
+            new Parameter(`Off`, `Indicates that this cmdlet turns strict mode off for the current scope and all child scopes.`, `SwitchParameter`),
+            new Parameter(`Version`, `Specifies the conditions that cause an error in strict mode. This parameter accepts any valid PowerShell version number. Any number higher than 3 is treated as Latest .
 
 
-The acceptable values for this parameter are:
+The effective values for this parameter are:
 
 
-- 1.0
-
-
----- Prohibits references to uninitialized variables, except for uninitialized variables in strings.
-
-
-- 2.0
-
-
-
-
----- Prohibits references to uninitialized variables. This includes uninitialized variables in strings.
-
-
----- Prohibits references to non-existent properties of an object.
-
-
----- Prohibits function calls that use the syntax for calling methods.
-
-
----- Prohibits a variable without a name ().
-
-
-
-
-Latest
-
-
----- Selects the latest version available. The latest version is the most strict. Use this value to make sure that scripts use the strictest available version, even when new versions are added to PowerShell.`, `Version`),
+- 1.0   - Prohibits references to uninitialized variables, except for uninitialized variables in strings. - 2.0   - Prohibits references to uninitialized variables. This includes uninitialized variables in strings.   - Prohibits references to non-existent properties of an object.   - Prohibits function calls that use the syntax for calling methods. - 3.0   - Prohibits references to uninitialized variables. This includes uninitialized variables in strings.   - Prohibits references to non-existent properties of an object.   - Prohibits function calls that use the syntax for calling methods.   - Prohibit out of bounds or unresolvable array indexes. - Latest   - Selects the latest version available. The latest version is the most strict. Use this value to     make sure that scripts use the strictest available version, even when new versions are added to     PowerShell.`, `Version`),
         ],
         `Establishes and enforces coding rules in expressions, scripts, and script blocks.`,
         `Set-StrictMode -Off [<CommonParameters>]
@@ -22742,9 +21944,9 @@ Set-StrictMode -Version <Version> [<CommonParameters>]`,
     new ConsoleCommand(
         `Set-TimeZone`,
         [
-            new Parameter(`Id`, `Specifies the ID of the time zone that this cmdlet sets.`, `String`),
+            new Parameter(`Id`, `Specifies the ID of the time zone that this cmdlet sets. A full list of Time Zone IDs can be obtained by running the following command: "Get-TimeZone -ListAvailable".`, `String`),
             new Parameter(`InputObject`, `Specifies a TimeZoneInfo object to use as input.`, `TimeZoneInfo`),
-            new Parameter(`Name`, `Specifies the name of the time zone that this cmdlet sets.`, `String`),
+            new Parameter(`Name`, `Specifies the name of the time zone that this cmdlet sets. A full list of Time Zone names can be obtained by running the following command: "Get-TimeZone -ListAvailable".`, `String`),
             new Parameter(`PassThru`, `Returns an object representing the item with which you are working. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
@@ -22808,7 +22010,7 @@ None is the default.
 
 To specify multiple options, separate them with commas, but with no spaces, and enclose them in quotation marks, such as "ProcessID,ThreadID".`, `TraceOptions`),
             new Parameter(`Name`, `Specifies which components are traced. Enter the name of the trace source of each component. Wildcards are permitted.`, `String[]`),
-            new Parameter(`Option`, `Determines the type of events that are traced. The acceptable values for this parameter are:
+            new Parameter(`Option`, `Specifies the type of events that are traced. The acceptable values for this parameter are:
 
 
 - None
@@ -22891,7 +22093,7 @@ The following values are combinations of other values:
 
 To specify multiple options, separate them with commas, but with no spaces, and enclose them in quotation marks, such as "Constructor,Dispose".`, `PSTraceSourceOptions`),
             new Parameter(`PassThru`, `Returns an object representing the item with which you are working. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
-            new Parameter(`PSHost`, `ndicates that this cmdlet sends the trace output to the Windows PowerShell host. This parameter also selects the PSHost trace listener.`, `SwitchParameter`),
+            new Parameter(`PSHost`, `ndicates that this cmdlet sends the trace output to the PowerShell host. This parameter also selects the PSHost trace listener.`, `SwitchParameter`),
             new Parameter(`RemoveFileListener`, `Stops the trace by removing the file trace listener associated with the specified file. Enter the path and file name of the trace output file.`, `String[]`),
             new Parameter(`RemoveListener`, `Stops the trace by removing the trace listener.
 
@@ -22928,7 +22130,7 @@ Set-TraceSource [-Name] <String[]> [-RemoveListener <String[]>] [<CommonParamete
         [
             new Parameter(`Description`, `Specifies the description of the variable.`, `String`),
             new Parameter(`Exclude`, `Specifies an array of items that this cmdlet excludes from the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcards are permitted.`, `String[]`),
-            new Parameter(`Force`, `Forces the command to run without asking for user confirmation.
+            new Parameter(`Force`, `Allows you to create a variable with the same name as an existing read-only variable, or to change the value of a read-only variable.
 
 
 By default, you can overwrite a variable, unless the variable has an option value of ReadOnly or Constant. For more information, see the Option parameter.`, `SwitchParameter`),
@@ -22937,14 +22139,28 @@ By default, you can overwrite a variable, unless the variable has an option valu
             new Parameter(`Option`, `Specifies the value of the Options property of the variable.
 
 
-The acceptable values for this parameter are:
+Valid values are:
 
 
-- None. Sets no options. ("None" is the default.) - ReadOnly. Can be deleted. Cannot be changed, except by using the Force parameter. - Constant. Cannot be deleted or changed. Constant is valid only when you are creating a variable. You cannot change the options of an existing variable to Constant. - Private. The variable is available only in the current scope. - AllScope. The variable is copied to any new scopes that are created.
+- None: Sets no options. ("None" is the default.)
+
+
+- ReadOnly: Can be deleted. Cannot be changed, except by using the Force parameter.
+
+
+- Constant: Cannot be deleted or changed. "Constant" is valid only when you are creating a variable. You cannot change the options of an existing variable to "Constant".
+
+
+- Private: The variable is available only in the current scope.
+
+
+- AllScope: The variable is copied to any new scopes that are created.
+
+
 
 
 To see the Options property of all variables in the session, type "Get-Variable | Format-Table -Property name, options -Autosize".`, `ScopedItemOptions`),
-            new Parameter(`PassThru`, `Returns an object representing the item with which you are working. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
+            new Parameter(`PassThru`, `Returns an object representing the new variable. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
             new Parameter(`Scope`, `Specifies the scope of the variable.The acceptable values for this parameter are:
 
 
@@ -22957,6 +22173,9 @@ To see the Options property of all variables in the session, type "Get-Variable 
 - Script
 
 
+- Private
+
+
 - A number relative to the current scope (0 through the number of scopes, where 0 is the current scope and 1 is its parent).
 
 
@@ -22966,10 +22185,18 @@ Local is the default.
 
 For more information, see about_Scopes (../Microsoft.PowerShell.Core/About/about_scopes.md).`, `String`),
             new Parameter(`Value`, `Specifies the value of the variable.`, `Object`),
-            new Parameter(`Visibility`, `Determines whether the variable is visible outside of the session in which it was created. This parameter is designed for use in scripts and commands that will be delivered to other users. The acceptable values for this parameter are:
+            new Parameter(`Visibility`, `Determines whether the variable is visible outside of the session in which it was created. This parameter is designed for  use in scripts and commands that will be delivered to other users.
 
 
-- Public. The variable is visible. (Public is the default.) - Private. The variable is not visible.
+Valid values are:
+
+
+- Public:  The variable is visible. ("Public" is the default.)
+
+
+- Private: The variable is not visible.
+
+
 
 
 When a variable is private, it does not appear in lists of variables, such as those returned by Get-Variable, or in displays of the Variable: drive. Commands to read or change the value of a private variable return an error. However, the user can run commands that use a private variable if the commands were written in the session in which the variable was defined.`, `SessionStateEntryVisibility`),
@@ -22984,7 +22211,7 @@ When a variable is private, it does not appear in lists of variables, such as th
         }
     ),
     new ConsoleCommand(
-        `Set-VHD`,
+        `Set-WheaMemoryPolicy`,
         [
 
         ],
@@ -22996,7 +22223,7 @@ When a variable is private, it does not appear in lists of variables, such as th
         }
     ),
     new ConsoleCommand(
-        `Set-VM`,
+        `Set-WinAcceptLanguageFromLanguageListOptOut`,
         [
 
         ],
@@ -23008,7 +22235,7 @@ When a variable is private, it does not appear in lists of variables, such as th
         }
     ),
     new ConsoleCommand(
-        `Set-VMBios`,
+        `Set-WinCultureFromLanguageListOptOut`,
         [
 
         ],
@@ -23020,7 +22247,7 @@ When a variable is private, it does not appear in lists of variables, such as th
         }
     ),
     new ConsoleCommand(
-        `Set-VMComPort`,
+        `Set-WinDefaultInputMethodOverride`,
         [
 
         ],
@@ -23032,7 +22259,7 @@ When a variable is private, it does not appear in lists of variables, such as th
         }
     ),
     new ConsoleCommand(
-        `Set-VMDvdDrive`,
+        `Set-WindowsEdition`,
         [
 
         ],
@@ -23044,7 +22271,7 @@ When a variable is private, it does not appear in lists of variables, such as th
         }
     ),
     new ConsoleCommand(
-        `Set-VMFibreChannelHba`,
+        `Set-WindowsProductKey`,
         [
 
         ],
@@ -23056,7 +22283,7 @@ When a variable is private, it does not appear in lists of variables, such as th
         }
     ),
     new ConsoleCommand(
-        `Set-VMFirmware`,
+        `Set-WindowsSearchSetting`,
         [
 
         ],
@@ -23068,7 +22295,7 @@ When a variable is private, it does not appear in lists of variables, such as th
         }
     ),
     new ConsoleCommand(
-        `Set-VMFloppyDiskDrive`,
+        `Set-WinHomeLocation`,
         [
 
         ],
@@ -23080,7 +22307,7 @@ When a variable is private, it does not appear in lists of variables, such as th
         }
     ),
     new ConsoleCommand(
-        `Set-VMGpuPartitionAdapter`,
+        `Set-WinLanguageBarOption`,
         [
 
         ],
@@ -23092,7 +22319,7 @@ When a variable is private, it does not appear in lists of variables, such as th
         }
     ),
     new ConsoleCommand(
-        `Set-VMHardDiskDrive`,
+        `Set-WinSystemLocale`,
         [
 
         ],
@@ -23104,7 +22331,7 @@ When a variable is private, it does not appear in lists of variables, such as th
         }
     ),
     new ConsoleCommand(
-        `Set-VMHost`,
+        `Set-WinUILanguageOverride`,
         [
 
         ],
@@ -23116,331 +22343,7 @@ When a variable is private, it does not appear in lists of variables, such as th
         }
     ),
     new ConsoleCommand(
-        `Set-VMHostCluster`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMKeyProtector`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMKeyStorageDrive`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMMemory`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMMigrationNetwork`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMNetworkAdapter`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMNetworkAdapterFailoverConfiguration`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMNetworkAdapterIsolation`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMNetworkAdapterRdma`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMNetworkAdapterRoutingDomainMapping`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMNetworkAdapterTeamMapping`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMNetworkAdapterVlan`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMPartitionableGpu`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMProcessor`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMRemoteFx3dVideoAdapter`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMReplication`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMReplicationAuthorizationEntry`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMReplicationServer`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMResourcePool`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMSan`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMSecurity`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMSecurityPolicy`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMStorageSettings`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMSwitch`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMSwitchExtensionPortFeature`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMSwitchExtensionSwitchFeature`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMSwitchTeam`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Set-VMVideo`,
+        `Set-WinUserLanguageList`,
         [
 
         ],
@@ -23478,19 +22381,17 @@ When a variable is private, it does not appear in lists of variables, such as th
     new ConsoleCommand(
         `Show-Markdown`,
         [
-            new Parameter(`InputObject`, ``, `psobject`),
-            new Parameter(`LiteralPath`, ``, `string[]`),
-            new Parameter(`Path`, ``, `string[]`),
-            new Parameter(`UseBrowser`, ``, `switch`),
+            new Parameter(`InputObject`, `A Markdown string that will be shown in the terminal. If you do not pass in a supported format, "Show-Markdown" will emit an error.`, `PSObject`),
+            new Parameter(`LiteralPath`, `Specifies the path to a Markdown file. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
+            new Parameter(`Path`, `Specifies the path to a Markdown file to be rendered.`, `String[]`),
+            new Parameter(`UseBrowser`, `Compiles the Markdown input as HTML and opens it in your default browser.`, `SwitchParameter`),
         ],
-        `Show-Markdown [-Path] <string[]> [-UseBrowser] [<CommonParameters>]
+        `Shows a Markdown file or string in the console in a friendly way using VT100 escape sequences or in a browser using HTML.`,
+        `Show-Markdown -InputObject <PSObject> [-UseBrowser] [<CommonParameters>]
 
-Show-Markdown -InputObject <psobject> [-UseBrowser] [<CommonParameters>]
+Show-Markdown -LiteralPath <String[]> [-UseBrowser] [<CommonParameters>]
 
-Show-Markdown -LiteralPath <string[]> [-UseBrowser] [<CommonParameters>]`,
-        `syntaxItem
-----------
-{@{name=Show-Markdown; CommonParameters=True; parameter=System.Object[]}, @{name=Show-Markdown; CommonParameters=True...`,
+Show-Markdown [-Path] <String[]> [-UseBrowser] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -23511,30 +22412,27 @@ Show-Markdown -LiteralPath <string[]> [-UseBrowser] [<CommonParameters>]`,
     new ConsoleCommand(
         `Sort-Object`,
         [
-            new Parameter(`Bottom`, `Specifies the number of objects to get from the end of the sorted object array.`, `Int32`),
-            new Parameter(`CaseSensitive`, `Indicates that the sort should be case sensitive. By default, sorting is not case sensitive.`, `SwitchParameter`),
-            new Parameter(`Culture`, `Specifies the cultural configuration to use when sorting.`, `String`),
-            new Parameter(`Descending`, `Indicates that the cmdlet sorts the objects in descending order. The default is ascending order.
+            new Parameter(`Bottom`, `Specifies the number of objects to get from the end of a sorted object array. This results in a stable sort.
 
 
-The Descending parameter applies to all properties. To sort by some properties in ascending order and others in descending order, you must specify their property values by using a hash table.`, `SwitchParameter`),
-            new Parameter(`InputObject`, `Specifies the objects to sort.
+This parameter was introduced in PowerShell 6.0.`, `Int32`),
+            new Parameter(`CaseSensitive`, `Indicates that the sort is case-sensitive. By default, sorts are not case-sensitive.`, `SwitchParameter`),
+            new Parameter(`Culture`, `Specifies the cultural configuration to use for sorts. Use "Get-Culture" to display the system's culture configuration.`, `String`),
+            new Parameter(`Descending`, `Indicates that "Sort-Object" sorts the objects in descending order. The default is ascending order.
 
 
-When you use the InputObject parameter to submit a collection of items, Sort-Object receives one object that represents the collection. Because one object cannot be sorted, Sort-Object returns the entire collection unchanged.
+To sort multiple properties with different sort orders, use a hash table. For example, with a hash table you can sort one property in ascending order and another property in descending order.`, `SwitchParameter`),
+            new Parameter(`InputObject`, `To sort objects, send them down the pipeline to "Sort-Object". If you use the InputObject parameter to submit a collection of items, "Sort-Object" receives one object that represents the collection. Because one object cannot be sorted, "Sort-Object" returns the entire collection unchanged.`, `PSObject`),
+            new Parameter(`Property`, `Specifies the property names that "Sort-Object" uses to sort the objects. Wildcards are permitted. Objects are sorted based on the property values. If you do not specify a property, "Sort-Object" sorts based on default properties for the object type.
 
 
-To sort objects, pipe them to Sort-Object .`, `PSObject`),
-            new Parameter(`Property`, `Specifies the properties to use when sorting. Objects are sorted based on the values of these properties. Enter the names of the properties. Wildcards are permitted.
+Multiple properties can be sorted in ascending order, descending order, or a combination of sort orders. When you specify multiple properties, the objects are sorted by the first property. If multiple objects have the same value for the first property, those objects are sorted by the second property. This process continues until there are no more specified properties or no groups of objects.
 
 
-If you specify multiple properties, the objects are first sorted by the first property. If more than one object has the same value for the first property, those objects are sorted by the second property. This process continues until there are no more specified properties or no groups of objects.
+The Property parameter's value can be a calculated property. To create a calculated property, use a hash table.
 
 
-If you do not specify properties, the cmdlet sorts based on default properties for the object type.
-
-
-The value of the Property parameter can be a calculated property. To create a calculated, property, use a hash table. Valid keys are:
+Valid keys for a hash table are as follows:
 
 
 - Expression <string> or <script block>
@@ -23544,16 +22442,22 @@ The value of the Property parameter can be a calculated property. To create a ca
 
 
 - Descending <Boolean>`, `Object[]`),
-            new Parameter(`Top`, `Specifies the number of objects to get from the start of the sorted object array.`, `Int32`),
-            new Parameter(`Unique`, `Indicates that the cmdlet eliminates duplicates and returns only the unique members of the collection. You can use this parameter instead of using the Get-Unique cmdlet.
+            new Parameter(`Top`, `Specifies the number of objects to get from the start of a sorted object array. This results in a stable sort.
 
 
-This parameter is case-insensitive. As a result, strings that differ only in character casing are considered to be the same.`, `SwitchParameter`),
+This parameter was introduced in PowerShell 6.0.`, `Int32`),
+            new Parameter(`Unique`, `Indicates that "Sort-Object" eliminates duplicates and returns only the unique members of the collection. The first instance of a unique value is included in the sorted output. Unique is case-insensitive. Strings that only differ by character case are considered the same. For example, character and CHARACTER.`, `SwitchParameter`),
+            new Parameter(`Stable`, `The sorted objects are delivered in the order they were received when the sort criteria are equal.
+
+
+This parameter was added in PowerShell v6.2.0.`, `SwitchParameter`),
         ],
         `Sorts objects by property values.`,
         `Sort-Object [[-Property] <Object[]>] -Bottom <Int32> [-CaseSensitive] [-Culture <String>] [-Descending] [-InputObject <PSObject>] [-Unique] [<CommonParameters>]
 
-Sort-Object [[-Property] <Object[]>] [-CaseSensitive] [-Culture <String>] [-Descending] [-InputObject <PSObject>] [-Top <Int32>] [-Unique] [<CommonParameters>]`,
+Sort-Object [[-Property] <Object[]>] [-CaseSensitive] [-Culture <String>] [-Descending] [-InputObject <PSObject>] -Top <Int32> [-Unique] [<CommonParameters>]
+
+Sort-Object [[-Property] <Object[]>] [-CaseSensitive] [-Culture <String>] [-Descending] [-InputObject <PSObject>] [-Unique] [-Stable] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -23562,20 +22466,20 @@ Sort-Object [[-Property] <Object[]>] [-CaseSensitive] [-Culture <String>] [-Desc
     new ConsoleCommand(
         `Split-Path`,
         [
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
+            new Parameter(`Extension`, `Indicates that this cmdlet returns only the extension of the leaf. For example, in the path "C:\\Test\\Logs\\Pass1.log", it returns only ".log".
 
 
-Type a user name, such as User01 or Domain01\User01, or enter a PSCredential object, such as one generated by the Get-Credential cmdlet. If you type a user name, this cmdlet prompts you for a password.
-
-
-This parameter is not supported by any providers installed with parameter is not supported by any providers installed with PowerShell.`, `PSCredential`),
-            new Parameter(`Extension`, `Indicates that this cmdlet returns only the extension of the leaf. For example, in the path "C:\Test\Logs\Pass1.log", it returns only ".log".`, `SwitchParameter`),
+This parameter was introduced in PowerShell 6.0.`, `SwitchParameter`),
             new Parameter(`IsAbsolute`, `Indicates that this cmdlet returns $True if the path is absolute and $False if it is relative. An absolute path has a length greater than zero and does not use a dot (.) to indicate the current path.`, `SwitchParameter`),
-            new Parameter(`Leaf`, `Indicates that this cmdlet returns only the last item or container in the path. For example, in the path "C:\Test\Logs\Pass1.log", it returns only Pass1.log.`, `SwitchParameter`),
-            new Parameter(`LeafBase`, `Indicates that this cmdlet returns only base name of the leaf. For example, in the path "C:\Test\Logs\Pass1.log", it returns only "Pass1".`, `SwitchParameter`),
+            new Parameter(`Leaf`, `Indicates that this cmdlet returns only the last item or container in the path. For example, in the path "C:\\Test\\Logs\\Pass1.log", it returns only Pass1.log.`, `SwitchParameter`),
+            new Parameter(`LeafBase`, `Indicates that this cmdlet returns only base name of the leaf. For example, in the path "C:\\Test\\Logs\\Pass1.log", it returns only "Pass1".
+
+
+This parameter was introduced in PowerShell 6.0.`, `SwitchParameter`),
             new Parameter(`LiteralPath`, `Specifies the paths to be split. Unlike Path , the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcard characters. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
-            new Parameter(`NoQualifier`, `Indicates that this cmdlet returns the path without the qualifier. For the FileSystem or registry providers, the qualifier is the drive of the provider path, such as C: or HKCU:. For example, in the path "C:\Test\Logs\Pass1.log", it returns only \Test\Logs\Pass1.log.`, `SwitchParameter`),
-            new Parameter(`Parent`, `Indicates that this cmdlet returns only the parent containers of the item or of the container specified by the path. For example, in the path "C:\Test\Logs\Pass1.log", it returns C:\Test\Logs. The Parent parameter is the default split location parameter.`, `SwitchParameter`),
+            new Parameter(`NoQualifier`, `Indicates that this cmdlet returns the path without the qualifier. For the FileSystem or registry providers, the qualifier is the drive of the provider path, such as C: or HKCU:. For example, in the path "C:\\Test\\Logs\\Pass1.log", it returns only \\Test\\Logs\\Pass1.log.`, `SwitchParameter`),
+            new Parameter(`Parent`, `Indicates that this cmdlet returns only the parent containers of the item or of the container specified by the path. For example, in the path "C:\\Test\\Logs\\Pass1.log", it returns C:\\Test\\Logs. The Parent parameter is the default split location parameter.`, `SwitchParameter`),
             new Parameter(`Path`, `Specifies the paths to be split. Wildcard characters are permitted. If the path includes spaces, enclose it in quotation marks. You can also pipe a path to this cmdlet.`, `String[]`),
             new Parameter(`Qualifier`, `Indicates that this cmdlet returns only the qualifier of the specified path. For the FileSystem or registry providers, the qualifier is the drive of the provider path, such as C: or HKCU:.`, `SwitchParameter`),
             new Parameter(`Resolve`, `Indicates that this cmdlet displays the items that are referenced by the resulting split path instead of displaying the path elements.`, `SwitchParameter`),
@@ -23602,13 +22506,28 @@ Split-Path [-Path] <String[]> [[-Qualifier]] [-Credential <PSCredential>] [-Reso
         }
     ),
     new ConsoleCommand(
+        `Split-WindowsImage`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
         `Start-Job`,
         [
-            new Parameter(`ArgumentList`, `Specifies an array of arguments, or parameter values, for the script that is specified by the FilePath parameter.
+            new Parameter(`ArgumentList`, `Specifies an array of arguments, or parameter values, for the script that is specified by the FilePath parameter or a command specified with the ScriptBlock parameter.
 
 
-Because all of the values that follow the ArgumentList parameter name are interpreted as being values of ArgumentList , specify this parameter as the last parameter in the command.`, `Object[]`),
-            new Parameter(`Authentication`, `Specifies the mechanism that is used to authenticate user credentials. The acceptable values for this parameter are:
+Arguments must be passed to ArgumentList as single-dimension array argument. For example, a comma-separated list. For more information about array dimensions, see about_Arrays (./about/about_arrays.md#rank).`, `Object[]`),
+            new Parameter(`Authentication`, `Specifies the mechanism that is used to authenticate user credentials.
+
+
+The acceptable values for this parameter are as follows:
 
 
 - Default
@@ -23640,61 +22559,66 @@ The default value is Default.
 CredSSP authentication is available only in Windows Vista, Windows Server 2008, and later versions of the Windows operating system.
 
 
-For more information about the values of this parameter, see AuthenticationMechanism Enumeration (https://msdn.microsoft.com/library/system.management.automation.runspaces.authenticationmechanism)in the MSDN library.
+For more information about the values of this parameter, see AuthenticationMechanism (/dotnet/api/system.management.automation.runspaces.authenticationmechanism).
 
-Caution: Credential Security Support Provider (CredSSP) authentication, in which the user's credentials are passed to a remote computer to be authenticated, is designed for commands that require authentication on more than one resource, such as accessing a remote network share. This mechanism increases the security risk of the remote operation. If the remote computer is compromised, the credentials that are passed to it can be used to control the network session.`, `AuthenticationMechanism`),
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
+> [!CAUTION] > Credential Security Support Provider (CredSSP) authentication, in which the user's credentials are > passed to a remote computer to be authenticated, is designed for commands that require > authentication on more than one resource, such as accessing a remote network share. This mechanism > increases the security risk of the remote operation. If the remote computer is compromised, the > credentials that are passed to it can be used to control the network session.`, `AuthenticationMechanism`),
+            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. If the Credential parameter isn't specified, the command uses the current user's credentials.
 
 
-Type a user name, such as User01 or Domain01\User01, or enter a PSCredential object, such as one from the Get-Credential cmdlet.`, `PSCredential`),
+Type a user name, such as User01 or Domain01\\User01 , or enter a PSCredential object generated by the "Get-Credential" cmdlet. If you type a user name, you're prompted to enter the password.
+
+
+Credentials are stored in a PSCredential (/dotnet/api/system.management.automation.pscredential)object and the password is stored as a SecureString (/dotnet/api/system.security.securestring).
+
+
+> [!NOTE] > For more information about SecureString data protection, see > How secure is SecureString? (/dotnet/api/system.security.securestring#how-secure-is-securestring).`, `PSCredential`),
             new Parameter(`DefinitionName`, `Specifies the definition name of the job that this cmdlet starts. Use this parameter to start custom job types that have a definition name, such as scheduled jobs.
 
 
-When you use Start-Job to start an instance of a scheduled job, the job starts immediately, regardless of job triggers or job options. The resulting job instance is a scheduled job, but it is not saved to disk like triggered scheduled jobs. Also, you cannot use the ArgumentList parameter of Start-Job to provide values for parameters of scripts that run in a scheduled job. For more information, see about_Scheduled_Jobs.
+When you use "Start-Job" to start an instance of a scheduled job, the job starts immediately, regardless of job triggers or job options. The resulting job instance is a scheduled job, but it isn't saved to disk like triggered scheduled jobs. You can't use the ArgumentList parameter of "Start-Job" to provide values for parameters of scripts that run in a scheduled job.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `String`),
+This parameter was introduced in PowerShell 3.0.`, `String`),
             new Parameter(`DefinitionPath`, `Specifies path of the definition for the job that this cmdlet starts. Enter the definition path. The concatenation of the values of the DefinitionPath and DefinitionName parameters is the fully qualified path of the job definition. Use this parameter to start custom job types that have a definition path, such as scheduled jobs.
 
 
-For scheduled jobs, the value of the DefinitionPath parameter is "$home\AppData\Local\Windows\PowerShell\ScheduledJob".
+For scheduled jobs, the value of the DefinitionPath parameter is "$home\\AppData\\Local\\Windows\\PowerShell\\ScheduledJob".
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `String`),
-            new Parameter(`FilePath`, `Specifies a local script that this cmdlet runs as a background job. Enter the path and file name of the script or pipe a script path to Start-Job . The script must be on the local computer or in a folder that the local computer can access.
+This parameter was introduced in PowerShell 3.0.`, `String`),
+            new Parameter(`FilePath`, `Specifies a local script that "Start-Job" runs as a background job. Enter the path and file name of the script or use the pipeline to send a script path to "Start-Job". The script must be on the local computer or in a folder that the local computer can access.
 
 
 When you use this parameter, PowerShell converts the contents of the specified script file to a script block and runs the script block as a background job.`, `String`),
-            new Parameter(`HostName`, `{{Fill HostName Description}}`, `String[]`),
-            new Parameter(`InitializationScript`, `Specifies commands that run before the job starts. Enclose the commands in braces ( { } ) to create a script block.
+            new Parameter(`InitializationScript`, `Specifies commands that run before the job starts. To create a script block, enclose the commands in curly braces ("{}").
 
 
 Use this parameter to prepare the session in which the job runs. For example, you can use it to add functions, snap-ins, and modules to the session.`, `ScriptBlock`),
             new Parameter(`InputObject`, `Specifies input to the command. Enter a variable that contains the objects, or type a command or expression that generates the objects.
 
 
-In the value of the ScriptBlock parameter, use the $Input automatic variable to represent the input objects.`, `PSObject`),
+In the value of the ScriptBlock parameter, use the "$input" automatic variable to represent the input objects.`, `PSObject`),
             new Parameter(`LiteralPath`, `Specifies a local script that this cmdlet runs as a background job. Enter the path of a script on the local computer.
 
 
-Unlike the FilePath parameter, this cmdlet uses the value of the LiteralPath parameter exactly as it is typed. No characters are interpreted as wildcard characters. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String`),
-            new Parameter(`Name`, `Specifies a friendly name for the new job. You can use the name to identify the job to other job cmdlets, such as the Stop-Job cmdlet.
+"Start-Job" uses the value of the LiteralPath parameter exactly as it's typed. No characters are interpreted as wildcard characters. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String`),
+            new Parameter(`Name`, `Specifies a friendly name for the new job. You can use the name to identify the job to other job cmdlets, such as the "Stop-Job" cmdlet.
 
 
-The default friendly name is Job#, where # is an ordinal number that is incremented for each job.`, `String`),
-            new Parameter(`PSVersion`, `Specifies a version. This cmdlet runs the job with the version of PowerShell. The acceptable values for this parameter are: 2.0 and 3.0.
+The default friendly name is "Job#", where "#" is an ordinal number that is incremented for each job.`, `String`),
+            new Parameter(`PSVersion`, `Specifies a version. "Start-Job" runs the job with the version of PowerShell. The acceptable values for this parameter are: "2.0" and "3.0".
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `Version`),
-            new Parameter(`RunAs32`, `Indicates that this cmdlet runs the job in a 32-bit process. Use this parameter to force the job to run in a 32-bit process on a 64-bit operating system.
+This parameter was introduced in PowerShell 3.0.`, `Version`),
+            new Parameter(`RunAs32`, `Indicates that "Start-Job" runs the job in a 32-bit process. RunAs32 forces the job to run in a 32-bit process, even on a 64-bit operating system.
 
 
-On 64-bit versions of Windows 7 and Windows Server 2008 R2, when the Start-Job command includes the RunAs32 parameter, you cannot use the Credential parameter to specify the credentials of another user.`, `SwitchParameter`),
-            new Parameter(`ScriptBlock`, `Specifies the commands to run in the background job. Enclose the commands in braces ( { } ) to create a script block. This parameter is required.`, `ScriptBlock`),
-            new Parameter(`Type`, `Specifies the custom type for jobs that this cmdlet starts. Enter a custom job type name, such as PSScheduledJob for scheduled jobs or PSWorkflowJob for workflows jobs. This parameter is not valid for standard background jobs.
+On 64-bit versions of Windows 7 and Windows Server 2008 R2, when the "Start-Job" command includes the RunAs32 parameter, you can't use the Credential parameter to specify the credentials of another user.`, `SwitchParameter`),
+            new Parameter(`ScriptBlock`, `Specifies the commands to run in the background job. To create a script block, enclose the commands in curly braces ("{}"). Use the "$input" automatic variable to access the value of the InputObject parameter. This parameter is required.`, `ScriptBlock`),
+            new Parameter(`Type`, `Specifies the custom type for jobs started by "Start-Job". Enter a custom job type name, such as PSScheduledJob for scheduled jobs or PSWorkflowJob for workflows jobs. This parameter isn't valid for standard background jobs.
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `String`),
+This parameter was introduced in PowerShell 3.0.`, `String`),
         ],
         `Starts a PowerShell background job.`,
         `Start-Job [-ScriptBlock] <ScriptBlock> [[-InitializationScript] <ScriptBlock>] [-ArgumentList <Object[]>] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-Credential <PSCredential>] [-InputObject <PSObject>] [-Name <String>] [-PSVersion <Version>] [-RunAs32] [<CommonParameters>]
@@ -23703,9 +22627,19 @@ Start-Job [-FilePath] <String> [[-InitializationScript] <ScriptBlock>] [-Argumen
 
 Start-Job [[-InitializationScript] <ScriptBlock>] [-ArgumentList <Object[]>] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-Credential <PSCredential>] [-InputObject <PSObject>] -LiteralPath <String> [-Name <String>] [-PSVersion <Version>] [-RunAs32] [<CommonParameters>]
 
-Start-Job [-DefinitionName] <String> [[-DefinitionPath] <String>] [[-Type] <String>] [<CommonParameters>]
+Start-Job [-DefinitionName] <String> [[-DefinitionPath] <String>] [[-Type] <String>] [<CommonParameters>]`,
+        "",
+        (parameters, paramDictionary) => {
 
-Start-Job [-HostName] <String[]> [<CommonParameters>]`,
+        }
+    ),
+    new ConsoleCommand(
+        `Start-OSUninstall`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
         "",
         (parameters, paramDictionary) => {
 
@@ -23715,42 +22649,54 @@ Start-Job [-HostName] <String[]> [<CommonParameters>]`,
         `Start-Process`,
         [
             new Parameter(`ArgumentList`, `Specifies parameters or parameter values to use when this cmdlet starts the process. If parameters or parameter values contain a space, they need surrounded with escaped double quotes.`, `String[]`),
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. Type a user name, such as User01 or Domain01\User01, or enter a PSCredential object, such as one from the Get-Credential cmdlet. By default, the cmdlet uses the credentials of the current user.`, `PSCredential`),
-            new Parameter(`FilePath`, `Specifies the optional path and file name of the program that runs in the process. Enter the name of an executable file or of a document, such as a .txt or .doc file, that is associated with a program on the computer. This parameter is required.
+            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. By default, the cmdlet uses the credentials of the current user.
 
 
-If you specify only a file name, use the WorkingDirectory parameter to specify the path.`, `String`),
+Type a user name, such as User01 or Domain01\\User01 , or enter a PSCredential object generated by the "Get-Credential" cmdlet. If you type a user name, you're prompted to enter the password.
+
+
+Credentials are stored in a PSCredential (/dotnet/api/system.management.automation.pscredential)object and the password is stored as a SecureString (/dotnet/api/system.security.securestring).
+
+
+> [!NOTE] > For more information about SecureString data protection, see > How secure is SecureString? (/dotnet/api/system.security.securestring#how-secure-is-securestring).`, `PSCredential`),
+            new Parameter(`FilePath`, `Specifies the optional path and filename of the program that runs in the process. Enter the name of an executable file or of a document, such as a .txt or .doc file, that is associated with a program on the computer. This parameter is required.
+
+
+If you specify only a filename, use the WorkingDirectory parameter to specify the path.`, `String`),
             new Parameter(`LoadUserProfile`, `Indicates that this cmdlet loads the Windows user profile stored in the HKEY_USERS registry key for the current user.
 
 
-This parameter does not affect the PowerShell profiles. For more information, see about_Profiles.`, `SwitchParameter`),
+This parameter does not affect the PowerShell profiles. For more information, see about_Profiles (../Microsoft.PowerShell.Core/About/about_Profiles.md).`, `SwitchParameter`),
             new Parameter(`NoNewWindow`, `Start the new process in the current console window. By default PowerShell opens a new window.
 
 
 You cannot use the NoNewWindow and WindowStyle parameters in the same command.`, `SwitchParameter`),
             new Parameter(`PassThru`, `Returns a process object for each process that the cmdlet started. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
-            new Parameter(`RedirectStandardError`, `Specifies a file. This cmdlet sends any errors generated by the process to a file that you specify. Enter the path and file name. By default, the errors are displayed in the console.`, `String`),
-            new Parameter(`RedirectStandardInput`, `Specifies a file. This cmdlet reads input from the specified file. Enter the path and file name of the input file. By default, the process gets its input from the keyboard.`, `String`),
-            new Parameter(`RedirectStandardOutput`, `Specifies a file. This cmdlet sends the output generated by the process to a file that you specify. Enter the path and file name. By default, the output is displayed in the console.`, `String`),
+            new Parameter(`RedirectStandardError`, `Specifies a file. This cmdlet sends any errors generated by the process to a file that you specify. Enter the path and filename. By default, the errors are displayed in the console.`, `String`),
+            new Parameter(`RedirectStandardInput`, `Specifies a file. This cmdlet reads input from the specified file. Enter the path and filename of the input file. By default, the process gets its input from the keyboard.`, `String`),
+            new Parameter(`RedirectStandardOutput`, `Specifies a file. This cmdlet sends the output generated by the process to a file that you specify. Enter the path and filename. By default, the output is displayed in the console.`, `String`),
             new Parameter(`UseNewEnvironment`, `Indicates that this cmdlet uses new environment variables specified for the process. By default, the started process runs with the environment variables specified for the computer and user.`, `SwitchParameter`),
-            new Parameter(`Verb`, `Specifies a verb to use when this cmdlet starts the process. The verbs that are available are determined by the file name extension of the file that runs in the process.
+            new Parameter(`Verb`, `Specifies a verb to use when this cmdlet starts the process. The verbs that are available are determined by the filename extension of the file that runs in the process.
 
 
 The following table shows the verbs for some common process file types.
 
 
-| File type | Verbs   | | --------- | ------- | |.cmd       | Edit, Open, Print, RunAs | |.exe       | Open, RunAs | |.txt       | Open, Print, PrintTo | |.wav       | Open, Play |
+| File type |                Verbs                | | --------- | ----------------------------------- | | .cmd      | Edit, Open, Print, RunAs, RunAsUser | | .exe      | Open, RunAs, RunAsUser              | | .txt      | Open, Print, PrintTo                | | .wav      | Open, Play                          |
 
 
-To find the verbs that can be used with the file that runs in a process, use the New-Object cmdlet to create a System.Diagnostics.ProcessStartInfo object for the file. The available verbs are in the Verbs property of the ProcessStartInfo object. For details, see the examples.`, `String`),
+To find the verbs that can be used with the file that runs in a process, use the "New-Object" cmdlet to create a System.Diagnostics.ProcessStartInfo object for the file. The available verbs are in the Verbs property of the ProcessStartInfo object. For details, see the examples.`, `String`),
             new Parameter(`Wait`, `Indicates that this cmdlet waits for the specified process and its descendants to complete before accepting more input. This parameter suppresses the command prompt or retains the window until the processes finish.`, `SwitchParameter`),
-            new Parameter(`WindowStyle`, `Specifies the state of the window that is used for the new process. The acceptable values for this parameter are: Normal, Hidden, Minimized, and Maximized. The default value is Normal.
+            new Parameter(`WindowStyle`, `Specifies the state of the window that is used for the new process. The acceptable values for this parameter are: Normal , Hidden , Minimized , and Maximized . The default value is Normal .
 
 
 You cannot use the WindowStyle and NoNewWindow parameters in the same command.`, `ProcessWindowStyle`),
             new Parameter(`WorkingDirectory`, `Specifies the location of the executable file or document that runs in the process. The default is the folder for the new process.`, `String`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
-            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
+            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.
+
+
+This parameter was introduced in PowerShell 6.0.`, `SwitchParameter`),
         ],
         `Starts one or more processes on the local computer.`,
         `Start-Process [-FilePath] <String> [[-ArgumentList] <String[]>] [-Credential <PSCredential>] [-LoadUserProfile] [-NoNewWindow] [-PassThru] [-RedirectStandardError <String>] [-RedirectStandardInput <String>] [-RedirectStandardOutput <String>] [-UseNewEnvironment] [-Wait] [-WindowStyle {Normal | Hidden | Minimized | Maximized}] [-WorkingDirectory <String>] [-Confirm] [-WhatIf] [<CommonParameters>]
@@ -23791,12 +22737,12 @@ Start-Service [-Name] <String[]> [-Exclude <String[]>] [-Include <String[]>] [-P
         `Start-Sleep`,
         [
             new Parameter(`Milliseconds`, `Specifies how long the resource sleeps in milliseconds. The parameter can be abbreviated as m .`, `Int32`),
-            new Parameter(`Seconds`, `Specifies how long the resource sleeps in seconds. You can omit the parameter name ( Seconds ), or you can abbreviate it as s .`, `Int32`),
+            new Parameter(`Seconds`, `Specifies how long the resource sleeps in seconds. You can omit the parameter name or you can abbreviate it as s . Beginning in PowerShell 6.2.0, this parameter now accepts fractional values.`, `Double`),
         ],
         `Suspends the activity in a script or session for the specified period of time.`,
         `Start-Sleep -Milliseconds <Int32> [<CommonParameters>]
 
-Start-Sleep [-Seconds] <Int32> [<CommonParameters>]`,
+Start-Sleep [-Seconds] <Double> [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -23827,54 +22773,6 @@ Start-Sleep [-Seconds] <Int32> [<CommonParameters>]`,
         }
     ),
     new ConsoleCommand(
-        `Start-VM`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Start-VMFailover`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Start-VMInitialReplication`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Start-VMTrace`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
         `Stop-Computer`,
         [
             new Parameter(`ComputerName`, `Specifies the computers to stop. The default is the local computer.
@@ -23883,13 +22781,23 @@ Start-Sleep [-Seconds] <Int32> [<CommonParameters>]`,
 Type the NETBIOS name, IP address, or fully qualified domain name of one or more computers in a comma-separated list. To specify the local computer, type the computer name or localhost.
 
 
-This parameter does not rely on PowerShell remoting. You can use the ComputerName parameter even if your computer is not configured to run remote commands.`, `String[]`),
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
+This parameter doesn't rely on PowerShell remoting. You can use the ComputerName parameter even if your computer isn't configured to run remote commands.`, `String[]`),
+            new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
+            new Parameter(`Credential`, `Specifies a user account that has permission to do this action. The default is the current user.
 
 
-Type a user name, such as User01 or Domain01\User01, or enter a PSCredential object, such as one from the Get-Credential cmdlet.`, `PSCredential`),
-            new Parameter(`Force`, `Forces an immediate shut down of the computers.`, `SwitchParameter`),
-            new Parameter(`WsmanAuthentication`, `Specifies the mechanism that is used to authenticate the user credentials when this cmdlet uses the WSMan protocol. The acceptable values for this parameter are:
+Type a user name, such as User01 or Domain01\\User01 , or enter a PSCredential object generated by the "Get-Credential" cmdlet. If you type a user name, you're prompted to enter the password.
+
+
+Credentials are stored in a PSCredential (/dotnet/api/system.management.automation.pscredential)object and the password is stored as a SecureString (/dotnet/api/system.security.securestring).
+
+
+> [!NOTE] > For more information about SecureString data protection, see > How secure is SecureString? (/dotnet/api/system.security.securestring#how-secure-is-securestring).`, `PSCredential`),
+            new Parameter(`Force`, `Forces an immediate shut down of the computer.`, `SwitchParameter`),
+            new Parameter(`WsmanAuthentication`, `Specifies the mechanism that is used to authenticate the user credentials when this cmdlet uses the WSMan protocol. The default value is Default .
+
+
+The acceptable values for this parameter are:
 
 
 - Basic
@@ -23912,20 +22820,16 @@ Type a user name, such as User01 or Domain01\User01, or enter a PSCredential obj
 
 
 
-The default value is Default.
+For more information about the values of this parameter, see AuthenticationMechanism (/dotnet/api/system.management.automation.runspaces.authenticationmechanism).
 
 
-For more information about the values of this parameter, see AuthenticationMechanism Enumeration (https://msdn.microsoft.com/library/system.management.automation.runspaces.authenticationmechanism)in the MSDN library.
+> [!CAUTION] > Credential Security Service Provider (CredSSP) authentication, in which the user credentials are > passed to a remote computer to be authenticated, is designed for commands that require > authentication on more than one resource, such as accessing a remote network share. This mechanism > increases the security risk of the remote operation. If the remote computer is compromised, the > credentials that are passed to it can be used to control the network session.
 
-
-Caution: Credential Security Service Provider (CredSSP) authentication, in which the user credentials are passed to a remote computer to be authenticated, is designed for commands that require authentication on more than one resource, such as accessing a remote network share. This mechanism increases the security risk of the remote operation. If the remote computer is compromised, the credentials that are passed to it can be used to control the network session.
-
-This parameter was introduced in Windows PowerShell 3.0.`, `String`),
-            new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
-            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
+This parameter was introduced in PowerShell 3.0.`, `String`),
+            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet isn't run.`, `SwitchParameter`),
         ],
         `Stops (shuts down) local and remote computers.`,
-        `Stop-Computer [[-ComputerName] <String[]>] [[-Credential] <PSCredential>] [-Force] [-WsmanAuthentication {Default | Basic | Negotiate | CredSSP | Digest | Kerberos}] [-Confirm] [-WhatIf] [<CommonParameters>]`,
+        `Stop-Computer [[-ComputerName] <String[]>] [[-Credential] <PSCredential>] [-Confirm] [-Force] [-WsmanAuthentication {Default | Basic | Negotiate | CredSSP | Digest | Kerberos}] [-WhatIf] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -24074,66 +22978,6 @@ Stop-Service [-Name] <String[]> [-Exclude <String[]>] [-Force] [-Include <String
         }
     ),
     new ConsoleCommand(
-        `Stop-VM`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Stop-VMFailover`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Stop-VMInitialReplication`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Stop-VMReplication`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Stop-VMTrace`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
         `Suspend-Service`,
         [
             new Parameter(`DisplayName`, `Specifies the display names of the services to be suspended. Wildcard characters are permitted.`, `String[]`),
@@ -24160,30 +23004,6 @@ Suspend-Service [-Name] <String[]> [-Exclude <String[]>] [-Include <String[]>] [
         }
     ),
     new ConsoleCommand(
-        `Suspend-VM`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Suspend-VMReplication`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
         `Tee-Object`,
         [
             new Parameter(`Append`, `Indicates that the cmdlet appends the output to the specified file. Without this parameter, the new content replaces any existing content in the file without warning.
@@ -24191,12 +23011,12 @@ Suspend-Service [-Name] <String[]> [-Exclude <String[]>] [-Include <String[]>] [
 
 This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
             new Parameter(`FilePath`, `Specifies a file that this cmdlet saves the object to Wildcard characters are permitted, but must resolve to a single file.`, `String`),
-            new Parameter(`InputObject`, `Specifies the object to be saved and displayed. Enter a variable that contains the objects or type a command or expression that gets the objects. You can also pipe an object to Tee-Object .
+            new Parameter(`InputObject`, `Specifies the object to be saved and displayed. Enter a variable that contains the objects or type a command or expression that gets the objects. You can also pipe an object to "Tee-Object".
 
 
-When you use the InputObject parameter with Tee-Object , instead of piping command results to Tee-Object , the InputObject value-even if the value is a collection that is the result of a command, such as "InputObject (Get-Process)"-is treated as a single object. Because InputObject cannot return individual properties from an array or collection of objects, it is recommended that if you use Tee-Object to perform operations on a collection of objects for those objects that have specific values in defined properties, you use Tee-Object in the pipeline, as shown in the examples in this topic.`, `PSObject`),
-            new Parameter(`LiteralPath`, `Specifies a file that this cmdlet saves the object to. Unlike FilePath , the value of the LiteralPath parameter is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell Windows PowerShell not to interpret any characters as escape sequences.`, `String`),
-            new Parameter(`Variable`, `Specifies a variable that the cmdlet saves the object to. Enter a variable name without the preceding dollar sign ($).`, `String`),
+When you use the InputObject parameter with "Tee-Object", instead of piping command results to "Tee-Object", the InputObject value is treated as a single object even if the value is a collection.`, `PSObject`),
+            new Parameter(`LiteralPath`, `Specifies a file that this cmdlet saves the object to. Unlike FilePath , the value of the LiteralPath parameter is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String`),
+            new Parameter(`Variable`, `Specifies a variable that the cmdlet saves the object to. Enter a variable name without the preceding dollar sign ("$").`, `String`),
         ],
         `Saves command output in a file or variable and also sends it down the pipeline.`,
         `Tee-Object [-FilePath] <String> [-Append] [-InputObject <PSObject>] [<CommonParameters>]
@@ -24213,33 +23033,45 @@ Tee-Object [-InputObject <PSObject>] -Variable <String> [<CommonParameters>]`,
         `Test-Connection`,
         [
             new Parameter(`BufferSize`, `Specifies the size, in bytes, of the buffer sent with this command. The default value is 32.`, `Int32`),
-            new Parameter(`Continues`, `Causes the cmdlet to send ping requests continuously. This parameter cannot be used with the Count parameter.`, `SwitchParameter`),
+            new Parameter(`Continues`, `Causes the cmdlet to send ping requests continuously. This parameter can't be used with the Count parameter.`, `SwitchParameter`),
             new Parameter(`Count`, `Specifies the number of echo requests to send. The default value is 4.`, `Int32`),
             new Parameter(`Delay`, `Specifies the interval between pings, in seconds.`, `System.Int32`),
-            new Parameter(`DontFragment`, `This parameter sets the "Don't Fragment" flag in the IP header. You can use this parameter with the BufferSize parameter to test the Path MTU size. For more information about Path MTU, see the Path MTU Discovery (https://wikipedia.org/wiki/Path_MTU_Discovery)article in wikipedia.`, `SwitchParameter`),
+            new Parameter(`DontFragment`, `This parameter sets the Don't Fragment flag in the IP header. You can use this parameter with the BufferSize parameter to test the Path MTU size. For more information about Path MTU, see the Path MTU Discovery (https://wikipedia.org/wiki/Path_MTU_Discovery)article in wikipedia.`, `SwitchParameter`),
             new Parameter(`IPv4`, `Forces the cmdlet to use the IPv4 protocol for the test.`, `SwitchParameter`),
             new Parameter(`IPv6`, `Forces the cmdlet to use the IPv6 protocol for the test.`, `SwitchParameter`),
             new Parameter(`MaxHops`, `Sets the maximum number of hops that an ICMP request message can be sent. The default value is controlled by the operating system. The default value for Windows 10 is 128 hops.`, `Int32`),
             new Parameter(`MTUSizeDetect`, `This parameter is used to discover the Path MTU size. The cmdlet returns a PingReply#MTUSize object that contains the Path MTU size to the target. For more information about Path MTU, see the Path MTU Discovery (https://wikipedia.org/wiki/Path_MTU_Discovery)article in wikipedia.`, `SwitchParameter`),
-            new Parameter(`Ping`, `Causes the cmdlet to do a ping test. This is the default action.`, `SwitchParameter`),
-            new Parameter(`Quiet`, `Indicates that this cmdlet suppresses errors. If any ping succeeds, this cmdlet returns "$True". If all pings fail, this cmdlet returns "$False".`, `SwitchParameter`),
+            new Parameter(`Ping`, `Causes the cmdlet to do a ping test, which is the default action.`, `SwitchParameter`),
+            new Parameter(`Quiet`, `The Quiet parameter returns a Boolean value in a System.Boolean object. Using this parameter suppresses all errors.
+
+
+Each connection that's tested returns a Boolean value. If the TargetName parameter specifies multiple computers, an array of Boolean values is returned.
+
+
+If any ping succeeds, "$True" is returned.
+
+
+If all pings fail, "$False" is returned.`, `SwitchParameter`),
             new Parameter(`ResolveDestination`, `Causes the cmdlet to attempt to resolve the DNS name of the target.`, `SwitchParameter`),
-            new Parameter(`Source`, `The Source is not currently implemented.`, `String`),
-            new Parameter(`TargetName`, `Specifies the computers to test. Type the computer names or type IP addresses in IPv4 or IPv6 format. Wildcard characters are not permitted. This parameter is required.`, `String[]`),
+            new Parameter(`Source`, `Specifies the names of the computers where the ping originates. Enter a comma-separated list of computer names. The default is the local computer.`, `String`),
+            new Parameter(`TargetName`, `Specifies the computers to test. Type the computer names or type IP addresses in IPv4 or IPv6 format. Wildcard characters aren't permitted. This parameter is required. ComputerName is an alias for this parameter.`, `String[]`),
             new Parameter(`TCPPort`, `Specifies the TCP port number on the target to be used in the TCP connection test. The cmdlet will attempt to make a TCP connection to the specified port on the target.`, `Int32`),
-            new Parameter(`TimeoutSeconds`, `Sets the timeout value for the test. The test fails if a response is not received before the timeout expires.`, `Int32`),
+            new Parameter(`TimeoutSeconds`, `Sets the timeout value for the test. The test fails if a response isn't received before the timeout expires. The default is five seconds.
+
+
+This parameter was introduced in PowerShell 6.0.`, `Int32`),
             new Parameter(`Traceroute`, `Causes the cmdlet to do a traceroute test. When this parameter is used, the cmdlet returns a "TestConnectionCommand+TraceRouteResult" object.`, `SwitchParameter`),
         ],
-        `Sends ICMP echo request packets ("pings") to one or more computers.`,
-        `Test-Connection [[-Source] <String>] [-BufferSize <Int32>] [-Count <Int32>] [-Delay <System.Int32>] [-DontFragment] [-IPv4] [-IPv6] [-MaxHops <Int32>] [-Ping] [-Quiet] [-ResolveDestination] -TargetName <String[]> [-TimeoutSeconds <Int32>] [<CommonParameters>]
+        `Sends ICMP echo request packets, or pings, to one or more computers.`,
+        `Test-Connection [-TargetName] <String[]> [-BufferSize <Int32>] [-Count <Int32>] [-Delay <System.Int32>] [-DontFragment] [-IPv4] [-IPv6] [-MaxHops <Int32>] [-Ping] [-Quiet] [-ResolveDestination] [-Source <String>] [-TimeoutSeconds <Int32>] [<CommonParameters>]
 
-Test-Connection [[-Source] <String>] [-BufferSize <Int32>] [-Continues] [-Delay <System.Int32>] [-DontFragment] [-IPv4] [-IPv6] [-MaxHops <Int32>] [-Ping] [-Quiet] [-ResolveDestination] -TargetName <String[]> [-TimeoutSeconds <Int32>] [<CommonParameters>]
+Test-Connection [-TargetName] <String[]> [-BufferSize <Int32>] [-Continues] [-Delay <System.Int32>] [-DontFragment] [-IPv4] [-IPv6] [-MaxHops <Int32>] [-Ping] [-Quiet] [-ResolveDestination] [-Source <String>] [-TimeoutSeconds <Int32>] [<CommonParameters>]
 
-Test-Connection [[-Source] <String>] [-IPv4] [-IPv6] [-MaxHops <Int32>] [-Quiet] [-ResolveDestination] -TargetName <String[]> [-TimeoutSeconds <Int32>] -Traceroute [<CommonParameters>]
+Test-Connection [-TargetName] <String[]> [-IPv4] [-IPv6] [-MaxHops <Int32>] [-Quiet] [-ResolveDestination] [-Source <String>] [-TimeoutSeconds <Int32>] -Traceroute [<CommonParameters>]
 
-Test-Connection [-IPv4] [-IPv6] -MTUSizeDetect [-Quiet] [-ResolveDestination] -TargetName <String[]> [-TimeoutSeconds <Int32>] [<CommonParameters>]
+Test-Connection [-TargetName] <String[]> [-IPv4] [-IPv6] -MTUSizeDetect [-Quiet] [-ResolveDestination] [-TimeoutSeconds <Int32>] [<CommonParameters>]
 
-Test-Connection [[-Source] <String>] [-IPv4] [-IPv6] [-Quiet] [-ResolveDestination] -TargetName <String[]> -TCPPort <Int32> [-TimeoutSeconds <Int32>] [<CommonParameters>]`,
+Test-Connection [-TargetName] <String[]> [-IPv4] [-IPv6] [-Quiet] [-ResolveDestination] [-Source <String>] -TCPPort <Int32> [-TimeoutSeconds <Int32>] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -24258,28 +23090,16 @@ Test-Connection [[-Source] <String>] [-IPv4] [-IPv6] [-Quiet] [-ResolveDestinati
         }
     ),
     new ConsoleCommand(
-        `Test-HgsTraceTarget`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
         `Test-Json`,
         [
-            new Parameter(`Json`, `Specifies the JSON string to test for validity. Enter a variable that contains the string, or type a command or expression that gets the string. You can also pipe a string to "Test-Json"
+            new Parameter(`Json`, `Specifies the JSON string to test for validity. Enter a variable that contains the string, or type a command or expression that gets the string. You can also pipe a string to "Test-Json".
 
 
-The "Json" parameter is required.`, `String`),
-            new Parameter(`Schema`, `Specifies a Schema to validate the JSON input against.  If passed "Test-Json" will validate that the Json input conforms to the spec specified by the "-Schema" parameter and return "$True" only if the input conforms to the provided Schema.
+The Json parameter is required.`, `String`),
+            new Parameter(`Schema`, `Specifies a Schema to validate the JSON input against. If passed "Test-Json" will validate that the Json input conforms to the spec specified by the Schema parameter and return "$True" only if the input conforms to the provided Schema.
 
 
-For more information, see JSON Schema (https://json-schema.org/)`, `String`),
+For more information, see JSON Schema (https://json-schema.org/).`, `String`),
         ],
         `Tests whether a string is a valid JSON document`,
         `Test-Json [-Json] <String> [[-Schema] <String>] [<CommonParameters>]`,
@@ -24303,13 +23123,7 @@ For more information, see JSON Schema (https://json-schema.org/)`, `String`),
     new ConsoleCommand(
         `Test-Path`,
         [
-            new Parameter(`Credential`, `Specifies a user account that has permission to perform this action. The default is the current user.
-
-
-Type a user name, such as User01 or Domain01\User01. Or, enter a PSCredential object, such as one generated by the "Get-Credential" cmdlet. If you type a user name, this cmdlet prompts you for a password.
-
-
-> [!WARNING] > This parameter is not supported by any providers installed with Windows PowerShell.`, `PSCredential`),
+            new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
             new Parameter(`Exclude`, `Specifies items that this cmdlet omits. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
             new Parameter(`Filter`, `Specifies a filter in the format or language of the provider. The value of this parameter qualifies the Path parameter. The syntax of the filter, including the use of wildcard characters, depends on the provider. Filters are more efficient than other parameters, because the provider applies them when it retrieves the objects instead of having PowerShell filter the objects after they are retrieved.`, `String`),
             new Parameter(`Include`, `Specifies paths that this cmdlet tests. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "*.txt". Wildcard characters are permitted.`, `String[]`),
@@ -24324,7 +23138,10 @@ Type a user name, such as User01 or Domain01\User01. Or, enter a PSCredential ob
 - Container.   An element that contains other elements, such as a directory or registry key. - Leaf.   An element that does not contain other elements, such as a file. - Any.   Either a container or a leaf.
 
 
-Tells whether the final element in the path is of a particular type.`, `TestPathType`),
+Tells whether the final element in the path is of a particular type.
+
+
+> [!CAUTION] > > Up to PowerShell version 6.1.2, when the IsValid and PathType switches are > specified together, the "Test-Path" cmdlet ignores the PathType switch and only > validates the syntactic path without validating the path type. > > According to issue #8607 (https://github.com/PowerShell/PowerShell/issues/8607), fixing this > behavior may be a breaking change in a future version, where the IsValid and PathType > switches belong to separate parameter sets, and thus, cannot be used together avoiding this > confusion.`, `TestPathType`),
         ],
         `Determines whether all elements of a path exist.`,
         `Test-Path [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Include <String[]>] [-IsValid] -LiteralPath <String[]> [-NewerThan <DateTime>] [-OlderThan <DateTime>] [-PathType {Any | Container | Leaf}] [<CommonParameters>]
@@ -24338,46 +23155,10 @@ Test-Path [-Path] <String[]> [-Credential <PSCredential>] [-Exclude <String[]>] 
     new ConsoleCommand(
         `Test-PSSessionConfigurationFile`,
         [
-            new Parameter(`Path`, `Specifies the path and file name of a session configuration file (.pssc). If you omit the path, the default is the current folder. Wildcard characters are supported, but they must resolve to a single file. You can also pipe a session configuration file path to Test-PSSessionConfigurationFile .`, `String`),
+            new Parameter(`Path`, `Specifies the path and filename of a session configuration file (.pssc). If you omit the path, the default is the current folder. Wildcard characters are supported, but they must resolve to a single file. You can also pipe a session configuration file path to "Test-PSSessionConfigurationFile".`, `String`),
         ],
         `Verifies the keys and values in a session configuration file.`,
         `Test-PSSessionConfigurationFile [-Path] <String> [<CommonParameters>]`,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Test-VHD`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Test-VMNetworkAdapter`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Test-VMReplicationConnection`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
         "",
         (parameters, paramDictionary) => {
 
@@ -24630,14 +23411,14 @@ To prevent a restart and suppress the restart prompt, use the NoServiceRestart p
             new Parameter(`Name`, `Specifies the names of the session configurations to delete. Enter one session configuration name or a configuration name pattern. Wildcard characters are permitted. This parameter is required.
 
 
-You can also pipe a session configurations to Unregister-PSSessionConfiguration .`, `String`),
+You can also pipe a session configurations to "Unregister-PSSessionConfiguration".`, `String`),
             new Parameter(`NoServiceRestart`, `Indicates that this cmdlet does not restart the WinRM service, and suppresses the prompt to restart the service.
 
 
-By default, when you run an Unregister-PSSessionConfiguration command, you are prompted to restart the WinRM service to make the change effective. Until the WinRM service is restarted, users can still use the unregistered session configuration, even though Get-PSSessionConfiguration does not find it.
+By default, when you run an "Unregister-PSSessionConfiguration" command, you are prompted to restart the WinRM service to make the change effective. Until the WinRM service is restarted, users can still use the unregistered session configuration, even though "Get-PSSessionConfiguration" does not find it.
 
 
-To restart the WinRM service without prompting, specify the Force parameter. To restart the WinRM service manually, use the Restart-Service cmdlet.`, `SwitchParameter`),
+To restart the WinRM service without prompting, specify the Force parameter. To restart the WinRM service manually, use the "Restart-Service" cmdlet.`, `SwitchParameter`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
             new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
         ],
@@ -24693,40 +23474,64 @@ Use this parameter to add a file that formats a .NET object that is also referen
             new Parameter(`Credential`, `Specifies credentials of a user who has permission to access the file system location specified by SourcePath . This parameter is valid only when the SourcePath or LiteralPath parameter is used in the command.
 
 
-This parameter enables you to run "Update-Help" commands with the SourcePath parameter on remote computers. By providing explicit credentials, you can run the command on a remote computer and access a file share on a third computer without encountering an access denied error or using CredSSP authentication to delegate credentials.`, `PSCredential`),
-            new Parameter(`Force`, `Indicates that this cmdlet does not follow the once-per-day limitation, skips version checking, and downloads files that exceed the 1 GB limit.
+The Credential parameter enables you to run "Update-Help" commands with the SourcePath parameter on remote computers. By providing explicit credentials, you can run the command on a remote computer and access a file share on a third computer without encountering an access denied error or using CredSSP authentication to delegate credentials.
 
 
-Without this parameter, "Update-Help" runs only once in each 24-hour period, downloads are limited to 1 GB of uncompressed content per module and help files are installed only when they are newer than the files on the computer.
+Type a user name, such as User01 or Domain01\\User01 , or enter a PSCredential object generated by the "Get-Credential" cmdlet. If you type a user name, you're prompted to enter the password.
+
+
+Credentials are stored in a PSCredential (/dotnet/api/system.management.automation.pscredential)object and the password is stored as a SecureString (/dotnet/api/system.security.securestring).
+
+
+> [!NOTE] > For more information about SecureString data protection, see > How secure is SecureString? (/dotnet/api/system.security.securestring#how-secure-is-securestring).`, `PSCredential`),
+            new Parameter(`Force`, `Indicates that this cmdlet doesn't follow the once-per-day limitation, skips version checking, and downloads files that exceed the 1 GB limit.
+
+
+Without this parameter, "Update-Help" runs only once in each 24-hour period. Downloads are limited to 1 GB of uncompressed content per module and help files are only installed when they're newer than the existing files on the computer.
 
 
 The once-per-day limit protects the servers that host the help files and makes it practical for you to add an "Update-Help" command to your PowerShell profile without incurring the resource cost of repeated connections or downloads.
 
 
-To update help for a module in multiple UI cultures without the Force parameter, include all UI cultures in the same command, such as:  "Update-Help -Module PSScheduledJobs -UICulture en-US, fr-FR, pt-BR"`, `SwitchParameter`),
-            new Parameter(`FullyQualifiedModule`, `Specifies modules with names that are specified in the form of ModuleSpecification objects. These are described in the Remarks section of ModuleSpecification Constructor (Hashtable) (/dotnet/api/microsoft.powershell.commands.modulespecification.-ctor?view=powershellsdk-1.1.0#Microsoft_PowerShell_Commands_ModuleSpecification__ctor_System_Collections_Hashtable_).  For example, the FullyQualifiedModule parameter accepts a module name that is specified in the format "@{ModuleName = "modulename"; ModuleVersion = "version_number"}" or  "@{ModuleName = "modulename"; ModuleVersion = "version_number"; Guid = "GUID"}." ModuleName and ModuleVersion are required, but Guid is optional.
+To update help for a module in multiple UI cultures without the Force parameter, include all UI cultures in the same command, such as:
 
 
-You cannot specify the FullyQualifiedModule parameter in the same command as a Module parameter.`, `ModuleSpecification[]`),
-            new Parameter(`LiteralPath`, `Specifies the folder for updated help files instead of downloading them from the Internet. Use this parameter or SourcePath if you have used the "Save-Help" cmdlet to download help files to a directory.
+"Update-Help -Module PSScheduledJobs -UICulture en-US, fr-FR, pt-BR"`, `SwitchParameter`),
+            new Parameter(`FullyQualifiedModule`, `Specifies modules with names that are specified in the form of ModuleSpecification objects. These modules are described in the Remarks section of ModuleSpecification Constructor (Hashtable) (/dotnet/api/microsoft.powershell.commands.modulespecification.-ctor?view=powershellsdk-1.1.0#Microsoft_PowerShell_Commands_ModuleSpecification__ctor_System_Collections_Hashtable_).
 
 
-You can also pipe a directory object, such as one from the Get-Item or Get-ChildItem cmdlets, to "Update-Help".
+For example, the FullyQualifiedModule parameter accepts a module name that is specified in the format:
 
 
-Unlike the value of SourcePath , the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcard characters. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
-            new Parameter(`Module`, `Specifies modules for which this cmdlet updates help. Enter one or more module names or name patterns in a comma-separated list, or specify a file that lists one module name on each line. Wildcard characters are permitted. You can also pipe modules from the Get-Module cmdlet, to the "Update-Help" cmdlet.
+"@{ModuleName = "modulename"; ModuleVersion = "version_number"}"
 
 
-The modules that you specify must be installed on the computer, but they do not have to be imported into the current session. You can specify any module in the session or any module that is installed in a location listed in the PSModulePath environment variable.
+or
 
 
-A value of * (all) attempts to update help for all modules that are installed on the computer. This includes modules that do not support Updatable Help. This value might generate errors when the command encounters modules that do not support Updatable Help. Instead, run "Update-Help" without parameters.
+"@{ModuleName = "modulename"; ModuleVersion = "version_number"; Guid = "GUID"}." ModuleName and ModuleVersion are required, but Guid is optional.
 
 
-The Module parameter of the "Update-Help" cmdlet does not accept the full path of a module file or module manifest file. To update help for a module that is not in a PSModulePath location, import the module into the current session before you run the "Update-Help" command.`, `String[]`),
-            new Parameter(`Recurse Searches recursively for help files in the specified directory. This parameter is`, `valid only when SourcePath is used in the command.`, `SwitchParameter`),
-            new Parameter(`Scope`, `Specifies the system scope where help is to be updated. Note that updating help at the AllUsers scope requires administrative privileges on Windows systems. CurrentUser is the default scope for help from PowerShell 6.1 onwards, but AllUsers may be specified to install or update help for all users. Note that on Unix systems "sudo" privileges are required to update help for all users. For example: "sudo pwsh -c Update-Help"
+You can't specify the FullyQualifiedModule parameter in the same command as a Module parameter.`, `ModuleSpecification[]`),
+            new Parameter(`LiteralPath`, `Specifies the folder for updated help files instead of downloading them from the internet. Use this parameter or SourcePath if you've used the "Save-Help" cmdlet to download help files to a directory.
+
+
+You can pipeline a directory object, such as from the "Get-Item" or "Get-ChildItem" cmdlets, to "Update-Help".
+
+
+Unlike the value of SourcePath , the value of LiteralPath is used exactly as it's typed. No characters are interpreted as wildcard characters. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
+            new Parameter(`Module`, `Updates help for the specified modules. Enter one or more module names or name patterns in a comma-separated list, or specify a file that lists one module name on each line. Wildcard characters are permitted. You can pipeline modules from the "Get-Module" cmdlet to the "Update-Help" cmdlet.
+
+
+The modules that you specify must be installed on the computer, but they don't have to be imported into the current session. You can specify any module in the session or any module that is installed in a location listed in the "$env:PSModulePath" environment variable.
+
+
+A value of "*" (all) attempts to update help for all modules that are installed on the computer. Modules that don't support Updatable Help are included. This value might generate errors when the command encounters modules that don't support Updatable Help. Instead, run "Update-Help" without parameters.
+
+
+The Module parameter of the "Update-Help" cmdlet doesn't accept the full path of a module file or module manifest file. To update help for a module that isn't in a "$env:PSModulePath" location, import the module into the current session before you run the "Update-Help" command.`, `String[]`),
+            new Parameter(`Recurse`, `Performs a recursive search for help files in the specified directory. This parameter is valid only when the command uses the SourcePath parameter.`, `SwitchParameter`),
+            new Parameter(`Scope`, `Specifies the system scope where help is updated. Updates at the AllUsers scope require administrative privileges on Windows systems. The "-Scope" parameter was introduced in PowerShell Core version 6.1. CurrentUser is the default scope for help files in PowerShell 6.1 and above. AllUsers can be specified to install or update help for all users. On Unix systems "sudo" privileges are required to update help for all users. For example: "sudo pwsh -c Update-Help"
 
 
 The acceptable values are:
@@ -24735,39 +23540,32 @@ The acceptable values are:
 - CurrentUser
 
 
-- AllUsers
+- AllUsers`, `UpdateHelpScope`),
+            new Parameter(`SourcePath`, `Specifies a file system folder where "Update-Help" gets updated help files, instead of downloading them from the internet. Enter the path of a folder. Don't specify a file name or file name extension. You can pipeline a folder, such as one from the "Get-Item" or "Get-ChildItem" cmdlets, to "Update-Help".
 
 
+By default, "Update-Help" downloads updated help files from the internet. Use SourcePath when you've used the "Save-Help" cmdlet to download updated help files to a directory.
 
 
+To specify a default value for SourcePath , go to Group Policy , Computer Configuration , and Set the default source path for Update-Help . This Group Policy setting prevents users from using "Update-Help" to download help files from the internet. For more information, see about_Group_Policy_Settings (./About/about_Group_Policy_Settings.md).`, `String[]`),
+            new Parameter(`UICulture`, `Specifies UI culture values that "Update-Help" uses to get updated help files. Enter one or more language codes, such as es-ES , a variable that contains culture objects, or a command that gets culture objects, such as a "Get-Culture" or "Get-UICulture" command. Wildcard characters aren't permitted and you can't submit a partial language code, such as de .
 
 
-The "-Scope" parameter was introduced in PowerShell Core version 6.1.`, `UpdateHelpScope`),
-            new Parameter(`SourcePath`, `Specifies a file system folder from which this cmdlet gets updated help files, instead of downloading them from the Internet. Enter the path of a folder. Do not specify a file name or file name extension. You can also pipe a folder, such as one from the Get-Item or Get-ChildItem cmdlets, to "Update-Help".
+By default, "Update-Help" gets help files in the UI culture set for the operating system. If you specify the UICulture parameter, "Update-Help" looks for help only for the specified UI culture.
 
 
-By default, "Update-Help" downloads updated help files from the Internet. Use this parameter when you have used the "Save-Help" cmdlet to download updated help files to a directory.
+Commands that use the UICulture parameter succeed only when the module provides help files for the specified UI culture. If the command fails because the specified UI culture isn't supported, an error message is displayed.`, `CultureInfo[]`),
+            new Parameter(`UseDefaultCredentials`, `Indicates that "Update-Help" runs the command, including the internet download, by using the credentials of the current user. By default, the command runs without explicit credentials.
 
 
-Administrators can use the Set the default source path for Update-Help Group Policy setting under Computer Configuration to specify a default value for SourcePath . This Group Policy setting prevents users from using "Update-Help" to download help files from the Internet. For more information, see about_Group_Policy_Settings (about/about_Group_Policy_Settings.md).`, `String[]`),
-            new Parameter(`UICulture`, `Specifies UI culture values for which this cmdlet gets updated help files. Enter one or more language codes, such as es-ES, a variable that contains culture objects, or a command that gets culture objects, such as a Get-Culture or Get-UICulture command. Wildcard characters are not permitted and you cannot submit a partial language code, such as "de".
-
-
-By default, "Update-Help" gets help files in the UI culture set for Windows or its fallback culture. If you specify the UICulture parameter, "Update-Help" looks for help only for the specified UI culture, not in any fallback culture.
-
-
-Commands that use the UICulture parameter succeed only when the module provides help files for the specified UI culture. If the command fails because the specified UI culture is not supported, the error message includes a list of UI cultures that the module supports.`, `CultureInfo[]`),
-            new Parameter(`UseDefaultCredentials`, `Indicates that this cmdlet runs the command, including the Internet download, by using the credentials of the current user. By default, the command runs without explicit credentials.
-
-
-This parameter is effective only when the Web download uses NTLM, negotiate, or Kerberos-based authentication.`, `SwitchParameter`),
+This parameter is effective only when the web download uses NT LAN Manager (NTLM), negotiate, or Kerberos-based authentication.`, `SwitchParameter`),
             new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
-            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
+            new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet isn't run.`, `SwitchParameter`),
         ],
         `Downloads and installs the newest help files on your computer.`,
-        `Update-Help [[-Module] <String[]>] [[-UICulture] <CultureInfo[]>] [-Credential <PSCredential>] [-Force] [-FullyQualifiedModule <ModuleSpecification[]>] [-LiteralPath <String[]>] [-Recurse Searches recursively for help files in the specified directory. This parameter is] [-Scope <UpdateHelpScope>] [-UseDefaultCredentials] [-Confirm] [-WhatIf] [<CommonParameters>]
+        `Update-Help [[-Module] <String[]>] [[-UICulture] <CultureInfo[]>] [-Credential <PSCredential>] [-Force] [-FullyQualifiedModule <ModuleSpecification[]>] [-LiteralPath <String[]>] [-Recurse] [-Scope <UpdateHelpScope>] [-UseDefaultCredentials] [-Confirm] [-WhatIf] [<CommonParameters>]
 
-Update-Help [[-Module] <String[]>] [[-SourcePath] <String[]>] [[-UICulture] <CultureInfo[]>] [-Credential <PSCredential>] [-Force] [-FullyQualifiedModule <ModuleSpecification[]>] [-Recurse Searches recursively for help files in the specified directory. This parameter is] [-Scope <UpdateHelpScope>] [-UseDefaultCredentials] [-Confirm] [-WhatIf] [<CommonParameters>]`,
+Update-Help [[-Module] <String[]>] [[-SourcePath] <String[]>] [[-UICulture] <CultureInfo[]>] [-Credential <PSCredential>] [-Force] [-FullyQualifiedModule <ModuleSpecification[]>] [-Recurse] [-Scope <UpdateHelpScope>] [-UseDefaultCredentials] [-Confirm] [-WhatIf] [<CommonParameters>]`,
         "",
         (parameters, paramDictionary) => {
 
@@ -24941,7 +23739,19 @@ Update-TypeData [-TypeData] <TypeData[]> [-Force] [-Confirm] [-WhatIf] [<CommonP
         }
     ),
     new ConsoleCommand(
-        `Update-VMVersion`,
+        `Update-WIMBootEntry`,
+        [
+
+        ],
+        `See help file for details.`,
+        ``,
+        "",
+        (parameters, paramDictionary) => {
+
+        }
+    ),
+    new ConsoleCommand(
+        `Use-WindowsUnattend`,
         [
 
         ],
@@ -25094,18 +23904,6 @@ Wait-Job [-State] {NotStarted | Running | Completed | Failed | Stopped | Blocked
 Wait-Process [[-Timeout] <Int32>] -InputObject <Process[]> [<CommonParameters>]
 
 Wait-Process [-Name] <String[]> [[-Timeout] <Int32>] [<CommonParameters>]`,
-        "",
-        (parameters, paramDictionary) => {
-
-        }
-    ),
-    new ConsoleCommand(
-        `Wait-VM`,
-        [
-
-        ],
-        `See help file for details.`,
-        ``,
         "",
         (parameters, paramDictionary) => {
 
@@ -25337,13 +24135,10 @@ The parameter name, Property , is optional.
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `String`),
-            new Parameter(`Value`, `Specifies a property value.
+            new Parameter(`Value`, `Specifies a property value. The parameter name, Value , is optional. This parameter accepts wildcard characters when used with the following comparison parameters:
 
 
-The parameter name, Value , is optional.
-
-
-This parameter was introduced in Windows PowerShell 3.0.`, `Object`),
+- CLike - CNotLike - Like - NotLike This parameter was introduced in Windows PowerShell 3.0.`, `Object`),
         ],
         `Selects objects from a collection based on their property values.`,
         `Where-Object [-Property] <String> [[-Value] <Object>] -CContains [-InputObject <PSObject>] [<CommonParameters>]
@@ -25429,7 +24224,7 @@ Where-Object [-Property] <String> [[-Value] <Object>] [-InputObject <PSObject>] 
     new ConsoleCommand(
         `Write-Error`,
         [
-            new Parameter(`Category`, `Specifies the category of the error. The default value is NotSpecified. The acceptable values for this parameter are:
+            new Parameter(`Category`, `Specifies the category of the error. The default value is NotSpecified . The acceptable values for this parameter are:
 
 
 - NotSpecified
@@ -25530,7 +24325,7 @@ Where-Object [-Property] <String> [[-Value] <Object>] [-InputObject <PSObject>] 
 
 
 
-For information about the error categories, see ErrorCategory Enumeration (https://go.microsoft.com/fwlink/?LinkId=143600)in the MSDN library.`, `ErrorCategory`),
+For information about the error categories, see ErrorCategory Enumeration (https://go.microsoft.com/fwlink/?LinkId=143600).`, `ErrorCategory`),
             new Parameter(`CategoryActivity`, `Specifies the action that caused the error.`, `String`),
             new Parameter(`CategoryReason`, `Specifies how or why the activity caused the error.`, `String`),
             new Parameter(`CategoryTargetName`, `Specifies the name of the object that was being processed when the error occurred.`, `String`),
@@ -25539,19 +24334,19 @@ For information about the error categories, see ErrorCategory Enumeration (https
             new Parameter(`ErrorRecord`, `Specifies an error record object that represents the error. Use the properties of the object to describe the error.
 
 
-To create an error record object, use the New-Object cmdlet or get an error record object from the array in the $Error automatic variable.`, `ErrorRecord`),
+To create an error record object, use the "New-Object" cmdlet or get an error record object from the array in the "$Error" automatic variable.`, `ErrorRecord`),
             new Parameter(`Exception`, `Specifies an exception object that represents the error. Use the properties of the object to describe the error.
 
 
-To create an exception object, use a hash table or use the New-Object cmdlet.`, `Exception`),
-            new Parameter(`Message`, `Specifies the message text of the error. If the text includes spaces or special characters, enclose it in quotation marks. You can also pipe a message string to Write-Error .`, `String`),
+To create an exception object, use a hash table or use the "New-Object" cmdlet.`, `Exception`),
+            new Parameter(`Message`, `Specifies the message text of the error. If the text includes spaces or special characters, enclose it in quotation marks. You can also pipe a message string to "Write-Error".`, `String`),
             new Parameter(`RecommendedAction`, `Specifies the action that the user should take to resolve or prevent the error.`, `String`),
             new Parameter(`TargetObject`, `Specifies the object that was being processed when the error occurred. Enter the object, a variable that contains the object, or a command that gets the object.`, `Object`),
         ],
         `Writes an object to the error stream.`,
         `Write-Error [-Message] <String> [-Category {NotSpecified | OpenError | CloseError | DeviceError | DeadlockDetected | InvalidArgument | InvalidData | InvalidOperation | InvalidResult | InvalidType | MetadataError | NotImplemented | NotInstalled | ObjectNotFound | OperationStopped | OperationTimeout | SyntaxError | ParserError | PermissionDenied | ResourceBusy | ResourceExists | ResourceUnavailable | ReadError | WriteError | FromStdErr | SecurityError | ProtocolError | ConnectionError | AuthenticationError | LimitsExceeded | QuotaExceeded | NotEnabled}] [-CategoryActivity <String>] [-CategoryReason <String>] [-CategoryTargetName <String>] [-CategoryTargetType <String>] [-ErrorId <String>] [-RecommendedAction <String>] [-TargetObject <Object>] [<CommonParameters>]
 
-Write-Error [[-Message] <String>] [-Category {NotSpecified | OpenError | CloseError | DeviceError | DeadlockDetected | InvalidArgument | InvalidData | InvalidOperation | InvalidResult | InvalidType | MetadataError | NotImplemented | NotInstalled | ObjectNotFound | OperationStopped | OperationTimeout | SyntaxError | ParserError | PermissionDenied | ResourceBusy | ResourceExists | ResourceUnavailable | ReadError | WriteError | FromStdErr | SecurityError | ProtocolError | ConnectionError | AuthenticationError | LimitsExceeded | QuotaExceeded | NotEnabled}] [-CategoryActivity <String>] [-CategoryReason <String>] [-CategoryTargetName <String>] [-CategoryTargetType <String>] [-ErrorId <String>] -Exception <Exception> [-RecommendedAction <String>] [-TargetObject <Object>] [<CommonParameters>]
+Write-Error [-Message] <String> [-Category {NotSpecified | OpenError | CloseError | DeviceError | DeadlockDetected | InvalidArgument | InvalidData | InvalidOperation | InvalidResult | InvalidType | MetadataError | NotImplemented | NotInstalled | ObjectNotFound | OperationStopped | OperationTimeout | SyntaxError | ParserError | PermissionDenied | ResourceBusy | ResourceExists | ResourceUnavailable | ReadError | WriteError | FromStdErr | SecurityError | ProtocolError | ConnectionError | AuthenticationError | LimitsExceeded | QuotaExceeded | NotEnabled}] [-CategoryActivity <String>] [-CategoryReason <String>] [-CategoryTargetName <String>] [-CategoryTargetType <String>] [-ErrorId <String>] -Exception <Exception> [-RecommendedAction <String>] [-TargetObject <Object>] [<CommonParameters>]
 
 Write-Error [-CategoryActivity <String>] [-CategoryReason <String>] [-CategoryTargetName <String>] [-CategoryTargetType <String>] -ErrorRecord <ErrorRecord> [-RecommendedAction <String>] [<CommonParameters>]`,
         "",
@@ -25688,7 +24483,10 @@ Write-Error [-CategoryActivity <String>] [-CategoryReason <String>] [-CategoryTa
         `Write-Output`,
         [
             new Parameter(`InputObject`, `Specifies the objects to send down the pipeline. Enter a variable that contains the objects, or type a command or expression that gets the objects.`, `PSObject[]`),
-            new Parameter(`NoEnumerate`, `By default, the Write-Output cmdlet always enumerates its output. The NoEnumerate parameter suppresses the default behavior, and prevents Write-Output from enumerating output. The NoEnumerate parameter has no effect on collections that were created by wrapping commands in parentheses, because the parentheses force enumeration.`, `SwitchParameter`),
+            new Parameter(`NoEnumerate`, `By default, the Write-Output cmdlet always enumerates its output. The NoEnumerate parameter suppresses the default behavior, and prevents Write-Output from enumerating output. The NoEnumerate parameter has no effect on collections that were created by wrapping commands in parentheses, because the parentheses force enumeration.
+
+
+> [!NOTE] > This switch only works correctly with PowerShell Core 6.2 and newer. On older > versions of PowerShell Core, the collection is still enumerated even with > use of this switch.  The behavior in PowerShell Core 6.2 is consistent with > Windows PowerShell.`, `SwitchParameter`),
         ],
         `Sends the specified objects to the next command in the pipeline. If the command is the last command in the pipeline, the objects are displayed in the console.`,
         `Write-Output [-InputObject] <PSObject[]> [-NoEnumerate] [<CommonParameters>]`,
@@ -25741,6 +24539,7 @@ Write-Error [-CategoryActivity <String>] [-CategoryReason <String>] [-CategoryTa
 
         }
     ),
+
 
 ];
 export const PSCoreCommands = commands;

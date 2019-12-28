@@ -26,7 +26,7 @@ namespace Remotely.ScreenCast.Linux.Capture
         public Bitmap PreviousFrame { get; set; }
         public event EventHandler<Rectangle> ScreenChanged;
         public int SelectedScreen { get; private set; } = -1;
-        public void Capture()
+        public void GetNextFrame()
         {
             try
             {
