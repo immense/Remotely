@@ -45,8 +45,8 @@ namespace Remotely.ScreenCast.Win
                     await CheckForRelaunch();
                     Conductor.IdleTimer = new IdleTimer(Conductor.Viewers);
                     Conductor.IdleTimer.Start();
-                    clipboardService.BeginWatching();
                     CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
+                    clipboardService.BeginWatching();
 
                     await HandleConnection(Conductor);
                 });
