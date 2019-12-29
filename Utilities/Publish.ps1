@@ -145,7 +145,7 @@ Get-ChildItem -Path "$Root\ScreenCast.Win\bin\x64\Release\" -Exclude "*.xml" | C
 
 # Build Windows GUI App (64-bit)
 &"$MSBuildPath" "$Root\Desktop.Win" /t:Build /p:Configuration=Release /p:Platform=x64
-Move-Item -Path "$Root\Desktop.Win\bin\x86\Release\Remotely_Desktop.exe" -Destination "$Root\Server\wwwroot\Downloads\Win-x64\Remotely_Desktop.exe" -Force
+Move-Item -Path "$Root\Desktop.Win\bin\x64\Release\Remotely_Desktop.exe" -Destination "$Root\Server\wwwroot\Downloads\Win-x64\Remotely_Desktop.exe" -Force
 if ($SignAssemblies) {
     &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Downloads\Win-x64\Remotely_Desktop.exe"
 }
