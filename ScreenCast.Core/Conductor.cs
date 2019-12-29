@@ -41,7 +41,6 @@ namespace Remotely.ScreenCast.Core
         public event EventHandler<string> ViewerRemoved;
         public Dictionary<string, string> ArgDict { get; set; }
         public CasterSocket CasterSocket { get; private set; }
-        public HubConnection Connection { get; private set; }
         public string CurrentDesktopName { get; set; }
         public string DeviceID { get; private set; }
         public string Host { get; private set; }
