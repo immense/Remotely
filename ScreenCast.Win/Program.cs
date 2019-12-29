@@ -34,19 +34,19 @@ namespace Remotely.ScreenCast.Win
                 CursorIconWatcher = new CursorIconWatcher(Conductor);
                 var screenCaster = new WinScreenCaster(CursorIconWatcher);
                 var clipboardService = new WinClipboardService();
-                clipboardService.BeginWatching();
                 var casterSocket = new CasterSocket(new WinInput(), screenCaster, new WinAudioCapturer(), clipboardService);
                 Conductor = new Conductor(casterSocket, screenCaster);
                 Conductor.ProcessArgs(args);
 
                 Conductor.Connect().ContinueWith(async (task) =>
                 {
-                    CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
                     await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
                     CheckInitialDesktop();
                     await CheckForRelaunch();
                     Conductor.IdleTimer = new IdleTimer(Conductor.Viewers);
                     Conductor.IdleTimer.Start();
+                    CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
+                    clipboardService.BeginWatching();
 
                     await HandleConnection(Conductor);
                 });

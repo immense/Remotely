@@ -130,26 +130,32 @@ dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:Publ
 dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=linux-x64 "$Root\Desktop.Linux\"
 
 
-# Publish Windows ScreenCaster (32-bit)
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=win-x86 "$Root\ScreenCast.Win"
+# Build .NET Framework ScreenCaster (32-bit)
+&"$MSBuildPath" "$Root\ScreenCast.Win" /t:Build /p:Configuration=Release /p:Platform=x86
 
-# Publish Windows ScreenCaster (64-bit)
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=win-x64 "$Root\ScreenCast.Win"
+# Copy 32-bit .NET Framework ScreenCaster to Agent output folder.
+Get-ChildItem -Path "$Root\ScreenCast.Win\bin\x86\Release\" -Exclude "*.xml" | Copy-Item -Destination ".\Agent\bin\Release\netcoreapp3.1\win10-x86\publish\ScreenCast\" -Force
 
-# Publish Windows GUI App (64-bit)
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=win-x64 "$Root\Desktop.Win"
+# Build .NET Framework ScreenCaster (64-bit)
+&"$MSBuildPath" "$Root\ScreenCast.Win" /t:Build /p:Configuration=Release /p:Platform=x64
 
+# Copy 64-bit .NET Framework ScreenCaster to Agent output folder.
+Get-ChildItem -Path "$Root\ScreenCast.Win\bin\x64\Release\" -Exclude "*.xml" | Copy-Item -Destination ".\Agent\bin\Release\netcoreapp3.1\win10-x64\publish\ScreenCast\" -Force
+
+
+# Build Windows GUI App (64-bit)
+&"$MSBuildPath" "$Root\Desktop.Win" /t:Build /p:Configuration=Release /p:Platform=x64
+Move-Item -Path "$Root\Desktop.Win\bin\x86\Release\Remotely_Desktop.exe" -Destination "$Root\Server\wwwroot\Downloads\Win-x64\Remotely_Desktop.exe" -Force
 if ($SignAssemblies) {
     &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Downloads\Win-x64\Remotely_Desktop.exe"
 }
 
-# Publish Windows GUI App (32-bit)
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=win-x86 "$Root\Desktop.Win"
-
+# Build Windows GUI App (32-bit)
+&"$MSBuildPath" "$Root\Desktop.Win" /t:Build /p:Configuration=Release /p:Platform=x86
+Move-Item -Path "$Root\Desktop.Win\bin\x86\Release\Remotely_Desktop.exe" -Destination "$Root\Server\wwwroot\Downloads\Win-x86\Remotely_Desktop.exe" -Force
 if ($SignAssemblies) {
     &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Downloads\Win-x86\Remotely_Desktop.exe"
 }
-
 
 
 # Compress Core clients.
