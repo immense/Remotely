@@ -34,7 +34,14 @@ namespace Remotely.ScreenCast.Win.Services
             ICapturer capturer;
             try
             {
-                capturer = new DXCapture();
+                if (Conductor.Current.Viewers.Count == 0)
+                {
+                    capturer = new DXCapture();
+                }
+                else
+                {
+                    capturer = new BitBltCapture();
+                }
             }
             catch (Exception ex)
             {
