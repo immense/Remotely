@@ -17,7 +17,7 @@ namespace Remotely.ScreenCast.Core.Models
         {
             ImageQuality = 50;
         }
-        public bool AutoAdjustQuality { get; internal set; }
+        public bool AutoAdjustQuality { get; internal set; } = true;
         public ICapturer Capturer { get; set; }
         public bool DisconnectRequested { get; set; }
         public EncoderParameters EncoderParams { get; private set; }
