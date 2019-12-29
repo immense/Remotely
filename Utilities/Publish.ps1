@@ -144,6 +144,7 @@ Get-ChildItem -Path "$Root\ScreenCast.Win\bin\x64\Release\" -Exclude "*.xml" | C
 
 
 # Build Windows GUI App (64-bit)
+[System.IO.Directory]::CreateDirectory("$Root\Server\wwwroot\Downloads\Win-x64\")
 &"$MSBuildPath" "$Root\Desktop.Win" /t:Build /p:Configuration=Release /p:Platform=x64
 Move-Item -Path "$Root\Desktop.Win\bin\x64\Release\Remotely_Desktop.exe" -Destination "$Root\Server\wwwroot\Downloads\Win-x64\Remotely_Desktop.exe" -Force
 if ($SignAssemblies) {
@@ -151,6 +152,7 @@ if ($SignAssemblies) {
 }
 
 # Build Windows GUI App (32-bit)
+[System.IO.Directory]::CreateDirectory("$Root\Server\wwwroot\Downloads\Win-x86\")
 &"$MSBuildPath" "$Root\Desktop.Win" /t:Build /p:Configuration=Release /p:Platform=x86
 Move-Item -Path "$Root\Desktop.Win\bin\x86\Release\Remotely_Desktop.exe" -Destination "$Root\Server\wwwroot\Downloads\Win-x86\Remotely_Desktop.exe" -Force
 if ($SignAssemblies) {
