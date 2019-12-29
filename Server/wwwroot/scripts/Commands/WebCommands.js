@@ -110,7 +110,7 @@ var commands = [
         var output = `<div>Selected Devices:</div>
                             <table class="console-device-table table table-responsive">
                             <thead><tr>
-                            <th>Online</th><th>Device Name</th><th>Current User</th><th>Last Online</th><th>Platform</th><th>OS Description</th><th>Free Storage</th><th>Total Storage (GB)</th><th>Free Memory</th><th>Total Memory (GB)</th><th>Tags</th>
+                            <th>Online</th><th>Device Name</th><th>Alias</th><th>Current User</th><th>Last Online</th><th>Platform</th><th>OS Description</th><th>Free Storage</th><th>Total Storage (GB)</th><th>Free Memory</th><th>Total Memory (GB)</th><th>Tags</th>
                             </tr></thead>`;
         var deviceList = selectedDevices.map(x => {
             return `<tr>
@@ -118,6 +118,7 @@ var commands = [
                 .replace("true", "<span class='fa fa-check-circle'></span>")
                 .replace("false", "<span class='fa fa-times'></span>")}</td>
                         <td>${x.DeviceName}</td>
+                        <td>${x.Alias}</td>
                         <td>${x.CurrentUser}</td>
                         <td>${new Date(x.LastOnline).toLocaleString()}</td>
                         <td>${x.Platform}</td>
@@ -126,7 +127,7 @@ var commands = [
                         <td>${x.TotalStorage.toLocaleString()}</td>
                         <td>${Math.round(x.FreeMemory * 100)}%</td>
                         <td>${x.TotalMemory.toLocaleString()}</td>
-                        <td>${x.Tags}</td>
+                        <td>${x.Tags || ""}</td>
                         </tr>`;
         });
         output += deviceList.join("");
