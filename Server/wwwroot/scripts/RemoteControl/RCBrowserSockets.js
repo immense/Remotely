@@ -87,6 +87,9 @@ export class RCBrowserSockets {
     SendQualityChange(qualityLevel) {
         this.Connection.invoke("SendQualityChange", qualityLevel);
     }
+    SendAutoQualityAdjust(isOn) {
+        this.Connection.invoke("SendAutoQualityAdjust", isOn);
+    }
     SendToggleAudio(toggleOn) {
         this.Connection.invoke("SendToggleAudio", toggleOn);
     }
