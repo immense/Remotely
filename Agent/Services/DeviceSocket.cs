@@ -309,7 +309,7 @@ namespace Remotely.Agent.Services
                             while (stopwatch.Elapsed.TotalSeconds < 10)
                             {
                                 await Task.Delay(250);
-                                if (Process.GetProcessesByName(Path.GetFileNameWithoutExtension(rcBinaryPath))?.Where(x => x.Id == proc.Id)?.Count() > 0 != true)
+                                if (Process.GetProcessesByName(Path.GetFileNameWithoutExtension(rcBinaryPath))?.Where(x => x.Id == proc.Id)?.Any() != true)
                                 {
                                     Logger.Write("Restarting screen caster after failed relaunch.");
                                 }
@@ -329,7 +329,7 @@ namespace Remotely.Agent.Services
                                 while (stopwatch.Elapsed.TotalSeconds < 10)
                                 {
                                     await Task.Delay(250);
-                                    if (Process.GetProcessesByName(Path.GetFileNameWithoutExtension(rcBinaryPath))?.Where(x=>x.Id == procInfo.dwProcessId)?.Count() > 0 != true)
+                                    if (Process.GetProcessesByName(Path.GetFileNameWithoutExtension(rcBinaryPath))?.Where(x=>x.Id == procInfo.dwProcessId)?.Any() != true)
                                     {
                                         Logger.Write("Restarting screen caster after failed relaunch.");
                                         result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}", "default", true, out procInfo);

@@ -54,7 +54,13 @@ namespace Remotely.ScreenCast.Win.Capture
                 OutputDuplicateFrameInformation duplicateFrameInformation;
 
                 // Try to get duplicated frame within given time is ms
-                duplicatedOutput.TryAcquireNextFrame(100, out duplicateFrameInformation, out screenResource);
+                var result = duplicatedOutput.TryAcquireNextFrame(100, out duplicateFrameInformation, out screenResource);
+
+                if (!result.Success)
+                {
+                    NeedsInit = true;
+                    return;
+                }
 
                 if (duplicateFrameInformation.AccumulatedFrames == 0)
                 {
