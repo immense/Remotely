@@ -135,6 +135,10 @@ namespace Remotely.Agent.Services
                         if (Directory.Exists(targetPath))
                         {
                             Directory.Delete(targetPath, true);
+                            while (Directory.Exists(targetPath))
+                            {
+                                Thread.Sleep(100);
+                            }
                         }
                         Directory.Move(subdir, targetPath);
                     }
