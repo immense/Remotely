@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ScreenCast.Win")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Remotely ScreenCast")]
+[assembly: AssemblyDescription("Allows unattended remote control via the Remotely server.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ScreenCast.Win")]
-[assembly: AssemblyCopyright("Copyright ©  2019")]
+[assembly: AssemblyCompany("Translucency Software")]
+[assembly: AssemblyProduct("Remotely ScreenCast")]
+[assembly: AssemblyCopyright("Copyright ©  2019 Translucency Software")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

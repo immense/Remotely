@@ -95,6 +95,28 @@ namespace Remotely.Desktop.Win.ViewModels
 
         }
 
+        public ICommand RestartAsAdminCommand
+        {
+            get
+            {
+                return new Executor((param) =>
+                {
+                    try
+                    {
+                        var psi = new ProcessStartInfo(Assembly.GetExecutingAssembly().Location);
+                        psi.Verb = "RunAs";
+                        Process.Start(psi);
+                        Environment.Exit(0);
+                    }
+                    // Exception can be thrown if UAC is dialog is cancelled.
+                    catch { }
+                }, (param) =>
+                {
+                    return !IsAdministrator;
+                });
+            }
+        }
+
         public string SessionID
         {
             get => sessionID;
