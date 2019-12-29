@@ -16,6 +16,7 @@ export var ConnectBox = document.getElementById("connectBox");
 export var ScreenSelectBar = document.getElementById("screenSelectBar");
 export var QualityBar = document.getElementById("qualityBar");
 export var QualitySlider = document.getElementById("qualityRangeInput");
+export var AutoQualityAdjustCheckBox = document.getElementById("autoAdjustQualityCheckBox");
 export var ActionsBar = document.getElementById("actionsBar");
 export var ViewBar = document.getElementById("viewBar");
 export var ChangeScreenButton = document.getElementById("changeScreenButton");
@@ -149,6 +150,9 @@ export function ApplyInputHandlers(sockets) {
     });
     QualitySlider.addEventListener("change", (ev) => {
         sockets.SendQualityChange(Number(QualitySlider.value));
+    });
+    AutoQualityAdjustCheckBox.addEventListener("change", ev => {
+        sockets.SendAutoQualityAdjust(AutoQualityAdjustCheckBox.checked);
     });
     ScreenViewer.addEventListener("pointermove", function (e) {
         currentPointerDevice = e.pointerType;

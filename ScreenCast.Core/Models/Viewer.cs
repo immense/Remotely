@@ -11,20 +11,18 @@ namespace Remotely.ScreenCast.Core.Models
 {
     public class Viewer
     {
+        private long imageQuality = 50;
+
         public Viewer()
         {
             ImageQuality = 50;
         }
-        public string ViewerConnectionID { get; set; }
-        public string Name { get; set; }
+        public bool AutoAdjustQuality { get; internal set; }
         public ICapturer Capturer { get; set; }
         public bool DisconnectRequested { get; set; }
         public EncoderParameters EncoderParams { get; private set; }
+        public bool FullScreenRefreshNeeded { get; internal set; }
         public bool HasControl { get; set; }
-        public double Latency { get; set; } = 1;
-        public int PendingFrames { get; set; }
-
-        private long imageQuality = 50;
         public long ImageQuality
         {
             get
@@ -42,17 +40,19 @@ namespace Remotely.ScreenCast.Core.Models
                     return;
                 }
                 imageQuality = value;
-                
+
                 EncoderParams = new EncoderParameters()
                 {
-                    Param = new []
+                    Param = new[]
                     {
                         new EncoderParameter(Encoder.Quality, value)
                     }
                 };
             }
         }
-        public bool FullScreenRefreshNeeded { get; internal set; }
 
+        public double Latency { get; set; } = 1;
+        public string Name { get; set; }
+        public string ViewerConnectionID { get; set; }
     }
 }
