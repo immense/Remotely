@@ -10,9 +10,8 @@ Public Server: https://tryremotely.lucency.co (not intended for production use)
 *Notice: Remotely is currently in maintenance mode and will likely stay in a more-or-less prototype state.*
 
 ## Client Prerequisites:
-* Endpoint devices require the .NET Core runtime to be installed.
-	* For Windows, the Desktop Runtime is required.
-    * Download Link: https://dotnet.microsoft.com/download/dotnet-core/current/runtime
+* Endpoint devices require the latest .NET Core runtime and .NET Framework 4.8 to be installed.
+    * Download Link: https://dotnet.microsoft.com/download
 
 ## Build Instructions (Windows 10)  
 The following steps will configure your Windows 10 machine for building the Remotely server and clients.
