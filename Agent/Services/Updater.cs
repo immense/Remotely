@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Threading;
 
 namespace Remotely.Agent.Services
 {
