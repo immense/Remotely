@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Threading;
 
 namespace Remotely.Agent.Services
 {
@@ -135,6 +136,10 @@ namespace Remotely.Agent.Services
                         if (Directory.Exists(targetPath))
                         {
                             Directory.Delete(targetPath, true);
+                            while (Directory.Exists(targetPath))
+                            {
+                                Thread.Sleep(100);
+                            }
                         }
                         Directory.Move(subdir, targetPath);
                     }
