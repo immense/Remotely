@@ -160,6 +160,11 @@ namespace Remotely.Server.Services
             await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("QualityChange", qualityLevel, Context.ConnectionId);
         }
 
+        public async Task SendAutoQualityAdjust(bool isOn)
+        {
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("AutoQualityAdjust", isOn, Context.ConnectionId);
+        }
+
         public async Task SendScreenCastRequestToDevice(string screenCasterID, string requesterName, int remoteControlMode)
         {
             if ((RemoteControlMode)remoteControlMode == RemoteControlMode.Normal)

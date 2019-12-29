@@ -277,7 +277,6 @@ namespace Remotely.ScreenCast.Core.Sockets
                 {
                     var latency = DateTime.UtcNow - sentTime;
                     viewer.Latency = latency.TotalMilliseconds;
-                    viewer.PendingFrames = Math.Max(0, viewer.PendingFrames - 1);
                 }
             });
 
@@ -294,6 +293,14 @@ namespace Remotely.ScreenCast.Core.Sockets
                 if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
                 {
                     viewer.ImageQuality = qualityLevel;
+                }
+            });
+
+            Connection.On("AutoQualityAdjust", (bool isOn, string viewerID) =>
+            {
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
+                {
+                    viewer.AutoAdjustQuality = isOn;
                 }
             });
 

@@ -19,6 +19,7 @@ export var ConnectBox = document.getElementById("connectBox") as HTMLDivElement;
 export var ScreenSelectBar = document.getElementById("screenSelectBar") as HTMLDivElement;
 export var QualityBar = document.getElementById("qualityBar") as HTMLDivElement;
 export var QualitySlider = document.getElementById("qualityRangeInput") as HTMLInputElement;
+export var AutoQualityAdjustCheckBox = document.getElementById("autoAdjustQualityCheckBox") as HTMLInputElement;
 export var ActionsBar = document.getElementById("actionsBar") as HTMLDivElement;
 export var ViewBar = document.getElementById("viewBar") as HTMLDivElement;
 export var ChangeScreenButton = document.getElementById("changeScreenButton") as HTMLButtonElement;
@@ -155,7 +156,10 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
     })
     QualitySlider.addEventListener("change", (ev) => {
         sockets.SendQualityChange(Number(QualitySlider.value));
-    })
+    });
+    AutoQualityAdjustCheckBox.addEventListener("change", ev => {
+        sockets.SendAutoQualityAdjust(AutoQualityAdjustCheckBox.checked);
+    });
     ScreenViewer.addEventListener("pointermove", function (e) {
         currentPointerDevice = e.pointerType;
     });

@@ -15,6 +15,7 @@ using Remotely.Shared.Win32;
 using Remotely.ScreenCast.Core.Interfaces;
 using System.Diagnostics;
 using System.Threading;
+using System.Drawing.Imaging;
 
 namespace Remotely.ScreenCast.Core.Capture
 {
@@ -72,16 +73,6 @@ namespace Remotely.ScreenCast.Core.Capture
             {
                 try
                 {
-                    if (Conductor.Current.IsDebug)
-                    {
-                        while (fpsQueue.Any() && DateTime.Now - fpsQueue.Peek() > TimeSpan.FromSeconds(1))
-                        {
-                            fpsQueue.Dequeue();
-                        }
-                        fpsQueue.Enqueue(DateTime.Now);
-                        Debug.WriteLine("Capture FPS: " + fpsQueue.Count);
-                    }
-
                     if (OSUtils.IsWindows)
                     {
                         var currentDesktopName = Win32Interop.GetCurrentDesktop();
@@ -95,13 +86,14 @@ namespace Remotely.ScreenCast.Core.Capture
                     }
 
 
-                    if (viewer.PendingFrames > 10)
+                    if (Conductor.Current.IsDebug)
                     {
-                        Logger.Write($"Throttling screen capture. Latency: {viewer.Latency}.  Pending Frames: {viewer.PendingFrames}");
-                        // This is to prevent dead-lock in case updates are missed from the browser.
-                        viewer.PendingFrames = Math.Max(0, viewer.PendingFrames - 1);
-                        await Task.Delay(10);
-                        continue;
+                        while (fpsQueue.Any() && DateTime.Now - fpsQueue.Peek() > TimeSpan.FromSeconds(1))
+                        {
+                            fpsQueue.Dequeue();
+                        }
+                        fpsQueue.Enqueue(DateTime.Now);
+                        Debug.WriteLine("Capture FPS: " + fpsQueue.Count);
                     }
 
                     capturer.GetNextFrame();
@@ -120,12 +112,27 @@ namespace Remotely.ScreenCast.Core.Capture
                             capturer.CaptureFullscreen = false;
                         }
 
-                        encodedImageBytes = ImageUtils.EncodeBitmap(newImage, viewer.EncoderParams);
+                        if (viewer.AutoAdjustQuality && viewer.Latency > 1000)
+                        {
+                            var quality = (int)(viewer.ImageQuality * 1000 / viewer.Latency);
+                            Logger.Write($"Auto-adjusting image quality. Latency: {viewer.Latency}. Quality: {quality}");
+                            encodedImageBytes = ImageUtils.EncodeBitmap(newImage, new EncoderParameters()
+                            {
+                                Param = new[]
+                                {
+                                    new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality)
+                                }
+                            });
+                        }
+                        else
+                        {
+                            encodedImageBytes = ImageUtils.EncodeBitmap(newImage, viewer.EncoderParams);
+                        }
 
                         if (encodedImageBytes?.Length > 0)
                         {
                             await conductor.CasterSocket.SendScreenCapture(encodedImageBytes, viewerID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, DateTime.UtcNow);
-                            viewer.PendingFrames++;
+                            viewer.Latency += 300;
                         }
                     }
                 }
