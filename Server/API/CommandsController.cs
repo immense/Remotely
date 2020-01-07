@@ -99,31 +99,35 @@ namespace Remotely.Server.API
         }
 
         [HttpPost("{resultType}")]
-        public void Post(string resultType)
+        public async Task Post(string resultType)
         {
-            var content = new StreamReader(Request.Body).ReadToEnd();
-            switch (resultType)
+            using (var sr = new StreamReader(Request.Body))
             {
-                case "PSCore":
-                    {
-                        var result = JsonConvert.DeserializeObject<PSCoreCommandResult>(content);
-                        var commandContext = DataService.GetCommandContext(result.CommandContextID);
-                        commandContext.PSCoreResults.Add(result);
-                        DataService.AddOrUpdateCommandContext(commandContext);
+                var content = await sr.ReadToEndAsync();
+                switch (resultType)
+                {
+                    case "PSCore":
+                        {
+                            var result = JsonConvert.DeserializeObject<PSCoreCommandResult>(content);
+                            var commandContext = DataService.GetCommandContext(result.CommandContextID);
+                            commandContext.PSCoreResults.Add(result);
+                            DataService.AddOrUpdateCommandContext(commandContext);
+                            break;
+                        }
+                    case "WinPS":
+                    case "CMD":
+                    case "Bash":
+                        {
+                            var result = JsonConvert.DeserializeObject<GenericCommandResult>(content);
+                            var commandContext = DataService.GetCommandContext(result.CommandContextID);
+                            commandContext.CommandResults.Add(result);
+                            DataService.AddOrUpdateCommandContext(commandContext);
+                            break;
+                        }
+                    default:
                         break;
-                    }
-                case "WinPS":
-                case "CMD":
-                case "Bash":
-                    {
-                        var result = JsonConvert.DeserializeObject<GenericCommandResult>(content);
-                        var commandContext = DataService.GetCommandContext(result.CommandContextID);
-                        commandContext.CommandResults.Add(result);
-                        DataService.AddOrUpdateCommandContext(commandContext);
-                        break;
-                    }
-                default:
-                    break;
+                }
+
             }
         }
     }
