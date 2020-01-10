@@ -85,6 +85,11 @@ namespace Remotely.ScreenCast.Core.Capture
                         }
                     }
 
+                    if (viewer.Latency > 30000)
+                    {
+                        // Viewer isn't responding.  Abort sending.
+                        break;
+                    }
 
                     if (Conductor.Current.IsDebug)
                     {
