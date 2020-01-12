@@ -392,17 +392,6 @@ namespace Remotely.Server.Data
                     .UserOptions;
         }
 
-        public List<RemotelyUser> GetUsersWithAccessToDevice(IEnumerable<string> userIDs, Device device)
-        {
-            var targetDevice = RemotelyContext.Devices
-                                .FirstOrDefault(x => x.ID == device.ID && x.OrganizationID == device.OrganizationID);
-
-            var targetUsers = RemotelyContext.Users.Where(x => 
-                                    x.OrganizationID == device.OrganizationID && 
-                                    userIDs.Contains(x.Id)).ToList();
-
-            return targetUsers.ToList();
-        }
         public bool JoinViaInvitation(string userName, string inviteID)
         {
             var invite = RemotelyContext.InviteLinks

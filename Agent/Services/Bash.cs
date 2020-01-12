@@ -120,7 +120,7 @@ namespace Remotely.Agent.Services
             var partialResult =  new GenericCommandResult()
             {
                 CommandContextID = LastInputID,
-                DeviceID = Utilities.GetConnectionInfo().DeviceID,
+                DeviceID = ConfigService.GetConnectionInfo().DeviceID,
                 CommandType = "Bash",
                 StandardOutput = StandardOut,
                 ErrorOutput = "WARNING: The command execution froze and was forced to return before finishing.  " +
@@ -136,7 +136,7 @@ namespace Remotely.Agent.Services
             return new GenericCommandResult()
             {
                 CommandContextID = LastInputID,
-                DeviceID = Utilities.GetConnectionInfo().DeviceID,
+                DeviceID = ConfigService.GetConnectionInfo().DeviceID,
                 CommandType = "Bash",
                 StandardOutput = StandardOut,
                 ErrorOutput = ErrorOut

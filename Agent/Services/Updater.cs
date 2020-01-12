@@ -20,7 +20,7 @@ namespace Remotely.Agent.Services
             try
             {
                 var wc = new WebClient();
-                var response = new HttpClient().GetAsync(Utilities.GetConnectionInfo().Host + $"/API/CoreVersion/").Result;
+                var response = new HttpClient().GetAsync(ConfigService.GetConnectionInfo().Host + $"/API/CoreVersion/").Result;
                 var latestVersion = response.Content.ReadAsStringAsync().Result;
                 var thisVersion = FileVersionInfo.GetVersionInfo("Remotely_Agent.dll").FileVersion.ToString().Trim();
                 if (thisVersion != latestVersion)
@@ -37,7 +37,7 @@ namespace Remotely.Agent.Services
                     {
                         Directory.Delete(tempFolder, true);
                     }
-                    wc.DownloadFile(new Uri(Utilities.GetConnectionInfo().Host + $"/Downloads/{fileName}"), tempFile);
+                    wc.DownloadFile(new Uri(ConfigService.GetConnectionInfo().Host + $"/Downloads/{fileName}"), tempFile);
 
                     Logger.Write($"Service Updater: Extracting files.");
 
@@ -187,10 +187,8 @@ namespace Remotely.Agent.Services
             {
                 throw new Exception("Unsupported operating system.");
             }
-            var response = await new HttpClient().GetAsync(Utilities.GetConnectionInfo().Host + $"/API/ScreenCastVersion/{platform}");
+            var response = await new HttpClient().GetAsync(ConfigService.GetConnectionInfo().Host + $"/API/ScreenCastVersion/{platform}");
             return await response.Content.ReadAsStringAsync();
         }
-
-
     }
 }

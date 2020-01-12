@@ -25,5 +25,6 @@ namespace Remotely.Shared.Models
         }
         public string OrganizationID { get; set; }
         public string ServerVerificationToken { get; set; }
+
     }
 }
