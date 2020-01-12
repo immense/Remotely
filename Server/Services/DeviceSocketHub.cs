@@ -14,14 +14,19 @@ namespace Remotely.Server.Services
 {
     public class DeviceSocketHub : Hub
     {
-        public DeviceSocketHub(DataService dataService, IHubContext<BrowserSocketHub> browserHub, IHubContext<RCBrowserSocketHub> rcBrowserHub)
+        public DeviceSocketHub(DataService dataService, 
+            IHubContext<BrowserSocketHub> browserHub, 
+            IHubContext<RCBrowserSocketHub> rcBrowserHub,
+            DeviceAlertService deviceAlertService)
         {
             DataService = dataService;
             BrowserHub = browserHub;
             RCBrowserHub = rcBrowserHub;
+            DeviceAlertService = deviceAlertService;
         }
 
 		public static ConcurrentDictionary<string, Device> ServiceConnections { get; } = new ConcurrentDictionary<string, Device>();
+        public DeviceAlertService DeviceAlertService { get; }
         public IHubContext<RCBrowserSocketHub> RCBrowserHub { get; }
         private IHubContext<BrowserSocketHub> BrowserHub { get; }
         private DataService DataService { get; }
@@ -79,14 +84,10 @@ namespace Remotely.Server.Services
                     Device = updatedDevice;
                     ServiceConnections.AddOrUpdate(Context.ConnectionId, Device, (id, d) => Device);
 
-                    var onlineOrganizationUsers = BrowserSocketHub.ConnectionIdToUserLookup
-                                                    .Where(x => x.Value.OrganizationID == Device.OrganizationID);
-
-                    var authorizedUsers = DataService.GetUsersWithAccessToDevice(onlineOrganizationUsers.Select(x => x.Value.Id), Device);
-                    var connectionIds = onlineOrganizationUsers
-                                            .Where(onlineUser => authorizedUsers.Any(authorizedUser => authorizedUser.Id == onlineUser.Value.Id))
-                                            .Select(x => x.Key)
-                                            .ToList();
+                    var connectionIds = BrowserSocketHub.ConnectionIdToUserLookup
+                                                    .Where(x => x.Value.OrganizationID == Device.OrganizationID)
+                                                    .Select(x => x.Key)
+                                                    .ToList();
 
                     await BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceCameOnline", Device);
                 }
@@ -107,16 +108,17 @@ namespace Remotely.Server.Services
         {
             DataService.AddOrUpdateDevice(device, out var updatedDevice);
             Device = updatedDevice;
-            var onlineOrganizationUsers = BrowserSocketHub.ConnectionIdToUserLookup
-                                            .Where(x => x.Value.OrganizationID == Device.OrganizationID);
-
-            var authorizedUsers = DataService.GetUsersWithAccessToDevice(onlineOrganizationUsers.Select(x=>x.Value.Id), Device);
-            var connectionIds = onlineOrganizationUsers
-                                    .Where(onlineUser => authorizedUsers.Any(authorizedUser => authorizedUser.Id == onlineUser.Value.Id))
-                                    .Select(x => x.Key)
-                                    .ToList();
+            var connectionIds = BrowserSocketHub.ConnectionIdToUserLookup
+                                            .Where(x => x.Value.OrganizationID == Device.OrganizationID)
+                                            .Select(x => x.Key)
+                                            .ToList();
 
             await BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceHeartbeat", Device);
+
+            if (DeviceAlertService.ShouldSendAlert(Device, out var alert))
+            {
+                await BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceAlert", alert);
+            }
         }
 
         public async Task DisplayMessage(string consoleMessage, string popupMessage, string requesterID)
@@ -135,18 +137,19 @@ namespace Remotely.Server.Services
 
                 Device.IsOnline = false;
 
-                var onlineOrganizationUsers = BrowserSocketHub.ConnectionIdToUserLookup
-                                                   .Where(x => x.Value.OrganizationID == Device.OrganizationID);
-
-                var authorizedUsers = DataService.GetUsersWithAccessToDevice(onlineOrganizationUsers.Select(x => x.Value.Id), Device);
-                var connectionIds = onlineOrganizationUsers
-                                        .Where(onlineUser => authorizedUsers.Any(authorizedUser => authorizedUser.Id == onlineUser.Value.Id))
-                                        .Select(x => x.Key)
-                                        .ToList();
+                var connectionIds = BrowserSocketHub.ConnectionIdToUserLookup
+                                                   .Where(x => x.Value.OrganizationID == Device.OrganizationID)
+                                                   .Select(x => x.Key)
+                                                   .ToList();
 
                 await BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceWentOffline", Device);
 
                 ServiceConnections.Remove(Context.ConnectionId, out _);
+
+                if (DeviceAlertService.ShouldSendAlert(Device, out var alert))
+                {
+                    await BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceAlert", alert);
+                }
             }
             
             await base.OnDisconnectedAsync(exception);

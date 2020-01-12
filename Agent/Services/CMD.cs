@@ -11,44 +11,6 @@ namespace Remotely.Agent.Services
 {
     public class CMD
     {
-        private static ConcurrentDictionary<string, CMD> Sessions { get; set; } = new ConcurrentDictionary<string, CMD>();
-        private string ConnectionID { get; set; }
-
-        private string LastInputID { get; set; }
-        private bool OutputDone { get; set; }
-        private string StandardOut { get; set; }
-        private string ErrorOut { get; set; }
-        private System.Timers.Timer ProcessIdleTimeout { get; set; }
-        public static CMD GetCurrent(string connectionID)
-        {
-            if (Sessions.ContainsKey(connectionID))
-            {
-                var bash = Sessions[connectionID];
-                bash.ProcessIdleTimeout.Stop();
-                bash.ProcessIdleTimeout.Start();
-                return bash;
-            }
-            else
-            {
-                var cmd = new CMD();
-                cmd.ConnectionID = connectionID;
-                cmd.ProcessIdleTimeout = new System.Timers.Timer(600000); // 10 minutes.
-                cmd.ProcessIdleTimeout.AutoReset = false;
-                cmd.ProcessIdleTimeout.Elapsed += cmd.ProcessIdleTimeout_Elapsed;
-                Sessions.AddOrUpdate(connectionID, cmd, (id, c) => cmd);
-                cmd.ProcessIdleTimeout.Start();
-                return cmd;
-            }
-        }
-
-        private void ProcessIdleTimeout_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            Sessions.Remove(ConnectionID, out var outResult);
-            outResult.CMDProc.Kill();
-        }
-
-        private Process CMDProc { get; }
-
         private CMD()
         {
             var psi = new ProcessStartInfo("cmd.exe");
@@ -70,24 +32,34 @@ namespace Remotely.Agent.Services
             CMDProc.BeginOutputReadLine();
         }
 
-        private void CMDProc_OutputDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            if (e?.Data?.Contains(LastInputID) == true)
-            {
-                OutputDone = true;
-            }
-            else if (!OutputDone)
-            {
-                StandardOut += e.Data + Environment.NewLine;
-            }
+        private static ConcurrentDictionary<string, CMD> Sessions { get; set; } = new ConcurrentDictionary<string, CMD>();
+        private Process CMDProc { get; }
+        private string ConnectionID { get; set; }
 
-        }
-
-        private void CMDProc_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        private string ErrorOut { get; set; }
+        private string LastInputID { get; set; }
+        private bool OutputDone { get; set; }
+        private System.Timers.Timer ProcessIdleTimeout { get; set; }
+        private string StandardOut { get; set; }
+        public static CMD GetCurrent(string connectionID)
         {
-            if (e?.Data != null)
+            if (Sessions.ContainsKey(connectionID))
             {
-                ErrorOut += e.Data + Environment.NewLine;
+                var bash = Sessions[connectionID];
+                bash.ProcessIdleTimeout.Stop();
+                bash.ProcessIdleTimeout.Start();
+                return bash;
+            }
+            else
+            {
+                var cmd = new CMD();
+                cmd.ConnectionID = connectionID;
+                cmd.ProcessIdleTimeout = new System.Timers.Timer(600000); // 10 minutes.
+                cmd.ProcessIdleTimeout.AutoReset = false;
+                cmd.ProcessIdleTimeout.Elapsed += cmd.ProcessIdleTimeout_Elapsed;
+                Sessions.AddOrUpdate(connectionID, cmd, (id, c) => cmd);
+                cmd.ProcessIdleTimeout.Start();
+                return cmd;
             }
         }
 
@@ -112,7 +84,40 @@ namespace Remotely.Agent.Services
                 }
                 return GenerateCompletedResult();
             }
-           
+
+        }
+
+        private void CMDProc_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e?.Data != null)
+            {
+                ErrorOut += e.Data + Environment.NewLine;
+            }
+        }
+
+        private void CMDProc_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e?.Data?.Contains(LastInputID) == true)
+            {
+                OutputDone = true;
+            }
+            else if (!OutputDone)
+            {
+                StandardOut += e.Data + Environment.NewLine;
+            }
+
+        }
+
+        private GenericCommandResult GenerateCompletedResult()
+        {
+            return new GenericCommandResult()
+            {
+                CommandContextID = LastInputID,
+                DeviceID = ConfigService.GetConnectionInfo().DeviceID,
+                CommandType = "CMD",
+                StandardOutput = StandardOut,
+                ErrorOutput = ErrorOut
+            };
         }
 
         private GenericCommandResult GeneratePartialResult()
@@ -121,7 +126,7 @@ namespace Remotely.Agent.Services
             var partialResult = new GenericCommandResult()
             {
                 CommandContextID = LastInputID,
-                DeviceID = Utilities.GetConnectionInfo().DeviceID,
+                DeviceID = ConfigService.GetConnectionInfo().DeviceID,
                 CommandType = "CMD",
                 StandardOutput = StandardOut,
                 ErrorOutput = "WARNING: The command execution froze and was forced to return before finishing.  " +
@@ -132,17 +137,10 @@ namespace Remotely.Agent.Services
             return partialResult;
         }
 
-        private GenericCommandResult GenerateCompletedResult()
+        private void ProcessIdleTimeout_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            return new GenericCommandResult()
-            {
-                CommandContextID = LastInputID,
-                DeviceID = Utilities.GetConnectionInfo().DeviceID,
-                CommandType = "CMD",
-                StandardOutput = StandardOut,
-                ErrorOutput = ErrorOut
-            };
+            Sessions.Remove(ConnectionID, out var outResult);
+            outResult.CMDProc.Kill();
         }
-
     }
 }

@@ -10,6 +10,7 @@ using System.ServiceProcess;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Threading;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Remotely.Agent
 {
@@ -17,12 +18,17 @@ namespace Remotely.Agent
     {
         public static bool IsDebug { get; set; }
 
+        public static IServiceProvider Services { get; set; }
+
         public static void Main(string[] args)
         {
             try
             {
+                // TODO: Replace static services with scoped instances in IoC container.
+                var serviceCollection = new ServiceCollection();
+                Services = serviceCollection.BuildServiceProvider();
 
-                Task.Run(()=> { Init(args); });
+                Task.Run(() => { Init(args); });
 
                 Thread.Sleep(Timeout.Infinite);
 

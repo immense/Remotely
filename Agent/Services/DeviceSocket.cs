@@ -27,7 +27,7 @@ namespace Remotely.Agent.Services
 
         public static async Task Connect()
         {
-            ConnectionInfo = Utilities.GetConnectionInfo();
+            ConnectionInfo = ConfigService.GetConnectionInfo();
 
             HubConnection = new HubConnectionBuilder()
                 .WithUrl(ConnectionInfo.Host + "/DeviceHub")
@@ -47,18 +47,15 @@ namespace Remotely.Agent.Services
                 IsServerVerified = true;
                 ConnectionInfo.ServerVerificationToken = Guid.NewGuid().ToString();
                 await HubConnection.InvokeAsync("SetServerVerificationToken", ConnectionInfo.ServerVerificationToken);
-                Utilities.SaveConnectionInfo(ConnectionInfo);
+                ConfigService.SaveConnectionInfo(ConnectionInfo);
             }
             else
             {
                 await HubConnection.InvokeAsync("SendServerVerificationToken");
             }
 
-            if (HeartbeatTimer != null)
-            {
-                HeartbeatTimer.Stop();
-            }
-            HeartbeatTimer = new Timer(300000);
+            HeartbeatTimer?.Dispose();
+            HeartbeatTimer = new Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
             HeartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
             HeartbeatTimer.Start();
         }
@@ -171,7 +168,7 @@ namespace Remotely.Agent.Services
             hubConnection.On("TransferFiles", async (string transferID, List<string> fileIDs, string requesterID) =>
             {
                 Logger.Write($"File transfer started by {requesterID}.");
-                var connectionInfo = Utilities.GetConnectionInfo();
+                var connectionInfo = ConfigService.GetConnectionInfo();
                 var sharedFilePath = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(),"RemotelySharedFiles")).FullName;
                 
                 foreach (var fileID in fileIDs)
@@ -201,7 +198,7 @@ namespace Remotely.Agent.Services
                 await HubConnection.InvokeAsync("TransferCompleted", transferID, requesterID);
             });
             hubConnection.On("DeployScript", async (string mode, string fileID, string commandContextID, string requesterID) => {
-                var connectionInfo = Utilities.GetConnectionInfo();
+                var connectionInfo = ConfigService.GetConnectionInfo();
                 var sharedFilePath = Directory.CreateDirectory(Path.Combine(
                         Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
                         "Remotely",
@@ -253,11 +250,11 @@ namespace Remotely.Agent.Services
 
                         if (Program.IsDebug)
                         {
-                            Process.Start(rcBinaryPath, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default");
+                            Process.Start(rcBinaryPath, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConfigService.GetConnectionInfo().Host} -desktop default");
                         }
                         else
                         {
-                            var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default", "default", true, out _);
+                            var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConfigService.GetConnectionInfo().Host} -desktop default", "default", true, out _);
                             if (!result)
                             {
                                 await hubConnection.InvokeAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
@@ -272,7 +269,7 @@ namespace Remotely.Agent.Services
                         var psi = new ProcessStartInfo()
                         {
                             FileName = "sudo",
-                            Arguments = $"-u {username} {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {Utilities.GetConnectionInfo().Host} -desktop default & disown"
+                            Arguments = $"-u {username} {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConfigService.GetConnectionInfo().Host} -desktop default & disown"
                         };
                         psi.Environment.Add("DISPLAY", ":0");
                         psi.Environment.Add("XAUTHORITY", $"{homeDir}/.Xauthority");
@@ -304,7 +301,7 @@ namespace Remotely.Agent.Services
                         Logger.Write("Restarting screen caster.");
                         if (Program.IsDebug)
                         {
-                            var proc = Process.Start(rcBinaryPath, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}");
+                            var proc = Process.Start(rcBinaryPath, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConfigService.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}");
                             var stopwatch = Stopwatch.StartNew();
                             while (stopwatch.Elapsed.TotalSeconds < 10)
                             {
@@ -317,7 +314,7 @@ namespace Remotely.Agent.Services
                         }
                         else
                         {
-                            var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}", "default", true, out var procInfo);
+                            var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConfigService.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}", "default", true, out var procInfo);
                             
                             if (result)
                             {
@@ -332,7 +329,7 @@ namespace Remotely.Agent.Services
                                     if (Process.GetProcessesByName(Path.GetFileNameWithoutExtension(rcBinaryPath))?.Where(x=>x.Id == procInfo.dwProcessId)?.Any() != true)
                                     {
                                         Logger.Write("Restarting screen caster after failed relaunch.");
-                                        result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}", "default", true, out procInfo);
+                                        result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConfigService.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)}", "default", true, out procInfo);
                                     }
                                 }
                             }
@@ -353,7 +350,7 @@ namespace Remotely.Agent.Services
                         var psi = new ProcessStartInfo()
                         {
                             FileName = "sudo",
-                            Arguments = $"-u {username} {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {Utilities.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)} & disown"
+                            Arguments = $"-u {username} {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConfigService.GetConnectionInfo().Host} -relaunch true -desktop default -viewers {String.Join(",", viewerIDs)} & disown"
                         };
                         psi.Environment.Add("DISPLAY", ":0");
                         psi.Environment.Add("XAUTHORITY", $"{homeDir}/.Xauthority");
@@ -375,7 +372,7 @@ namespace Remotely.Agent.Services
           
             hubConnection.On("ServerVerificationToken", (string verificationToken) =>
             {
-                if (verificationToken == Utilities.GetConnectionInfo().ServerVerificationToken)
+                if (verificationToken == ConfigService.GetConnectionInfo().ServerVerificationToken)
                 {
                     IsServerVerified = true;
                     if (!Program.IsDebug)
@@ -394,7 +391,7 @@ namespace Remotely.Agent.Services
 
         private static void SendResultsViaAjax(string resultType, object result)
         {
-            var targetURL = Utilities.GetConnectionInfo().Host + $"/API/Commands/{resultType}";
+            var targetURL = ConfigService.GetConnectionInfo().Host + $"/API/Commands/{resultType}";
             var webRequest = WebRequest.CreateHttp(targetURL);
             webRequest.Method = "POST";
 
