@@ -33,7 +33,7 @@ h6 {
     display: grid;
     grid-template-rows: min-content auto;
     grid-row-gap: 15px;
-    height: calc(100vh - 155px);
+    height: calc(100vh - 160px);
     overflow-y: hidden;
 }
 #consoleAlert {
@@ -54,8 +54,11 @@ h6 {
 }
 
 
-#dataGridFrame {
-    max-height: calc(100vh - 250px);
+
+#deviceGridInnerWrapper {
+    display: grid;
+    grid-auto-rows: auto 1fr;
+    height: 100%;
 }
 
 .record-row {
