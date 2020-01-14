@@ -68,11 +68,6 @@ namespace Remotely.Server.Pages
         }
         public class InputModel
         {
-            public double? AlertOfflineMinutes { get; set; }
-
-            public double? AlertMemoryPercentage { get; set; }
-
-            public double? AlertSystemDrivePercentage { get; set; }
 
             [StringLength(100)]
             public string Alias { get; set; }
