@@ -16,17 +16,14 @@ namespace Remotely.Server.Services
     {
         public DeviceSocketHub(DataService dataService, 
             IHubContext<BrowserSocketHub> browserHub, 
-            IHubContext<RCBrowserSocketHub> rcBrowserHub,
-            DeviceAlertService deviceAlertService)
+            IHubContext<RCBrowserSocketHub> rcBrowserHub)
         {
             DataService = dataService;
             BrowserHub = browserHub;
             RCBrowserHub = rcBrowserHub;
-            DeviceAlertService = deviceAlertService;
         }
 
 		public static ConcurrentDictionary<string, Device> ServiceConnections { get; } = new ConcurrentDictionary<string, Device>();
-        public DeviceAlertService DeviceAlertService { get; }
         public IHubContext<RCBrowserSocketHub> RCBrowserHub { get; }
         private IHubContext<BrowserSocketHub> BrowserHub { get; }
         private DataService DataService { get; }
@@ -114,11 +111,6 @@ namespace Remotely.Server.Services
                                             .ToList();
 
             await BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceHeartbeat", Device);
-
-            if (DeviceAlertService.ShouldSendAlert(Device, out var alert))
-            {
-                await BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceAlert", alert);
-            }
         }
 
         public async Task DisplayMessage(string consoleMessage, string popupMessage, string requesterID)
@@ -145,11 +137,6 @@ namespace Remotely.Server.Services
                 await BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceWentOffline", Device);
 
                 ServiceConnections.Remove(Context.ConnectionId, out _);
-
-                if (DeviceAlertService.ShouldSendAlert(Device, out var alert))
-                {
-                    await BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceAlert", alert);
-                }
             }
             
             await base.OnDisconnectedAsync(exception);
