@@ -199,12 +199,12 @@ Below are examples of how to use the API for starting a remote control session.
 
 	$WebSession = New-Object Microsoft.PowerShell.Commands.WebRequestSession
 	 
-	$Response = Invoke-WebRequest -Uri "https://localhost:44351/api/Login" -WebSession $WebSession -Method Post -Body "
+	$Response = Invoke-WebRequest -Uri "https://localhost:44351/api/Login" -WebSession $WebSession -Method Post -Body '
 	{
-		'Email': 'email@example.com',
-		'Password': 'P@ssword1'
+		"Email": "email@example.com",
+		"Password": "P@ssword1"
 	}
-	" -ContentType "application/json"
+	' -ContentType "application/json"
 
 
 	if ($Response.StatusCode -eq 200) {

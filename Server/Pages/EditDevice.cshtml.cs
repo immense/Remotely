@@ -37,6 +37,19 @@ namespace Remotely.Server.Pages
             PopulateViewModel(deviceID);
         }
 
+        public IActionResult OnPost(string deviceID)
+        {
+            if (!ModelState.IsValid)
+            {
+                PopulateViewModel(deviceID);
+                return Page();
+            }
+
+            DataService.UpdateDevice(deviceID, Input.Tags, Input.Alias, Input.DeviceGroupID);
+
+            return RedirectToPage("EditDevice", new { deviceID, success = true });
+        }
+
         private void PopulateViewModel(string deviceID)
         {
             var user = DataService.GetUserByName(User.Identity.Name);
@@ -53,22 +66,14 @@ namespace Remotely.Server.Pages
             var groups = DataService.GetDeviceGroupsForUserName(User.Identity.Name);
             DeviceGroups.AddRange(groups.Select(x => new SelectListItem(x.Name, x.ID)));
         }
-
-        public IActionResult OnPost(string deviceID)
-        {
-            if (!ModelState.IsValid)
-            {
-                PopulateViewModel(deviceID);
-                return Page();
-            }
-
-            DataService.UpdateDevice(deviceID, Input.Tags, Input.Alias, Input.DeviceGroupID);
-
-            return RedirectToPage("EditDevice", new { deviceID, success = true });
-        }
-
         public class InputModel
         {
+            public double? AlertOfflineMinutes { get; set; }
+
+            public double? AlertMemoryPercentage { get; set; }
+
+            public double? AlertSystemDrivePercentage { get; set; }
+
             [StringLength(100)]
             public string Alias { get; set; }
 

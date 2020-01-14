@@ -247,9 +247,6 @@ namespace Remotely.Server.Data
 
         public bool DoesUserHaveAccessToDevice(string deviceID, RemotelyUser remotelyUser)
         {
-            var targetDevice = RemotelyContext.Devices
-                                .FirstOrDefault(x => x.ID == deviceID && x.OrganizationID == remotelyUser.OrganizationID);
-
             return RemotelyContext.Devices.Any(x => x.ID == deviceID && x.OrganizationID == remotelyUser.OrganizationID);
         }
 
