@@ -81,6 +81,9 @@ export function ApplyInputHandlers(sockets) {
     DisconnectButton.addEventListener("click", (ev) => {
         ConnectButton.removeAttribute("disabled");
         RemoteControl.RCBrowserSockets.Connection.stop();
+        if (location.search.includes("fromApi=true")) {
+            window.close();
+        }
     });
     document.querySelectorAll("#sessionIDInput, #nameInput").forEach(x => {
         x.addEventListener("keypress", (ev) => {
