@@ -55,5 +55,12 @@ namespace Remotely.Server.API
             DataService.WriteEvent($"API login unsuccessful due to bad attempt for {login.Email}.");
             return BadRequest();
         }
+
+        [HttpGet("Logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await SignInManager.SignOutAsync();
+            return Ok();
+        }
     }
 }
