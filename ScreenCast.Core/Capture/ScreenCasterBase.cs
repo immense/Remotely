@@ -98,7 +98,14 @@ namespace Remotely.ScreenCast.Core.Capture
                             fpsQueue.Dequeue();
                         }
                         fpsQueue.Enqueue(DateTime.Now);
-                        Debug.WriteLine("Capture FPS: " + fpsQueue.Count);
+                        Debug.WriteLine($"Capture FPS: {fpsQueue.Count}");
+                    }
+                    
+                    if (viewer.OutputBuffer > 150_000)
+                    {
+                        Debug.WriteLine($"Waiting for buffer to clear.  Size: {viewer.OutputBuffer}");
+                        await Task.Delay(50);
+                        continue;
                     }
 
                     capturer.GetNextFrame();
@@ -120,7 +127,7 @@ namespace Remotely.ScreenCast.Core.Capture
                         if (viewer.AutoAdjustQuality && viewer.Latency > 1000)
                         {
                             var quality = (int)(viewer.ImageQuality * 1000 / viewer.Latency);
-                            Logger.Write($"Auto-adjusting image quality. Latency: {viewer.Latency}. Quality: {quality}");
+                            Debug.WriteLine($"Auto-adjusting image quality. Latency: {viewer.Latency}. Quality: {quality}");
                             encodedImageBytes = ImageUtils.EncodeBitmap(newImage, new EncoderParameters()
                             {
                                 Param = new[]
@@ -138,6 +145,7 @@ namespace Remotely.ScreenCast.Core.Capture
                         {
                             await conductor.CasterSocket.SendScreenCapture(encodedImageBytes, viewerID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, DateTime.UtcNow);
                             viewer.Latency += 300;
+                            viewer.OutputBuffer += encodedImageBytes.Length;
                         }
                     }
                 }

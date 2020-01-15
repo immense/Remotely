@@ -1,6 +1,5 @@
 ﻿using Remotely.Shared.Models;
 using Remotely.Shared.ViewModels;
-using Remotely.Server.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -9,8 +8,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Remotely.Shared.ViewModels.Organization;
+using Remotely.Server.Data;
 
-namespace Remotely.Server.Data
+namespace Remotely.Server.Services
 {
     public class DataService
     {
@@ -119,7 +119,7 @@ namespace Remotely.Server.Data
                 {
                     WriteEvent(new EventLog()
                     {
-                        EventType = EventTypes.Info,
+                        EventType = EventType.Info,
                         Message = $"Unable to add device {device.DeviceName} because organization {device.OrganizationID} does not exist.",
                         Source = "DataService.AddOrUpdateDevice"
                     });
@@ -269,8 +269,19 @@ namespace Remotely.Server.Data
 
         public IEnumerable<CommandContext> GetAllCommandContexts(string userName)
         {
-            var orgID = GetUserByName(userName).OrganizationID;
+            var orgID = RemotelyContext.Users
+                            .FirstOrDefault(x => x.UserName == userName)
+                            ?.OrganizationID;
+
             return RemotelyContext.CommandContexts.Where(x => x.OrganizationID == orgID);
+        }
+        public IEnumerable<EventLog> GetAllEventLogs(string userName)
+        {
+            var orgID = RemotelyContext.Users
+                        .FirstOrDefault(x => x.UserName == userName)
+                        ?.OrganizationID;
+
+            return RemotelyContext.EventLogs.Where(x => x.OrganizationID == orgID);
         }
 
         public IEnumerable<Device> GetAllDevicesForUser(string userID)
@@ -513,7 +524,7 @@ namespace Remotely.Server.Data
         {
             RemotelyContext.EventLogs.Add(new EventLog()
             {
-                EventType = EventTypes.Error,
+                EventType = EventType.Error,
                 Message = ex.Message,
                 Source = ex.Source,
                 StackTrace = ex.StackTrace,
@@ -522,13 +533,26 @@ namespace Remotely.Server.Data
             RemotelyContext.SaveChanges();
         }
 
-        public void WriteEvent(string message)
+        public void WriteEvent(string message, string organizationId)
         {
             RemotelyContext.EventLogs.Add(new EventLog()
             {
-                EventType = EventTypes.Info,
+                EventType = EventType.Info,
                 Message = message,
-                TimeStamp = DateTime.Now
+                TimeStamp = DateTime.Now,
+                OrganizationID = organizationId
+            });
+            RemotelyContext.SaveChanges();
+        }
+
+        public void WriteEvent(string message, EventType eventType, string organizationId)
+        {
+            RemotelyContext.EventLogs.Add(new EventLog()
+            {
+                EventType = eventType,
+                Message = message,
+                TimeStamp = DateTime.Now,
+                OrganizationID = organizationId
             });
             RemotelyContext.SaveChanges();
         }

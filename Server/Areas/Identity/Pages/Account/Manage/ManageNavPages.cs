@@ -24,6 +24,8 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         public static string Options => "Options";
         public static string Organization => "Organization";
 
+        public static string ServerLogs => "ServerLogs";
+
         public static string IndexNavClass(ViewContext viewContext) => PageNavClass(viewContext, Index);
 
         public static string ChangePasswordNavClass(ViewContext viewContext) => PageNavClass(viewContext, ChangePassword);
@@ -39,6 +41,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         public static string TwoFactorAuthenticationNavClass(ViewContext viewContext) => PageNavClass(viewContext, TwoFactorAuthentication);
         public static string OptionsNavClass(ViewContext viewContext) => PageNavClass(viewContext, Options);
         public static string OrganizationNavClass(ViewContext viewContext) => PageNavClass(viewContext, Organization);
+        public static string ServerLogsNavClass(ViewContext viewContext) => PageNavClass(viewContext, ServerLogs);
 
         public static string PageNavClass(ViewContext viewContext, string page)
         {

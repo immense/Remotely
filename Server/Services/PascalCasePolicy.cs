@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Remotely.Server.Services
 {
-    public class PascalCase : JsonNamingPolicy
+    public class PascalCasePolicy : JsonNamingPolicy
     {
         public override string ConvertName(string name)
         {

@@ -150,9 +150,9 @@ namespace Remotely.Server.Services
             await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ClipboardTransfer", transferText, typeText, Context.ConnectionId);
         }
 
-        public async Task SendLatencyUpdate(DateTime sentTime)
+        public async Task SendLatencyUpdate(DateTime sentTime, int bytesRecieved)
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("LatencyUpdate", sentTime, Context.ConnectionId);
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("LatencyUpdate", sentTime, bytesRecieved, Context.ConnectionId);
         }
 
         public async Task SendQualityChange(int qualityLevel)
@@ -177,24 +177,35 @@ namespace Remotely.Server.Services
 
                 screenCasterID = RCDeviceSocketHub.SessionInfoList.First(x => x.Value.AttendedSessionID == screenCasterID).Value.RCSocketID;
             }
-           
+
+            string orgId = null;
+
+            if (Context?.User?.Identity?.IsAuthenticated == true)
+            {
+                orgId = DataService.GetUserByID(Context.UserIdentifier).OrganizationID;
+            }
+
+            RCDeviceSocketHub.SessionInfoList.TryGetValue(screenCasterID, out var sessionInfo);
+
             DataService.WriteEvent(new EventLog()
             {
-                EventType = EventTypes.Info,
+                EventType = EventType.Info,
                 TimeStamp = DateTime.Now,
                 Message = $"Remote control session requested.  " +
+                                $"Login ID (if logged in): {Context?.User?.Identity?.Name}.  " +
+                                $"Machine Name: {sessionInfo.MachineName}.  " +
+                                $"Requester Name (if specified): {requesterName}.  " +
                                 $"Connection ID: {Context.ConnectionId}. User ID: {Context.UserIdentifier}.  " +
                                 $"Screen Caster ID: {screenCasterID}.  " + 
                                 $"Mode: {((RemoteControlMode)remoteControlMode).ToString()}.  " + 
-                                $"Login ID (if logged in): {Context?.User?.Identity?.Name}.  " +
-                                $"Rquester Name (if specified): {requesterName}.  " +
-                                $"Requester IP Address: " + Context?.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString()
+                                $"Requester IP Address: " + Context?.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString(),
+                OrganizationID = orgId
             });
     
             ScreenCasterID = screenCasterID;
             Mode = (RemoteControlMode)remoteControlMode;
             RequesterName = requesterName;
-            var sessionInfo = RCDeviceSocketHub.SessionInfoList.FirstOrDefault(x => x.Value.RCSocketID == screenCasterID).Value;
+
             if (Mode == RemoteControlMode.Unattended)
             {
                 sessionInfo.Mode = RemoteControlMode.Unattended;

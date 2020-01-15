@@ -271,12 +271,13 @@ namespace Remotely.ScreenCast.Core.Sockets
                 conductor.InvokeViewerRemoved(viewerID);
 
             });
-            Connection.On("LatencyUpdate", (DateTime sentTime, string viewerID) =>
+            Connection.On("LatencyUpdate", (DateTime sentTime, int bytesReceived, string viewerID) =>
             {
                 if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
                 {
                     var latency = DateTime.UtcNow - sentTime;
                     viewer.Latency = latency.TotalMilliseconds;
+                    viewer.OutputBuffer -= bytesReceived;
                 }
             });
 

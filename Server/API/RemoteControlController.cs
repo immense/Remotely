@@ -47,23 +47,26 @@ namespace Remotely.Server.API
             {
                 return NotFound();
             }
+
+            var orgId = DataService.GetUserByName(rcRequest.Email)?.OrganizationID;
+
             var result = await SignInManager.PasswordSignInAsync(rcRequest.Email, rcRequest.Password, false, true);
             if (result.Succeeded)
             {
-                DataService.WriteEvent($"API login successful for {rcRequest.Email}.");
+                DataService.WriteEvent($"API login successful for {rcRequest.Email}.", orgId);
                 return await InitiateRemoteControl(rcRequest.DeviceID, rcRequest.Email);
             }
             else if (result.IsLockedOut)
             {
-                DataService.WriteEvent($"API login unsuccessful due to lockout for {rcRequest.Email}.");
+                DataService.WriteEvent($"API login unsuccessful due to lockout for {rcRequest.Email}.", orgId);
                 return Unauthorized("Account is locked.");
             }
             else if (result.RequiresTwoFactor)
             {
-                DataService.WriteEvent($"API login unsuccessful due to 2FA for {rcRequest.Email}.");
+                DataService.WriteEvent($"API login unsuccessful due to 2FA for {rcRequest.Email}.", orgId);
                 return Unauthorized("Account requires two-factor authentication.");
             }
-            DataService.WriteEvent($"API login unsuccessful due to bad attempt for {rcRequest.Email}.");
+            DataService.WriteEvent($"API login unsuccessful due to bad attempt for {rcRequest.Email}.", orgId);
             return BadRequest();
         }
 

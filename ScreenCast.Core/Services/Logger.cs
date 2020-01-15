@@ -29,12 +29,6 @@ namespace Remotely.ScreenCast.Core.Services
                             Process.Start("sudo", $"chmod 666 {path}").WaitForExit();
                         }
                     }
-                    var jsoninfo = new
-                    {
-                        Type = "Info",
-                        Timestamp = DateTime.Now.ToString(),
-                        Message = message
-                    };
                     if (File.Exists(path))
                     {
                         var fi = new FileInfo(path);
@@ -45,7 +39,7 @@ namespace Remotely.ScreenCast.Core.Services
                             fi = new FileInfo(path);
                         }
                     }
-                    File.AppendAllText(path, JsonSerializer.Serialize(jsoninfo) + Environment.NewLine);
+                    File.AppendAllText(path, $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}\t[INFO]\t{message}{Environment.NewLine}");
                     Console.WriteLine(message);
                 }
             }
@@ -90,7 +84,7 @@ namespace Remotely.ScreenCast.Core.Services
                                 fi = new FileInfo(path);
                             }
                         }
-                        File.AppendAllText(path, JsonSerializer.Serialize(jsonError) + Environment.NewLine);
+                        File.AppendAllText(path, $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}\t[ERROR]\t{exception?.Message}\t{exception?.StackTrace}\t{exception?.Source}{Environment.NewLine}");
                         Console.WriteLine(exception.Message);
                         exception = exception.InnerException;
                     }

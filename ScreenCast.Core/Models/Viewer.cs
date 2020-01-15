@@ -53,6 +53,7 @@ namespace Remotely.ScreenCast.Core.Models
 
         public double Latency { get; set; } = 1;
         public string Name { get; set; }
+        public int OutputBuffer { get; set; }
         public string ViewerConnectionID { get; set; }
     }
 }

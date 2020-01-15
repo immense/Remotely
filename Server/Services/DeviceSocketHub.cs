@@ -68,7 +68,7 @@ namespace Remotely.Server.Services
                 {
                     DataService.WriteEvent(new EventLog()
                     {
-                        EventType = EventTypes.Info,
+                        EventType = EventType.Info,
                         OrganizationID = device.OrganizationID,
                         Message = $"Device connection for {device?.DeviceName} was denied because it is already connected."
                     });

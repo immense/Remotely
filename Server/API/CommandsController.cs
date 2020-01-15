@@ -7,10 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Remotely.Shared.Models;
-using Remotely.Server.Data;
+using Remotely.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -41,7 +40,7 @@ namespace Remotely.Server.API
             switch (fileExt.ToUpper())
             {
                 case "JSON":
-                    content = JsonConvert.SerializeObject(commandContexts);
+                    content = System.Text.Json.JsonSerializer.Serialize(commandContexts);
                     break;
                 case "XML":
                     var serializer = new DataContractSerializer(typeof(CommandContext));
@@ -67,7 +66,7 @@ namespace Remotely.Server.API
             switch (fileExt.ToUpper())
             {
                 case "JSON":
-                    content = JsonConvert.SerializeObject(commandContext);
+                    content = System.Text.Json.JsonSerializer.Serialize(commandContext);
                     break;
                 case "XML":
                     var serializer = new DataContractSerializer(typeof(CommandContext));
@@ -108,7 +107,7 @@ namespace Remotely.Server.API
                 {
                     case "PSCore":
                         {
-                            var result = JsonConvert.DeserializeObject<PSCoreCommandResult>(content);
+                            var result = System.Text.Json.JsonSerializer.Deserialize<PSCoreCommandResult>(content);
                             var commandContext = DataService.GetCommandContext(result.CommandContextID);
                             commandContext.PSCoreResults.Add(result);
                             DataService.AddOrUpdateCommandContext(commandContext);
@@ -118,7 +117,7 @@ namespace Remotely.Server.API
                     case "CMD":
                     case "Bash":
                         {
-                            var result = JsonConvert.DeserializeObject<GenericCommandResult>(content);
+                            var result = System.Text.Json.JsonSerializer.Deserialize<GenericCommandResult>(content);
                             var commandContext = DataService.GetCommandContext(result.CommandContextID);
                             commandContext.CommandResults.Add(result);
                             DataService.AddOrUpdateCommandContext(commandContext);

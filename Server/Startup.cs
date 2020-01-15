@@ -132,7 +132,7 @@ namespace Remotely.Server
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0).AddJsonOptions(options =>
                 {
-                    options.JsonSerializerOptions.PropertyNamingPolicy = new PascalCase();
+                    options.JsonSerializerOptions.PropertyNamingPolicy = new PascalCasePolicy();
                 });
 
             services.AddSignalR(options =>
@@ -142,7 +142,7 @@ namespace Remotely.Server
                 })
                 .AddJsonProtocol(options =>
                 {
-                    options.PayloadSerializerOptions.PropertyNamingPolicy = new PascalCase();
+                    options.PayloadSerializerOptions.PropertyNamingPolicy = new PascalCasePolicy();
                 })
                 .AddMessagePackProtocol();
 

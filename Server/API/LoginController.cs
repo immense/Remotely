@@ -36,30 +36,40 @@ namespace Remotely.Server.API
             {
                 return NotFound();
             }
+
+            var orgId = DataService.GetUserByName(login.Email)?.OrganizationID;
+
             var result = await SignInManager.PasswordSignInAsync(login.Email, login.Password, false, true);
             if (result.Succeeded)
             {
-                DataService.WriteEvent($"API login successful for {login.Email}.");
+                DataService.WriteEvent($"API login successful for {login.Email}.", orgId);
                 return Ok();
             }
             else if (result.IsLockedOut)
             {
-                DataService.WriteEvent($"API login unsuccessful due to lockout for {login.Email}.");
+                DataService.WriteEvent($"API login unsuccessful due to lockout for {login.Email}.", orgId);
                 return Unauthorized("Account is locked.");
             }
             else if (result.RequiresTwoFactor)
             {
-                DataService.WriteEvent($"API login unsuccessful due to 2FA for {login.Email}.");
+                DataService.WriteEvent($"API login unsuccessful due to 2FA for {login.Email}.", orgId);
                 return Unauthorized("Account requires two-factor authentication.");
             }
-            DataService.WriteEvent($"API login unsuccessful due to bad attempt for {login.Email}.");
+            DataService.WriteEvent($"API login unsuccessful due to bad attempt for {login.Email}.", orgId);
             return BadRequest();
         }
 
         [HttpGet("Logout")]
         public async Task<IActionResult> Logout()
         {
+            string orgId = null;
+
+            if (HttpContext?.User?.Identity?.IsAuthenticated == true)
+            {
+                orgId = DataService.GetUserByName(HttpContext.User.Identity.Name)?.OrganizationID;
+            }
             await SignInManager.SignOutAsync();
+            DataService.WriteEvent($"API logout successful for {HttpContext?.User?.Identity?.Name}.", orgId);
             return Ok();
         }
     }

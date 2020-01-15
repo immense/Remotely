@@ -10,7 +10,7 @@ namespace Remotely.Shared.Models
     {
         [Key]
         public string ID { get; set; } = Guid.NewGuid().ToString();
-        public EventTypes EventType { get; set; }
+        public EventType EventType { get; set; }
         public string Message { get; set; }
         public string Source { get; set; }
         public string StackTrace { get; set; }
@@ -19,10 +19,11 @@ namespace Remotely.Shared.Models
         [JsonIgnore]
         public virtual Organization Organization { get; set; }
     }
-    public enum EventTypes
+    public enum EventType
     {
         Info = 0,
         Error = 1,
-        Debug = 2
+        Debug = 2,
+        Warning = 3
     }
 }
