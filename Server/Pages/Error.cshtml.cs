@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Remotely.Server.Data;
+using Remotely.Server.Services;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -38,7 +38,7 @@ namespace Remotely.Server.Pages
                     {
                         var logEntry = new Remotely.Shared.Models.EventLog()
                         {
-                            EventType = Remotely.Shared.Models.EventTypes.Error,
+                            EventType = Remotely.Shared.Models.EventType.Error,
                             Message = error.Message,
                             Source = error.Source,
                             StackTrace = error.StackTrace,

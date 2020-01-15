@@ -1,6 +1,6 @@
 using Remotely.Shared.Models;
 using Remotely.Shared.ViewModels;
-using Remotely.Server.Data;
+using Remotely.Server.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
@@ -13,10 +13,9 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 {
     public class OrganizationModel : PageModel
     {
-        public OrganizationModel(DataService dataService, UserManager<RemotelyUser> userManager)
+        public OrganizationModel(DataService dataService)
         {
             DataService = dataService;
-            UserManager = userManager;
         }
         public List<SelectListItem> DeviceGroups { get; } = new List<SelectListItem>();
 
@@ -31,7 +30,6 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         public List<OrganizationUser> Users { get; set; }
 
         private DataService DataService { get; }
-        private UserManager<RemotelyUser> UserManager { get; }
         public void OnGet()
         {
             OrganizationName = DataService.GetOrganizationName(User.Identity.Name);

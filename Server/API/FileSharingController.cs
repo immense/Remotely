@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Remotely.Server.Data;
+using Remotely.Server.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,14 +14,14 @@ using Microsoft.Net.Http.Headers;
 namespace Remotely.Server.API
 {
     [Route("api/[controller]")]
-    public class FileSharing : Controller
+    public class FileSharingController : Controller
     {
-        public FileSharing(DataService dataService)
+        public FileSharingController(DataService dataService)
         {
             DataService = dataService;
         }
         public DataService DataService { get; set; }
-        // GET api/<controller>/5
+        
         [HttpGet("{id}")]
         public ActionResult Get(string id)
         {

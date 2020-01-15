@@ -140,7 +140,7 @@ namespace Remotely.Server.Services
         {
             DataService.WriteEvent(new EventLog()
             {
-                EventType = EventTypes.Info,
+                EventType = EventType.Info,
                 Message = $"File transfer started by {RemotelyUser.UserName}.  File transfer IDs: {string.Join(", ", fileIDs)}.",
                 TimeStamp = DateTime.Now,
                 OrganizationID = RemotelyUser.OrganizationID

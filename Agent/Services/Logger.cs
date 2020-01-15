@@ -15,9 +15,9 @@ namespace Remotely.Agent.Services
         public static object WriteLock { get; } = new object();
         public static void Write(string message)
         {
-            lock (WriteLock)
+            try
             {
-                try
+                lock (WriteLock)
                 {
                     var path = Path.Combine(Path.GetTempPath(), "Remotely_Logs.txt");
                     if (!File.Exists(path))
@@ -28,12 +28,6 @@ namespace Remotely.Agent.Services
                             Process.Start("sudo", $"chmod 666 {path}").WaitForExit();
                         }
                     }
-                    var jsoninfo = new
-                    {
-                        Type = "Info",
-                        Timestamp = DateTime.Now.ToString(),
-                        Message = message
-                    };
                     if (File.Exists(path))
                     {
                         var fi = new FileInfo(path);
@@ -44,10 +38,11 @@ namespace Remotely.Agent.Services
                             fi = new FileInfo(path);
                         }
                     }
-                    File.AppendAllText(path, JsonConvert.SerializeObject(jsoninfo) + Environment.NewLine);
+                    File.AppendAllText(path, $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}\t[INFO]\t{message}{Environment.NewLine}");
+                    Console.WriteLine(message);
                 }
-                catch { }
             }
+            catch { }
         }
 
         public static void Write(Exception ex)
@@ -58,6 +53,15 @@ namespace Remotely.Agent.Services
                 {
                     var exception = ex;
                     var path = Path.Combine(Path.GetTempPath(), "Remotely_Logs.txt");
+
+                    if (!File.Exists(path))
+                    {
+                        File.Create(path).Close();
+                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                        {
+                            Process.Start("sudo", $"chmod 666 {path}").WaitForExit();
+                        }
+                    }
 
                     while (exception != null)
                     {
@@ -79,7 +83,8 @@ namespace Remotely.Agent.Services
                                 fi = new FileInfo(path);
                             }
                         }
-                        File.AppendAllText(path, JsonConvert.SerializeObject(jsonError) + Environment.NewLine);
+                        File.AppendAllText(path, $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}\t[ERROR]\t{exception?.Message}\t{exception?.StackTrace}\t{exception?.Source}{Environment.NewLine}");
+                        Console.WriteLine(exception.Message);
                         exception = exception.InnerException;
                     }
                 }
