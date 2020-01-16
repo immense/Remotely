@@ -15,19 +15,18 @@ namespace Remotely.Server.Services
 {
     public class RemoteControlSessionRecorder
     {
-        private static bool IsProcessing { get; set; }
-        private static ConcurrentQueue<RemoteControlFrame> FrameQueue { get; } = new ConcurrentQueue<RemoteControlFrame>();
-        private static ConcurrentDictionary<string, RecordingSessionState> SessionStates { get; } = new ConcurrentDictionary<string, RecordingSessionState>();
-        private static object LockObject { get; } = new object();
-
-        private IWebHostEnvironment HostingEnv { get; }
-        private DataService DataService { get; }
-
         public RemoteControlSessionRecorder(IWebHostEnvironment hostingEnv, DataService dataService)
         {
             HostingEnv = hostingEnv;
             DataService = dataService;
         }
+
+        private static ConcurrentQueue<RemoteControlFrame> FrameQueue { get; } = new ConcurrentQueue<RemoteControlFrame>();
+        private static object LockObject { get; } = new object();
+        private static Task ProcessingTask { get; set; }
+        private static ConcurrentDictionary<string, RecordingSessionState> SessionStates { get; } = new ConcurrentDictionary<string, RecordingSessionState>();
+        private DataService DataService { get; }
+        private IWebHostEnvironment HostingEnv { get; }
         internal void SaveFrame(byte[] frameBytes, int left, int top, int width, int height, string viewerID, string machineName, DateTime startTime)
         {
             var rcFrame = new RemoteControlFrame(frameBytes, left, top, width, height, viewerID, machineName, startTime);
@@ -35,69 +34,74 @@ namespace Remotely.Server.Services
 
             lock (LockObject)
             {
-                if (!IsProcessing)
+                if (ProcessingTask?.IsCompleted ?? true)
                 {
-                    IsProcessing = true;
-                    Task.Run(new Action(StartProcessing));
+                    ProcessingTask = Task.Run(new Action(StartProcessing));
                 }
             }
         }
 
         internal void StartProcessing()
         {
-            lock (LockObject)
+            try
             {
-                try
+                while (FrameQueue.Count > 0)
                 {
-                    while (FrameQueue.Count > 0)
+                    if (FrameQueue.TryDequeue(out var frame))
                     {
-                        if (FrameQueue.TryDequeue(out var frame))
+                        var saveDir = Directory.CreateDirectory(GetSaveFolder(frame));
+
+                        var saveFile = Path.Combine(saveDir.FullName, $"Recording.mp4");
+
+                        if (!SessionStates.ContainsKey(frame.ViewerID))
                         {
-                            var saveDir = Directory.CreateDirectory(GetSaveFolder(frame));
-
-                            var saveFile = Path.Combine(saveDir.FullName, $"Recording.mp4");
-
-                            if (!SessionStates.ContainsKey(frame.ViewerID))
+                            SessionStates[frame.ViewerID] = new RecordingSessionState()
                             {
-                                SessionStates[frame.ViewerID] = new RecordingSessionState()
-                                {
-                                    CumulativeFrame = new Bitmap(frame.Width, frame.Height)
-                                };
-                                var ffmpegProc = new Process();
-                                SessionStates[frame.ViewerID].FfmpegProcess = ffmpegProc;
+                                CumulativeFrame = new Bitmap(frame.Width, frame.Height)
+                            };
+                            var ffmpegProc = new Process();
+                            SessionStates[frame.ViewerID].FfmpegProcess = ffmpegProc;
 
-                                ffmpegProc.StartInfo.FileName = "ffmpeg.exe";
-                                ffmpegProc.StartInfo.Arguments = $"-y -f image2pipe -i pipe:.jpg -r 5 \"{saveFile}\"";
-                                ffmpegProc.StartInfo.UseShellExecute = false;
-                                ffmpegProc.StartInfo.RedirectStandardInput = true;
+                            ffmpegProc.StartInfo.FileName = "ffmpeg.exe";
+                            ffmpegProc.StartInfo.Arguments = $"-y -f image2pipe -i pipe:.jpg -r 5 \"{saveFile}\"";
+                            ffmpegProc.StartInfo.UseShellExecute = false;
+                            ffmpegProc.StartInfo.RedirectStandardInput = true;
 
-                                ffmpegProc.Start();
-                            }
+                            ffmpegProc.Start();
+                        }
 
-                            var bitmap = SessionStates[frame.ViewerID].CumulativeFrame;
-                            using (var graphics = Graphics.FromImage(bitmap))
+                        var bitmap = SessionStates[frame.ViewerID].CumulativeFrame;
+                        using (var graphics = Graphics.FromImage(bitmap))
+                        {
+                            using (var ms = new MemoryStream(frame.FrameBytes))
                             {
-                                using (var ms = new MemoryStream(frame.FrameBytes))
+                                using (var saveImage = Image.FromStream(ms))
                                 {
-                                    using (var saveImage = Image.FromStream(ms))
-                                    {
-                                        graphics.DrawImage(saveImage, frame.Left, frame.Top);
-                                    }
+                                    graphics.DrawImage(saveImage, frame.Left, frame.Top);
                                 }
                             }
-                            bitmap.Save(SessionStates[frame.ViewerID].FfmpegProcess.StandardInput.BaseStream, ImageFormat.Jpeg);
+                        }
+                        using (var ms = new MemoryStream())
+                        {
+                            bitmap.Save(ms, ImageFormat.Jpeg);
+                            ms.Seek(0, SeekOrigin.Begin);
+                            ms.CopyTo(SessionStates[frame.ViewerID].FfmpegProcess.StandardInput.BaseStream);
                         }
                     }
                 }
-                catch (Exception ex)
-                {
-                    DataService.WriteEvent(ex);
-                }
-                finally
-                {
-                    IsProcessing = false;
-                }
             }
+            catch (Exception ex)
+            {
+                DataService.WriteEvent(ex);
+            }
+        }
+
+        internal void StopProcessing(string viewerID)
+        {
+            SessionStates[viewerID].FfmpegProcess.StandardInput.Flush();
+            SessionStates[viewerID].FfmpegProcess.StandardInput.Close();
+            SessionStates[viewerID].FfmpegProcess.Close();
+            SessionStates.TryRemove(viewerID, out _);
         }
 
         private string GetSaveFolder(RemoteControlFrame frame)
@@ -111,14 +115,6 @@ namespace Remotely.Server.Services
                         frame.MachineName,
                         frame.ViewerID,
                         frame.StartTime.ToString("HH.mm.ss.fff"));
-        }
-
-        internal void StopProcessing(string viewerID)
-        {
-            SessionStates[viewerID].FfmpegProcess.StandardInput.Flush();
-            SessionStates[viewerID].FfmpegProcess.StandardInput.Close();
-            SessionStates[viewerID].FfmpegProcess.Close();
-            SessionStates.TryRemove(viewerID, out _);
         }
     }
 }
