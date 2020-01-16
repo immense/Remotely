@@ -282,9 +282,9 @@
       <Project>{b04a1728-2e87-491e-bc7f-f575a1754def}</Project>
       <Name>ScreenCast.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ScreenCast.Win\ScreenCast.Win.csproj">
+    <ProjectReference Include="..\ScreenCast.Win_Old\ScreenCast.Win_Old.csproj">
       <Project>{67eeb0ce-6b9a-4765-be91-89fb574a764d}</Project>
-      <Name>ScreenCast.Win</Name>
+      <Name>ScreenCast.Win_Old</Name>
     </ProjectReference>
     <ProjectReference Include="..\Shared\Shared.csproj">
       <Project>{3b1b36ae-7a60-4974-a868-1e24894d4149}</Project>
