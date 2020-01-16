@@ -41,6 +41,7 @@ namespace Remotely.ScreenCast.Win.Capture
         {
             try
             {
+                Win32Interop.SwitchToInputDesktop();
                 PreviousFrame = (Bitmap)CurrentFrame.Clone();
                 Graphic.CopyFromScreen(CurrentScreenBounds.Left, CurrentScreenBounds.Top, 0, 0, new Size(CurrentScreenBounds.Width, CurrentScreenBounds.Height));
             }
@@ -50,7 +51,8 @@ namespace Remotely.ScreenCast.Win.Capture
                 Logger.Write("Capturer error.  Trying to switch desktops in BitBltCapture.");
                 if (Win32Interop.SwitchToInputDesktop())
                 {
-                    Logger.Write("Switched desktops after capture error in BitBltCapture.");
+                    Win32Interop.GetCurrentDesktop(out var desktopName);
+                    Logger.Write($"Switch to desktop {desktopName} after capture error in BitBltCapture.");
                 }
                 Init();
             }

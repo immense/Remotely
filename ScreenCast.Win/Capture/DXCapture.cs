@@ -49,7 +49,8 @@ namespace Remotely.ScreenCast.Win.Capture
                     Logger.Write("Init needed in DXCapture.  Switching desktops.");
                     if (Win32Interop.SwitchToInputDesktop())
                     {
-                        Logger.Write("Switched desktops after capture error in DXCapture.");
+                        Win32Interop.GetCurrentDesktop(out var desktopName);
+                        Logger.Write($"Switch to desktop {desktopName} after capture error in DXCapture.");
                     }
                     Init();
                 }
@@ -60,7 +61,15 @@ namespace Remotely.ScreenCast.Win.Capture
                 OutputDuplicateFrameInformation duplicateFrameInformation;
 
                 // Try to get duplicated frame within given time is ms
-                duplicatedOutput.TryAcquireNextFrame(100, out duplicateFrameInformation, out screenResource);
+                var result = duplicatedOutput.TryAcquireNextFrame(100, out duplicateFrameInformation, out screenResource);
+
+                if (result.Failure && result.Code != SharpDX.DXGI.ResultCode.WaitTimeout.Code)
+                {
+                    Logger.Write($"TryAcquireFrame error.  Code: {result.Code}");
+                    NeedsInit = true;
+                    return;
+                }
+
 
                 if (duplicateFrameInformation.AccumulatedFrames == 0)
                 {
