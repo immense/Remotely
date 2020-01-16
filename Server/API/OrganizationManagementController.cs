@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Remotely.Shared.ViewModels.Organization;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using System.Text;
+using Microsoft.AspNetCore.WebUtilities;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -138,13 +140,22 @@ namespace Remotely.Server.API
                 if (result.Succeeded)
                 {
                     user = await UserManager.FindByEmailAsync(invite.InvitedUser);
+
                     await UserManager.ConfirmEmailAsync(user, await UserManager.GenerateEmailConfirmationTokenAsync(user));
-                    var resetCode = UrlEncoder.Default.Encode(await UserManager.GeneratePasswordResetTokenAsync(user));
-                    var resetUrl = $"{Request.Scheme}://{Request.Host}/Identity/Account/ResetPassword?code={resetCode}";
-                    invite.ResetUrl = resetUrl;
+
+                    var code = await UserManager.GeneratePasswordResetTokenAsync(user);
+                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                    var callbackUrl = Url.Page(
+                        "/Account/ResetPassword",
+                        pageHandler: null,
+                        values: new { area = "Identity", code },
+                        protocol: Request.Scheme);
+
+                    invite.ResetUrl = callbackUrl;
+
                     newUserMessage = $@"<br><br>Since you don't have an account yet, one has been created for you.
                                     You will need to set a password first before attempting to join the organization.<br><br>
-                                    Set your password by <a href='{resetUrl}'>clicking here</a>.  Your username/email
+                                    Set your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.  Your username/email
                                     is <strong>{invite.InvitedUser}</strong>.";
                 }
                 else
@@ -153,7 +164,7 @@ namespace Remotely.Server.API
                 }
             }
 
-            var newInvite = DataService.AddInvite(User.Identity.Name, invite, Request.Scheme + "://" + Request.Host);
+            var newInvite = DataService.AddInvite(User.Identity.Name, invite);
 
             var inviteURL = $"{Request.Scheme}://{Request.Host}/Invite?id={newInvite.ID}";
             await EmailSender.SendEmailAsync(invite.InvitedUser, "Invitation to Organization in Remotely",

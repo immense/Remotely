@@ -1,5 +1,6 @@
 ﻿using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Services;
+using Remotely.Shared.Win32;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
@@ -45,6 +46,11 @@ namespace Remotely.ScreenCast.Win.Capture
             {
                 if (NeedsInit)
                 {
+                    Logger.Write("Init needed in DXCapture.  Switching desktops.");
+                    if (Win32Interop.SwitchToInputDesktop())
+                    {
+                        Logger.Write("Switched desktops after capture error in DXCapture.");
+                    }
                     Init();
                 }
 

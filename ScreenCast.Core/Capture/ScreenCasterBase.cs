@@ -26,9 +26,9 @@ namespace Remotely.ScreenCast.Core.Capture
                                                    ICapturer capturer)
         {
             var conductor = Conductor.Current;
-            Logger.Write($"Starting screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}. Capturer: {capturer.GetType().ToString()}.  App Mode: {conductor.Mode}  Desktop: {conductor.CurrentDesktopName}");
 
-            var desktopName = string.Empty;
+            Logger.Write($"Starting screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}. Capturer: {capturer.GetType().ToString()}.  App Mode: {conductor.Mode}");
+
             byte[] encodedImageBytes;
             var fpsQueue = new Queue<DateTime>();
 
@@ -63,28 +63,10 @@ namespace Remotely.ScreenCast.Core.Capture
                 await conductor.CasterSocket.SendScreenSize(bounds.Width, bounds.Height, viewerID);
             };
 
-            if (OSUtils.IsWindows)
-            {
-                desktopName = Win32Interop.GetCurrentDesktop();
-            }
-
-
             while (!viewer.DisconnectRequested)
             {
                 try
                 {
-                    if (OSUtils.IsWindows)
-                    {
-                        var currentDesktopName = Win32Interop.GetCurrentDesktop();
-                        if (desktopName.ToLower() != currentDesktopName.ToLower())
-                        {
-                            desktopName = currentDesktopName;
-                            Logger.Write($"Switching to desktop {desktopName} in ScreenCaster.");
-                            Win32Interop.SwitchToInputDesktop();
-                            continue;
-                        }
-                    }
-
                     if (viewer.Latency > 30000)
                     {
                         // Viewer isn't responding.  Abort sending.

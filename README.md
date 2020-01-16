@@ -55,8 +55,8 @@ The following steps will configure your Windows 10 machine for building the Remo
 * Documentation for hosting behind Nginx can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx?view=aspnetcore-3.1
 
 ## Logging
-* On clients, logs are kept in %temp%\Remotely_Logs.txt.
-	* For the Agent running as a Windows service, this maps to C:\Windows\Temp\Remotely_Logs.txt.
+* On clients, logs are kept in %temp%\Remotely_Logs.log.
+	* For the Agent running as a Windows service, this maps to C:\Windows\Temp\Remotely_Logs.log.
 * On the server, some event information is explicitly written to the EventLogs table in the database.
 * Built-in ASP.NET Core logs are written to the console (stdout).  You can redirect this to a file if desired.
 	* In IIS, this can be done in the web.config file by setting stdoutLogEnabled to true.

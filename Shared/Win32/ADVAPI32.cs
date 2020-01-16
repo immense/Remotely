@@ -277,6 +277,8 @@ namespace Remotely.Shared.Win32
         public const uint MAXIMUM_ALLOWED = 0x2000000;
         public const int CREATE_NEW_CONSOLE = 0x00000010;
         public const int CREATE_NO_WINDOW = 0x08000000;
+        public const int CREATE_UNICODE_ENVIRONMENT = 0x00000400;
+        public const int STARTF_USESHOWWINDOW = 0x00000001;
         public const int DETACHED_PROCESS = 0x00000008;
         public const int TOKEN_ALL_ACCESS = 0x000f01ff;
         public const int PROCESS_ALL_ACCESS = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xFFF;

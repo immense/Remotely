@@ -49,26 +49,25 @@ namespace Remotely.Server.Services
             return true;
         }
 
-        public InviteLink AddInvite(string requesterUserName, Invite invite, string requestOrigin)
+        public InviteLink AddInvite(string requesterUserName, Invite invite)
         {
             invite.InvitedUser = invite.InvitedUser.ToLower();
 
-            var requester = RemotelyContext.Users
-                .Include(x => x.Organization)
-                .ThenInclude(x => x.InviteLinks)
-                .Include(x => x.Organization)
-                .ThenInclude(x => x.RemotelyUsers)
-                .FirstOrDefault(x => x.UserName == requesterUserName);
+            var requester = RemotelyContext.Users.FirstOrDefault(x => x.UserName == requesterUserName);
+            var organization = RemotelyContext.Organizations
+                .Include(x => x.InviteLinks)
+                .FirstOrDefault(x => x.ID == requester.OrganizationID);
 
             var newInvite = new InviteLink()
             {
                 DateSent = DateTime.Now,
                 InvitedUser = invite.InvitedUser,
                 IsAdmin = invite.IsAdmin,
-                Organization = requester.Organization,
+                Organization = organization,
+                OrganizationID = organization.ID,
                 ResetUrl = invite.ResetUrl
             };
-            requester.Organization.InviteLinks.Add(newInvite);
+            organization.InviteLinks.Add(newInvite);
             RemotelyContext.SaveChanges();
             return newInvite;
         }
@@ -171,6 +170,7 @@ namespace Remotely.Server.Services
         {
             if (AppConfig.DataRetentionInDays > 0)
             {
+
                 var expirationDate = DateTime.Now - TimeSpan.FromDays(AppConfig.DataRetentionInDays);
 
                 var eventLogs = RemotelyContext.EventLogs
@@ -306,12 +306,8 @@ namespace Remotely.Server.Services
 
         public IEnumerable<RemotelyUser> GetAllUsers(string userName)
         {
-            return RemotelyContext.Users
-                    .Include(x => x.Organization)
-                    .ThenInclude(x => x.RemotelyUsers)
-                    .FirstOrDefault(x => x.UserName == userName)
-                    .Organization
-                    .RemotelyUsers;
+            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);
+            return RemotelyContext.Users.Where(x => x.OrganizationID == user.OrganizationID);
         }
 
         public CommandContext GetCommandContext(string commandContextID, string userName)
@@ -404,26 +400,24 @@ namespace Remotely.Server.Services
 
         public bool JoinViaInvitation(string userName, string inviteID)
         {
-            var invite = RemotelyContext.InviteLinks
-                .Include(x => x.Organization)
-                .ThenInclude(x => x.RemotelyUsers)
-                .FirstOrDefault(x =>
-                    x.InvitedUser.ToLower() == userName.ToLower() &&
-                    x.ID == inviteID);
+            var invite = RemotelyContext.InviteLinks.FirstOrDefault(x =>
+                            x.InvitedUser.ToLower() == userName.ToLower() &&
+                            x.ID == inviteID);
 
             if (invite == null)
             {
                 return false;
             }
 
-            var user = RemotelyContext.Users
-                .Include(x => x.Organization)
-                .FirstOrDefault(x => x.UserName == userName);
+            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);
+            var organization = RemotelyContext.Organizations
+                                .Include(x => x.RemotelyUsers)
+                                .FirstOrDefault(x => x.ID == invite.OrganizationID);
 
-            user.Organization = invite.Organization;
-            user.OrganizationID = invite.Organization.ID;
+            user.Organization = organization;
+            user.OrganizationID = organization.ID;
             user.IsAdministrator = invite.IsAdmin;
-            invite.Organization.RemotelyUsers.Add(user);
+            organization.RemotelyUsers.Add(user);
 
             RemotelyContext.SaveChanges();
 

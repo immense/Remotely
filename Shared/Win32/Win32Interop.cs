@@ -1,4 +1,5 @@
-﻿using Remotely.Shared.Win32;
+﻿using Remotely.Shared.Models;
+using Remotely.Shared.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,26 +13,39 @@ namespace Remotely.Shared.Win32
 {
     public class Win32Interop
     {
-        public static string GetCurrentDesktop()
+        public static bool GetCurrentDesktop(out string desktopName)
         {
             var inputDesktop = OpenInputDesktop();
-            byte[] deskBytes = new byte[256];
-            uint lenNeeded;
-            var success = GetUserObjectInformationW(inputDesktop, UOI_NAME, deskBytes, 256, out lenNeeded);
-            if (!success)
+            try
+            {
+                byte[] deskBytes = new byte[256];
+                uint lenNeeded;
+                if (!GetUserObjectInformationW(inputDesktop, UOI_NAME, deskBytes, 256, out lenNeeded))
+                {
+                    desktopName = string.Empty;
+                    return false;
+                }
+
+                desktopName = Encoding.Unicode.GetString(deskBytes.Take((int)lenNeeded).ToArray()).Replace("\0", "");
+                return true;
+            }
+            finally
             {
                 CloseDesktop(inputDesktop);
-                return "Default";
             }
-            var desktopName = Encoding.Unicode.GetString(deskBytes.Take((int)lenNeeded).ToArray()).Replace("\0", "");
-            CloseDesktop(inputDesktop);
-            return desktopName;
         }
 
-        public static uint GetRDPSession()
+        public static List<WindowsSession> GetActiveSessions()
         {
+            var sessions = new List<WindowsSession>();
             var consoleSessionId = Kernel32.WTSGetActiveConsoleSessionId();
-            uint activeSessionId = 0;
+            sessions.Add(new WindowsSession()
+            {
+                ID = consoleSessionId,
+                Type = SessionType.Console,
+                Name = "Console"
+            });
+
             IntPtr ppSessionInfo = IntPtr.Zero;
             var count = 0;
             var enumSessionResult = WTSAPI32.WTSEnumerateSessions(WTSAPI32.WTS_CURRENT_SERVER_HANDLE, 0, 1, ref ppSessionInfo, ref count);
@@ -46,17 +60,23 @@ namespace Remotely.Shared.Win32
                     current += dataSize;
                     if (sessionInfo.State == WTSAPI32.WTS_CONNECTSTATE_CLASS.WTSActive && sessionInfo.SessionID != consoleSessionId)
                     {
-                        activeSessionId = sessionInfo.SessionID;
+
+                        sessions.Add(new WindowsSession()
+                        {
+                            ID = sessionInfo.SessionID,
+                            Name = sessionInfo.pWinStationName,
+                            Type = SessionType.RDP
+                        });
                     }
                 }
             }
-            
-            return activeSessionId;
+
+            return sessions;
         }
 
         public static IntPtr OpenInputDesktop()
         {
-            return User32.OpenInputDesktop(0, false, ACCESS_MASK.GENERIC_ALL);
+            return User32.OpenInputDesktop(0, true, ACCESS_MASK.GENERIC_ALL);
         }
 
         public static bool OpenInteractiveProcess(string applicationName, string desktopName, bool hiddenWindow, out PROCESS_INFORMATION procInfo)
@@ -65,15 +85,9 @@ namespace Remotely.Shared.Win32
             IntPtr hUserTokenDup = IntPtr.Zero, hPToken = IntPtr.Zero, hProcess = IntPtr.Zero;
             procInfo = new PROCESS_INFORMATION();
 
-            // Obtain session ID for active session.
-            uint dwSessionId = Kernel32.WTSGetActiveConsoleSessionId();
-
             // Check for RDP session.  If active, use that session ID instead.
-            var rdpSessionID = GetRDPSession();
-            if (rdpSessionID > 0)
-            {
-                dwSessionId = rdpSessionID;
-            }
+            var activeSessions = GetActiveSessions();
+            var dwSessionId = activeSessions.Last().ID;
 
             // Obtain the process ID of the winlogon process that is running within the currently active session.
             Process[] processes = Process.GetProcessesByName("winlogon");
@@ -119,11 +133,13 @@ namespace Remotely.Shared.Win32
             uint dwCreationFlags;
             if (hiddenWindow)
             {
-                dwCreationFlags = NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW | DETACHED_PROCESS;
+                dwCreationFlags = NORMAL_PRIORITY_CLASS | CREATE_UNICODE_ENVIRONMENT | CREATE_NO_WINDOW;
+                si.dwFlags = STARTF_USESHOWWINDOW;
+                si.wShowWindow = 0;
             }
             else
             {
-                dwCreationFlags = NORMAL_PRIORITY_CLASS | CREATE_NEW_CONSOLE;
+                dwCreationFlags = NORMAL_PRIORITY_CLASS | CREATE_UNICODE_ENVIRONMENT | CREATE_NEW_CONSOLE;
             }
 
             // Create a new process in the current user's logon session.
@@ -142,12 +158,31 @@ namespace Remotely.Shared.Win32
             User32.SendMessage(0xFFFF, 0x112, 0xF170, (int)state);
         }
 
-        public static void SwitchToInputDesktop()
+        public static bool SwitchToInputDesktop()
         {
             var inputDesktop = OpenInputDesktop();
-            SwitchDesktop(inputDesktop);
-            SetThreadDesktop(inputDesktop);
-            CloseDesktop(inputDesktop);
+            try
+            {
+                if (inputDesktop == IntPtr.Zero)
+                {
+                    return false;
+                }
+
+                if (!SwitchDesktop(inputDesktop) || !SetThreadDesktop(inputDesktop))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+            finally
+            {
+                CloseDesktop(inputDesktop);
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Services;
 using Remotely.ScreenCast.Core.Sockets;
+using Remotely.Shared.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,27 +40,31 @@ namespace Remotely.ScreenCast.Win.Services
             {
                 return;
             }
-            ClipboardWatcher.Elapsed += (sender, args) =>
-            {
-                var thread = new Thread(() =>
-                {
-                    try
-                    {
-                        if (Clipboard.ContainsText() && Clipboard.GetText() != ClipboardText)
-                        {
-                            ClipboardText = Clipboard.GetText();
-                            ClipboardTextChanged.Invoke(this, ClipboardText);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Write(ex);
-                    }
-                });
-                thread.SetApartmentState(ApartmentState.STA);
-                thread.Start();
-            };
+            ClipboardWatcher.Elapsed += ClipboardWatcher_Elapsed;
             ClipboardWatcher.Start();
+        }
+
+        private void ClipboardWatcher_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            Win32Interop.SwitchToInputDesktop();
+
+            var thread = new Thread(() =>
+            {
+                try
+                {
+                    if (Clipboard.ContainsText() && Clipboard.GetText() != ClipboardText)
+                    {
+                        ClipboardText = Clipboard.GetText();
+                        ClipboardTextChanged.Invoke(this, ClipboardText);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
+            });
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
         }
 
         public void SetText(string clipboardText)

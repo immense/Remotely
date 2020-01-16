@@ -18,6 +18,9 @@ namespace Remotely.ScreenCast.Win
 	{
         public static Conductor Conductor { get; private set; }
         public static CursorIconWatcher CursorIconWatcher { get; private set; }
+
+        private static string CurrentDesktopName { get; set;
+        }
         public static async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)
         {
             if (Conductor?.CasterSocket != null)
@@ -41,7 +44,22 @@ namespace Remotely.ScreenCast.Win
                 Conductor.Connect().ContinueWith(async (task) =>
                 {
                     await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
-                    CheckInitialDesktop();
+                    if (Win32Interop.GetCurrentDesktop(out var currentDesktopName))
+                    {
+                        Logger.Write($"Setting initial desktop to {currentDesktopName}.");
+                        if (Win32Interop.SwitchToInputDesktop())
+                        {
+                            CurrentDesktopName = currentDesktopName;
+                        }
+                        else
+                        {
+                            Logger.Write("Failed to set initial desktop.");
+                        }
+                    }
+                    else
+                    {
+                        Logger.Write("Failed to get initial desktop name.");
+                    }
                     await CheckForRelaunch();
                     Conductor.IdleTimer = new IdleTimer(Conductor.Viewers);
                     Conductor.IdleTimer.Start();
@@ -65,7 +83,7 @@ namespace Remotely.ScreenCast.Win
 
             if (Conductor.ArgDict.ContainsKey("relaunch"))
             {
-                Logger.Write($"Resuming after relaunch in desktop {Conductor.CurrentDesktopName}.");
+                Logger.Write($"Resuming after relaunch in desktop {CurrentDesktopName}.");
                 var viewersString = Conductor.ArgDict["viewers"];
                 var viewerIDs = viewersString.Split(",".ToCharArray());
                 await Conductor.CasterSocket.NotifyViewersRelaunchedScreenCasterReady(viewerIDs);
@@ -73,28 +91,6 @@ namespace Remotely.ScreenCast.Win
             else
             {
                 await Conductor.CasterSocket.NotifyRequesterUnattendedReady(Conductor.RequesterID);
-            }
-        }
-
-        private static void CheckInitialDesktop()
-        {
-            var desktopName = Win32Interop.GetCurrentDesktop();
-            if (desktopName.ToLower() != Conductor.CurrentDesktopName.ToLower())
-            {
-                Conductor.CurrentDesktopName = desktopName;
-                Logger.Write($"Setting initial desktop to {desktopName}.");
-                Conductor.ArgDict["desktop"] = desktopName;
-                var openProcessString = Assembly.GetExecutingAssembly().Location;
-                foreach (var arg in Conductor.ArgDict)
-                {
-                    openProcessString += $" -{arg.Key} {arg.Value}";
-                }
-                var result = Win32Interop.OpenInteractiveProcess(openProcessString, desktopName, true, out _);
-                if (!result)
-                {
-                    Logger.Write($"Desktop relaunch to {desktopName} failed.");
-                }
-                Environment.Exit(0);
             }
         }
 
@@ -108,13 +104,26 @@ namespace Remotely.ScreenCast.Win
         {
             while (true)
             {
-                var desktopName = Win32Interop.GetCurrentDesktop();
-                if (desktopName.ToLower() != conductor.CurrentDesktopName.ToLower() && conductor.Viewers.Count > 0)
+                if (Win32Interop.GetCurrentDesktop(out var currentDesktopName))
                 {
-                    conductor.CurrentDesktopName = desktopName;
-                    Logger.Write($"Switching desktops to {desktopName}.");
-                    Win32Interop.SwitchToInputDesktop();
+                    if (currentDesktopName.ToLower() != CurrentDesktopName.ToLower() && conductor.Viewers.Count > 0)
+                    {
+                        Logger.Write($"Switching desktops to {currentDesktopName}.");
+                        if (Win32Interop.SwitchToInputDesktop())
+                        {
+                            CurrentDesktopName = currentDesktopName;
+                        }
+                        else
+                        {
+                            Logger.Write("Failed to switch desktops.");
+                        }
+                    }
                 }
+                else
+                {
+                    Logger.Write("Failed to get current desktop name.");
+                }
+             
                 await Task.Delay(1000);
             }
         }

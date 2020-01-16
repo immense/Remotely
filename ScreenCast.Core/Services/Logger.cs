@@ -20,7 +20,7 @@ namespace Remotely.ScreenCast.Core.Services
             {
                 lock (WriteLock)
                 {
-                    var path = Path.Combine(Path.GetTempPath(), "Remotely_Logs.txt");
+                    var path = Path.Combine(Path.GetTempPath(), "Remotely_Logs.log");
                     if (!File.Exists(path))
                     {
                         File.Create(path).Close();
@@ -53,7 +53,7 @@ namespace Remotely.ScreenCast.Core.Services
                 try
                 {
                     var exception = ex;
-                    var path = Path.Combine(Path.GetTempPath(), "Remotely_Logs.txt");
+                    var path = Path.Combine(Path.GetTempPath(), "Remotely_Logs.log");
 
                     if (!File.Exists(path))
                     {

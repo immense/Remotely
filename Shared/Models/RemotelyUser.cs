@@ -10,10 +10,15 @@ namespace Remotely.Shared.Models
 {
     public class RemotelyUser : IdentityUser
     {
-        public RemotelyUserOptions UserOptions { get; set; } = new RemotelyUserOptions();
+        public RemotelyUser()
+        {
+            UserOptions = new RemotelyUserOptions();
+            Organization = new Organization();
+        }
+        public RemotelyUserOptions UserOptions { get; set; }
 
         [JsonIgnore]
-        public virtual Organization Organization { get; set; } = new Organization();
+        public virtual Organization Organization { get; set; }
         public string OrganizationID { get; set; }
 
         public bool IsAdministrator { get; set; } = true;
