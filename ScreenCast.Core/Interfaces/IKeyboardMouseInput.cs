@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely.ScreenCast.Core.Input
+namespace Remotely.ScreenCast.Core.Interfaces
 {
     public interface IKeyboardMouseInput
     {

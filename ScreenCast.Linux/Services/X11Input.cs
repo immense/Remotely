@@ -1,4 +1,4 @@
-﻿using Remotely.ScreenCast.Core.Input;
+﻿using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Services;
 using Remotely.ScreenCast.Linux.X11Interop;
 using Remotely.ScreenCast.Core;
