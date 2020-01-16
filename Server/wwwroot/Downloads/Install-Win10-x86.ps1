@@ -116,6 +116,30 @@ function Install-Remotely {
 	Start-Service -Name Remotely_Service
 }
 
+function Install-DesktopRuntime() {
+	$UninstallKeys = New-Object System.Collections.ArrayList
+	Get-ChildItem -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" | ForEach-Object {
+		$UninstallKeys.Add($_) | Out-Null
+	}
+	Get-ChildItem -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\" | ForEach-Object {
+	  $UninstallKeys.Add($_) | Out-Null
+	}
+
+	$RuntimeRegKey = $UninstallKeys | Where-Object {
+		$_.GetValue("DisplayName") -like "Microsoft Windows Desktop Runtime - 3.1.1*" 
+	}
+
+	if ($RuntimeRegKey -eq $null) {
+		Write-Host ".NET Core Windows Desktop runtime not found.  Downloading installer."
+		$Response = Invoke-WebRequest -Uri "https://dotnet.microsoft.com/download/dotnet-core/thank-you/runtime-desktop-3.1.1-windows-x86-installer"
+		$DownloadLink = $Response.Links | Where-Object { $_.href -like "*windowsdesktop-runtime*" }
+		Invoke-WebRequest -Uri $DownloadLink.href -OutFile "$env:TEMP\windowsdesktop-runtime.exe"
+		Write-Host "Installing .NET Core Windows Desktop runtime."
+		Start-Process -FilePath "$env:TEMP\windowsdesktop-runtime.exe" -ArgumentList "/install /quiet /norestart" -Wait
+	}
+
+}
+
 try {
 	Run-StartupChecks
 
@@ -124,6 +148,7 @@ try {
         Write-Log
         Write-Log "Install/uninstall logs are being written to `"$LogPath`""
         Write-Log
+		Install-DesktopRuntime
 		Install-Remotely
 		Write-Log "Install completed."
 		exit
