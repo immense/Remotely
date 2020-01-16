@@ -15,6 +15,7 @@ namespace Remotely.Shared.Models
         public DateTime DateSent { get; set; }
         [JsonIgnore]
         public virtual Organization Organization { get; set; }
+        public string OrganizationID { get; set; }
         public string ResetUrl { get; set; }
     }
 }

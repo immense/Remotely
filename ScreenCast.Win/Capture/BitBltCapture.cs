@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using Remotely.ScreenCast.Core.Services;
 using System.Threading;
 using Remotely.ScreenCast.Core.Interfaces;
+using Remotely.Shared.Win32;
 
 namespace Remotely.ScreenCast.Win.Capture
 {
@@ -46,6 +47,11 @@ namespace Remotely.ScreenCast.Win.Capture
             catch (Exception ex)
             {
                 Logger.Write(ex);
+                Logger.Write("Capturer error.  Trying to switch desktops in BitBltCapture.");
+                if (Win32Interop.SwitchToInputDesktop())
+                {
+                    Logger.Write("Switched desktops after capture error in BitBltCapture.");
+                }
                 Init();
             }
         }

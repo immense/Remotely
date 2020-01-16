@@ -82,7 +82,9 @@ namespace Remotely.Server.Data
 
 
 			builder.Entity<RemotelyUser>()
-               .HasOne(x => x.Organization);
+               .HasOne(x => x.Organization)
+               .WithMany(x => x.RemotelyUsers);
+
             builder.Entity<RemotelyUser>()
                 .Property(x => x.UserOptions)
                 .HasConversion(
@@ -94,7 +96,6 @@ namespace Remotely.Server.Data
                 .HasConversion(
                     x => JsonConvert.SerializeObject(x),
                     x => JsonConvert.DeserializeObject<List<Drive>>(x));
-
         }
     }
 }

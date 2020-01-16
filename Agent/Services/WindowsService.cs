@@ -18,6 +18,22 @@ namespace Remotely.Agent.Services
             InitializeComponent();
         }
 
+        protected override void OnSessionChange(SessionChangeDescription changeDescription)
+        {
+            Logger.Write($"Session changed.  Reason: {changeDescription.Reason}.  Session: {changeDescription.SessionId}");
+            if (changeDescription.Reason == SessionChangeReason.ConsoleDisconnect ||
+               changeDescription.Reason == SessionChangeReason.RemoteDisconnect)
+            {
+
+                foreach (var screenCaster in Process.GetProcessesByName("Remotely_ScreenCast"))
+                {
+                    Logger.Write($"Session changed.  Kill process ID {screenCaster.Id}.");
+                    screenCaster.Kill();
+                }
+            }
+            base.OnSessionChange(changeDescription);
+        }
+
         protected override void OnStart(string[] args)
         {
 
@@ -56,21 +72,6 @@ namespace Remotely.Agent.Services
                 Logger.Write(ex);
                 throw;
             }
-        }
-
-        protected override void OnSessionChange(SessionChangeDescription changeDescription)
-        {
-            Logger.Write($"Session changed.  Reason: {changeDescription.Reason}");
-            if (changeDescription.Reason == SessionChangeReason.ConsoleDisconnect ||
-                changeDescription.Reason == SessionChangeReason.RemoteDisconnect)
-            {
-                foreach (var screenCaster in Process.GetProcessesByName("Remotely_ScreenCast"))
-                {
-                    Logger.Write($"Session changed.  Kill process ID {screenCaster.Id}.");
-                    screenCaster.Kill();
-                }
-            }
-            base.OnSessionChange(changeDescription);
         }
     }
 }

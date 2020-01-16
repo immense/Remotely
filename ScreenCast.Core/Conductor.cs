@@ -41,7 +41,6 @@ namespace Remotely.ScreenCast.Core
         public event EventHandler<string> ViewerRemoved;
         public Dictionary<string, string> ArgDict { get; set; }
         public CasterSocket CasterSocket { get; private set; }
-        public string CurrentDesktopName { get; set; }
         public string DeviceID { get; private set; }
         public string Host { get; private set; }
         public IdleTimer IdleTimer { get; set; }
@@ -79,7 +78,6 @@ namespace Remotely.ScreenCast.Core
             if (Mode == AppMode.Unattended)
             {
                 RequesterID = ArgDict["requester"];
-                CurrentDesktopName = ArgDict["desktop"];
                 ServiceID = ArgDict["serviceid"];
                 DeviceID = ArgDict["deviceid"];
             }

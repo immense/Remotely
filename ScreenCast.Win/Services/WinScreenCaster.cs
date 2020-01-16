@@ -11,6 +11,7 @@ using Remotely.ScreenCast.Core;
 using Remotely.ScreenCast.Core.Models;
 using Remotely.Shared.Models;
 using Remotely.ScreenCast.Win.Capture;
+using Remotely.Shared.Win32;
 
 namespace Remotely.ScreenCast.Win.Services
 {
@@ -25,6 +26,16 @@ namespace Remotely.ScreenCast.Win.Services
 
         public async Task BeginScreenCasting(ScreenCastRequest screenCastRequest)
         {
+            if (Win32Interop.GetCurrentDesktop(out var currentDesktopName))
+            {
+                Logger.Write($"Setting desktop to {currentDesktopName} before screen casting.");
+                Win32Interop.SwitchToInputDesktop();
+            }
+            else
+            {
+                Logger.Write("Failed to get current desktop before screen casting.");
+            }
+        
             await Conductor.Current.CasterSocket.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
             _ = BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, GetCapturer());
         }
