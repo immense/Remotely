@@ -20,6 +20,10 @@ h6 {
 }
 
 
+.container {
+    max-width: 95vw !important;
+}
+
 .login-frame {
     display: inline-block;
     margin-bottom: 150px;
@@ -43,6 +47,7 @@ h6 {
     animation-iteration-count: infinite;
     animation-timing-function: ease;
 }
+
 @keyframes blink {
     from {
         opacity: .25;
@@ -52,8 +57,6 @@ h6 {
         opacity: 1;
     }
 }
-
-
 
 #deviceGridInnerWrapper {
     display: grid;

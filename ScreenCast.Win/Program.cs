@@ -65,10 +65,8 @@ namespace Remotely.ScreenCast.Win
                     Conductor.IdleTimer.Start();
                     CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
                     clipboardService.BeginWatching();
-
-                    await HandleConnection(Conductor);
                 });
-
+               
                 Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception ex)
@@ -99,33 +97,5 @@ namespace Remotely.ScreenCast.Win
             Logger.Write((Exception)e.ExceptionObject);
         }
 
-
-        private static async Task HandleConnection(Conductor conductor)
-        {
-            while (true)
-            {
-                if (Win32Interop.GetCurrentDesktop(out var currentDesktopName))
-                {
-                    if (currentDesktopName.ToLower() != CurrentDesktopName.ToLower() && conductor.Viewers.Count > 0)
-                    {
-                        Logger.Write($"Switching desktops to {currentDesktopName}.");
-                        if (Win32Interop.SwitchToInputDesktop())
-                        {
-                            CurrentDesktopName = currentDesktopName;
-                        }
-                        else
-                        {
-                            Logger.Write("Failed to switch desktops.");
-                        }
-                    }
-                }
-                else
-                {
-                    Logger.Write("Failed to get current desktop name.");
-                }
-             
-                await Task.Delay(1000);
-            }
-        }
     }
 }
