@@ -12,7 +12,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using Remotely.ScreenCast.Core.Services;
-using Remotely.ScreenCast.Core.Input;
+using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.Shared.Win32;
 using Remotely.ScreenCast.Core.Interfaces;
 using Microsoft.Extensions.DependencyInjection;

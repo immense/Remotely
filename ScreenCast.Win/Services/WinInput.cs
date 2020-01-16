@@ -1,4 +1,4 @@
-﻿using Remotely.ScreenCast.Core.Input;
+﻿using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Models;
 using System;
 using Remotely.Shared.Win32;
