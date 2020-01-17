@@ -16,6 +16,8 @@ namespace Remotely.ScreenCast.Core.Communication
 
         public event EventHandler<string> LocalSdpReady;
 
+        public ulong CurrentBuffer { get; private set; }
+
         public bool IsDataChannelOpen => CaptureChannel?.State == DataChannel.ChannelState.Open;
         private DataChannel CaptureChannel { get; set; }
         private PeerConnection PeerConnection { get; set; }
@@ -84,6 +86,7 @@ namespace Remotely.ScreenCast.Core.Communication
         private void DataChannel_BufferingChanged(ulong previous, ulong current, ulong limit)
         {
             Debug.WriteLine($"DataChannel buffering changed.  Previous: {previous}.  Current: {current}.  Limit: {limit}.");
+            CurrentBuffer = current;
         }
 
         private void PeerConnection_Connected()

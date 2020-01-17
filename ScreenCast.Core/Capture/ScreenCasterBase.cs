@@ -96,6 +96,12 @@ namespace Remotely.ScreenCast.Core.Capture
                         continue;
                     }
 
+                    if (viewer.RtcSession?.CurrentBuffer > 100_000)
+                    {
+                        Debug.WriteLine($"Throttling output due to WebRTC buffer.  Size: {viewer.RtcSession.CurrentBuffer}");
+                        await Task.Delay((int)(viewer.RtcSession.CurrentBuffer - 100_000));
+                    }
+
                     capturer.GetNextFrame();
 
                     var diffArea = ImageUtils.GetDiffArea(capturer.CurrentFrame, capturer.PreviousFrame, capturer.CaptureFullscreen);
