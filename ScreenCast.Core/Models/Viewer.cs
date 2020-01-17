@@ -1,4 +1,5 @@
 ﻿using Remotely.ScreenCast.Core.Capture;
+using Remotely.ScreenCast.Core.Communication;
 using Remotely.ScreenCast.Core.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -54,6 +55,7 @@ namespace Remotely.ScreenCast.Core.Models
         public double Latency { get; set; } = 1;
         public string Name { get; set; }
         public int OutputBuffer { get; set; }
+        public WebRtcSession RtcSession { get; set; }
         public string ViewerConnectionID { get; set; }
     }
 }

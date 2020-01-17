@@ -15,6 +15,7 @@
     <Company>Translucency Software</Company>
     <Product>Remotely Desktop</Product>
     <PackageProjectUrl>https://remotely.lucency.co</PackageProjectUrl>
+    <Platforms>AnyCPU;x86;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

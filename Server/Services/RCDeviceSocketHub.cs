@@ -154,6 +154,7 @@ namespace Remotely.Server.Services
             SessionInfo.MachineName = machineName;
             SessionInfo.DeviceID = deviceID;
         }
+
         public async Task SendAudioSample(byte[] buffer, List<string> viewerIDs)
         {
             await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("AudioSample", buffer);
@@ -163,6 +164,7 @@ namespace Remotely.Server.Services
         {
             await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("ClipboardTextChanged", clipboardText);
         }
+
         public async Task SendConnectionFailedToViewers(List<string> viewerIDs)
         {
             await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("ConnectionFailed");
@@ -177,6 +179,16 @@ namespace Remotely.Server.Services
         {
             await RCBrowserHub.Clients.Client(viewerID).SendAsync("ReceiveMachineName", machineName);
         }
+
+        public async Task SendRtcOfferToBrowser(string sdp, string viewerID)
+        {
+            await RCBrowserHub.Clients.Client(viewerID).SendAsync("ReceiveRtcOffer", sdp);
+        }
+        public async Task SendIceCandidateToBrowser(string candidate, int sdpMlineIndex, string sdpMid, string viewerID)
+        {
+            await RCBrowserHub.Clients.Client(viewerID).SendAsync("ReceiveIceCandidate", candidate, sdpMlineIndex, sdpMid);
+        }
+
         public Task SendScreenCapture(byte[] captureBytes, string rcBrowserHubConnectionID, int left, int top, int width, int height, DateTime captureTime)
         {
             if (AppConfig.RecordRemoteControlSessions)

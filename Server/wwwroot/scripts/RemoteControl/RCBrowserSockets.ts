@@ -46,6 +46,17 @@ export class RCBrowserSockets {
             UI.ConnectBox.style.removeProperty("display");
         });
     };
+
+    SendIceCandidate(candidate: RTCIceCandidate) {
+        if (candidate) {
+            this.Connection.invoke("SendIceCandidateToAgent", candidate.candidate, candidate.sdpMLineIndex, candidate.sdpMid);
+        }
+    }
+    SendRtcAnswer(sessionDescription: RTCSessionDescription) {
+        this.Connection.invoke("SendRtcAnswerToAgent", sessionDescription.sdp);
+    }
+
+
     SendScreenCastRequestToDevice() {
         this.Connection.invoke("SendScreenCastRequestToDevice", RemoteControl.ClientID, RemoteControl.RequesterName, RemoteControl.Mode);
     }
@@ -204,6 +215,21 @@ export class RCBrowserSockets {
 
         hubConnection.on("RequestingScreenCast", () => {
             UI.ShowMessage("Requesting remote control...");
+        });
+
+        hubConnection.on("ReceiveRtcOffer", async (sdp: string) => {
+            console.log("Rtc offer SDP received.");
+            RemoteControl.RtcSession.Init();
+            await RemoteControl.RtcSession.ReceiveRtcOffer(sdp);
+            
+        });
+        hubConnection.on("ReceiveIceCandidate", (candidate: string, sdpMlineIndex: number, sdpMid: string) => {
+            console.log("Ice candidate received.");
+            RemoteControl.RtcSession.ReceiveCandidate({
+                candidate: candidate,
+                sdpMLineIndex: sdpMlineIndex,
+                sdpMid: sdpMid
+            } as any);
         });
     }
 }

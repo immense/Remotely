@@ -10,7 +10,7 @@ using Remotely.ScreenCast.Core.Capture;
 using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Models;
 using Remotely.ScreenCast.Core.Services;
-using Remotely.ScreenCast.Core.Sockets;
+using Remotely.ScreenCast.Core.Communication;
 using Remotely.ScreenCast.Linux.Capture;
 using Remotely.ScreenCast.Linux.Services;
 using Remotely.Shared.Models;

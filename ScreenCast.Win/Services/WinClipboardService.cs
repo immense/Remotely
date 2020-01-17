@@ -1,6 +1,6 @@
 ﻿using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Services;
-using Remotely.ScreenCast.Core.Sockets;
+using Remotely.ScreenCast.Core.Communication;
 using Remotely.Shared.Win32;
 using System;
 using System.Collections.Generic;
