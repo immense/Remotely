@@ -29,7 +29,6 @@ export class RtcSession {
             };
             this.DataChannel.onmessage = (ev) => {
                 var frameInfo = this.MsgPack5.decode(ev.data) as FrameInfo;
-                console.debug("Data channel message.");
                 var url = window.URL.createObjectURL(new Blob([frameInfo.ImageBytes]));
                 var img = document.createElement("img");
                 img.onload = () => {
