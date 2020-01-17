@@ -60,7 +60,7 @@ function Uninstall-Remotely {
 	Start-Process -FilePath "cmd.exe" -ArgumentList "/c sc delete Remotely_Service" -Wait -WindowStyle Hidden
 	Stop-Process -Name Remotely_Agent -Force -ErrorAction SilentlyContinue
 	Remove-Item -Path $InstallPath -Force -Recurse -ErrorAction SilentlyContinue
-	Remove-NetFirewallRule -Name "Remotely ScreenCast"
+	Remove-NetFirewallRule -Name "Remotely ScreenCast" -ErrorAction SilentlyContinue
 }
 
 function Install-Remotely {
@@ -116,7 +116,7 @@ function Install-Remotely {
 	Start-Process -FilePath "cmd.exe" -ArgumentList "/c sc.exe failure `"Remotely_Service`" reset=5 actions=restart/5000" -Wait -WindowStyle Hidden
 	Start-Service -Name Remotely_Service
 
-	New-NetFirewallRule -Name "Remotely ScreenCast" -DisplayName "Remotely ScreenCast" -Description "The agent that allows screen sharing and remote control for Remotely." -Direction Inbound -Enabled True -Action Allow -Program "C:\Program Files\Remotely\ScreenCast\Remotely_ScreenCast.exe"
+	New-NetFirewallRule -Name "Remotely ScreenCast" -DisplayName "Remotely ScreenCast" -Description "The agent that allows screen sharing and remote control for Remotely." -Direction Inbound -Enabled True -Action Allow -Program "C:\Program Files\Remotely\ScreenCast\Remotely_ScreenCast.exe" -ErrorAction SilentlyContinue
 }
 
 function Install-DesktopRuntime() {
