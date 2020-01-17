@@ -1,6 +1,7 @@
 ﻿using MessagePack;
 using Microsoft.MixedReality.WebRTC;
 using Remotely.ScreenCast.Core.Models;
+using Remotely.ScreenCast.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,8 +27,16 @@ namespace Remotely.ScreenCast.Core.Communication
             PeerConnection.AddIceCandidate(sdpMid, sdpMlineIndex, candidate);
         }
 
+        public void Dispose()
+        {
+            PeerConnection?.Dispose();
+            CaptureChannel?.Dispose();
+        }
+
         public async Task Init()
         {
+            CaptureChannel?.Dispose();
+            PeerConnection?.Dispose();
             PeerConnection = new PeerConnection();
 
             var config = new PeerConnectionConfiguration()
@@ -51,7 +60,6 @@ namespace Remotely.ScreenCast.Core.Communication
             CaptureChannel.StateChanged += CaptureChannel_StateChanged;
             PeerConnection.CreateOffer();
         }
-
         public void SendCaptureFrame(int left, int top, int width, int height, byte[] imageBytes)
         {
             CaptureChannel.SendMessage(MessagePackSerializer.Serialize(new FrameInfo()
@@ -75,39 +83,43 @@ namespace Remotely.ScreenCast.Core.Communication
 
         private void CaptureChannel_MessageReceived(byte[] obj)
         {
-            Debug.WriteLine($"DataChannel message received.  Size: {obj.Length}");
+            Logger.Debug($"DataChannel message received.  Size: {obj.Length}");
         }
 
-        private void CaptureChannel_StateChanged()
+        private async void CaptureChannel_StateChanged()
         {
-            Debug.WriteLine($"DataChannel state changed.  New State: {CaptureChannel.State}");
+            Logger.Debug($"DataChannel state changed.  New State: {CaptureChannel.State}");
+            if (CaptureChannel.State == DataChannel.ChannelState.Closed)
+            {
+                await Init();
+            }
         }
 
         private void DataChannel_BufferingChanged(ulong previous, ulong current, ulong limit)
         {
-            Debug.WriteLine($"DataChannel buffering changed.  Previous: {previous}.  Current: {current}.  Limit: {limit}.");
+            Logger.Debug($"DataChannel buffering changed.  Previous: {previous}.  Current: {current}.  Limit: {limit}.");
             CurrentBuffer = current;
         }
 
         private void PeerConnection_Connected()
         {
-            Debug.WriteLine("PeerConnection connected.");
+            Logger.Debug("PeerConnection connected.");
         }
 
         private void PeerConnection_IceCandidateReadytoSend(string candidate, int sdpMlineindex, string sdpMid)
         {
-            Debug.WriteLine("Ice candidate ready to send.");
+            Logger.Debug("Ice candidate ready to send.");
             IceCandidateReady?.Invoke(this, (candidate, sdpMlineindex, sdpMid));
         }
 
         private void PeerConnection_IceStateChanged(IceConnectionState newState)
         {
-            Debug.WriteLine($"Ice state changed to {newState}.");
+            Logger.Debug($"Ice state changed to {newState}.");
         }
 
         private void PeerConnection_LocalSdpReadytoSend(string type, string sdp)
         {
-            Debug.WriteLine($"Local SDP ready.");
+            Logger.Debug($"Local SDP ready.");
             LocalSdpReady?.Invoke(this, sdp);
         }
     }

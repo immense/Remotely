@@ -50,17 +50,6 @@ namespace Remotely.Agent
             SetWorkingDirectory();
             var argDict = ProcessArgs(args);
 
-            JsonConvert.DefaultSettings = () =>
-            {
-                var settings = new JsonSerializerSettings();
-                settings.Error = (sender, arg) =>
-                {
-                    arg.ErrorContext.Handled = true;
-                };
-                return settings;
-            };
-
-
             if (argDict.ContainsKey("update"))
             {
                 Updater.CoreUpdate();

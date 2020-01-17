@@ -18,6 +18,9 @@ export function EvaluateCurrentCommandText() {
         DisplayCommandShortcuts(UI.ConsoleTextArea.value.slice(1));
         return;
     }
+    if (UI.ConsoleTextArea.value.endsWith(" ")) {
+        return;
+    }
     var relevantText = GetRelevantCommandText(UI.ConsoleTextArea.value);
     var commandInputArray = Main.Utilities.Split(relevantText, " ", 2);
     var matchingCommands = GetCommandCompletions(commandInputArray[0]);

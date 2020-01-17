@@ -1,6 +1,7 @@
 ﻿using Remotely.ScreenCast.Core.Capture;
 using Remotely.ScreenCast.Core.Communication;
 using Remotely.ScreenCast.Core.Interfaces;
+using Remotely.ScreenCast.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Remotely.ScreenCast.Core.Models
 {
-    public class Viewer
+    public class Viewer : IDisposable
     {
         private long imageQuality = 50;
 
@@ -54,8 +55,44 @@ namespace Remotely.ScreenCast.Core.Models
 
         public double Latency { get; set; } = 1;
         public string Name { get; set; }
-        public int OutputBuffer { get; set; }
+        public int WebSocketBuffer { get; set; }
         public WebRtcSession RtcSession { get; set; }
         public string ViewerConnectionID { get; set; }
+
+        public void Dispose()
+        {
+            EncoderParams?.Dispose();
+            Capturer?.Dispose();
+            RtcSession?.Dispose();
+        }
+
+        public bool IsStalled()
+        {
+            return RtcSession?.IsDataChannelOpen != true && Latency > 30000;
+        }
+
+        public async Task ThrottleIfNeeded()
+        {
+            if (IsUsingWebRtc() && RtcSession?.CurrentBuffer > 100_000)
+            {
+                Logger.Debug($"Throttling output due to WebRTC buffer.  Size: {RtcSession.CurrentBuffer}");
+                await Task.Delay((int)Math.Ceiling((RtcSession.CurrentBuffer - 100_000) * .0025));
+            }
+            else if (!IsUsingWebRtc() && WebSocketBuffer > 150_000)
+            {
+                Logger.Debug($"Throttling output due to websocket buffer.  Size: {WebSocketBuffer}");
+                await Task.Delay((int)Math.Ceiling((WebSocketBuffer - 150_000) * .0025));
+            }
+        }
+
+        public bool ShouldAdjustQuality()
+        {
+            return !IsUsingWebRtc() && AutoAdjustQuality && Latency > 1000;
+        }
+
+        public bool IsUsingWebRtc()
+        {
+            return RtcSession?.IsDataChannelOpen == true;
+        }
     }
 }

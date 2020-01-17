@@ -51,6 +51,9 @@ export class RCBrowserSockets {
         if (candidate) {
             this.Connection.invoke("SendIceCandidateToAgent", candidate.candidate, candidate.sdpMLineIndex, candidate.sdpMid);
         }
+        else {
+            this.Connection.invoke("SendIceCandidateToAgent", "", 0, "");
+        }
     }
     SendRtcAnswer(sessionDescription: RTCSessionDescription) {
         this.Connection.invoke("SendRtcAnswerToAgent", sessionDescription.sdp);
@@ -152,7 +155,7 @@ export class RCBrowserSockets {
             UI.Screen2DContext.clearRect(0, 0, width, height);
         });
         hubConnection.on("ScreenCapture", (buffer: Uint8Array, left:number, top:number, width:number, height:number, captureTime: Date) => {
-
+            console.log("Websocket frame received.");
             this.SendLatencyUpdate(captureTime, buffer.byteLength);
 
             var url = window.URL.createObjectURL(new Blob([buffer]));

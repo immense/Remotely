@@ -8,5 +8,8 @@
     "@types/bootstrap": "^4.3.1",
     "@types/jquery": "^3.3.31",
     "msgpack5": "^4.2.1"
+  },
+  "dependencies": {
+    "@msgpack/msgpack": "^1.11.0"
   }
 }
