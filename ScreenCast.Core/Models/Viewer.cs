@@ -92,7 +92,7 @@ namespace Remotely.ScreenCast.Core.Models
 
         public bool IsUsingWebRtc()
         {
-            return RtcSession?.IsDataChannelOpen == true;
+            return RtcSession?.IsPeerConnected == true && RtcSession?.IsDataChannelOpen == true;
         }
     }
 }

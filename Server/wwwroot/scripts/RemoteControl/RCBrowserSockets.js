@@ -139,7 +139,7 @@ export class RCBrowserSockets {
             UI.Screen2DContext.clearRect(0, 0, width, height);
         });
         hubConnection.on("ScreenCapture", (buffer, left, top, width, height, captureTime) => {
-            console.log("Websocket frame received.");
+            //console.log("Websocket frame received.");
             this.SendLatencyUpdate(captureTime, buffer.byteLength);
             var url = window.URL.createObjectURL(new Blob([buffer]));
             var img = document.createElement("img");
