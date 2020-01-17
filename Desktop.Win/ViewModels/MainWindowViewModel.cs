@@ -18,7 +18,7 @@ using System.Security.Principal;
 using System.Windows.Input;
 using Remotely.ScreenCast.Win.Services;
 using Remotely.ScreenCast.Core.Interfaces;
-using Remotely.ScreenCast.Core.Sockets;
+using Remotely.ScreenCast.Core.Communication;
 
 namespace Remotely.Desktop.Win.ViewModels
 {

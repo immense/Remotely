@@ -10,7 +10,7 @@ using System.Threading;
 using Remotely.ScreenCast.Win.Services;
 using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Win.Capture;
-using Remotely.ScreenCast.Core.Sockets;
+using Remotely.ScreenCast.Core.Communication;
 
 namespace Remotely.ScreenCast.Win
 {

@@ -247,5 +247,15 @@ namespace Remotely.Server.Services
         {
             await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("TouchUp", Context.ConnectionId);
         }
+
+        public async Task SendIceCandidateToAgent(string candidate, int sdpMlineIndex, string sdpMid)
+        {
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ReceiveIceCandidate", candidate, sdpMlineIndex, sdpMid, Context.ConnectionId);
+        }
+
+        public async Task SendRtcAnswerToAgent(string sdp)
+        {
+            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ReceiveRtcAnswer", sdp, Context.ConnectionId);
+        }
     }
 }

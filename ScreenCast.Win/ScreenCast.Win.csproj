@@ -13,6 +13,7 @@
     <Description>Allows unattended remote control via the Remotely server.</Description>
     <Copyright>Copyright ©  2020 Translucency Software</Copyright>
     <PackageProjectUrl>https://remotely.lucency.co</PackageProjectUrl>
+    <Platforms>AnyCPU;x86;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,12 +34,9 @@
     <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Resource Include="favicon.ico" />
-  </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if $(ConfigurationName) == Debug (&#xD;&#xA;  if $(PlatformName) == Any CPU (&#xD;&#xA;      md &quot;$(SolutionDir)Agent\bin\Debug\netcoreapp3.1\ScreenCast\&quot;&#xD;&#xA;      copy /y &quot;$(TargetDir)\*&quot; &quot;$(SolutionDir)Agent\bin\Debug\netcoreapp3.1\ScreenCast\&quot;&#xD;&#xA;  )&#xD;&#xA;)" />
+    <Exec Command="if $(ConfigurationName) == Debug (&#xD;&#xA;  if $(PlatformName) == Any CPU (&#xD;&#xA;      md &quot;$(SolutionDir)Agent\bin\Debug\netcoreapp3.1\ScreenCast\&quot;&#xD;&#xA;      xcopy &quot;$(TargetDir)*&quot; &quot;$(SolutionDir)Agent\bin\Debug\netcoreapp3.1\ScreenCast\&quot; /y /e /i&#xD;&#xA;  )&#xD;&#xA;  if $(PlatformName) == x64 (&#xD;&#xA;      md &quot;$(SolutionDir)Agent\bin\x64\Debug\netcoreapp3.1\ScreenCast\&quot;&#xD;&#xA;      xcopy &quot;$(TargetDir)*&quot; &quot;$(SolutionDir)Agent\bin\x64\Debug\netcoreapp3.1\ScreenCast\&quot; /y /e /i&#xD;&#xA;  )&#xD;&#xA;  if $(PlatformName) == x86 (&#xD;&#xA;      md &quot;$(SolutionDir)Agent\bin\x86\Debug\netcoreapp3.1\ScreenCast\&quot;&#xD;&#xA;      xcopy &quot;$(TargetDir)*&quot; &quot;$(SolutionDir)Agent\bin\x86\Debug\netcoreapp3.1\ScreenCast\&quot; /y /e /i&#xD;&#xA;  )&#xD;&#xA;)" />
   </Target>
-  
+
 </Project>

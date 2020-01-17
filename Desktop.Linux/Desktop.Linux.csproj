@@ -8,7 +8,6 @@
     <Platforms>AnyCPU;x64;x86</Platforms>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="Models\" />
     <Compile Update="**\*.xaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
@@ -16,6 +15,10 @@
       <SubType>Designer</SubType>
     </AvaloniaResource>
     <AvaloniaResource Include="Assets\*" />
+    <AvaloniaResource Remove="Models\**" />
+    <Compile Remove="Models\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <None Remove="Models\**" />
     <AvaloniaResource Remove="Controls\HostNamePrompt.xaml" />
     <AvaloniaResource Remove="Controls\MessageBox.xaml" />
   </ItemGroup>

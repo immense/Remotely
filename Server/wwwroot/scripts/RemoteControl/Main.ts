@@ -1,5 +1,6 @@
 ﻿import * as Utilities from "../Utilities.js";
 import { RCBrowserSockets } from "./RCBrowserSockets.js";
+import { RtcSession } from "./RtcSession.js";
 import * as UI from "./UI.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 
@@ -9,6 +10,7 @@ var queryString = Utilities.ParseSearchString();
 export const RemoteControl = {
 
     RCBrowserSockets: new RCBrowserSockets(),
+    RtcSession: new RtcSession(),
     ClientID: queryString["clientID"] ? decodeURIComponent(queryString["clientID"]) : "",
     ServiceID: queryString["serviceID"] ? decodeURIComponent(queryString["serviceID"]) : "",
     RequesterName: queryString["requesterName"] ? decodeURIComponent(queryString["requesterName"]) : "",

@@ -4,7 +4,7 @@ using Remotely.Shared.Models;
 using Remotely.ScreenCast.Core.Enums;
 using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Models;
-using Remotely.ScreenCast.Core.Sockets;
+using Remotely.ScreenCast.Core.Communication;
 using Remotely.ScreenCast.Core.Services;
 using System;
 using System.Collections.Concurrent;

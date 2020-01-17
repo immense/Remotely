@@ -14,10 +14,9 @@ using System.Net;
 using Remotely.ScreenCast.Core.Services;
 using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.Shared.Win32;
-using Remotely.ScreenCast.Core.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Remotely.ScreenCast.Core.Sockets
+namespace Remotely.ScreenCast.Core.Communication
 {
     public class CasterSocket
     {
@@ -113,6 +112,11 @@ namespace Remotely.ScreenCast.Core.Sockets
             await Connection.SendAsync("SendMachineName", machineName, viewerID);
         }
 
+        public async Task SendRtcOfferToBrowser(string sdp, string viewerID)
+        {
+            await Connection.SendAsync("SendRtcOfferToBrowser", sdp, viewerID);
+        }
+
         public async Task SendScreenCapture(byte[] captureBytes, string viewerID, int left, int top, int width, int height, DateTime captureTime)
         {
             await Connection.SendAsync("SendScreenCapture", captureBytes, viewerID, left, top, width, height, captureTime);
@@ -133,6 +137,10 @@ namespace Remotely.ScreenCast.Core.Sockets
             await Connection.SendAsync("SendViewerRemoved", viewerID);
         }
 
+        public async Task SendIceCandidateToBrowser(string candidate, int sdpMlineIndex, string sdpMid, string viewerConnectionID)
+        {
+            await Connection.SendAsync("SendIceCandidateToBrowser", candidate, sdpMlineIndex, sdpMid, viewerConnectionID);
+        }
         private void ApplyConnectionHandlers()
         {
             var conductor = Conductor.Current;
@@ -141,6 +149,37 @@ namespace Remotely.ScreenCast.Core.Sockets
                 Logger.Write($"Connection closed.  Error: {ex?.Message}");
                 return Task.CompletedTask;
             };
+
+            Connection.On("ReceiveIceCandidate", (string candidate, int sdpMlineIndex, string sdpMid, string viewerID) =>
+            {
+                try
+                {
+                    if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                    {
+                        viewer.RtcSession.AddIceCandidate(sdpMid, sdpMlineIndex, candidate);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
+
+            });
+
+            Connection.On("ReceiveRtcAnswer", (string sdp, string viewerID) =>
+            {
+                try
+                {
+                    if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                    {
+                        viewer.RtcSession.SetRemoteDescription("answer", sdp);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
+            });
 
             Connection.On("ClipboardTransfer", (string transferText, bool typeText, string viewerID) =>
             {

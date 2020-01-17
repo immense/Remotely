@@ -4,7 +4,7 @@ using System;
 using System.Threading;
 using Remotely.ScreenCast.Linux.Services;
 using Remotely.ScreenCast.Linux.Capture;
-using Remotely.ScreenCast.Core.Sockets;
+using Remotely.ScreenCast.Core.Communication;
 
 namespace Remotely.ScreenCast.Linux
 {
