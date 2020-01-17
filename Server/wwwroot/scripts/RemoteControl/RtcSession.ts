@@ -2,11 +2,11 @@
 import * as Utilities from "../Utilities.js";
 import { RemoteControl } from "./Main.js";
 
-
 export class RtcSession {
     PeerConnection: RTCPeerConnection;
     DataChannel: RTCDataChannel;
     MessagePack: any = window['MessagePack'];
+    PartialFrames: Uint8Array[] = [];
     Init() {
         this.PeerConnection = new RTCPeerConnection({
             iceServers: [
@@ -28,20 +28,27 @@ export class RtcSession {
                 console.log("Data channel error.", ev.error);
             };
             this.DataChannel.onmessage = async (ev) => {
-                var data = ev.data;
+                var data = ev.data as ArrayBuffer;
 
                 if (ev.data.arrayBuffer) {
                     data = await ev.data.arrayBuffer();
                 }
-                console.log("WebRTC frame received. Size: " + data.byteLength);
+                //console.log("WebRTC frame received. Size: " + data.byteLength);
                 var frameInfo = this.MessagePack.decode(data) as FrameInfo;
-                var url = window.URL.createObjectURL(new Blob([frameInfo.ImageBytes]));
-                var img = document.createElement("img");
-                img.onload = () => {
-                    UI.Screen2DContext.drawImage(img, frameInfo.Left, frameInfo.Top, frameInfo.Width, frameInfo.Height);
-                    window.URL.revokeObjectURL(url);
-                };
-                img.src = url;
+                if (frameInfo.EndOfFrame) {
+                    var url = window.URL.createObjectURL(new Blob(this.PartialFrames));
+                    var img = document.createElement("img");
+                    img.onload = () => {
+                        UI.Screen2DContext.drawImage(img, frameInfo.Left, frameInfo.Top, frameInfo.Width, frameInfo.Height);
+                        window.URL.revokeObjectURL(url);
+                    };
+                    img.src = url;
+                    this.PartialFrames = [];
+                }
+                else {
+                    this.PartialFrames.push(frameInfo.ImageBytes);
+                }
+               
             };
             this.DataChannel.onopen = (ev) => {
                 console.log("Data channel opened.");

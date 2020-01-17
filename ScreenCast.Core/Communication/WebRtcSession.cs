@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,6 +21,7 @@ namespace Remotely.ScreenCast.Core.Communication
         public ulong CurrentBuffer { get; private set; }
 
         public bool IsDataChannelOpen => CaptureChannel?.State == DataChannel.ChannelState.Open;
+        public bool IsPeerConnected => PeerConnection?.IsConnected == true;
         private DataChannel CaptureChannel { get; set; }
         private PeerConnection PeerConnection { get; set; }
         public void AddIceCandidate(string sdpMid, int sdpMlineIndex, string candidate)
@@ -35,8 +37,7 @@ namespace Remotely.ScreenCast.Core.Communication
 
         public async Task Init()
         {
-            CaptureChannel?.Dispose();
-            PeerConnection?.Dispose();
+            Logger.Debug("Starting WebRTC connection.");
             PeerConnection = new PeerConnection();
 
             var config = new PeerConnectionConfiguration()
@@ -62,13 +63,25 @@ namespace Remotely.ScreenCast.Core.Communication
         }
         public void SendCaptureFrame(int left, int top, int width, int height, byte[] imageBytes)
         {
+            for (var i = 0; i < imageBytes.Length; i += 50_000)
+            {
+                CaptureChannel.SendMessage(MessagePackSerializer.Serialize(new FrameInfo()
+                {
+                    Left = left,
+                    Top = top,
+                    Width = width,
+                    Height = height,
+                    EndOfFrame = false,
+                    ImageBytes = imageBytes.Skip(i).Take(50000).ToArray()
+                }));
+            }
             CaptureChannel.SendMessage(MessagePackSerializer.Serialize(new FrameInfo()
             {
                 Left = left,
                 Top = top,
                 Width = width,
                 Height = height,
-                ImageBytes = imageBytes
+                EndOfFrame = true
             }));
         }
 
