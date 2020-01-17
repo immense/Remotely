@@ -6,7 +6,7 @@ import { RemoteControl } from "./Main.js";
 export class RtcSession {
     PeerConnection: RTCPeerConnection;
     DataChannel: RTCDataChannel;
-    MsgPack5: any = new window['msgpack5']();
+    MessagePack: any = window['MessagePack'];
     Init() {
         this.PeerConnection = new RTCPeerConnection({
             iceServers: [
@@ -27,8 +27,14 @@ export class RtcSession {
             this.DataChannel.onerror = (ev) => {
                 console.log("Data channel error.", ev.error);
             };
-            this.DataChannel.onmessage = (ev) => {
-                var frameInfo = this.MsgPack5.decode(ev.data) as FrameInfo;
+            this.DataChannel.onmessage = async (ev) => {
+                var data = ev.data;
+
+                if (ev.data.arrayBuffer) {
+                    data = await ev.data.arrayBuffer();
+                }
+                console.log("WebRTC frame received. Size: " + data.byteLength);
+                var frameInfo = this.MessagePack.decode(data) as FrameInfo;
                 var url = window.URL.createObjectURL(new Blob([frameInfo.ImageBytes]));
                 var img = document.createElement("img");
                 img.onload = () => {

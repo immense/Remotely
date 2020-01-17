@@ -316,7 +316,7 @@ namespace Remotely.ScreenCast.Core.Communication
                 {
                     var latency = DateTime.UtcNow - sentTime;
                     viewer.Latency = latency.TotalMilliseconds;
-                    viewer.OutputBuffer -= bytesReceived;
+                    viewer.WebSocketBuffer = Math.Max(0, viewer.WebSocketBuffer - bytesReceived);
                 }
             });
 

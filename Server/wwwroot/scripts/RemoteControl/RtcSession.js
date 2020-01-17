@@ -3,7 +3,7 @@ import * as Utilities from "../Utilities.js";
 import { RemoteControl } from "./Main.js";
 export class RtcSession {
     constructor() {
-        this.MsgPack5 = new window['msgpack5']();
+        this.MessagePack = window['MessagePack'];
     }
     Init() {
         this.PeerConnection = new RTCPeerConnection({
@@ -24,8 +24,13 @@ export class RtcSession {
             this.DataChannel.onerror = (ev) => {
                 console.log("Data channel error.", ev.error);
             };
-            this.DataChannel.onmessage = (ev) => {
-                var frameInfo = this.MsgPack5.decode(ev.data);
+            this.DataChannel.onmessage = async (ev) => {
+                var data = ev.data;
+                if (ev.data.arrayBuffer) {
+                    data = await ev.data.arrayBuffer();
+                }
+                console.log("WebRTC frame received. Size: " + data.byteLength);
+                var frameInfo = this.MessagePack.decode(data);
                 var url = window.URL.createObjectURL(new Blob([frameInfo.ImageBytes]));
                 var img = document.createElement("img");
                 img.onload = () => {

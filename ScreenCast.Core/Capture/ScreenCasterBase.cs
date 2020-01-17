@@ -73,7 +73,7 @@ namespace Remotely.ScreenCast.Core.Capture
             {
                 try
                 {
-                    if (viewer.Latency > 30000)
+                    if (viewer.IsStalled())
                     {
                         // Viewer isn't responding.  Abort sending.
                         break;
@@ -88,19 +88,9 @@ namespace Remotely.ScreenCast.Core.Capture
                         fpsQueue.Enqueue(DateTime.Now);
                         Debug.WriteLine($"Capture FPS: {fpsQueue.Count}");
                     }
-                    
-                    if (viewer.OutputBuffer > 150_000)
-                    {
-                        Debug.WriteLine($"Waiting for buffer to clear.  Size: {viewer.OutputBuffer}");
-                        await Task.Delay(50);
-                        continue;
-                    }
 
-                    if (viewer.RtcSession?.CurrentBuffer > 100_000)
-                    {
-                        Debug.WriteLine($"Throttling output due to WebRTC buffer.  Size: {viewer.RtcSession.CurrentBuffer}");
-                        await Task.Delay((int)(viewer.RtcSession.CurrentBuffer - 100_000));
-                    }
+                    await viewer.ThrottleIfNeeded();
+                  
 
                     capturer.GetNextFrame();
 
@@ -118,10 +108,10 @@ namespace Remotely.ScreenCast.Core.Capture
                             capturer.CaptureFullscreen = false;
                         }
 
-                        if (viewer.AutoAdjustQuality && viewer.Latency > 1000)
+                        if (viewer.ShouldAdjustQuality())
                         {
                             var quality = (int)(viewer.ImageQuality * 1000 / viewer.Latency);
-                            Debug.WriteLine($"Auto-adjusting image quality. Latency: {viewer.Latency}. Quality: {quality}");
+                            Logger.Debug($"Auto-adjusting image quality. Latency: {viewer.Latency}. Quality: {quality}");
                             encodedImageBytes = ImageUtils.EncodeBitmap(newImage, new EncoderParameters()
                             {
                                 Param = new[]
@@ -137,16 +127,18 @@ namespace Remotely.ScreenCast.Core.Capture
 
                         if (encodedImageBytes?.Length > 0)
                         {
-                            if (viewer.RtcSession.IsDataChannelOpen)
+                            if (viewer.IsUsingWebRtc())
                             {
                                 viewer.RtcSession.SendCaptureFrame(diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, encodedImageBytes);
-
+                                viewer.WebSocketBuffer = 0;
+                                viewer.Latency = 0;
                             }
                             else
                             {
                                 await casterSocket.SendScreenCapture(encodedImageBytes, viewerID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, DateTime.UtcNow);
                                 viewer.Latency += 300;
-                                viewer.OutputBuffer += encodedImageBytes.Length;
+                                // Shave some off so it doesn't get deadlocked by dropped frames.
+                                viewer.WebSocketBuffer += (int)(encodedImageBytes.Length * .9);
                             }
                         }
                     }
@@ -164,6 +156,8 @@ namespace Remotely.ScreenCast.Core.Capture
 
             Logger.Write($"Ended screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}.");
             viewers.TryRemove(viewerID, out _);
+
+            viewer.Dispose();
 
             capturer.Dispose();
 
