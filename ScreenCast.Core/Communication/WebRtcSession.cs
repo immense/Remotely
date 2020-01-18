@@ -1,7 +1,7 @@
 ﻿using MessagePack;
 using Microsoft.MixedReality.WebRTC;
-using Remotely.ScreenCast.Core.Models;
 using Remotely.ScreenCast.Core.Services;
+using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Remotely.ScreenCast.Core.Communication
 {
-    public class WebRtcSession
+    public class WebRtcSession : IDisposable
     {
         public event EventHandler<(string candidate, int sdpMlineIndex, string sdpMid)> IceCandidateReady;
 
@@ -31,8 +31,8 @@ namespace Remotely.ScreenCast.Core.Communication
 
         public void Dispose()
         {
-            PeerConnection?.Dispose();
             CaptureChannel?.Dispose();
+            PeerConnection?.Dispose();
         }
 
         public async Task Init()
@@ -72,7 +72,8 @@ namespace Remotely.ScreenCast.Core.Communication
                     Width = width,
                     Height = height,
                     EndOfFrame = false,
-                    ImageBytes = imageBytes.Skip(i).Take(50000).ToArray()
+                    ImageBytes = imageBytes.Skip(i).Take(50000).ToArray(),
+                    DtoType = Shared.Enums.DynamicDtoType.FrameInfo
                 }));
             }
             CaptureChannel.SendMessage(MessagePackSerializer.Serialize(new FrameInfo()
@@ -81,7 +82,8 @@ namespace Remotely.ScreenCast.Core.Communication
                 Top = top,
                 Width = width,
                 Height = height,
-                EndOfFrame = true
+                EndOfFrame = true,
+                DtoType = Shared.Enums.DynamicDtoType.FrameInfo
             }));
         }
 

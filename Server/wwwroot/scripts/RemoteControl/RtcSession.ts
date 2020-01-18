@@ -1,6 +1,8 @@
 ﻿import * as UI from "./UI.js";
 import * as Utilities from "../Utilities.js";
 import { RemoteControl } from "./Main.js";
+import { DynamicDto } from "../Models/DynamicDto.js";
+import { DynamicDtoType } from "../Models/DynamicDtoType.js";
 
 export class RtcSession {
     PeerConnection: RTCPeerConnection;
@@ -33,21 +35,7 @@ export class RtcSession {
                 if (ev.data.arrayBuffer) {
                     data = await ev.data.arrayBuffer();
                 }
-                //console.log("WebRTC frame received. Size: " + data.byteLength);
-                var frameInfo = this.MessagePack.decode(data) as FrameInfo;
-                if (frameInfo.EndOfFrame) {
-                    var url = window.URL.createObjectURL(new Blob(this.PartialFrames));
-                    var img = document.createElement("img");
-                    img.onload = () => {
-                        UI.Screen2DContext.drawImage(img, frameInfo.Left, frameInfo.Top, frameInfo.Width, frameInfo.Height);
-                        window.URL.revokeObjectURL(url);
-                    };
-                    img.src = url;
-                    this.PartialFrames = [];
-                }
-                else {
-                    this.PartialFrames.push(frameInfo.ImageBytes);
-                }
+                this.ParseBinaryMessage(data);
                
             };
             this.DataChannel.onopen = (ev) => {
@@ -64,6 +52,32 @@ export class RtcSession {
         this.PeerConnection.onicecandidate = async (ev) => {
             await RemoteControl.RCBrowserSockets.SendIceCandidate(ev.candidate);
         };
+    }
+    ParseBinaryMessage(data: ArrayBuffer) {
+        //console.log("WebRTC frame received. Size: " + data.byteLength);
+        var model = this.MessagePack.decode(data) as DynamicDto;
+        //console.log("Received model type " + model.ModelType);
+        switch (model.DtoType) {
+            case DynamicDtoType.FrameInfo:
+                this.ProcessFrameInfo(model as unknown as FrameInfo);
+                break;
+            default:
+        }
+    }
+    ProcessFrameInfo(frameInfo: FrameInfo) {
+        if (frameInfo.EndOfFrame) {
+            var url = window.URL.createObjectURL(new Blob(this.PartialFrames));
+            var img = document.createElement("img");
+            img.onload = () => {
+                UI.Screen2DContext.drawImage(img, frameInfo.Left, frameInfo.Top, frameInfo.Width, frameInfo.Height);
+                window.URL.revokeObjectURL(url);
+            };
+            img.src = url;
+            this.PartialFrames = [];
+        }
+        else {
+            this.PartialFrames.push(frameInfo.ImageBytes);
+        }
     }
     Disconnect() {
         this.PeerConnection.close();
