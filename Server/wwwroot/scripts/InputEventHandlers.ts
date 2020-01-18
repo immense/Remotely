@@ -113,11 +113,6 @@ function keyDownOnInputTextArea() {
                         UI.CommandInfoDiv.classList.add("hidden");
                     }
                     break;
-                case "q":
-                    if (e.ctrlKey) {
-                        UI.ConsoleOutputDiv.innerHTML = "";
-                    }
-                    break;
                 default:
                     break;
             }
@@ -133,6 +128,9 @@ function keyDownOnWindow() {
             !e.altKey &&
             !e.ctrlKey) {
             UI.ConsoleTextArea.focus();
+        }
+        if (e.ctrlKey && e.key.toLowerCase() == "q") {
+            UI.ConsoleOutputDiv.innerHTML = "";
         }
     });
 }

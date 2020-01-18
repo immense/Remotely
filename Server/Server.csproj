@@ -40,6 +40,8 @@
     <Content Remove="wwwroot\scripts\Models\CursorInfo.ts" />
     <Content Remove="wwwroot\scripts\Models\Device.ts" />
     <Content Remove="wwwroot\scripts\Models\DevicePermissionLink.ts" />
+    <Content Remove="wwwroot\scripts\Models\DynamicModel.ts" />
+    <Content Remove="wwwroot\scripts\Models\DynamicModelType.ts" />
     <Content Remove="wwwroot\scripts\Models\FrameInfo.ts" />
     <Content Remove="wwwroot\scripts\Models\GenericCommandResult.ts" />
     <Content Remove="wwwroot\scripts\Models\Parameter.ts" />
@@ -148,6 +150,8 @@
     <TypeScriptCompile Include="wwwroot\scripts\CommandProcessor.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\CommandLineParameter.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\ConsoleCommand.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Models\DynamicModel.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Models\DynamicModelType.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\FrameInfo.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\Point.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\UserOptions.ts" />

@@ -59,14 +59,22 @@ function Run-StartupChecks {
 	}
 }
 
-function Uninstall-Remotely {
-	Start-Process -FilePath "cmd.exe" -ArgumentList "/c sc delete Remotely_Service" -Wait  -WindowStyle Hidden
+function Stop-Remotely {
+	Start-Process -FilePath "cmd.exe" -ArgumentList "/c sc delete Remotely_Service" -Wait -WindowStyle Hidden
 	Stop-Process -Name Remotely_Agent -Force -ErrorAction SilentlyContinue
+	Stop-Process -Name Remotely_ScreenCast -Force -ErrorAction SilentlyContinue
+}
+
+
+function Uninstall-Remotely {
+	Stop-Remotely
 	Remove-Item -Path $InstallPath -Force -Recurse -ErrorAction SilentlyContinue
 	Remove-NetFirewallRule -Name "Remotely ScreenCast" -ErrorAction SilentlyContinue
 }
 
 function Install-Remotely {
+	Stop-Remotely
+
 	if ((Test-Path -Path "$InstallPath") -eq $true){
 		if ((Test-Path -Path "$InstallPath\ConnectionInfo.json") -eq $true){
 			$ConnectionInfo = Get-Content -Path "$InstallPath\ConnectionInfo.json" | ConvertFrom-Json
@@ -151,6 +159,9 @@ function Install-DesktopRuntime() {
 try {
 	Run-StartupChecks
 
+	Write-Log "Install/uninstall logs are being written to `"$LogPath`""
+    Write-Log
+
 	if ($ArgList.Contains("-uninstall")) {
 		Write-Log "Uninstall started."
 		Uninstall-Remotely
@@ -159,8 +170,6 @@ try {
 	}
 	else {
 		Write-Log "Install started."
-        Write-Log
-        Write-Log "Install/uninstall logs are being written to `"$LogPath`""
         Write-Log
 		Install-DesktopRuntime
 		Install-Remotely

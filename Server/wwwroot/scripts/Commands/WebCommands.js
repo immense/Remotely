@@ -34,6 +34,15 @@ var commands = [
         };
         fileInput.click();
     }),
+    new ConsoleCommand("GetLogs", [], "Retrieve the logs from the remote agent.", "GetLogs", "", (parameters, paramDictionary) => {
+        var selectedDevices = Main.DataGrid.GetSelectedDevices();
+        if (selectedDevices.length == 0) {
+            AddConsoleOutput("No devices are selected.");
+            return;
+        }
+        ;
+        BrowserSockets.Connection.invoke("ExecuteCommandOnClient", "PSCore", 'Get-Content -Path "C:\\Windows\\Temp\\Remotely_Logs.log"', selectedDevices.map(x => x.ID));
+    }),
     new ConsoleCommand("GetVersion", [], "Display the remote agent's version.", "GetVersion", "", (parameters, paramDictionary) => {
         var selectedDevices = Main.DataGrid.GetSelectedDevices();
         if (selectedDevices.length == 0) {

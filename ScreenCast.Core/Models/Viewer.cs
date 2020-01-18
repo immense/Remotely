@@ -62,7 +62,6 @@ namespace Remotely.ScreenCast.Core.Models
         public void Dispose()
         {
             EncoderParams?.Dispose();
-            Capturer?.Dispose();
             RtcSession?.Dispose();
         }
 
@@ -75,13 +74,15 @@ namespace Remotely.ScreenCast.Core.Models
         {
             if (IsUsingWebRtc() && RtcSession?.CurrentBuffer > 100_000)
             {
-                Logger.Debug($"Throttling output due to WebRTC buffer.  Size: {RtcSession.CurrentBuffer}");
-                await Task.Delay((int)Math.Ceiling((RtcSession.CurrentBuffer - 100_000) * .0025));
+                var delay = (int)Math.Ceiling((RtcSession.CurrentBuffer - 100_000) * .0025);
+                Logger.Debug($"Throttling output due to WebRTC buffer.  Size: {RtcSession.CurrentBuffer}.  Delay: {delay}");
+                await Task.Delay(delay);
             }
             else if (!IsUsingWebRtc() && WebSocketBuffer > 150_000)
             {
-                Logger.Debug($"Throttling output due to websocket buffer.  Size: {WebSocketBuffer}");
-                await Task.Delay((int)Math.Ceiling((WebSocketBuffer - 150_000) * .0025));
+                var delay = (int)Math.Ceiling((WebSocketBuffer - 150_000) * .0025);
+                Logger.Debug($"Throttling output due to websocket buffer.  Size: {WebSocketBuffer}.  Delay: {delay}");
+                await Task.Delay(delay);
             }
         }
 

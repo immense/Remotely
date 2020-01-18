@@ -153,19 +153,34 @@ namespace Remotely.ScreenCast.Core.Capture
                 }
             }
 
-
             Logger.Write($"Ended screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}.");
             viewers.TryRemove(viewerID, out _);
+            var shouldExit = viewers.Count == 0 && mode == Enums.AppMode.Unattended;
 
-            viewer.Dispose();
-
-            capturer.Dispose();
-
-            // Close if no one is viewing.
-            if (viewers.Count == 0 && mode == Enums.AppMode.Unattended)
+            try
             {
-                await casterSocket.Disconnect();
-                Environment.Exit(0);
+                viewer.Dispose();
+
+                if (shouldExit)
+                {
+                    capturer.Dispose();
+
+                    await casterSocket.Disconnect();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+            }
+            finally
+            {
+                // Close if no one is viewing.
+                if (shouldExit)
+                {
+                    Logger.Debug($"Exiting process ID {Process.GetCurrentProcess().Id}.");
+                    Environment.Exit(0);
+                }
             }
         }
 
