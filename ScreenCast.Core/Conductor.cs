@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Extensions.DependencyInjection;
-using Remotely.Shared.Models;
+﻿using Remotely.Shared.Models;
 using Remotely.ScreenCast.Core.Enums;
 using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Models;
@@ -9,10 +7,7 @@ using Remotely.ScreenCast.Core.Services;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Remotely.ScreenCast.Core.Interfaces;
 
 namespace Remotely.ScreenCast.Core
 {

@@ -1,5 +1,6 @@
 import * as DataGrid from "./DataGrid.js";
 import { ConsoleFrame } from "./UI.js";
+import { FormatScriptOutput, FormatScriptOutputArray } from "./Utilities.js";
 export function CreateCommandHarness(context) {
     var collapseClass = context.TargetDeviceIDs.length > 1 ? "collapse" : "collapse show";
     var commandHarness = document.createElement("div");
@@ -34,11 +35,11 @@ export function AddPSCoreResultsHarness(result) {
                 <button class="btn btn-sm btn-secondary" data-toggle="collapse" data-target='#${contextID + result.DeviceID}-result'>View</button>
         </div>
         <div id='${contextID + result.DeviceID}-result' class="command-result-output ${collapseClass}">
-            <div>Host Output:<br>${result.HostOutput.replace(/\n/g, "<br>").replace(/ /g, "&nbsp;")}</div>
-            <div>Debug Output:<br>${result.DebugOutput.join("<br>").replace(/ /g, "&nbsp;")}</div>
-            <div>Verbose Output:<br>${result.VerboseOutput.join("<br>").replace(/ /g, "&nbsp;")}</div>
-            <div>Information Output:<br>${result.InformationOutput.join("<br>").replace(/ /g, "&nbsp;")}</div>
-            <div>Error Output:<br>${result.ErrorOutput.join("<br>").replace(/ /g, "&nbsp;")}</div>
+            <div>Host Output:<br>${FormatScriptOutput(result.HostOutput)}</div>
+            <div>Debug Output:<br>${FormatScriptOutputArray(result.DebugOutput)}</div>
+            <div>Verbose Output:<br>${FormatScriptOutputArray(result.VerboseOutput)}</div>
+            <div>Information Output:<br>${FormatScriptOutputArray(result.InformationOutput)}</div>
+            <div>Error Output:<br>${FormatScriptOutputArray(result.ErrorOutput)}</div>
         </div>`;
     if (result.ErrorOutput.length > 0) {
         var errorSpan = document.getElementById(contextID + "-errors");
@@ -63,8 +64,8 @@ export function AddCommandResultsHarness(result) {
                 <button class="btn btn-sm btn-secondary" data-toggle="collapse" data-target="#${contextID + result.DeviceID}-result">View</button>
         </div>
         <div id="${contextID + result.DeviceID}-result" class="command-result-output ${collapseClass}">
-            <div>Standard Output:<br>${result.StandardOutput.replace(/\n/g, "<br>").replace(/ /g, "&nbsp;")}</div>
-            <div>Error Output:<br>${result.ErrorOutput.replace(/\n/g, "<br>").replace(/ /g, "&nbsp;")}</div>
+            <div>Standard Output:<br>${FormatScriptOutput(result.StandardOutput)}</div>
+            <div>Error Output:<br>${FormatScriptOutput(result.ErrorOutput)}</div>
         </div>`;
     if (result.ErrorOutput.length > 0) {
         var errorSpan = document.getElementById(`${contextID}-errors`);

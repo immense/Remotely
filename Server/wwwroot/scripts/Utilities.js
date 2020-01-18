@@ -71,6 +71,12 @@ export function ConvertUInt8ArrayToBase64(array) {
     }
     return btoa(base64String);
 }
+export function FormatScriptOutput(output) {
+    return EncodeForHTML(output).replace(/ /g, "&nbsp;").replace(/\n/g, "<br>");
+}
+export function FormatScriptOutputArray(output) {
+    return output.map(x => EncodeForHTML(x)).join("<br>");
+}
 export function RemoveFromArray(array, item) {
     var index = array.indexOf(item);
     if (index > -1) {
