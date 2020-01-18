@@ -22,7 +22,7 @@ namespace Remotely.Shared.Models
         [DataMember(Name = "Left")]
         public int Left { get; set; }
 
-        [DataMember(Name = "ModelType")]
+        [DataMember(Name = "DtoType")]
         public DynamicDtoType DtoType { get; set; }
 
         [DataMember(Name = "Top")]
