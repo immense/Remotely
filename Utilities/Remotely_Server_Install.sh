@@ -1,4 +1,7 @@
 #!/bin/bash
+echo "WARNING: This script won't work until the ASP.NET Core runtime version is updated in the package manager to version 3.1.1."
+read -p "Press Enter to exit."
+exit
 echo "Thanks for trying remotely!  If you have any questions, feel free to email me at Translucency_Software@outlook.com."
 echo
 read -p "Enter path where the Remotely server files are located (typically /var/www/remotely): " appRoot
