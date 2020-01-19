@@ -41,7 +41,7 @@ var commands = [
             return;
         }
         ;
-        BrowserSockets.Connection.invoke("ExecuteCommandOnClient", "PSCore", 'Get-Content -Path "C:\\Windows\\Temp\\Remotely_Logs.log"', selectedDevices.map(x => x.ID));
+        BrowserSockets.Connection.invoke("ExecuteCommandOnClient", "PSCore", 'Get-Content -Path "$([System.IO.Path]::GetTempPath())\\Remotely_Logs.log"', selectedDevices.map(x => x.ID));
     }),
     new ConsoleCommand("GetVersion", [], "Display the remote agent's version.", "GetVersion", "", (parameters, paramDictionary) => {
         var selectedDevices = Main.DataGrid.GetSelectedDevices();
