@@ -71,7 +71,6 @@ The following steps will configure your Windows 10 machine for building the Remo
 	* Requires .NET Core Desktop Runtime.
 	* Windows 2016/2019 should work as well, but isn't tested regularly.
 * Linux: Only Ubuntu 18.04+ is tested.
-	* Your account must be set to auto login for unattended remote control to work.
 
 ## Session Recording
 * You can turn on session recording in appsettings.json.
