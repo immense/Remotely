@@ -263,18 +263,32 @@ namespace Remotely.Agent.Services
                     }
                     else if (OSUtils.IsLinux)
                     {
-                        var users = OSUtils.StartProcessWithResults("users", "");
-                        var username = users?.Split()?.FirstOrDefault()?.Trim();
-                        var homeDir = OSUtils.StartProcessWithResults("sudo", $"-u {username} env | grep HOME")?.Split('=')?.Last();
+                        //var users = OSUtils.StartProcessWithResults("users", "");
+                        //var username = users?.Split()?.FirstOrDefault()?.Trim();
+                        var xauthority = OSUtils.StartProcessWithResults("find", $"/ -name Xauthority").Split('\n', StringSplitOptions.RemoveEmptyEntries).First();
+                        var display = ":0";
+                        var whoString = OSUtils.StartProcessWithResults("who", "")?.Trim();
+                        var username = string.Empty;
+                     
+                        var args = $"{rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConfigService.GetConnectionInfo().Host} & disown";
+                        if (!string.IsNullOrWhiteSpace(whoString))
+                        {
+                            var whoLine = whoString.Split('\n', StringSplitOptions.RemoveEmptyEntries).First();
+                            var whoSplit = whoLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                            username = whoSplit[0];
+                            display = whoSplit[1];
+                            args = $"-u {username} {args}";
+                        }
                         var psi = new ProcessStartInfo()
                         {
                             FileName = "sudo",
-                            Arguments = $"-u {username} {rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConfigService.GetConnectionInfo().Host} & disown"
+                            Arguments = args
                         };
-                        psi.Environment.Add("DISPLAY", ":0");
-                        psi.Environment.Add("XAUTHORITY", $"{homeDir}/.Xauthority");
+                        psi.Environment.Add("DISPLAY", display);
+                        psi.Environment.Add("XAUTHORITY", xauthority);
+                        Logger.Write($"Attempting to launch screen caster with username {username}, xauthority {xauthority}, and display {display}.");
                         var casterProc = Process.Start(psi);
-                        casterProc.WaitForExit();
+                        await Task.Run(() => { casterProc.WaitForExit(); });
                     }
                 }
                 catch (Exception ex)
