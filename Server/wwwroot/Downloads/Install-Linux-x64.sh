@@ -12,6 +12,16 @@ if [ "$1" = "--uninstall" ]; then
 	exit
 fi
 
+UbuntuVersion=$(lsb_release -r -s)
+
+wget -q https://packages.microsoft.com/config/ubuntu/$UbuntuVersion/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+dpkg -i packages-microsoft-prod.deb
+apt-get update
+apt-get install apt-transport-https
+apt-get update
+apt-get install dotnet-runtime-3.1
+rm packages-microsoft-prod.deb
+
 apt-get -y install unzip
 apt-get -y install libc6-dev
 apt-get -y install libgdiplus

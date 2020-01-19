@@ -276,7 +276,7 @@ namespace Remotely.Agent.Services
                             var whoLine = whoString.Split('\n', StringSplitOptions.RemoveEmptyEntries).First();
                             var whoSplit = whoLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                             username = whoSplit[0];
-                            display = whoSplit[1];
+                            display = whoSplit.Last().Trim('(').Trim(')');
                             args = $"-u {username} {args}";
                         }
                         var psi = new ProcessStartInfo()
