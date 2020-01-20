@@ -43,7 +43,7 @@ The following steps will configure your Windows 10 machine for building the Remo
 * Documentation for hosting in IIS can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/iis/index?view=aspnetcore-3.1
 
 ## Hosting a Server (Ubuntu)
-* Ubuntu 18.04 and 19.04 have been tested.  The Linux server package might work with other distros after some alterations to the setup script.
+* Ubuntu 18.04 and 19.04 have been tested.
 * Run Remotely_Server_Setup.sh (with sudo), which is in the [Utilities folder in source control](https://raw.githubusercontent.com/Jay-Rad/Remotely/master/Utilities/Remotely_Server_Install.sh).
 	* The script is designed to install Remotely and Nginx on the same server, running Ubuntu 18.04 or 19.04.  You'll need to manually set up other configurations.
     * A helpful user supplied an example Apache configuration, which can be found in the Utilities folder.
