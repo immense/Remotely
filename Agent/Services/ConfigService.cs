@@ -8,28 +8,36 @@ using System.Linq;
 
 namespace Remotely.Agent.Services
 {
-    public static class ConfigService
+    public class ConfigService
     {
-        private static ConnectionInfo connectionInfo;
-        public static ConnectionInfo GetConnectionInfo()
+        private static object fileLock = new object();
+        private ConnectionInfo connectionInfo;
+
+        public ConnectionInfo GetConnectionInfo()
         {
             if (connectionInfo == null)
             {
-                if (!File.Exists("ConnectionInfo.json"))
+                lock (fileLock)
                 {
-                    Logger.Write(new Exception("No connection info available.  Please create ConnectionInfo.json file with appropriate values."));
-                    return null;
+                    if (!File.Exists("ConnectionInfo.json"))
+                    {
+                        Logger.Write(new Exception("No connection info available.  Please create ConnectionInfo.json file with appropriate values."));
+                        return null;
+                    }
+                    connectionInfo = JsonConvert.DeserializeObject<ConnectionInfo>(File.ReadAllText("ConnectionInfo.json"));
                 }
-                connectionInfo = JsonConvert.DeserializeObject<ConnectionInfo>(File.ReadAllText("ConnectionInfo.json"));
             }
 
             return connectionInfo;
         }
 
 
-        public static void SaveConnectionInfo(ConnectionInfo connectionInfo)
+        public void SaveConnectionInfo(ConnectionInfo connectionInfo)
         {
-            File.WriteAllText("ConnectionInfo.json", JsonConvert.SerializeObject(connectionInfo));
+            lock (fileLock)
+            {
+                File.WriteAllText("ConnectionInfo.json", JsonConvert.SerializeObject(connectionInfo));
+            }
         }
     }
 }

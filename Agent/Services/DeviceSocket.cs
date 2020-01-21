@@ -17,15 +17,24 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Remotely.Agent.Services
 {
-    public static class DeviceSocket
+    public class DeviceSocket
     {
-        public static Timer HeartbeatTimer { get; private set; }
-        public static bool IsServerVerified { get; set; }
-        private static ConnectionInfo ConnectionInfo { get; set; }
+        public DeviceSocket(Updater updater, ConfigService configService, Uninstaller uninstaller)
+        {
+            Updater = updater;
+            ConfigService = configService;
+            Uninstaller = uninstaller;
+        }
+        public Timer HeartbeatTimer { get; private set; }
+        public bool IsConnected => HubConnection?.State == HubConnectionState.Connected;
+        public bool IsServerVerified { get; set; }
+        public Uninstaller Uninstaller { get; }
+        private ConfigService ConfigService { get; }
+        private ConnectionInfo ConnectionInfo { get; set; }
 
-        private static HubConnection HubConnection { get; set; }
-
-        public static async Task Connect()
+        private HubConnection HubConnection { get; set; }
+        private Updater Updater { get; }
+        public async Task Connect()
         {
             ConnectionInfo = ConfigService.GetConnectionInfo();
 
@@ -59,16 +68,13 @@ namespace Remotely.Agent.Services
             HeartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
             HeartbeatTimer.Start();
         }
-
-        public static bool IsConnected => HubConnection?.State == HubConnectionState.Connected;
-
-        public static void SendHeartbeat()
+        public void SendHeartbeat()
         {
             var currentInfo = Device.Create(ConnectionInfo);
             HubConnection.InvokeAsync("DeviceHeartbeat", currentInfo);
         }
 
-        private static async Task ExecuteCommand(string mode, string command, string commandID, string senderConnectionID)
+        private async Task ExecuteCommand(string mode, string command, string commandID, string senderConnectionID)
         {
             if (!IsServerVerified)
             {
@@ -150,16 +156,16 @@ namespace Remotely.Agent.Services
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                await HubConnection.InvokeAsync("DisplayMessage", $"There was an error executing the command.  It has been logged on the client device.", "Error executing command.", senderConnectionID);
+                await HubConnection.InvokeAsync("DisplayMessage", "There was an error executing the command.  It has been logged on the client device.", "Error executing command.", senderConnectionID);
             }
         }
 
-        private static void HeartbeatTimer_Elapsed(object sender, ElapsedEventArgs e)
+        private void HeartbeatTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             SendHeartbeat();
         }
 
-        private static void RegisterMessageHandlers(HubConnection hubConnection)
+        private void RegisterMessageHandlers(HubConnection hubConnection)
         {
             hubConnection.On("ExecuteCommand", (async (string mode, string command, string commandID, string senderConnectionID) =>
             {
@@ -263,8 +269,6 @@ namespace Remotely.Agent.Services
                     }
                     else if (OSUtils.IsLinux)
                     {
-                        //var users = OSUtils.StartProcessWithResults("users", "");
-                        //var username = users?.Split()?.FirstOrDefault()?.Trim();
                         var xauthority = OSUtils.StartProcessWithResults("find", $"/ -name Xauthority").Split('\n', StringSplitOptions.RemoveEmptyEntries).First();
                         var display = ":0";
                         var whoString = OSUtils.StartProcessWithResults("who", "")?.Trim();
@@ -387,7 +391,7 @@ namespace Remotely.Agent.Services
             });           
         }
 
-        private static void SendResultsViaAjax(string resultType, object result)
+        private void SendResultsViaAjax(string resultType, object result)
         {
             var targetURL = ConfigService.GetConnectionInfo().Host + $"/API/Commands/{resultType}";
             var webRequest = WebRequest.CreateHttp(targetURL);

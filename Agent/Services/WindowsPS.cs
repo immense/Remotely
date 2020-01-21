@@ -1,4 +1,5 @@
-﻿using Remotely.Shared.Models;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Remotely.Shared.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -10,45 +11,9 @@ namespace Remotely.Agent.Services
 {
     public class WindowsPS
     {
-        private static ConcurrentDictionary<string, WindowsPS> Sessions { get; set; } = new ConcurrentDictionary<string, WindowsPS>();
-        private string ConnectionID { get; set; }
-        private System.Timers.Timer ProcessIdleTimeout { get; set; }
-        private string LastInputID { get; set; }
-        private bool OutputDone { get; set; }
-        private string StandardOut { get; set; }
-        private string ErrorOut { get; set; }
-        public static WindowsPS GetCurrent(string connectionID)
+        public WindowsPS(ConfigService configService)
         {
-            if (Sessions.ContainsKey(connectionID))
-            {
-                var winPS = Sessions[connectionID];
-                winPS.ProcessIdleTimeout.Stop();
-                winPS.ProcessIdleTimeout.Start();
-                return winPS;
-            }
-            else
-            {
-                var winPS = new WindowsPS();
-                winPS.ConnectionID = connectionID;
-                winPS.ProcessIdleTimeout = new System.Timers.Timer(600000); // 10 minutes.
-                winPS.ProcessIdleTimeout.AutoReset = false;
-                winPS.ProcessIdleTimeout.Elapsed += winPS.ProcessIdleTimeout_Elapsed;
-                Sessions.AddOrUpdate(connectionID, winPS, (id, w) => winPS);
-                winPS.ProcessIdleTimeout.Start();
-                return winPS;
-            }
-        }
-
-        private void ProcessIdleTimeout_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            Sessions.Remove(ConnectionID, out var outResult);
-            outResult.PSProc.Kill();
-        }
-
-        private Process PSProc { get; }
-
-        private WindowsPS()
-        {
+            ConfigService = configService;
             var psi = new ProcessStartInfo("powershell.exe");
             psi.WindowStyle = ProcessWindowStyle.Hidden;
             psi.Verb = "RunAs";
@@ -66,25 +31,38 @@ namespace Remotely.Agent.Services
 
             PSProc.BeginErrorReadLine();
             PSProc.BeginOutputReadLine();
+
+            ProcessIdleTimeout = new System.Timers.Timer(600_000); // 10 minutes.
+            ProcessIdleTimeout.AutoReset = false;
+            ProcessIdleTimeout.Elapsed += ProcessIdleTimeout_Elapsed;
+            ProcessIdleTimeout.Start();
         }
 
-        private void CMDProc_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        private static ConcurrentDictionary<string, WindowsPS> Sessions { get; set; } = new ConcurrentDictionary<string, WindowsPS>();
+        private ConfigService ConfigService { get; }
+        private string ConnectionID { get; set; }
+        private string ErrorOut { get; set; }
+        private string LastInputID { get; set; }
+        private bool OutputDone { get; set; }
+        private System.Timers.Timer ProcessIdleTimeout { get; set; }
+        private Process PSProc { get; }
+        private string StandardOut { get; set; }
+        public static WindowsPS GetCurrent(string connectionID)
         {
-            if (e?.Data?.Contains(LastInputID) == true)
+            if (Sessions.ContainsKey(connectionID))
             {
-                OutputDone = true;
+                var winPS = Sessions[connectionID];
+                winPS.ProcessIdleTimeout.Stop();
+                winPS.ProcessIdleTimeout.Start();
+                return winPS;
             }
-            else if (!OutputDone)
+            else
             {
-                StandardOut += e.Data + Environment.NewLine;
-            }
-        }
+                var winPS = Program.Services.GetRequiredService<WindowsPS>();
 
-        private void CMDProc_ErrorDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            if (e?.Data != null)
-            {
-                ErrorOut += e.Data + Environment.NewLine;
+                winPS.ConnectionID = connectionID;
+                Sessions.AddOrUpdate(connectionID, winPS, (id, w) => winPS);
+                return winPS;
             }
         }
 
@@ -112,6 +90,38 @@ namespace Remotely.Agent.Services
             return GenerateCompletedResult();
         }
 
+        private void CMDProc_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e?.Data != null)
+            {
+                ErrorOut += e.Data + Environment.NewLine;
+            }
+        }
+
+        private void CMDProc_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e?.Data?.Contains(LastInputID) == true)
+            {
+                OutputDone = true;
+            }
+            else if (!OutputDone)
+            {
+                StandardOut += e.Data + Environment.NewLine;
+            }
+        }
+
+        private GenericCommandResult GenerateCompletedResult()
+        {
+            return new GenericCommandResult()
+            {
+                CommandContextID = LastInputID,
+                DeviceID = ConfigService.GetConnectionInfo().DeviceID,
+                CommandType = "WinPS",
+                StandardOutput = StandardOut,
+                ErrorOutput = ErrorOut
+            };
+        }
+
         private GenericCommandResult GeneratePartialResult()
         {
             OutputDone = true;
@@ -129,16 +139,10 @@ namespace Remotely.Agent.Services
             return partialResult;
         }
 
-        private GenericCommandResult GenerateCompletedResult()
+        private void ProcessIdleTimeout_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            return new GenericCommandResult()
-            {
-                CommandContextID = LastInputID,
-                DeviceID = ConfigService.GetConnectionInfo().DeviceID,
-                CommandType = "WinPS",
-                StandardOutput = StandardOut,
-                ErrorOutput = ErrorOut
-            };
+            PSProc?.Kill();
+            Sessions.TryRemove(ConnectionID, out _);
         }
     }
 }
