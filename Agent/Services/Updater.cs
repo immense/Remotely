@@ -15,7 +15,14 @@ namespace Remotely.Agent.Services
 {
     public class Updater
     {
-        internal static void CheckForCoreUpdates()
+        public Updater(ConfigService configService)
+        {
+            ConfigService = configService;
+        }
+
+        private ConfigService ConfigService { get; }
+
+        public void CheckForCoreUpdates()
         {
             try
             {
@@ -69,7 +76,7 @@ namespace Remotely.Agent.Services
                 Logger.Write(ex);
             }
         }
-        internal static void CoreUpdate()
+        public void CoreUpdate()
         {
             try
             {
@@ -171,24 +178,6 @@ namespace Remotely.Agent.Services
                 }
                 Environment.Exit(0);
             }
-        }
-        internal static async Task<string> GetLatestScreenCastVersion()
-        {
-            var platform = "";
-            if (OSUtils.IsWindows)
-            {
-                platform = "Windows";
-            }
-            else if (OSUtils.IsLinux)
-            {
-                platform = "Linux";
-            }
-            else
-            {
-                throw new Exception("Unsupported operating system.");
-            }
-            var response = await new HttpClient().GetAsync(ConfigService.GetConnectionInfo().Host + $"/API/ScreenCastVersion/{platform}");
-            return await response.Content.ReadAsStringAsync();
         }
     }
 }

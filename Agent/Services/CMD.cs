@@ -6,13 +6,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Remotely.Agent.Services
 {
     public class CMD
     {
-        private CMD()
+        public CMD(ConfigService configService)
         {
+            ConfigService = configService;
             var psi = new ProcessStartInfo("cmd.exe");
             psi.WindowStyle = ProcessWindowStyle.Hidden;
             psi.Verb = "RunAs";
@@ -30,10 +32,16 @@ namespace Remotely.Agent.Services
 
             CMDProc.BeginErrorReadLine();
             CMDProc.BeginOutputReadLine();
+
+            ProcessIdleTimeout = new System.Timers.Timer(600_000); // 10 minutes.
+            ProcessIdleTimeout.AutoReset = false;
+            ProcessIdleTimeout.Elapsed += ProcessIdleTimeout_Elapsed;
+            ProcessIdleTimeout.Start();
         }
 
         private static ConcurrentDictionary<string, CMD> Sessions { get; set; } = new ConcurrentDictionary<string, CMD>();
         private Process CMDProc { get; }
+        private ConfigService ConfigService { get; }
         private string ConnectionID { get; set; }
 
         private string ErrorOut { get; set; }
@@ -52,13 +60,9 @@ namespace Remotely.Agent.Services
             }
             else
             {
-                var cmd = new CMD();
+                var cmd = Program.Services.GetRequiredService<CMD>();
                 cmd.ConnectionID = connectionID;
-                cmd.ProcessIdleTimeout = new System.Timers.Timer(600000); // 10 minutes.
-                cmd.ProcessIdleTimeout.AutoReset = false;
-                cmd.ProcessIdleTimeout.Elapsed += cmd.ProcessIdleTimeout_Elapsed;
                 Sessions.AddOrUpdate(connectionID, cmd, (id, c) => cmd);
-                cmd.ProcessIdleTimeout.Start();
                 return cmd;
             }
         }
@@ -139,8 +143,8 @@ namespace Remotely.Agent.Services
 
         private void ProcessIdleTimeout_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            Sessions.Remove(ConnectionID, out var outResult);
-            outResult.CMDProc.Kill();
+            CMDProc?.Kill();
+            Sessions.TryRemove(ConnectionID, out _);
         }
     }
 }

@@ -5,52 +5,15 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Collections.Concurrent;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Remotely.Agent.Services
 {
     public class Bash
     {
-        private static ConcurrentDictionary<string, Bash> Sessions { get; set; } = new ConcurrentDictionary<string, Bash>();
-        private Process BashProc { get; }
-        private System.Timers.Timer ProcessIdleTimeout { get; set; }
-        private string ConnectionID { get; set; }
-        private string LastInputID { get; set; }
-        private bool OutputDone { get; set; }
-        private string StandardOut { get; set; }
-        private string ErrorOut { get; set; }
-
-        public static Bash GetCurrent(string connectionID)
+        public Bash(ConfigService configService)
         {
-            if (Sessions.ContainsKey(connectionID))
-            {
-                var bash = Sessions[connectionID];
-                bash.ProcessIdleTimeout.Stop();
-                bash.ProcessIdleTimeout.Start();
-                return bash;
-            }
-            else
-            {
-                var bash = new Bash();
-                bash.ConnectionID = connectionID;
-                bash.ProcessIdleTimeout = new System.Timers.Timer(600000); // 10 minutes.
-                bash.ProcessIdleTimeout.AutoReset = false;
-                bash.ProcessIdleTimeout.Elapsed += bash.ProcessIdleTimeout_Elapsed;
-                Sessions.AddOrUpdate(connectionID, bash, (id, b) => bash);
-                bash.ProcessIdleTimeout.Start();
-                return bash;
-            }
-        }
-
-        private void ProcessIdleTimeout_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            Sessions.Remove(ConnectionID, out var outResult);
-            outResult.BashProc.Kill();
-        }
-
-
-
-        private Bash()
-        {
+            ConfigService = configService;
             var psi = new ProcessStartInfo("bash");
             psi.WindowStyle = ProcessWindowStyle.Hidden;
             psi.Verb = "RunAs";
@@ -68,26 +31,37 @@ namespace Remotely.Agent.Services
 
             BashProc.BeginErrorReadLine();
             BashProc.BeginOutputReadLine();
+
+            ProcessIdleTimeout = new System.Timers.Timer(600_000); // 10 minutes.
+            ProcessIdleTimeout.AutoReset = false;
+            ProcessIdleTimeout.Elapsed += ProcessIdleTimeout_Elapsed;
+            ProcessIdleTimeout.Start();
         }
 
-        private void CMDProc_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        private static ConcurrentDictionary<string, Bash> Sessions { get; set; } = new ConcurrentDictionary<string, Bash>();
+        private Process BashProc { get; }
+        private ConfigService ConfigService { get; set; }
+        private string ConnectionID { get; set; }
+        private string ErrorOut { get; set; }
+        private string LastInputID { get; set; }
+        private bool OutputDone { get; set; }
+        private System.Timers.Timer ProcessIdleTimeout { get; set; }
+        private string StandardOut { get; set; }
+        public static Bash GetCurrent(string connectionID)
         {
-            if (e?.Data?.Contains(LastInputID) == true)
+            if (Sessions.ContainsKey(connectionID))
             {
-                OutputDone = true;
+                var bash = Sessions[connectionID];
+                bash.ProcessIdleTimeout.Stop();
+                bash.ProcessIdleTimeout.Start();
+                return bash;
             }
-            else if (!OutputDone)
+            else
             {
-                StandardOut += e.Data + Environment.NewLine;
-            }
-
-        }
-
-        private void CMDProc_ErrorDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            if (e?.Data != null)
-            {
-                ErrorOut += e.Data + Environment.NewLine;
+                var bash = Program.Services.GetRequiredService<Bash>();
+                bash.ConnectionID = connectionID;
+                Sessions.AddOrUpdate(connectionID, bash, (id, b) => bash);
+                return bash;
             }
         }
 
@@ -114,21 +88,25 @@ namespace Remotely.Agent.Services
             return GenerateCompletedResult();
         }
 
-        private GenericCommandResult GeneratePartialResult()
+        private void CMDProc_ErrorDataReceived(object sender, DataReceivedEventArgs e)
         {
-            OutputDone = true;
-            var partialResult =  new GenericCommandResult()
+            if (e?.Data != null)
             {
-                CommandContextID = LastInputID,
-                DeviceID = ConfigService.GetConnectionInfo().DeviceID,
-                CommandType = "Bash",
-                StandardOutput = StandardOut,
-                ErrorOutput = "WARNING: The command execution froze and was forced to return before finishing.  " +
-                    "The results may be partial, and the console process has been reset.  "  +
-                    "Please note that interactive commands aren't supported." + Environment.NewLine + ErrorOut
-            };
-            ProcessIdleTimeout_Elapsed(this, null);
-            return partialResult;
+                ErrorOut += e.Data + Environment.NewLine;
+            }
+        }
+
+        private void CMDProc_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e?.Data?.Contains(LastInputID) == true)
+            {
+                OutputDone = true;
+            }
+            else if (!OutputDone)
+            {
+                StandardOut += e.Data + Environment.NewLine;
+            }
+
         }
 
         private GenericCommandResult GenerateCompletedResult()
@@ -143,5 +121,27 @@ namespace Remotely.Agent.Services
             };
         }
 
+        private GenericCommandResult GeneratePartialResult()
+        {
+            OutputDone = true;
+            var partialResult = new GenericCommandResult()
+            {
+                CommandContextID = LastInputID,
+                DeviceID = ConfigService.GetConnectionInfo().DeviceID,
+                CommandType = "Bash",
+                StandardOutput = StandardOut,
+                ErrorOutput = "WARNING: The command execution froze and was forced to return before finishing.  " +
+                    "The results may be partial, and the console process has been reset.  " +
+                    "Please note that interactive commands aren't supported." + Environment.NewLine + ErrorOut
+            };
+            ProcessIdleTimeout_Elapsed(this, null);
+            return partialResult;
+        }
+
+        private void ProcessIdleTimeout_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            BashProc?.Kill();
+            Sessions.TryRemove(ConnectionID, out _);
+        }
     }
 }

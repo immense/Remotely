@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Remotely.Agent.Services
 {
-    public static class Logger
+    public class Logger
     {
         private static string LogPath => Path.Combine(Path.GetTempPath(), "Remotely_Logs.log");
         private static object WriteLock { get; } = new object();

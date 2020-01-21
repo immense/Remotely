@@ -11,7 +11,7 @@ namespace Remotely.Agent.Services
 {
     public class Uninstaller
     {
-        public static void UninstallAgent()
+        public void UninstallAgent()
         {
             if (OSUtils.IsWindows)
             {
