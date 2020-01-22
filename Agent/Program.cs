@@ -55,6 +55,9 @@ namespace Remotely.Agent
             serviceCollection.AddScoped<Logger>();
             serviceCollection.AddScoped<Updater>();
             serviceCollection.AddScoped<Uninstaller>();
+            serviceCollection.AddScoped<ScriptRunner>();
+            serviceCollection.AddScoped<CommandExecutor>();
+            serviceCollection.AddScoped<AppLauncher>();
 
             Services = serviceCollection.BuildServiceProvider();
         }
