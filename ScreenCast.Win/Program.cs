@@ -20,7 +20,7 @@ namespace Remotely.ScreenCast.Win
 	{
         public static Conductor Conductor { get; private set; }
         public static CursorIconWatcher CursorIconWatcher { get; private set; }
-        public static ServiceProvider Services { get; private set; }
+        public static IServiceProvider Services => ServiceContainer.Instance;
 
         private static string CurrentDesktopName { get; set;
         }
@@ -65,8 +65,7 @@ namespace Remotely.ScreenCast.Win
                         Logger.Write("Failed to get initial desktop name.");
                     }
                     await CheckForRelaunch();
-                    Conductor.IdleTimer = new IdleTimer(Conductor.Viewers);
-                    Conductor.IdleTimer.Start();
+                    Services.GetRequiredService<IdleTimer>().Start();
                     CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
                     Services.GetRequiredService<IClipboardService>().BeginWatching();
                 });
@@ -88,16 +87,26 @@ namespace Remotely.ScreenCast.Win
                 builder.AddConsole().AddEventLog();
             });
 
-            serviceCollection.AddSingleton<Conductor>();
             serviceCollection.AddSingleton<CursorIconWatcher>();
-            serviceCollection.AddScoped<IScreenCaster, WinScreenCaster>();
-            serviceCollection.AddScoped<IKeyboardMouseInput, WinInput>();
-            serviceCollection.AddScoped<IClipboardService, WinClipboardService>();
-            serviceCollection.AddScoped<IAudioCapturer, WinAudioCapturer>();
+            serviceCollection.AddSingleton<IScreenCaster, WinScreenCaster>();
+            serviceCollection.AddSingleton<IKeyboardMouseInput, WinInput>();
+            serviceCollection.AddSingleton<IClipboardService, WinClipboardService>();
+            serviceCollection.AddSingleton<IAudioCapturer, WinAudioCapturer>();
             serviceCollection.AddSingleton<CasterSocket>();
+            serviceCollection.AddSingleton<IdleTimer>();
             serviceCollection.AddSingleton<Conductor>();
+            serviceCollection.AddTransient<ICapturer>(provider => {
+                try
+                {
+                    return new DXCapture();
+                }
+                catch
+                {
+                    return new BitBltCapture();
+                }
+            });
 
-            Services = serviceCollection.BuildServiceProvider();
+            ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
         }
 
         private static async Task CheckForRelaunch()

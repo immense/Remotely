@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using Microsoft.Extensions.DependencyInjection;
 using NAudio.Wave;
 using Remotely.ScreenCast.Core;
 using Remotely.ScreenCast.Core.Interfaces;
@@ -54,7 +55,8 @@ namespace Remotely.ScreenCast.Win.Services
                     {
                         WaveFileWriter.WriteWavFileToStream(ms3, resampler);
                     }
-                    await Conductor.Current.CasterSocket.SendAudioSample(ms3.ToArray(), Program.Conductor.Viewers.Keys.ToList());
+                    var conductor = ServiceContainer.Instance.GetRequiredService<Conductor>();
+                    await conductor.CasterSocket.SendAudioSample(ms3.ToArray(), Program.Conductor.Viewers.Keys.ToList());
                 }
             }
         }

@@ -12,6 +12,7 @@ using Remotely.ScreenCast.Core.Models;
 using Remotely.Shared.Models;
 using Remotely.ScreenCast.Win.Capture;
 using Remotely.Shared.Win32;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Remotely.ScreenCast.Win.Services
 {
@@ -35,32 +36,11 @@ namespace Remotely.ScreenCast.Win.Services
             {
                 Logger.Write("Failed to get current desktop before screen casting.");
             }
-        
-            await Conductor.Current.CasterSocket.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
-            _ = BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, GetCapturer());
+
+            var conductor = ServiceContainer.Instance.GetRequiredService<Conductor>();
+            await conductor.CasterSocket.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
+            _ = BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, ServiceContainer.Instance.GetRequiredService<ICapturer>());
         }
 
-        private static ICapturer GetCapturer()
-        {
-            ICapturer capturer;
-            try
-            {
-                if (Conductor.Current.Viewers.Count == 0)
-                {
-                    capturer = new DXCapture();
-                }
-                else
-                {
-                    capturer = new BitBltCapture();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
-                capturer = new BitBltCapture();
-            }
-
-            return capturer;
-        }
     }
 }

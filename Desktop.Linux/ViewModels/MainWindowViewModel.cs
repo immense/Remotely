@@ -25,6 +25,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Remotely.Desktop.Linux.ViewModels
 {
@@ -42,9 +44,10 @@ namespace Remotely.Desktop.Linux.ViewModels
             {
                 return;
             }
-            var screenCaster = new LinuxScreenCaster();
-            var casterSocket = new CasterSocket(new X11Input(), screenCaster, new LinuxAudioCapturer(), new LinuxClipboardService());
-            Conductor = new Conductor(casterSocket, screenCaster);
+
+            BuildServices();
+
+            Conductor = Services.GetRequiredService<Conductor>();
 
             Conductor.SessionIDChanged += SessionIDChanged;
             Conductor.ViewerRemoved += ViewerRemoved;
@@ -52,7 +55,10 @@ namespace Remotely.Desktop.Linux.ViewModels
             Conductor.ScreenCastRequested += ScreenCastRequested;
         }
 
+
         public static MainWindowViewModel Current { get; private set; }
+
+        public static IServiceProvider Services => ServiceContainer.Instance;
 
         public ICommand ChangeServerCommand => new Executor(async (param) =>
         {
@@ -105,6 +111,14 @@ namespace Remotely.Desktop.Linux.ViewModels
             (param as Window).WindowState = WindowState.Minimized;
         });
 
+        public ICommand OpenOptionsMenu => new Executor((param) =>
+        {
+            if (param is Button)
+            {
+                (param as Button).ContextMenu?.Open(param as Button);
+            }
+        });
+
         public ICommand RemoveViewerCommand => new Executor(async (param) =>
         {
             var viewerList = param as AvaloniaList<object> ?? new AvaloniaList<object>();
@@ -149,14 +163,6 @@ namespace Remotely.Desktop.Linux.ViewModels
             await Conductor.CasterSocket.GetSessionID();
         }
 
-        public ICommand OpenOptionsMenu => new Executor((param) =>
-        {
-            if (param is Button)
-            {
-                (param as Button).ContextMenu?.Open(param as Button);
-            }
-        });
-
         public async Task PromptForHostName()
         {
             var prompt = new HostNamePrompt();
@@ -180,7 +186,26 @@ namespace Remotely.Desktop.Linux.ViewModels
             }
         }
 
-       
+        private static void BuildServices()
+        {
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddLogging(builder =>
+            {
+                builder.AddConsole().AddEventLog();
+            });
+
+            serviceCollection.AddSingleton<IScreenCaster, LinuxScreenCaster>();
+            serviceCollection.AddSingleton<IKeyboardMouseInput, X11Input>();
+            serviceCollection.AddSingleton<IClipboardService, LinuxClipboardService>();
+            serviceCollection.AddSingleton<IAudioCapturer, LinuxAudioCapturer>();
+            serviceCollection.AddSingleton<CasterSocket>();
+            serviceCollection.AddSingleton<IdleTimer>();
+            serviceCollection.AddSingleton<Conductor>();
+            serviceCollection.AddTransient<ICapturer, X11Capture>();
+
+
+            ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
+        }
         private void ScreenCastRequested(object sender, ScreenCastRequest screenCastRequest)
         {
             Dispatcher.UIThread.InvokeAsync(async () =>
@@ -191,7 +216,7 @@ namespace Remotely.Desktop.Linux.ViewModels
                     _ = Task.Run(async () =>
                     {
                         await Conductor.CasterSocket.SendCursorChange(new CursorInfo(null, Point.Empty, "default"), new List<string>() { screenCastRequest.ViewerID });
-                            _ = Conductor.ScreenCaster.BeginScreenCasting(screenCastRequest);
+                            _ = Services.GetRequiredService<IScreenCaster>().BeginScreenCasting(screenCastRequest);
                     });
                 }
             });

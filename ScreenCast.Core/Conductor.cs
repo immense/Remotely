@@ -13,15 +13,10 @@ namespace Remotely.ScreenCast.Core
 {
     public class Conductor
     {
-        public static Conductor Current { get; private set; }
-        public IScreenCaster ScreenCaster { get; }
         public bool IsDebug { get; }
 
-        public Conductor(CasterSocket casterSocket,
-            IScreenCaster screenCaster)
+        public Conductor(CasterSocket casterSocket)
         {
-            Current = this;
-            ScreenCaster = screenCaster;
             CasterSocket = casterSocket;
 #if DEBUG
             IsDebug = true;
@@ -38,7 +33,6 @@ namespace Remotely.ScreenCast.Core
         public CasterSocket CasterSocket { get; private set; }
         public string DeviceID { get; private set; }
         public string Host { get; private set; }
-        public IdleTimer IdleTimer { get; set; }
         public AppMode Mode { get; private set; }
         public string RequesterID { get; private set; }
         public string ServiceID { get; private set; }
