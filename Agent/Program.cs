@@ -43,8 +43,7 @@ namespace Remotely.Agent
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddLogging(builder =>
             {
-                builder.AddConsole()
-                    .AddEventLog();
+                builder.AddConsole().AddEventLog();
             });
             serviceCollection.AddSingleton<DeviceSocket>();
             serviceCollection.AddScoped<Bash>();
@@ -60,6 +59,42 @@ namespace Remotely.Agent
             serviceCollection.AddScoped<AppLauncher>();
 
             Services = serviceCollection.BuildServiceProvider();
+        }
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Logger.Write(e.ExceptionObject as Exception);
+            if (OSUtils.IsWindows)
+            {
+                // Remove Secure Attention Sequence policy to allow app to simulate Ctrl + Alt + Del.
+                var subkey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", true);
+                if (subkey.GetValue("SoftwareSASGeneration") != null)
+                {
+                    subkey.DeleteValue("SoftwareSASGeneration");
+                }
+            }
+        }
+
+        private static async Task HandleConnection()
+        {
+            while (true)
+            {
+                try
+                {
+                    if (!Services.GetRequiredService<DeviceSocket>().IsConnected)
+                    {
+                        var waitTime = new Random().Next(1000, 30000);
+                        Logger.Write($"Websocket closed.  Reconnecting in {waitTime / 1000} seconds...");
+                        await Task.Delay(waitTime);
+                        await Services.GetRequiredService<DeviceSocket>().Connect();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
+                Thread.Sleep(1000);
+            }
         }
 
         private static async void Init(string[] args)
@@ -93,42 +128,6 @@ namespace Remotely.Agent
             finally
             {
                 await HandleConnection();
-            }
-        }
-
-        private static async Task HandleConnection()
-        {
-            while (true)
-            {
-                try
-                {
-                    if (!Services.GetRequiredService<DeviceSocket>().IsConnected)
-                    {
-                        var waitTime = new Random().Next(1000, 30000);
-                        Logger.Write($"Websocket closed.  Reconnecting in {waitTime / 1000} seconds...");
-                        await Task.Delay(waitTime);
-                        await Services.GetRequiredService<DeviceSocket>().Connect();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.Write(ex);
-                }
-                Thread.Sleep(1000);
-            }
-        }
-
-        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            Logger.Write(e.ExceptionObject as Exception);
-            if (OSUtils.IsWindows)
-            {
-                // Remove Secure Attention Sequence policy to allow app to simulate Ctrl + Alt + Del.
-                var subkey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", true);
-                if (subkey.GetValue("SoftwareSASGeneration") != null)
-                {
-                    subkey.DeleteValue("SoftwareSASGeneration");
-                }
             }
         }
         private static Dictionary<string,string> ProcessArgs(string[] args)

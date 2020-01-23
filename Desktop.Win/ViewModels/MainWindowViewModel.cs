@@ -30,7 +30,7 @@ namespace Remotely.Desktop.Win.ViewModels
         {
             Current = this;
 
-            CursorIconWatcher = new CursorIconWatcher(Conductor);
+            CursorIconWatcher = new CursorIconWatcher();
             CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
 
             var screenCaster = new WinScreenCaster(CursorIconWatcher);

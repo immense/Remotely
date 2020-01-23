@@ -3,8 +3,6 @@ using Remotely.ScreenCast.Core.Models;
 using System;
 using Remotely.Shared.Win32;
 using static Remotely.Shared.Win32.User32;
-using Remotely.ScreenCast.Core.Capture;
-using Remotely.ScreenCast.Core.Interfaces;
 using System.Windows.Forms;
 
 namespace Remotely.ScreenCast.Win.Services

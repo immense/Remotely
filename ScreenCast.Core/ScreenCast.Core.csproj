@@ -34,6 +34,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="3.1.1" />
     <PackageReference Include="Microsoft.MixedReality.WebRTC" Version="1.0.2" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
