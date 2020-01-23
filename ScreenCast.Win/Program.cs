@@ -11,6 +11,8 @@ using Remotely.ScreenCast.Win.Services;
 using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Win.Capture;
 using Remotely.ScreenCast.Core.Communication;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Remotely.ScreenCast.Win
 {
@@ -18,6 +20,7 @@ namespace Remotely.ScreenCast.Win
 	{
         public static Conductor Conductor { get; private set; }
         public static CursorIconWatcher CursorIconWatcher { get; private set; }
+        public static ServiceProvider Services { get; private set; }
 
         private static string CurrentDesktopName { get; set;
         }
@@ -34,11 +37,12 @@ namespace Remotely.ScreenCast.Win
             try
             {
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-                CursorIconWatcher = new CursorIconWatcher(Conductor);
-                var screenCaster = new WinScreenCaster(CursorIconWatcher);
-                var clipboardService = new WinClipboardService();
-                var casterSocket = new CasterSocket(new WinInput(), screenCaster, new WinAudioCapturer(), clipboardService);
-                Conductor = new Conductor(casterSocket, screenCaster);
+
+                BuildServices();
+
+                CursorIconWatcher = Services.GetRequiredService<CursorIconWatcher>();
+
+                Conductor = Services.GetRequiredService<Conductor>();
                 Conductor.ProcessArgs(args);
 
                 Conductor.Connect().ContinueWith(async (task) =>
@@ -64,7 +68,7 @@ namespace Remotely.ScreenCast.Win
                     Conductor.IdleTimer = new IdleTimer(Conductor.Viewers);
                     Conductor.IdleTimer.Start();
                     CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
-                    clipboardService.BeginWatching();
+                    Services.GetRequiredService<IClipboardService>().BeginWatching();
                 });
                
                 Thread.Sleep(Timeout.Infinite);
@@ -74,6 +78,26 @@ namespace Remotely.ScreenCast.Win
                 Logger.Write(ex);
                 throw;
             }
+        }
+
+        private static void BuildServices()
+        {
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddLogging(builder =>
+            {
+                builder.AddConsole().AddEventLog();
+            });
+
+            serviceCollection.AddSingleton<Conductor>();
+            serviceCollection.AddSingleton<CursorIconWatcher>();
+            serviceCollection.AddScoped<IScreenCaster, WinScreenCaster>();
+            serviceCollection.AddScoped<IKeyboardMouseInput, WinInput>();
+            serviceCollection.AddScoped<IClipboardService, WinClipboardService>();
+            serviceCollection.AddScoped<IAudioCapturer, WinAudioCapturer>();
+            serviceCollection.AddSingleton<CasterSocket>();
+            serviceCollection.AddSingleton<Conductor>();
+
+            Services = serviceCollection.BuildServiceProvider();
         }
 
         private static async Task CheckForRelaunch()

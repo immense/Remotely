@@ -102,7 +102,7 @@ namespace Remotely.Server
 
 
             var trustedOrigins = Configuration.GetSection("ApplicationOptions:TrustedCorsOrigins").Get<string[]>();
-
+            
             if (trustedOrigins != null)
             {
                 services.AddCors(options =>

@@ -21,9 +21,8 @@ namespace Remotely.ScreenCast.Win.Services
     /// </summary>
     public class CursorIconWatcher
     {
-        public CursorIconWatcher(Conductor conductor)
+        public CursorIconWatcher()
         {
-            Conductor = conductor;
             ChangeTimer = new System.Timers.Timer(25);
             ChangeTimer.Elapsed += ChangeTimer_Elapsed;
             ChangeTimer.Start();
@@ -31,7 +30,6 @@ namespace Remotely.ScreenCast.Win.Services
         public event EventHandler<CursorInfo> OnChange;
         private System.Timers.Timer ChangeTimer { get; set; }
         private string PreviousCursorHandle { get; set; }
-        public Conductor Conductor { get; }
 
         private User32.CursorInfo cursorInfo;
 
