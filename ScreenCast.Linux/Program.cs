@@ -5,28 +5,33 @@ using System.Threading;
 using Remotely.ScreenCast.Linux.Services;
 using Remotely.ScreenCast.Linux.Capture;
 using Remotely.ScreenCast.Core.Communication;
+using Remotely.ScreenCast.Core.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Remotely.ScreenCast.Linux
 {
     public class Program
     {
         public static Conductor Conductor { get; private set; }
+        public static IServiceProvider Services => ServiceContainer.Instance;
+
         public static void Main(string[] args)
         {
             try
             {
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-                var screenCaster = new LinuxScreenCaster();
-                var casterSocket = new CasterSocket(new X11Input(), screenCaster, new LinuxAudioCapturer(), new LinuxClipboardService());
-                Conductor = new Conductor(casterSocket, screenCaster);
+
+                BuildServices();
+
+                Conductor = Services.GetRequiredService<Conductor>();
 
                 Conductor.ProcessArgs(args);
                 Conductor.Connect().ContinueWith(async (task) =>
                 {
                     await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
                     await Conductor.CasterSocket.NotifyRequesterUnattendedReady(Conductor.RequesterID);
-                    Conductor.IdleTimer = new IdleTimer(Conductor.Viewers);
-                    Conductor.IdleTimer.Start();
+                    Services.GetRequiredService<IdleTimer>().Start();
                 });
 
                 Thread.Sleep(Timeout.Infinite);
@@ -36,6 +41,26 @@ namespace Remotely.ScreenCast.Linux
                 Logger.Write(ex);
                 throw;
             }
+        }
+
+        private static void BuildServices()
+        {
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddLogging(builder =>
+            {
+                builder.AddConsole().AddEventLog();
+            });
+
+            serviceCollection.AddSingleton<IScreenCaster, LinuxScreenCaster>();
+            serviceCollection.AddSingleton<IKeyboardMouseInput, X11Input>();
+            serviceCollection.AddSingleton<IClipboardService, LinuxClipboardService>();
+            serviceCollection.AddSingleton<IAudioCapturer, LinuxAudioCapturer>();
+            serviceCollection.AddSingleton<CasterSocket>();
+            serviceCollection.AddSingleton<IdleTimer>();
+            serviceCollection.AddSingleton<Conductor>();
+            serviceCollection.AddTransient<ICapturer, X11Capture>();
+
+            ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
         }
 
 

@@ -143,7 +143,7 @@ namespace Remotely.ScreenCast.Core.Communication
         }
         private void ApplyConnectionHandlers()
         {
-            var conductor = Conductor.Current;
+            var conductor = ServiceContainer.Instance.GetRequiredService<Conductor>();
             Connection.Closed += (ex) =>
             {
                 Logger.Write($"Connection closed.  Error: {ex?.Message}");
@@ -432,7 +432,8 @@ namespace Remotely.ScreenCast.Core.Communication
 
         private async void ClipboardService_ClipboardTextChanged(object sender, string clipboardText)
         {
-            var viewerIDs = Conductor.Current.Viewers.Keys.ToList();
+            var conductor = ServiceContainer.Instance.GetRequiredService<Conductor>();
+            var viewerIDs = conductor.Viewers.Keys.ToList();
             if (viewerIDs.Any())
             {
                 await SendClipboardText(clipboardText, viewerIDs);

@@ -16,6 +16,7 @@ using Remotely.ScreenCast.Core.Interfaces;
 using System.Diagnostics;
 using System.Threading;
 using System.Drawing.Imaging;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Remotely.ScreenCast.Core.Capture
 {
@@ -25,9 +26,10 @@ namespace Remotely.ScreenCast.Core.Capture
                                                    string requesterName,
                                                    ICapturer capturer)
         {
-            var viewers = Conductor.Current.Viewers;
-            var mode = Conductor.Current.Mode;
-            var casterSocket = Conductor.Current.CasterSocket;
+            var conductor = ServiceContainer.Instance.GetRequiredService<Conductor>();
+            var viewers = conductor.Viewers;
+            var mode = conductor.Mode;
+            var casterSocket = ServiceContainer.Instance.GetRequiredService<CasterSocket>();
 
             Logger.Write($"Starting screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}. Capturer: {capturer.GetType().ToString()}.  App Mode: {mode}");
 
@@ -47,7 +49,7 @@ namespace Remotely.ScreenCast.Core.Capture
 
             if (mode == Enums.AppMode.Normal)
             {
-                Conductor.Current.InvokeViewerAdded(viewer);
+                conductor.InvokeViewerAdded(viewer);
             }
 
             if (OSUtils.IsWindows)
@@ -79,7 +81,7 @@ namespace Remotely.ScreenCast.Core.Capture
                         break;
                     }
 
-                    if (Conductor.Current.IsDebug)
+                    if (conductor.IsDebug)
                     {
                         while (fpsQueue.Any() && DateTime.Now - fpsQueue.Peek() > TimeSpan.FromSeconds(1))
                         {

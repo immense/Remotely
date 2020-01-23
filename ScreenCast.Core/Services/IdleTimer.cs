@@ -9,9 +9,9 @@ namespace Remotely.ScreenCast.Core.Services
 {
     public class IdleTimer
     {
-        public IdleTimer(ConcurrentDictionary<string, Viewer> viewerList)
+        public IdleTimer(Conductor conductor)
         {
-            ViewerList = viewerList;
+            ViewerList = conductor.Viewers;
             Timer.Elapsed += Timer_Elapsed;
         }
 

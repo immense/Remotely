@@ -1,4 +1,5 @@
-﻿using Remotely.ScreenCast.Core;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Remotely.ScreenCast.Core;
 using Remotely.ScreenCast.Core.Capture;
 using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Services;
@@ -18,8 +19,9 @@ namespace Remotely.ScreenCast.Linux.Services
         {
             try
             {
-                await Conductor.Current.CasterSocket.SendCursorChange(new CursorInfo(null, Point.Empty, "default"), new List<string>() { screenCastRequest.ViewerID });
-                _ = BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, new X11Capture());
+                var conductor = ServiceContainer.Instance.GetRequiredService<Conductor>();
+                await conductor.CasterSocket.SendCursorChange(new CursorInfo(null, Point.Empty, "default"), new List<string>() { screenCastRequest.ViewerID });
+                _ = BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, ServiceContainer.Instance.GetRequiredService<ICapturer>());
             }
             catch (Exception ex)
             {
