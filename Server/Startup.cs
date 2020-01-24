@@ -169,11 +169,11 @@ namespace Remotely.Server
             else
             {
                 app.UseExceptionHandler("/Error");
-                if (bool.Parse(Configuration["ApplicationOptions:UseHSTS"]))
+                if (bool.Parse(Configuration["ApplicationOptions:UseHsts"]))
                 {
                     app.UseHsts();
                 }
-                if (bool.Parse(Configuration["ApplicationOptions:RedirectToHTTPS"]))
+                if (bool.Parse(Configuration["ApplicationOptions:RedirectToHttps"]))
                 {
                     app.UseHttpsRedirection();
                 }

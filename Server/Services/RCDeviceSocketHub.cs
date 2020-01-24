@@ -182,7 +182,10 @@ namespace Remotely.Server.Services
 
         public async Task SendRtcOfferToBrowser(string sdp, string viewerID)
         {
-            await RCBrowserHub.Clients.Client(viewerID).SendAsync("ReceiveRtcOffer", sdp);
+            if (AppConfig.UseWebRtc)
+            {
+                await RCBrowserHub.Clients.Client(viewerID).SendAsync("ReceiveRtcOffer", sdp);
+            }
         }
         public async Task SendIceCandidateToBrowser(string candidate, int sdpMlineIndex, string sdpMid, string viewerID)
         {
