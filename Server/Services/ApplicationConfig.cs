@@ -22,7 +22,7 @@ namespace Remotely.Server.Services
         public string[] KnownProxies => Config.GetSection("ApplicationOptions:KnownProxies").Get<string[]>();
         public int MaxOrganizationCount => int.Parse(Config["ApplicationOptions:MaxOrganizationCount"]);
         public bool RecordRemoteControlSessions => bool.Parse(Config["ApplicationOptions:RecordRemoteControlSessions"]);
-        public bool RedirectToHTTPS => bool.Parse(Config["ApplicationOptions:RedirectToHTTPS"]);
+        public bool RedirectToHttps => bool.Parse(Config["ApplicationOptions:RedirectToHttps"]);
         public bool RemoteControlRequiresAuthentication => bool.Parse(Config["ApplicationOptions:RemoteControlRequiresAuthentication"]);
         public double RemoteControlSessionLimit => double.Parse(Config["ApplicationOptions:RemoteControlSessionLimit"]);
         public string SmtpDisplayName => Config["ApplicationOptions:SmtpDisplayName"];
@@ -34,7 +34,8 @@ namespace Remotely.Server.Services
         public string SmtpUserName => Config["ApplicationOptions:SmtpUserName"];
         public string Theme => Config["ApplicationOptions:Theme"];
         public string[] TrustedCorsOrigins => Config.GetSection("ApplicationOptions:TrustedCorsOrigins").Get<string[]>();
-        public bool UseHSTS => bool.Parse(Config["ApplicationOptions:RedirectToHTTPS"]);
+        public bool UseHsts => bool.Parse(Config["ApplicationOptions:UseHsts"]);
+        public bool UseWebRtc => bool.Parse(Config["ApplicationOptions:UseWebRtc"]);
         private IConfiguration Config { get; set; }
     }
 }
