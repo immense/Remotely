@@ -7,6 +7,15 @@ import * as DataGrid from "../DataGrid.js";
 import { AddConsoleHTML, AddConsoleOutput, AddTransferHarness } from "../Console.js";
 import { GetSelectedDevices } from "../DataGrid.js";
 var commands = [
+    new ConsoleCommand("Chat", [], "Start a chat session with the selected device.", "chat -message Hey, this is your IT guy.", "", (parameters, paramaterDict) => {
+        var selectedDevices = Main.DataGrid.GetSelectedDevices();
+        if (selectedDevices.length == 0) {
+            AddConsoleOutput("You must select a device first.");
+            return;
+        }
+        AddConsoleOutput("Sending chat message...");
+        BrowserSockets.Connection.invoke("Chat", paramaterDict["message"], selectedDevices.map(x => x.ID));
+    }),
     new ConsoleCommand("DeployScript", [
         new Parameter("pscore", "Indicates that script should be run with PowerShell Core.", "Switch"),
         new Parameter("winps", "Indicates that script should be run with Windows PowerShell.", "Switch"),

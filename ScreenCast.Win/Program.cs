@@ -40,37 +40,18 @@ namespace Remotely.ScreenCast.Win
 
                 BuildServices();
 
-                CursorIconWatcher = Services.GetRequiredService<CursorIconWatcher>();
-
                 Conductor = Services.GetRequiredService<Conductor>();
                 Conductor.ProcessArgs(args);
 
-                Conductor.Connect().ContinueWith(async (task) =>
+                if (Conductor.Mode == Core.Enums.AppMode.Chat)
                 {
-                    await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
-                    if (Win32Interop.GetCurrentDesktop(out var currentDesktopName))
-                    {
-                        Logger.Write($"Setting initial desktop to {currentDesktopName}.");
-                        if (Win32Interop.SwitchToInputDesktop())
-                        {
-                            CurrentDesktopName = currentDesktopName;
-                        }
-                        else
-                        {
-                            Logger.Write("Failed to set initial desktop.");
-                        }
-                    }
-                    else
-                    {
-                        Logger.Write("Failed to get initial desktop name.");
-                    }
-                    await CheckForRelaunch();
-                    Services.GetRequiredService<IdleTimer>().Start();
-                    CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
-                    Services.GetRequiredService<IClipboardService>().BeginWatching();
-                });
-               
-                Thread.Sleep(Timeout.Infinite);
+                    Services.GetRequiredService<ChatService>().StartChat().Wait();
+                }
+                else
+                {
+                    StartScreenCasting();
+                }
+
             }
             catch (Exception ex)
             {
@@ -95,7 +76,9 @@ namespace Remotely.ScreenCast.Win
             serviceCollection.AddSingleton<CasterSocket>();
             serviceCollection.AddSingleton<IdleTimer>();
             serviceCollection.AddSingleton<Conductor>();
-            serviceCollection.AddTransient<ICapturer>(provider => {
+            serviceCollection.AddSingleton<ChatService>();
+            serviceCollection.AddTransient<ICapturer>(provider =>
+            {
                 try
                 {
                     return new DXCapture();
@@ -130,5 +113,36 @@ namespace Remotely.ScreenCast.Win
             Logger.Write((Exception)e.ExceptionObject);
         }
 
+        private static void StartScreenCasting()
+        {
+            CursorIconWatcher = Services.GetRequiredService<CursorIconWatcher>();
+
+            Conductor.Connect().ContinueWith(async (task) =>
+            {
+                await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
+                if (Win32Interop.GetCurrentDesktop(out var currentDesktopName))
+                {
+                    Logger.Write($"Setting initial desktop to {currentDesktopName}.");
+                    if (Win32Interop.SwitchToInputDesktop())
+                    {
+                        CurrentDesktopName = currentDesktopName;
+                    }
+                    else
+                    {
+                        Logger.Write("Failed to set initial desktop.");
+                    }
+                }
+                else
+                {
+                    Logger.Write("Failed to get initial desktop name.");
+                }
+                await CheckForRelaunch();
+                Services.GetRequiredService<IdleTimer>().Start();
+                CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
+                Services.GetRequiredService<IClipboardService>().BeginWatching();
+            });
+
+            Thread.Sleep(Timeout.Infinite);
+        }
     }
 }
