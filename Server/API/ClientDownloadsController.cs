@@ -28,9 +28,20 @@ namespace Remotely.Server.API
         
         [Authorize]
         [HttpGet("{platformID}")]
-        public ActionResult Get(string platformID)
+        public async Task<ActionResult> Get(string platformID)
         {
             var user = DataService.GetUserByName(User.Identity.Name);
+            return await GetInstallFile(user.OrganizationID, platformID);
+        }
+
+        [HttpGet("{organizationID}/{platformID}")]
+        public async Task<ActionResult> Get(string organizationID, string platformID)
+        {
+            return await GetInstallFile(organizationID, platformID);
+        }
+
+        private async Task<ActionResult> GetInstallFile(string organizationID, string platformID)
+        {
             var fileContents = new List<string>();
             string fileName;
             byte[] fileBytes;
@@ -41,32 +52,32 @@ namespace Remotely.Server.API
                     {
                         fileName = $"Install-{platformID}.ps1";
 
-                        fileContents.AddRange(System.IO.File.ReadAllLines(Path.Combine(HostEnv.WebRootPath, "Downloads", $"{fileName}")));
+                        fileContents.AddRange(await System.IO.File.ReadAllLinesAsync(Path.Combine(HostEnv.WebRootPath, "Downloads", $"{fileName}")));
 
                         var hostIndex = fileContents.IndexOf("[string]$HostName = $null");
                         var orgIndex = fileContents.IndexOf("[string]$Organization = $null");
 
                         fileContents[hostIndex] = $"[string]$HostName = \"{Request.Scheme}://{Request.Host}\"";
-                        fileContents[orgIndex] = $"[string]$Organization = \"{user.Organization.ID}\"";
+                        fileContents[orgIndex] = $"[string]$Organization = \"{organizationID}\"";
                         fileBytes = System.Text.Encoding.UTF8.GetBytes(string.Join(Environment.NewLine, fileContents));
                         break;
                     }
-                   
+
                 case "Linux-x64":
                     {
                         fileName = "Install-Linux-x64.sh";
 
-                        fileContents.AddRange(System.IO.File.ReadAllLines(Path.Combine(HostEnv.WebRootPath, "Downloads", $"{fileName}")));
+                        fileContents.AddRange(await System.IO.File.ReadAllLinesAsync(Path.Combine(HostEnv.WebRootPath, "Downloads", $"{fileName}")));
 
                         var hostIndex = fileContents.IndexOf("HostName=");
                         var orgIndex = fileContents.IndexOf("Organization=");
 
                         fileContents[hostIndex] = $"HostName=\"{Request.Scheme}://{Request.Host}\"";
-                        fileContents[orgIndex] = $"Organization=\"{user.Organization.ID}\"";
+                        fileContents[orgIndex] = $"Organization=\"{organizationID}\"";
                         fileBytes = System.Text.Encoding.UTF8.GetBytes(string.Join("\n", fileContents));
                         break;
                     }
-                    
+
                 default:
                     return BadRequest();
             }

@@ -129,6 +129,7 @@ namespace Remotely.Server.Services
             RemotelyContext.SaveChanges();
             return true;
         }
+
         public string AddSharedFile(IFormFile file, string organizationID)
         {
             var expirationDate = DateTime.Now.AddDays(-AppConfig.DataRetentionInDays);
@@ -209,6 +210,7 @@ namespace Remotely.Server.Services
             RemotelyContext.DeviceGroups.Remove(deviceGroup);
             RemotelyContext.SaveChanges();
         }
+
         public void DeleteInvite(string requesterUserName, string inviteID)
         {
             var requester = RemotelyContext.Users
@@ -277,6 +279,7 @@ namespace Remotely.Server.Services
                 .Where(x => x.OrganizationID == orgID)
                 .OrderByDescending(x => x.TimeStamp);
         }
+
         public IEnumerable<Device> GetAllDevicesForUser(string userID)
         {
             var user = RemotelyContext.Users.FirstOrDefault(x => x.Id == userID);
@@ -294,6 +297,7 @@ namespace Remotely.Server.Services
                 .Where(x => x.OrganizationID == orgID)
                 .OrderByDescending(x => x.TimeStamp);
         }
+
         public ICollection<InviteLink> GetAllInviteLinks(string userName)
         {
             return RemotelyContext.Users
@@ -336,6 +340,10 @@ namespace Remotely.Server.Services
             return AppConfig.DefaultPrompt;
         }
 
+        public int GetDeviceCount()
+        {
+            return RemotelyContext.Devices.Count();
+        }
         public Device GetDeviceForUser(string userID, string deviceID)
         {
             var user = RemotelyContext.Users.FirstOrDefault(x => x.Id == userID);

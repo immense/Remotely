@@ -56,7 +56,7 @@ namespace Remotely.Shared.Services
             }
         }
 
-        public static string CoreZipFileName
+        public static string PlatformString
         {
             get
             {
@@ -64,17 +64,17 @@ namespace Remotely.Shared.Services
                 {
                     if (Environment.Is64BitOperatingSystem)
                     {
-                        return "Remotely-Win10-x64.zip";
+                        return "Win10-x64";
                     }
                     else
                     {
-                        return "Remotely-Win10-x86.zip";
+                        return "Win10-x86";
                     }
 
                 }
-                else if (OSUtils.IsLinux)
+                else if (IsLinux)
                 {
-                    return "Remotely-Linux.zip";
+                    return "Linux-x64";
                 }
                 else
                 {
