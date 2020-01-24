@@ -108,11 +108,6 @@ namespace Remotely.Agent
             SetWorkingDirectory();
             var argDict = ProcessArgs(args);
 
-            if (argDict.ContainsKey("update"))
-            {
-                Services.GetRequiredService<Updater>().CoreUpdate();
-            }
-            
             if (!IsDebug && OSUtils.IsWindows)
             {
                 _ = Task.Run(() =>

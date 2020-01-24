@@ -4,8 +4,6 @@ Organization=
 GUID=$(cat /proc/sys/kernel/random/uuid)
 
 systemctl stop remotely-agent
-rm -r -f /usr/local/bin/Remotely
-rm -f /etc/systemd/system/remotely-agent.service
 systemctl daemon-reload
 
 if [ "$1" = "--uninstall" ]; then
@@ -27,6 +25,14 @@ apt-get -y install libc6-dev
 apt-get -y install libgdiplus
 apt-get -y install libxtst-dev
 apt-get -y install xclip
+apt-get -y install jq
+
+if [ -f "/usr/local/bin/Remotely/ConnectionInfo.json" ]; then
+	GUID=`cat "/usr/local/bin/Remotely/ConnectionInfo.json" | jq -r '.DeviceID'`
+fi
+
+rm -r -f /usr/local/bin/Remotely
+rm -f /etc/systemd/system/remotely-agent.service
 
 mkdir -p /usr/local/bin/Remotely/
 cd /usr/local/bin/Remotely/

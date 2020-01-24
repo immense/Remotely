@@ -181,7 +181,7 @@ namespace Remotely.Agent.Services
                     IsServerVerified = true;
                     if (!Program.IsDebug)
                     {
-                        Updater.CheckForCoreUpdates();
+                        Task.Run(Updater.CheckForUpdates);
                     }
                 }
                 else
