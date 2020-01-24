@@ -140,7 +140,7 @@ function Install-DesktopRuntime() {
 
 	if ($RuntimeRegKey -eq $null) {
 		Write-Host ".NET Core Windows Desktop runtime not found.  Downloading installer."
-		$Response = Invoke-WebRequest -Uri "https://dotnet.microsoft.com/download/dotnet-core/thank-you/runtime-desktop-3.1.1-windows-x86-installer"
+		$Response = Invoke-WebRequest -Uri "https://dotnet.microsoft.com/download/dotnet-core/thank-you/runtime-desktop-3.1.1-windows-x86-installer" -UseBasicParsing
 		$DownloadLink = $Response.Links | Where-Object { $_.href -like "*windowsdesktop-runtime*" }
 		Invoke-WebRequest -Uri $DownloadLink.href -OutFile "$env:TEMP\windowsdesktop-runtime.exe"
 		Write-Host "Installing .NET Core Windows Desktop runtime."
