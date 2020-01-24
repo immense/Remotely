@@ -61,8 +61,12 @@ namespace Remotely.ScreenCast.Core
 
             }
 
-            Mode = (AppMode)Enum.Parse(typeof(AppMode), ArgDict["mode"]);
-            Host = ArgDict["host"];
+            Mode = (AppMode)Enum.Parse(typeof(AppMode), ArgDict["mode"], true);
+
+            if (Mode == AppMode.Normal || Mode == AppMode.Unattended)
+            {
+                Host = ArgDict["host"];
+            }
 
             if (Mode == AppMode.Unattended)
             {
