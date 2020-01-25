@@ -71,108 +71,110 @@ namespace Remotely.Server.Services
                 Context.Items["ScreenCasterID"] = value;
             }
         }
-        public async Task CtrlAltDel()
+        public Task CtrlAltDel()
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("CtrlAltDel", Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("CtrlAltDel", Context.ConnectionId);
         }
 
-        public async Task KeyDown(string key)
+        public Task KeyDown(string key)
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("KeyDown", key, Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("KeyDown", key, Context.ConnectionId);
         }
 
-        public async Task KeyPress(string key)
+        public Task KeyPress(string key)
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("KeyPress", key, Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("KeyPress", key, Context.ConnectionId);
         }
 
-        public async Task KeyUp(string key)
+        public Task KeyUp(string key)
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("KeyUp", key, Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("KeyUp", key, Context.ConnectionId);
         }
 
-        public async Task LongPress()
+        public Task LongPress()
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("LongPress", Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("LongPress", Context.ConnectionId);
         }
 
-        public async Task MouseDown(int button, double percentX, double percentY)
+        public Task MouseDown(int button, double percentX, double percentY)
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("MouseDown", button, percentX, percentY, Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("MouseDown", button, percentX, percentY, Context.ConnectionId);
         }
 
-        public async Task MouseMove(double percentX, double percentY)
+        public Task MouseMove(double percentX, double percentY)
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("MouseMove", percentX, percentY, Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("MouseMove", percentX, percentY, Context.ConnectionId);
         }
 
-        public async Task MouseUp(int button, double percentX, double percentY)
+        public Task MouseUp(int button, double percentX, double percentY)
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("MouseUp", button, percentX, percentY, Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("MouseUp", button, percentX, percentY, Context.ConnectionId);
         }
 
-        public async Task MouseWheel(double deltaX, double deltaY)
+        public Task MouseWheel(double deltaX, double deltaY)
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("MouseWheel", deltaX, deltaY, Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("MouseWheel", deltaX, deltaY, Context.ConnectionId);
         }
 
-        public override async Task OnConnectedAsync()
+        public override Task OnConnectedAsync()
         {
             if (Context.User.Identity.IsAuthenticated)
             {
                 var user = DataService.GetUserByName(Context.User.Identity.Name);
                 OrganizationConnectionList.AddOrUpdate(Context.ConnectionId, user, (id, r) => user);
             }
-            await base.OnConnectedAsync();
+            return base.OnConnectedAsync();
         }
 
-        public override async Task OnDisconnectedAsync(Exception exception)
+        public override Task OnDisconnectedAsync(Exception exception)
         {
             if (Context.User.Identity.IsAuthenticated)
             {
                 OrganizationConnectionList.Remove(Context.ConnectionId, out _);
             }
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ViewerDisconnected", Context.ConnectionId);
+
+            RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ViewerDisconnected", Context.ConnectionId);
 
             if (AppConfig.RecordRemoteControlSessions)
             {
                 RCSessionRecorder.StopProcessing(Context.ConnectionId);
             }
+
+            return base.OnDisconnectedAsync(exception);
         }
 
-        public async Task SelectScreen(int screenIndex)
+        public Task SelectScreen(int screenIndex)
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("SelectScreen", screenIndex, Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("SelectScreen", screenIndex, Context.ConnectionId);
         }
 
-        public async Task SendClipboardTransfer(string transferText, bool typeText)
+        public Task SendClipboardTransfer(string transferText, bool typeText)
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ClipboardTransfer", transferText, typeText, Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ClipboardTransfer", transferText, typeText, Context.ConnectionId);
         }
 
-        public async Task SendLatencyUpdate(DateTime sentTime, int bytesRecieved)
+        public Task SendLatencyUpdate(DateTime sentTime, int bytesRecieved)
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("LatencyUpdate", sentTime, bytesRecieved, Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("LatencyUpdate", sentTime, bytesRecieved, Context.ConnectionId);
         }
 
-        public async Task SendQualityChange(int qualityLevel)
+        public Task SendQualityChange(int qualityLevel)
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("QualityChange", qualityLevel, Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("QualityChange", qualityLevel, Context.ConnectionId);
         }
 
-        public async Task SendAutoQualityAdjust(bool isOn)
+        public Task SendAutoQualityAdjust(bool isOn)
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("AutoQualityAdjust", isOn, Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("AutoQualityAdjust", isOn, Context.ConnectionId);
         }
 
-        public async Task SendScreenCastRequestToDevice(string screenCasterID, string requesterName, int remoteControlMode)
+        public Task SendScreenCastRequestToDevice(string screenCasterID, string requesterName, int remoteControlMode)
         {
             if ((RemoteControlMode)remoteControlMode == RemoteControlMode.Normal)
             {
                 if (!RCDeviceSocketHub.SessionInfoList.Any(x => x.Value.AttendedSessionID == screenCasterID))
                 {
-                    await Clients.Caller.SendAsync("SessionIDNotFound");
-                    return;
+                    return Clients.Caller.SendAsync("SessionIDNotFound");
                 }
 
                 screenCasterID = RCDeviceSocketHub.SessionInfoList.First(x => x.Value.AttendedSessionID == screenCasterID).Value.RCSocketID;
@@ -212,50 +214,52 @@ namespace Remotely.Server.Services
                 var deviceID = DeviceSocketHub.ServiceConnections[sessionInfo.ServiceID].ID;
                 if (Context.User.Identity.IsAuthenticated && DataService.DoesUserHaveAccessToDevice(deviceID, Context.UserIdentifier))
                 {
-                    await RCDeviceHub.Clients.Client(screenCasterID).SendAsync("GetScreenCast", Context.ConnectionId, requesterName);
+                    return RCDeviceHub.Clients.Client(screenCasterID).SendAsync("GetScreenCast", Context.ConnectionId, requesterName);
                 }
             }
             else
             {
                 sessionInfo.Mode = RemoteControlMode.Normal;
-                await Clients.Caller.SendAsync("RequestingScreenCast");
-                await RCDeviceHub.Clients.Client(screenCasterID).SendAsync("RequestScreenCast", Context.ConnectionId, requesterName);
+                Clients.Caller.SendAsync("RequestingScreenCast");
+                return RCDeviceHub.Clients.Client(screenCasterID).SendAsync("RequestScreenCast", Context.ConnectionId, requesterName);
             }
+
+            return Task.CompletedTask;
         }
-        public async Task SendSharedFileIDs(List<string> fileIDs)
+        public Task SendSharedFileIDs(List<string> fileIDs)
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("SharedFileIDs", fileIDs);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("SharedFileIDs", fileIDs);
         }
-        public async Task SendToggleAudio(bool toggleOn)
+        public Task SendToggleAudio(bool toggleOn)
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ToggleAudio", toggleOn, Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ToggleAudio", toggleOn, Context.ConnectionId);
         }
-        public async Task Tap(double percentX, double percentY)
+        public Task Tap(double percentX, double percentY)
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("Tap", percentX, percentY, Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("Tap", percentX, percentY, Context.ConnectionId);
         }
 
-        public async Task TouchDown()
+        public Task TouchDown()
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("TouchDown", Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("TouchDown", Context.ConnectionId);
         }
-        public async Task TouchMove(double moveX, double moveY)
+        public Task TouchMove(double moveX, double moveY)
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("TouchMove", moveX, moveY, Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("TouchMove", moveX, moveY, Context.ConnectionId);
         }
-        public async Task TouchUp()
+        public Task TouchUp()
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("TouchUp", Context.ConnectionId);
-        }
-
-        public async Task SendIceCandidateToAgent(string candidate, int sdpMlineIndex, string sdpMid)
-        {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ReceiveIceCandidate", candidate, sdpMlineIndex, sdpMid, Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("TouchUp", Context.ConnectionId);
         }
 
-        public async Task SendRtcAnswerToAgent(string sdp)
+        public Task SendIceCandidateToAgent(string candidate, int sdpMlineIndex, string sdpMid)
         {
-            await RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ReceiveRtcAnswer", sdp, Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ReceiveIceCandidate", candidate, sdpMlineIndex, sdpMid, Context.ConnectionId);
+        }
+
+        public Task SendRtcAnswerToAgent(string sdp)
+        {
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ReceiveRtcAnswer", sdp, Context.ConnectionId);
         }
     }
 }

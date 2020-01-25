@@ -39,32 +39,32 @@ namespace Remotely.Server.Services
 			}
 		}
 
-		public async Task BashResultViaAjax(string commandID)
+		public Task BashResultViaAjax(string commandID)
 		{
 			var commandContext = DataService.GetCommandContext(commandID);
-			await BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("BashResultViaAjax", commandID, Device.ID);
+			return BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("BashResultViaAjax", commandID, Device.ID);
 		}
-        public async Task Chat(string message, string senderConnectionID)
+        public Task Chat(string message, string senderConnectionID)
         {
-            await BrowserHub.Clients.Client(senderConnectionID).SendAsync("Chat", Device.DeviceName, message);
+            return BrowserHub.Clients.Client(senderConnectionID).SendAsync("Chat", Device.DeviceName, message);
         }
 
-        public async Task CMDResultViaAjax(string commandID)
+        public Task CMDResultViaAjax(string commandID)
 		{
 			var commandContext = DataService.GetCommandContext(commandID);
-			await BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("CMDResultViaAjax", commandID, Device.ID);
+            return BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("CMDResultViaAjax", commandID, Device.ID);
 		}
 
-		public async Task CommandResult(GenericCommandResult result)
+		public Task CommandResult(GenericCommandResult result)
 		{
 			result.DeviceID = Device.ID;
 			var commandContext = DataService.GetCommandContext(result.CommandContextID);
 			commandContext.CommandResults.Add(result);
 			DataService.AddOrUpdateCommandContext(commandContext);
-			await BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("CommandResult", result);
+            return BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("CommandResult", result);
 		}
 
-        public async Task DeviceCameOnline(Device device)
+        public Task DeviceCameOnline(Device device)
         {
             try
             {
@@ -77,7 +77,7 @@ namespace Remotely.Server.Services
                         Message = $"Device connection for {device?.DeviceName} was denied because it is already connected."
                     });
                     Context.Abort();
-                    return;
+                    return Task.CompletedTask;
                 }
                 
                 if (DataService.AddOrUpdateDevice(device, out var updatedDevice))
@@ -90,22 +90,23 @@ namespace Remotely.Server.Services
                                                     .Select(x => x.Key)
                                                     .ToList();
 
-                    await BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceCameOnline", Device);
+                    return BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceCameOnline", Device);
                 }
                 else
                 {
                     // Organization wasn't found.
-                    await Clients.Caller.SendAsync("UninstallClient");
+                    return Clients.Caller.SendAsync("UninstallClient");
                 }
             }
             catch (Exception ex)
             {
                 DataService.WriteEvent(ex);
-                throw;
             }
+
+            return Task.CompletedTask;
         }
 
-        public async Task DeviceHeartbeat(Device device)
+        public Task DeviceHeartbeat(Device device)
         {
             DataService.AddOrUpdateDevice(device, out var updatedDevice);
             Device = updatedDevice;
@@ -114,12 +115,12 @@ namespace Remotely.Server.Services
                                             .Select(x => x.Key)
                                             .ToList();
 
-            await BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceHeartbeat", Device);
+            return BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceHeartbeat", Device);
         }
 
-        public async Task DisplayMessage(string consoleMessage, string popupMessage, string requesterID)
+        public Task DisplayMessage(string consoleMessage, string popupMessage, string requesterID)
         {
-			await BrowserHub.Clients.Client(requesterID).SendAsync("DisplayMessage", consoleMessage, popupMessage);
+            return BrowserHub.Clients.Client(requesterID).SendAsync("DisplayMessage", consoleMessage, popupMessage);
 		}
 		public override Task OnConnectedAsync()
 		{
@@ -145,13 +146,13 @@ namespace Remotely.Server.Services
             
             await base.OnDisconnectedAsync(exception);
         }
-        public async Task PSCoreResult(PSCoreCommandResult result)
+        public Task PSCoreResult(PSCoreCommandResult result)
         {
             result.DeviceID = Device.ID;
             var commandContext = DataService.GetCommandContext(result.CommandContextID);
             commandContext.PSCoreResults.Add(result);
             DataService.AddOrUpdateCommandContext(commandContext);
-            await BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("PSCoreResult", result);
+            return BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("PSCoreResult", result);
         }
 		public async void PSCoreResultViaAjax(string commandID)
 		{
@@ -159,14 +160,14 @@ namespace Remotely.Server.Services
 			await BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("PSCoreResultViaAjax", commandID, Device.ID);
 		}
 
-        public async Task SendConnectionFailedToViewers(List<string> viewerIDs)
+        public Task SendConnectionFailedToViewers(List<string> viewerIDs)
         {
-            await RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("ConnectionFailed");
+            return RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("ConnectionFailed");
         }
 
-        public async Task SendServerVerificationToken()
+        public Task SendServerVerificationToken()
         {
-            await Clients.Caller.SendAsync("ServerVerificationToken", Device.ServerVerificationToken);
+            return Clients.Caller.SendAsync("ServerVerificationToken", Device.ServerVerificationToken);
         }
         public void SetServerVerificationToken(string verificationToken)
         {
@@ -174,14 +175,14 @@ namespace Remotely.Server.Services
             DataService.SetServerVerificationToken(Device.ID, verificationToken);
         }
 
-        public async Task TransferCompleted(string transferID, string requesterID)
+        public Task TransferCompleted(string transferID, string requesterID)
         {
-            await BrowserHub.Clients.Client(requesterID).SendAsync("TransferCompleted", transferID);
+            return BrowserHub.Clients.Client(requesterID).SendAsync("TransferCompleted", transferID);
         }
-        public async Task WinPSResultViaAjax(string commandID)
+        public Task WinPSResultViaAjax(string commandID)
         {
             var commandContext = DataService.GetCommandContext(commandID);
-            await BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("WinPSResultViaAjax", commandID, Device.ID);
+            return BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("WinPSResultViaAjax", commandID, Device.ID);
         }
     }
 }
