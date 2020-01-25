@@ -126,13 +126,7 @@ function Install-Remotely {
 }
 
 function Install-DesktopRuntime() {
-	$UninstallKeys = New-Object System.Collections.ArrayList
-	Get-ChildItem -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" | ForEach-Object {
-		$UninstallKeys.Add($_) | Out-Null
-	}
-	Get-ChildItem -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\" | ForEach-Object {
-	  $UninstallKeys.Add($_) | Out-Null
-	}
+	$UninstallKeys = (Get-ChildItem -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\")
 
 	$RuntimeRegKey = $UninstallKeys | Where-Object {
 		$_.GetValue("DisplayName") -like "Microsoft Windows Desktop Runtime - 3.1.1*" 
