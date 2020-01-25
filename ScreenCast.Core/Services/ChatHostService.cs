@@ -31,10 +31,10 @@ namespace Remotely.ScreenCast.Core.Services
 
         public async Task StartChat(string requesterID)
         {
-            NamedPipeStream = new NamedPipeServerStream("Remotely_Chat" + requesterID, PipeDirection.InOut, 10, PipeTransmissionMode.Byte, PipeOptions.Asynchronous | PipeOptions.WriteThrough);
+            NamedPipeStream = new NamedPipeServerStream("Remotely_Chat" + requesterID, PipeDirection.InOut, 10, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
             Writer = new StreamWriter(NamedPipeStream);
             Reader = new StreamReader(NamedPipeStream);
-
+            
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Title = "Remotely Chat";
@@ -87,7 +87,11 @@ namespace Remotely.ScreenCast.Core.Services
                 var message = await Reader.ReadLineAsync();
                 Console.WriteLine();
                 Console.WriteLine();
-                Console.WriteLine(message);
+                var split = message.Split(":", 2);
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.Write($"{split[0]}: ");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine(split[1]);
                 SetPrompt();
             }
         }
