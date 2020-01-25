@@ -21,6 +21,48 @@ namespace Remotely.Agent.Services
 
         private ConnectionInfo ConnectionInfo { get; }
 
+        public async Task LaunchChatService(string requesterID, HubConnection hubConnection)
+        {
+            try
+            {
+                var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", OSUtils.ScreenCastExecutableFileName);
+                if (!File.Exists(rcBinaryPath))
+                {
+                    await hubConnection.InvokeAsync("DisplayMessage", "Chat executable not found on target device.", "Executable not found on device.", requesterID);
+                }
+
+
+                // Start ScreenCast.
+                await hubConnection.InvokeAsync("DisplayMessage", $"Starting chat service...", "Starting chat service.", requesterID);
+                if (OSUtils.IsWindows)
+                {
+
+                    if (Program.IsDebug)
+                    {
+                        Process.Start("conhost.exe", $"{rcBinaryPath} -mode Chat -requester {requesterID}");
+                    }
+                    else
+                    {
+                        var result = Win32Interop.OpenInteractiveProcess($"conhost.exe {rcBinaryPath} -mode Chat -requester {requesterID}", "default", false, out _);
+                        if (!result)
+                        {
+                            await hubConnection.InvokeAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
+                        }
+                    }
+                }
+                else if (OSUtils.IsLinux)
+                {
+                    var args = $"bash -c {rcBinaryPath} -mode Chat -requester {requesterID} & disown";
+                    StartLinuxScreenCaster(args);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+                await hubConnection.InvokeAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
+            }
+        }
+
         public async Task LaunchRemoteControl(string requesterID, string serviceID, HubConnection hubConnection)
         {
             try
@@ -54,17 +96,15 @@ namespace Remotely.Agent.Services
                 else if (OSUtils.IsLinux)
                 {
                     var args = $"{rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} & disown";
-                    await StartLinuxScreenCaster(args);
+                    StartLinuxScreenCaster(args);
                 }
             }
             catch (Exception ex)
             {
                 Logger.Write(ex);
                 await hubConnection.InvokeAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
-                throw;
             }
         }
-
         public async Task RestartScreenCaster(List<string> viewerIDs, string serviceID, string requesterID, HubConnection hubConnection)
         {
             try
@@ -104,7 +144,7 @@ namespace Remotely.Agent.Services
                 else if (OSUtils.IsLinux)
                 {
                     var args = $"{rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} -relaunch true -viewers {string.Join(",", viewerIDs)} & disown";
-                    await StartLinuxScreenCaster(args);
+                    StartLinuxScreenCaster(args);
                 }
             }
             catch (Exception ex)
@@ -115,7 +155,7 @@ namespace Remotely.Agent.Services
             }
         }
 
-        private async Task StartLinuxScreenCaster(string args)
+        private void StartLinuxScreenCaster(string args)
         {
             var xauthority = OSUtils.StartProcessWithResults("find", $"/ -name Xauthority").Split('\n', StringSplitOptions.RemoveEmptyEntries).First();
             var display = ":0";
@@ -140,8 +180,7 @@ namespace Remotely.Agent.Services
             psi.Environment.Add("DISPLAY", display);
             psi.Environment.Add("XAUTHORITY", xauthority);
             Logger.Write($"Attempting to launch screen caster with username {username}, xauthority {xauthority}, and display {display}.");
-            var casterProc = Process.Start(psi);
-            await Task.Run(() => { casterProc.WaitForExit(); });
+            Process.Start(psi);
         }
     }
 }

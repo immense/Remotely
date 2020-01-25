@@ -3,7 +3,8 @@
 @{
     ViewData["Title"] = "Invite";
 }
-<h2>Organization Invite</h2>
+<h3>Organization Invite</h3>
+<hr />
 <div class="row">
     <div class="col-sm-12">
         @if (Model.Success)
@@ -16,9 +17,19 @@
 
         else
         {
-            <h5>Uh oh.</h5>
-            <p>@Model.Message</p>
-
+            <form method="post">
+                <div>
+                    <strong class="text-danger">WARNING: </strong>
+                    <p class="text-danger">You will leave your current organization and lose access to its agents unless someone is able to invite you back in.</p>
+                    <p>Are you sure you want to leave your current organization and join this one?</p>
+                </div>
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <input asp-for="Input.InviteID" hidden />
+                <div class="form-group">
+                    <button type="button" class="btn btn-secondary mr-3" onclick="location.assign(location.origin)">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Confirm</button>
+                </div>
+            </form>
         }
 
     </div>

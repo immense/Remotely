@@ -24,7 +24,8 @@ namespace Remotely.Agent.Services
             Uninstaller uninstaller, 
             CommandExecutor commandExecutor,
             ScriptRunner scriptRunner,
-            AppLauncher appLauncher)
+            AppLauncher appLauncher,
+            ChatClientService chatService)
         {
             Updater = updater;
             ConfigService = configService;
@@ -32,9 +33,11 @@ namespace Remotely.Agent.Services
             CommandExecutor = commandExecutor;
             ScriptRunner = scriptRunner;
             AppLauncher = appLauncher;
+            ChatService = chatService;
         }
         public bool IsConnected => HubConnection?.State == HubConnectionState.Connected;
         private AppLauncher AppLauncher { get; }
+        private ChatClientService ChatService { get; }
         private CommandExecutor CommandExecutor { get; }
         private ConfigService ConfigService { get; }
         private ConnectionInfo ConnectionInfo { get; set; }
@@ -53,7 +56,7 @@ namespace Remotely.Agent.Services
                 .AddMessagePackProtocol()
                 .Build();
 
-            RegisterMessageHandlers(HubConnection);
+            RegisterMessageHandlers();
 
             await HubConnection.StartAsync();
 
@@ -78,21 +81,24 @@ namespace Remotely.Agent.Services
             HeartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
             HeartbeatTimer.Start();
         }
+
         public void SendHeartbeat()
         {
             var currentInfo = Device.Create(ConnectionInfo);
             HubConnection.InvokeAsync("DeviceHeartbeat", currentInfo);
         }
 
-        
         private void HeartbeatTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             SendHeartbeat();
         }
 
-        private void RegisterMessageHandlers(HubConnection hubConnection)
+        private void RegisterMessageHandlers()
         {
-            hubConnection.On("ExecuteCommand", (async (string mode, string command, string commandID, string senderConnectionID) =>
+            HubConnection.On("Chat", async (string message, string senderConnectionID) => {
+                await ChatService.SendMessage(message, senderConnectionID, HubConnection);
+            });
+            HubConnection.On("ExecuteCommand", (async (string mode, string command, string commandID, string senderConnectionID) =>
             {
                 if (!IsServerVerified)
                 {
@@ -101,9 +107,9 @@ namespace Remotely.Agent.Services
                     return;
                 }
 
-                await CommandExecutor.ExecuteCommand(mode, command, commandID, senderConnectionID, hubConnection);
+                await CommandExecutor.ExecuteCommand(mode, command, commandID, senderConnectionID, HubConnection);
             }));
-            hubConnection.On("TransferFiles", async (string transferID, List<string> fileIDs, string requesterID) =>
+            HubConnection.On("TransferFiles", async (string transferID, List<string> fileIDs, string requesterID) =>
             {
                 Logger.Write($"File transfer started by {requesterID}.");
                 var sharedFilePath = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(),"RemotelySharedFiles")).FullName;
@@ -132,9 +138,9 @@ namespace Remotely.Agent.Services
                         }
                     }
                 }
-                await HubConnection.InvokeAsync("TransferCompleted", transferID, requesterID);
+                await this.HubConnection.InvokeAsync("TransferCompleted", transferID, requesterID);
             });
-            hubConnection.On("DeployScript", async (string mode, string fileID, string commandContextID, string requesterID) => {
+            HubConnection.On("DeployScript", async (string mode, string fileID, string commandContextID, string requesterID) => {
                 if (!IsServerVerified)
                 {
                     Logger.Write($"Script deploy attempted before server was verified.  Mode: {mode}.  File ID: {fileID}.  Sender: {requesterID}");
@@ -142,14 +148,14 @@ namespace Remotely.Agent.Services
                     return;
                 }
 
-                await ScriptRunner.RunScript(mode, fileID, commandContextID, requesterID, hubConnection);
+                await ScriptRunner.RunScript(mode, fileID, commandContextID, requesterID, HubConnection);
             });
-            hubConnection.On("UninstallClient", () =>
+            HubConnection.On("UninstallClient", () =>
             {
                 Uninstaller.UninstallAgent();
             });
           
-            hubConnection.On("RemoteControl", async (string requesterID, string serviceID) =>
+            HubConnection.On("RemoteControl", async (string requesterID, string serviceID) =>
             {
                 if (!IsServerVerified)
                 {
@@ -157,9 +163,9 @@ namespace Remotely.Agent.Services
                     Uninstaller.UninstallAgent();
                     return;
                 }
-                await AppLauncher.LaunchRemoteControl(requesterID, serviceID, hubConnection);
+                await AppLauncher.LaunchRemoteControl(requesterID, serviceID, HubConnection);
             });
-            hubConnection.On("RestartScreenCaster", async (List<string> viewerIDs, string serviceID, string requesterID) =>
+            HubConnection.On("RestartScreenCaster", async (List<string> viewerIDs, string serviceID, string requesterID) =>
             {
                 if (!IsServerVerified)
                 {
@@ -167,14 +173,14 @@ namespace Remotely.Agent.Services
                     Uninstaller.UninstallAgent();
                     return;
                 }
-                await AppLauncher.RestartScreenCaster(viewerIDs, serviceID, requesterID, hubConnection);
+                await AppLauncher.RestartScreenCaster(viewerIDs, serviceID, requesterID, HubConnection);
             });
-            hubConnection.On("CtrlAltDel", () =>
+            HubConnection.On("CtrlAltDel", () =>
             {
                 User32.SendSAS(false);
             });
           
-            hubConnection.On("ServerVerificationToken", (string verificationToken) =>
+            HubConnection.On("ServerVerificationToken", (string verificationToken) =>
             {
                 if (verificationToken == ConnectionInfo.ServerVerificationToken)
                 {

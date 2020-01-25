@@ -68,9 +68,13 @@ namespace Remotely.ScreenCast.Core
                 Host = ArgDict["host"];
             }
 
-            if (Mode == AppMode.Unattended)
+            if (Mode == AppMode.Chat || Mode == AppMode.Unattended)
             {
                 RequesterID = ArgDict["requester"];
+            }
+
+            if (Mode == AppMode.Unattended)
+            {
                 ServiceID = ArgDict["serviceid"];
                 DeviceID = ArgDict["deviceid"];
             }

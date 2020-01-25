@@ -39,13 +39,17 @@ namespace Remotely.Server.Services
 			}
 		}
 
-		public async void BashResultViaAjax(string commandID)
+		public async Task BashResultViaAjax(string commandID)
 		{
 			var commandContext = DataService.GetCommandContext(commandID);
 			await BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("BashResultViaAjax", commandID, Device.ID);
 		}
+        public async Task Chat(string message, string senderConnectionID)
+        {
+            await BrowserHub.Clients.Client(senderConnectionID).SendAsync("Chat", Device.DeviceName, message);
+        }
 
-		public async void CMDResultViaAjax(string commandID)
+        public async Task CMDResultViaAjax(string commandID)
 		{
 			var commandContext = DataService.GetCommandContext(commandID);
 			await BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("CMDResultViaAjax", commandID, Device.ID);

@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
-    <UserSecretsId>aspnet-DoXM_Server-C4DA754F-DF49-46C8-9091-A7EC11A0D311</UserSecretsId>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <DockerTargetOS>Windows</DockerTargetOS>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>

@@ -18,27 +18,43 @@ namespace Remotely.Server.Pages
         }
         private DataService DataService { get; }
         public bool Success { get; set; }
-        public string Message { get; set; }
+
+        public class InputModel
+        {
+            public string InviteID { get; set; }
+        }
+
+        [BindProperty]
+        public InputModel Input { get; set; } = new InputModel();
 
         public void OnGet(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                Success = false;
-                Message = "No invititation ID is specified.";
-                return;
+                ModelState.AddModelError("MissingID", "No invititation ID is specified.");
             }
-            var result = DataService.JoinViaInvitation(User.Identity.Name, id);
+
+            Input.InviteID = id;
+        }
+
+        public IActionResult OnPost()
+        {
+            if (string.IsNullOrWhiteSpace(Input?.InviteID))
+            {
+                Success = false;
+                ModelState.AddModelError("MissingID", "No invititation ID is specified.");
+                return Page();
+            }
+
+            var result = DataService.JoinViaInvitation(User.Identity.Name, Input.InviteID);
             if (result == false)
             {
                 Success = false;
-                Message = "The invitation ID wasn't found or is for another account.";
-                return;
+                ModelState.AddModelError("InviteIDNotFound", "The invitation ID wasn't found or is for another account.");
             }
-            
-            Success = true;
-            Message = "You've successfully joined the organization.";
-        }
 
+            Success = true;
+            return Page();
+        }
     }
 }
