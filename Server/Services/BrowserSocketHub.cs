@@ -49,14 +49,14 @@ namespace Remotely.Server.Services
         }
         private SignInManager<RemotelyUser> SignInManager { get; }
 
-        public async Task Chat(string message, string[] deviceIDs)
+        public Task Chat(string message, string[] deviceIDs)
         {
             deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
             var connections = GetActiveClientConnections(deviceIDs);
-            await DeviceHub.Clients.Clients(connections.Select(x => x.Key).ToList()).SendAsync("Chat", $"{RemotelyUser.UserName}: {message}", Context.ConnectionId);
+            return DeviceHub.Clients.Clients(connections.Select(x => x.Key).ToList()).SendAsync("Chat", $"{RemotelyUser.UserName}: {message}", Context.ConnectionId);
         }
 
-        public async Task DeployScript(string fileID, string mode, string[] deviceIDs)
+        public Task DeployScript(string fileID, string mode, string[] deviceIDs)
         {
             deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
             var connections = GetActiveClientConnections(deviceIDs);
@@ -70,14 +70,15 @@ namespace Remotely.Server.Services
                 OrganizationID = RemotelyUser.OrganizationID
             };
             DataService.AddOrUpdateCommandContext(commandContext);
-            await Clients.Caller.SendAsync("CommandContextCreated", commandContext);
+            Clients.Caller.SendAsync("CommandContextCreated", commandContext);
             foreach (var connection in connections)
             {
-                await DeviceHub.Clients.Client(connection.Key).SendAsync("DeployScript", mode, fileID, commandContext.ID, Context.ConnectionId);
+                DeviceHub.Clients.Client(connection.Key).SendAsync("DeployScript", mode, fileID, commandContext.ID, Context.ConnectionId);
             }
+            return Task.CompletedTask;
         }
 
-        public async Task ExecuteCommandOnClient(string mode, string command, string[] deviceIDs)
+        public Task ExecuteCommandOnClient(string mode, string command, string[] deviceIDs)
         {
             deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
             var connections = GetActiveClientConnections(deviceIDs);
@@ -92,11 +93,13 @@ namespace Remotely.Server.Services
                 OrganizationID = RemotelyUser.OrganizationID
             };
             DataService.AddOrUpdateCommandContext(commandContext);
-            await Clients.Caller.SendAsync("CommandContextCreated", commandContext);
+            Clients.Caller.SendAsync("CommandContextCreated", commandContext);
             foreach (var connection in connections)
             {
-                await DeviceHub.Clients.Client(connection.Key).SendAsync("ExecuteCommand", mode, command, commandContext.ID, Context.ConnectionId);
+                DeviceHub.Clients.Client(connection.Key).SendAsync("ExecuteCommand", mode, command, commandContext.ID, Context.ConnectionId);
             }
+
+            return Task.CompletedTask;
         }
 
 
@@ -119,7 +122,7 @@ namespace Remotely.Server.Services
             await base.OnDisconnectedAsync(exception);
 		}
 
-		public async Task RemoteControl(string deviceID)
+		public Task RemoteControl(string deviceID)
 		{
 			if (DataService.DoesUserHaveAccessToDevice(deviceID, RemotelyUser))
 			{
@@ -127,23 +130,23 @@ namespace Remotely.Server.Services
 				var currentUsers = RCBrowserSocketHub.OrganizationConnectionList.Count(x => x.Value.OrganizationID == RemotelyUser.OrganizationID);
 				if (currentUsers >= AppConfig.RemoteControlSessionLimit)
 				{
-					await Clients.Caller.SendAsync("DisplayMessage", $"There are already the maximum amount of active remote control sessions for your organization.", "Max number of concurrent sessions reached.");
-					return;
+					return Clients.Caller.SendAsync("DisplayMessage", $"There are already the maximum amount of active remote control sessions for your organization.", "Max number of concurrent sessions reached.");
 				}
-				await this.Clients.Caller.SendAsync("ServiceID", targetDevice.Key);
-				await DeviceHub.Clients.Client(targetDevice.Key).SendAsync("RemoteControl", Context.ConnectionId, targetDevice.Key);
+				Clients.Caller.SendAsync("ServiceID", targetDevice.Key);
+                return DeviceHub.Clients.Client(targetDevice.Key).SendAsync("RemoteControl", Context.ConnectionId, targetDevice.Key);
 			}
+            return Task.CompletedTask;
 		}
 
-        public async Task RemoveDevices(string[] deviceIDs)
+        public Task RemoveDevices(string[] deviceIDs)
         {
             var filterDevices = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
             DataService.RemoveDevices(filterDevices);
-            await Clients.Caller.SendAsync("RefreshDeviceList");
+            return Clients.Caller.SendAsync("RefreshDeviceList");
         }
 
 
-        public async Task TransferFiles(List<string> fileIDs, string transferID, string[] deviceIDs)
+        public Task TransferFiles(List<string> fileIDs, string transferID, string[] deviceIDs)
         {
             DataService.WriteEvent(new EventLog()
             {
@@ -156,32 +159,33 @@ namespace Remotely.Server.Services
             var connections = GetActiveClientConnections(deviceIDs);
             foreach (var connection in connections)
             {
-                await DeviceHub.Clients.Client(connection.Key).SendAsync("TransferFiles", transferID, fileIDs, Context.ConnectionId);
+                DeviceHub.Clients.Client(connection.Key).SendAsync("TransferFiles", transferID, fileIDs, Context.ConnectionId);
             }
+            return Task.CompletedTask;
         }
-        public async Task UninstallClients(string[] deviceIDs)
+        public Task UninstallClients(string[] deviceIDs)
         {
             deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
             var connections = GetActiveClientConnections(deviceIDs);
             foreach (var connection in connections)
             {
-                await DeviceHub.Clients.Client(connection.Key).SendAsync("UninstallClient");
+                DeviceHub.Clients.Client(connection.Key).SendAsync("UninstallClient");
             }
             DataService.RemoveDevices(deviceIDs);
-            await Clients.Caller.SendAsync("RefreshDeviceList");
+            return Clients.Caller.SendAsync("RefreshDeviceList");
         }
-        public async Task UpdateTags(string deviceID, string tags)
+        public Task UpdateTags(string deviceID, string tags)
         {
             if (DataService.DoesUserHaveAccessToDevice(deviceID, RemotelyUser))
             {
                 if (tags.Length > 200)
                 {
-                    await Clients.Caller.SendAsync("DisplayMessage", $"Tag must be 200 characters or less. Supplied length is {tags.Length}.", "Tag must be under 200 characters.");
-                    return;
+                    return Clients.Caller.SendAsync("DisplayMessage", $"Tag must be 200 characters or less. Supplied length is {tags.Length}.", "Tag must be under 200 characters.");
                 }
                 DataService.UpdateTags(deviceID, tags);
-                await Clients.Caller.SendAsync("DisplayMessage", "Device updated successfully.", "Device updated.");
+                return Clients.Caller.SendAsync("DisplayMessage", "Device updated successfully.", "Device updated.");
             }
+            return Task.CompletedTask;
         }
 
         private IEnumerable<KeyValuePair<string, Device>> GetActiveClientConnections(string[] deviceIDs)
@@ -196,7 +200,7 @@ namespace Remotely.Server.Services
             if (Context?.User?.Identity?.IsAuthenticated != true || 
                 await SignInManager.UserManager.IsLockedOutAsync(RemotelyUser))
             {
-                await Clients.Caller.SendAsync("LockedOut");
+                _ = Clients.Caller.SendAsync("LockedOut");
                 Context.Abort();
                 return false;
             }
