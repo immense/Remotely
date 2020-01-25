@@ -3,10 +3,11 @@ HostName=
 Organization=
 GUID=$(cat /proc/sys/kernel/random/uuid)
 
-systemctl stop remotely-agent
-systemctl daemon-reload
-
 if [ "$1" = "--uninstall" ]; then
+	systemctl stop remotely-agent
+	systemctl daemon-reload
+	rm -r -f /usr/local/bin/Remotely
+	rm -f /etc/systemd/system/remotely-agent.service
 	exit
 fi
 
@@ -26,6 +27,7 @@ apt-get -y install libgdiplus
 apt-get -y install libxtst-dev
 apt-get -y install xclip
 apt-get -y install jq
+apt-get -y install xterm
 
 if [ -f "/usr/local/bin/Remotely/ConnectionInfo.json" ]; then
 	GUID=`cat "/usr/local/bin/Remotely/ConnectionInfo.json" | jq -r '.DeviceID'`
@@ -77,6 +79,6 @@ WantedBy=graphical.target
 EOL
 
 systemctl enable remotely-agent
-systemctl start remotely-agent
+systemctl restart remotely-agent
 
 echo Install complete.

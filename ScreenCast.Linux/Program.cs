@@ -27,12 +27,20 @@ namespace Remotely.ScreenCast.Linux
                 Conductor = Services.GetRequiredService<Conductor>();
 
                 Conductor.ProcessArgs(args);
-                Conductor.Connect().ContinueWith(async (task) =>
+
+                if (Conductor.Mode == Core.Enums.AppMode.Chat)
                 {
-                    await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
-                    await Conductor.CasterSocket.NotifyRequesterUnattendedReady(Conductor.RequesterID);
-                    Services.GetRequiredService<IdleTimer>().Start();
-                });
+                    Services.GetRequiredService<ChatHostService>().StartChat(Conductor.RequesterID).Wait();
+                }
+                else
+                {
+                    Conductor.Connect().ContinueWith(async (task) =>
+                    {
+                        await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
+                        await Conductor.CasterSocket.NotifyRequesterUnattendedReady(Conductor.RequesterID);
+                        Services.GetRequiredService<IdleTimer>().Start();
+                    });
+                }
 
                 Thread.Sleep(Timeout.Infinite);
             }
@@ -58,6 +66,7 @@ namespace Remotely.ScreenCast.Linux
             serviceCollection.AddSingleton<CasterSocket>();
             serviceCollection.AddSingleton<IdleTimer>();
             serviceCollection.AddSingleton<Conductor>();
+            serviceCollection.AddSingleton<ChatHostService>();
             serviceCollection.AddTransient<ICapturer, X11Capture>();
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();

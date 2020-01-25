@@ -52,7 +52,7 @@ namespace Remotely.Agent.Services
                 }
                 else if (OSUtils.IsLinux)
                 {
-                    var args = $"bash -c {rcBinaryPath} -mode Chat -requester {requesterID} & disown";
+                    var args = $"xterm -e {rcBinaryPath} -mode Chat -requester {requesterID} & disown";
                     StartLinuxScreenCaster(args);
                 }
             }

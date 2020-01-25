@@ -105,8 +105,8 @@ Note: To retain your settings between upgrades, copy your settings to appsetting
 * MaxOrganizationCount: By default, one organization can exist on the server, which is created automatically when the first account is registered.  Afterward, self-registration will be disabled.
     * Set this to -1 or increase it to a specific number to allow multi-tenancy.
 * RecordRemoteControlSessions: Whether or not to record remote control sessions.
-* RedirectToHTTPS: Whether ASP.NET Core will redirect all traffic from HTTP to HTTPS.  This is independent of Nginx and IIS configurations that do the same.
-* UseHSTS: Whether ASP.NET Core will use HTTP Strict Transport Security.
+* RedirectToHttps: Whether ASP.NET Core will redirect all traffic from HTTP to HTTPS.  This is independent of Nginx and IIS configurations that do the same.
+* UseHsts: Whether ASP.NET Core will use HTTP Strict Transport Security.
 * DataRetentionInDays: How long event logs and remote command logs will be kept.
 * RemoteControlSessionLimit: How many concurrent remote control sessions are allowed per organization.
 * RemoteControlRequiresAuthentication: Whether the remote control page requires authentication to establish a connection.
@@ -115,6 +115,9 @@ Note: To retain your settings between upgrades, copy your settings to appsetting
 * KnownProxies: If your Nginx server is on a different machine and is forwarding requests to the Remotely server, you will need to add the IP of the Nginx server to this array.
 * Smpt*: SMTP settings for auto-generated system emails (such as registration and password reset).
 * Theme: The color theme to use for the site.  Values are "Light" or "Dark".
+* UseWebRtc: Attempt to create a peer-to-peer connection via WebRTC for screen sharing.
+    * Only works on Windows agents.
+    * Session recording will not work if a WebRTC connection is made.
 
 ## API and Integrations
 Remotely has a basic API, which can be browsed at https://tryremotely.lucency.co/swagger (or your own server instance).  Most endpoints require authentication via the /api/Login, which in turn requires the AllowApiLogin option to be set to true in appsettings.json.  If you're not familiar with how CORS works, I recommend reading up on it before proceeding.
