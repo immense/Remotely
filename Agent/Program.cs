@@ -47,10 +47,10 @@ namespace Remotely.Agent
             });
             serviceCollection.AddSingleton<DeviceSocket>();
             serviceCollection.AddScoped<ChatClientService>();
-            serviceCollection.AddScoped<Bash>();
-            serviceCollection.AddScoped<CMD>();
-            serviceCollection.AddScoped<PSCore>();
-            serviceCollection.AddScoped<WindowsPS>();
+            serviceCollection.AddTransient<Bash>();
+            serviceCollection.AddTransient<CMD>();
+            serviceCollection.AddTransient<PSCore>();
+            serviceCollection.AddTransient<WindowsPS>();
             serviceCollection.AddScoped<ConfigService>();
             serviceCollection.AddScoped<Logger>();
             serviceCollection.AddScoped<Updater>();

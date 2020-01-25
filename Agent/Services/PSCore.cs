@@ -92,8 +92,8 @@ namespace Remotely.Agent.Services
 
         private void ProcessIdleTimeout_Elapsed(object sender, ElapsedEventArgs e)
         {
-            PS?.Dispose();
             Sessions.TryRemove(ConnectionID, out _);
+            PS?.Dispose();
         }
     }
 }
