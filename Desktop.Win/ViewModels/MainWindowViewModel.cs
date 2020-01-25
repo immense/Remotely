@@ -264,6 +264,7 @@ namespace Remotely.Desktop.Win.ViewModels
                 if (viewer != null)
                 {
                     Viewers.Remove(viewer);
+                    viewer.Dispose();
                 }
             });
         }
