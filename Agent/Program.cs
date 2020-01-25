@@ -46,6 +46,7 @@ namespace Remotely.Agent
                 builder.AddConsole().AddEventLog();
             });
             serviceCollection.AddSingleton<DeviceSocket>();
+            serviceCollection.AddScoped<ChatClientService>();
             serviceCollection.AddScoped<Bash>();
             serviceCollection.AddScoped<CMD>();
             serviceCollection.AddScoped<PSCore>();

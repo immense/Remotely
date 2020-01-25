@@ -2,17 +2,18 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Pipes;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Remotely.ScreenCast.Core.Services
 {
-    public class ChatService
+    public class ChatHostService
     {
 
-        private NamedPipeServerStream NamedPipeStream { get; set; }
         private string AsciiLogo => @"  
   _____                      _       _       
  |  __ \                    | |     | |      
@@ -24,9 +25,16 @@ namespace Remotely.ScreenCast.Core.Services
                                        |___/ 
 ";
 
-        public async Task StartChat()
+        private NamedPipeServerStream NamedPipeStream { get; set; }
+        private StreamWriter Writer { get; set; }
+        private StreamReader Reader { get; set; }
+
+        public async Task StartChat(string requesterID)
         {
-            NamedPipeStream = new NamedPipeServerStream("Remotely_Chat" + Process.GetCurrentProcess().Id, PipeDirection.InOut, 1);
+            NamedPipeStream = new NamedPipeServerStream("Remotely_Chat" + requesterID, PipeDirection.InOut, 10, PipeTransmissionMode.Byte, PipeOptions.Asynchronous | PipeOptions.WriteThrough);
+            Writer = new StreamWriter(NamedPipeStream);
+            Reader = new StreamReader(NamedPipeStream);
+
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Title = "Remotely Chat";
@@ -43,27 +51,53 @@ namespace Remotely.ScreenCast.Core.Services
                 await Task.Delay(10000);
                 if (!NamedPipeStream.IsConnected)
                 {
-                    Console.WriteLine("Connection failed.  Closing...");
-                    await Task.Delay(3000);
-                    Environment.Exit(0);
+                    await Close();
                 }
             });
             var cts = new CancellationTokenSource(10000);
             await NamedPipeStream.WaitForConnectionAsync(cts.Token);
+            _ = Task.Run(ReadFromStream);
             Console.WriteLine("You're now connected with a technician.");
             Console.WriteLine();
             Console.WriteLine("Type your responses below and hit Enter to send.");
             Console.WriteLine("Press Ctrl + C to exit.");
-            Console.WriteLine();
 
-            while (true)
+            while (NamedPipeStream.IsConnected)
             {
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.Write("You: ");
-                Console.ForegroundColor = ConsoleColor.White;
-                var input = Console.ReadLine();
-                await NamedPipeStream.WriteAsync(Encoding.UTF8.GetBytes(input));
+                SetPrompt();
+                var message = Console.ReadLine();
+                await Writer.WriteLineAsync(message);
+                await Writer.FlushAsync();
             }
+
+            await Close();
+        }
+
+        private async Task Close()
+        {
+            Console.WriteLine("Connection failed.  Closing...");
+            await Task.Delay(3000);
+            Environment.Exit(0);
+        }
+
+        private async Task ReadFromStream()
+        {
+            while (NamedPipeStream.IsConnected)
+            {
+                var message = await Reader.ReadLineAsync();
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine(message);
+                SetPrompt();
+            }
+        }
+
+        private void SetPrompt()
+        {
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write("You: ");
+            Console.ForegroundColor = ConsoleColor.White;
         }
     }
 }

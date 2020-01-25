@@ -45,7 +45,7 @@ namespace Remotely.ScreenCast.Win
 
                 if (Conductor.Mode == Core.Enums.AppMode.Chat)
                 {
-                    Services.GetRequiredService<ChatService>().StartChat().Wait();
+                    Services.GetRequiredService<ChatHostService>().StartChat(Conductor.RequesterID).Wait();
                 }
                 else
                 {
@@ -76,7 +76,7 @@ namespace Remotely.ScreenCast.Win
             serviceCollection.AddSingleton<CasterSocket>();
             serviceCollection.AddSingleton<IdleTimer>();
             serviceCollection.AddSingleton<Conductor>();
-            serviceCollection.AddSingleton<ChatService>();
+            serviceCollection.AddSingleton<ChatHostService>();
             serviceCollection.AddTransient<ICapturer>(provider =>
             {
                 try

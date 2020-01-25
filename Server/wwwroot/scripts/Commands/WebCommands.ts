@@ -12,7 +12,9 @@ import { GetSelectedDevices } from "../DataGrid.js";
 var commands: Array<ConsoleCommand> = [
     new ConsoleCommand(
         "Chat",
-        [],
+        [
+            new Parameter("message", "The message to send to the remote device.", "String")
+        ],
         "Start a chat session with the selected device.",
         "chat -message Hey, this is your IT guy.",
         "",
@@ -23,7 +25,6 @@ var commands: Array<ConsoleCommand> = [
                 return;
             }
 
-            AddConsoleOutput("Sending chat message...");
             BrowserSockets.Connection.invoke("Chat", paramaterDict["message"], selectedDevices.map(x => x.ID));
         }
     ),

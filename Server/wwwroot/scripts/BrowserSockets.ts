@@ -44,6 +44,9 @@ export function Connect() {
 };
 
 function applyMessageHandlers(hubConnection) {
+    hubConnection.on("Chat", (deviceName: string, message: string) => {
+        AddConsoleHTML(`<strong class="text-info">Chat from ${deviceName}</strong>: ${message}`);
+    });
     hubConnection.on("UserOptions", (options: UserOptions) => {
         Main.UserSettings.CommandModeShortcuts.Web = options.CommandModeShortcutWeb;
         Main.UserSettings.CommandModeShortcuts.PSCore = options.CommandModeShortcutPSCore;

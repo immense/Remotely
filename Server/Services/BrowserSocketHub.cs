@@ -49,6 +49,13 @@ namespace Remotely.Server.Services
         }
         private SignInManager<RemotelyUser> SignInManager { get; }
 
+        public async Task Chat(string message, string[] deviceIDs)
+        {
+            deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
+            var connections = GetActiveClientConnections(deviceIDs);
+            await DeviceHub.Clients.Clients(connections.Select(x => x.Key).ToList()).SendAsync("Chat", $"{RemotelyUser.UserName}: {message}", Context.ConnectionId);
+        }
+
         public async Task DeployScript(string fileID, string mode, string[] deviceIDs)
         {
             deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
