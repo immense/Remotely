@@ -56,32 +56,6 @@ namespace Remotely.Shared.Services
             }
         }
 
-        public static string PlatformString
-        {
-            get
-            {
-                if (IsWindows)
-                {
-                    if (Environment.Is64BitOperatingSystem)
-                    {
-                        return "Win10-x64";
-                    }
-                    else
-                    {
-                        return "Win10-x86";
-                    }
-
-                }
-                else if (IsLinux)
-                {
-                    return "Linux-x64";
-                }
-                else
-                {
-                    throw new Exception("Unsupported operating system.");
-                }
-            }
-        }
         public static OSPlatform GetPlatform()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

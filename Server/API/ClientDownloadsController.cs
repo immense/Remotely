@@ -47,8 +47,10 @@ namespace Remotely.Server.API
             byte[] fileBytes;
             switch (platformID)
             {
+                // TODO: Remove x64/x86 and PS files after a few releases.
                 case "Win10-x64":
                 case "Win10-x86":
+                case "Win10":
                     {
                         fileName = $"Install-{platformID}.ps1";
 

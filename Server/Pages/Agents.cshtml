@@ -43,59 +43,35 @@
     @if (User.Identity.IsAuthenticated)
     {
     <div class="col-sm-6 mb-3">
-        <h6>Windows 10 64-Bit</h6>
+        <h6>Windows 10 (64-Bit and 32-Bit)</h6>
         <p>
             <strong>Download:</strong>
             <br />
-            <a href="/API/ClientDownloads/Win10-x64">Windows 10 x64 PowerShell Installer</a>
+            <a href="/API/ClientDownloads/Win10">Windows 10 PowerShell Installer (x64/x86)</a>
             <br />
             <a href="~/Downloads/Remotely-Win10-x64.zip">Windows 10 x64 Files Only</a>
-        </p>
-
-        <p>
-            <strong>Install:</strong>
-            <br />
-            <span class="label label-default code">powershell -f [path]\Install-Win10-x64.ps1</span>
-        </p>
-        <p>
-            <strong>Local Install:</strong>
-            <span data-toggle="modal" data-target="#localInstallInfo" class="fas fa-question-circle pointer"></span>
-            <br />
-            <span class="label label-default code">powershell -f [path]\Install-Win10-x64.ps1 -path \\[path]\Remotely-Win10-x64.zip</span>
-        </p>
-        <p>
-            <strong>Uninstall:</strong>
-            <br />
-            <span class="label label-default code">powershell -f [path]\Install-Win10-x64.ps1 -uninstall</span>
-        </p>
-    </div>
-
-    <div class="col-sm-6 mb-3">
-        <h6>Windows 10 32-Bit</h6>
-        <p>
-            <strong>Download:</strong>
-            <br />
-            <a href="/API/ClientDownloads/Win10-x86">Windows 10 x86 PowerShell Installer</a>
             <br />
             <a href="~/Downloads/Remotely-Win10-x86.zip">Windows 10 x86 Files Only</a>
         </p>
+
         <p>
             <strong>Install:</strong>
             <br />
-            <span class="label label-default code">powershell -f [path]\Install-Win10-x86.ps1</span>
+            <span class="label label-default code">powershell -f [path]\Install-Win10.ps1</span>
         </p>
         <p>
             <strong>Local Install:</strong>
             <span data-toggle="modal" data-target="#localInstallInfo" class="fas fa-question-circle pointer"></span>
             <br />
-            <span class="label label-default code">powershell -f [path]\Install-Win10-x86.ps1 -path \\[path]\Remotely-Win10-x86.zip</span>
+            <span class="label label-default code">powershell -f [path]\Install-Win10.ps1 -path \\[path]\Remotely-Win10-x64.zip</span>
         </p>
         <p>
             <strong>Uninstall:</strong>
             <br />
-            <span class="label label-default code">powershell -f [path]\Install-Win10-x86.ps1 -uninstall</span>
+            <span class="label label-default code">powershell -f [path]\Install-Win10.ps1 -uninstall</span>
         </p>
     </div>
+
     <div class="col-sm-6 mb-3">
         <h6>Linux 64-Bit</h6>
         <p>

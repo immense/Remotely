@@ -46,7 +46,7 @@ namespace Remotely.Agent.Services
                         var filePath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.ps1");
 
                         wc.DownloadFile(
-                            ConfigService.GetConnectionInfo().Host + $"/API/ClientDownloads/{connectionInfo.OrganizationID}/{OSUtils.PlatformString}",
+                            ConfigService.GetConnectionInfo().Host + $"/API/ClientDownloads/{connectionInfo.OrganizationID}/Win10",
                             filePath);
 
                         Process.Start("powershell.exe", $"-f \"{filePath}\"");
@@ -56,7 +56,7 @@ namespace Remotely.Agent.Services
                         var filePath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.sh");
 
                         wc.DownloadFile(
-                            ConfigService.GetConnectionInfo().Host + $"/API/ClientDownloads/{connectionInfo.OrganizationID}/{OSUtils.PlatformString}",
+                            ConfigService.GetConnectionInfo().Host + $"/API/ClientDownloads/{connectionInfo.OrganizationID}/Linux-x64",
                             filePath);
 
                         Process.Start("sudo", $"chmod +x {filePath}").WaitForExit();
