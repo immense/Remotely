@@ -80,9 +80,10 @@ namespace Remotely.Desktop.Win.ViewModels
             {
                 return new Executor(async (param) =>
                 {
-                    foreach (Viewer viewer in (param as IList<object>))
+                    foreach (Viewer viewer in (param as IList<object>).ToArray())
                     {
                         viewer.DisconnectRequested = true;
+                        ViewerRemoved(this, viewer.ViewerConnectionID);
                         await Conductor.CasterSocket.SendViewerRemoved(viewer.ViewerConnectionID);
                     }
                 },
