@@ -16,7 +16,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Remotely.Server.API
 {
     [Route("api/[controller]")]
-    public class CommandsController : Controller
+    [ApiController]
+    public class CommandsController : ControllerBase
     {
         public CommandsController(DataService dataService)
         {

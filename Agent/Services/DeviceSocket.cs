@@ -76,6 +76,11 @@ namespace Remotely.Agent.Services
                 await HubConnection.InvokeAsync("SendServerVerificationToken");
             }
 
+            if (ConfigService.TryGetDeviceSetupOptions(out DeviceSetupOptions options))
+            {
+                await HubConnection.InvokeAsync("DeviceSetupOptions", options, ConnectionInfo.DeviceID);
+            }
+
             HeartbeatTimer?.Dispose();
             HeartbeatTimer = new Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
             HeartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
@@ -180,14 +185,14 @@ namespace Remotely.Agent.Services
                 User32.SendSAS(false);
             });
           
-            HubConnection.On("ServerVerificationToken", (string verificationToken) =>
+            HubConnection.On("ServerVerificationToken", async (string verificationToken) =>
             {
                 if (verificationToken == ConnectionInfo.ServerVerificationToken)
                 {
                     IsServerVerified = true;
                     if (!Program.IsDebug)
                     {
-                        Task.Run(Updater.CheckForUpdates);
+                        _ = Task.Run(Updater.CheckForUpdates);
                     }
                 }
                 else

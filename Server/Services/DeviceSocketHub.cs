@@ -118,6 +118,12 @@ namespace Remotely.Server.Services
             return BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceHeartbeat", Device);
         }
 
+
+        public void DeviceSetupOptions(DeviceSetupOptions options, string deviceID)
+        {
+            DataService.SetDeviceSetupOptions(deviceID, options);
+        }
+
         public Task DisplayMessage(string consoleMessage, string popupMessage, string requesterID)
         {
             return BrowserHub.Clients.Client(requesterID).SendAsync("DisplayMessage", consoleMessage, popupMessage);

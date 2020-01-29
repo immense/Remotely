@@ -15,17 +15,20 @@ using Remotely.Server.Services;
 namespace Remotely.Server.API
 {
     [Route("api/[controller]")]
-    public class ClientDownloadsController : Controller
+    [ApiController]
+    public class ClientDownloadsController : ControllerBase
     {
-        public ClientDownloadsController(IWebHostEnvironment hostEnv, DataService dataService)
+        public ClientDownloadsController(IWebHostEnvironment hostEnv, DataService dataService, ApplicationConfig appConfig)
         {
             HostEnv = hostEnv;
             DataService = dataService;
+            AppConfig = appConfig;
         }
-        private IWebHostEnvironment HostEnv { get; set; }
-        private DataService DataService { get; set; }
 
-        
+        private ApplicationConfig AppConfig { get; }
+        private DataService DataService { get; set; }
+        private IWebHostEnvironment HostEnv { get; set; }
+
         [Authorize]
         [HttpGet("{platformID}")]
         public async Task<ActionResult> Get(string platformID)
@@ -42,6 +45,7 @@ namespace Remotely.Server.API
 
         private async Task<ActionResult> GetInstallFile(string organizationID, string platformID)
         {
+            var scheme = AppConfig.RedirectToHttps ? "https" : Request.Scheme;
             var fileContents = new List<string>();
             string fileName;
             byte[] fileBytes;
@@ -59,7 +63,7 @@ namespace Remotely.Server.API
                         var hostIndex = fileContents.IndexOf("[string]$HostName = $null");
                         var orgIndex = fileContents.IndexOf("[string]$Organization = $null");
 
-                        fileContents[hostIndex] = $"[string]$HostName = \"{Request.Scheme}://{Request.Host}\"";
+                        fileContents[hostIndex] = $"[string]$HostName = \"{scheme}://{Request.Host}\"";
                         fileContents[orgIndex] = $"[string]$Organization = \"{organizationID}\"";
                         fileBytes = System.Text.Encoding.UTF8.GetBytes(string.Join(Environment.NewLine, fileContents));
                         break;
@@ -74,7 +78,7 @@ namespace Remotely.Server.API
                         var hostIndex = fileContents.IndexOf("HostName=");
                         var orgIndex = fileContents.IndexOf("Organization=");
 
-                        fileContents[hostIndex] = $"HostName=\"{Request.Scheme}://{Request.Host}\"";
+                        fileContents[hostIndex] = $"HostName=\"{scheme}://{Request.Host}\"";
                         fileContents[orgIndex] = $"Organization=\"{organizationID}\"";
                         fileBytes = System.Text.Encoding.UTF8.GetBytes(string.Join("\n", fileContents));
                         break;

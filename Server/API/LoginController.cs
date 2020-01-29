@@ -16,7 +16,8 @@ using Remotely.Server.Services;
 namespace Remotely.Server.API
 {
     [Route("api/[controller]")]
-    public class LoginController : Controller
+    [ApiController]
+    public class LoginController : ControllerBase
     {
         public LoginController(SignInManager<RemotelyUser> signInManager, DataService dataService, ApplicationConfig appConfig)
         {
