@@ -21,7 +21,8 @@ namespace Remotely.Server.API
 {
     [Route("api/[controller]")]
     [Authorize]
-    public class OrganizationManagementController : Controller
+    [ApiController]
+    public class OrganizationManagementController : ControllerBase
     {
         public OrganizationManagementController(DataService dataService, UserManager<RemotelyUser> userManager, IEmailSender emailSender)
         {

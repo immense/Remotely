@@ -9,7 +9,8 @@ using System.IO.Compression;
 namespace Remotely.Server.API
 {
     [Route("api/[controller]")]
-    public class AgentUpdateController : Controller
+    [ApiController]
+    public class AgentUpdateController : ControllerBase
     {
         public AgentUpdateController(IWebHostEnvironment hostingEnv, DataService dataService)
         {

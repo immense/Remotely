@@ -14,7 +14,8 @@ using Microsoft.Net.Http.Headers;
 namespace Remotely.Server.API
 {
     [Route("api/[controller]")]
-    public class FileSharingController : Controller
+    [ApiController]
+    public class FileSharingController : ControllerBase
     {
         public FileSharingController(DataService dataService)
         {

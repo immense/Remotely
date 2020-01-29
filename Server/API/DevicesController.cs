@@ -15,7 +15,7 @@ namespace Remotely.Server.API
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class DevicesController : Controller
+    public class DevicesController : ControllerBase
     {
    
         public DevicesController(DataService dataService, UserManager<RemotelyUser> userManager)

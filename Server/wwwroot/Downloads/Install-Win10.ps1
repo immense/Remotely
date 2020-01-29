@@ -5,7 +5,15 @@
    Do not modify this script.  It was generated specifically for your account.
 .EXAMPLE
    powershell.exe -f Install-Win10.ps1
+   powershell.exe -f Install-Win10.ps1 -DeviceAlias "My Super Computer" -DeviceGroup "My Stuff"
 #>
+
+param (
+	[string]$DeviceAlias,
+	[string]$DeviceGroup,
+	[string]$Path,
+	[switch]$Uninstall
+)
 
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
 $LogPath = "$env:TEMP\Remotely_Install.txt"
@@ -20,10 +28,6 @@ else {
 	$Platform = "x86"
 }
 
-$ArgList = New-Object System.Collections.ArrayList
-foreach ($arg in $args){
-	$ArgList.Add($arg.ToLower()) | Out-Null
-}
 $InstallPath = "$env:ProgramFiles\Remotely"
 
 function Write-Log($Message){
@@ -52,10 +56,8 @@ function Run-StartupChecks {
 		Write-Log -Message "Install script requires elevation.  Attempting to self-elevate..."
 		Start-Sleep -Seconds 3
 		$param = "-f `"$($MyInvocation.ScriptName)`""
-		foreach ($arg in $ArgList){
-			$param += " $arg"
-		}
-		Start-Process -FilePath powershell.exe -ArgumentList "$param" -Verb RunAs
+
+		Start-Process -FilePath powershell.exe -ArgumentList "-DeviceAlias $DeviceAlias -DeviceGroup $DeviceGroup -Path $Path" -Verb RunAs
 		exit
 	}
 }
@@ -101,11 +103,9 @@ function Install-Remotely {
 		$HostName = $HostName.Substring(0, $HostName.LastIndexOf("/"))
 	}
 
-	if ($ArgList.Contains("-path")) {
+	if ($Path) {
 		Write-Log "Copying install files..."
-		$SourceIndex = $ArgList.IndexOf("-path") + 1
-		$SourcePath = $ArgList[$SourceIndex].Replace("`"", "").Replace("'", "")
-		Copy-Item -Path $ArgList[$SourceIndex] -Destination "$env:TEMP\Remotely-Win10-$Platform.zip"
+		Copy-Item -Path $Path -Destination "$env:TEMP\Remotely-Win10-$Platform.zip"
 
 	}
 	else {
@@ -126,6 +126,13 @@ function Install-Remotely {
 	Expand-Archive -Path "$env:TEMP\Remotely-Win10-$Platform.zip" -DestinationPath "$InstallPath"  -Force
 
 	New-Item -ItemType File -Path "$InstallPath\ConnectionInfo.json" -Value (ConvertTo-Json -InputObject $ConnectionInfo) -Force
+
+	$DeviceSetupOptions = @{
+		DeviceAlias = $DeviceAlias;
+		DeviceGroup = $DeviceGroup;
+	}
+
+	New-Item -ItemType File -Path "$InstallPath\DeviceSetupOptions.json" -Value (ConvertTo-Json -InputObject $DeviceSetupOptions) -Force
 
 	New-Service -Name "Remotely_Service" -BinaryPathName "$InstallPath\Remotely_Agent.exe" -DisplayName "Remotely Service" -StartupType Automatic -Description "Background service that maintains a connection to the Remotely server.  The service is used for remote support and maintenance by this computer's administrators."
 	Start-Process -FilePath "cmd.exe" -ArgumentList "/c sc.exe failure `"Remotely_Service`" reset=5 actions=restart/5000" -Wait -WindowStyle Hidden
@@ -169,7 +176,7 @@ try {
 	Write-Log "Install/uninstall logs are being written to `"$LogPath`""
     Write-Log
 
-	if ($ArgList.Contains("-uninstall")) {
+	if ($Uninstall) {
 		Write-Log "Uninstall started."
 		Uninstall-Remotely
 		Write-Log "Uninstall completed."

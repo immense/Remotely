@@ -18,7 +18,8 @@ using Remotely.Server.Services;
 namespace Remotely.Server.API
 {
     [Route("api/[controller]")]
-    public class RemoteControlController : Controller
+    [ApiController]
+    public class RemoteControlController : ControllerBase
     {
         public RemoteControlController(DataService dataService, IHubContext<DeviceSocketHub> deviceHub, ApplicationConfig appConfig, SignInManager<RemotelyUser> signInManager)
         {

@@ -9,7 +9,8 @@ namespace Remotely.Server.API
 {
     // TODO: Delete after a few versions.
     [Route("api/[controller]")]
-    public class CoreVersionController : Controller
+    [ApiController]
+    public class CoreVersionController : ControllerBase
     {
         public CoreVersionController(IWebHostEnvironment hostingEnv)
         {

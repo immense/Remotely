@@ -344,6 +344,7 @@ namespace Remotely.Server.Services
         {
             return RemotelyContext.Devices.Count();
         }
+
         public Device GetDeviceForUser(string userID, string deviceID)
         {
             var user = RemotelyContext.Users.FirstOrDefault(x => x.Id == userID);
@@ -466,6 +467,17 @@ namespace Remotely.Server.Services
             RemotelyContext.SaveChanges();
         }
 
+        public void SetDeviceSetupOptions(string deviceID, DeviceSetupOptions options)
+        {
+            var device = RemotelyContext.Devices.FirstOrDefault(x => x.ID == deviceID);
+            if (device != null)
+            {
+                device.Alias = options.DeviceAlias;
+                var group = RemotelyContext.DeviceGroups.FirstOrDefault(x => x.Name.ToLower() == options.DeviceGroup.ToLower());
+                device.DeviceGroup = group;
+                RemotelyContext.SaveChanges();
+            }
+        }
         public void SetServerVerificationToken(string deviceID, string verificationToken)
         {
             var device = RemotelyContext.Devices.Find(deviceID);
