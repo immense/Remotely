@@ -473,7 +473,9 @@ namespace Remotely.Server.Services
             if (device != null)
             {
                 device.Alias = options.DeviceAlias;
-                var group = RemotelyContext.DeviceGroups.FirstOrDefault(x => x.Name.ToLower() == options.DeviceGroup.ToLower());
+                var group = RemotelyContext.DeviceGroups.FirstOrDefault(x => 
+                    x.Name.ToLower() == options.DeviceGroup.ToLower() &&
+                    x.OrganizationID == device.OrganizationID);
                 device.DeviceGroup = group;
                 RemotelyContext.SaveChanges();
             }
