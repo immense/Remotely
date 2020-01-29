@@ -43,7 +43,7 @@ namespace Remotely.Agent.Services
                     }
                     else
                     {
-                        var result = Win32Interop.OpenInteractiveProcess($"conhost.exe {rcBinaryPath} -mode Chat -requester {requesterID}", "default", false, out _);
+                        var result = Win32Interop.OpenInteractiveProcess($"{rcBinaryPath} -mode Chat -requester {requesterID}", "default", false, out _);
                         if (!result)
                         {
                             await hubConnection.InvokeAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
