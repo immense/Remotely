@@ -201,6 +201,7 @@ namespace Remotely.Server
 
             app.UseAuthorization();
 
+            app.UseCors("TrustedOriginPolicy");
 
             app.UseEndpoints(routeBuilder =>
             {
@@ -229,8 +230,6 @@ namespace Remotely.Server
                 routeBuilder.MapControllers();
                 
             });
-
-            app.UseCors("TrustedOriginPolicy");
 
             try
             {

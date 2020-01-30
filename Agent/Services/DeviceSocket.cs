@@ -185,7 +185,7 @@ namespace Remotely.Agent.Services
                 User32.SendSAS(false);
             });
           
-            HubConnection.On("ServerVerificationToken", async (string verificationToken) =>
+            HubConnection.On("ServerVerificationToken", (string verificationToken) =>
             {
                 if (verificationToken == ConnectionInfo.ServerVerificationToken)
                 {

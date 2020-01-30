@@ -4,6 +4,7 @@ using System;
 using Remotely.Shared.Win32;
 using static Remotely.Shared.Win32.User32;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace Remotely.ScreenCast.Win.Services
 {
@@ -25,116 +26,148 @@ namespace Remotely.ScreenCast.Win.Services
 
         public void SendKeyDown(string key, Viewer viewer)
         {
-            Win32Interop.SwitchToInputDesktop();
-            var keyCode = ConvertJavaScriptKeyToVirtualKey(key);
-            var union = new InputUnion()
+            SendOnStaThread(() =>
             {
-                ki = new KEYBDINPUT()
+                Win32Interop.SwitchToInputDesktop();
+                var keyCode = ConvertJavaScriptKeyToVirtualKey(key);
+                var union = new InputUnion()
                 {
-                    wVk = keyCode,
-                    wScan = 0,
-                    time = 0,
-                    dwExtraInfo = GetMessageExtraInfo()
-                }
-            };
-            var input = new INPUT() { type = InputType.KEYBOARD, U = union };
-            SendInput(1, new INPUT[] { input }, INPUT.Size);
+                    ki = new KEYBDINPUT()
+                    {
+                        wVk = keyCode,
+                        wScan = 0,
+                        time = 0,
+                        dwExtraInfo = GetMessageExtraInfo()
+                    }
+                };
+                var input = new INPUT() { type = InputType.KEYBOARD, U = union };
+                SendInput(1, new INPUT[] { input }, INPUT.Size);
+            });
+           
         }
 
         public void SendKeyUp(string key, Viewer viewer)
         {
-            Win32Interop.SwitchToInputDesktop();
-            var keyCode = ConvertJavaScriptKeyToVirtualKey(key);
-            var union = new InputUnion()
+            SendOnStaThread(() =>
             {
-                ki = new KEYBDINPUT()
+                Win32Interop.SwitchToInputDesktop();
+                var keyCode = ConvertJavaScriptKeyToVirtualKey(key);
+                var union = new InputUnion()
                 {
-                    wVk = keyCode,
-                    wScan = 0,
-                    time = 0,
-                    dwFlags = KEYEVENTF.KEYUP,
-                    dwExtraInfo = GetMessageExtraInfo()
+                    ki = new KEYBDINPUT()
+                    {
+                        wVk = keyCode,
+                        wScan = 0,
+                        time = 0,
+                        dwFlags = KEYEVENTF.KEYUP,
+                        dwExtraInfo = GetMessageExtraInfo()
+                    }
+                };
+                var input = new INPUT() { type = InputType.KEYBOARD, U = union };
+                SendInput(1, new INPUT[] { input }, INPUT.Size);
+            });
+        }
+
+        public void SendLeftMouseDown(double percentX, double percentY, Viewer viewer)
+        {
+            SendOnStaThread(() =>
+            {
+                Win32Interop.SwitchToInputDesktop();
+                var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
+                // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
+                var normalizedX = xyPercent.Item1 * 65535D;
+                var normalizedY = xyPercent.Item2 * 65535D;
+                var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.LEFTDOWN | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
+                var input = new INPUT() { type = InputType.MOUSE, U = union };
+                SendInput(1, new INPUT[] { input }, INPUT.Size);
+            });
+        }
+
+        public void SendLeftMouseUp(double percentX, double percentY, Viewer viewer)
+        {
+            SendOnStaThread(() =>
+            {
+                Win32Interop.SwitchToInputDesktop();
+                var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
+                // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
+                var normalizedX = xyPercent.Item1 * 65535D;
+                var normalizedY = xyPercent.Item2 * 65535D;
+                var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.LEFTUP | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
+                var input = new INPUT() { type = InputType.MOUSE, U = union };
+                SendInput(1, new INPUT[] { input }, INPUT.Size);
+            });
+        }
+
+        public void SendMouseMove(double percentX, double percentY, Viewer viewer)
+        {
+            SendOnStaThread(() =>
+            {
+                Win32Interop.SwitchToInputDesktop();
+                var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
+                // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
+                var normalizedX = xyPercent.Item1 * 65535D;
+                var normalizedY = xyPercent.Item2 * 65535D;
+                var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.MOVE | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
+                var input = new INPUT() { type = InputType.MOUSE, U = union };
+                SendInput(1, new INPUT[] { input }, INPUT.Size);
+            });
+        }
+
+        public void SendMouseWheel(int deltaY, Viewer viewer)
+        {
+            SendOnStaThread(() =>
+            {
+                Win32Interop.SwitchToInputDesktop();
+                if (deltaY < 0)
+                {
+                    deltaY = -120;
                 }
-            };
-            var input = new INPUT() { type = InputType.KEYBOARD, U = union };
-            SendInput(1, new INPUT[] { input }, INPUT.Size);
+                else if (deltaY > 0)
+                {
+                    deltaY = 120;
+                }
+                var union = new User32.InputUnion() { mi = new User32.MOUSEINPUT() { dwFlags = MOUSEEVENTF.WHEEL, dx = 0, dy = 0, time = 0, mouseData = deltaY, dwExtraInfo = GetMessageExtraInfo() } };
+                var input = new User32.INPUT() { type = InputType.MOUSE, U = union };
+                SendInput(1, new User32.INPUT[] { input }, INPUT.Size);
+            });
         }
 
-        public uint SendLeftMouseDown(double percentX, double percentY, Viewer viewer)
+        public void SendRightMouseDown(double percentX, double percentY, Viewer viewer)
         {
-            Win32Interop.SwitchToInputDesktop();
-            var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
-            // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
-            var normalizedX = xyPercent.Item1 * 65535D;
-            var normalizedY = xyPercent.Item2 * 65535D;
-            var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.LEFTDOWN | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
-            var input = new INPUT() { type = InputType.MOUSE, U = union };
-            return SendInput(1, new INPUT[] { input }, INPUT.Size);
-        }
-        public uint SendLeftMouseUp(double percentX, double percentY, Viewer viewer)
-        {
-            Win32Interop.SwitchToInputDesktop();
-            var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
-            // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
-            var normalizedX = xyPercent.Item1 * 65535D;
-            var normalizedY = xyPercent.Item2 * 65535D;
-            var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.LEFTUP | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
-            var input = new INPUT() { type = InputType.MOUSE, U = union };
-            return SendInput(1, new INPUT[] { input }, INPUT.Size);
-        }
-        public uint SendMouseMove(double percentX, double percentY, Viewer viewer)
-        {
-            Win32Interop.SwitchToInputDesktop();
-            var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
-            // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
-            var normalizedX = xyPercent.Item1 * 65535D;
-            var normalizedY = xyPercent.Item2 * 65535D;
-            var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.MOVE | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
-            var input = new INPUT() { type = InputType.MOUSE, U = union };
-            return SendInput(1, new INPUT[] { input }, INPUT.Size);
-        }
-
-        public uint SendMouseWheel(int deltaY, Viewer viewer)
-        {
-            Win32Interop.SwitchToInputDesktop();
-            if (deltaY < 0)
+            SendOnStaThread(() =>
             {
-                deltaY = -120;
-            }
-            else if (deltaY > 0)
-            {
-                deltaY = 120;
-            }
-            var union = new User32.InputUnion() { mi = new User32.MOUSEINPUT() { dwFlags = MOUSEEVENTF.WHEEL, dx = 0, dy = 0, time = 0, mouseData = deltaY, dwExtraInfo = GetMessageExtraInfo() } };
-            var input = new User32.INPUT() { type = InputType.MOUSE, U = union };
-            return SendInput(1, new User32.INPUT[] { input }, INPUT.Size);
+                Win32Interop.SwitchToInputDesktop();
+                var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
+                // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
+                var normalizedX = xyPercent.Item1 * 65535D;
+                var normalizedY = xyPercent.Item2 * 65535D;
+                var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.RIGHTDOWN | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
+                var input = new INPUT() { type = InputType.MOUSE, U = union };
+                SendInput(1, new INPUT[] { input }, INPUT.Size);
+            });
         }
 
-        public uint SendRightMouseDown(double percentX, double percentY, Viewer viewer)
+        public void SendRightMouseUp(double percentX, double percentY, Viewer viewer)
         {
-            Win32Interop.SwitchToInputDesktop();
-            var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
-            // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
-            var normalizedX = xyPercent.Item1 * 65535D;
-            var normalizedY = xyPercent.Item2 * 65535D;
-            var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.RIGHTDOWN | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
-            var input = new INPUT() { type = InputType.MOUSE, U = union };
-            return SendInput(1, new INPUT[] { input }, INPUT.Size);
+            SendOnStaThread(() =>
+            {
+                Win32Interop.SwitchToInputDesktop();
+                var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
+                // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
+                var normalizedX = xyPercent.Item1 * 65535D;
+                var normalizedY = xyPercent.Item2 * 65535D;
+                var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.RIGHTUP | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
+                var input = new INPUT() { type = InputType.MOUSE, U = union };
+                SendInput(1, new INPUT[] { input }, INPUT.Size);
+            });
         }
-        public uint SendRightMouseUp(double percentX, double percentY, Viewer viewer)
-        {
-            Win32Interop.SwitchToInputDesktop();
-            var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
-            // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
-            var normalizedX = xyPercent.Item1 * 65535D;
-            var normalizedY = xyPercent.Item2 * 65535D;
-            var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.RIGHTUP | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
-            var input = new INPUT() { type = InputType.MOUSE, U = union };
-            return SendInput(1, new INPUT[] { input }, INPUT.Size);
-        }
+
         public void SendText(string transferText, Viewer viewer)
         {
-            SendKeys.SendWait(transferText);
+            SendOnStaThread(() =>
+            {
+                SendKeys.SendWait(transferText);
+            });
         }
 
         private VirtualKey ConvertJavaScriptKeyToVirtualKey(string key)
@@ -257,6 +290,15 @@ namespace Remotely.ScreenCast.Win.Services
                     break;
             }
             return keyCode;
+        }
+
+        private void SendOnStaThread(Action sendAction)
+        {
+            var thread = new Thread(() => {
+                sendAction();
+            });
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
         }
     }
 }
