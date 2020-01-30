@@ -132,7 +132,7 @@ namespace Remotely.Desktop.Win.ViewModels
                             WindowStyle = ProcessWindowStyle.Hidden,
                             CreateNoWindow = true
                         };
-                        var commandLine = Win32Interop.GetCommandLine().Replace(" -elevate", "");
+                        var commandLine = Win32Interop.GetCommandLine().Replace(" -elevate", "").Replace("\"", "");
                         Logger.Write($"Creating temporary service with command line {commandLine}.");
                         psi.Arguments = $"/c sc create Remotely_Temp binPath=\"{commandLine} -elevate\"";
                         Process.Start(psi).WaitForExit();
@@ -140,7 +140,7 @@ namespace Remotely.Desktop.Win.ViewModels
                         Process.Start(psi).WaitForExit();
                         psi.Arguments = "/c sc delete Remotely_Temp";
                         Process.Start(psi).WaitForExit();
-                        Environment.Exit(0);
+                        App.Current.Shutdown();
                     }
                     catch { }
                 }, (param) =>
