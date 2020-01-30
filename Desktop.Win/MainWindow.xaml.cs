@@ -1,5 +1,7 @@
 ﻿using Remotely.Desktop.Win.ViewModels;
 using Remotely.ScreenCast.Core.Models;
+using Remotely.ScreenCast.Core.Services;
+using Remotely.Shared.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;

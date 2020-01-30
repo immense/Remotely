@@ -21,6 +21,7 @@ using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Communication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Remotely.Shared.Win32;
 
 namespace Remotely.Desktop.Win.ViewModels
 {
@@ -95,7 +96,7 @@ namespace Remotely.Desktop.Win.ViewModels
 
         }
 
-        public ICommand RestartAsAdminCommand
+        public ICommand ElevateToAdminCommand
         {
             get
             {
@@ -103,7 +104,8 @@ namespace Remotely.Desktop.Win.ViewModels
                 {
                     try
                     {
-                        var psi = new ProcessStartInfo(Assembly.GetExecutingAssembly().Location);
+                        var commandLine = Win32Interop.GetCommandLine().Trim(" -elevate".ToCharArray()).Trim('"');
+                        var psi = new ProcessStartInfo(commandLine);
                         psi.Verb = "RunAs";
                         Process.Start(psi);
                         Environment.Exit(0);
@@ -113,6 +115,37 @@ namespace Remotely.Desktop.Win.ViewModels
                 }, (param) =>
                 {
                     return !IsAdministrator;
+                });
+            }
+        }
+
+        public ICommand ElevateToServiceCommand
+        {
+            get
+            {
+                return new Executor((param) =>
+                {
+                    try
+                    {
+                        var psi = new ProcessStartInfo("cmd.exe")
+                        {
+                            WindowStyle = ProcessWindowStyle.Hidden,
+                            CreateNoWindow = true
+                        };
+                        var commandLine = Win32Interop.GetCommandLine().Replace(" -elevate", "");
+                        Logger.Write($"Creating temporary service with command line {commandLine}.");
+                        psi.Arguments = $"/c sc create Remotely_Temp binPath=\"{commandLine} -elevate\"";
+                        Process.Start(psi).WaitForExit();
+                        psi.Arguments = "/c sc start Remotely_Temp";
+                        Process.Start(psi).WaitForExit();
+                        psi.Arguments = "/c sc delete Remotely_Temp";
+                        Process.Start(psi).WaitForExit();
+                        Environment.Exit(0);
+                    }
+                    catch { }
+                }, (param) =>
+                {
+                    return IsAdministrator && !WindowsIdentity.GetCurrent().IsSystem;
                 });
             }
         }

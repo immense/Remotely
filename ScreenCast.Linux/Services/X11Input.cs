@@ -65,39 +65,35 @@ namespace Remotely.ScreenCast.Linux.Services
 
         }
 
-        public uint SendLeftMouseDown(double percentX, double percentY, Viewer viewer)
+        public void SendLeftMouseDown(double percentX, double percentY, Viewer viewer)
         {
             try
             {
                 SendMouseMove(percentX, percentY, viewer);
                 LibXtst.XTestFakeButtonEvent(Display, 1, true, 0);
                 LibX11.XSync(Display, false);
-                return 0;
             }
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                return 1;
             }
         }
 
-        public uint SendLeftMouseUp(double percentX, double percentY, Viewer viewer)
+        public void SendLeftMouseUp(double percentX, double percentY, Viewer viewer)
         {
             try
             {
                 SendMouseMove(percentX, percentY, viewer);
                 LibXtst.XTestFakeButtonEvent(Display, 1, false, 0);
                 LibX11.XSync(Display, false);
-                return 0;
             }
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                return 1;
             }
         }
 
-        public uint SendMouseMove(double percentX, double percentY, Viewer viewer)
+        public void SendMouseMove(double percentX, double percentY, Viewer viewer)
         {
             try
             {
@@ -112,10 +108,9 @@ namespace Remotely.ScreenCast.Linux.Services
             {
                 Logger.Write(ex);
             }
-            return 0;
         }
 
-        public uint SendMouseWheel(int deltaY, Viewer viewer)
+        public void SendMouseWheel(int deltaY, Viewer viewer)
         {
             try
             {
@@ -130,44 +125,38 @@ namespace Remotely.ScreenCast.Linux.Services
                     LibXtst.XTestFakeButtonEvent(Display, 5, false, 0);
                 }
                 LibX11.XSync(Display, false);
-                return 0;
             }
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                return 1;
             }
         }
 
-        public uint SendRightMouseDown(double percentX, double percentY, Viewer viewer)
+        public void SendRightMouseDown(double percentX, double percentY, Viewer viewer)
         {
             try
             {
                 SendMouseMove(percentX, percentY, viewer);
                 LibXtst.XTestFakeButtonEvent(Display, 3, true, 0);
                 LibX11.XSync(Display, false);
-                return 0;
             }
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                return 1;
             }
         }
 
-        public uint SendRightMouseUp(double percentX, double percentY, Viewer viewer)
+        public void SendRightMouseUp(double percentX, double percentY, Viewer viewer)
         {
             try
             {
                 SendMouseMove(percentX, percentY, viewer);
                 LibXtst.XTestFakeButtonEvent(Display, 3, false, 0);
                 LibX11.XSync(Display, false);
-                return 0;
             }
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                return 1;
             }
         }
 

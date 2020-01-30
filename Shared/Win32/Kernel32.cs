@@ -19,6 +19,9 @@ namespace Remotely.Shared.Win32
         [DllImport("kernel32.dll")]
         public static extern IntPtr OpenProcess(uint dwDesiredAccess, bool bInheritHandle, uint dwProcessId);
 
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        public static extern IntPtr GetCommandLine();
+
         #endregion
     }
 }

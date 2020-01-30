@@ -11,12 +11,12 @@ namespace Remotely.ScreenCast.Core.Interfaces
     {
         void SendKeyDown(string key, Viewer viewer);
         void SendKeyUp(string key, Viewer viewer);
-        uint SendMouseMove(double percentX, double percentY, Viewer viewer);
-        uint SendLeftMouseDown(double percentX, double percentY, Viewer viewer);
-        uint SendLeftMouseUp(double percentX, double percentY, Viewer viewer);
-        uint SendRightMouseDown(double percentX, double percentY, Viewer viewer);
-        uint SendRightMouseUp(double percentX, double percentY, Viewer viewer);
-        uint SendMouseWheel(int deltaY, Viewer viewer);
+        void SendMouseMove(double percentX, double percentY, Viewer viewer);
+        void SendLeftMouseDown(double percentX, double percentY, Viewer viewer);
+        void SendLeftMouseUp(double percentX, double percentY, Viewer viewer);
+        void SendRightMouseDown(double percentX, double percentY, Viewer viewer);
+        void SendRightMouseUp(double percentX, double percentY, Viewer viewer);
+        void SendMouseWheel(int deltaY, Viewer viewer);
         void SendText(string transferText, Viewer viewer);
     }
 }

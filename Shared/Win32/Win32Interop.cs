@@ -13,28 +13,6 @@ namespace Remotely.Shared.Win32
 {
     public class Win32Interop
     {
-        public static bool GetCurrentDesktop(out string desktopName)
-        {
-            var inputDesktop = OpenInputDesktop();
-            try
-            {
-                byte[] deskBytes = new byte[256];
-                uint lenNeeded;
-                if (!GetUserObjectInformationW(inputDesktop, UOI_NAME, deskBytes, 256, out lenNeeded))
-                {
-                    desktopName = string.Empty;
-                    return false;
-                }
-
-                desktopName = Encoding.Unicode.GetString(deskBytes.Take((int)lenNeeded).ToArray()).Replace("\0", "");
-                return true;
-            }
-            finally
-            {
-                CloseDesktop(inputDesktop);
-            }
-        }
-
         public static List<WindowsSession> GetActiveSessions()
         {
             var sessions = new List<WindowsSession>();
@@ -74,6 +52,33 @@ namespace Remotely.Shared.Win32
             return sessions;
         }
 
+        public static string GetCommandLine()
+        {
+            var commandLinePtr = Kernel32.GetCommandLine();
+            return Marshal.PtrToStringAuto(commandLinePtr);
+        }
+
+        public static bool GetCurrentDesktop(out string desktopName)
+        {
+            var inputDesktop = OpenInputDesktop();
+            try
+            {
+                byte[] deskBytes = new byte[256];
+                uint lenNeeded;
+                if (!GetUserObjectInformationW(inputDesktop, UOI_NAME, deskBytes, 256, out lenNeeded))
+                {
+                    desktopName = string.Empty;
+                    return false;
+                }
+
+                desktopName = Encoding.Unicode.GetString(deskBytes.Take((int)lenNeeded).ToArray()).Replace("\0", "");
+                return true;
+            }
+            finally
+            {
+                CloseDesktop(inputDesktop);
+            }
+        }
         public static IntPtr OpenInputDesktop()
         {
             return User32.OpenInputDesktop(0, true, ACCESS_MASK.GENERIC_ALL);
@@ -168,7 +173,7 @@ namespace Remotely.Shared.Win32
                     return false;
                 }
 
-                if (!SwitchDesktop(inputDesktop) || !SetThreadDesktop(inputDesktop))
+                if (!SetThreadDesktop(inputDesktop) || !SwitchDesktop(inputDesktop))
                 {
                     return false;
                 }
