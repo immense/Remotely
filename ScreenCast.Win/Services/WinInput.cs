@@ -26,9 +26,8 @@ namespace Remotely.ScreenCast.Win.Services
 
         public void SendKeyDown(string key, Viewer viewer)
         {
-            SendOnStaThread(() =>
+            TryOnInputDesktop(() =>
             {
-                Win32Interop.SwitchToInputDesktop();
                 var keyCode = ConvertJavaScriptKeyToVirtualKey(key);
                 var union = new InputUnion()
                 {
@@ -46,11 +45,12 @@ namespace Remotely.ScreenCast.Win.Services
            
         }
 
+
+
         public void SendKeyUp(string key, Viewer viewer)
         {
-            SendOnStaThread(() =>
+            TryOnInputDesktop(() =>
             {
-                Win32Interop.SwitchToInputDesktop();
                 var keyCode = ConvertJavaScriptKeyToVirtualKey(key);
                 var union = new InputUnion()
                 {
@@ -70,9 +70,8 @@ namespace Remotely.ScreenCast.Win.Services
 
         public void SendLeftMouseDown(double percentX, double percentY, Viewer viewer)
         {
-            SendOnStaThread(() =>
+            TryOnInputDesktop(() =>
             {
-                Win32Interop.SwitchToInputDesktop();
                 var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
                 // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
                 var normalizedX = xyPercent.Item1 * 65535D;
@@ -85,9 +84,8 @@ namespace Remotely.ScreenCast.Win.Services
 
         public void SendLeftMouseUp(double percentX, double percentY, Viewer viewer)
         {
-            SendOnStaThread(() =>
+            TryOnInputDesktop(() =>
             {
-                Win32Interop.SwitchToInputDesktop();
                 var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
                 // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
                 var normalizedX = xyPercent.Item1 * 65535D;
@@ -100,9 +98,8 @@ namespace Remotely.ScreenCast.Win.Services
 
         public void SendMouseMove(double percentX, double percentY, Viewer viewer)
         {
-            SendOnStaThread(() =>
+            TryOnInputDesktop(() =>
             {
-                Win32Interop.SwitchToInputDesktop();
                 var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
                 // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
                 var normalizedX = xyPercent.Item1 * 65535D;
@@ -115,9 +112,8 @@ namespace Remotely.ScreenCast.Win.Services
 
         public void SendMouseWheel(int deltaY, Viewer viewer)
         {
-            SendOnStaThread(() =>
+            TryOnInputDesktop(() =>
             {
-                Win32Interop.SwitchToInputDesktop();
                 if (deltaY < 0)
                 {
                     deltaY = -120;
@@ -134,9 +130,8 @@ namespace Remotely.ScreenCast.Win.Services
 
         public void SendRightMouseDown(double percentX, double percentY, Viewer viewer)
         {
-            SendOnStaThread(() =>
+            TryOnInputDesktop(() =>
             {
-                Win32Interop.SwitchToInputDesktop();
                 var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
                 // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
                 var normalizedX = xyPercent.Item1 * 65535D;
@@ -149,9 +144,8 @@ namespace Remotely.ScreenCast.Win.Services
 
         public void SendRightMouseUp(double percentX, double percentY, Viewer viewer)
         {
-            SendOnStaThread(() =>
+            TryOnInputDesktop(() =>
             {
-                Win32Interop.SwitchToInputDesktop();
                 var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
                 // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
                 var normalizedX = xyPercent.Item1 * 65535D;
@@ -164,7 +158,7 @@ namespace Remotely.ScreenCast.Win.Services
 
         public void SendText(string transferText, Viewer viewer)
         {
-            SendOnStaThread(() =>
+            TryOnInputDesktop(() =>
             {
                 SendKeys.SendWait(transferText);
             });
@@ -292,13 +286,22 @@ namespace Remotely.ScreenCast.Win.Services
             return keyCode;
         }
 
-        private void SendOnStaThread(Action sendAction)
+        private void TryOnInputDesktop(Action inputAction)
         {
-            var thread = new Thread(() => {
-                sendAction();
-            });
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Start();
+            if (!Win32Interop.SwitchToInputDesktop())
+            {
+                var thread = new Thread(() =>
+                {
+                    Win32Interop.SwitchToInputDesktop();
+                    inputAction();
+                });
+                thread.SetApartmentState(ApartmentState.STA);
+                thread.Start();
+            }
+            else
+            {
+                inputAction();
+            }
         }
     }
 }

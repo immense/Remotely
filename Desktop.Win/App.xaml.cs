@@ -47,7 +47,7 @@ namespace Remotely.Desktop.Win
         {
             if (Environment.GetCommandLineArgs().Contains("-elevate"))
             {
-                var commandLine = Win32Interop.GetCommandLine().Replace(" -elevate", "");
+                var commandLine = Win32Interop.GetCommandLine().Replace(" -elevate", "").Replace("\"", "");
 
                 Logger.Write($"Elevating process {commandLine}.");
                 var result = Win32Interop.OpenInteractiveProcess(
