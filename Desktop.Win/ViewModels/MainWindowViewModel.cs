@@ -22,6 +22,7 @@ using Remotely.ScreenCast.Core.Communication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Win32;
+using Screen = System.Windows.Forms.Screen;
 
 namespace Remotely.Desktop.Win.ViewModels
 {
@@ -237,7 +238,17 @@ namespace Remotely.Desktop.Win.ViewModels
             serviceCollection.AddTransient<ICapturer>(provider => {
                 try
                 {
-                    return new DXCapture();
+                    var dxCapture = new DXCapture();
+                    if (dxCapture.GetScreenCount() == Screen.AllScreens.Length)
+                    {
+                        return dxCapture;
+                    }
+                    else
+                    {
+                        Logger.Write("DX screen count doesn't match.  Using CPU capturer instead.");
+                        dxCapture.Dispose();
+                        return new BitBltCapture();
+                    }
                 }
                 catch
                 {

@@ -175,7 +175,7 @@ namespace Remotely.ScreenCast.Win.Capture
 
         public int GetScreenCount()
         {
-            return Screen.AllScreens.Length;
+            return adapter.GetOutputCount();
         }
 
         public Rectangle GetVirtualScreenBounds()

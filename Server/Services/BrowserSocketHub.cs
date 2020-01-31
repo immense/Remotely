@@ -127,7 +127,7 @@ namespace Remotely.Server.Services
 			if (DataService.DoesUserHaveAccessToDevice(deviceID, RemotelyUser))
 			{
 				var targetDevice = DeviceSocketHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == deviceID);
-				var currentUsers = RCBrowserSocketHub.OrganizationConnectionList.Count(x => x.Value.OrganizationID == RemotelyUser.OrganizationID);
+				var currentUsers = RCDeviceSocketHub.SessionInfoList.Count(x => x.Value.OrganizationID == RemotelyUser.OrganizationID);
 				if (currentUsers >= AppConfig.RemoteControlSessionLimit)
 				{
 					return Clients.Caller.SendAsync("DisplayMessage", $"There are already the maximum amount of active remote control sessions for your organization.", "Max number of concurrent sessions reached.");

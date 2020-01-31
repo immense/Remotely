@@ -220,6 +220,7 @@ export class RCBrowserSockets {
             UI.ShowMessage("Requesting remote control...");
         });
 
+
         hubConnection.on("ReceiveRtcOffer", async (sdp: string) => {
             console.log("Rtc offer SDP received.");
             RemoteControl.RtcSession.Init();
@@ -233,6 +234,9 @@ export class RCBrowserSockets {
                 sdpMLineIndex: sdpMlineIndex,
                 sdpMid: sdpMid
             } as any);
+        });
+        hubConnection.on("ShowMessage", (message: string) => {
+            UI.ShowMessage(message);
         });
     }
 }

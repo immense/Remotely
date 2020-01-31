@@ -212,6 +212,9 @@ export class RCBrowserSockets {
                 sdpMid: sdpMid
             });
         });
+        hubConnection.on("ShowMessage", (message) => {
+            UI.ShowMessage(message);
+        });
     }
 }
 //# sourceMappingURL=RCBrowserSockets.js.map

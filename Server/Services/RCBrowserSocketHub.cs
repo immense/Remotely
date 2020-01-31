@@ -8,29 +8,25 @@ using System.Linq;
 using System.Threading.Tasks;
 using Remotely.Shared.Enums;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace Remotely.Server.Services
 {
     [Authorize("RemoteControlPolicy")]
     public class RCBrowserSocketHub : Hub
     {
-        public RCBrowserSocketHub(DataService dataService, 
-            IHubContext<RCDeviceSocketHub> rcDeviceHub, 
-            IHubContext<DeviceSocketHub> deviceHub, 
+        public RCBrowserSocketHub(DataService dataService,
+            IHubContext<RCDeviceSocketHub> rcDeviceHub,
             ApplicationConfig appConfig,
             RemoteControlSessionRecorder rcSessionRecorder)
         {
-            this.DataService = dataService;
-            this.RCDeviceHub = rcDeviceHub;
-            this.AppConfig = appConfig;
-            this.DeviceHub = deviceHub;
+            DataService = dataService;
+            RCDeviceHub = rcDeviceHub;
+            AppConfig = appConfig;
             RCSessionRecorder = rcSessionRecorder;
         }
-        public static ConcurrentDictionary<string, RemotelyUser> OrganizationConnectionList { get; } = new ConcurrentDictionary<string, RemotelyUser>();
         private ApplicationConfig AppConfig { get; set; }
         private DataService DataService { get; }
-
-        private IHubContext<DeviceSocketHub> DeviceHub { get; }
 
         private RemoteControlMode Mode
         {
@@ -118,22 +114,15 @@ namespace Remotely.Server.Services
 
         public override Task OnConnectedAsync()
         {
-            if (Context.User.Identity.IsAuthenticated)
-            {
-                var user = DataService.GetUserByName(Context.User.Identity.Name);
-                OrganizationConnectionList.AddOrUpdate(Context.ConnectionId, user, (id, r) => user);
-            }
             return base.OnConnectedAsync();
         }
 
         public override Task OnDisconnectedAsync(Exception exception)
         {
-            if (Context.User.Identity.IsAuthenticated)
+            if (ScreenCasterID != null)
             {
-                OrganizationConnectionList.Remove(Context.ConnectionId, out _);
+                RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ViewerDisconnected", Context.ConnectionId);
             }
-
-            RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ViewerDisconnected", Context.ConnectionId);
 
             if (AppConfig.RecordRemoteControlSessions)
             {
@@ -168,7 +157,7 @@ namespace Remotely.Server.Services
             return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("AutoQualityAdjust", isOn, Context.ConnectionId);
         }
 
-        public Task SendScreenCastRequestToDevice(string screenCasterID, string requesterName, int remoteControlMode)
+        public async Task<Task> SendScreenCastRequestToDevice(string screenCasterID, string requesterName, int remoteControlMode)
         {
             if ((RemoteControlMode)remoteControlMode == RemoteControlMode.Normal)
             {
@@ -180,14 +169,26 @@ namespace Remotely.Server.Services
                 screenCasterID = RCDeviceSocketHub.SessionInfoList.First(x => x.Value.AttendedSessionID == screenCasterID).Value.RCSocketID;
             }
 
+            RCDeviceSocketHub.SessionInfoList.TryGetValue(screenCasterID, out var sessionInfo);
+
+            ScreenCasterID = screenCasterID;
+            RequesterName = requesterName;
+            Mode = (RemoteControlMode)remoteControlMode;
+
             string orgId = null;
 
             if (Context?.User?.Identity?.IsAuthenticated == true)
             {
                 orgId = DataService.GetUserByID(Context.UserIdentifier).OrganizationID;
+                var currentUsers = RCDeviceSocketHub.SessionInfoList.Count(x => x.Value.OrganizationID == orgId);
+                if (currentUsers >= AppConfig.RemoteControlSessionLimit)
+                {
+                    await Clients.Caller.SendAsync("ShowMessage", "Max number of concurrent sessions reached.");
+                    Context.Abort();
+                    return Task.CompletedTask;
+                }
+                sessionInfo.OrganizationID = orgId;
             }
-
-            RCDeviceSocketHub.SessionInfoList.TryGetValue(screenCasterID, out var sessionInfo);
 
             DataService.WriteEvent(new EventLog()
             {
@@ -203,10 +204,6 @@ namespace Remotely.Server.Services
                                 $"Requester IP Address: " + Context?.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString(),
                 OrganizationID = orgId
             });
-    
-            ScreenCasterID = screenCasterID;
-            Mode = (RemoteControlMode)remoteControlMode;
-            RequesterName = requesterName;
 
             if (Mode == RemoteControlMode.Unattended)
             {
@@ -220,7 +217,7 @@ namespace Remotely.Server.Services
             else
             {
                 sessionInfo.Mode = RemoteControlMode.Normal;
-                Clients.Caller.SendAsync("RequestingScreenCast");
+                _ = Clients.Caller.SendAsync("RequestingScreenCast");
                 return RCDeviceHub.Clients.Client(screenCasterID).SendAsync("RequestScreenCast", Context.ConnectionId, requesterName);
             }
 
