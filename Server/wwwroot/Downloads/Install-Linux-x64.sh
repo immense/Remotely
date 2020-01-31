@@ -5,9 +5,9 @@ GUID=$(cat /proc/sys/kernel/random/uuid)
 
 if [ "$1" = "--uninstall" ]; then
 	systemctl stop remotely-agent
-	systemctl daemon-reload
 	rm -r -f /usr/local/bin/Remotely
 	rm -f /etc/systemd/system/remotely-agent.service
+	systemctl daemon-reload
 	exit
 fi
 
