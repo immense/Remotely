@@ -21,7 +21,7 @@ namespace Remotely.Agent.Services
 
         private ConnectionInfo ConnectionInfo { get; }
 
-        public async Task LaunchChatService(string requesterID, HubConnection hubConnection)
+        public async Task<int> LaunchChatService(string requesterID, HubConnection hubConnection)
         {
             try
             {
@@ -39,21 +39,25 @@ namespace Remotely.Agent.Services
 
                     if (Program.IsDebug)
                     {
-                        Process.Start("conhost.exe", $"{rcBinaryPath} -mode Chat -requester {requesterID}");
+                        return Process.Start("conhost.exe", $"{rcBinaryPath} -mode Chat -requester {requesterID}").Id;
                     }
                     else
                     {
-                        var result = Win32Interop.OpenInteractiveProcess($"{rcBinaryPath} -mode Chat -requester {requesterID}", "default", false, out _);
+                        var result = Win32Interop.OpenInteractiveProcess($"{rcBinaryPath} -mode Chat -requester {requesterID}", "default", false, out var procInfo);
                         if (!result)
                         {
                             await hubConnection.InvokeAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
+                        }
+                        else
+                        {
+                            return procInfo.dwProcessId;
                         }
                     }
                 }
                 else if (OSUtils.IsLinux)
                 {
                     var args = $"xterm -e {rcBinaryPath} -mode Chat -requester {requesterID} & disown";
-                    StartLinuxScreenCaster(args);
+                    return StartLinuxScreenCaster(args);
                 }
             }
             catch (Exception ex)
@@ -61,6 +65,7 @@ namespace Remotely.Agent.Services
                 Logger.Write(ex);
                 await hubConnection.InvokeAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
             }
+            return -1;
         }
 
         public async Task LaunchRemoteControl(string requesterID, string serviceID, HubConnection hubConnection)
@@ -155,7 +160,7 @@ namespace Remotely.Agent.Services
             }
         }
 
-        private void StartLinuxScreenCaster(string args)
+        private int StartLinuxScreenCaster(string args)
         {
             var xauthority = OSUtils.StartProcessWithResults("find", $"/ -name Xauthority").Split('\n', StringSplitOptions.RemoveEmptyEntries).First();
             var display = ":0";
@@ -180,7 +185,7 @@ namespace Remotely.Agent.Services
             psi.Environment.Add("DISPLAY", display);
             psi.Environment.Add("XAUTHORITY", xauthority);
             Logger.Write($"Attempting to launch screen caster with username {username}, xauthority {xauthority}, and display {display}.");
-            Process.Start(psi);
+            return Process.Start(psi).Id;
         }
     }
 }
