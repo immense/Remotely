@@ -46,16 +46,16 @@ namespace Remotely.ScreenCast.Core.Services
             Console.WriteLine("Connecting...");
             Console.WriteLine();
 
-            // Cancellation token doesn't work.
-            _ = Task.Run(async () => {
-                await Task.Delay(10000);
-                if (!NamedPipeStream.IsConnected)
-                {
-                    await Close();
-                }
-            });
             var cts = new CancellationTokenSource(10000);
-            await NamedPipeStream.WaitForConnectionAsync(cts.Token);
+            try
+            {
+                await NamedPipeStream.WaitForConnectionAsync(cts.Token);
+            }
+            catch (TaskCanceledException)
+            {
+                await Close();
+                return;
+            }
             _ = Task.Run(ReadFromStream);
             Console.WriteLine("You're now connected with a technician.");
             Console.WriteLine();
