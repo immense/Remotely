@@ -81,6 +81,7 @@ namespace Remotely.Agent.Services
                             if (Encoding.UTF8.GetBytes(serializedResult).Length > 400000)
                             {
                                 await SendResultsViaAjax("Bash", result);
+                                await hubConnection.InvokeAsync("BashResultViaAjax", commandID);
                             }
                             else
                             {
