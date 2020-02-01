@@ -24,6 +24,7 @@ namespace Remotely.Server.Services
         }
 
 		public static ConcurrentDictionary<string, Device> ServiceConnections { get; } = new ConcurrentDictionary<string, Device>();
+        public static ConcurrentDictionary<string, string> ApiScriptResults { get; } = new ConcurrentDictionary<string, string>();
         public IHubContext<RCBrowserSocketHub> RCBrowserHub { get; }
         private IHubContext<BrowserSocketHub> BrowserHub { get; }
         private DataService DataService { get; }
@@ -44,6 +45,7 @@ namespace Remotely.Server.Services
 			var commandContext = DataService.GetCommandContext(commandID);
 			return BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("BashResultViaAjax", commandID, Device.ID);
 		}
+
         public Task Chat(string message, string senderConnectionID)
         {
             return BrowserHub.Clients.Client(senderConnectionID).SendAsync("Chat", Device.DeviceName, message);
@@ -55,7 +57,7 @@ namespace Remotely.Server.Services
             return BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("CMDResultViaAjax", commandID, Device.ID);
 		}
 
-		public Task CommandResult(GenericCommandResult result)
+        public Task CommandResult(GenericCommandResult result)
 		{
 			result.DeviceID = Device.ID;
 			var commandContext = DataService.GetCommandContext(result.CommandContextID);
@@ -63,6 +65,11 @@ namespace Remotely.Server.Services
 			DataService.AddOrUpdateCommandContext(commandContext);
             return BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("CommandResult", result);
 		}
+
+        public void CommandResultViaApi(string commandID, string requestID)
+        {
+            ApiScriptResults.AddOrUpdate(requestID, commandID, (k, v) => commandID);
+        }
 
         public Task DeviceCameOnline(Device device)
         {
