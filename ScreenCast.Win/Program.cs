@@ -13,6 +13,7 @@ using Remotely.ScreenCast.Win.Capture;
 using Remotely.ScreenCast.Core.Communication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Windows.Forms;
 
 namespace Remotely.ScreenCast.Win
 {
@@ -81,7 +82,17 @@ namespace Remotely.ScreenCast.Win
             {
                 try
                 {
-                    return new DXCapture();
+                    var dxCapture = new DXCapture();
+                    if (dxCapture.GetScreenCount() == Screen.AllScreens.Length)
+                    {
+                        return dxCapture;
+                    }
+                    else
+                    {
+                        Logger.Write("DX screen count doesn't match.  Using CPU capturer instead.");
+                        dxCapture.Dispose();
+                        return new BitBltCapture();
+                    }
                 }
                 catch
                 {
