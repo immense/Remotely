@@ -114,6 +114,17 @@ namespace Remotely.Agent.Services
 
                 await CommandExecutor.ExecuteCommand(mode, command, commandID, senderConnectionID, HubConnection);
             }));
+            HubConnection.On("ExecuteCommandFromApi", (async (string mode, string requesterID, string command, string commandID, string senderConnectionID) =>
+            {
+                if (!IsServerVerified)
+                {
+                    Logger.Write($"Command attempted before server was verified.  Mode: {mode}.  Command: {command}.  Sender: {senderConnectionID}");
+                    Uninstaller.UninstallAgent();
+                    return;
+                }
+
+                await CommandExecutor.ExecuteCommandFromApi(mode, requesterID, command, commandID, senderConnectionID, HubConnection);
+            }));
             HubConnection.On("TransferFiles", async (string transferID, List<string> fileIDs, string requesterID) =>
             {
                 Logger.Write($"File transfer started by {requesterID}.");
