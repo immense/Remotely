@@ -227,6 +227,12 @@ namespace Remotely.Server.Services
             RemotelyContext.SaveChanges();
         }
 
+        public void DetachEntity(object entity)
+        {
+            RemotelyContext.Entry(entity).State = EntityState.Detached;
+        }
+
+
         public void DeviceDisconnected(string deviceID)
         {
             var device = RemotelyContext.Devices.Find(deviceID);

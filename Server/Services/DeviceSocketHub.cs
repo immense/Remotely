@@ -9,13 +9,15 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Internal;
 
 namespace Remotely.Server.Services
 {
     public class DeviceSocketHub : Hub
     {
-        public DeviceSocketHub(DataService dataService, 
-            IHubContext<BrowserSocketHub> browserHub, 
+        public DeviceSocketHub(DataService dataService,
+            IHubContext<BrowserSocketHub> browserHub,
             IHubContext<RCBrowserSocketHub> rcBrowserHub)
         {
             DataService = dataService;
@@ -23,8 +25,8 @@ namespace Remotely.Server.Services
             RCBrowserHub = rcBrowserHub;
         }
 
-		public static ConcurrentDictionary<string, Device> ServiceConnections { get; } = new ConcurrentDictionary<string, Device>();
-        public static ConcurrentDictionary<string, string> ApiScriptResults { get; } = new ConcurrentDictionary<string, string>();
+        public static ConcurrentDictionary<string, Device> ServiceConnections { get; } = new ConcurrentDictionary<string, Device>();
+        public static IMemoryCache ApiScriptResults { get; } = new MemoryCache(new MemoryCacheOptions());
         public IHubContext<RCBrowserSocketHub> RCBrowserHub { get; }
         private IHubContext<BrowserSocketHub> BrowserHub { get; }
         private DataService DataService { get; }
@@ -68,7 +70,7 @@ namespace Remotely.Server.Services
 
         public void CommandResultViaApi(string commandID, string requestID)
         {
-            ApiScriptResults.AddOrUpdate(requestID, commandID, (k, v) => commandID);
+            ApiScriptResults.Set(requestID, commandID, DateTimeOffset.Now.AddHours(1));
         }
 
         public Task DeviceCameOnline(Device device)
