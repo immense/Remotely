@@ -121,7 +121,7 @@ namespace Remotely.Server.Services
         {
             SessionInfo = new RCSessionInfo()
             {
-                RCSocketID = Context.ConnectionId,
+                RCDeviceSocketID = Context.ConnectionId,
                 StartTime = DateTime.Now
             };
             SessionInfoList.AddOrUpdate(Context.ConnectionId, SessionInfo, (id, si) => SessionInfo);

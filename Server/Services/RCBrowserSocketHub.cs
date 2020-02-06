@@ -166,7 +166,7 @@ namespace Remotely.Server.Services
                     return Clients.Caller.SendAsync("SessionIDNotFound");
                 }
 
-                screenCasterID = RCDeviceSocketHub.SessionInfoList.First(x => x.Value.AttendedSessionID == screenCasterID).Value.RCSocketID;
+                screenCasterID = RCDeviceSocketHub.SessionInfoList.First(x => x.Value.AttendedSessionID == screenCasterID).Value.RCDeviceSocketID;
             }
 
             RCDeviceSocketHub.SessionInfoList.TryGetValue(screenCasterID, out var sessionInfo);
@@ -188,6 +188,8 @@ namespace Remotely.Server.Services
                     return Task.CompletedTask;
                 }
                 sessionInfo.OrganizationID = orgId;
+                sessionInfo.RequesterUserName = Context.User.Identity.Name;
+                sessionInfo.RequesterSocketID = Context.ConnectionId;
             }
 
             DataService.WriteEvent(new EventLog()
