@@ -102,8 +102,7 @@ namespace Remotely.Server.Services
             return Task.CompletedTask;
         }
 
-
-		public override async Task OnConnectedAsync()
+        public override async Task OnConnectedAsync()
 		{
 			RemotelyUser = DataService.GetUserByID(Context.UserIdentifier);
 			if (await IsConnectionValid() == false)

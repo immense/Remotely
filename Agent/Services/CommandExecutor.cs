@@ -40,7 +40,6 @@ namespace Remotely.Agent.Services
                             }
                             break;
                         }
-
                     case "winps":
                         if (OSUtils.IsWindows)
                         {
@@ -97,6 +96,50 @@ namespace Remotely.Agent.Services
             {
                 Logger.Write(ex);
                 await hubConnection.InvokeAsync("DisplayMessage", "There was an error executing the command.  It has been logged on the client device.", "Error executing command.", senderConnectionID);
+            }
+        }
+
+        public async Task ExecuteCommandFromApi(string mode, string requestID, string command, string commandID, string senderUserName, HubConnection hubConnection)
+        {
+            try
+            {
+                switch (mode.ToLower())
+                {
+                    case "pscore":
+                        var psCoreResult = PSCore.GetCurrent(senderUserName).WriteInput(command, commandID);
+                        await SendResultsViaAjax("PSCore", psCoreResult);
+                        break;
+
+                    case "winps":
+                        if (OSUtils.IsWindows)
+                        {
+                            var result = WindowsPS.GetCurrent(senderUserName).WriteInput(command, commandID);
+                            await SendResultsViaAjax("WinPS", result);
+                        }
+                        break;
+                    case "cmd":
+                        if (OSUtils.IsWindows)
+                        {
+                            var result = CMD.GetCurrent(senderUserName).WriteInput(command, commandID);
+                            await SendResultsViaAjax("CMD", result);
+                        }
+                        break;
+                    case "bash":
+                        if (OSUtils.IsLinux)
+                        {
+                            var result = Bash.GetCurrent(senderUserName).WriteInput(command, commandID);
+                            await SendResultsViaAjax("Bash", result);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+
+                await hubConnection.InvokeAsync("CommandResultViaApi", commandID, requestID);
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
             }
         }
         private async Task SendResultsViaAjax(string resultType, object result)

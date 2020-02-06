@@ -211,6 +211,16 @@ namespace Remotely.ScreenCast.Core.Communication
                 }
             });
 
+            Connection.On("Disconnect", async (string reason) =>
+            {
+                Logger.Write($"Disconnecting caster socket.  Reason: {reason}");
+                foreach (var viewer in conductor.Viewers.Values.ToList())
+                {
+                    await Connection.InvokeAsync("ViewerDisconnected", viewer.ViewerConnectionID);
+                    viewer.DisconnectRequested = true;
+                }
+            });
+
             Connection.On("GetScreenCast", (string viewerID, string requesterName) =>
             {
                 try
@@ -302,11 +312,11 @@ namespace Remotely.ScreenCast.Core.Communication
 
             Connection.On("ViewerDisconnected", async (string viewerID) =>
             {
+                await Connection.InvokeAsync("ViewerDisconnected", viewerID);
                 if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
                 {
                     viewer.DisconnectRequested = true;
                 }
-                await Connection.InvokeAsync("ViewerDisconnected", viewerID);
                 conductor.InvokeViewerRemoved(viewerID);
 
             });

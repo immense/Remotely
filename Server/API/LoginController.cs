@@ -10,6 +10,7 @@ using Remotely.Shared.Models;
 using Remotely.Server.Data;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
+using Microsoft.AspNetCore.SignalR;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,16 +20,24 @@ namespace Remotely.Server.API
     [ApiController]
     public class LoginController : ControllerBase
     {
-        public LoginController(SignInManager<RemotelyUser> signInManager, DataService dataService, ApplicationConfig appConfig)
+        public LoginController(SignInManager<RemotelyUser> signInManager, 
+            DataService dataService, 
+            ApplicationConfig appConfig,
+            IHubContext<RCDeviceSocketHub> rcDeviceHub,
+            IHubContext<RCBrowserSocketHub> rcBrowserHub)
         {
             SignInManager = signInManager;
             DataService = dataService;
             AppConfig = appConfig;
+            RCDeviceHub = rcDeviceHub;
+            RCBrowserHub = rcBrowserHub;
         }
 
         private SignInManager<RemotelyUser> SignInManager { get; }
         private DataService DataService { get; }
         public ApplicationConfig AppConfig { get; }
+        private IHubContext<RCDeviceSocketHub> RCDeviceHub { get; }
+        private IHubContext<RCBrowserSocketHub> RCBrowserHub { get; }
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]ApiLogin login)
@@ -68,6 +77,12 @@ namespace Remotely.Server.API
             if (HttpContext?.User?.Identity?.IsAuthenticated == true)
             {
                 orgId = DataService.GetUserByName(HttpContext.User.Identity.Name)?.OrganizationID;
+                var activeSessions = RCDeviceSocketHub.SessionInfoList.Where(x => x.Value.RequesterUserName == HttpContext.User.Identity.Name);
+                foreach (var session in activeSessions.ToList())
+                {
+                    await RCDeviceHub.Clients.Client(session.Value.RCDeviceSocketID).SendAsync("Disconnect", "User logged out.");
+                    await RCBrowserHub.Clients.Client(session.Value.RequesterSocketID).SendAsync("ConnectionFailed");
+                }
             }
             await SignInManager.SignOutAsync();
             DataService.WriteEvent($"API logout successful for {HttpContext?.User?.Identity?.Name}.", orgId);

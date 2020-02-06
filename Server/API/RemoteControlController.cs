@@ -94,19 +94,19 @@ namespace Remotely.Server.API
 
                     var stopWatch = Stopwatch.StartNew();
 
-                    while (!RCDeviceSocketHub.SessionInfoList.Values.Any(x=>x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y=>y.Key != x.RCSocketID)) && stopWatch.Elapsed.TotalSeconds < 5)
+                    while (!RCDeviceSocketHub.SessionInfoList.Values.Any(x=>x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y=>y.Key != x.RCDeviceSocketID)) && stopWatch.Elapsed.TotalSeconds < 5)
                     {
                         await Task.Delay(10);
                     }
 
-                    if (!RCDeviceSocketHub.SessionInfoList.Values.Any(x => x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y => y.Key != x.RCSocketID)))
+                    if (!RCDeviceSocketHub.SessionInfoList.Values.Any(x => x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y => y.Key != x.RCDeviceSocketID)))
                     {
                         return StatusCode(408, "The remote control process failed to start in time on the remote device.");
                     }
                     else
                     {
-                        var rcSession = RCDeviceSocketHub.SessionInfoList.Values.FirstOrDefault(x=>x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y=>y.Key != x.RCSocketID));
-                        return Ok($"{HttpContext.Request.Scheme}://{Request.Host}/RemoteControl?clientID={rcSession.RCSocketID}&serviceID={targetDevice.Key}&fromApi=true");
+                        var rcSession = RCDeviceSocketHub.SessionInfoList.Values.FirstOrDefault(x=>x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y=>y.Key != x.RCDeviceSocketID));
+                        return Ok($"{HttpContext.Request.Scheme}://{Request.Host}/RemoteControl?clientID={rcSession.RCDeviceSocketID}&serviceID={targetDevice.Key}&fromApi=true");
                     }
                 }
                 else
