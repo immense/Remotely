@@ -12,9 +12,19 @@ namespace Remotely.Agent.Services
     {
         private static object fileLock = new object();
         private ConnectionInfo connectionInfo;
+        private string debugGuid = "f2b0a595-5ea8-471b-975f-12e70e0f3497";
 
         public ConnectionInfo GetConnectionInfo()
         {
+            if (Program.IsDebug && Debugger.IsAttached)
+            {
+                return new ConnectionInfo()
+                {
+                    DeviceID = debugGuid,
+                    Host = "https://localhost:5001"
+                };
+            }
+
             if (connectionInfo == null)
             {
                 lock (fileLock)
