@@ -9,20 +9,22 @@ using System.IO;
 using System.Linq;
 using Remotely.Shared.ViewModels.Organization;
 using Remotely.Server.Data;
+using Microsoft.Extensions.Hosting;
 
 namespace Remotely.Server.Services
 {
     public class DataService
     {
-        public DataService(ApplicationDbContext context, ApplicationConfig appConfig)
+        public DataService(ApplicationDbContext context, ApplicationConfig appConfig, IHostEnvironment hostEnvironment)
         {
             RemotelyContext = context;
             AppConfig = appConfig;
+            HostEnvironment = hostEnvironment;
         }
 
-        private ApplicationConfig AppConfig { get; set; }
-
-        private ApplicationDbContext RemotelyContext { get; set; }
+        private ApplicationConfig AppConfig { get; }
+        private IHostEnvironment HostEnvironment { get; }
+        private ApplicationDbContext RemotelyContext { get; }
 
         public bool AddDeviceGroup(string userName, DeviceGroup deviceGroup, out string deviceGroupID, out string errorMessage)
         {
@@ -113,7 +115,16 @@ namespace Remotely.Server.Services
             }
             else
             {
+
+                if (HostEnvironment.IsDevelopment() && RemotelyContext.Organizations.Any())
+                {
+                    var org = RemotelyContext.Organizations.FirstOrDefault();
+                    device.Organization = org;
+                    device.OrganizationID = org?.ID;
+                }
+
                 updatedDevice = device;
+
                 if (!RemotelyContext.Organizations.Any(x => x.ID == device.OrganizationID))
                 {
                     WriteEvent(new EventLog()
@@ -360,11 +371,11 @@ namespace Remotely.Server.Services
                             x.ID == deviceID);
         }
 
-        public List<DeviceGroup> GetDeviceGroupsForUserName(string username)
+        public IEnumerable<DeviceGroup> GetDeviceGroupsForUserName(string username)
         {
             var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == username);
 
-            return RemotelyContext.DeviceGroups.Where(x => x.OrganizationID == user.OrganizationID).ToList();
+            return RemotelyContext.DeviceGroups.Where(x => x.OrganizationID == user.OrganizationID) ?? Enumerable.Empty<DeviceGroup>();
         }
 
         public int GetOrganizationCount()
