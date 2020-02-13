@@ -30,11 +30,9 @@ namespace Remotely.ScreenCast.Win.Services
             InputActionsThread.Start();
         }
 
-        private bool IsInputBlocked { get; set; }
-        private Thread InputActionsThread { get; }
-
         private ConcurrentQueue<Action> InputActions { get; } = new ConcurrentQueue<Action>();
-
+        private Thread InputActionsThread { get; }
+        private bool IsInputBlocked { get; set; }
         public Tuple<double, double> GetAbsolutePercentFromRelativePercent(double percentX, double percentY, ICapturer capturer)
         {
             var absoluteX = (capturer.CurrentScreenBounds.Width * percentX) + capturer.CurrentScreenBounds.Left - capturer.GetVirtualScreenBounds().Left;
