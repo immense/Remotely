@@ -121,6 +121,9 @@ export class RCBrowserSockets {
     SendToggleAudio(toggleOn: boolean) {
         this.Connection.invoke("SendToggleAudio", toggleOn);
     };
+    SendToggleBlockInput(toggleOn: boolean) {
+        this.Connection.invoke("SendToggleBlockInput", toggleOn);
+    }
     SendClipboardTransfer(text: string, typeText: boolean) {
         this.Connection.invoke("SendClipboardTransfer", text, typeText);
     }

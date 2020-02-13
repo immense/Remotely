@@ -15,6 +15,7 @@ using Remotely.ScreenCast.Core.Services;
 using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.Shared.Win32;
 using Microsoft.Extensions.DependencyInjection;
+using Remotely.Shared.Services;
 
 namespace Remotely.ScreenCast.Core.Communication
 {
@@ -359,6 +360,13 @@ namespace Remotely.ScreenCast.Core.Communication
                 if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
                     AudioCapturer.ToggleAudio(toggleOn);
+                }
+            });
+            Connection.On("ToggleBlockInput", (bool toggleOn, string viewerID) =>
+            {
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                {
+                    KeyboardMouseInput.ToggleBlockInput(toggleOn);
                 }
             });
 

@@ -1247,6 +1247,11 @@ namespace Remotely.Shared.Win32
         [DllImport("user32.dll")]
         public static extern int SendMessage(int hWnd, int hMsg, int wParam, int lParam);
 
+        [DllImport("user32.dll", EntryPoint = "BlockInput")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool BlockInput([MarshalAs(UnmanagedType.Bool)] bool fBlockIt);
+
+
         #endregion
     }
 }

@@ -22,6 +22,7 @@ export var ViewBar = document.getElementById("viewBar");
 export var ChangeScreenButton = document.getElementById("changeScreenButton");
 export var QualityButton = document.getElementById("qualityButton");
 export var FitToScreenButton = document.getElementById("fitToScreenButton");
+export var BlockInputButton = document.getElementById("blockInputButton");
 export var DisconnectButton = document.getElementById("disconnectButton");
 export var FileTransferInput = document.getElementById("fileTransferInput");
 export var FileTransferProgress = document.getElementById("fileTransferProgress");
@@ -108,6 +109,16 @@ export function ApplyInputHandlers(sockets) {
         else {
             ScreenViewer.style.maxWidth = "unset";
             ScreenViewer.style.maxHeight = "unset";
+        }
+    });
+    BlockInputButton.addEventListener("click", (ev) => {
+        var button = ev.currentTarget;
+        button.classList.toggle("toggled");
+        if (button.classList.contains("toggled")) {
+            RemoteControl.RCBrowserSockets.SendToggleBlockInput(true);
+        }
+        else {
+            RemoteControl.RCBrowserSockets.SendToggleBlockInput(false);
         }
     });
     InviteButton.addEventListener("click", (ev) => {

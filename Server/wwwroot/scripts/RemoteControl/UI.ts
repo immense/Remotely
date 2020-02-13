@@ -25,6 +25,7 @@ export var ViewBar = document.getElementById("viewBar") as HTMLDivElement;
 export var ChangeScreenButton = document.getElementById("changeScreenButton") as HTMLButtonElement;
 export var QualityButton = document.getElementById("qualityButton") as HTMLButtonElement;
 export var FitToScreenButton = document.getElementById("fitToScreenButton") as HTMLButtonElement;
+export var BlockInputButton = document.getElementById("blockInputButton") as HTMLButtonElement;
 export var DisconnectButton = document.getElementById("disconnectButton") as HTMLButtonElement;
 export var FileTransferInput = document.getElementById("fileTransferInput") as HTMLInputElement;
 export var FileTransferProgress = document.getElementById("fileTransferProgress") as HTMLProgressElement;
@@ -114,7 +115,17 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
             ScreenViewer.style.maxWidth = "unset";
             ScreenViewer.style.maxHeight = "unset";
         }
-    })
+    });
+    BlockInputButton.addEventListener("click", (ev) => {
+        var button = ev.currentTarget as HTMLButtonElement;
+        button.classList.toggle("toggled");
+        if (button.classList.contains("toggled")) {
+            RemoteControl.RCBrowserSockets.SendToggleBlockInput(true);
+        }
+        else {
+            RemoteControl.RCBrowserSockets.SendToggleBlockInput(false);
+        }
+    });
     InviteButton.addEventListener("click", (ev) => {
         var url = "";
         if (RemoteControl.Mode == RemoteControlMode.Normal) {
@@ -125,7 +136,6 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
         }
         SetClipboardText(url);
         PopupMessage("Link copied to clipboard.");
-
     });
     KeyboardButton.addEventListener("click", (ev) => {
         closeAllHorizontalBars(null);
