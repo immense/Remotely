@@ -45,6 +45,7 @@ button[disabled] {
     height: 40px;
     margin: 5px 0;
     width: 90%;
+    user-select: none;
 }
 
 .horizontal-bar-button {

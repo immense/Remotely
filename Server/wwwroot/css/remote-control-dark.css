@@ -44,6 +44,7 @@ button[disabled] {
     height: 40px;
     margin: 5px 0;
     width: 90%;
+    user-select: none;
 }
 
 .horizontal-bar-button {
@@ -73,6 +74,7 @@ button[disabled] {
     cursor: pointer;
     z-index: 3;
     transition: .5s ease left;
+    user-select: none;
 }
 #menuButton:hover {
     color: white;

@@ -233,6 +233,10 @@ namespace Remotely.Server.Services
         {
             return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ToggleAudio", toggleOn, Context.ConnectionId);
         }
+        public Task SendToggleBlockInput(bool toggleOn)
+        {
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ToggleBlockInput", toggleOn, Context.ConnectionId);
+        }
         public Task Tap(double percentX, double percentY)
         {
             return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("Tap", percentX, percentY, Context.ConnectionId);

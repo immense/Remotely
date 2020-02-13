@@ -13,6 +13,7 @@ using Remotely.Shared.Models;
 using Remotely.ScreenCast.Win.Capture;
 using Remotely.Shared.Win32;
 using Microsoft.Extensions.DependencyInjection;
+using System.Threading;
 
 namespace Remotely.ScreenCast.Win.Services
 {
@@ -41,6 +42,5 @@ namespace Remotely.ScreenCast.Win.Services
             await conductor.CasterSocket.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
             _ = BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, ServiceContainer.Instance.GetRequiredService<ICapturer>());
         }
-
     }
 }

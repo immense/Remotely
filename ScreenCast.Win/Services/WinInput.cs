@@ -5,11 +5,36 @@ using Remotely.Shared.Win32;
 using static Remotely.Shared.Win32.User32;
 using System.Windows.Forms;
 using System.Threading;
+using Remotely.ScreenCast.Core.Services;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace Remotely.ScreenCast.Win.Services
 {
     public class WinInput : IKeyboardMouseInput
     {
+        public WinInput()
+        {
+            InputActionsThread = new Thread(() =>
+            {
+                while (true)
+                {
+                    if (InputActions.TryDequeue(out var action))
+                    {
+                        action();
+                    }
+                    Thread.Sleep(1);
+                }
+            });
+            InputActionsThread.SetApartmentState(ApartmentState.STA);
+            InputActionsThread.Start();
+        }
+
+        private bool IsInputBlocked { get; set; }
+        private Thread InputActionsThread { get; }
+
+        private ConcurrentQueue<Action> InputActions { get; } = new ConcurrentQueue<Action>();
+
         public Tuple<double, double> GetAbsolutePercentFromRelativePercent(double percentX, double percentY, ICapturer capturer)
         {
             var absoluteX = (capturer.CurrentScreenBounds.Width * percentX) + capturer.CurrentScreenBounds.Left - capturer.GetVirtualScreenBounds().Left;
@@ -23,7 +48,6 @@ namespace Remotely.ScreenCast.Win.Services
             var absoluteY = (capturer.CurrentScreenBounds.Height * percentY) + capturer.CurrentScreenBounds.Top;
             return new Tuple<double, double>(absoluteX, absoluteY);
         }
-
         public void SendKeyDown(string key, Viewer viewer)
         {
             TryOnInputDesktop(() =>
@@ -42,10 +66,7 @@ namespace Remotely.ScreenCast.Win.Services
                 var input = new INPUT() { type = InputType.KEYBOARD, U = union };
                 SendInput(1, new INPUT[] { input }, INPUT.Size);
             });
-           
         }
-
-
 
         public void SendKeyUp(string key, Viewer viewer)
         {
@@ -161,6 +182,16 @@ namespace Remotely.ScreenCast.Win.Services
             TryOnInputDesktop(() =>
             {
                 SendKeys.SendWait(transferText);
+            });
+        }
+
+        public void ToggleBlockInput(bool toggleOn)
+        {
+            InputActions.Enqueue(() =>
+            {
+                IsInputBlocked = toggleOn;
+                var result = BlockInput(toggleOn);
+                Logger.Write($"Result of ToggleBlockInput set to {toggleOn}: {result}");
             });
         }
 
@@ -288,20 +319,31 @@ namespace Remotely.ScreenCast.Win.Services
 
         private void TryOnInputDesktop(Action inputAction)
         {
-            if (!Win32Interop.SwitchToInputDesktop())
+            InputActions.Enqueue(() =>
             {
-                var thread = new Thread(() =>
+                if (!Win32Interop.SwitchToInputDesktop())
                 {
-                    Win32Interop.SwitchToInputDesktop();
+                    if (IsInputBlocked)
+                    {
+                        BlockInput(false);
+                    }
+
+                    Task.Run(() =>
+                    {
+                        Win32Interop.SwitchToInputDesktop();
+                        inputAction();
+                    }).Wait();
+
+                    if (IsInputBlocked)
+                    {
+                        BlockInput(true);
+                    }
+                }
+                else
+                {
                     inputAction();
-                });
-                thread.SetApartmentState(ApartmentState.STA);
-                thread.Start();
-            }
-            else
-            {
-                inputAction();
-            }
+                }
+            });
         }
     }
 }

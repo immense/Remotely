@@ -169,6 +169,11 @@ namespace Remotely.ScreenCast.Linux.Services
             }
         }
 
+        public void ToggleBlockInput(bool toggleOn)
+        {
+            // Not implemented.
+        }
+
         private string ConvertJavaScriptKeyToX11Key(string key)
         {
             string keySym;

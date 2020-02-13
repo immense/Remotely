@@ -103,7 +103,7 @@ namespace Remotely.ScreenCast.Core.Capture
                         continue;
                     }
 
-                    using (var newImage = capturer.CurrentFrame.Clone(diffArea, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+                    using (var newImage = capturer.CurrentFrame.Clone(diffArea, PixelFormat.Format32bppArgb))
                     {
                         if (capturer.CaptureFullscreen)
                         {
