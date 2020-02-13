@@ -2,9 +2,7 @@
 A remote control and remote scripting solution, built with .NET Core, SignalR Core, and WebRTC.
 
 [![Build Status](https://dev.azure.com/translucency/Remotely/_apis/build/status/Remotely-ReleaseBuild?branchName=master)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=17&branchName=master)
-
 [![Donate](https://www.paypalobjects.com/webstatic/en_US/i/buttons/pp-acceptance-small.png)](https://paypal.me/translucency)
-(Last 30 Days: $0  |  Last Year: $400)
 
 
 Website: https://remotely.lucency.co  
