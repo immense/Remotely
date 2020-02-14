@@ -489,11 +489,19 @@ namespace Remotely.Server.Services
             var device = RemotelyContext.Devices.FirstOrDefault(x => x.ID == deviceID);
             if (device != null)
             {
-                device.Alias = options.DeviceAlias;
-                var group = RemotelyContext.DeviceGroups.FirstOrDefault(x => 
+                if (!string.IsNullOrWhiteSpace(options.DeviceAlias))
+                {
+                    device.Alias = options.DeviceAlias;
+                }
+
+                if (!string.IsNullOrWhiteSpace(options.DeviceGroup))
+                {
+                    var group = RemotelyContext.DeviceGroups.FirstOrDefault(x =>
                     x.Name.ToLower() == options.DeviceGroup.ToLower() &&
                     x.OrganizationID == device.OrganizationID);
-                device.DeviceGroup = group;
+                    device.DeviceGroup = group;
+                }
+
                 RemotelyContext.SaveChanges();
             }
         }

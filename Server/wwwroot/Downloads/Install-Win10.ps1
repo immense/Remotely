@@ -127,12 +127,14 @@ function Install-Remotely {
 
 	New-Item -ItemType File -Path "$InstallPath\ConnectionInfo.json" -Value (ConvertTo-Json -InputObject $ConnectionInfo) -Force
 
-	$DeviceSetupOptions = @{
-		DeviceAlias = $DeviceAlias;
-		DeviceGroup = $DeviceGroup;
-	}
+	if ($DeviceAlias -or $DeviceGroup) {
+		$DeviceSetupOptions = @{
+			DeviceAlias = $DeviceAlias;
+			DeviceGroup = $DeviceGroup;
+		}
 
-	New-Item -ItemType File -Path "$InstallPath\DeviceSetupOptions.json" -Value (ConvertTo-Json -InputObject $DeviceSetupOptions) -Force
+		New-Item -ItemType File -Path "$InstallPath\DeviceSetupOptions.json" -Value (ConvertTo-Json -InputObject $DeviceSetupOptions) -Force
+	}
 
 	New-Service -Name "Remotely_Service" -BinaryPathName "$InstallPath\Remotely_Agent.exe" -DisplayName "Remotely Service" -StartupType Automatic -Description "Background service that maintains a connection to the Remotely server.  The service is used for remote support and maintenance by this computer's administrators."
 	Start-Process -FilePath "cmd.exe" -ArgumentList "/c sc.exe failure `"Remotely_Service`" reset=5 actions=restart/5000" -Wait -WindowStyle Hidden
