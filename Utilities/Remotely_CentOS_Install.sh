@@ -9,26 +9,25 @@ fi
 
 read -p "Enter server host (e.g. remotely.yourdomainname.com): " serverHost
 
-UbuntuVersion=$(lsb_release -r -s)
-
-apt-get update
+yum update
 
 # Install .NET Core Runtime.
-wget -q https://packages.microsoft.com/config/ubuntu/$UbuntuVersion/packages-microsoft-prod.deb
-dpkg -i packages-microsoft-prod.deb
-add-apt-repository universe
-apt-get -y install apt-transport-https
-apt-get update
-apt-get -y install aspnetcore-runtime-3.1
-rm packages-microsoft-prod.deb
+sudo rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm
+
+yum -y install apt-transport-https
+yum -y update
+yum -y install aspnetcore-runtime-3.1
 
 
  # Install other prerequisites.
-apt-get -y install unzip
-apt-get -y install acl
-apt-get -y install ffmpeg
-apt-get -y install libc6-dev
-apt-get -y install libgdiplus
+yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+yum -y install yum-utils
+yum-config-manager --enable rhui-REGION-rhel-server-extras rhui-REGION-rhel-server-optional
+yum -y install unzip
+yum -y install acl
+yum -y install ffmpeg
+yum -y install libc6-dev
+yum -y install libgdiplus
 
 
 # Download and install Remotely files.
@@ -36,13 +35,12 @@ mkdir -p $appRoot
 wget "https://github.com/Jay-Rad/Remotely/releases/latest/download/Remotely_Server_Linux-x64.zip"
 unzip -o Remotely_Server_Linux-x64.zip -d $appRoot
 rm Remotely_Server_Linux-x64.zip
-setfacl -R -m u:www-data:rwx $appRoot
-chown -R www-data:www-data $appRoot
+setfacl -R -m u:apache:rwx $appRoot
+chown -R apache:apache $appRoot
 
 
 # Install Nginx
-apt-get update
-apt-get -y install nginx
+yum -y install nginx
 
 systemctl start nginx
 
@@ -97,17 +95,13 @@ nginxConfig="server {
 	}
 }"
 
-echo "$nginxConfig" > /etc/nginx/sites-available/remotely
-
-ln -s /etc/nginx/sites-available/remotely /etc/nginx/sites-enabled/remotely
+echo "$nginxConfig" > /etc/nginx/conf.d/remotely.conf
 
 # Test config.
 nginx -t
 
 # Reload.
 nginx -s reload
-
-
 
 
 # Create service.
@@ -122,7 +116,6 @@ Restart=always
 # Restart service after 10 seconds if the dotnet service crashes:
 RestartSec=10
 SyslogIdentifier=remotely
-User=www-data
 Environment=ASPNETCORE_ENVIRONMENT=Production
 Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
 
@@ -137,8 +130,11 @@ systemctl enable remotely.service
 # Start service.
 systemctl start remotely.service
 
+firewall-cmd --permanent --zone=public --add-service=http
+firewall-cmd --permanent --zone=public --add-service=https
+firewall-cmd --reload
 
 # Install Certbot and get SSL cert.
-apt-get -y install certbot python-certbot-nginx
+yum -y install certbot python2-certbot-nginx
 
 certbot --nginx
