@@ -9,6 +9,15 @@ export const FilterOptions = new class {
     }
 };
 export function AddOrUpdateDevices(devices) {
+    devices.sort((a, b) => {
+        if (a.IsOnline && !b.IsOnline) {
+            return -1;
+        }
+        else if (b.IsOnline && !a.IsOnline) {
+            return 1;
+        }
+        return a.DeviceName.localeCompare(b.DeviceName, [], { sensitivity: "base" });
+    });
     devices.forEach(x => {
         AddOrUpdateDevice(x);
     });
@@ -103,8 +112,8 @@ export function RefreshGrid() {
                 AddConsoleOutput("It looks like you don't have the Remotely service installed on any devices.  You can get the install script from the Client Downloads page.");
             }
             else {
+                AddOrUpdateDevices(devices);
             }
-            AddOrUpdateDevices(devices);
         }
         else {
             UI.ShowModal("Request Failure", "Failed to retrieve device data.  Please refresh your connection or contact support.");

@@ -29,18 +29,8 @@ namespace Remotely.Desktop.Win
 
         private void Application_Exit(object sender, ExitEventArgs e)
         {
-            var conductor = ServiceContainer.Instance.GetRequiredService<Conductor>();
-            foreach (var viewer in conductor.Viewers.Values.ToArray())
-            {
-                try
-                {
-                    viewer.Dispose();
-                }
-                catch (Exception ex)
-                {
-                    Logger.Write(ex);
-                }
-            }
+            // Hack to fix application not exiting when window closed.
+            Environment.Exit(0);
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)
