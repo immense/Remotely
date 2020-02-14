@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{
 		Utilities\Get-WindowsCommands.ps1 = Utilities\Get-WindowsCommands.ps1
 		Utilities\Install-RemotelyServer.ps1 = Utilities\Install-RemotelyServer.ps1
 		Utilities\Publish.ps1 = Utilities\Publish.ps1
+		Utilities\Remotely_CentOS_Install.sh = Utilities\Remotely_CentOS_Install.sh
 		Utilities\Remotely_Server_Install.sh = Utilities\Remotely_Server_Install.sh
 		Utilities\signtool.exe = Utilities\signtool.exe
 	EndProjectSection
