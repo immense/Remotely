@@ -51,6 +51,7 @@ namespace Remotely.Server.Services
             return true;
         }
 
+
         public InviteLink AddInvite(string requesterUserName, Invite invite)
         {
             invite.InvitedUser = invite.InvitedUser.ToLower();
@@ -312,6 +313,18 @@ namespace Remotely.Server.Services
 
             return RemotelyContext.EventLogs
                 .Where(x => x.OrganizationID == orgID)
+                .OrderByDescending(x => x.TimeStamp);
+        }
+
+
+        public IEnumerable<EventLog> GetEventLogs(string userName, DateTime from, DateTime to)
+        {
+            var orgID = RemotelyContext.Users
+                        .FirstOrDefault(x => x.UserName == userName)
+                        ?.OrganizationID;
+
+            return RemotelyContext.EventLogs
+                .Where(x => x.OrganizationID == orgID && x.TimeStamp >= from && x.TimeStamp <= to)
                 .OrderByDescending(x => x.TimeStamp);
         }
 
