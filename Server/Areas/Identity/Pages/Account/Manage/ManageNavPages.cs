@@ -23,6 +23,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         public static string TwoFactorAuthentication => "TwoFactorAuthentication";
         public static string Options => "Options";
         public static string Organization => "Organization";
+        public static string ApiTokens => "ApiTokens";
 
         public static string ServerLogs => "ServerLogs";
 
@@ -41,6 +42,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         public static string TwoFactorAuthenticationNavClass(ViewContext viewContext) => PageNavClass(viewContext, TwoFactorAuthentication);
         public static string OptionsNavClass(ViewContext viewContext) => PageNavClass(viewContext, Options);
         public static string OrganizationNavClass(ViewContext viewContext) => PageNavClass(viewContext, Organization);
+        public static string ApiTokensNavClass(ViewContext viewContext) => PageNavClass(viewContext, ApiTokens);
         public static string ServerLogsNavClass(ViewContext viewContext) => PageNavClass(viewContext, ServerLogs);
 
         public static string PageNavClass(ViewContext viewContext, string page)

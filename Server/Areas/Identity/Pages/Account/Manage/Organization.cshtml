@@ -4,6 +4,7 @@
 @{
     ViewData["Title"] = "Manage Organization";
     var currentUser = DataService.GetUserByName(User.Identity.Name);
+    var organizationID = currentUser.OrganizationID;
     var isAdmin = currentUser.IsAdministrator;
 
 }
@@ -11,6 +12,16 @@
 
 @if (isAdmin)
 {
+    <div class="row">
+        <div class="col-sm-8">
+            @* Organization ID *@
+            <div class="form-group mw">
+                <label class="mb-1">Organization ID</label>
+                <input readonly class="form-control" value="@organizationID" />
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-sm-8">
             @* Organization Name *@
@@ -150,11 +161,12 @@
             </div>
         </div>
     </div>
+
+    <script type="module" src="~/scripts/Pages/OrganizationManagement.js">
+    </script>
+
 }
 else
 {
     <h5 class="text-muted">Only organization administrators can view this page.</h5>
 }
-
-<script type="module" src="~/scripts/Pages/OrganizationManagement.js">
-</script>

@@ -10,6 +10,7 @@ using System.Linq;
 using Remotely.Shared.ViewModels.Organization;
 using Remotely.Server.Data;
 using Microsoft.Extensions.Hosting;
+using System.Threading.Tasks;
 
 namespace Remotely.Server.Services
 {
@@ -51,6 +52,42 @@ namespace Remotely.Server.Services
             return true;
         }
 
+        public async Task RenameApiToken(string userName, string tokenId, string tokenName)
+        {
+            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);
+            var token = RemotelyContext.ApiTokens.FirstOrDefault(x =>
+                x.OrganizationID == user.OrganizationID &&
+                x.ID == tokenId);
+
+            token.Name = tokenName;
+            await RemotelyContext.SaveChangesAsync();
+        }
+
+        public async Task<ApiToken> CreateApiToken(string userName, string tokenName)
+        {
+            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);
+            var newToken = new ApiToken()
+            {
+                Name = tokenName,
+                OrganizationID = user.OrganizationID,
+                Token = Guid.NewGuid().ToString(),
+                Secret = Guid.NewGuid().ToString().Replace("-", "")
+            };
+            RemotelyContext.ApiTokens.Add(newToken);
+            await RemotelyContext.SaveChangesAsync();
+            return newToken;
+        }
+
+        public async Task DeleteApiToken(string userName, string tokenId)
+        {
+            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);
+            var token = RemotelyContext.ApiTokens.FirstOrDefault(x =>
+                x.OrganizationID == user.OrganizationID &&
+                x.ID == tokenId);
+
+            RemotelyContext.ApiTokens.Remove(token);
+            await RemotelyContext.SaveChangesAsync();
+        }
 
         public InviteLink AddInvite(string requesterUserName, Invite invite)
         {
@@ -297,6 +334,16 @@ namespace Remotely.Server.Services
                 .Where(x => x.OrganizationID == orgID)
                 .OrderByDescending(x => x.TimeStamp);
         }
+
+        public IEnumerable<ApiToken> GetAllApiTokens(string userID)
+        {
+            var user = RemotelyContext.Users.FirstOrDefault(x => x.Id == userID);
+
+            return RemotelyContext.ApiTokens
+                .Where(x => x.OrganizationID == user.OrganizationID)
+                .OrderByDescending(x => x.LastUsed);
+        }
+
 
         public IEnumerable<Device> GetAllDevicesForUser(string userID)
         {
