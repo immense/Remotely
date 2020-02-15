@@ -16,6 +16,8 @@ namespace Remotely.Server.Data
         {
         }
 
+        public DbSet<ApiToken> ApiTokens { get; set; }
+
         public DbSet<CommandContext> CommandContexts { get; set; }
 
         public DbSet<Device> Devices { get; set; }
@@ -62,6 +64,9 @@ namespace Remotely.Server.Data
             builder.Entity<Organization>()
               .HasMany(x => x.SharedFiles)
               .WithOne(x => x.Organization);
+            builder.Entity<Organization>()
+              .HasMany(x => x.ApiTokens)
+              .WithOne(x => x.Organization);
 
 
             builder.Entity<CommandContext>()
@@ -90,6 +95,9 @@ namespace Remotely.Server.Data
                 .HasConversion(
                     x => JsonConvert.SerializeObject(x),
                     x => JsonConvert.DeserializeObject<RemotelyUserOptions>(x));
+
+            builder.Entity<RemotelyUser>()
+                .HasIndex(x => x.UserName);
 
             builder.Entity<Device>()
                 .Property(x => x.Drives)

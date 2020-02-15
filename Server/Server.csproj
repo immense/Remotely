@@ -46,6 +46,7 @@
     <Content Remove="wwwroot\scripts\Models\Parameter.ts" />
     <Content Remove="wwwroot\scripts\Models\Point.ts" />
     <Content Remove="wwwroot\scripts\Models\UserOptions.ts" />
+    <Content Remove="wwwroot\scripts\Pages\ApiTokens.ts" />
     <Content Remove="wwwroot\scripts\Pages\OrganizationManagement.ts" />
     <Content Remove="wwwroot\scripts\RemoteControl\Main.ts" />
     <Content Remove="wwwroot\scripts\RemoteControl\RtcSession.ts" />
@@ -156,6 +157,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\Models\UserOptions.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\Device.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\Parameter.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Pages\ApiTokens.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Pages\OrganizationManagement.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\Main.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RtcSession.ts" />
