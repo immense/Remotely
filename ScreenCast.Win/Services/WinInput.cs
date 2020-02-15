@@ -15,6 +15,12 @@ namespace Remotely.ScreenCast.Win.Services
     {
         public WinInput()
         {
+            StartInputActionThread();
+        }
+
+        private void StartInputActionThread()
+        {
+            InputActionsThread?.Abort();
             InputActionsThread = new Thread(() =>
             {
                 while (true)
@@ -31,7 +37,7 @@ namespace Remotely.ScreenCast.Win.Services
         }
 
         private ConcurrentQueue<Action> InputActions { get; } = new ConcurrentQueue<Action>();
-        private Thread InputActionsThread { get; }
+        private Thread InputActionsThread { get; set; }
         private bool IsInputBlocked { get; set; }
         public Tuple<double, double> GetAbsolutePercentFromRelativePercent(double percentX, double percentY, ICapturer capturer)
         {
@@ -317,6 +323,11 @@ namespace Remotely.ScreenCast.Win.Services
 
         private void TryOnInputDesktop(Action inputAction)
         {
+            if (!InputActionsThread.IsAlive)
+            {
+                StartInputActionThread();
+            }
+
             InputActions.Enqueue(() =>
             {
                 if (!Win32Interop.SwitchToInputDesktop())
