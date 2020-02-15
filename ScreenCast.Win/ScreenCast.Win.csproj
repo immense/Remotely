@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.MixedReality.WebRTC" Version="1.0.2" />
-    <PackageReference Include="NAudio" Version="1.9.0" />
+    <PackageReference Include="NAudio" Version="1.10.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="3.1.1" />
     <PackageReference Include="SharpDX" Version="4.2.0" />
