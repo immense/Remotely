@@ -3,49 +3,63 @@
 @inject DataService  DataService
 @{
     ViewData["Title"] = "Server Logs";
-    var currentUser = DataService.GetUserByName(User.Identity.Name);
-    var isAdmin = currentUser.IsAdministrator;
-    var eventLogs = DataService.GetAllEventLogs(User.Identity.Name);
 }
 <h4>@ViewData["Title"]</h4>
 
-@if (isAdmin)
+@if (Model.IsAdmin)
 {
-<div class="row mb-3">
-    <div class="col-sm-12 text-right">
-        <button class="btn btn-primary mr-3" 
-                onclick="location.assign('/API/Commands/JSON')">
-            Scripting History
-        </button>
-        <button class="btn btn-primary" 
-                onclick="location.assign('/API/ServerLogs/Download')">
-            Server Logs
-        </button>
+    <div class="row mb-3">
+        <div class="col-sm-12 text-right">
+            <div style="display:inline-block; text-align: left">
+                <div class="mb-1">Download All:</div>
+                <button class="btn btn-primary mr-3"
+                        onclick="location.assign('/API/Commands/JSON')">
+                    Scripting History
+                </button>
+                <button class="btn btn-primary"
+                        onclick="location.assign('/API/ServerLogs/Download')">
+                    Server Logs
+                </button>
+            </div>
+        </div>
     </div>
-</div>
-<table class="table table-hover table-striped">
-    <thead>
-        <tr>
-            <th>Type</th>
-            <th>Timestamp</th>
-            <th>Message</th>
-            <th>Source</th>
-            <th>Stack Trace</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var eventLog in eventLogs)
-        {
+    <form method="post">
+        <div style="display:inline-block" class="mr-1">
+            <strong>From:</strong>
+            <br />
+            <input type="date" asp-for="Input.FromDate" />
+        </div>
+        <div style="display:inline-block" class="mr-1">
+            <strong>To:</strong>
+            <br />
+            <input type="date" asp-for="Input.ToDate" />
+        </div>
+        <button class="btn btn-primary" type="submit">Update</button>
+    </form>
+
+    <table class="table table-hover table-striped">
+        <thead>
             <tr>
-                <td>@eventLog.EventType</td>
-                <td>@eventLog.TimeStamp</td>
-                <td>@eventLog.Message</td>
-                <td>@eventLog.Source</td>
-                <td>@eventLog.StackTrace</td>
+                <th>Type</th>
+                <th>Timestamp</th>
+                <th>Message</th>
+                <th>Source</th>
+                <th>Stack Trace</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var eventLog in Model.EventLogs)
+            {
+                <tr>
+                    <td>@eventLog.EventType</td>
+                    <td>@eventLog.TimeStamp</td>
+                    <td>@eventLog.Message</td>
+                    <td>@eventLog.Source</td>
+                    <td>@eventLog.StackTrace</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
 else
 {
