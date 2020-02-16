@@ -32,7 +32,7 @@ namespace Remotely.Server.Auth
                 var apiToken = result.ToString().Split(":")[0]?.Trim();
                 var apiSecret = result.ToString().Split(":")[1]?.Trim();
                 
-                if (DataService.ValidateApiToken(apiToken, apiSecret, context.HttpContext.Request.Path))
+                if (DataService.ValidateApiToken(apiToken, apiSecret, context.HttpContext.Request.Path, context.HttpContext.Connection.RemoteIpAddress.ToString()))
                 {
                     var orgID = DataService.GetApiToken(apiToken)?.OrganizationID;
                     context.HttpContext.Request.Headers.Add("OrganizationID", orgID);

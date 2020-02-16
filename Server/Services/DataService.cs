@@ -614,7 +614,7 @@ namespace Remotely.Server.Services
             RemotelyContext.SaveChanges();
         }
 
-        public bool ValidateApiToken(string apiToken, string apiSecret, string requestPath)
+        public bool ValidateApiToken(string apiToken, string apiSecret, string requestPath, string remoteIP)
         {
             var token = RemotelyContext.ApiTokens.FirstOrDefault(x => x.Token == apiToken);
             var isValid = token != null && token.Secret == apiSecret;
@@ -625,7 +625,7 @@ namespace Remotely.Server.Services
                 RemotelyContext.SaveChanges();
             }
 
-            WriteEvent($"API token used.  Token: {apiToken}.  Path: {requestPath}.  Validated: {isValid}.", EventType.Info, token?.OrganizationID);
+            WriteEvent($"API token used.  Token: {apiToken}.  Path: {requestPath}.  Validated: {isValid}.  Remote IP: {remoteIP}", EventType.Info, token?.OrganizationID);
 
             return isValid;
         }
