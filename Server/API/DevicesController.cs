@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Remotely.Server.API
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class DevicesController : ControllerBase
@@ -26,21 +25,35 @@ namespace Remotely.Server.API
         private DataService DataService { get; set; }
         private UserManager<RemotelyUser> UserManager { get; set; }
 
-        // GET: api/<controller>
+        
         [HttpGet]
-        public async Task<IEnumerable<Device>> Get()
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
+        public IEnumerable<Device> Get()
         {
-            var user = await UserManager.GetUserAsync(User);
-            var devices = DataService.GetAllDevicesForUser(user.Id);
-            return devices;
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
+
+            if (User.Identity.IsAuthenticated)
+            {
+                return DataService.GetDevicesForUser(User.Identity.Name);
+            }
+
+            return DataService.GetAllDevices(orgID);
         }
 
-        // GET api/<controller>/5
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
         [HttpGet("{id}")]
-        public async Task<Device> Get(string id)
+        public Device Get(string id)
         {
-            var user = await UserManager.GetUserAsync(User);
-            return DataService.GetDeviceForUser(user.Id, id);
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
+
+            var device = DataService.GetDevice(orgID, id);
+
+            if (User.Identity.IsAuthenticated &&
+                !DataService.DoesUserHaveAccessToDevice(id, User.Identity.Name))
+            {
+                return null;
+            }
+            return device;
         }
     }
 }

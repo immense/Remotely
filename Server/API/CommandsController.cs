@@ -28,16 +28,13 @@ namespace Remotely.Server.API
 
         // GET: api/<controller>
         [HttpGet("{fileExt}")]
-        [Authorize]
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
         public ActionResult DownloadAll(string fileExt)
         {
-            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
-            {
-                return Unauthorized();
-            }
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
 
             var content = "";
-            var commandContexts = DataService.GetAllCommandContexts(User.Identity.Name);
+            var commandContexts = DataService.GetAllCommandContexts(orgID);
             switch (fileExt.ToUpper())
             {
                 case "JSON":
@@ -59,11 +56,13 @@ namespace Remotely.Server.API
         }
 
         [HttpGet("{fileExt}/{commandID}")]
-        [Authorize]
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
         public FileResult DownloadResults(string fileExt, string commandID)
         {
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
+
             var content = "";
-            var commandContext = DataService.GetCommandContext(commandID, User.Identity.Name);
+            var commandContext = DataService.GetCommandContext(commandID, orgID);
             switch (fileExt.ToUpper())
             {
                 case "JSON":
@@ -85,10 +84,11 @@ namespace Remotely.Server.API
         }
 
         [HttpGet("PSCoreResult/{commandID}/{deviceID}")]
-        [Authorize]
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
         public PSCoreCommandResult PSCoreResult(string commandID, string deviceID)
         {
-            return DataService.GetCommandContext(commandID, User.Identity.Name).PSCoreResults.FirstOrDefault(x => x.DeviceID == deviceID);
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
+            return DataService.GetCommandContext(commandID, orgID).PSCoreResults.FirstOrDefault(x => x.DeviceID == deviceID);
         }
 
         [HttpGet("GenericResult/{commandID}/{deviceID}")]

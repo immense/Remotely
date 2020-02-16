@@ -35,10 +35,11 @@ namespace Remotely.Server.API
         public SignInManager<RemotelyUser> SignInManager { get; }
 
         [HttpGet("{deviceID}")]
-        [Authorize]
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
         public async Task<IActionResult> Get(string deviceID)
         {
-            return await InitiateRemoteControl(deviceID, HttpContext.User.Identity.Name);
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
+            return await InitiateRemoteControl(deviceID, orgID);
         }
 
         [HttpPost]
@@ -71,47 +72,46 @@ namespace Remotely.Server.API
             return BadRequest();
         }
 
-        private async Task<IActionResult> InitiateRemoteControl(string deviceID, string userName)
+        private async Task<IActionResult> InitiateRemoteControl(string deviceID, string orgID)
         {
-            var remotelyUser = DataService.GetUserByName(userName);
             var targetDevice = DeviceSocketHub.ServiceConnections.FirstOrDefault(x => 
-                                    x.Value.OrganizationID == remotelyUser.OrganizationID &&
+                                    x.Value.OrganizationID == orgID &&
                                     x.Value.ID.ToLower() == deviceID.ToLower());
 
             if (targetDevice.Value != null)
             {
-                if (DataService.DoesUserHaveAccessToDevice(targetDevice.Value.ID, remotelyUser))
+                if (User.Identity.IsAuthenticated &&
+                   !DataService.DoesUserHaveAccessToDevice(targetDevice.Value.ID, User.Identity.Name))
                 {
-                    var currentUsers = RCDeviceSocketHub.SessionInfoList.Count(x => x.Value.OrganizationID == remotelyUser.OrganizationID);
-                    if (currentUsers >= AppConfig.RemoteControlSessionLimit)
-                    {
-                        return BadRequest("There are already the maximum amount of active remote control sessions for your organization.");
-                    }
+                    return Unauthorized();
+                }
 
-                    var existingSessions = RCDeviceSocketHub.SessionInfoList.Where(x => x.Value.DeviceID == targetDevice.Value.ID);
 
-                    await DeviceHub.Clients.Client(targetDevice.Key).SendAsync("RemoteControl", Request.HttpContext.Connection.Id, targetDevice.Key);
+                var currentUsers = RCDeviceSocketHub.SessionInfoList.Count(x => x.Value.OrganizationID == orgID);
+                if (currentUsers >= AppConfig.RemoteControlSessionLimit)
+                {
+                    return BadRequest("There are already the maximum amount of active remote control sessions for your organization.");
+                }
 
-                    var stopWatch = Stopwatch.StartNew();
+                var existingSessions = RCDeviceSocketHub.SessionInfoList.Where(x => x.Value.DeviceID == targetDevice.Value.ID);
 
-                    while (!RCDeviceSocketHub.SessionInfoList.Values.Any(x=>x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y=>y.Key != x.RCDeviceSocketID)) && stopWatch.Elapsed.TotalSeconds < 5)
-                    {
-                        await Task.Delay(10);
-                    }
+                await DeviceHub.Clients.Client(targetDevice.Key).SendAsync("RemoteControl", Request.HttpContext.Connection.Id, targetDevice.Key);
 
-                    if (!RCDeviceSocketHub.SessionInfoList.Values.Any(x => x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y => y.Key != x.RCDeviceSocketID)))
-                    {
-                        return StatusCode(408, "The remote control process failed to start in time on the remote device.");
-                    }
-                    else
-                    {
-                        var rcSession = RCDeviceSocketHub.SessionInfoList.Values.FirstOrDefault(x=>x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y=>y.Key != x.RCDeviceSocketID));
-                        return Ok($"{HttpContext.Request.Scheme}://{Request.Host}/RemoteControl?clientID={rcSession.RCDeviceSocketID}&serviceID={targetDevice.Key}&fromApi=true");
-                    }
+                var stopWatch = Stopwatch.StartNew();
+
+                while (!RCDeviceSocketHub.SessionInfoList.Values.Any(x => x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y => y.Key != x.RCDeviceSocketID)) && stopWatch.Elapsed.TotalSeconds < 5)
+                {
+                    await Task.Delay(10);
+                }
+
+                if (!RCDeviceSocketHub.SessionInfoList.Values.Any(x => x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y => y.Key != x.RCDeviceSocketID)))
+                {
+                    return StatusCode(408, "The remote control process failed to start in time on the remote device.");
                 }
                 else
                 {
-                    return Unauthorized();
+                    var rcSession = RCDeviceSocketHub.SessionInfoList.Values.FirstOrDefault(x => x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y => y.Key != x.RCDeviceSocketID));
+                    return Ok($"{HttpContext.Request.Scheme}://{Request.Host}/RemoteControl?clientID={rcSession.RCDeviceSocketID}&serviceID={targetDevice.Key}&fromApi=true");
                 }
             }
             else

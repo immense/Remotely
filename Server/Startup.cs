@@ -157,6 +157,7 @@ namespace Remotely.Server
             services.AddScoped<RemoteControlSessionRecorder>();
             services.AddSingleton<ApplicationConfig>();
             services.AddSingleton<RandomGenerator>();
+            services.AddScoped<ApiAuthorizationFilter>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

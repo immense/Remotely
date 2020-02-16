@@ -20,6 +20,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20200216033930_Test.cs" />
+    <Compile Remove="Migrations\20200216033930_Test.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="wwwroot\scripts\BrowserSockets.ts" />
     <Content Remove="wwwroot\scripts\CommandCompletion.ts" />
     <Content Remove="wwwroot\scripts\CommandProcessor.ts" />

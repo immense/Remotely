@@ -31,7 +31,7 @@ namespace Remotely.Server.API
         private IHubContext<DeviceSocketHub> DeviceHub { get; }
         private UserManager<RemotelyUser> UserManager { get; }
 
-        [Authorize]
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
         [HttpPost("[action]/{mode}/{deviceID}")]
         public async Task<ActionResult<CommandContext>> ExecuteCommand(string mode, string deviceID)
         {
@@ -40,16 +40,24 @@ namespace Remotely.Server.API
             {
                 command = await sr.ReadToEndAsync();
             }
-            var username = Request.HttpContext.User.Identity.Name;
-            var user = await UserManager.FindByNameAsync(username);
-            if (!DataService.DoesUserHaveAccessToDevice(deviceID, user))
+
+            var userID = string.Empty;
+            if (Request.HttpContext.User.Identity.IsAuthenticated)
             {
-                return Unauthorized();
+                var username = Request.HttpContext.User.Identity.Name;
+                var user = await UserManager.FindByNameAsync(username);
+                userID = user.Id;
+                if (!DataService.DoesUserHaveAccessToDevice(deviceID, user))
+                {
+                    return Unauthorized();
+                }
+
             }
 
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
 
             KeyValuePair<string, Device> connection = DeviceSocketHub.ServiceConnections.FirstOrDefault(x =>
-                x.Value.OrganizationID == user.OrganizationID &&
+                x.Value.OrganizationID == orgID &&
                 x.Value.ID == deviceID);
 
             if (string.IsNullOrWhiteSpace(connection.Key))
@@ -62,13 +70,13 @@ namespace Remotely.Server.API
                 CommandMode = "PSCore",
                 CommandText = command,
                 SenderConnectionID = string.Empty,
-                SenderUserID = user.Id,
+                SenderUserID = userID,
                 TargetDeviceIDs = new string[] { deviceID },
-                OrganizationID = user.OrganizationID
+                OrganizationID = orgID
             };
             DataService.AddOrUpdateCommandContext(commandContext);
             var requestID = Guid.NewGuid().ToString();
-            await DeviceHub.Clients.Client(connection.Key).SendAsync("ExecuteCommandFromApi", mode, requestID, command, commandContext.ID, username);
+            await DeviceHub.Clients.Client(connection.Key).SendAsync("ExecuteCommandFromApi", mode, requestID, command, commandContext.ID, Guid.NewGuid().ToString());
             var success = await TaskHelper.DelayUntil(() => DeviceSocketHub.ApiScriptResults.TryGetValue(requestID, out _), TimeSpan.FromSeconds(30));
             if (!success)
             {
@@ -77,7 +85,7 @@ namespace Remotely.Server.API
             DeviceSocketHub.ApiScriptResults.TryGetValue(requestID, out var commandID);
             DeviceSocketHub.ApiScriptResults.Remove(requestID);
             DataService.DetachEntity(commandContext);
-            var result = DataService.GetCommandContext(commandID.ToString(), username);
+            var result = DataService.GetCommandContext(commandID.ToString(), orgID);
             return result;
         }
     }
