@@ -21,7 +21,6 @@ namespace Remotely.Server.API
         private IWebHostEnvironment HostingEnv { get; }
         private DataService DataService { get; }
 
-        // GET: api/<controller>
         [HttpGet("[action]")]
         public string CurrentVersion()
         {

@@ -29,18 +29,12 @@ namespace Remotely.Server.API
         private DataService DataService { get; set; }
         private IWebHostEnvironment HostEnv { get; set; }
 
-        [Authorize]
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
         [HttpGet("{platformID}")]
         public async Task<ActionResult> Get(string platformID)
         {
-            var user = DataService.GetUserByName(User.Identity.Name);
-            return await GetInstallFile(user.OrganizationID, platformID);
-        }
-
-        [HttpGet("{organizationID}/{platformID}")]
-        public async Task<ActionResult> Get(string organizationID, string platformID)
-        {
-            return await GetInstallFile(organizationID, platformID);
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
+            return await GetInstallFile(orgID, platformID);
         }
 
         private async Task<ActionResult> GetInstallFile(string organizationID, string platformID)
@@ -51,9 +45,6 @@ namespace Remotely.Server.API
             byte[] fileBytes;
             switch (platformID)
             {
-                // TODO: Remove x64/x86 and PS files after a few releases.
-                case "Win10-x64":
-                case "Win10-x86":
                 case "Win10":
                     {
                         fileName = $"Install-{platformID}.ps1";

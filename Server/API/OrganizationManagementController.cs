@@ -20,7 +20,6 @@ using Microsoft.AspNetCore.WebUtilities;
 namespace Remotely.Server.API
 {
     [Route("api/[controller]")]
-    [Authorize]
     [ApiController]
     public class OrganizationManagementController : ControllerBase
     {
@@ -37,37 +36,48 @@ namespace Remotely.Server.API
 
 
         [HttpPost("ChangeIsAdmin/{userID}")]
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
         public IActionResult ChangeIsAdmin(string userID, [FromBody]bool isAdmin)
         {
-            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+            if (User.Identity.IsAuthenticated && 
+                !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
             {
                 return Unauthorized();
             }
 
-            if (DataService.GetUserByName(User.Identity.Name).Id == userID)
+            if (User.Identity.IsAuthenticated && 
+                DataService.GetUserByName(User.Identity.Name).Id == userID)
             {
                 return BadRequest("You can't remove administrator rights from yourself.");
             }
 
-            DataService.ChangeUserIsAdmin(User.Identity.Name, userID, isAdmin);
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
+
+            DataService.ChangeUserIsAdmin(orgID, userID, isAdmin);
             return Ok("ok");
         }
 
         [HttpDelete("DeleteInvite/{inviteID}")]
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
         public IActionResult DeleteInvite(string inviteID)
         {
-            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+            if (User.Identity.IsAuthenticated &&
+                !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
             {
                 return Unauthorized();
             }
-            DataService.DeleteInvite(User.Identity.Name, inviteID);
+
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
+            DataService.DeleteInvite(orgID, inviteID);
             return Ok("ok");
         }
 
         [HttpPut("Name")]
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
         public IActionResult Name([FromBody]string organizationName)
         {
-            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+            if (User.Identity.IsAuthenticated &&
+                !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
             {
                 return Unauthorized();
             }
@@ -75,56 +85,72 @@ namespace Remotely.Server.API
             {
                 return BadRequest();
             }
-            DataService.UpdateOrganizationName(User.Identity.Name, organizationName.Trim());
+
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
+            DataService.UpdateOrganizationName(orgID, organizationName.Trim());
             return Ok("ok");
         }
 
         [HttpDelete("DeviceGroup")]
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
         public IActionResult DeviceGroup([FromBody]string deviceGroupID)
         {
-            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+            if (User.Identity.IsAuthenticated &&
+                !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
             {
                 return Unauthorized();
             }
 
-            DataService.DeleteDeviceGroup(User.Identity.Name, deviceGroupID.Trim());
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
+            DataService.DeleteDeviceGroup(orgID, deviceGroupID.Trim());
             return Ok("ok");
         }
 
         [HttpPost("DeviceGroup")]
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
         public IActionResult DeviceGroup([FromBody]DeviceGroup deviceGroup)
         {
-            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+            if (User.Identity.IsAuthenticated &&
+                !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
             {
                 return Unauthorized();
             }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
-            var result = DataService.AddDeviceGroup(User.Identity.Name, deviceGroup, out var deviceGroupID, out var errorMessage);
+
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
+            var result = DataService.AddDeviceGroup(orgID, deviceGroup, out var deviceGroupID, out var errorMessage);
             if (!result)
             {
                 return BadRequest(errorMessage);
             }
             return Ok(deviceGroupID);
         }
+
         [HttpDelete("RemoveUserFromOrganization/{userID}")]
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
         public IActionResult RemoveUserFromOrganization(string userID)
         {
-            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+            if (User.Identity.IsAuthenticated &&
+                !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
             {
                 return Unauthorized();
             }
 
-            DataService.RemoveUserFromOrganization(User.Identity.Name, userID);
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
+            DataService.RemoveUserFromOrganization(orgID, userID);
             return Ok("ok");
         }
 
         [HttpPost("SendInvite")]
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
         public async Task<IActionResult> SendInvite([FromBody]Invite invite)
         {
-            if (!DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+            if (User.Identity.IsAuthenticated &&
+                !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
             {
                 return Unauthorized();
             }
@@ -165,7 +191,9 @@ namespace Remotely.Server.API
                 }
             }
 
-            var newInvite = DataService.AddInvite(User.Identity.Name, invite);
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
+
+            var newInvite = DataService.AddInvite(orgID, invite);
 
             var inviteURL = $"{Request.Scheme}://{Request.Host}/Invite?id={newInvite.ID}";
             await EmailSender.SendEmailAsync(invite.InvitedUser, "Invitation to Organization in Remotely",
@@ -173,7 +201,7 @@ namespace Remotely.Server.API
                             <br><br>
                             Hello!
                             <br><br>
-                            You've been invited by {User.Identity.Name} to join an organization in Remotely.
+                            You've been invited to join an organization in Remotely.
                             {newUserMessage}
                             <br><br>
                             You can join the organization by <a href='{HtmlEncoder.Default.Encode(inviteURL)}'>clicking here</a>.");

@@ -55,7 +55,7 @@ namespace Remotely.Server.Pages
             var user = DataService.GetUserByName(User.Identity.Name);
             if (user != null)
             {
-                var device = DataService.GetDeviceForUser(user.Id, deviceID);
+                var device = DataService.GetDevice(user.OrganizationID, deviceID);
                 DeviceName = device?.DeviceName;
                 AgentVersion = device.AgentVersion;
                 Input.Alias = device?.Alias;

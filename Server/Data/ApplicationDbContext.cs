@@ -104,6 +104,12 @@ namespace Remotely.Server.Data
                 .HasConversion(
                     x => JsonConvert.SerializeObject(x),
                     x => JsonConvert.DeserializeObject<List<Drive>>(x));
+
+            builder.Entity<Device>()
+                .HasIndex(x => x.DeviceName);
+
+            builder.Entity<ApiToken>()
+                .HasIndex(x => x.Token);
         }
     }
 }

@@ -15,7 +15,6 @@ namespace Remotely.Server.API
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class ServerLogsController : ControllerBase
     {
 
@@ -25,11 +24,12 @@ namespace Remotely.Server.API
         }
         public DataService DataService { get; set; }
 
-        // GET: api/ServerLogs
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
         [HttpGet("Download")]
         public ActionResult Download()
         {
-            var logs = DataService.GetAllEventLogs(HttpContext.User.Identity.Name);
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
+            var logs = DataService.GetAllEventLogs(orgID);
             var fileBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(logs));
             return File(fileBytes, "application/octet-stream", "ServerLogs.json");
         }
