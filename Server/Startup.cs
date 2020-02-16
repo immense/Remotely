@@ -29,6 +29,7 @@ using System.Net;
 using Microsoft.Extensions.Hosting;
 using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.OpenApi.Models;
+using Remotely.Server.Auth;
 
 namespace Remotely.Server
 {

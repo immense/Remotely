@@ -83,11 +83,11 @@
                                 <td class="middle-aligned"><label class="control-label">@Model.Users[i].UserName</label></td>
                                 @if (currentUser.Id == Model.Users[i].ID)
                                 {
-                                    <td class="middle-aligned text-center">@Html.CheckBoxFor(x => x.Users[i].IsAdmin, new { user = Model.Users[i].ID, @class = "user-is-admin-checkbox", disabled = "disabled" })</td>
+                                    <td>@Html.CheckBoxFor(x => x.Users[i].IsAdmin, new { user = Model.Users[i].ID, @class = "user-is-admin-checkbox", disabled = "disabled" })</td>
                                 }
                                 else
                                 {
-                                    <td class="middle-aligned text-center">@Html.CheckBoxFor(x => x.Users[i].IsAdmin, new { user = Model.Users[i].ID, @class = "user-is-admin-checkbox" })</td>
+                                    <td>@Html.CheckBoxFor(x => x.Users[i].IsAdmin, new { user = Model.Users[i].ID, @class = "user-is-admin-checkbox" })</td>
                                 }
                                 <td><button type="button" class="btn btn-danger remove-user-button" user="@Model.Users[i].ID">Remove</button></td>
                             </tr>

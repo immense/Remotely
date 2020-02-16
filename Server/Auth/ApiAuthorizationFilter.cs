@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Remotely.Server.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Remotely.Server.Services
+namespace Remotely.Server.Auth
 {
     public class ApiAuthorizationFilter : ActionFilterAttribute, IAuthorizationFilter
     {
@@ -28,9 +29,10 @@ namespace Remotely.Server.Services
 
             if (context.HttpContext.Request.Headers.TryGetValue("Authorization", out var result))
             {
-                var apiToken = result.ToString().Split(":")[0];
-                var apiSecret = result.ToString().Split(":")[1];
-                if (DataService.ValidateApiToken(apiToken, apiSecret))
+                var apiToken = result.ToString().Split(":")[0]?.Trim();
+                var apiSecret = result.ToString().Split(":")[1]?.Trim();
+                
+                if (DataService.ValidateApiToken(apiToken, apiSecret, context.HttpContext.Request.Path))
                 {
                     var orgID = DataService.GetApiToken(apiToken)?.OrganizationID;
                     context.HttpContext.Request.Headers.Add("OrganizationID", orgID);
