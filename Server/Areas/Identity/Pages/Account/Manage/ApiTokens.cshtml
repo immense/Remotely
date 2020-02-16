@@ -4,17 +4,24 @@
 @{
     ViewData["Title"] = "API Access Tokens";
 }
-<h4>@ViewData["Title"]</h4>
+<h4 class="mb-4">@ViewData["Title"]</h4>
 
 @if (!string.IsNullOrWhiteSpace(Model.Message))
 {
-    <h5 class="text-success mb-2">@Model.Message</h5>
+    <h5 class="text-success mb-4">@Model.Message</h5>
 }
 
 @if (!string.IsNullOrWhiteSpace(Model.NewTokenSecret))
 {
-    <h5 class="text-warning font-weight-bold mb-2">Warning: This secret will only be shown once.  Save it now.</h5>
-    <h5>Token Secret: @Model.NewTokenSecret</h5>
+    <h5 class="text-warning font-weight-bold mb-2">Warning: The token secret will only be shown once.  Save it now.</h5>
+    <h5>
+        <label>Token Key: </label>
+        <input class="form-control custom-control-inline" readonly value="@Model.NewTokenKey" style="width:400px" />
+    </h5>
+    <h5 class="mb-4">
+        <label>Token Secret: </label>
+        <input class="form-control custom-control-inline" readonly value="@Model.NewTokenSecret" style="width:400px" />
+    </h5>
 }
 
 

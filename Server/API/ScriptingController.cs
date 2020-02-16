@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Remotely.Shared.Helpers;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using Remotely.Server.Auth;
 
 namespace Remotely.Server.API
 {

@@ -29,6 +29,9 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         public string Message { get; set; }
 
         [TempData]
+        public Guid NewTokenKey { get; set; }
+
+        [TempData]
         public string NewTokenSecret { get; set; }
 
         private DataService DataService { get; }
@@ -56,6 +59,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             if (ModelState.IsValid && !string.IsNullOrWhiteSpace(Input.TokenName))
             {
                 var newToken = await DataService.CreateApiToken(User.Identity.Name, Input.TokenName);
+                NewTokenKey = Guid.Parse(newToken.Token);
                 NewTokenSecret = newToken.Secret;
                 Message = "New token created.";
             }

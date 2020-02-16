@@ -11,6 +11,7 @@ using Remotely.Shared.ViewModels.Organization;
 using Remotely.Server.Data;
 using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
+using Remotely.Server.Auth;
 
 namespace Remotely.Server.Services
 {
@@ -55,54 +56,6 @@ namespace Remotely.Server.Services
             RemotelyContext.SaveChanges();
             deviceGroupID = newDeviceGroup.ID;
             return true;
-        }
-
-        public ApiToken GetApiToken(string apiToken)
-        {
-            return RemotelyContext.ApiTokens.FirstOrDefault(x => x.Token == apiToken);
-        }
-
-        public bool ValidateApiToken(string apiToken, string apiSecret)
-        {
-            var token = RemotelyContext.ApiTokens.FirstOrDefault(x => x.Token == apiToken);
-            return token?.Secret == apiSecret;
-        }
-
-        public async Task RenameApiToken(string userName, string tokenId, string tokenName)
-        {
-            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);
-            var token = RemotelyContext.ApiTokens.FirstOrDefault(x =>
-                x.OrganizationID == user.OrganizationID &&
-                x.ID == tokenId);
-
-            token.Name = tokenName;
-            await RemotelyContext.SaveChangesAsync();
-        }
-
-        public async Task<ApiToken> CreateApiToken(string userName, string tokenName)
-        {
-            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);
-            var newToken = new ApiToken()
-            {
-                Name = tokenName,
-                OrganizationID = user.OrganizationID,
-                Token = Guid.NewGuid().ToString(),
-                Secret = Guid.NewGuid().ToString().Replace("-", "")
-            };
-            RemotelyContext.ApiTokens.Add(newToken);
-            await RemotelyContext.SaveChangesAsync();
-            return newToken;
-        }
-
-        public async Task DeleteApiToken(string userName, string tokenId)
-        {
-            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);
-            var token = RemotelyContext.ApiTokens.FirstOrDefault(x =>
-                x.OrganizationID == user.OrganizationID &&
-                x.ID == tokenId);
-
-            RemotelyContext.ApiTokens.Remove(token);
-            await RemotelyContext.SaveChangesAsync();
         }
 
         public InviteLink AddInvite(string orgID, Invite invite)
@@ -259,9 +212,36 @@ namespace Remotely.Server.Services
             }
         }
 
+        public async Task<ApiToken> CreateApiToken(string userName, string tokenName)
+        {
+            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);
+
+            var newToken = new ApiToken()
+            {
+                Name = tokenName,
+                OrganizationID = user.OrganizationID,
+                Token = Guid.NewGuid().ToString(),
+                Secret = PasswordGenerator.GeneratePassword(24)
+            };
+            RemotelyContext.ApiTokens.Add(newToken);
+            await RemotelyContext.SaveChangesAsync();
+            return newToken;
+        }
+
+        public async Task DeleteApiToken(string userName, string tokenId)
+        {
+            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);
+            var token = RemotelyContext.ApiTokens.FirstOrDefault(x =>
+                x.OrganizationID == user.OrganizationID &&
+                x.ID == tokenId);
+
+            RemotelyContext.ApiTokens.Remove(token);
+            await RemotelyContext.SaveChangesAsync();
+        }
+
         public void DeleteDeviceGroup(string orgID, string deviceGroupId)
         {
-            var deviceGroup = RemotelyContext.DeviceGroups.FirstOrDefault(x => 
+            var deviceGroup = RemotelyContext.DeviceGroups.FirstOrDefault(x =>
                 x.ID == deviceGroupId &&
                 x.OrganizationID == orgID);
 
@@ -294,7 +274,6 @@ namespace Remotely.Server.Services
         {
             RemotelyContext.Entry(entity).State = EntityState.Detached;
         }
-
 
         public void DeviceDisconnected(string deviceID)
         {
@@ -338,13 +317,6 @@ namespace Remotely.Server.Services
                     .ToArray();
         }
 
-        public IEnumerable<CommandContext> GetAllCommandContexts(string orgID)
-        {
-            return RemotelyContext.CommandContexts
-                .Where(x => x.OrganizationID == orgID)
-                .OrderByDescending(x => x.TimeStamp);
-        }
-
         public IEnumerable<ApiToken> GetAllApiTokens(string userID)
         {
             var user = RemotelyContext.Users.FirstOrDefault(x => x.Id == userID);
@@ -354,34 +326,22 @@ namespace Remotely.Server.Services
                 .OrderByDescending(x => x.LastUsed);
         }
 
+        public IEnumerable<CommandContext> GetAllCommandContexts(string orgID)
+        {
+            return RemotelyContext.CommandContexts
+                .Where(x => x.OrganizationID == orgID)
+                .OrderByDescending(x => x.TimeStamp);
+        }
 
         public IEnumerable<Device> GetAllDevices(string orgID)
         {
             return RemotelyContext.Devices.Where(x => x.OrganizationID == orgID);
         }
 
-        public IEnumerable<Device> GetDevicesForUser(string userName)
-        {
-            // TODO: Add authorization groups.
-            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);
-            return RemotelyContext.Devices.Where(x => x.OrganizationID == user.OrganizationID);
-        }
         public IEnumerable<EventLog> GetAllEventLogs(string orgID)
         {
             return RemotelyContext.EventLogs
                 .Where(x => x.OrganizationID == orgID)
-                .OrderByDescending(x => x.TimeStamp);
-        }
-
-
-        public IEnumerable<EventLog> GetEventLogs(string userName, DateTime from, DateTime to)
-        {
-            var orgID = RemotelyContext.Users
-                        .FirstOrDefault(x => x.UserName == userName)
-                        ?.OrganizationID;
-
-            return RemotelyContext.EventLogs
-                .Where(x => x.OrganizationID == orgID && x.TimeStamp >= from && x.TimeStamp <= to)
                 .OrderByDescending(x => x.TimeStamp);
         }
 
@@ -399,6 +359,11 @@ namespace Remotely.Server.Services
         {
             var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);
             return RemotelyContext.Users.Where(x => x.OrganizationID == user.OrganizationID);
+        }
+
+        public ApiToken GetApiToken(string apiToken)
+        {
+            return RemotelyContext.ApiTokens.FirstOrDefault(x => x.Token == apiToken);
         }
 
         public CommandContext GetCommandContext(string commandContextID, string orgID)
@@ -425,11 +390,6 @@ namespace Remotely.Server.Services
             return AppConfig.DefaultPrompt;
         }
 
-        public int GetDeviceCount()
-        {
-            return RemotelyContext.Devices.Count();
-        }
-
         public Device GetDevice(string orgID, string deviceID)
         {
             return RemotelyContext.Devices.FirstOrDefault(x =>
@@ -437,11 +397,34 @@ namespace Remotely.Server.Services
                             x.ID == deviceID);
         }
 
+        public int GetDeviceCount()
+        {
+            return RemotelyContext.Devices.Count();
+        }
+
         public IEnumerable<DeviceGroup> GetDeviceGroupsForUserName(string username)
         {
             var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == username);
 
             return RemotelyContext.DeviceGroups.Where(x => x.OrganizationID == user.OrganizationID) ?? Enumerable.Empty<DeviceGroup>();
+        }
+
+        public IEnumerable<Device> GetDevicesForUser(string userName)
+        {
+            // TODO: Add authorization groups.
+            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);
+            return RemotelyContext.Devices.Where(x => x.OrganizationID == user.OrganizationID);
+        }
+
+        public IEnumerable<EventLog> GetEventLogs(string userName, DateTime from, DateTime to)
+        {
+            var orgID = RemotelyContext.Users
+                        .FirstOrDefault(x => x.UserName == userName)
+                        ?.OrganizationID;
+
+            return RemotelyContext.EventLogs
+                .Where(x => x.OrganizationID == orgID && x.TimeStamp >= from && x.TimeStamp <= to)
+                .OrderByDescending(x => x.TimeStamp);
         }
 
         public int GetOrganizationCount()
@@ -539,6 +522,17 @@ namespace Remotely.Server.Services
             RemotelyContext.SaveChanges();
         }
 
+        public async Task RenameApiToken(string userName, string tokenId, string tokenName)
+        {
+            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);
+            var token = RemotelyContext.ApiTokens.FirstOrDefault(x =>
+                x.OrganizationID == user.OrganizationID &&
+                x.ID == tokenId);
+
+            token.Name = tokenName;
+            await RemotelyContext.SaveChangesAsync();
+        }
+
         public void SetAllDevicesNotOnline()
         {
             RemotelyContext.Devices.ForEachAsync(x =>
@@ -569,6 +563,7 @@ namespace Remotely.Server.Services
                 RemotelyContext.SaveChanges();
             }
         }
+
         public void SetServerVerificationToken(string deviceID, string verificationToken)
         {
             var device = RemotelyContext.Devices.Find(deviceID);
@@ -612,12 +607,28 @@ namespace Remotely.Server.Services
             device.Tags = tags;
             RemotelyContext.SaveChanges();
         }
+
         public void UpdateUserOptions(string userName, RemotelyUserOptions options)
         {
             RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName).UserOptions = options;
             RemotelyContext.SaveChanges();
         }
 
+        public bool ValidateApiToken(string apiToken, string apiSecret, string requestPath)
+        {
+            var token = RemotelyContext.ApiTokens.FirstOrDefault(x => x.Token == apiToken);
+            var isValid = token != null && token.Secret == apiSecret;
+
+            if (token != null)
+            {
+                token.LastUsed = DateTime.Now;
+                RemotelyContext.SaveChanges();
+            }
+
+            WriteEvent($"API token used.  Token: {apiToken}.  Path: {requestPath}.  Validated: {isValid}.", EventType.Info, token?.OrganizationID);
+
+            return isValid;
+        }
         public void WriteEvent(EventLog eventLog)
         {
             RemotelyContext.EventLogs.Add(eventLog);

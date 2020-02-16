@@ -14,6 +14,7 @@ using Remotely.Shared.ViewModels.Organization;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using System.Text;
 using Microsoft.AspNetCore.WebUtilities;
+using Remotely.Server.Auth;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
