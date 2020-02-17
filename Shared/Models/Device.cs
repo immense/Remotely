@@ -24,9 +24,9 @@ namespace Remotely.Shared.Models
         public string DeviceName { get; set; }
         public List<Drive> Drives { get; set; }
 
-        public double FreeMemory { get; set; }
+        public double UsedMemory { get; set; }
 
-        public double FreeStorage { get; set; }
+        public double UsedStorage { get; set; }
 
         [Key]
         public string ID { get; set; }
@@ -98,22 +98,12 @@ namespace Remotely.Shared.Models
             if (systemDrive != null && systemDrive.TotalSize > 0 && systemDrive.TotalFreeSpace > 0)
             {
                 device.TotalStorage = Math.Round((double)(systemDrive.TotalSize / 1024 / 1024 / 1024), 2);
-                var freeStorage = Math.Round((double)(systemDrive.TotalFreeSpace / 1024 / 1024 / 1024), 2);
-                device.FreeStorage = freeStorage / device.TotalStorage;
+                device.UsedStorage = Math.Round((double)((systemDrive.TotalSize - systemDrive.TotalFreeSpace) / 1024 / 1024 / 1024), 2);
             }
 
         
-            var (freeMemory, totalMemory) = DeviceInformation.GetMemoryInGB();
-
-            if (totalMemory > 0)
-            {
-                device.FreeMemory = freeMemory / totalMemory;
-            }
-            else
-            {
-                device.FreeMemory = 0;
-            }
-
+            var (usedMemory, totalMemory) = DeviceInformation.GetMemoryInGB();
+            device.UsedMemory = usedMemory;
             device.TotalMemory = totalMemory;
 
             device.CpuUtilization = await DeviceInformation.GetCpuUtilization();

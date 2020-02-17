@@ -314,12 +314,6 @@ namespace Remotely.Server.Migrations
                     b.Property<string>("Drives")
                         .HasColumnType("TEXT");
 
-                    b.Property<double>("FreeMemory")
-                        .HasColumnType("REAL");
-
-                    b.Property<double>("FreeStorage")
-                        .HasColumnType("REAL");
-
                     b.Property<bool>("Is64Bit")
                         .HasColumnType("INTEGER");
 
@@ -355,6 +349,12 @@ namespace Remotely.Server.Migrations
                         .HasColumnType("REAL");
 
                     b.Property<double>("TotalStorage")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("UsedMemory")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("UsedStorage")
                         .HasColumnType("REAL");
 
                     b.HasKey("ID");

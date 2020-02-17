@@ -124,7 +124,7 @@ namespace Remotely.Shared.Services
                 var freeGB = Math.Round((double.Parse(freeKB) / 1024 / 1024), 2);
                 var totalGB = Math.Round((double.Parse(totalKB) / 1024 / 1024), 2);
 
-                return (freeGB, totalGB);
+                return (totalGB - freeGB, totalGB);
             }
             catch
             {
@@ -143,7 +143,7 @@ namespace Remotely.Shared.Services
                 var total = (ulong)(cimOS.FirstOrDefault()?.CimInstanceProperties["TotalVisibleMemorySize"]?.Value ?? 0);
                 var totalGB = Math.Round(((double)total / 1024 / 1024), 2);
 
-                return (freeGB, totalGB);
+                return (totalGB - freeGB, totalGB);
             }
             catch
             {
