@@ -67,9 +67,9 @@ export function AddOrUpdateDevice(device: Device) {
                     <td>${device.Platform}</td>
                     <td>${device.OSDescription}</td>
                     <td>${Math.round(device.CpuUtilization * 100)}%</td>
-                    <td>${Math.round(device.FreeStorage * 100)}%</td>
+                    <td>${Math.round(device.UsedStorage / device.TotalStorage * 100)}%</td>
                     <td>${device.TotalStorage.toLocaleString()}</td>
-                    <td>${Math.round(device.FreeMemory * 100)}%</td>
+                    <td>${Math.round(device.UsedMemory /device.TotalMemory * 100)}%</td>
                     <td>${device.TotalMemory.toLocaleString()}</td>
                     <td><span class="fas fa-edit device-edit-button" style="font-size:1.5em" /></td>`;
 

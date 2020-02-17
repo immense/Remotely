@@ -142,9 +142,9 @@ var commands = [
                         <td>${new Date(x.LastOnline).toLocaleString()}</td>
                         <td>${x.Platform}</td>
                         <td>${x.OSDescription}</td>
-                        <td>${Math.round(x.FreeStorage * 100)}%</td>
+                        <td>${Math.round(x.UsedStorage / x.TotalStorage * 100)}%</td>
                         <td>${x.TotalStorage.toLocaleString()}</td>
-                        <td>${Math.round(x.FreeMemory * 100)}%</td>
+                        <td>${Math.round(x.UsedMemory / x.TotalMemory * 100)}%</td>
                         <td>${x.TotalMemory.toLocaleString()}</td>
                         <td>${x.Tags || ""}</td>
                         </tr>`;

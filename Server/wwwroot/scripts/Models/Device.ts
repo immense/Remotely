@@ -8,8 +8,6 @@ export interface Device {
     DeviceName: string;
     DeviceGroupID: string;
     Drives: any[];
-    FreeMemory: number;
-    FreeStorage: number;
     ID: string;
     Is64Bit: boolean;
     IsOnline: boolean;
@@ -22,4 +20,6 @@ export interface Device {
     TotalMemory: number;
     TotalStorage: number;
     Tags: string;
+    UsedMemory: number;
+    UsedStorage: number;
 }
