@@ -3,6 +3,7 @@
 export interface Device {
     Alias: string;
     AgentVersion: string;
+    CpuUtilization: number;
     CurrentUser: string;
     DeviceName: string;
     DeviceGroupID: string;

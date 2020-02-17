@@ -9,8 +9,8 @@ using Remotely.Server.Data;
 namespace Remotely.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200216015743_ApiToken and Device indexes")]
-    partial class ApiTokenandDeviceindexes
+    [Migration("20200216234855_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -300,6 +300,9 @@ namespace Remotely.Server.Migrations
                     b.Property<string>("Alias")
                         .HasColumnType("TEXT")
                         .HasMaxLength(100);
+
+                    b.Property<double>("CpuUtilization")
+                        .HasColumnType("REAL");
 
                     b.Property<string>("CurrentUser")
                         .HasColumnType("TEXT");

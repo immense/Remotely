@@ -66,6 +66,7 @@ export function AddOrUpdateDevice(device: Device) {
                     <td>${new Date(device.LastOnline).toLocaleString()}</td>
                     <td>${device.Platform}</td>
                     <td>${device.OSDescription}</td>
+                    <td>${Math.round(device.CpuUtilization * 100)}%</td>
                     <td>${Math.round(device.FreeStorage * 100)}%</td>
                     <td>${device.TotalStorage.toLocaleString()}</td>
                     <td>${Math.round(device.FreeMemory * 100)}%</td>
