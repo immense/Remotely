@@ -27,7 +27,7 @@ namespace Remotely.Agent
             {
                 BuildServices();
 
-                Task.Run(() => { Init(args); });
+                Task.Run(() => { Init(); });
 
                 Thread.Sleep(Timeout.Infinite);
 
@@ -98,7 +98,7 @@ namespace Remotely.Agent
             }
         }
 
-        private static async void Init(string[] args)
+        private static async void Init()
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
@@ -107,7 +107,6 @@ namespace Remotely.Agent
 #endif
 
             SetWorkingDirectory();
-            var argDict = ProcessArgs(args);
 
             if (!IsDebug && OSUtils.IsWindows)
             {
@@ -125,26 +124,6 @@ namespace Remotely.Agent
             {
                 await HandleConnection();
             }
-        }
-        private static Dictionary<string,string> ProcessArgs(string[] args)
-        {
-            var argDict = new Dictionary<string, string>();
-            
-            for (var i = 0; i < args.Length; i += 2)
-            {
-                var key = args?[i];
-                if (key != null)
-                {
-                    key = key.Trim().Replace("-", "").ToLower();
-                    var value = args?[i + 1];
-                    if (value != null)
-                    {
-                        argDict[key] = args[i + 1].Trim();
-                    }
-                }
-               
-            }
-            return argDict;
         }
 
         private static void SetWorkingDirectory()
