@@ -19,15 +19,13 @@ namespace Remotely.Server.API
     [ApiController]
     public class ClientDownloadsController : ControllerBase
     {
-        public ClientDownloadsController(IWebHostEnvironment hostEnv, DataService dataService, ApplicationConfig appConfig)
+        public ClientDownloadsController(IWebHostEnvironment hostEnv, ApplicationConfig appConfig)
         {
             HostEnv = hostEnv;
-            DataService = dataService;
             AppConfig = appConfig;
         }
 
         private ApplicationConfig AppConfig { get; }
-        private DataService DataService { get; set; }
         private IWebHostEnvironment HostEnv { get; set; }
 
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
@@ -36,6 +34,12 @@ namespace Remotely.Server.API
         {
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
             return await GetInstallFile(orgID, platformID);
+        }
+
+        [HttpGet("{organizationID}/{platformID}")]
+        public async Task<ActionResult> Get(string organizationID, string platformID)
+        {
+            return await GetInstallFile(organizationID, platformID);
         }
 
         private async Task<ActionResult> GetInstallFile(string organizationID, string platformID)

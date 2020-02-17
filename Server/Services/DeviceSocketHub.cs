@@ -101,11 +101,11 @@ namespace Remotely.Server.Services
 
                     return BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceCameOnline", Device);
                 }
-                else
-                {
-                    // Organization wasn't found.
-                    return Clients.Caller.SendAsync("UninstallClient");
-                }
+                //else
+                //{
+                //    // Organization wasn't found.
+                //    return Clients.Caller.SendAsync("UninstallClient");
+                //}
             }
             catch (Exception ex)
             {
