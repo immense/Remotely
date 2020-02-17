@@ -55,6 +55,28 @@ namespace Remotely.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ApiTokens",
+                columns: table => new
+                {
+                    ID = table.Column<string>(nullable: false),
+                    LastUsed = table.Column<DateTime>(nullable: true),
+                    Name = table.Column<string>(maxLength: 200, nullable: true),
+                    OrganizationID = table.Column<string>(nullable: true),
+                    Secret = table.Column<string>(nullable: true),
+                    Token = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApiTokens", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_ApiTokens_Organizations_OrganizationID",
+                        column: x => x.OrganizationID,
+                        principalTable: "Organizations",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CommandContexts",
                 columns: table => new
                 {
@@ -207,9 +229,11 @@ namespace Remotely.Server.Migrations
                 {
                     ID = table.Column<string>(nullable: false),
                     AgentVersion = table.Column<string>(nullable: true),
+                    Alias = table.Column<string>(maxLength: 100, nullable: true),
+                    CpuUtilization = table.Column<double>(nullable: false),
                     CurrentUser = table.Column<string>(nullable: true),
-                    DeviceName = table.Column<string>(nullable: true),
                     DeviceGroupID = table.Column<string>(nullable: true),
+                    DeviceName = table.Column<string>(nullable: true),
                     Drives = table.Column<string>(nullable: true),
                     FreeMemory = table.Column<double>(nullable: false),
                     FreeStorage = table.Column<double>(nullable: false),
@@ -329,6 +353,16 @@ namespace Remotely.Server.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_ApiTokens_OrganizationID",
+                table: "ApiTokens",
+                column: "OrganizationID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApiTokens_Token",
+                table: "ApiTokens",
+                column: "Token");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
                 column: "RoleId");
@@ -370,6 +404,11 @@ namespace Remotely.Server.Migrations
                 column: "DeviceGroupID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Devices_DeviceName",
+                table: "Devices",
+                column: "DeviceName");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Devices_OrganizationID",
                 table: "Devices",
                 column: "OrganizationID");
@@ -401,6 +440,11 @@ namespace Remotely.Server.Migrations
                 column: "OrganizationID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RemotelyUsers_UserName",
+                table: "RemotelyUsers",
+                column: "UserName");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SharedFiles_OrganizationID",
                 table: "SharedFiles",
                 column: "OrganizationID");
@@ -408,6 +452,9 @@ namespace Remotely.Server.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "ApiTokens");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 

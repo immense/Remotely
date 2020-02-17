@@ -2,13 +2,60 @@
 using Remotely.Shared.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Remotely.Shared.Services
 {
     public class DeviceInformation
     {
+        public static async Task<double> GetCpuUtilization()
+        {
+            double totalUtilization = 0;
+            var utilizations = new Dictionary<int, Tuple<DateTime, TimeSpan>>();
+            var processes = Process.GetProcesses();
+
+            foreach (var proc in processes)
+            {
+                try
+                {
+                    var startTime = DateTime.UtcNow;
+                    var startCpuUsage = proc.TotalProcessorTime;
+                    utilizations.Add(proc.Id, new Tuple<DateTime, TimeSpan>(startTime, startCpuUsage));
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+
+            await Task.Delay(500);
+
+            foreach (var kvp in utilizations)
+            {
+                var endTime = DateTime.UtcNow;
+                try
+                {
+                    var proc = Process.GetProcessById(kvp.Key);
+                    var startTime = kvp.Value.Item1;
+                    var startCpuUsage = kvp.Value.Item2;
+                    var endCpuUsage = proc.TotalProcessorTime;
+                    var cpuUsedMs = (endCpuUsage - startCpuUsage).TotalMilliseconds;
+                    var totalMsPassed = (endTime - startTime).TotalMilliseconds;
+                    var cpuUsageTotal = cpuUsedMs / (Environment.ProcessorCount * totalMsPassed);
+                    totalUtilization += cpuUsageTotal;
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+
+            return totalUtilization;
+        }
+
         public static string GetCurrentUser()
         {
             try
@@ -34,7 +81,23 @@ namespace Remotely.Shared.Services
             }
         }
 
-        public static Tuple<double, double> GetLinxMemoryInGB()
+        public static (double, double) GetMemoryInGB()
+        {
+            if (OSUtils.IsWindows)
+            {
+                return GetWinMemoryInGB();
+            }
+            else if (OSUtils.IsLinux)
+            {
+                return GetLinxMemoryInGB();
+            }
+            else
+            {
+                return (0, 0);
+            }
+        }
+
+        private static (double, double) GetLinxMemoryInGB()
         {
             try
             {
@@ -61,15 +124,15 @@ namespace Remotely.Shared.Services
                 var freeGB = Math.Round((double.Parse(freeKB) / 1024 / 1024), 2);
                 var totalGB = Math.Round((double.Parse(totalKB) / 1024 / 1024), 2);
 
-                return new Tuple<double, double>(freeGB, totalGB);
+                return (freeGB, totalGB);
             }
             catch
             {
-                return new Tuple<double, double>(0, 0);
+                return (0, 0);
             }
         }
 
-        public static Tuple<double, double> GetWinMemoryInGB()
+        private static (double, double) GetWinMemoryInGB()
         {
             try
             {
@@ -80,11 +143,11 @@ namespace Remotely.Shared.Services
                 var total = (ulong)(cimOS.FirstOrDefault()?.CimInstanceProperties["TotalVisibleMemorySize"]?.Value ?? 0);
                 var totalGB = Math.Round(((double)total / 1024 / 1024), 2);
 
-                return new Tuple<double, double>(freeGB, totalGB);
+                return (freeGB, totalGB);
             }
             catch
             {
-                return new Tuple<double, double>(0, 0);
+                return (0, 0);
             }
         }
     }

@@ -60,7 +60,7 @@ namespace Remotely.Agent.Services
 
             await HubConnection.StartAsync();
 
-            var device = Device.Create(ConnectionInfo);
+            var device = await Device.Create(ConnectionInfo);
 
             await HubConnection.InvokeAsync("DeviceCameOnline", device);
 
@@ -87,15 +87,15 @@ namespace Remotely.Agent.Services
             HeartbeatTimer.Start();
         }
 
-        public void SendHeartbeat()
+        public async Task SendHeartbeat()
         {
-            var currentInfo = Device.Create(ConnectionInfo);
-            HubConnection.InvokeAsync("DeviceHeartbeat", currentInfo);
+            var currentInfo = await Device.Create(ConnectionInfo);
+            await HubConnection.InvokeAsync("DeviceHeartbeat", currentInfo);
         }
 
-        private void HeartbeatTimer_Elapsed(object sender, ElapsedEventArgs e)
+        private async void HeartbeatTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            SendHeartbeat();
+            await SendHeartbeat();
         }
 
         private void RegisterMessageHandlers()

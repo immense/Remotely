@@ -299,6 +299,9 @@ namespace Remotely.Server.Migrations
                         .HasColumnType("TEXT")
                         .HasMaxLength(100);
 
+                    b.Property<double>("CpuUtilization")
+                        .HasColumnType("REAL");
+
                     b.Property<string>("CurrentUser")
                         .HasColumnType("TEXT");
 

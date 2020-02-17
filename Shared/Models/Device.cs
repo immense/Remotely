@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace Remotely.Shared.Models
 {
@@ -16,6 +17,7 @@ namespace Remotely.Shared.Models
         public string AgentVersion { get; set; }
         [StringLength(100)]
         public string Alias { get; set; }
+        public double CpuUtilization { get; set; }
         public string CurrentUser { get; set; }
         public virtual DeviceGroup DeviceGroup { get; set; }
         public string DeviceGroupID { get; set; }
@@ -49,7 +51,7 @@ namespace Remotely.Shared.Models
 
         public double TotalMemory { get; set; }
         public double TotalStorage { get; set; }
-        public static Device Create(ConnectionInfo connectionInfo)
+        public static async Task<Device> Create(ConnectionInfo connectionInfo)
         {
             OSPlatform platform = OSUtils.GetPlatform();
             DriveInfo systemDrive;
@@ -100,26 +102,21 @@ namespace Remotely.Shared.Models
                 device.FreeStorage = freeStorage / device.TotalStorage;
             }
 
-            Tuple<double, double> totalMemory = new Tuple<double, double>(0, 0);
+        
+            var (freeMemory, totalMemory) = DeviceInformation.GetMemoryInGB();
 
-            if (OSUtils.IsWindows)
+            if (totalMemory > 0)
             {
-                totalMemory = DeviceInformation.GetWinMemoryInGB();
-            }
-            else if (OSUtils.IsLinux)
-            {
-                totalMemory = DeviceInformation.GetLinxMemoryInGB();
-            }
-          
-            if (totalMemory.Item2 > 0)
-            {
-                device.FreeMemory = totalMemory.Item1 / totalMemory.Item2;
+                device.FreeMemory = freeMemory / totalMemory;
             }
             else
             {
                 device.FreeMemory = 0;
             }
-            device.TotalMemory = totalMemory.Item2;
+
+            device.TotalMemory = totalMemory;
+
+            device.CpuUtilization = await DeviceInformation.GetCpuUtilization();
 
             if (File.Exists("Remotely_Agent.dll"))
             {
