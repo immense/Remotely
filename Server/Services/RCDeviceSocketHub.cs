@@ -191,7 +191,12 @@ namespace Remotely.Server.Services
         }
         public Task SendIceCandidateToBrowser(string candidate, int sdpMlineIndex, string sdpMid, string viewerID)
         {
-            return RCBrowserHub.Clients.Client(viewerID).SendAsync("ReceiveIceCandidate", candidate, sdpMlineIndex, sdpMid);
+            if (AppConfig.UseWebRtc)
+            {
+                return RCBrowserHub.Clients.Client(viewerID).SendAsync("ReceiveIceCandidate", candidate, sdpMlineIndex, sdpMid);
+            }
+
+            return Task.CompletedTask;
         }
 
         public Task SendScreenCapture(byte[] captureBytes, string rcBrowserHubConnectionID, int left, int top, int width, int height, DateTime captureTime)
