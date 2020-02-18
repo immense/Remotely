@@ -9,8 +9,8 @@ using Remotely.Server.Data;
 namespace Remotely.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200217063410_Initial")]
-    partial class Initial
+    [Migration("20200218144304_API Tokens and Device Updates")]
+    partial class APITokensandDeviceUpdates
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
