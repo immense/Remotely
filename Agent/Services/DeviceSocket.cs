@@ -62,7 +62,16 @@ namespace Remotely.Agent.Services
 
             var device = await Device.Create(ConnectionInfo);
 
-            await HubConnection.InvokeAsync("DeviceCameOnline", device);
+            var result = await HubConnection.InvokeAsync<bool>("DeviceCameOnline", device);
+
+            if (!result)
+            {
+                // Orgnanization ID wasn't found, or this device is already connected.
+                // The above can be caused by temporary issues on the server.  So we'll do
+                // nothing here and wait for it to get resolved.
+                Logger.Write("There was an issue registering with the server.  The server might be undergoing maintenance, or the supplied organization ID might be incorrect.");
+                return;
+            }
 
             if (string.IsNullOrWhiteSpace(ConnectionInfo.ServerVerificationToken))
             {
