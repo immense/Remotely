@@ -93,10 +93,11 @@ namespace Remotely.Server.API
         }
 
         [HttpGet("GenericResult/{commandID}/{deviceID}")]
-        [Authorize]
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
         public GenericCommandResult GenericResult(string commandID, string deviceID)
         {
-            return DataService.GetCommandContext(commandID, User.Identity.Name).CommandResults.FirstOrDefault(x => x.DeviceID == deviceID);
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
+            return DataService.GetCommandContext(commandID, orgID).CommandResults.FirstOrDefault(x => x.DeviceID == deviceID);
         }
 
         [HttpPost("{resultType}")]
