@@ -73,7 +73,7 @@ namespace Remotely.Server.Services
             ApiScriptResults.Set(requestID, commandID, DateTimeOffset.Now.AddHours(1));
         }
 
-        public Task DeviceCameOnline(Device device)
+        public Task<bool> DeviceCameOnline(Device device)
         {
             try
             {
@@ -85,8 +85,7 @@ namespace Remotely.Server.Services
                         OrganizationID = device.OrganizationID,
                         Message = $"Device connection for {device?.DeviceName} was denied because it is already connected."
                     });
-                    Context.Abort();
-                    return Task.CompletedTask;
+                    return Task.FromResult(false);
                 }
                 
                 if (DataService.AddOrUpdateDevice(device, out var updatedDevice))
@@ -99,20 +98,22 @@ namespace Remotely.Server.Services
                                                     .Select(x => x.Key)
                                                     .ToList();
 
-                    return BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceCameOnline", Device);
+                    BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceCameOnline", Device);
+                    return Task.FromResult(true);
                 }
-                //else
-                //{
-                //    // Organization wasn't found.
-                //    return Clients.Caller.SendAsync("UninstallClient");
-                //}
+                else
+                {
+                    // Organization wasn't found.
+                    return Task.FromResult(false);
+                }
             }
             catch (Exception ex)
             {
                 DataService.WriteEvent(ex);
             }
 
-            return Task.CompletedTask;
+            Context.Abort();
+            return Task.FromResult(false);
         }
 
         public Task DeviceHeartbeat(Device device)
