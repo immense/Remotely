@@ -13,19 +13,27 @@ namespace Remotely.Server.Pages
 {
     public class IndexModel : PageModel
     {
-        private DataService DataService { get; }
-        public IndexModel(DataService dataService)
+        public IndexModel(DataService dataService, SignInManager<RemotelyUser> signInManager)
         {
             DataService = dataService;
+            SignInManager = signInManager;
         }
 
         public string DefaultPrompt { get; set; }
         public List<SelectListItem> DeviceGroups { get; set; } = new List<SelectListItem>();
+        private DataService DataService { get; }
+        private SignInManager<RemotelyUser> SignInManager { get; }
 
-        public void OnGet()
+        public async Task<IActionResult> OnGet()
         {
             if (User?.Identity?.IsAuthenticated == true)
             {
+                var user = DataService.GetUserByName(User.Identity.Name);
+                if (user is null)
+                {
+                    await SignInManager.SignOutAsync();
+                    return RedirectToPage();
+                }
                 DefaultPrompt = DataService.GetDefaultPrompt(User.Identity.Name);
                 var groups = DataService.GetDeviceGroupsForUserName(User.Identity.Name);
                 if (groups?.Any() == true)
@@ -37,6 +45,8 @@ namespace Remotely.Server.Pages
             {
                 DefaultPrompt = DataService.GetDefaultPrompt();
             }
+
+            return Page();
         }
     }
 }

@@ -27,7 +27,8 @@ namespace Remotely.Server.API
         public ActionResult Get(string id)
         {
             var sharedFile = DataService.GetSharedFiled(id);
-            if (sharedFile != null)
+            // Shared files expire after a minute and become locked.
+            if (sharedFile != null && sharedFile.Timestamp.AddMinutes(1) > DateTime.Now)
             {
                 return File(sharedFile.FileContents, sharedFile.ContentType, sharedFile.FileName);
             }

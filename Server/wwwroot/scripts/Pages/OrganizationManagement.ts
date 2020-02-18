@@ -133,9 +133,9 @@ document.querySelectorAll(".user-is-admin-checkbox").forEach((checkbox: HTMLInpu
         xhr.send(JSON.stringify((ev.currentTarget as HTMLInputElement).checked));
     })
 });
-document.querySelectorAll(".remove-user-button").forEach((removeButton: HTMLButtonElement) => {
+document.querySelectorAll(".delete-user-button").forEach((removeButton: HTMLButtonElement) => {
     removeButton.addEventListener("click", (ev) => {
-        var result = confirm("Are you sure you want to remove this user from the organization?");
+        var result = confirm("Are you sure you want to delete this user?");
         if (result) {
             var userID = removeButton.getAttribute("user");
             var xhr = new XMLHttpRequest();
@@ -153,7 +153,7 @@ document.querySelectorAll(".remove-user-button").forEach((removeButton: HTMLButt
             xhr.onerror = () => {
                 showError(xhr);
             }
-            xhr.open("delete", `${location.origin}/api/OrganizationManagement/RemoveUserFromOrganization/${userID}`);
+            xhr.open("delete", `${location.origin}/api/OrganizationManagement/DeleteUser/${userID}`);
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.send();
         }

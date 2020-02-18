@@ -17,16 +17,21 @@ namespace Remotely.Server.Services
 {
     public class DataService
     {
-        public DataService(ApplicationDbContext context, ApplicationConfig appConfig, IHostEnvironment hostEnvironment)
+        public DataService(ApplicationDbContext context, 
+            ApplicationConfig appConfig, 
+            IHostEnvironment hostEnvironment,
+            UserManager<RemotelyUser> userManager)
         {
             RemotelyContext = context;
             AppConfig = appConfig;
             HostEnvironment = hostEnvironment;
+            UserManager = userManager;
         }
 
         private ApplicationConfig AppConfig { get; }
         private IHostEnvironment HostEnvironment { get; }
         private ApplicationDbContext RemotelyContext { get; }
+        private UserManager<RemotelyUser> UserManager { get; }
 
         public bool AddDeviceGroup(string orgID, DeviceGroup deviceGroup, out string deviceGroupID, out string errorMessage)
         {
@@ -407,6 +412,11 @@ namespace Remotely.Server.Services
         {
             var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == username);
 
+            if (user is null)
+            {
+                return null;
+            }
+
             return RemotelyContext.DeviceGroups.Where(x => x.OrganizationID == user.OrganizationID) ?? Enumerable.Empty<DeviceGroup>();
         }
 
@@ -511,15 +521,23 @@ namespace Remotely.Server.Services
             RemotelyContext.SaveChanges();
         }
 
-        public void RemoveUserFromOrganization(string orgID, string targetUserID)
+        public async Task RemoveUserFromOrganization(string orgID, string targetUserID)
         {
             var target = RemotelyContext.Users.FirstOrDefault(x =>
                 x.Id == targetUserID &&
                 x.OrganizationID == orgID);
 
-            var newOrganization = new Organization();
-            target.Organization = newOrganization;
-            RemotelyContext.Organizations.Add(newOrganization);
+            if (GetOrganizationCount() >= AppConfig.MaxOrganizationCount)
+            {
+                await UserManager.DeleteAsync(target);
+            }
+            else
+            {
+                var newOrganization = new Organization();
+                target.Organization = newOrganization;
+                RemotelyContext.Organizations.Add(newOrganization);
+            }
+
             RemotelyContext.SaveChanges();
         }
 
