@@ -131,9 +131,9 @@ namespace Remotely.Server.API
             return Ok(deviceGroupID);
         }
 
-        [HttpDelete("RemoveUserFromOrganization/{userID}")]
+        [HttpDelete("DeleteUser/{userID}")]
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
-        public IActionResult RemoveUserFromOrganization(string userID)
+        public async Task<IActionResult> DeleteUser(string userID)
         {
             if (User.Identity.IsAuthenticated &&
                 !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
@@ -141,8 +141,14 @@ namespace Remotely.Server.API
                 return Unauthorized();
             }
 
+            if (User.Identity.IsAuthenticated &&
+              DataService.GetUserByName(User.Identity.Name).Id == userID)
+            {
+                return BadRequest("You can't delete yourself here.  You must go to the Personal Data page to delete your own account.");
+            }
+
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
-            DataService.RemoveUserFromOrganization(orgID, userID);
+            await DataService.RemoveUserFromOrganization(orgID, userID);
             return Ok("ok");
         }
 
