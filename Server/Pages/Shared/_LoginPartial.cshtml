@@ -1,10 +1,9 @@
 @inject Remotely.Server.Services.ApplicationConfig AppConfig
 @using Microsoft.AspNetCore.Identity
 @using Remotely.Shared.Models
-@using Remotely.Server.Data;
 
 @inject SignInManager<RemotelyUser> SignInManager
-@inject UserManager<RemotelyUser> UserManager
+@inject DataService  DataService
 
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
@@ -20,9 +19,13 @@
     }
     else
     {
-        <li class="nav-item">
-            <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Register</a>
-        </li>
+        if (DataService.GetOrganizationCount() < AppConfig.MaxOrganizationCount)
+        {
+            <li class="nav-item">
+                <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Register</a>
+            </li>
+        }
+
         <li class="nav-item">
             <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
         </li>
