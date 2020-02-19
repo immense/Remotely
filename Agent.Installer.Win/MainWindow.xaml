@@ -3,10 +3,88 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ViewModels="clr-namespace:Remotely.Agent.Installer.Win.ViewModels"
         xmlns:local="clr-namespace:Remotely.Agent.Installer.Win"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Icon="favicon.ico">
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown"
+        Loaded="Window_Loaded"
+        Title="Remotely Installer" Height="350" Width="500"  Icon="Assets/favicon.ico">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Window.Resources>
+    <Window.DataContext>
+        <ViewModels:MainWindowViewModel/>
+    </Window.DataContext>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
         
+        <Border Grid.Row="0" Height="50" Background="#FF464646" VerticalAlignment="Top">
+            <DockPanel Margin="10,0,0,0">
+                <Image Height="50" Width="50" Source="Assets/Remotely_Icon.png" Margin="0,0,10,0"></Image>
+                <TextBlock Foreground="DeepSkyBlue" FontWeight="Bold" FontSize="20" VerticalAlignment="Center">Remotely Installer</TextBlock>
+                <Button Style="{StaticResource TitlebarButton}" Click="CloseButton_Click" Content="X" />
+                <Button Style="{StaticResource TitlebarButton}" Click="MinimizeButton_Click" Content="_"/>
+            </DockPanel>
+        </Border>
+        <Grid Grid.Row="1" Margin="10,15,10,0">
+            
+            <StackPanel Visibility="{Binding IsServiceMissing, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Style="{StaticResource SectionHeader}" Text="{Binding HeaderMessage}"></TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="25,5,0,0">
+                    <Run>Organization: </Run>
+                    <Run Text="{Binding OrganizationName}"></Run>
+                </TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="25,5,0,0">
+                    <Run>Server URL: </Run>
+                    <Run Text="{Binding ServerUrl}"></Run>
+                </TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="0,15,0,0" Text="{Binding SubMessage}"></TextBlock>
+                <ProgressBar Height="25" Margin="0,25,0,0" Value="{Binding Progress}"></ProgressBar>
+                <TextBlock TextWrapping="Wrap" Margin="0,15,0,0" Text="{Binding StatusMessage}"></TextBlock>
+            </StackPanel>
+
+            <StackPanel Visibility="{Binding IsServiceInstalled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Style="{StaticResource SectionHeader}" Text="{Binding HeaderMessage}"></TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="25,5,0,0"  Visibility="{Binding IsServiceMissing, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Run>Organization: </Run>
+                    <Run Text="{Binding OrganizationName}"></Run>
+                </TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="25,5,0,0"  Visibility="{Binding IsServiceMissing, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Run>Server URL: </Run>
+                    <Run Text="{Binding ServerUrl}"></Run>
+                </TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="0,15,0,0" Text="{Binding SubMessage}"></TextBlock>
+            </StackPanel>
+
+        </Grid>
+
+        <DockPanel Margin="10" Grid.Row="2">
+            <Button DockPanel.Dock="Right" 
+                    HorizontalAlignment="Right" 
+                    Style="{StaticResource NormalButton}" 
+                    Margin="5,0,0,0">
+                Close
+            </Button>
+            <Button DockPanel.Dock="Right" 
+                    HorizontalAlignment="Right" 
+                    Style="{StaticResource NormalButton}" 
+                    Margin="5,0,0,0"
+                    Visibility="{Binding IsServiceMissing, Converter={StaticResource BooleanToVisibilityConverter}}">
+                Install
+            </Button>
+            <Button DockPanel.Dock="Right" 
+                    HorizontalAlignment="Right"
+                    Style="{StaticResource NormalButton}" 
+                    Margin="5,0,0,0"
+                    Visibility="{Binding IsServiceInstalled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                Uninstall
+            </Button>
+        </DockPanel>
     </Grid>
 </Window>
