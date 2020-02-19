@@ -27,6 +27,12 @@ namespace Remotely.Agent
             {
                 BuildServices();
 
+                if (Environment.CommandLine.Contains("-uninstall"))
+                {
+                    Services.GetRequiredService<Uninstaller>().UninstallAgent();
+                    return;
+                }
+
                 Task.Run(() => { Init(); });
 
                 Thread.Sleep(Timeout.Infinite);
