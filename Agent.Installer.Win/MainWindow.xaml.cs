@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Remotely.Agent.Installer.Win.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,26 @@ namespace Remotely.Agent.Installer.Win
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            DragMove();
+        }
+
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            await (DataContext as MainWindowViewModel).Init();
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            App.Current.Shutdown();
+        }
+
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
         }
     }
 }

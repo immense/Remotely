@@ -19,10 +19,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{D96B47F6-EF3E-4AF6-A1BE-006D531DDBA4}"
 	ProjectSection(SolutionItems) = preProject
+		Assets\Remotely_Icon.ico = Assets\Remotely_Icon.ico
 		Assets\Remotely_Icon.pdn = Assets\Remotely_Icon.pdn
 		Assets\Remotely_Icon.png = Assets\Remotely_Icon.png
-		Assets\Remotely_Icon_Transparent.ico = Assets\Remotely_Icon_Transparent.ico
-		Assets\Remotely_Icon_Transparent.png = Assets\Remotely_Icon_Transparent.png
 		Assets\Remotely_Logo.png = Assets\Remotely_Logo.png
 	EndProjectSection
 EndProject

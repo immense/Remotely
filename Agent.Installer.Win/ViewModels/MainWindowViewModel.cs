@@ -9,8 +9,96 @@ using System.Threading.Tasks;
 
 namespace Remotely.Agent.Installer.Win.ViewModels
 {
-    public class MainWindowViewModel
+    public class MainWindowViewModel : ViewModelBase
     {
+        private string headerMessage = "Install the Remotely service.";
+        private bool isServiceInstalled;
+        private bool isServiceMissing = true;
+        private string subMessage = "Installing the Remotely service will allow remote access by the above service provider.";
+        private string statusMessage;
+        private int progress = 50;
+
+        public string HeaderMessage
+        {
+            get
+            {
+                return headerMessage;
+            }
+            set
+            {
+                headerMessage = value;
+                FirePropertyChanged(nameof(HeaderMessage));
+            }
+        }
+
+
+        public int Progress
+        {
+            get
+            {
+                return progress;
+            }
+            set
+            {
+                progress = value;
+                FirePropertyChanged(nameof(Progress));
+            }
+        }
+
+        public bool IsServiceInstalled
+        {
+            get
+            {
+                return isServiceInstalled;
+            }
+            set
+            {
+                isServiceInstalled = value;
+                FirePropertyChanged(nameof(IsServiceInstalled));
+            }
+        }
+        public bool IsServiceMissing
+        {
+            get
+            {
+                return isServiceMissing;
+            }
+            set
+            {
+                isServiceMissing = value;
+                FirePropertyChanged(nameof(IsServiceMissing));
+            }
+        }
+        public string SubMessage
+        {
+            get
+            {
+                return subMessage;
+            }
+            set
+            {
+                subMessage = value;
+                FirePropertyChanged(nameof(SubMessage));
+            }
+        }
+
+        public string StatusMessage
+        {
+            get
+            {
+                return statusMessage;
+            }
+            set
+            {
+                statusMessage = value;
+                FirePropertyChanged(nameof(StatusMessage));
+            }
+        }
+        public async Task Init()
+        {
+            
+        }
+
         public InstallerSettings ReadInstallerSettings()
         {
             try
