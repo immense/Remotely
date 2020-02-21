@@ -433,8 +433,11 @@ namespace Remotely.Server.Services
                         .FirstOrDefault(x => x.UserName == userName)
                         ?.OrganizationID;
 
+            var fromDate = DateTime.Now.Date;
+            var toDate = DateTime.Now.Date.AddDays(1);
+
             return RemotelyContext.EventLogs
-                .Where(x => x.OrganizationID == orgID && x.TimeStamp >= from && x.TimeStamp <= to)
+                .Where(x => x.OrganizationID == orgID && x.TimeStamp >= fromDate && x.TimeStamp <= toDate)
                 .OrderByDescending(x => x.TimeStamp);
         }
 
