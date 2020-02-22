@@ -14,7 +14,7 @@ namespace Remotely.Agent.Installer.Win.Services
 {
     public class InstallerService
     {
-        public bool InstallService()
+        public bool Install()
         {
             try
             {
@@ -23,34 +23,11 @@ namespace Remotely.Agent.Installer.Win.Services
                     return false;
                 }
 
-                Logger.Write("Install started.");
-                var installPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-                var serv = ServiceController.GetServices().FirstOrDefault(ser => ser.ServiceName == "Remotely_Service");
-                if (serv == null)
-                {
-                    var command = new string[] { "/assemblypath=" + installPath };
-                    var serviceInstaller = new ServiceInstaller();
-                    var context = new InstallContext("", command);
-                    serviceInstaller.Context = context;
-                    serviceInstaller.DisplayName = "Remotely Service";
-                    serviceInstaller.Description = "Background service that maintains a connection to the Remotely server.  The service is used for remote support and maintenance by this computer's administrators.";
-                    serviceInstaller.ServiceName = "Remotely_Service";
-                    serviceInstaller.StartType = ServiceStartMode.Automatic;
-                    serviceInstaller.Parent = new ServiceProcessInstaller();
+                InstallService();
 
-                    var state = new System.Collections.Specialized.ListDictionary();
-                    serviceInstaller.Install(state);
-                    Logger.Write("Service installed.");
-                }
-                serv = ServiceController.GetServices().FirstOrDefault(ser => ser.ServiceName == "Remotely_Service");
-                if (serv.Status != ServiceControllerStatus.Running)
-                {
-                    serv.Start();
-                }
-                Logger.Write("Service started.");
-                var psi = new ProcessStartInfo("cmd.exe", "/c sc.exe failure \"Remotely_Service\" reset=5 actions=restart/5000");
-                psi.WindowStyle = ProcessWindowStyle.Hidden;
-                Process.Start(psi).WaitForExit();
+                var programPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Remotely", "ScreenCast", "Remotely_ScreenCast.exe");
+                Process.Start("netsh", "advfirewall firewall delete rule name=\"Remotely ScreenCast\"").WaitForExit();
+                Process.Start("netsh", $"advfirewall firewall add rule name=\"Remotely ScreenCast\" program=\"{programPath}\" protocol=any dir=in enable=yes action=allow profile=Private,Domain description=\"The agent that allows screen sharing and remote control for Remotely.\"").WaitForExit();
                 return true;
             }
             catch (Exception ex)
@@ -58,6 +35,7 @@ namespace Remotely.Agent.Installer.Win.Services
                 Logger.Write(ex);
                 return false;
             }
+
         }
 
         public async Task<bool> Uninstall()
@@ -82,6 +60,8 @@ namespace Remotely.Agent.Installer.Win.Services
 
                 Directory.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Remotely"), true);
 
+                Process.Start("netsh", "advfirewall firewall delete rule name=\"Remotely ScreenCast\"").WaitForExit();
+
                 return true;
 
             }
@@ -102,6 +82,38 @@ namespace Remotely.Agent.Installer.Win.Services
                 MessageBox.Show("Elevated privileges are required.  Please restart the installer using 'Run as administrator'.", "Elevation Required", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return result;
+        }
+
+        private void InstallService()
+        {
+            Logger.Write("Install started.");
+            var installPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            var serv = ServiceController.GetServices().FirstOrDefault(ser => ser.ServiceName == "Remotely_Service");
+            if (serv == null)
+            {
+                var command = new string[] { "/assemblypath=" + installPath };
+                var serviceInstaller = new ServiceInstaller();
+                var context = new InstallContext("", command);
+                serviceInstaller.Context = context;
+                serviceInstaller.DisplayName = "Remotely Service";
+                serviceInstaller.Description = "Background service that maintains a connection to the Remotely server.  The service is used for remote support and maintenance by this computer's administrators.";
+                serviceInstaller.ServiceName = "Remotely_Service";
+                serviceInstaller.StartType = ServiceStartMode.Automatic;
+                serviceInstaller.Parent = new ServiceProcessInstaller();
+
+                var state = new System.Collections.Specialized.ListDictionary();
+                serviceInstaller.Install(state);
+                Logger.Write("Service installed.");
+            }
+            serv = ServiceController.GetServices().FirstOrDefault(ser => ser.ServiceName == "Remotely_Service");
+            if (serv.Status != ServiceControllerStatus.Running)
+            {
+                serv.Start();
+            }
+            Logger.Write("Service started.");
+            var psi = new ProcessStartInfo("cmd.exe", "/c sc.exe failure \"Remotely_Service\" reset=5 actions=restart/5000");
+            psi.WindowStyle = ProcessWindowStyle.Hidden;
+            Process.Start(psi).WaitForExit();
         }
     }
 }
