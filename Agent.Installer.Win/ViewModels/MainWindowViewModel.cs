@@ -200,13 +200,15 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             {
                 await Uninstall(null);
             }
+            else
+            {
+                CheckParams();
+            }
 
             if (CommandLineParser.CommandLineArgs.ContainsKey("quiet"))
             {
                 App.Current.Shutdown();
             }
-
-            CheckParams();
         }
 
         public InstallerSettings ReadInstallerSettings()
@@ -336,11 +338,6 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             {
                 IsReadyState = false;
 
-                if (!CheckParams())
-                {
-                    return;
-                }
-               
                 if (await Installer.Uninstall())
                 {
                     IsServiceInstalled = false;
