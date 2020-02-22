@@ -43,7 +43,9 @@ namespace Remotely.Agent.Installer.Win.Services
 
                 StopService();
 
-                BackupOrCreateDirectory();
+                await StopProcesses();
+
+                BackupDirectory();
 
                 var connectionInfo = GetConnectionInfo(organizationId, serverUrl);
 
@@ -87,16 +89,7 @@ namespace Remotely.Agent.Installer.Win.Services
 
                 ProcessWrapper.StartHidden("cmd.exe", "/c sc delete Remotely_Service").WaitForExit();
 
-
-                ProgressMessageChanged?.Invoke(this, "Stopping Remotely processes.");
-                var procs = Process.GetProcessesByName("Remotely_Agent").Concat(Process.GetProcessesByName("Remotely_ScreenCast"));
-
-                foreach (var proc in procs)
-                {
-                    proc.Kill();
-                }
-
-                await Task.Delay(500);
+                await StopProcesses();
 
                 ProgressMessageChanged?.Invoke(this, "Deleting files.");
                 ClearInstallDirectory();
@@ -116,6 +109,19 @@ namespace Remotely.Agent.Installer.Win.Services
             }
         }
 
+        private async Task StopProcesses()
+        {
+            ProgressMessageChanged?.Invoke(this, "Stopping Remotely processes.");
+            var procs = Process.GetProcessesByName("Remotely_Agent").Concat(Process.GetProcessesByName("Remotely_ScreenCast"));
+
+            foreach (var proc in procs)
+            {
+                proc.Kill();
+            }
+
+            await Task.Delay(500);
+        }
+
         private void AddFirewallRule()
         {
             var screenCastPath = Path.Combine(InstallPath, "ScreenCast", "Remotely_ScreenCast.exe");
@@ -123,7 +129,7 @@ namespace Remotely.Agent.Installer.Win.Services
             ProcessWrapper.StartHidden("netsh", $"advfirewall firewall add rule name=\"Remotely ScreenCast\" program=\"{screenCastPath}\" protocol=any dir=in enable=yes action=allow profile=Private,Domain description=\"The agent that allows screen sharing and remote control for Remotely.\"").WaitForExit();
         }
 
-        private void BackupOrCreateDirectory()
+        private void BackupDirectory()
         {
             if (Directory.Exists(InstallPath))
             {
@@ -135,10 +141,6 @@ namespace Remotely.Agent.Installer.Win.Services
                     File.Delete(backupPath);
                 }
                 ZipFile.CreateFromDirectory(InstallPath, backupPath, CompressionLevel.Fastest, false);
-            }
-            else
-            {
-                Directory.CreateDirectory(InstallPath);
             }
         }
 
@@ -220,7 +222,43 @@ namespace Remotely.Agent.Installer.Win.Services
 
             ProgressMessageChanged.Invoke(this, "Extracting Remotely files.");
             ProgressValueChanged?.Invoke(this, 0);
-            await Task.Run(() => { ZipFile.ExtractToDirectory(targetFile, InstallPath); });
+
+            var tempDir = Path.Combine(Path.GetTempPath(), "RemotelyUpdate");
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, true);
+            }
+
+            Directory.CreateDirectory(InstallPath);
+            while (!Directory.Exists(InstallPath))
+            {
+                await Task.Delay(10);
+            }
+
+            ZipFile.ExtractToDirectory(targetFile, tempDir);
+            var fileSystemEntries = Directory.GetFileSystemEntries(tempDir);
+            for (var i = 0; i < fileSystemEntries.Length; i++)
+            {
+                try
+                {
+                    ProgressValueChanged?.Invoke(this, (int)((double)i / (double)fileSystemEntries.Length * 100d));
+                    var entry = fileSystemEntries[i];
+                    if (File.Exists(entry))
+                    {
+                        File.Copy(entry, Path.Combine(InstallPath, Path.GetFileName(entry)), true);
+                    }
+                    else if (Directory.Exists(entry))
+                    {
+                        Directory.Move(entry, Path.Combine(InstallPath, new DirectoryInfo(entry).Name));
+                    }
+                    await Task.Delay(1);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
+            }
+            ProgressValueChanged?.Invoke(this, 0);
         }
 
         private ConnectionInfo GetConnectionInfo(string organizationId, string serverUrl)
