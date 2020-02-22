@@ -198,27 +198,38 @@ namespace Remotely.Agent.Installer.Win.Services
 
         private void CreateUninstallKey()
         {
+            var version = FileVersionInfo.GetVersionInfo(Path.Combine(InstallPath, "Remotely_Agent.exe"));
+
             var remotelyKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Remotely", true);
             remotelyKey.SetValue("DisplayIcon", Path.Combine(InstallPath, "Remotely_Agent.exe"));
             remotelyKey.SetValue("DisplayName", "Remotely");
-            remotelyKey.SetValue("DisplayVersion", Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            remotelyKey.SetValue("DisplayVersion", version.FileVersion);
             remotelyKey.SetValue("InstallDate", DateTime.Now.ToShortDateString());
             remotelyKey.SetValue("Publisher", "Translucency Software");
-            remotelyKey.SetValue("VersionMajor", Assembly.GetExecutingAssembly().GetName().Version.Major.ToString(), RegistryValueKind.DWord);
-            remotelyKey.SetValue("VersionMinor", Assembly.GetExecutingAssembly().GetName().Version.Minor.ToString(), RegistryValueKind.DWord);
+            remotelyKey.SetValue("VersionMajor", version.FileMajorPart.ToString(), RegistryValueKind.DWord);
+            remotelyKey.SetValue("VersionMinor", version.FileMinorPart.ToString(), RegistryValueKind.DWord);
             remotelyKey.SetValue("UninstallString", Path.Combine(InstallPath, "Remotely_Installer.exe -uninstall"));
             remotelyKey.SetValue("QuietUninstallString", Path.Combine(InstallPath, "Remotely_Installer.exe -uninstall -quiet"));
         }
         private async Task DownloadRemotelyAgent(string serverUrl)
         {
-            ProgressMessageChanged.Invoke(this, "Downloading Remotely agent.");
-            var client = new WebClient();
-            client.DownloadProgressChanged += (sender, args) =>
-            {
-                ProgressValueChanged?.Invoke(this, args.ProgressPercentage);
-            };
             var targetFile = Path.Combine(Path.GetTempPath(), $"Remotely-Agent.zip");
-            await client.DownloadFileTaskAsync($"{serverUrl}/Downloads/Remotely-Win10-{Platform}.zip", targetFile);
+
+            if (CommandLineParser.CommandLineArgs.TryGetValue("path", out var result))
+            {
+                File.Copy(result, targetFile, true);
+            }
+            else
+            {
+                ProgressMessageChanged.Invoke(this, "Downloading Remotely agent.");
+                var client = new WebClient();
+                client.DownloadProgressChanged += (sender, args) =>
+                {
+                    ProgressValueChanged?.Invoke(this, args.ProgressPercentage);
+                };
+
+                await client.DownloadFileTaskAsync($"{serverUrl}/Downloads/Remotely-Win10-{Platform}.zip", targetFile);
+            }
 
             ProgressMessageChanged.Invoke(this, "Extracting Remotely files.");
             ProgressValueChanged?.Invoke(this, 0);

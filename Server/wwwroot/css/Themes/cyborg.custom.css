@@ -115,3 +115,8 @@ button.navbar-toggler:hover {
 .fa-times {
     color: red;
 }
+
+span.label.code {
+    background: rgb(60, 60, 60);
+    color: white;
+}

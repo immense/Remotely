@@ -63,6 +63,11 @@ namespace Remotely.Server.Services
             return true;
         }
 
+        public string GetOrganizationNameById(string organizationID)
+        {
+            return RemotelyContext.Organizations.FirstOrDefault(x => x.ID == organizationID)?.OrganizationName;
+        }
+
         public InviteLink AddInvite(string orgID, Invite invite)
         {
             invite.InvitedUser = invite.InvitedUser.ToLower();
