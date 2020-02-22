@@ -241,8 +241,9 @@ namespace Remotely.Agent.Installer.Win.ViewModels
                 {
                     return;
                 }
-
-                if (Installer.InstallService())
+                
+                
+                if (Installer.Install())
                 {
                     IsServiceInstalled = true;
                     Progress = 0;
