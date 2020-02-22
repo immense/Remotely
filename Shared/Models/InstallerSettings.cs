@@ -12,5 +12,11 @@ namespace Remotely.Shared.Models
     {
         [DataMember]
         public string OrganizationID { get; set; }
+
+        [DataMember]
+        public string OrganizationName { get; set; }
+
+        [DataMember]
+        public string ServerUrl { get; set; }
     }
 }

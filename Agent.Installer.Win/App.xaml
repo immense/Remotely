@@ -1,8 +1,8 @@
-﻿<Application x:Class="Agent.Installer.Win.App"
+﻿<Application x:Class="Remotely.Agent.Installer.Win.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Remotely.Agent.Installer.Win"
-             StartupUri="MainWindow.xaml">
+             StartupUri="MainWindow.xaml" Startup="App_Startup">
     <Application.Resources>
         <Style x:Key="TitlebarButton" TargetType="Button">
             <Setter Property="Background" Value="#FF464646"></Setter>
