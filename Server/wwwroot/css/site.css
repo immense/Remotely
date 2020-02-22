@@ -191,8 +191,10 @@ h6 {
 
 span.label.code {
     font-weight: normal;
-    font-size: 1em;
+    font-size: .9em;
     white-space: normal;
+    padding: 5px 10px;
+    border-radius: 3px;
 }
 
 .command-result-output {
