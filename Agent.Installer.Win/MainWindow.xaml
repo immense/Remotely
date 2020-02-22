@@ -7,9 +7,11 @@
         xmlns:local="clr-namespace:Remotely.Agent.Installer.Win"
         mc:Ignorable="d"
         WindowStyle="None"
-        ResizeMode="NoResize"
+        ResizeMode="CanResizeWithGrip"
+        AllowsTransparency="True"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
         Loaded="Window_Loaded"
+        WindowStartupLocation="CenterScreen"
         Title="Remotely Installer" Height="325" Width="500"  Icon="Assets/favicon.ico">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
@@ -36,17 +38,25 @@
 
             <StackPanel>
                 <TextBlock Style="{StaticResource SectionHeader}" Text="{Binding HeaderMessage}"></TextBlock>
-                <TextBlock TextWrapping="Wrap" Margin="25,5,0,0">
-                    <Run>Provider: </Run>
-                    <Run Text="{Binding OrganizationName}"></Run>
-                </TextBlock>
-                <TextBlock TextWrapping="Wrap" Margin="25,5,0,0">
-                    <Run>Server URL: </Run>
-                    <Run Text="{Binding ServerUrl}"></Run>
-                </TextBlock>
-                <TextBlock TextWrapping="Wrap" Margin="0,15,0,0" Text="{Binding SubMessage}"></TextBlock>
-                <ProgressBar Height="25" Margin="0,25,0,0" Value="{Binding Progress}" Visibility="{Binding IsProgressVisible, Converter={StaticResource BooleanToVisibilityConverter}}"></ProgressBar>
-                <TextBlock TextWrapping="Wrap" Margin="0,15,0,0" Text="{Binding StatusMessage}"></TextBlock>
+                <Grid Margin="25,5,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Column="0" Grid.Row="0" Text="Provider:"  Margin="0,0,15,0" FontSize="14" />
+                    <TextBox  Grid.Column="1" Grid.Row="0" IsReadOnly="True" Margin="0,0,0,10" TextWrapping="Wrap" Text="{Binding OrganizationName}" FontSize="14" />
+
+                    <TextBlock Grid.Column="0" Grid.Row="1" Margin="0,0,15,0" Text="Server URL:" FontSize="14" />
+                    <TextBox Grid.Column="1" Grid.Row="1" IsReadOnly="True" TextWrapping="Wrap" Text="{Binding ServerUrl}" FontSize="14" />
+                </Grid>
+
+                <TextBlock TextWrapping="Wrap" Margin="0,25,0,0" Text="{Binding StatusMessage}" FontSize="14"></TextBlock>
+                <ProgressBar Height="25" Margin="0,10,0,0" Value="{Binding Progress}" Visibility="{Binding IsProgressVisible, Converter={StaticResource BooleanToVisibilityConverter}}"></ProgressBar>
             </StackPanel>
 
         </Grid>
@@ -70,6 +80,7 @@
                     HorizontalAlignment="Right" 
                     Style="{StaticResource NormalButton}" 
                     Margin="5,0,0,0"
+                    IsEnabled="{Binding IsReadyState}"
                     Visibility="{Binding IsServiceMissing, Converter={StaticResource BooleanToVisibilityConverter}}"
                     Command="{Binding InstallCommand}">
                 Install
@@ -78,6 +89,7 @@
                     HorizontalAlignment="Right"
                     Style="{StaticResource NormalButton}" 
                     Margin="5,0,0,0"
+                    IsEnabled="{Binding IsReadyState}"
                     Visibility="{Binding IsServiceInstalled, Converter={StaticResource BooleanToVisibilityConverter}}"
                     Command="{Binding UninstallCommand}">
                 Uninstall
