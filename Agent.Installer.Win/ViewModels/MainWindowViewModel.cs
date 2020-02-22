@@ -1,16 +1,17 @@
 ﻿using Remotely.Agent.Installer.Win.Services;
+using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization.Json;
 using System.Security.Principal;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.Script.Serialization;
 using System.Windows;
 using System.Windows.Input;
 
@@ -20,6 +21,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
     {
         private string headerMessage;
 
+        private bool isReadyState = true;
         private bool isServiceInstalled;
 
         private string organizationName;
@@ -29,8 +31,6 @@ namespace Remotely.Agent.Installer.Win.ViewModels
         private string serverUrl;
 
         private string statusMessage;
-
-        private string subMessage;
 
         public MainWindowViewModel()
         {
@@ -49,9 +49,22 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             }
         }
 
-        public ICommand InstallCommand => new Executor(Install);
+        public ICommand InstallCommand => new Executor(async (param) => { await Install(param); });
 
         public bool IsProgressVisible => Progress > 0;
+
+        public bool IsReadyState
+        {
+            get
+            {
+                return isReadyState;
+            }
+            set
+            {
+                isReadyState = value;
+                FirePropertyChanged(nameof(IsReadyState));
+            }
+        }
 
         public bool IsServiceInstalled
         {
@@ -81,8 +94,8 @@ namespace Remotely.Agent.Installer.Win.ViewModels
                         Process.Start(logPath);
                     }
                     else
-                    {
-                        MessageBox.Show("Log file doesn't exist.", "No Logs", MessageBoxButton.OK, MessageBoxImage.Information);
+                    { 
+                        MessageBoxWrapper.Show("Log file doesn't exist.", "No Logs", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 });
             }
@@ -141,33 +154,34 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             }
         }
 
-        public string SubMessage
-        {
-            get
-            {
-                return subMessage;
-            }
-            set
-            {
-                subMessage = value;
-                FirePropertyChanged(nameof(SubMessage));
-            }
-        }
-
         public ICommand UninstallCommand => new Executor(async (param) => { await Uninstall(param); });
+
+        private string DeviceAlias { get; set; }
+        private string DeviceGroup { get; set; }
         private InstallerService Installer { get; }
         public async Task Init()
         {
+
+            Installer.ProgressMessageChanged += (sender, arg) =>
+            {
+                StatusMessage = arg;
+            };
+
+            Installer.ProgressValueChanged += (sender, arg) =>
+            {
+                Progress = arg;
+            };
+
             IsServiceInstalled = ServiceController.GetServices().Any(x => x.ServiceName == "Remotely_Service");
-            if (IsServiceInstalled)
+            if (IsServiceMissing)
             {
                 HeaderMessage = "Install the Remotely service.";
-                SubMessage = "Installing the Remotely service will allow remote access by the above service provider.";
+                StatusMessage = "Installing the Remotely service will allow remote access by the above service provider.";
             }
             else
             {
                 HeaderMessage = "Uninstall the Remotely service.";
-                SubMessage = "Uninstalling the Remotely service will remove all remote acess for the above service provider.";
+                StatusMessage = "Uninstalling the Remotely service will remove all remote acess for the above service provider.";
             }
 
             var installerSettings = ReadInstallerSettings();
@@ -176,10 +190,23 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             ServerUrl = installerSettings?.ServerUrl;
             OrganizationID = installerSettings?.OrganizationID;
 
-            if (Environment.GetCommandLineArgs().Contains("-rununinstaller"))
+            CopyCommandLineArgs();
+
+            if (CommandLineParser.CommandLineArgs.ContainsKey("install"))
+            {
+                await Install(null);
+            }
+            else if (CommandLineParser.CommandLineArgs.ContainsKey("uninstall"))
             {
                 await Uninstall(null);
             }
+
+            if (CommandLineParser.CommandLineArgs.ContainsKey("quiet"))
+            {
+                App.Current.Shutdown();
+            }
+
+            CheckParams();
         }
 
         public InstallerSettings ReadInstallerSettings()
@@ -194,19 +221,16 @@ namespace Remotely.Agent.Installer.Win.ViewModels
                     var payloadSize = br.ReadInt32();
                     peStream.Seek(-4 - payloadSize, SeekOrigin.End);
                     var payloadBytes = br.ReadBytes(payloadSize);
-                    using (var settingsStream = new MemoryStream(payloadBytes))
-                    {
-                        settingsStream.Seek(0, SeekOrigin.Begin);
-                        var serializer = new DataContractJsonSerializer(typeof(InstallerSettings));
-                        var installerSettings = (InstallerSettings)serializer.ReadObject(settingsStream);
-                        return installerSettings;
-                    }
+                    var payloadJson = Encoding.UTF8.GetString(payloadBytes);
+                    var serializer = new JavaScriptSerializer();
+                    var installerSettings = serializer.Deserialize<InstallerSettings>(payloadJson);
+                    return installerSettings;
                 }
             }
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                MessageBox.Show("There was an error reading the installer settings.  Try re-downloading the installer.", "Configuration Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxWrapper.Show("There was an error reading the installer settings.  Try re-downloading the installer.", "Configuration Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
         }
@@ -218,7 +242,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             var result = principal.IsInRole(WindowsBuiltInRole.Administrator);
             if (!result)
             {
-                MessageBox.Show("Elevated privileges are required.  Please restart the installer using 'Run as administrator'.", "Elevation Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBoxWrapper.Show("Elevated privileges are required.  Please restart the installer using 'Run as administrator'.", "Elevation Required", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return result;
         }
@@ -228,33 +252,66 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             var result = !string.IsNullOrWhiteSpace(OrganizationID) && !string.IsNullOrWhiteSpace(ServerUrl);
             if (!result)
             {
-                MessageBox.Show("Required settings are missing.  Try re-downloading the installer.", "Invalid Installer", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxWrapper.Show("Required settings are missing.  Try re-downloading the installer.", "Invalid Installer", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return result;
         }
 
-        private void Install(object param)
+        private void CopyCommandLineArgs()
+        {
+            if (CommandLineParser.CommandLineArgs.TryGetValue("organization", out var orgName))
+            {
+                OrganizationName = orgName;
+            }
+
+            if (CommandLineParser.CommandLineArgs.TryGetValue("organizationid", out var orgID))
+            {
+                OrganizationID = orgID;
+            }
+
+            if (CommandLineParser.CommandLineArgs.TryGetValue("serverurl", out var serverUrl))
+            {
+                ServerUrl = serverUrl;
+            }
+
+            if (CommandLineParser.CommandLineArgs.TryGetValue("devicegroup", out var deviceGroup))
+            {
+                DeviceGroup = deviceGroup;
+            }
+
+            if (CommandLineParser.CommandLineArgs.TryGetValue("devicealias", out var deviceAlias))
+            {
+                DeviceAlias = deviceAlias;
+            }
+
+            if (ServerUrl?.EndsWith("/") == true)
+            {
+                ServerUrl = ServerUrl.Substring(0, ServerUrl.LastIndexOf("/"));
+            }
+        }
+        private async Task Install(object param)
         {
             try
             {
+                IsReadyState = false;
                 if (!CheckParams())
                 {
                     return;
                 }
                 
                 
-                if (Installer.Install())
+                if (await Installer.Install(ServerUrl, OrganizationID, DeviceGroup, DeviceAlias))
                 {
                     IsServiceInstalled = true;
                     Progress = 0;
                     HeaderMessage = "Installation completed.";
-                    SubMessage = "Remotely has been installed.  You can now close this window.";
+                    StatusMessage = "Remotely has been installed.  You can now close this window.";
                 }
                 else
                 {
                     Progress = 0;
                     HeaderMessage = "An error occurred during installation.";
-                    SubMessage = "There was an error during installation.  Check the logs for details.";
+                    StatusMessage = "There was an error during installation.  Check the logs for details.";
                 }
                 if (!CheckIsAdministrator())
                 {
@@ -265,12 +322,20 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             {
                 Logger.Write(ex);
             }
-           
+            finally
+            {
+                IsReadyState = true;
+            }
         }
+
+       
+
         private async Task Uninstall(object param)
         {
             try
             {
+                IsReadyState = false;
+
                 if (!CheckParams())
                 {
                     return;
@@ -281,19 +346,23 @@ namespace Remotely.Agent.Installer.Win.ViewModels
                     IsServiceInstalled = false;
                     Progress = 0;
                     HeaderMessage = "Uninstall completed.";
-                    SubMessage = "Remotely has been uninstalled.  You can now close this window.";
+                    StatusMessage = "Remotely has been uninstalled.  You can now close this window.";
                 }
                 else
                 {
                     Progress = 0;
                     HeaderMessage = "An error occurred during uninstall.";
-                    SubMessage = "There was an error during uninstall.  Check the logs for details.";
+                    StatusMessage = "There was an error during uninstall.  Check the logs for details.";
                 }
 
             }
             catch (Exception ex)
             {
                 Logger.Write(ex);
+            }
+            finally
+            {
+                IsReadyState = true;
             }
         }
     }

@@ -50,10 +50,12 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Data" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Runtime.Serialization">
       <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.2\System.Runtime.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -72,10 +74,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Models\InstallerSettings.cs" />
+    <Compile Include="..\Shared\Models\ConnectionInfo.cs">
+      <Link>Models\ConnectionInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\Models\InstallerSettings.cs">
+      <Link>Models\InstallerSettings.cs</Link>
+    </Compile>
+    <Compile Include="Services\CommandLineParser.cs" />
+    <Compile Include="Services\MessageBoxWrapper.cs" />
     <Compile Include="Services\Executor.cs" />
     <Compile Include="Services\InstallerService.cs" />
     <Compile Include="Services\Logger.cs" />
+    <Compile Include="Services\ProcessWrapper.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Page Include="MainWindow.xaml">

@@ -1,4 +1,5 @@
-﻿using Remotely.Agent.Installer.Win.ViewModels;
+﻿using Remotely.Agent.Installer.Win.Services;
+using Remotely.Agent.Installer.Win.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,12 @@ namespace Remotely.Agent.Installer.Win
     {
         public MainWindow()
         {
+            if (CommandLineParser.CommandLineArgs.ContainsKey("quiet"))
+            {
+                Hide();
+                ShowInTaskbar = false;
+                _ = new MainWindowViewModel().Init();
+            }
             InitializeComponent();
         }
 
@@ -31,9 +38,9 @@ namespace Remotely.Agent.Installer.Win
             DragMove();
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            (DataContext as MainWindowViewModel).Init();
+            await (DataContext as MainWindowViewModel).Init();
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)

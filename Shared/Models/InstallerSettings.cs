@@ -7,16 +7,12 @@ using System.Threading.Tasks;
 
 namespace Remotely.Shared.Models
 {
-    [DataContract]
     public class InstallerSettings
     {
-        [DataMember]
         public string OrganizationID { get; set; }
 
-        [DataMember]
         public string OrganizationName { get; set; }
 
-        [DataMember]
         public string ServerUrl { get; set; }
     }
 }
