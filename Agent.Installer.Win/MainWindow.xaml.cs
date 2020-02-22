@@ -31,9 +31,9 @@ namespace Remotely.Agent.Installer.Win
             DragMove();
         }
 
-        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            await (DataContext as MainWindowViewModel).Init();
+            (DataContext as MainWindowViewModel).Init();
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)

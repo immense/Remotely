@@ -73,6 +73,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Models\InstallerSettings.cs" />
+    <Compile Include="Services\Executor.cs" />
     <Compile Include="Services\InstallerService.cs" />
     <Compile Include="Services\Logger.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />

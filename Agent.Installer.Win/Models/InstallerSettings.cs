@@ -12,5 +12,11 @@ namespace Remotely.Agent.Installer.Win
     {
         [DataMember]
         public string OrganizationID { get; set; }
+
+        [DataMember]
+        public string OrganizationName { get; set; }
+
+        [DataMember]
+        public string ServerUrl { get; set; }
     }
 }
