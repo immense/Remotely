@@ -181,7 +181,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             else
             {
                 HeaderMessage = "Uninstall the Remotely service.";
-                StatusMessage = "Uninstalling the Remotely service will remove all remote acess for the above service provider.";
+                StatusMessage = "Uninstalling the Remotely service will remove all remote acess to this device.";
             }
 
             var installerSettings = ReadInstallerSettings();
