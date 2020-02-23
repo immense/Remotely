@@ -225,7 +225,7 @@ span.label.code {
     position: fixed;
     right: 20px;
     bottom: 20px;
-    width: 250px;
+    width: 350px;
 }
 
 .chat-header {
@@ -236,7 +236,7 @@ span.label.code {
 
 .chat-messages {
     overflow-y: auto;
-    height: 200px;
+    height: 250px;
     padding: 5px 10px;
 }
 
