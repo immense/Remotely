@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Remotely.Agent.Installer.Win.Services
 {
-    public static class ProcessWrapper
+    public static class ProcessEx
     {
         public static Process StartHidden(string filePath, string arguments)
         {
