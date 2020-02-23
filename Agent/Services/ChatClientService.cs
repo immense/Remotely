@@ -35,7 +35,7 @@ namespace Remotely.Agent.Services
         };
 
         private MemoryCache ChatClients { get; } = new MemoryCache("ChatClients");
-        public async Task SendMessage(string message, string senderConnectionID, HubConnection hubConnection)
+        public async Task SendMessage(string message, string orgName, string senderConnectionID, HubConnection hubConnection)
         {
             try
             {
@@ -45,7 +45,7 @@ namespace Remotely.Agent.Services
                     if (!ChatClients.Contains(senderConnectionID))
                     {
                         var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", OSUtils.ScreenCastExecutableFileName);
-                        var procID = await AppLauncher.LaunchChatService(senderConnectionID, hubConnection);
+                        var procID = await AppLauncher.LaunchChatService(orgName, senderConnectionID, hubConnection);
 
                         var clientPipe = new NamedPipeClientStream(".", "Remotely_Chat" + senderConnectionID, PipeDirection.InOut, PipeOptions.Asynchronous);
                         clientPipe.Connect(15000);

@@ -34,9 +34,11 @@ namespace Remotely.ScreenCast.Core
         public string DeviceID { get; private set; }
         public string Host { get; private set; }
         public AppMode Mode { get; private set; }
+        public string OrganizationName { get; private set; }
         public string RequesterID { get; private set; }
         public string ServiceID { get; private set; }
         public ConcurrentDictionary<string, Viewer> Viewers { get; } = new ConcurrentDictionary<string, Viewer>();
+
         public async Task Connect()
         {
             await CasterSocket.Connect(Host);
@@ -48,35 +50,66 @@ namespace Remotely.ScreenCast.Core
 
             for (var i = 0; i < args.Length; i += 2)
             {
-                var key = args?[i];
-                if (key != null)
+                try
                 {
-                    key = key.Trim().Replace("-", "").ToLower();
-                    var value = args?[i + 1];
-                    if (value != null)
+                    var key = args?[i];
+                    if (key != null)
                     {
-                        ArgDict[key] = args[i + 1].Trim();
+                        if (!key.Contains("-"))
+                        {
+                            Logger.Write("Command line arguments are invalid.");
+                            i -= 1;
+                            continue;
+                        }
+                        key = key.Trim().Replace("-", "").ToLower();
+                        if (i + 1 == args.Length)
+                        {
+                            ArgDict.Add(key, "true");
+                            continue;
+                        }
+                        var value = args?[i + 1];
+                        if (value != null)
+                        {
+                            if (value.StartsWith("-"))
+                            {
+                                ArgDict.Add(key, "true");
+                                i -= 1;
+                            }
+                            else
+                            {
+                                ArgDict.Add(key, args[i + 1].Trim());
+                            }
+                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
                 }
 
             }
 
             Mode = (AppMode)Enum.Parse(typeof(AppMode), ArgDict["mode"], true);
 
-            if (Mode == AppMode.Normal || Mode == AppMode.Unattended)
+            if (ArgDict.TryGetValue("host", out var host))
             {
-                Host = ArgDict["host"];
+                Host = host;
             }
-
-            if (Mode == AppMode.Chat || Mode == AppMode.Unattended)
+            if (ArgDict.TryGetValue("requester", out var requester))
             {
-                RequesterID = ArgDict["requester"];
+                RequesterID = requester;
             }
-
-            if (Mode == AppMode.Unattended)
+            if (ArgDict.TryGetValue("serviceid", out var serviceID))
             {
-                ServiceID = ArgDict["serviceid"];
-                DeviceID = ArgDict["deviceid"];
+                ServiceID = serviceID;
+            }
+            if (ArgDict.TryGetValue("deviceid", out var deviceID))
+            {
+                DeviceID = deviceID;
+            }
+            if (ArgDict.TryGetValue("organization", out var orgName))
+            {
+                OrganizationName = orgName;
             }
         }
 

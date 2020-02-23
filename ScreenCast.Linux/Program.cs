@@ -8,6 +8,7 @@ using Remotely.ScreenCast.Core.Communication;
 using Remotely.ScreenCast.Core.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace Remotely.ScreenCast.Linux
 {
@@ -26,11 +27,11 @@ namespace Remotely.ScreenCast.Linux
 
                 Conductor = Services.GetRequiredService<Conductor>();
 
-                Conductor.ProcessArgs(args);
+                Conductor.ProcessArgs(Environment.GetCommandLineArgs().Skip(1).ToArray());
 
                 if (Conductor.Mode == Core.Enums.AppMode.Chat)
                 {
-                    Services.GetRequiredService<ChatHostService>().StartChat(Conductor.RequesterID).Wait();
+                    Services.GetRequiredService<ChatHostService>().StartChat(Conductor.RequesterID, Conductor.OrganizationName).Wait();
                 }
                 else
                 {

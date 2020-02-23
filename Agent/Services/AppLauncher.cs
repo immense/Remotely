@@ -21,7 +21,7 @@ namespace Remotely.Agent.Services
 
         private ConnectionInfo ConnectionInfo { get; }
 
-        public async Task<int> LaunchChatService(string requesterID, HubConnection hubConnection)
+        public async Task<int> LaunchChatService(string orgName, string requesterID, HubConnection hubConnection)
         {
             try
             {
@@ -39,11 +39,11 @@ namespace Remotely.Agent.Services
 
                     if (Program.IsDebug)
                     {
-                        return Process.Start("conhost.exe", $"{rcBinaryPath} -mode Chat -requester {requesterID}").Id;
+                        return Process.Start(rcBinaryPath, $"-mode Chat -requester {requesterID} -organization \"{orgName}\"").Id;
                     }
                     else
                     {
-                        var result = Win32Interop.OpenInteractiveProcess($"{rcBinaryPath} -mode Chat -requester {requesterID}", "default", false, out var procInfo);
+                        var result = Win32Interop.OpenInteractiveProcess($"{rcBinaryPath} -mode Chat -requester {requesterID} -organization \"{orgName}\"", "default", false, out var procInfo);
                         if (!result)
                         {
                             await hubConnection.InvokeAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
@@ -56,7 +56,7 @@ namespace Remotely.Agent.Services
                 }
                 else if (OSUtils.IsLinux)
                 {
-                    var args = $"xterm -e {rcBinaryPath} -mode Chat -requester {requesterID} & disown";
+                    var args = $"xterm -e {rcBinaryPath} -mode Chat -requester {requesterID} -organization \"{orgName}\" & disown";
                     return StartLinuxScreenCaster(args);
                 }
             }

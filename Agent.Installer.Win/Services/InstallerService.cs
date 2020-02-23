@@ -385,6 +385,11 @@ namespace Remotely.Agent.Installer.Win.Services
                     Logger.Write("Restoring backup.");
                     ClearInstallDirectory();
                     ZipFile.ExtractToDirectory(backupPath, InstallPath);
+                    var serv = ServiceController.GetServices().FirstOrDefault(ser => ser.ServiceName == "Remotely_Service");
+                    if (serv?.Status != ServiceControllerStatus.Running)
+                    {
+                        serv?.Start();
+                    }
                 }
             }
             catch (Exception ex)
