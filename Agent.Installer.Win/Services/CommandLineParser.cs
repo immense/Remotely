@@ -28,7 +28,7 @@ namespace Remotely.Agent.Installer.Win.Services
                                 if (!key.Contains("-"))
                                 {
                                     Logger.Write("Command line arguments are invalid.");
-                                    MessageBoxWrapper.Show("Command line arguments are invalid.", "Invalid Arguments", MessageBoxButton.OK, MessageBoxImage.Error);
+                                    MessageBoxEx.Show("Command line arguments are invalid.", "Invalid Arguments", MessageBoxButton.OK, MessageBoxImage.Error);
                                     i -= 1;
                                     continue;
                                 }

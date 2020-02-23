@@ -87,15 +87,15 @@ namespace Remotely.Agent.Installer.Win.Services
 
                 StopService();
 
-                ProcessWrapper.StartHidden("cmd.exe", "/c sc delete Remotely_Service").WaitForExit();
+                ProcessEx.StartHidden("cmd.exe", "/c sc delete Remotely_Service").WaitForExit();
 
                 await StopProcesses();
 
                 ProgressMessageChanged?.Invoke(this, "Deleting files.");
                 ClearInstallDirectory();
-                ProcessWrapper.StartHidden("cmd.exe", $"/c timeout 5 & rd /s /q \"{InstallPath}\"");
+                ProcessEx.StartHidden("cmd.exe", $"/c timeout 5 & rd /s /q \"{InstallPath}\"");
 
-                ProcessWrapper.StartHidden("netsh", "advfirewall firewall delete rule name=\"Remotely ScreenCast\"").WaitForExit();
+                ProcessEx.StartHidden("netsh", "advfirewall firewall delete rule name=\"Remotely ScreenCast\"").WaitForExit();
 
                 GetRegistryBaseKey().DeleteSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Remotely", false);
 
@@ -112,8 +112,8 @@ namespace Remotely.Agent.Installer.Win.Services
         private void AddFirewallRule()
         {
             var screenCastPath = Path.Combine(InstallPath, "ScreenCast", "Remotely_ScreenCast.exe");
-            ProcessWrapper.StartHidden("netsh", "advfirewall firewall delete rule name=\"Remotely ScreenCast\"").WaitForExit();
-            ProcessWrapper.StartHidden("netsh", $"advfirewall firewall add rule name=\"Remotely ScreenCast\" program=\"{screenCastPath}\" protocol=any dir=in enable=yes action=allow profile=Private,Domain description=\"The agent that allows screen sharing and remote control for Remotely.\"").WaitForExit();
+            ProcessEx.StartHidden("netsh", "advfirewall firewall delete rule name=\"Remotely ScreenCast\"").WaitForExit();
+            ProcessEx.StartHidden("netsh", $"advfirewall firewall add rule name=\"Remotely ScreenCast\" program=\"{screenCastPath}\" protocol=any dir=in enable=yes action=allow profile=Private,Domain description=\"The agent that allows screen sharing and remote control for Remotely.\"").WaitForExit();
         }
 
         private void BackupDirectory()
@@ -138,7 +138,7 @@ namespace Remotely.Agent.Installer.Win.Services
             var result = principal.IsInRole(WindowsBuiltInRole.Administrator);
             if (!result)
             {
-                MessageBoxWrapper.Show("Elevated privileges are required.  Please restart the installer using 'Run as administrator'.", "Elevation Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBoxEx.Show("Elevated privileges are required.  Please restart the installer using 'Run as administrator'.", "Elevation Required", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return result;
         }
@@ -336,7 +336,7 @@ namespace Remotely.Agent.Installer.Win.Services
                 ProgressMessageChanged?.Invoke(this, "Installing the .NET Core runtime.");
                 ProgressValueChanged?.Invoke(this, 0);
 
-                await Task.Run(() => { ProcessWrapper.StartHidden(targetFile, "/install /quiet /norestart").WaitForExit(); });
+                await Task.Run(() => { ProcessEx.StartHidden(targetFile, "/install /quiet /norestart").WaitForExit(); });
             }
             else
             {
@@ -366,7 +366,7 @@ namespace Remotely.Agent.Installer.Win.Services
                 Logger.Write("Service installed.");
                 serv = ServiceController.GetServices().FirstOrDefault(ser => ser.ServiceName == "Remotely_Service");
 
-                ProcessWrapper.StartHidden("cmd.exe", "/c sc.exe failure \"Remotely_Service\" reset=5 actions=restart/5000");
+                ProcessEx.StartHidden("cmd.exe", "/c sc.exe failure \"Remotely_Service\" reset=5 actions=restart/5000");
             }
             if (serv.Status != ServiceControllerStatus.Running)
             {

@@ -95,7 +95,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
                     }
                     else
                     { 
-                        MessageBoxWrapper.Show("Log file doesn't exist.", "No Logs", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBoxEx.Show("Log file doesn't exist.", "No Logs", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 });
             }
@@ -232,7 +232,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                MessageBoxWrapper.Show("There was an error reading the installer settings.  Try re-downloading the installer.", "Configuration Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxEx.Show("There was an error reading the installer settings.  Try re-downloading the installer.", "Configuration Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
         }
@@ -244,7 +244,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             var result = principal.IsInRole(WindowsBuiltInRole.Administrator);
             if (!result)
             {
-                MessageBoxWrapper.Show("Elevated privileges are required.  Please restart the installer using 'Run as administrator'.", "Elevation Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBoxEx.Show("Elevated privileges are required.  Please restart the installer using 'Run as administrator'.", "Elevation Required", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return result;
         }
@@ -254,7 +254,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             var result = !string.IsNullOrWhiteSpace(OrganizationID) || !string.IsNullOrWhiteSpace(ServerUrl);
             if (!result)
             {
-                MessageBoxWrapper.Show("Required settings are missing.  Try re-downloading the installer.", "Invalid Installer", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxEx.Show("Required settings are missing.  Try re-downloading the installer.", "Invalid Installer", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return result;
         }
