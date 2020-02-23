@@ -26,10 +26,9 @@ namespace Remotely.ScreenCast.Core.Services
 ";
 
         private NamedPipeServerStream NamedPipeStream { get; set; }
-        private StreamWriter Writer { get; set; }
         private StreamReader Reader { get; set; }
-
-        public async Task StartChat(string requesterID)
+        private StreamWriter Writer { get; set; }
+        public async Task StartChat(string requesterID, string organizationName)
         {
             NamedPipeStream = new NamedPipeServerStream("Remotely_Chat" + requesterID, PipeDirection.InOut, 10, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
             Writer = new StreamWriter(NamedPipeStream);
@@ -38,7 +37,14 @@ namespace Remotely.ScreenCast.Core.Services
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Title = "Remotely Chat";
-            Console.Write(AsciiLogo);
+            if (string.IsNullOrWhiteSpace(organizationName))
+            {
+                Console.Write(AsciiLogo);
+            }
+            else
+            {
+                WriteOrgnanizationName(organizationName);
+            }
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine();
             Console.WriteLine("Your IT administrator would like to chat!");
@@ -102,6 +108,52 @@ namespace Remotely.ScreenCast.Core.Services
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write("You: ");
             Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        private void WriteOrgnanizationName(string organizationName)
+        {
+            Console.WriteLine();
+            Console.WriteLine();
+
+            Console.Write("     ");
+            for (var i = 0; i < organizationName.Length + 10; i++)
+            {
+                Console.Write("/");
+            }
+            Console.WriteLine();
+
+
+            Console.Write("    ///");
+            for (var i = 0; i < organizationName.Length + 4; i++)
+            {
+                Console.Write(" ");
+            }
+            Console.Write("///");
+            Console.WriteLine();
+
+
+            Console.WriteLine($"   ///  {organizationName}  ///");
+
+
+            Console.Write("  ///");
+            for (var i = 0; i < organizationName.Length + 4; i++)
+            {
+                Console.Write(" ");
+            }
+            Console.Write("///");
+            Console.WriteLine();
+
+
+            Console.Write(" ");
+            for (var i = 0; i < organizationName.Length + 10; i++)
+            {
+                Console.Write("/");
+            }
+            Console.WriteLine();
+
+
+            Console.WriteLine();
+            Console.WriteLine();
         }
     }
 }

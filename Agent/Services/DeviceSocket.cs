@@ -109,8 +109,8 @@ namespace Remotely.Agent.Services
 
         private void RegisterMessageHandlers()
         {
-            HubConnection.On("Chat", async (string message, string senderConnectionID) => {
-                await ChatService.SendMessage(message, senderConnectionID, HubConnection);
+            HubConnection.On("Chat", async (string message, string orgName, string senderConnectionID) => {
+                await ChatService.SendMessage(message, orgName, senderConnectionID, HubConnection);
             });
             HubConnection.On("ExecuteCommand", (async (string mode, string command, string commandID, string senderConnectionID) =>
             {

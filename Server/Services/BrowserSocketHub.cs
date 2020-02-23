@@ -53,7 +53,8 @@ namespace Remotely.Server.Services
         {
             deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
             var connections = GetActiveClientConnections(deviceIDs);
-            return DeviceHub.Clients.Clients(connections.Select(x => x.Key).ToList()).SendAsync("Chat", $"{RemotelyUser.UserName}: {message}", Context.ConnectionId);
+            var organizationName = DataService.GetOrganizationName(RemotelyUser.UserName);
+            return DeviceHub.Clients.Clients(connections.Select(x => x.Key).ToList()).SendAsync("Chat", $"{RemotelyUser.UserName}: {message}", organizationName, Context.ConnectionId);
         }
 
         public Task DeployScript(string fileID, string mode, string[] deviceIDs)

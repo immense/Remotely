@@ -46,22 +46,20 @@ namespace Remotely.ScreenCast.Win.Services
 
         private void ClipboardWatcher_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            Win32Interop.SwitchToInputDesktop();
-
             var thread = new Thread(() =>
             {
                 try
                 {
+                    Win32Interop.SwitchToInputDesktop();
+
+
                     if (Clipboard.ContainsText() && Clipboard.GetText() != ClipboardText)
                     {
                         ClipboardText = Clipboard.GetText();
                         ClipboardTextChanged.Invoke(this, ClipboardText);
                     }
                 }
-                catch (Exception ex)
-                {
-                    Logger.Write(ex);
-                }
+                catch { }
             });
             thread.SetApartmentState(ApartmentState.STA);
             thread.Start();

@@ -42,11 +42,11 @@ namespace Remotely.ScreenCast.Win
                 BuildServices();
 
                 Conductor = Services.GetRequiredService<Conductor>();
-                Conductor.ProcessArgs(args);
+                Conductor.ProcessArgs(Environment.GetCommandLineArgs().Skip(1).ToArray());
 
                 if (Conductor.Mode == Core.Enums.AppMode.Chat)
                 {
-                    Services.GetRequiredService<ChatHostService>().StartChat(Conductor.RequesterID).Wait();
+                    Services.GetRequiredService<ChatHostService>().StartChat(Conductor.RequesterID, Conductor.OrganizationName).Wait();
                 }
                 else
                 {
