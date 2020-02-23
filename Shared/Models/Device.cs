@@ -51,70 +51,7 @@ namespace Remotely.Shared.Models
 
         public double TotalMemory { get; set; }
         public double TotalStorage { get; set; }
-        public static async Task<Device> Create(ConnectionInfo connectionInfo)
-        {
-            OSPlatform platform = OSUtils.GetPlatform();
-            DriveInfo systemDrive;
-
-            if (!string.IsNullOrWhiteSpace(Environment.SystemDirectory))
-            {
-                systemDrive = DriveInfo.GetDrives()
-                    .Where(x=>x.IsReady)
-                    .FirstOrDefault(x =>
-                        x.RootDirectory.FullName.Contains(Path.GetPathRoot(Environment.SystemDirectory ?? Environment.CurrentDirectory))
-                    );
-            }
-            else
-            {
-                systemDrive = DriveInfo.GetDrives().FirstOrDefault(x => 
-                    x.IsReady &&
-                    x.RootDirectory.FullName == Path.GetPathRoot(Environment.CurrentDirectory));
-            }
-
-            var device = new Device()
-            {
-                ID = connectionInfo.DeviceID,
-                DeviceName = Environment.MachineName,
-                Platform = platform.ToString(),
-                ProcessorCount = Environment.ProcessorCount,
-                OSArchitecture = RuntimeInformation.OSArchitecture,
-                OSDescription = RuntimeInformation.OSDescription,
-                Is64Bit = Environment.Is64BitOperatingSystem,
-                IsOnline = true,
-                Drives = DriveInfo.GetDrives().Where(x => x.IsReady).Select(x => new Drive()
-                {
-                    DriveFormat = x.DriveFormat,
-                    DriveType = x.DriveType,
-                    Name = x.Name,
-                    RootDirectory = x.RootDirectory.FullName,
-                    FreeSpace = x.TotalSize > 0 ? x.TotalFreeSpace / x.TotalSize : 0,
-                    TotalSize = x.TotalSize > 0 ? Math.Round((double)(x.TotalSize / 1024 / 1024 / 1024), 2) : 0,
-                    VolumeLabel = x.VolumeLabel
-                }).ToList(),
-                OrganizationID = connectionInfo.OrganizationID,
-                CurrentUser = DeviceInformation.GetCurrentUser()
-            };
-
-            if (systemDrive != null && systemDrive.TotalSize > 0 && systemDrive.TotalFreeSpace > 0)
-            {
-                device.TotalStorage = Math.Round((double)(systemDrive.TotalSize / 1024 / 1024 / 1024), 2);
-                device.UsedStorage = Math.Round((double)((systemDrive.TotalSize - systemDrive.TotalFreeSpace) / 1024 / 1024 / 1024), 2);
-            }
-
-        
-            var (usedMemory, totalMemory) = DeviceInformation.GetMemoryInGB();
-            device.UsedMemory = usedMemory;
-            device.TotalMemory = totalMemory;
-
-            device.CpuUtilization = await DeviceInformation.GetCpuUtilization();
-
-            if (File.Exists("Remotely_Agent.dll"))
-            {
-                device.AgentVersion = FileVersionInfo.GetVersionInfo("Remotely_Agent.dll")?.FileVersion?.ToString()?.Trim();
-            }
-
-            return device;
-        }
+       
 
     }
 }
