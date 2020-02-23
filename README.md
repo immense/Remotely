@@ -70,7 +70,7 @@ The following steps will configure your Windows 10 machine for building the Remo
 	* More information: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-3.1
 
 ## Remote Control Requirements
-* Windows: Only the latest version of Windows 10 is tested.
+* Windows: Only the latest version of Windows 10 is tested.  Windows 7 and 8.1 should work, though performance will be reduced on Windows 7.
 	* Requires .NET Core Desktop Runtime.
 	* Windows 2016/2019 should work as well, but isn't tested regularly.
 * Linux: Only Ubuntu 18.04+ is tested.
@@ -118,108 +118,33 @@ Note: To retain your settings between upgrades, copy your settings to appsetting
 * TrustedCorsOrigins: For cross-origin API requests via JavaScript.  The websites listed in this array with be allowed to make requests to the API.  This does not grant authentication, which is still required on most endpoints.
 * KnownProxies: If your Nginx server is on a different machine and is forwarding requests to the Remotely server, you will need to add the IP of the Nginx server to this array.
 * Smpt*: SMTP settings for auto-generated system emails (such as registration and password reset).
-* Theme: The color theme to use for the site.  Values are "Light" or "Dark".
+* Theme: The color theme to use for the site.  Values are "Light" or "Dark".  This can also be configured per-user in Account - Options.
 * UseWebRtc: Attempt to create a peer-to-peer connection via WebRTC for screen sharing.
     * Only works on Windows agents.
     * Session recording will not work if a WebRTC connection is made.
 
 ## API and Integrations
-Remotely has a basic API, which can be browsed at https://tryremotely.lucency.co/swagger (or your own server instance).  Most endpoints require authentication via the /api/Login, which in turn requires the AllowApiLogin option to be set to true in appsettings.json.  If you're not familiar with how CORS works, I recommend reading up on it before proceeding.
+Remotely has a basic API, which can be browsed at https://tryremotely.lucency.co/swagger (or your own server instance).  Most endpoints require authentication via an API access token, which can be created by going to Account - API Access.
 
-Once AllowApiLogin is set to true, you'll be able to use the API with languages such as C# and PowerShell.  For JavaScript clients to work, you'll also need to add the website's origin to the TrustedCorsOrigins array.  For example, if I wanted to create a login form on https://lucency.co that logged into the Remotely API, I'd need to add "https://lucency.co" to the TrustedCorsOrigins.
+When accessing the API from the browser on another website, you'll need to set up CORS in appsettings by adding the website origin URL to the TrustedCorsOrigins array.  If you're not familiar with how CORS works, I recommend reading up on it before proceeding.  For example, if I wanted to create a login form on https://lucency.co that logged into the Remotely API, I'd need to add "https://lucency.co" to the TrustedCorsOrigins.
 
-Below are examples of how to use the API for starting a remote control session.
+The API key and secret must be added to the request's Authorization header in the following format: [ApiKey]:[ApiSecret]
 
-**JavaScript Client**  
+Below is an example API request:
 
-	// Log in with one request, then launch remote control with another.
-	fetch("https://localhost:44351/api/Login/", {
-		method: "post",
-		credentials: "include",
-		mode: "cors",
-		body: '{"Email":"email@example.com", "Password":"P@ssword1"}',
-		headers: {
-			"Content-Type": "application/json",
-		}
-	}).then(response=>{
-		if (response.ok) {
-			fetch("https://localhost:44351/api/RemoteControl/b68c24b0-2c67-4524-ad28-dadea7a576a4", {
-				method: "get",
-				credentials: "include",
-				mode: "cors"
-			}).then(response=>{
-				if (response.ok) {
-					response.text().then(url=>{
-						window.open(url);
-					})
-				}
-			})
-		}
-	})
+	POST https://localhost:5001/API/Scripting/ExecuteCommand/PSCore/f2b0a595-5ea8-471b-975f-12e70e0f3497 HTTP/1.1
+	Content-Type: application/json
+	Authorization: 31fb288d-af97-4ce1-ae7b-ceebb98281ac:HLkrKaZGExYvozSPvcACZw9awKkhHnNK
+	User-Agent: PostmanRuntime/7.22.0
+	Accept: */*
+	Cache-Control: no-cache
+	Host: localhost:5001
+	Accept-Encoding: gzip, deflate, br
+	Content-Length: 12
+	Connection: close
 
-	// Log in and launch remote control in the same request.
-	fetch("https://localhost:44351/api/RemoteControl/", {
-		method: "post",
-		credentials: "include",
-		mode: "cors",
-		body: '{"Email":"email@example.com", "Password":"P@ssword1", "DeviceID":"b68c24b0-2c67-4524-ad28-dadea7a576a4"}',
-		headers: {
-			"Content-Type": "application/json",
-		}
-	}).then(response=>{
-		if (response.ok) {
-			response.text().then(url=>{
-				window.open(url);
-			})
-		}
-	})
+	Get-Location
 
-**C# Client**
-
-	private static async Task StartRemoteControl()
-	{
-		var client = new System.Net.Http.HttpClient();
-		client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-
-		var stringContent = new System.Net.Http.StringContent(
-			@"{
-				'Email': 'email@example.com',
-				'Password': 'P@ssword1'
-			}",
-			System.Text.Encoding.UTF8,
-			"application/json");
-
-
-		var response = await client.PostAsync("https://localhost:44351/api/Login", stringContent);
-		if (response.IsSuccessStatusCode)
-		{
-			response = await client.GetAsync("https://localhost:44351/api/RemoteControl/b68c24b0-2c67-4524-ad28-dadea7a576a4");
-			if (response.IsSuccessStatusCode)
-			{
-				var remoteControlURL = await response.Content.ReadAsStringAsync();
-				System.Diagnostics.Process.Start(remoteControlURL);
-			}
-		}
-	}
-
-**PowerShell Client**
-
-	$WebSession = New-Object Microsoft.PowerShell.Commands.WebRequestSession
-	 
-	$Response = Invoke-WebRequest -Uri "https://localhost:44351/api/Login" -WebSession $WebSession -Method Post -Body '
-	{
-		"Email": "email@example.com",
-		"Password": "P@ssword1"
-	}
-	' -ContentType "application/json"
-
-
-	if ($Response.StatusCode -eq 200) {
-		$Response = Invoke-WebRequest -Uri "https://localhost:44351/api/RemoteControl/b68c24b0-2c67-4524-ad28-dadea7a576a4" -WebSession $WebSession -Method Get -ContentType "application/json"
-		if ($Response.StatusCode -eq 200) {
-			Start-Process -FilePath $Response.Content
-		}
-	}
 
 ## .NET Core Deployments
 * .NET Core has two methods of deployment: framework-dependent and self-contained.

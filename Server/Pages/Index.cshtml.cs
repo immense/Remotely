@@ -39,7 +39,7 @@ namespace Remotely.Server.Pages
                     return RedirectToPage();
                 }
 
-                if (AppConfig.RequireMFA && !user.TwoFactorEnabled)
+                if (AppConfig.Require2FA && !user.TwoFactorEnabled)
                 {
                     return RedirectToPage("TwoFactorRequired");
                 }
