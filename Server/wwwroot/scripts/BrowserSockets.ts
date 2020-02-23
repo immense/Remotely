@@ -9,6 +9,7 @@ import { Store } from "./Store.js";
 import { UserOptions } from "./Models/UserOptions.js";
 import { Main } from "./Main.js";
 import { AddConsoleOutput, AddConsoleHTML } from "./Console.js";
+import { ReceiveChatText } from "./Chat.js";
 
 
 export var Connection: any;
@@ -44,8 +45,11 @@ export function Connect() {
 };
 
 function applyMessageHandlers(hubConnection) {
-    hubConnection.on("Chat", (deviceName: string, message: string) => {
-        AddConsoleHTML(`<strong class="text-info">Chat from ${deviceName}</strong>: ${message}`);
+    hubConnection.on("Chat", (deviceID: string, deviceName: string, message: string) => {
+        if (message) {
+            AddConsoleHTML(`<strong class="text-info">Chat from ${deviceName}</strong>: ${message}`);
+            ReceiveChatText(deviceID, deviceName, message);
+        }
     });
     hubConnection.on("UserOptions", (options: UserOptions) => {
         Main.UserSettings.CommandModeShortcuts.Web = options.CommandModeShortcutWeb;

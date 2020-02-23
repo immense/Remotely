@@ -50,7 +50,7 @@ namespace Remotely.Server.Services
 
         public Task Chat(string message, string senderConnectionID)
         {
-            return BrowserHub.Clients.Client(senderConnectionID).SendAsync("Chat", Device.DeviceName, message);
+            return BrowserHub.Clients.Client(senderConnectionID).SendAsync("Chat", Device.ID, Device.DeviceName, message);
         }
 
         public Task CMDResultViaAjax(string commandID)

@@ -115,3 +115,12 @@ span.label.code {
     background: rgb(245, 245, 245);
     color: black;
 }
+
+.chat-window {
+    background-color: white;
+    border: 1px solid dimgray;
+}
+.chat-header {
+    color: white;
+    background-color: #008cba;
+}

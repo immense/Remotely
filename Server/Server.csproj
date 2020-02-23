@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\scripts\BrowserSockets.ts" />
+    <Content Remove="wwwroot\scripts\Chat.ts" />
     <Content Remove="wwwroot\scripts\CommandCompletion.ts" />
     <Content Remove="wwwroot\scripts\CommandProcessor.ts" />
     <Content Remove="wwwroot\scripts\Commands\BashCommands.ts" />
@@ -136,6 +137,7 @@
     <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\legacy.d.ts" />
     <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\misc.d.ts" />
     <TypeScriptCompile Include="wwwroot\lib\%40types\sizzle\index.d.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Chat.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\CommandCompletion.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Commands\BashCommands.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Commands\WinPSCommands.ts" />

@@ -4,6 +4,7 @@ import { CreateCommandHarness, AddCommandResultsHarness, AddPSCoreResultsHarness
 import { Store } from "./Store.js";
 import { Main } from "./Main.js";
 import { AddConsoleOutput, AddConsoleHTML } from "./Console.js";
+import { ReceiveChatText } from "./Chat.js";
 export var Connection;
 export var ServiceID;
 export var Connected;
@@ -32,8 +33,11 @@ export function Connect() {
 }
 ;
 function applyMessageHandlers(hubConnection) {
-    hubConnection.on("Chat", (deviceName, message) => {
-        AddConsoleHTML(`<strong class="text-info">Chat from ${deviceName}</strong>: ${message}`);
+    hubConnection.on("Chat", (deviceID, deviceName, message) => {
+        if (message) {
+            AddConsoleHTML(`<strong class="text-info">Chat from ${deviceName}</strong>: ${message}`);
+            ReceiveChatText(deviceID, deviceName, message);
+        }
     });
     hubConnection.on("UserOptions", (options) => {
         Main.UserSettings.CommandModeShortcuts.Web = options.CommandModeShortcutWeb;
