@@ -21,7 +21,8 @@ namespace Remotely.Shared.Win32
             {
                 ID = consoleSessionId,
                 Type = SessionType.Console,
-                Name = "Console"
+                Name = "Console",
+                Username = GetUsernameFromSessionId(consoleSessionId)
             });
 
             IntPtr ppSessionInfo = IntPtr.Zero;
@@ -43,7 +44,8 @@ namespace Remotely.Shared.Win32
                         {
                             ID = sessionInfo.SessionID,
                             Name = sessionInfo.pWinStationName,
-                            Type = SessionType.RDP
+                            Type = SessionType.RDP,
+                            Username = GetUsernameFromSessionId(sessionInfo.SessionID)
                         });
                     }
                 }
@@ -79,11 +81,24 @@ namespace Remotely.Shared.Win32
                 CloseDesktop(inputDesktop);
             }
         }
+
+        public static string GetUsernameFromSessionId(uint sessionId)
+        {
+            var username = string.Empty;
+
+            if (WTSAPI32.WTSQuerySessionInformation(IntPtr.Zero, sessionId, WTSAPI32.WTS_INFO_CLASS.WTSUserName, out var buffer, out var strLen) && strLen > 1)
+            {
+                username = Marshal.PtrToStringAnsi(buffer);
+                WTSAPI32.WTSFreeMemory(buffer);
+            }
+
+            return username;
+        }
+
         public static IntPtr OpenInputDesktop()
         {
             return User32.OpenInputDesktop(0, true, ACCESS_MASK.GENERIC_ALL);
         }
-
         public static bool OpenInteractiveProcess(string applicationName, string desktopName, bool hiddenWindow, out PROCESS_INFORMATION procInfo)
         {
             uint winlogonPid = 0;
