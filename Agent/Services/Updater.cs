@@ -43,13 +43,13 @@ namespace Remotely.Agent.Services
                     Logger.Write($"Service Updater: Downloading installer.");
                     if (OSUtils.IsWindows)
                     {
-                        var filePath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.ps1");
+                        var filePath = Path.Combine(Path.GetTempPath(), "Remotely_Installer.exe");
 
                         wc.DownloadFile(
-                            ConfigService.GetConnectionInfo().Host + $"/API/ClientDownloads/{connectionInfo.OrganizationID}/Win10",
+                            ConfigService.GetConnectionInfo().Host + $"/API/ClientDownloads/{connectionInfo.OrganizationID}/Windows",
                             filePath);
 
-                        Process.Start("powershell.exe", $"-f \"{filePath}\"");
+                        Process.Start(filePath, $"-install -quiet");
                     }
                     else if (OSUtils.IsLinux)
                     {
