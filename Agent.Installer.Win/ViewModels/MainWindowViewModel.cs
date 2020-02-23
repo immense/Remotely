@@ -300,7 +300,8 @@ namespace Remotely.Agent.Installer.Win.ViewModels
                 {
                     return;
                 }
-                
+
+                HeaderMessage = "Installing Remotely...";
                 
                 if (await Installer.Install(ServerUrl, OrganizationID, DeviceGroup, DeviceAlias))
                 {
@@ -337,6 +338,8 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             try
             {
                 IsReadyState = false;
+
+                HeaderMessage = "Uninstalling Remotely...";
 
                 if (await Installer.Uninstall())
                 {
