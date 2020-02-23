@@ -1,4 +1,5 @@
 ﻿@inject Remotely.Server.Services.ApplicationConfig AppConfig
+@inject UserManager<Remotely.Shared.Models.RemotelyUser> UserManager
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,16 +15,37 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link href="~/lib/fontawesome/css/all.min.css" rel="stylesheet" />
 
-    @if (AppConfig.Theme.ToLower() == "light")
+    @if (User.Identity.IsAuthenticated)
     {
-        <link rel="stylesheet" href="~/css/Themes/yeti.min.css" />
-        <link rel="stylesheet" href="~/css/Themes/yeti.custom.css" asp-append-version="true" />
+        var user = await UserManager.GetUserAsync(User);
+        switch (user.UserOptions.Theme)
+        {
+            case Remotely.Shared.Enums.Theme.Light:
+                <link rel="stylesheet" href="~/css/Themes/yeti.min.css" />
+                <link rel="stylesheet" href="~/css/Themes/yeti.custom.css" asp-append-version="true" />
+                break;
+            case Remotely.Shared.Enums.Theme.Dark:
+                <link rel="stylesheet" href="~/css/Themes/cyborg.min.css" />
+                <link rel="stylesheet" href="~/css/Themes/cyborg.custom.css" asp-append-version="true" />
+                break;
+            default:
+                break;
+        }
     }
     else
     {
-        <link rel="stylesheet" href="~/css/Themes/cyborg.min.css" />
-        <link rel="stylesheet" href="~/css/Themes/cyborg.custom.css" asp-append-version="true" />
+        if (AppConfig.Theme.ToLower() == "light")
+        {
+            <link rel="stylesheet" href="~/css/Themes/yeti.min.css" />
+            <link rel="stylesheet" href="~/css/Themes/yeti.custom.css" asp-append-version="true" />
+        }
+        else
+        {
+            <link rel="stylesheet" href="~/css/Themes/cyborg.min.css" />
+            <link rel="stylesheet" href="~/css/Themes/cyborg.custom.css" asp-append-version="true" />
+        }
     }
+
 
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>

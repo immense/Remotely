@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Remotely.Shared.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -25,5 +26,8 @@ namespace Remotely.Shared.Models
         [Display(Name = "Bash Shortcut")]
         [StringLength(10)]
         public string CommandModeShortcutBash { get; set; } = "/bash";
+
+        [Display(Name = "Theme")]
+        public Theme Theme { get; set; }
     }
 }
