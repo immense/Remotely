@@ -25,6 +25,7 @@ namespace Remotely.Server.Services
         public bool RedirectToHttps => bool.Parse(Config["ApplicationOptions:RedirectToHttps"]);
         public bool RemoteControlRequiresAuthentication => bool.Parse(Config["ApplicationOptions:RemoteControlRequiresAuthentication"]);
         public double RemoteControlSessionLimit => double.Parse(Config["ApplicationOptions:RemoteControlSessionLimit"]);
+        public bool Require2FA => bool.Parse(Config["ApplicationOptions:Require2FA"]);
         public string SmtpDisplayName => Config["ApplicationOptions:SmtpDisplayName"];
         public string SmtpEmail => Config["ApplicationOptions:SmtpEmail"];
         public bool SmtpEnableSsl => bool.Parse(Config["ApplicationOptions:SmtpEnableSsl"]);
