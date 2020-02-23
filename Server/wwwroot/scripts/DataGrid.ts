@@ -3,6 +3,7 @@ import { Device } from "./Models/Device.js";
 import { Main } from "./Main.js";
 import { DeviceGrid } from "./UI.js";
 import { AddConsoleOutput } from "./Console.js";
+import { CreateChatWindow } from "./Chat.js";
 
 
 export const DataSource: Array<Device> = new Array<Device>();
@@ -71,13 +72,21 @@ export function AddOrUpdateDevice(device: Device) {
                     <td>${device.TotalStorage.toLocaleString()}</td>
                     <td>${Math.round(device.UsedMemory /device.TotalMemory * 100)}%</td>
                     <td>${device.TotalMemory.toLocaleString()}</td>
-                    <td><span class="fas fa-edit device-edit-button" style="font-size:1.5em" /></td>`;
+                    <td>
+                        <i class="fas fa-comment device-chat-button mr-2" title="Chat" style="font-size:1.5em"></i>
+                        <span class="fas fa-edit device-edit-button" title="Edit" style="font-size:1.5em" />
+                    </td>`;
 
 
     (recordRow.querySelector(".device-edit-button") as HTMLButtonElement).onclick = (ev) => {
         ev.preventDefault();
         ev.stopPropagation();
         window.open(`${location.origin}/EditDevice?deviceID=${device.ID}`, "_blank");
+    };
+    (recordRow.querySelector(".device-chat-button") as HTMLButtonElement).onclick = (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        CreateChatWindow(device.ID, device.DeviceName);
     };
     UpdateDeviceCounts();
 }

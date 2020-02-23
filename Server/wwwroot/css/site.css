@@ -220,6 +220,32 @@ span.label.code {
 .middle-aligned {
     vertical-align: middle !important;
 }
+
+.chat-window {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 250px;
+}
+
+.chat-header {
+    user-select: none;
+    cursor: move;
+    padding: 5px 10px;
+}
+
+.chat-messages {
+    overflow-y: auto;
+    height: 200px;
+    padding: 5px 10px;
+}
+
+.chat-input {
+    width: 100%;
+    resize: none;
+    margin-bottom: -5px;
+}
+
 .float-message {
     position: fixed;
     top: 20px;
