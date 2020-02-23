@@ -13,16 +13,20 @@ namespace Remotely.Server.Pages
 {
     public class IndexModel : PageModel
     {
-        public IndexModel(DataService dataService, SignInManager<RemotelyUser> signInManager)
+        public IndexModel(DataService dataService, 
+            SignInManager<RemotelyUser> signInManager,
+            ApplicationConfig appConfig)
         {
             DataService = dataService;
             SignInManager = signInManager;
+            AppConfig = appConfig;
         }
 
         public string DefaultPrompt { get; set; }
         public List<SelectListItem> DeviceGroups { get; set; } = new List<SelectListItem>();
         private DataService DataService { get; }
         private SignInManager<RemotelyUser> SignInManager { get; }
+        private ApplicationConfig AppConfig { get; }
 
         public async Task<IActionResult> OnGet()
         {
@@ -34,6 +38,12 @@ namespace Remotely.Server.Pages
                     await SignInManager.SignOutAsync();
                     return RedirectToPage();
                 }
+
+                if (AppConfig.RequireMFA && !user.TwoFactorEnabled)
+                {
+                    return RedirectToPage("TwoFactorRequired");
+                }
+
                 DefaultPrompt = DataService.GetDefaultPrompt(User.Identity.Name);
                 var groups = DataService.GetDeviceGroupsForUserName(User.Identity.Name);
                 if (groups?.Any() == true)
