@@ -62,7 +62,7 @@ namespace Remotely.Server.API
                     {
                         fileName = $"Remotely_Installer.exe";
                         var filePath = Path.Combine(HostEnv.WebRootPath, "Downloads", $"{fileName}");
-                        fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+                        var installerBytes = await System.IO.File.ReadAllBytesAsync(filePath);
 
                         var installerSettings = new InstallerSettings()
                         {
@@ -71,10 +71,16 @@ namespace Remotely.Server.API
                             OrganizationName = organizationName
                         };
 
-                        fileBytes = fileBytes
-                            .Concat(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(installerSettings)))
-                            .ToArray();
-
+                        using (var ms = new MemoryStream())
+                        using (var br = new BinaryWriter(ms))
+                        {
+                            var payloadBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(installerSettings));
+                            br.Write(installerBytes);
+                            br.Write(payloadBytes);
+                            br.Write(payloadBytes.Length);
+                            ms.Seek(0, SeekOrigin.Begin);
+                            fileBytes = ms.ToArray();
+                        }
                         break;
                     }
 
@@ -89,7 +95,7 @@ namespace Remotely.Server.API
 
                         fileContents[hostIndex] = $"HostName=\"{scheme}://{Request.Host}\"";
                         fileContents[orgIndex] = $"Organization=\"{organizationID}\"";
-                        fileBytes = System.Text.Encoding.UTF8.GetBytes(string.Join("\n", fileContents));
+                        fileBytes = Encoding.UTF8.GetBytes(string.Join("\n", fileContents));
                         break;
                     }
 
