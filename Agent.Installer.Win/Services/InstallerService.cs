@@ -97,7 +97,7 @@ namespace Remotely.Agent.Installer.Win.Services
 
                 ProcessWrapper.StartHidden("netsh", "advfirewall firewall delete rule name=\"Remotely ScreenCast\"").WaitForExit();
 
-                Registry.LocalMachine.DeleteSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Remotely", false);
+                GetRegistryBaseKey().DeleteSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Remotely", false);
 
                 return true;
 
@@ -107,19 +107,6 @@ namespace Remotely.Agent.Installer.Win.Services
                 Logger.Write(ex);
                 return false;
             }
-        }
-
-        private async Task StopProcesses()
-        {
-            ProgressMessageChanged?.Invoke(this, "Stopping Remotely processes.");
-            var procs = Process.GetProcessesByName("Remotely_Agent").Concat(Process.GetProcessesByName("Remotely_ScreenCast"));
-
-            foreach (var proc in procs)
-            {
-                proc.Kill();
-            }
-
-            await Task.Delay(500);
         }
 
         private void AddFirewallRule()
@@ -199,8 +186,9 @@ namespace Remotely.Agent.Installer.Win.Services
         private void CreateUninstallKey()
         {
             var version = FileVersionInfo.GetVersionInfo(Path.Combine(InstallPath, "Remotely_Agent.exe"));
+            var baseKey = GetRegistryBaseKey();
 
-            var remotelyKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Remotely", true);
+            var remotelyKey = baseKey.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Remotely", true);
             remotelyKey.SetValue("DisplayIcon", Path.Combine(InstallPath, "Remotely_Agent.exe"));
             remotelyKey.SetValue("DisplayName", "Remotely");
             remotelyKey.SetValue("DisplayVersion", version.FileVersion);
@@ -211,6 +199,7 @@ namespace Remotely.Agent.Installer.Win.Services
             remotelyKey.SetValue("UninstallString", Path.Combine(InstallPath, "Remotely_Installer.exe -uninstall"));
             remotelyKey.SetValue("QuietUninstallString", Path.Combine(InstallPath, "Remotely_Installer.exe -uninstall -quiet"));
         }
+
         private async Task DownloadRemotelyAgent(string serverUrl)
         {
             var targetFile = Path.Combine(Path.GetTempPath(), $"Remotely-Agent.zip");
@@ -294,15 +283,27 @@ namespace Remotely.Agent.Installer.Win.Services
             return connectionInfo;
         }
 
+        private RegistryKey GetRegistryBaseKey()
+        {
+            if (Environment.Is64BitOperatingSystem)
+            {
+                return RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+            }
+            else
+            {
+                return RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+            }
+        }
+
         private async Task InstallDesktpRuntimeIfNeeded()
         {
             Logger.Write("Checking for .NET Core runtime.");
             var uninstallKeys = new List<RegistryKey>();
             var runtimeInstalled = false;
 
-            foreach (var subkeyName in Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\", false).GetSubKeyNames())
+            foreach (var subkeyName in GetRegistryBaseKey().OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\", false).GetSubKeyNames())
             {
-                var subkey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\" + subkeyName, false);
+                var subkey = GetRegistryBaseKey().OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + subkeyName, false);
                 if (subkey?.GetValue("DisplayName")?.ToString()?.Contains("Microsoft Windows Desktop Runtime - 3.1.2") == true)
                 {
                     runtimeInstalled = true;
@@ -390,6 +391,19 @@ namespace Remotely.Agent.Installer.Win.Services
             {
                 Logger.Write(ex);
             }
+        }
+
+        private async Task StopProcesses()
+        {
+            ProgressMessageChanged?.Invoke(this, "Stopping Remotely processes.");
+            var procs = Process.GetProcessesByName("Remotely_Agent").Concat(Process.GetProcessesByName("Remotely_ScreenCast"));
+
+            foreach (var proc in procs)
+            {
+                proc.Kill();
+            }
+
+            await Task.Delay(500);
         }
         private void StopService()
         {

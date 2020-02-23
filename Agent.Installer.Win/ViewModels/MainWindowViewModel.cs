@@ -251,7 +251,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
 
         private bool CheckParams()
         {
-            var result = !string.IsNullOrWhiteSpace(OrganizationID) && !string.IsNullOrWhiteSpace(ServerUrl);
+            var result = !string.IsNullOrWhiteSpace(OrganizationID) || !string.IsNullOrWhiteSpace(ServerUrl);
             if (!result)
             {
                 MessageBoxWrapper.Show("Required settings are missing.  Try re-downloading the installer.", "Invalid Installer", MessageBoxButton.OK, MessageBoxImage.Error);
