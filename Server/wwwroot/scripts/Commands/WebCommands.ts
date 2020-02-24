@@ -63,6 +63,23 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
+        "DownloadFile",
+        [
+            new Parameter("path", "The path on the remote computer of the file to download.", "String"),
+        ],
+        "Download a file from the remote computer.",
+        `DownloadFile -path "C:\Users\Me\Pictures\ThatFunnyPic.png"`,
+        "",
+        (parameters, paramDictionary) => {
+            var selectedDevices = Main.DataGrid.GetSelectedDevices();
+            if (selectedDevices.length == 0) {
+                AddConsoleOutput("No devices are selected.");
+                return;
+            };
+            BrowserSockets.Connection.invoke("DownloadFile", paramDictionary["path"], selectedDevices[0].ID);
+        }
+    ),
+    new ConsoleCommand(
         "GetLogs",
         [
         ],

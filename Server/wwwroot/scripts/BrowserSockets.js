@@ -82,6 +82,9 @@ function applyMessageHandlers(hubConnection) {
     hubConnection.on("DisplayConsoleHTML", (message) => {
         AddConsoleHTML(message);
     });
+    hubConnection.on("DownloadFile", (fileID) => {
+        location.assign(`/API/FileSharing/${fileID}`);
+    });
     hubConnection.on("TransferCompleted", (transferID) => {
         var completedWrapper = document.getElementById(transferID + "-completed");
         var count = parseInt(completedWrapper.innerHTML);

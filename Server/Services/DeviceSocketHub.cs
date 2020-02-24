@@ -138,7 +138,11 @@ namespace Remotely.Server.Services
         {
             return BrowserHub.Clients.Client(requesterID).SendAsync("DisplayMessage", consoleMessage, popupMessage);
 		}
-		public override Task OnConnectedAsync()
+        public Task DownloadFile(string fileID, string requesterID)
+        {
+            return BrowserHub.Clients.Client(requesterID).SendAsync("DownloadFile", fileID);
+        }
+        public override Task OnConnectedAsync()
 		{
             return base.OnConnectedAsync();
         }
