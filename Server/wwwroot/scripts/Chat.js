@@ -62,6 +62,7 @@ export function ReceiveChatText(deviceID, deviceName, message) {
             <span>${message}</span>
         </div>
     `;
+    chatMessages.scrollTo({ top: chatMessages.scrollHeight });
 }
 function moveChatWindow(ev) {
     var chatWindow = ev.currentTarget;

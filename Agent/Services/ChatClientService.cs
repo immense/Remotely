@@ -96,6 +96,7 @@ namespace Remotely.Agent.Services
                     await hubConnection.SendAsync("Chat", message, senderConnectionID);
                 }               
             }
+            ChatClients.Remove(senderConnectionID);
         }
     }
 }
