@@ -137,19 +137,21 @@ export function ExtractParameters(commandText) {
     if (startParams == -1) {
         return parameterArray;
     }
-    commandText.substr(startParams).trim().split("-").forEach(x => {
+    commandText.substr(startParams).trim().split(" -").forEach(x => {
         if (x.trim().length == 0) {
             return;
         }
+        var kv = x.trim();
         var key = "";
         var value = "";
-        if (x.indexOf(" ") == -1 || x.substr(x.indexOf(" ")).trim().length == 0) {
-            key = x.trim();
+        if (kv.indexOf(" ") == -1 || kv.substr(kv.indexOf(" ")).trim().length == 0) {
+            key = kv;
         }
         else {
-            key = x.substr(0, x.indexOf(" "));
-            value = x.substr(x.indexOf(" ")).trim();
+            key = kv.substr(0, kv.indexOf(" "));
+            value = kv.substr(kv.indexOf(" ")).trim();
         }
+        key = key.replace("-", "");
         parameterArray.push(new CommandLineParameter(key, value));
     });
     return parameterArray;

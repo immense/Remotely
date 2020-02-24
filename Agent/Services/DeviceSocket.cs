@@ -112,6 +112,21 @@ namespace Remotely.Agent.Services
             HubConnection.On("Chat", async (string message, string orgName, string senderConnectionID) => {
                 await ChatService.SendMessage(message, orgName, senderConnectionID, HubConnection);
             });
+            HubConnection.On("DownloadFile", async (string filePath, string senderConnectionID) =>
+            {
+                filePath = filePath.Replace("\"", "");
+                if (!File.Exists(filePath))
+                {
+                    await HubConnection.SendAsync("DisplayMessage", "File not found on remote device.", "File not found.", senderConnectionID);
+                    return;
+                }
+                var wr = WebRequest.CreateHttp($"{ConnectionInfo.Host}/API/FileSharing/");
+                var wc = new WebClient();
+                var response = await wc.UploadFileTaskAsync($"{ConnectionInfo.Host}/API/FileSharing/", filePath);
+                var fileIDs = JsonSerializer.Deserialize<string[]>(Encoding.UTF8.GetString(response));
+                await HubConnection.SendAsync("DownloadFile", fileIDs[0], senderConnectionID);
+            });
+
             HubConnection.On("ExecuteCommand", (async (string mode, string command, string commandID, string senderConnectionID) =>
             {
                 if (!IsServerVerified)

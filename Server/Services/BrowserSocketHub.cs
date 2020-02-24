@@ -79,6 +79,16 @@ namespace Remotely.Server.Services
             return Task.CompletedTask;
         }
 
+        public Task DownloadFile(string filePath, string deviceID)
+        {
+            if (DataService.DoesUserHaveAccessToDevice(deviceID, RemotelyUser))
+            {
+                var targetDevice = DeviceSocketHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == deviceID);
+                DeviceHub.Clients.Client(targetDevice.Key).SendAsync("DownloadFile", filePath, Context.ConnectionId);
+            }
+            return Task.CompletedTask;
+        }
+
         public Task ExecuteCommandOnClient(string mode, string command, string[] deviceIDs)
         {
             deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
