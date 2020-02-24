@@ -4,8 +4,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Remotely.Server.Auth;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
 
@@ -58,9 +60,12 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         {
             if (ModelState.IsValid && !string.IsNullOrWhiteSpace(Input.TokenName))
             {
-                var newToken = await DataService.CreateApiToken(User.Identity.Name, Input.TokenName);
+                var secret = PasswordGenerator.GeneratePassword(24);
+                var secretHash = new PasswordHasher<RemotelyUser>().HashPassword(null, secret);
+
+                var newToken = await DataService.CreateApiToken(User.Identity.Name, Input.TokenName, secretHash);
                 NewTokenKey = Guid.Parse(newToken.Token);
-                NewTokenSecret = newToken.Secret;
+                NewTokenSecret = secret;
                 Message = "New token created.";
             }
             PopulateViewModel();
