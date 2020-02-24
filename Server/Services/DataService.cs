@@ -223,7 +223,7 @@ namespace Remotely.Server.Services
             }
         }
 
-        public async Task<ApiToken> CreateApiToken(string userName, string tokenName)
+        public async Task<ApiToken> CreateApiToken(string userName, string tokenName, string secretHash)
         {
             var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);
 
@@ -232,7 +232,7 @@ namespace Remotely.Server.Services
                 Name = tokenName,
                 OrganizationID = user.OrganizationID,
                 Token = Guid.NewGuid().ToString(),
-                Secret = PasswordGenerator.GeneratePassword(24)
+                Secret = secretHash
             };
             RemotelyContext.ApiTokens.Add(newToken);
             await RemotelyContext.SaveChangesAsync();
@@ -643,8 +643,9 @@ namespace Remotely.Server.Services
 
         public bool ValidateApiToken(string apiToken, string apiSecret, string requestPath, string remoteIP)
         {
+            var hasher = new PasswordHasher<RemotelyUser>();
             var token = RemotelyContext.ApiTokens.FirstOrDefault(x => x.Token == apiToken);
-            var isValid = token != null && token.Secret == apiSecret;
+            var isValid = token != null && hasher.VerifyHashedPassword(null, token.Secret, apiSecret) == PasswordVerificationResult.Success;
 
             if (token != null)
             {
