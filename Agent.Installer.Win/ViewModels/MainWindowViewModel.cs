@@ -290,6 +290,11 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             {
                 ServerUrl = ServerUrl.Substring(0, ServerUrl.LastIndexOf("/"));
             }
+
+            if (string.IsNullOrWhiteSpace(OrganizationName))
+            {
+                OrganizationName = "(IT provider has not set a name.)";
+            }
         }
         private async Task Install(object param)
         {
