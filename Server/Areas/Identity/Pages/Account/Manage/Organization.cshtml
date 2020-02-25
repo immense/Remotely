@@ -12,6 +12,10 @@
 
 @if (isAdmin)
 {
+    <partial name="_StatusMessage" for="StatusMessage" />
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
     <div class="row">
         <div class="col-sm-8">
             @* Organization ID *@
@@ -73,25 +77,28 @@
                         <tr>
                             <th>User Name</th>
                             <th>Administrator</th>
+                            <th>Reset Password</th>
                             <th>Remove</th>
                         </tr>
                     </thead>
                     <tbody>
                         @for (var i = 0; i < Model.Users.Count; i++)
                         {
-                        <tr user="@Model.Users[i].ID">
-                            <td class="middle-aligned"><label class="control-label">@Model.Users[i].UserName</label></td>
-                            @if (currentUser.Id == Model.Users[i].ID)
-                            {
-                                <td>@Html.CheckBoxFor(x => x.Users[i].IsAdmin, new { user = Model.Users[i].ID, @class = "user-is-admin-checkbox", disabled = "disabled" })</td>
-                                <td><button type="button" class="btn btn-danger delete-user-button" user="@Model.Users[i].ID" disabled>Delete</button></td>
-                            }
-                            else
-                            {
-                                <td>@Html.CheckBoxFor(x => x.Users[i].IsAdmin, new { user = Model.Users[i].ID, @class = "user-is-admin-checkbox" })</td>
-                                <td><button type="button" class="btn btn-danger delete-user-button" user="@Model.Users[i].ID">Delete</button></td>
-                            }
-                        </tr>
+                            <tr user="@Model.Users[i].ID">
+                                <td class="middle-aligned"><label class="control-label">@Model.Users[i].UserName</label></td>
+                                @if (currentUser.Id == Model.Users[i].ID)
+                                {
+                                    <td>@Html.CheckBoxFor(x => x.Users[i].IsAdmin, new { user = Model.Users[i].ID, @class = "user-is-admin-checkbox", disabled = "disabled" })</td>
+                                    <td></td>
+                                    <td><button type="button" class="btn btn-danger delete-user-button" user="@Model.Users[i].ID" disabled>Delete</button></td>
+                                }
+                                else
+                                {
+                                    <td>@Html.CheckBoxFor(x => x.Users[i].IsAdmin, new { user = Model.Users[i].ID, @class = "user-is-admin-checkbox" })</td>
+                                    <td><button type="button" class="btn btn-danger reset-password-button" user="@Model.Users[i].ID">Reset</button></td>
+                                    <td><button type="button" class="btn btn-danger delete-user-button" user="@Model.Users[i].ID">Delete</button></td>
+                                }
+                            </tr>
                         }
                     </tbody>
                 </table>
@@ -120,15 +127,10 @@
                         {
                             <tr invite="@Model.Invites[i].ID">
                                 <td class="middle-aligned"><label class="control-label">@Model.Invites[i].InvitedUser</label></td>
-                                <td class="middle-aligned text-center">@Html.CheckBoxFor(x => x.Invites[i].IsAdmin, new { disabled = "disabled" })</td>
+                                <td class="middle-aligned">@Html.CheckBoxFor(x => x.Invites[i].IsAdmin, new { disabled = "disabled" })</td>
                                 <td class="middle-aligned">
                                     <label class="control-label">
                                         <a href="@Request.Scheme://@Request.Host/Invite/?id=@Model.Invites[i].ID">Join Link</a>
-                                        @if (!string.IsNullOrWhiteSpace(Model.Invites[i].ResetUrl))
-                                        {
-                                            <br />
-                                            <a href="@Model.Invites[i].ResetUrl">Password Reset</a>
-                                        }
                                     </label>
                                 </td>
                                 <td><button type="button" class="btn btn-danger delete-invite-button" invite="@Model.Invites[i].ID">Delete</button></td>
@@ -144,22 +146,26 @@
     @* Send Invites *@
     <div class="row">
         <div class="col-sm-8">
-            <div class="form-group">
-                <div class="input-group">
-                    <input id="inviteUserInput" placeholder="Username/email to invite" type="email" required class="form-control" />
-                    <div class="input-group-append">
-                        <span class="input-group-text pr-1">Admin?</span>
-                    </div>
-                    <div class="input-group-append">
-                        <div class="input-group-text pl-1">
-                            <input id="inviteIsAdmin" class="checkbox-inline" type="checkbox" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <form method="post" asp-page-handler="SendInvite">
+                <div class="form-group">
+                    <div class="input-group">
+                        <input asp-for="Input.UserEmail" placeholder="Username/email to invite" type="email" required  class="form-control" />
+                        <div class="input-group-append">
+                            <span class="input-group-text pr-1">Admin?</span>
+                        </div>
+                        <div class="input-group-append">
+                            <div class="input-group-text pl-1">
+                                <input asp-for="Input.IsAdmin" class="checkbox-inline" type="checkbox" />
+                            </div>
+                        </div>
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-secondary">Invite</button>
                         </div>
                     </div>
-                    <div class="input-group-append">
-                        <button id="sendInviteButton" type="button" class="btn btn-secondary">Invite</button>
-                    </div>
                 </div>
-            </div>
+            </form>
+
         </div>
     </div>
 

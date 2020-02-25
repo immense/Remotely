@@ -82,8 +82,7 @@ namespace Remotely.Server.Services
                 InvitedUser = invite.InvitedUser,
                 IsAdmin = invite.IsAdmin,
                 Organization = organization,
-                OrganizationID = organization.ID,
-                ResetUrl = invite.ResetUrl
+                OrganizationID = organization.ID
             };
             organization.InviteLinks.Add(newInvite);
             RemotelyContext.SaveChanges();
@@ -104,6 +103,18 @@ namespace Remotely.Server.Services
                 RemotelyContext.CommandContexts.Add(commandContext);
             }
             RemotelyContext.SaveChanges();
+        }
+
+        public bool SetNewUserProperties(string targetName, string organizationID, bool isAdmin)
+        {
+            var targetUser = GetUserByName(targetName);
+
+            targetUser.OrganizationID = organizationID;
+            targetUser.IsAdministrator = isAdmin;
+
+            RemotelyContext.SaveChanges();
+
+            return true;
         }
 
         public bool AddOrUpdateDevice(Device device, out Device updatedDevice)

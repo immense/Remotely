@@ -7,11 +7,10 @@ document.getElementById("usersHelpButton").addEventListener("click", (ev) => {
 });
 document.getElementById("invitesHelpButton").addEventListener("click", (ev) => {
     ShowModal("Invitations", `All pending invitations will be shown here and can be revoked by deleting them.<br><br>
-        If a user does not exist, sending an invite will create their account and send them a password reset email too.
-        The password reset must be completed before accepting the invitation.
+        If a user does not exist, sending an invite will create their account and add them to the current organization.
+        A password reset URL can be generated from the user table.
         <br><br>
-        The Admin checkbox determines if the new user will have administrator privileges in this organization
-        after they accept the invitation.`);
+        The Admin checkbox determines if the new user will have administrator privileges in this organization.`);
 });
 
 document.getElementById("deviceGroupHelpButton").addEventListener("click", (ev) => {
@@ -159,59 +158,6 @@ document.querySelectorAll(".delete-user-button").forEach((removeButton: HTMLButt
         }
     })
 });
-
-document.getElementById("sendInviteButton").addEventListener("click", (ev) => {
-    var inviteUserInput = document.querySelector("#inviteUserInput") as HTMLInputElement;
-    if (!ValidateInput(inviteUserInput)) {
-        return;
-    }
-    var invitedUser = inviteUserInput.value;
-    inviteUserInput.value = "";
-    var isAdmin = (document.getElementById("inviteIsAdmin") as HTMLInputElement).checked;
-    var xhr = new XMLHttpRequest();
-    xhr.onload = () => {
-        if (xhr.status == 200) {
-            var newInvite = JSON.parse(xhr.responseText);
-            var tbody = document.querySelector("#invitesTable tbody");
-            var newRow = document.createElement("tr");
-            newRow.setAttribute("invite", newInvite.ID);
-            var innerHtml = `<td class="middle-aligned"><label class="control-label">${newInvite.InvitedUser}</label></td>
-                                <td class="middle-aligned text-center"><input type="checkbox" disabled ${newInvite.IsAdmin ? "checked" : ""}/></td>
-                                <td class="middle-aligned">
-                                    <label class="control-label">
-                                        <a href="${location.origin}/Invite/?id=${newInvite.ID}">Join Link</a>`;
-            if (newInvite.ResetUrl) {
-                innerHtml += `<br /> <a href="${newInvite.ResetUrl}">Reset Password</a>`;
-            }
-            innerHtml +=       ` </label> </td>
-                                <td><button type="button" class="btn btn-danger delete-invite-button" invite="${newInvite.ID}">Delete</button></td>`;
-
-            newRow.innerHTML = innerHtml;
-            tbody.appendChild(newRow);
-            newRow.querySelector(".delete-invite-button").addEventListener("click", (ev:MouseEvent) => {
-                deleteInvite(ev);
-            })
-        }
-        else if (xhr.status == 400) {
-            ShowModal("Invalid Request", xhr.responseText);
-        }
-        else {
-            showError(xhr);
-        }
-    }
-    xhr.onerror = () => {
-        showError(xhr);
-    }
-    xhr.open("post", location.origin + `/api/OrganizationManagement/SendInvite/`);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.send(JSON.stringify({ InvitedUser: invitedUser, IsAdmin: isAdmin }));
-    PopupMessage("Sending invite...");
-});
-document.getElementById("inviteUserInput").addEventListener("keypress", (e) => {
-    if (e.key.toLowerCase() == "enter") {
-        document.getElementById("sendInviteButton").click();
-    }
-})
 
 document.querySelectorAll(".delete-invite-button").forEach((deleteButton: HTMLButtonElement) => {
     deleteButton.addEventListener("click", (ev) => {
