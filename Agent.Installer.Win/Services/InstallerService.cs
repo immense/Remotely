@@ -23,6 +23,7 @@ namespace Remotely.Agent.Installer.Win.Services
         public event EventHandler<string> ProgressMessageChanged;
         public event EventHandler<int> ProgressValueChanged;
 
+        public static string CoreRuntimeVersion => "3.1.2";
         private string InstallPath => Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), "Program Files", "Remotely");
         private string Platform => Environment.Is64BitOperatingSystem ? "x64" : "x86";
         private JavaScriptSerializer Serializer { get; } = new JavaScriptSerializer();
@@ -304,7 +305,7 @@ namespace Remotely.Agent.Installer.Win.Services
             foreach (var subkeyName in GetRegistryBaseKey().OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\", false).GetSubKeyNames())
             {
                 var subkey = GetRegistryBaseKey().OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + subkeyName, false);
-                if (subkey?.GetValue("DisplayName")?.ToString()?.Contains("Microsoft Windows Desktop Runtime - 3.1.2") == true)
+                if (subkey?.GetValue("DisplayName")?.ToString()?.Contains($"Microsoft Windows Desktop Runtime - {CoreRuntimeVersion}") == true)
                 {
                     runtimeInstalled = true;
                     break;

@@ -47,6 +47,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desktop.Win", "Desktop.Win\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agent.Installer.Win", "Agent.Installer.Win\Agent.Installer.Win.csproj", "{A3D0368C-0850-4614-B5B5-41B9D5135AA9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{48D9D0E6-5781-44A9-84C0-56F56C2A1193}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -165,6 +167,18 @@ Global
 		{A3D0368C-0850-4614-B5B5-41B9D5135AA9}.Release|x64.Build.0 = Release|Any CPU
 		{A3D0368C-0850-4614-B5B5-41B9D5135AA9}.Release|x86.ActiveCfg = Release|Any CPU
 		{A3D0368C-0850-4614-B5B5-41B9D5135AA9}.Release|x86.Build.0 = Release|Any CPU
+		{48D9D0E6-5781-44A9-84C0-56F56C2A1193}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48D9D0E6-5781-44A9-84C0-56F56C2A1193}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48D9D0E6-5781-44A9-84C0-56F56C2A1193}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{48D9D0E6-5781-44A9-84C0-56F56C2A1193}.Debug|x64.Build.0 = Debug|Any CPU
+		{48D9D0E6-5781-44A9-84C0-56F56C2A1193}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{48D9D0E6-5781-44A9-84C0-56F56C2A1193}.Debug|x86.Build.0 = Debug|Any CPU
+		{48D9D0E6-5781-44A9-84C0-56F56C2A1193}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48D9D0E6-5781-44A9-84C0-56F56C2A1193}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48D9D0E6-5781-44A9-84C0-56F56C2A1193}.Release|x64.ActiveCfg = Release|Any CPU
+		{48D9D0E6-5781-44A9-84C0-56F56C2A1193}.Release|x64.Build.0 = Release|Any CPU
+		{48D9D0E6-5781-44A9-84C0-56F56C2A1193}.Release|x86.ActiveCfg = Release|Any CPU
+		{48D9D0E6-5781-44A9-84C0-56F56C2A1193}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
