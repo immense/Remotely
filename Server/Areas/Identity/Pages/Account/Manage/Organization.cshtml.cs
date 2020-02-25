@@ -26,6 +26,9 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         }
         public List<SelectListItem> DeviceGroups { get; } = new List<SelectListItem>();
 
+        [BindProperty]
+        public InputModel Input { get; set; } = new InputModel();
+
         [Display(Name = "Invites")]
         public List<Invite> Invites { get; set; }
 
@@ -33,55 +36,21 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         [StringLength(25)]
         public string OrganizationName { get; set; }
 
-        [Display(Name = "Users")]
-        public List<OrganizationUser> Users { get; set; }
-
-        public class InputModel
-        {
-            public bool IsAdmin { get; set; }
-
-            [EmailAddress]
-            public string UserEmail { get; set; }
-        }
-
-        [BindProperty]
-        public InputModel Input { get; set; } = new InputModel();
-
         [TempData]
         public string StatusMessage { get; set; }
 
+        [Display(Name = "Users")]
+        public List<OrganizationUser> Users { get; set; }
+
         private DataService DataService { get; }
 
-        private UserManager<RemotelyUser> UserManager { get; }
         private IEmailSender EmailSender { get; }
+
+        private UserManager<RemotelyUser> UserManager { get; }
 
         public void OnGet()
         {
             PopulateViewModel();
-        }
-
-        private void PopulateViewModel()
-        {
-            OrganizationName = DataService.GetOrganizationName(User.Identity.Name);
-
-            var groups = DataService.GetDeviceGroupsForUserName(User.Identity.Name);
-            DeviceGroups.AddRange(groups.Select(x => new SelectListItem(x.Name, x.ID)));
-
-            Users = DataService.GetAllUsers(User.Identity.Name)
-                .Select(x => new OrganizationUser()
-                {
-                    ID = x.Id,
-                    IsAdmin = x.IsAdministrator,
-                    UserName = x.UserName
-                }).ToList();
-
-            Invites = DataService.GetAllInviteLinks(User.Identity.Name).Select(x => new Invite()
-            {
-                ID = x.ID,
-                InvitedUser = x.InvitedUser,
-                IsAdmin = x.IsAdmin,
-                DateSent = x.DateSent
-            }).ToList();
         }
 
         public async Task<IActionResult> OnPostSendInviteAsync()
@@ -122,7 +91,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
                 }
                 else
                 {
-                  
+
                     var invite = new Invite()
                     {
                         InvitedUser = Input.UserEmail,
@@ -146,6 +115,38 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
                 }
             }
             return Page();
+        }
+
+        private void PopulateViewModel()
+        {
+            OrganizationName = DataService.GetOrganizationName(User.Identity.Name);
+
+            var groups = DataService.GetDeviceGroupsForUserName(User.Identity.Name);
+            DeviceGroups.AddRange(groups.Select(x => new SelectListItem(x.Name, x.ID)));
+
+            Users = DataService.GetAllUsers(User.Identity.Name)
+                .Select(x => new OrganizationUser()
+                {
+                    ID = x.Id,
+                    IsAdmin = x.IsAdministrator,
+                    UserName = x.UserName
+                }).ToList();
+
+            Invites = DataService.GetAllInviteLinks(User.Identity.Name).Select(x => new Invite()
+            {
+                ID = x.ID,
+                InvitedUser = x.InvitedUser,
+                IsAdmin = x.IsAdmin,
+                DateSent = x.DateSent
+            }).ToList();
+        }
+
+        public class InputModel
+        {
+            public bool IsAdmin { get; set; }
+
+            [EmailAddress]
+            public string UserEmail { get; set; }
         }
     }
 
