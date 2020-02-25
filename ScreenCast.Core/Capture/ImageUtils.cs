@@ -97,7 +97,7 @@ namespace Remotely.ScreenCast.Core.Capture
                     }
                 }
 
-                if (left < right && top < bottom)
+                if (left <= right && top <= bottom)
                 {
                     // Bounding box is valid.  Padding is necessary to prevent artifacts from
                     // moving windows.
