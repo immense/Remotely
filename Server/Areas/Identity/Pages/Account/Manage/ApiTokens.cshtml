@@ -4,16 +4,16 @@
 @{
     ViewData["Title"] = "API Access Tokens";
 }
-<h4 class="mb-4">@ViewData["Title"]</h4>
+<h4>@ViewData["Title"]</h4>
 
 @if (!string.IsNullOrWhiteSpace(Model.Message))
 {
-    <h5 class="text-success mb-4">@Model.Message</h5>
+    <h5 class="text-success mb-4 mt-4">@Model.Message</h5>
 }
 
 @if (!string.IsNullOrWhiteSpace(Model.NewTokenSecret))
 {
-    <h5 class="text-warning font-weight-bold mb-2">Warning: The token secret will only be shown once.  Save it now.</h5>
+    <h5 class="text-warning font-weight-bold mb-2 mt-4">Warning: The token secret will only be shown once.  Save it now.</h5>
     <h5>
         <label>Token Key: </label>
         <input class="form-control custom-control-inline" readonly value="@Model.NewTokenKey" style="width:400px" />
@@ -27,7 +27,7 @@
 
 @if (Model.IsAdmin)
 {
-    <form method="post" asp-page-handler="Create" class="mb-2">
+    <form method="post" asp-page-handler="Create" class="mb-2 mt-4">
         <label class="mr-1">New Token Name:</label>
         <input class="form-control form-control-sm custom-control-inline mr-1" style="width:200px" asp-for="Input.TokenName" />
         <button class="btn btn-primary" type="submit">Create</button>

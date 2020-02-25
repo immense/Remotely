@@ -133,9 +133,9 @@ namespace Remotely.Server.API
             return Ok(deviceGroupID);
         }
 
-        [HttpGet("GenerateResetUrl")]
+        [HttpGet("GenerateResetUrl/{userID}")]
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
-        public async Task<IActionResult> GenerateResetUrl(string userEmail)
+        public async Task<IActionResult> GenerateResetUrl(string userID)
         {
             if (User.Identity.IsAuthenticated &&
               !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
@@ -145,7 +145,7 @@ namespace Remotely.Server.API
 
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
 
-            var user = await UserManager.FindByEmailAsync(userEmail);
+            var user = await UserManager.FindByIdAsync(userID);
 
             if (user.OrganizationID != orgID)
             {

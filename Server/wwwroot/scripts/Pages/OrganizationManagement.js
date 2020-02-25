@@ -121,6 +121,37 @@ document.querySelectorAll(".user-is-admin-checkbox").forEach((checkbox) => {
         xhr.send(JSON.stringify(ev.currentTarget.checked));
     });
 });
+document.querySelectorAll(".reset-password-button").forEach((resetButton) => {
+    resetButton.addEventListener("click", (ev) => {
+        var userID = resetButton.getAttribute("user");
+        var xhr = new XMLHttpRequest();
+        xhr.onload = () => {
+            if (xhr.status == 200) {
+                ShowModal("Password Reset", `<div class="mb-3">
+                    <span>Password Reset URL: </span>
+                    <a target="_blank" href="${xhr.responseText}">Copy This Link</a>
+                </div>
+
+                <div>
+                    NOTE: You must log out before visiting the reset URL.  It's only valid for the selected user.
+                </div>
+                `);
+            }
+            else if (xhr.status == 400) {
+                ShowModal("Invalid Request", xhr.responseText);
+            }
+            else {
+                showError(xhr);
+            }
+        };
+        xhr.onerror = () => {
+            showError(xhr);
+        };
+        xhr.open("get", `${location.origin}/api/OrganizationManagement/GenerateResetUrl/${userID}`);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send();
+    });
+});
 document.querySelectorAll(".delete-user-button").forEach((removeButton) => {
     removeButton.addEventListener("click", (ev) => {
         var result = confirm("Are you sure you want to delete this user?");
