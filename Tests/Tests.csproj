@@ -4,6 +4,10 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
 
     <IsPackable>false</IsPackable>
+
+    <RootNamespace>Remotely.Tests</RootNamespace>
+
+    <AssemblyName>Remotely_Tests</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
