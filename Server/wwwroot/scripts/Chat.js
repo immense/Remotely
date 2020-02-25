@@ -20,6 +20,12 @@ export function CreateChatWindow(deviceID, deviceName) {
         chatWindow.setAttribute("id", "chat-" + deviceID);
         chatWindow.innerHTML = windowHtml;
         document.body.appendChild(chatWindow);
+        chatWindow.addEventListener("mousedown", (ev) => {
+            document.querySelectorAll(".chat-window").forEach(x => {
+                x.style.zIndex = "0";
+            });
+            ev.currentTarget.style.zIndex = "1";
+        });
         chatWindow.querySelector(".close-button").onclick = (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
@@ -27,7 +33,6 @@ export function CreateChatWindow(deviceID, deviceName) {
         };
         chatWindow.querySelector(".chat-header").onmousedown = (ev) => {
             ev.preventDefault();
-            ev.stopPropagation();
             chatWindow.removeEventListener("mousemove", moveChatWindow);
             chatWindow.removeEventListener("mouseup", stopMovingChatWindow);
             chatWindow.removeEventListener("mouseleave", stopMovingChatWindow);

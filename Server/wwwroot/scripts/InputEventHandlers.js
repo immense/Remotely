@@ -119,6 +119,7 @@ function keyDownOnWindow() {
         if (!document.activeElement.isEqualNode(UI.ConsoleTextArea) &&
             document.activeElement.tagName.toLowerCase() != "select" &&
             document.activeElement.tagName.toLowerCase() != "input" &&
+            document.activeElement.tagName.toLowerCase() != "textarea" &&
             !e.altKey &&
             !e.ctrlKey) {
             UI.ConsoleTextArea.focus();

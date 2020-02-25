@@ -22,6 +22,13 @@ export function CreateChatWindow(deviceID: string, deviceName: string) {
         chatWindow.innerHTML = windowHtml;
         document.body.appendChild(chatWindow);
 
+        chatWindow.addEventListener("mousedown", (ev) => {
+            document.querySelectorAll(".chat-window").forEach(x => {
+                (x as HTMLDivElement).style.zIndex = "0";
+            });
+            (ev.currentTarget as HTMLDivElement).style.zIndex = "1";
+        });
+
         (chatWindow.querySelector(".close-button") as HTMLElement).onclick = (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
@@ -30,7 +37,6 @@ export function CreateChatWindow(deviceID: string, deviceName: string) {
 
         (chatWindow.querySelector(".chat-header") as HTMLDivElement).onmousedown = (ev) => {
             ev.preventDefault();
-            ev.stopPropagation();
             chatWindow.removeEventListener("mousemove", moveChatWindow);
             chatWindow.removeEventListener("mouseup", stopMovingChatWindow);
             chatWindow.removeEventListener("mouseleave", stopMovingChatWindow);
