@@ -73,22 +73,24 @@ namespace Remotely.Server.API
             return Ok("ok");
         }
 
-        [HttpPut("Name")]
+        [HttpDelete("DeleteUser/{userID}")]
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
-        public IActionResult Name([FromBody]string organizationName)
+        public async Task<IActionResult> DeleteUser(string userID)
         {
             if (User.Identity.IsAuthenticated &&
                 !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
             {
                 return Unauthorized();
             }
-            if (organizationName.Length > 25)
+
+            if (User.Identity.IsAuthenticated &&
+              DataService.GetUserByName(User.Identity.Name).Id == userID)
             {
-                return BadRequest();
+                return BadRequest("You can't delete yourself here.  You must go to the Personal Data page to delete your own account.");
             }
 
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
-            DataService.UpdateOrganizationName(orgID, organizationName.Trim());
+            await DataService.RemoveUserFromOrganization(orgID, userID);
             return Ok("ok");
         }
 
@@ -131,27 +133,55 @@ namespace Remotely.Server.API
             return Ok(deviceGroupID);
         }
 
-        [HttpDelete("DeleteUser/{userID}")]
+        [HttpGet("GenerateResetUrl")]
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
-        public async Task<IActionResult> DeleteUser(string userID)
+        public async Task<IActionResult> GenerateResetUrl(string userEmail)
+        {
+            if (User.Identity.IsAuthenticated &&
+              !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+            {
+                return Unauthorized();
+            }
+
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
+
+            var user = await UserManager.FindByEmailAsync(userEmail);
+
+            if (user.OrganizationID != orgID)
+            {
+                return Unauthorized();
+            }
+
+            var code = await UserManager.GeneratePasswordResetTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            var callbackUrl = Url.Page(
+                "/Account/ResetPassword",
+                pageHandler: null,
+                values: new { area = "Identity", code },
+                protocol: Request.Scheme);
+
+            return Ok(callbackUrl);
+
+        }
+
+        [HttpPut("Name")]
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
+        public IActionResult Name([FromBody]string organizationName)
         {
             if (User.Identity.IsAuthenticated &&
                 !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
             {
                 return Unauthorized();
             }
-
-            if (User.Identity.IsAuthenticated &&
-              DataService.GetUserByName(User.Identity.Name).Id == userID)
+            if (organizationName.Length > 25)
             {
-                return BadRequest("You can't delete yourself here.  You must go to the Personal Data page to delete your own account.");
+                return BadRequest();
             }
 
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
-            await DataService.RemoveUserFromOrganization(orgID, userID);
+            DataService.UpdateOrganizationName(orgID, organizationName.Trim());
             return Ok("ok");
         }
-
         [HttpPost("SendInvite")]
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
         public async Task<IActionResult> SendInvite([FromBody]Invite invite)
@@ -166,54 +196,49 @@ namespace Remotely.Server.API
                 return BadRequest();
             }
 
-            var newUserMessage = "";
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
+
+
             if (!DataService.DoesUserExist(invite.InvitedUser))
-            {           
-                var user = new RemotelyUser { UserName = invite.InvitedUser, Email = invite.InvitedUser };
+            {
+                var user = new RemotelyUser { UserName = invite.InvitedUser, Email = invite.InvitedUser, OrganizationID = orgID };
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
+                    if (!DataService.SetNewUserProperties(user.UserName, orgID, invite.IsAdmin))
+                    {
+                        return BadRequest();
+                    }
+
+
                     user = await UserManager.FindByEmailAsync(invite.InvitedUser);
 
                     await UserManager.ConfirmEmailAsync(user, await UserManager.GenerateEmailConfirmationTokenAsync(user));
 
-                    var code = await UserManager.GeneratePasswordResetTokenAsync(user);
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    var callbackUrl = Url.Page(
-                        "/Account/ResetPassword",
-                        pageHandler: null,
-                        values: new { area = "Identity", code },
-                        protocol: Request.Scheme);
-
-                    invite.ResetUrl = callbackUrl;
-
-                    newUserMessage = $@"<br><br>Since you don't have an account yet, one has been created for you.
-                                    You will need to set a password first before attempting to join the organization.<br><br>
-                                    Set your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.  Your username/email
-                                    is <strong>{invite.InvitedUser}</strong>.";
+                    return Ok();
                 }
                 else
                 {
                     return BadRequest("There was an issue creating the new account.");
                 }
             }
+            else
+            {
+                var newInvite = DataService.AddInvite(orgID, invite);
 
-            Request.Headers.TryGetValue("OrganizationID", out var orgID);
-
-            var newInvite = DataService.AddInvite(orgID, invite);
-
-            var inviteURL = $"{Request.Scheme}://{Request.Host}/Invite?id={newInvite.ID}";
-            await EmailSender.SendEmailAsync(invite.InvitedUser, "Invitation to Organization in Remotely",
-                        $@"<img src='https://remotely.lucency.co/images/Remotely_Logo.png'/>
+                var inviteURL = $"{Request.Scheme}://{Request.Host}/Invite?id={newInvite.ID}";
+                await EmailSender.SendEmailAsync(invite.InvitedUser, "Invitation to Organization in Remotely",
+                            $@"<img src='https://remotely.lucency.co/images/Remotely_Logo.png'/>
                             <br><br>
                             Hello!
                             <br><br>
                             You've been invited to join an organization in Remotely.
-                            {newUserMessage}
                             <br><br>
                             You can join the organization by <a href='{HtmlEncoder.Default.Encode(inviteURL)}'>clicking here</a>.");
 
-            return Ok(newInvite);
+                return Ok();
+            }
+ 
         }
     }
 }
