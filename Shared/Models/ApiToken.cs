@@ -17,7 +17,7 @@ namespace Remotely.Shared.Models
         public string Name { get; set; }
 
         [JsonIgnore]
-        public virtual Organization Organization { get; set; }
+        public Organization Organization { get; set; }
 
         public string OrganizationID { get; set; }
         public string Secret { get; set; }

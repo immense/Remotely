@@ -18,9 +18,11 @@ namespace Remotely.Shared.Models
         public RemotelyUserOptions UserOptions { get; set; }
 
         [JsonIgnore]
-        public virtual Organization Organization { get; set; }
+        public Organization Organization { get; set; }
         public string OrganizationID { get; set; }
 
         public bool IsAdministrator { get; set; } = true;
+
+        public List<UserDevicePermission> PermissionLinks { get; set; }
     }
 }

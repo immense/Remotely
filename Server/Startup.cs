@@ -30,6 +30,8 @@ using Microsoft.Extensions.Hosting;
 using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.OpenApi.Models;
 using Remotely.Server.Auth;
+using Microsoft.Data.SqlClient;
+using Npgsql;
 
 namespace Remotely.Server
 {
@@ -69,9 +71,17 @@ namespace Remotely.Server
             }
             else if (dbProvider == "postgresql")
             {
+                var connectionBuilder = new NpgsqlConnectionStringBuilder(Configuration.GetConnectionString("PostgreSQL"));
+
+                // Password needs to be set in User Secrets in dev environment.
+                // See https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-3.1
+                if (IsDev)
+                {
+                    connectionBuilder.Password = Configuration["PostgresPassword"];
+                }
+
                 services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(
-                    Configuration.GetConnectionString("PostgreSQL")));
+                    options.UseNpgsql(connectionBuilder.ConnectionString));
             }
 
             services.AddIdentity<RemotelyUser, IdentityRole>(options => options.Stores.MaxLengthForKeys = 128)

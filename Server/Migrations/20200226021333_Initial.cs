@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Remotely.Server.Migrations
 {
@@ -38,7 +39,7 @@ namespace Remotely.Server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     RoleId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -52,6 +53,28 @@ namespace Remotely.Server.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ApiTokens",
+                columns: table => new
+                {
+                    ID = table.Column<string>(nullable: false),
+                    LastUsed = table.Column<DateTime>(nullable: true),
+                    Name = table.Column<string>(maxLength: 200, nullable: true),
+                    OrganizationID = table.Column<string>(nullable: true),
+                    Secret = table.Column<string>(nullable: true),
+                    Token = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApiTokens", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_ApiTokens_Organizations_OrganizationID",
+                        column: x => x.OrganizationID,
+                        principalTable: "Organizations",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -145,41 +168,6 @@ namespace Remotely.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RemotelyUsers",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    UserName = table.Column<string>(maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
-                    Email = table.Column<string>(maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(nullable: false),
-                    PasswordHash = table.Column<string>(nullable: true),
-                    SecurityStamp = table.Column<string>(nullable: true),
-                    ConcurrencyStamp = table.Column<string>(nullable: true),
-                    PhoneNumber = table.Column<string>(nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
-                    LockoutEnabled = table.Column<bool>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false),
-                    Discriminator = table.Column<string>(nullable: false),
-                    UserOptions = table.Column<string>(nullable: true),
-                    OrganizationID = table.Column<string>(nullable: true),
-                    IsAdministrator = table.Column<bool>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RemotelyUsers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_RemotelyUsers_Organizations_OrganizationID",
-                        column: x => x.OrganizationID,
-                        principalTable: "Organizations",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "SharedFiles",
                 columns: table => new
                 {
@@ -207,12 +195,14 @@ namespace Remotely.Server.Migrations
                 {
                     ID = table.Column<string>(nullable: false),
                     AgentVersion = table.Column<string>(nullable: true),
+                    Alias = table.Column<string>(maxLength: 100, nullable: true),
+                    CpuUtilization = table.Column<double>(nullable: false),
                     CurrentUser = table.Column<string>(nullable: true),
-                    DeviceName = table.Column<string>(nullable: true),
                     DeviceGroupID = table.Column<string>(nullable: true),
+                    DeviceName = table.Column<string>(nullable: true),
                     Drives = table.Column<string>(nullable: true),
-                    FreeMemory = table.Column<double>(nullable: false),
-                    FreeStorage = table.Column<double>(nullable: false),
+                    UsedMemory = table.Column<double>(nullable: false),
+                    UsedStorage = table.Column<double>(nullable: false),
                     Is64Bit = table.Column<bool>(nullable: false),
                     IsOnline = table.Column<bool>(nullable: false),
                     LastOnline = table.Column<DateTime>(nullable: false),
@@ -244,11 +234,53 @@ namespace Remotely.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RemotelyUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    UserName = table.Column<string>(maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
+                    Email = table.Column<string>(maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(nullable: false),
+                    PasswordHash = table.Column<string>(nullable: true),
+                    SecurityStamp = table.Column<string>(nullable: true),
+                    ConcurrencyStamp = table.Column<string>(nullable: true),
+                    PhoneNumber = table.Column<string>(nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
+                    LockoutEnabled = table.Column<bool>(nullable: false),
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    Discriminator = table.Column<string>(nullable: false),
+                    UserOptions = table.Column<string>(nullable: true),
+                    OrganizationID = table.Column<string>(nullable: true),
+                    IsAdministrator = table.Column<bool>(nullable: true),
+                    DeviceGroupID = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RemotelyUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RemotelyUsers_DeviceGroups_DeviceGroupID",
+                        column: x => x.DeviceGroupID,
+                        principalTable: "DeviceGroups",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_RemotelyUsers_Organizations_OrganizationID",
+                        column: x => x.OrganizationID,
+                        principalTable: "Organizations",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -328,6 +360,41 @@ namespace Remotely.Server.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "PermissionLinks",
+                columns: table => new
+                {
+                    ID = table.Column<string>(nullable: false),
+                    UserID = table.Column<string>(nullable: true),
+                    DeviceGroupID = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PermissionLinks", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_PermissionLinks_DeviceGroups_DeviceGroupID",
+                        column: x => x.DeviceGroupID,
+                        principalTable: "DeviceGroups",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PermissionLinks_RemotelyUsers_UserID",
+                        column: x => x.UserID,
+                        principalTable: "RemotelyUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApiTokens_OrganizationID",
+                table: "ApiTokens",
+                column: "OrganizationID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApiTokens_Token",
+                table: "ApiTokens",
+                column: "Token");
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -370,6 +437,11 @@ namespace Remotely.Server.Migrations
                 column: "DeviceGroupID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Devices_DeviceName",
+                table: "Devices",
+                column: "DeviceName");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Devices_OrganizationID",
                 table: "Devices",
                 column: "OrganizationID");
@@ -385,6 +457,16 @@ namespace Remotely.Server.Migrations
                 column: "OrganizationID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PermissionLinks_DeviceGroupID",
+                table: "PermissionLinks",
+                column: "DeviceGroupID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PermissionLinks_UserID",
+                table: "PermissionLinks",
+                column: "UserID");
+
+            migrationBuilder.CreateIndex(
                 name: "EmailIndex",
                 table: "RemotelyUsers",
                 column: "NormalizedEmail");
@@ -396,9 +478,19 @@ namespace Remotely.Server.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_RemotelyUsers_DeviceGroupID",
+                table: "RemotelyUsers",
+                column: "DeviceGroupID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RemotelyUsers_OrganizationID",
                 table: "RemotelyUsers",
                 column: "OrganizationID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RemotelyUsers_UserName",
+                table: "RemotelyUsers",
+                column: "UserName");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SharedFiles_OrganizationID",
@@ -408,6 +500,9 @@ namespace Remotely.Server.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "ApiTokens");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -434,6 +529,9 @@ namespace Remotely.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "InviteLinks");
+
+            migrationBuilder.DropTable(
+                name: "PermissionLinks");
 
             migrationBuilder.DropTable(
                 name: "SharedFiles");

@@ -19,7 +19,7 @@ namespace Remotely.Shared.Models
         public ICollection<GenericCommandResult> CommandResults { get; set; } = new List<GenericCommandResult>();
         public DateTime TimeStamp { get; set; } = DateTime.Now;
         [JsonIgnore]
-        public virtual Organization Organization { get; set; }
+        public Organization Organization { get; set; }
         public string OrganizationID { get; set; }
     }
 }
