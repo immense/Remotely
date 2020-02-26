@@ -63,7 +63,7 @@ namespace Remotely.Server.Pages
                 Input.Tags = device?.Tags;
 
             }
-            var groups = DataService.GetDeviceGroupsForUserName(User.Identity.Name);
+            var groups = DataService.GetDeviceGroups(User.Identity.Name);
             DeviceGroups.AddRange(groups.Select(x => new SelectListItem(x.Name, x.ID)));
         }
         public class InputModel

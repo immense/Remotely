@@ -16,8 +16,6 @@ namespace Remotely.Shared.Models
 
         public List<Device> Devices { get; set; }
 
-        public List<RemotelyUser> Users { get; set; }
-
         [JsonIgnore]
         public Organization Organization { get; set; }
 

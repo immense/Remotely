@@ -133,6 +133,54 @@ namespace Remotely.Server.API
             return Ok(deviceGroupID);
         }
 
+        [HttpDelete("DeviceGroup/{groupID}/Users/")]
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
+        public async Task<IActionResult> DeviceGroupRemoveUser([FromBody]string userID, string groupID)
+        {
+            if (User.Identity.IsAuthenticated &&
+                !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+            {
+                return Unauthorized();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
+            if (!await DataService.RemoveUserFromDeviceGroup(orgID, groupID, userID))
+            {
+                return BadRequest("Failed to remove user from group.");
+            }
+            return Ok();
+        }
+
+        [HttpPost("DeviceGroup/{groupID}/Users/")]
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
+        public IActionResult DeviceGroupAddUser([FromBody]string userID, string groupID)
+        {
+            if (User.Identity.IsAuthenticated &&
+                !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+            {
+                return Unauthorized();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
+            var result = DataService.AddUserToDeviceGroup(orgID, groupID, userID, out var resultMessage);
+            if (!result)
+            {
+                return BadRequest(resultMessage);
+            }
+            
+            return Ok(resultMessage);
+        }
+
         [HttpGet("GenerateResetUrl/{userID}")]
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
         public async Task<IActionResult> GenerateResetUrl(string userID)
