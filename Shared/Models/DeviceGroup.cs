@@ -14,6 +14,7 @@ namespace Remotely.Shared.Models
         [Key]
         public string ID { get; set; } = Guid.NewGuid().ToString();
 
+        [JsonIgnore]
         public List<Device> Devices { get; set; }
 
         [JsonIgnore]
