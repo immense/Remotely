@@ -267,7 +267,7 @@ namespace Remotely.Server.Services
                 x.ID == deviceGroupId &&
                 x.OrganizationID == orgID);
 
-            deviceGroup.Devices.ForEach(x =>
+            deviceGroup.Devices?.ForEach(x =>
             {
                 x.DeviceGroup = null;
             });

@@ -19,7 +19,7 @@ namespace Remotely.Shared.Models
         public string Alias { get; set; }
         public double CpuUtilization { get; set; }
         public string CurrentUser { get; set; }
-        public virtual DeviceGroup DeviceGroup { get; set; }
+        public DeviceGroup DeviceGroup { get; set; }
         public string DeviceGroupID { get; set; }
         public string DeviceName { get; set; }
         public List<Drive> Drives { get; set; }
@@ -37,7 +37,7 @@ namespace Remotely.Shared.Models
 
         public DateTime LastOnline { get; set; }
         [JsonIgnore]
-        public virtual Organization Organization { get; set; }
+        public Organization Organization { get; set; }
         public string OrganizationID { get; set; }
         public Architecture OSArchitecture { get; set; }
 

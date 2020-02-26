@@ -13,6 +13,19 @@ document.getElementById("invitesHelpButton").addEventListener("click", (ev) => {
 document.getElementById("deviceGroupHelpButton").addEventListener("click", (ev) => {
     ShowModal("Device Groups", `Device groups can be used to organize and filter computers on the grid.`);
 });
+document.getElementById("addUsersToDeviceGroupButton").addEventListener("click", (ev) => {
+    var selectList = document.getElementById("deviceGroupList");
+    if (selectList.selectedOptions.length == 0) {
+        return;
+    }
+    if (selectList.selectedOptions.length > 1) {
+        ShowModal("Device Group Users", "You can only edit users for 1 device group at a time.");
+        return;
+    }
+    var groupID = selectList.selectedOptions[0].value;
+    var modalDiv = document.querySelector(`.modal[group='${groupID}']`);
+    $(modalDiv).modal("show");
+});
 document.getElementById("removeDeviceGroupButton").addEventListener("click", (ev) => {
     var selectList = document.getElementById("deviceGroupList");
     for (var i = 0; i < selectList.selectedOptions.length; i++) {
@@ -45,32 +58,19 @@ document.getElementById("deviceGroupInput").addEventListener("keypress", (e) => 
         document.getElementById("addDeviceGroupButton").click();
     }
 });
-document.getElementById("addDeviceGroupButton").addEventListener("click", () => {
-    var input = document.getElementById("deviceGroupInput");
-    if (input.checkValidity() && input.value.length > 0) {
-        var xhr = new XMLHttpRequest();
-        xhr.onload = () => {
-            if (xhr.status == 200) {
-                document.querySelectorAll(`.all-device-groups-list`).forEach((list) => {
-                    var newOption = new Option(input.value, xhr.responseText);
-                    list.options.add(newOption);
-                });
-                input.value = "";
-            }
-            else if (xhr.status == 400) {
-                ShowModal("Invalid Request", xhr.responseText);
-            }
-            else {
-                showError(xhr);
-            }
-        };
-        xhr.onerror = () => {
-            showError(xhr);
-        };
-        xhr.open("post", location.origin + "/api/OrganizationManagement/DeviceGroup");
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(JSON.stringify({ Name: input.value }));
+document.querySelectorAll(".remove-user-from-device-group-button").forEach((x) => {
+    var groupID = x.getAttribute("group");
+    var selectList = document.querySelector(`.modal[group='${groupID}'] select.device-group-user-list`);
+    for (var i = 0; i < selectList.selectedOptions.length; i++) {
+        // TODO: XHR to remove users and remove from list.
     }
+});
+document.querySelectorAll(".add-user-to-devicegroup-button").forEach((x) => {
+    var groupID = x.getAttribute("group");
+    var modal = document.querySelector(`.modal[group='${groupID}']`);
+    var selectList = modal.querySelector(`select.device-group-user-list`);
+    var userInput = modal.querySelector(`input.add-user-to-devicegroup-input`);
+    // TODO: XHR to add user to group and add to select list.
 });
 document.getElementById("organizationNameInput").addEventListener("input", (ev) => {
     var addon = ev.currentTarget.parentElement.querySelector(".fa");

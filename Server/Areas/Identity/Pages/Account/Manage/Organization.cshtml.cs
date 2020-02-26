@@ -24,7 +24,8 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             UserManager = userManager;
             EmailSender = emailSender;
         }
-        public List<SelectListItem> DeviceGroups { get; } = new List<SelectListItem>();
+        public List<SelectListItem> DeviceGroupSelectItems { get; } = new List<SelectListItem>();
+        public List<DeviceGroup> DeviceGroups { get; } = new List<DeviceGroup>();
 
         [BindProperty]
         public InputModel Input { get; set; } = new InputModel();
@@ -117,12 +118,41 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             return Page();
         }
 
+        public async Task<IActionResult> OnPostCreateDeviceGroupAsync()
+        {
+            var currentUser = await UserManager.FindByEmailAsync(User.Identity.Name);
+            if (!currentUser.IsAdministrator)
+            {
+                return RedirectToPage("Index");
+            }
+
+            if (ModelState.IsValid)
+            {
+                var deviceGroup = new DeviceGroup()
+                {
+                    Name = Input.DeviceGroupName
+                };
+
+                var result = DataService.AddDeviceGroup(currentUser.OrganizationID, deviceGroup, out _, out var errorMessage);
+                if (!result)
+                {
+                    PopulateViewModel();
+                    ModelState.AddModelError("AddDeviceGroup", errorMessage);
+                    return Page();
+                }
+                StatusMessage = "Device group created.";
+                return RedirectToPage();
+            }
+            PopulateViewModel();
+            return Page();
+        }
+
         private void PopulateViewModel()
         {
             OrganizationName = DataService.GetOrganizationName(User.Identity.Name);
 
-            var groups = DataService.GetDeviceGroupsForUserName(User.Identity.Name);
-            DeviceGroups.AddRange(groups.Select(x => new SelectListItem(x.Name, x.ID)));
+            DeviceGroups.AddRange(DataService.GetDeviceGroupsForUserName(User.Identity.Name));
+            DeviceGroupSelectItems.AddRange(DeviceGroups.Select(x => new SelectListItem(x.Name, x.ID)));
 
             Users = DataService.GetAllUsers(User.Identity.Name)
                 .Select(x => new OrganizationUser()
@@ -147,6 +177,9 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
             [EmailAddress]
             public string UserEmail { get; set; }
+
+            [StringLength(200)]
+            public string DeviceGroupName { get; set; }
         }
     }
 
