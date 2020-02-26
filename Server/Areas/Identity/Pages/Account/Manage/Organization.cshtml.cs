@@ -150,8 +150,8 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         private void PopulateViewModel()
         {
             OrganizationName = DataService.GetOrganizationName(User.Identity.Name);
-
-            DeviceGroups.AddRange(DataService.GetDeviceGroupsForUserName(User.Identity.Name));
+            var deviceGroups = DataService.GetDeviceGroups(User.Identity.Name).OrderBy(x => x.Name);
+            DeviceGroups.AddRange(deviceGroups);
             DeviceGroupSelectItems.AddRange(DeviceGroups.Select(x => new SelectListItem(x.Name, x.ID)));
 
             Users = DataService.GetAllUsers(User.Identity.Name)

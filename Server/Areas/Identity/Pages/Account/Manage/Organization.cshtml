@@ -194,11 +194,11 @@
                             If no users are added, everyone will have access.
                         </div>
                         <select multiple class="form-control device-group-user-list mb-1">
-                            @if (Model.DeviceGroups[i]?.Users?.Any() == true)
+                            @if (Model.DeviceGroups[i]?.PermissionLinks?.Any() == true)
                             {
-                                foreach (var user in Model.DeviceGroups[i].Users)
+                                foreach (var link in Model.DeviceGroups[i].PermissionLinks)
                                 {
-                                    <option value="@user.Id">@user.UserName</option>
+                                    <option value="@link.UserID">@link.User.UserName</option>
                                 }
                             }
                         </select>
@@ -209,7 +209,7 @@
                         </div>
 
                         <div class="input-group">
-                            <input placeholder="Add user to device group" class="form-control add-user-to-devicegroup-input" maxlength="200" />
+                            <input placeholder="Add user to device group" class="form-control add-user-to-devicegroup-input" group="@Model.DeviceGroups[i].ID" maxlength="200" />
                             <span class="input-group-btn">
                                 <button type="button" class="btn btn-secondary add-user-to-devicegroup-button" group="@Model.DeviceGroups[i].ID">
                                     Add
