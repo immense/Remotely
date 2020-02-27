@@ -34,7 +34,9 @@ namespace Remotely.Server.Data
 
         public DbSet<DeviceGroup> DeviceGroups { get; set; }
 
-		protected override void OnModelCreating(ModelBuilder builder)
+        public DbSet<UserDevicePermission> PermissionLinks { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
@@ -55,6 +57,8 @@ namespace Remotely.Server.Data
             builder.Entity<DeviceGroup>()
                 .HasMany(x => x.Devices)
                 .WithOne(x => x.DeviceGroup);
+            builder.Entity<DeviceGroup>()
+                .HasMany(x => x.PermissionLinks);
             builder.Entity<Organization>()
                 .HasMany(x => x.DeviceGroups)
                 .WithOne(x => x.Organization);
@@ -89,6 +93,9 @@ namespace Remotely.Server.Data
 			builder.Entity<RemotelyUser>()
                .HasOne(x => x.Organization)
                .WithMany(x => x.RemotelyUsers);
+
+            builder.Entity<RemotelyUser>()
+                .HasMany(x => x.PermissionLinks);
 
             builder.Entity<RemotelyUser>()
                 .Property(x => x.UserOptions)

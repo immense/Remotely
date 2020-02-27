@@ -17,7 +17,7 @@ namespace Remotely.Shared.Models
         public string OrganizationID { get; set; }
         public DateTime TimeStamp { get; set; } = DateTime.Now;
         [JsonIgnore]
-        public virtual Organization Organization { get; set; }
+        public Organization Organization { get; set; }
     }
     public enum EventType
     {

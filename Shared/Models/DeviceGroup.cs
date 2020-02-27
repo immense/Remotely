@@ -14,11 +14,14 @@ namespace Remotely.Shared.Models
         [Key]
         public string ID { get; set; } = Guid.NewGuid().ToString();
 
-        public virtual List<Device> Devices { get; set; }
+        [JsonIgnore]
+        public List<Device> Devices { get; set; }
 
         [JsonIgnore]
         public Organization Organization { get; set; }
 
         public string OrganizationID { get; set; }
+
+        public List<UserDevicePermission> PermissionLinks { get; set; }
     }
 }

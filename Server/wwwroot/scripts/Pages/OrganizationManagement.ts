@@ -18,17 +18,34 @@ document.getElementById("deviceGroupHelpButton").addEventListener("click", (ev) 
 });
 
 
+document.getElementById("addUsersToDeviceGroupButton").addEventListener("click", (ev) => {
+    var selectList = document.getElementById("deviceGroupList") as HTMLSelectElement;
+    if (selectList.selectedOptions.length == 0) {
+        return;
+    }
+    if (selectList.selectedOptions.length > 1) {
+        ShowModal("Device Group Users", "You can only edit users for 1 device group at a time.");
+        return;
+    }
+
+    var groupID = selectList.selectedOptions[0].value;
+    var modalDiv = document.querySelector(`.modal[group='${groupID}']`) as HTMLDivElement;
+    $(modalDiv).modal("show");
+});
+
 document.getElementById("removeDeviceGroupButton").addEventListener("click", (ev) => {
     var selectList = document.getElementById("deviceGroupList") as HTMLSelectElement;
+    var selectedValues = [];
     for (var i = 0; i < selectList.selectedOptions.length; i++) {
-        let selectedValue = selectList.selectedOptions[i].value;
+        selectedValues.push(selectList.selectedOptions[i].value);
+    }
+
+    selectedValues.forEach(x => {
         let xhr = new XMLHttpRequest();
         xhr.onload = (ev) => {
             console.log(ev.srcElement);
             if (xhr.status == 200) {
-                document.querySelectorAll(`.all-device-groups-list option[value='${selectedValue}']`).forEach(option => {
-                    option.remove();
-                })
+                document.querySelector(`#deviceGroupList option[value='${x}']`).remove();
             }
             else if (xhr.status == 400) {
                 ShowModal("Invalid Request", xhr.responseText);
@@ -42,27 +59,64 @@ document.getElementById("removeDeviceGroupButton").addEventListener("click", (ev
         }
         xhr.open("delete", location.origin + "/api/OrganizationManagement/DeviceGroup");
         xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(JSON.stringify(selectedValue));
-    }
-
+        xhr.send(JSON.stringify(x));
+    })
 });
 document.getElementById("deviceGroupInput").addEventListener("keypress", (e) => {
     if (e.key.toLowerCase() == "enter") {
         document.getElementById("addDeviceGroupButton").click();
     }
 })
-document.getElementById("addDeviceGroupButton").addEventListener("click", () => {
-    var input = document.getElementById("deviceGroupInput") as HTMLInputElement;
 
-    if (input.checkValidity() && input.value.length > 0) {
-        var xhr = new XMLHttpRequest();
-        xhr.onload = () => {
+document.querySelectorAll(".remove-user-from-device-group-button").forEach((x:HTMLElement) => {
+    x.addEventListener("click", clickEv => {
+        var groupID = (clickEv.currentTarget as HTMLButtonElement).getAttribute("group");
+        var selectList = document.querySelector(`.modal[group='${groupID}'] select.device-group-user-list`) as HTMLSelectElement;
+        var selectedValues = [];
+        for (var i = 0; i < selectList.selectedOptions.length; i++) {
+            selectedValues.push(selectList.selectedOptions[i].value);
+        }
+
+        selectedValues.forEach(user => {
+            let xhr = new XMLHttpRequest();
+            xhr.onload = (ev) => {
+                console.log(ev.srcElement);
+                if (xhr.status == 200) {
+                    selectList.querySelector(`option[value='${user}']`).remove()
+                }
+                else if (xhr.status == 400) {
+                    ShowModal("Invalid Request", xhr.responseText);
+                }
+                else {
+                    showError(xhr);
+                }
+            }
+            xhr.onerror = () => {
+                showError(xhr);
+            }
+            xhr.open("delete", location.origin + `/api/OrganizationManagement/DeviceGroup/${groupID}/Users/`);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(user));
+        })
+    })
+});
+
+document.querySelectorAll(".add-user-to-devicegroup-button").forEach((x: HTMLElement) => {
+    x.addEventListener("click", (clickEv) => {
+        var groupID = (clickEv.currentTarget as HTMLButtonElement).getAttribute("group");
+        var modal = document.querySelector(`.modal[group='${groupID}']`);
+        var selectList = modal.querySelector(`select.device-group-user-list`) as HTMLSelectElement;
+        var userInput = modal.querySelector(`input.add-user-to-devicegroup-input`) as HTMLInputElement;
+
+        let xhr = new XMLHttpRequest();
+        xhr.onload = (ev) => {
+            console.log(ev.srcElement);
             if (xhr.status == 200) {
-                document.querySelectorAll(`.all-device-groups-list`).forEach((list: HTMLSelectElement) => {
-                    var newOption = new Option(input.value, xhr.responseText);
-                    list.options.add(newOption);
-                })
-                input.value = "";
+                var option = document.createElement("option");
+                option.value = xhr.responseText;
+                option.text = userInput.value;
+                selectList.options.add(option)
+                userInput.value = "";
             }
             else if (xhr.status == 400) {
                 ShowModal("Invalid Request", xhr.responseText);
@@ -74,10 +128,20 @@ document.getElementById("addDeviceGroupButton").addEventListener("click", () => 
         xhr.onerror = () => {
             showError(xhr);
         }
-        xhr.open("post", location.origin + "/api/OrganizationManagement/DeviceGroup");
+        xhr.open("post", location.origin + `/api/OrganizationManagement/DeviceGroup/${groupID}/Users/`);
         xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(JSON.stringify({ Name: input.value }));
-    }
+        xhr.send(JSON.stringify(userInput.value));
+    });
+})
+
+
+document.querySelectorAll(".add-user-to-devicegroup-input").forEach(x => {
+    x.addEventListener("keypress", (ev: KeyboardEvent) => {
+        if (ev.key.toLowerCase() == "enter") {
+            var groupID = (ev.currentTarget as HTMLInputElement).getAttribute("group");
+            (document.querySelector(`.add-user-to-devicegroup-button[group='${groupID}']`) as HTMLButtonElement).click();
+        }
+    })
 })
 
 document.getElementById("organizationNameInput").addEventListener("input", (ev) => {

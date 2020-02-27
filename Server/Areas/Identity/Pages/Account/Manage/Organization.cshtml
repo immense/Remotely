@@ -45,24 +45,29 @@
     <div class="row">
         <div class="col-sm-8">
 
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             @* Device Groups *@
-            <div class="form-group">
-                <label class="mb-1">Device Groups</label>
-                <span id="deviceGroupHelpButton" class="fas fa-question-circle pointer"></span>
-                <select id="deviceGroupList" multiple asp-items="Model.DeviceGroups" class="form-control all-device-groups-list mb-1">
-                </select>
+            <form asp-page-handler="CreateDeviceGroup">
+                <div class="form-group">
+                    <label class="mb-1">Device Groups</label>
+                    <span id="deviceGroupHelpButton" class="fas fa-question-circle pointer"></span>
+                    <select id="deviceGroupList" multiple asp-items="Model.DeviceGroupSelectItems" class="form-control all-device-groups-list mb-1">
+                    </select>
 
-                <div class="text-right mb-3">
-                    <button id="removeDeviceGroupButton" type="button" class="btn btn-secondary">Remove</button>
-                </div>
+                    <div class="text-right mb-3">
+                        <button id="addUsersToDeviceGroupButton" type="button" class="btn btn-secondary">Users</button>
+                        <button id="removeDeviceGroupButton" type="button" class="btn btn-secondary">Remove</button>
+                    </div>
 
-                <div class="input-group">
-                    <input id="deviceGroupInput" placeholder="Add new device group" class="form-control" maxlength="200" />
-                    <span class="input-group-btn">
-                        <button id="addDeviceGroupButton" type="button" class="btn btn-secondary">Add</button>
-                    </span>
+                    <div class="input-group">
+                        <input id="deviceGroupInput" placeholder="Add new device group" asp-for="Input.DeviceGroupName" class="form-control" maxlength="200" />
+                        <span class="input-group-btn">
+                            <button id="addDeviceGroupButton" type="submit" class="btn btn-secondary">Add</button>
+                        </span>
+                    </div>
                 </div>
-            </div>
+            </form>
+
         </div>
     </div>
 
@@ -150,7 +155,7 @@
             <form method="post" asp-page-handler="SendInvite">
                 <div class="form-group">
                     <div class="input-group">
-                        <input asp-for="Input.UserEmail" placeholder="Username/email to invite" type="email" required  class="form-control" />
+                        <input asp-for="Input.UserEmail" placeholder="Username/email to invite" type="email" required class="form-control" />
                         <div class="input-group-append">
                             <span class="input-group-text pr-1">Admin?</span>
                         </div>
@@ -168,6 +173,58 @@
 
         </div>
     </div>
+
+
+    @* Device Permission Modals *@
+    @for (var i = 0; i < Model.DeviceGroups.Count; i++)
+    {
+        <div group="@Model.DeviceGroups[i].ID" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Users <span class="small text-muted">for @Model.DeviceGroups[i].Name</span></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-1">
+                            Use this form to give users access to this device group.  Once added, only the
+                            users in this list will have access.
+                        </div>
+                        <div class="mb-3">
+                            If no users are added, everyone will have access.
+                        </div>
+                        <select multiple class="form-control device-group-user-list mb-1">
+                            @if (Model.DeviceGroups[i]?.PermissionLinks?.Any() == true)
+                            {
+                                foreach (var link in Model.DeviceGroups[i].PermissionLinks)
+                                {
+                                    <option value="@link.UserID">@link.User.UserName</option>
+                                }
+                            }
+                        </select>
+                        <div class="text-right mb-3">
+                            <button type="button" class="btn btn-secondary remove-user-from-device-group-button" group="@Model.DeviceGroups[i].ID">
+                                Remove
+                            </button>
+                        </div>
+
+                        <div class="input-group">
+                            <input placeholder="Add user to device group" class="form-control add-user-to-devicegroup-input" group="@Model.DeviceGroups[i].ID" maxlength="200" />
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-secondary add-user-to-devicegroup-button" group="@Model.DeviceGroups[i].ID">
+                                    Add
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
 
     <script type="module" src="~/scripts/Pages/OrganizationManagement.js">
     </script>
