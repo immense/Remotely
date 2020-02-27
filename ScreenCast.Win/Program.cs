@@ -94,8 +94,9 @@ namespace Remotely.ScreenCast.Win
                         return new BitBltCapture();
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Logger.Write(ex);
                     return new BitBltCapture();
                 }
             });
