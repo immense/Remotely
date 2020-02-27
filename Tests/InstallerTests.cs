@@ -3,7 +3,7 @@ using Remotely.Agent.Installer.Win.Services;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace Tests
+namespace Remotely.Tests
 {
     [TestClass]
     public class InstallerTests
