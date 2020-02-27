@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Remotely.Server.Areas.Identity.Pages.Account.Manage;
 using Remotely.Server.Data;
 using Remotely.Server.Services;
@@ -60,6 +61,8 @@ namespace Remotely.Tests
             ID = "Device2"
         };
 
+        public static string OrganizationID { get; private set; }
+
         public static void ClearData()
         {
             var dbContext = IoCActivator.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -105,6 +108,8 @@ namespace Remotely.Tests
             var deviceGroups = dataService.GetDeviceGroups(Admin1.UserName);
             Group1 = deviceGroups.First(x => x.Name == Group1.Name);
             Group2 = deviceGroups.First(x => x.Name == Group2.Name);
+
+            OrganizationID = Admin1.OrganizationID;
         }
     }
 }

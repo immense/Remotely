@@ -47,7 +47,7 @@ namespace Remotely.Tests
             Assert.IsNotNull(DataService.GetUserByName(TestData.User2.UserName));
             Assert.AreEqual(1, DataService.GetOrganizationCount());
 
-            var devices = DataService.GetAllDevices(TestData.Admin1.OrganizationID);
+            var devices = DataService.GetAllDevices(TestData.OrganizationID);
 
             Assert.AreEqual(2, devices.Count());
             Assert.IsTrue(devices.Any(x => x.ID == "Device1"));
@@ -65,7 +65,7 @@ namespace Remotely.Tests
                 TestData.Device2.OrganizationID
             };
 
-            Assert.IsTrue(orgIDs.All(x => x == TestData.Admin1.OrganizationID));
+            Assert.IsTrue(orgIDs.All(x => x == TestData.OrganizationID));
         }
 
 
@@ -74,7 +74,7 @@ namespace Remotely.Tests
         public void UpdateOrganizationName()
         {
             Assert.IsTrue(string.IsNullOrWhiteSpace(TestData.Admin1.Organization.OrganizationName));
-            DataService.UpdateOrganizationName(TestData.Admin1.OrganizationID, "Test Org");
+            DataService.UpdateOrganizationName(TestData.OrganizationID, "Test Org");
             Assert.AreEqual(TestData.Admin1.Organization.OrganizationName, "Test Org");
         }
 
@@ -91,12 +91,41 @@ namespace Remotely.Tests
             var groupID = DataService.GetDeviceGroups(TestData.Admin1.UserName).First().ID;
 
             DataService.UpdateDevice(TestData.Device1.ID, "", "", groupID);
-            DataService.AddUserToDeviceGroup(TestData.Admin1.OrganizationID, groupID, TestData.User1.UserName, out _);
+            DataService.AddUserToDeviceGroup(TestData.OrganizationID, groupID, TestData.User1.UserName, out _);
 
             Assert.IsTrue(DataService.GetDevicesForUser(TestData.Admin1.UserName).Count() == 2);
             Assert.IsTrue(DataService.GetDevicesForUser(TestData.Admin2.UserName).Count() == 2);
             Assert.IsTrue(DataService.GetDevicesForUser(TestData.User1.UserName).Count() == 2);
             Assert.IsTrue(DataService.GetDevicesForUser(TestData.User2.UserName).Count() == 1);
+
+            Assert.IsTrue(DataService.DoesUserHaveAccessToDevice(TestData.Device1.ID, TestData.Admin1));
+            Assert.IsTrue(DataService.DoesUserHaveAccessToDevice(TestData.Device1.ID, TestData.Admin2));
+            Assert.IsTrue(DataService.DoesUserHaveAccessToDevice(TestData.Device1.ID, TestData.User1));
+            Assert.IsFalse(DataService.DoesUserHaveAccessToDevice(TestData.Device1.ID, TestData.User2));
+
+            var allDevices = DataService.GetAllDevices(TestData.OrganizationID).Select(x => x.ID).ToArray();
+
+            Assert.AreEqual(2, DataService.FilterDeviceIDsByUserPermission(allDevices, TestData.Admin1).Count());
+            Assert.AreEqual(2, DataService.FilterDeviceIDsByUserPermission(allDevices, TestData.Admin2).Count());
+            Assert.AreEqual(2, DataService.FilterDeviceIDsByUserPermission(allDevices, TestData.User1).Count());
+            Assert.AreEqual(1, DataService.FilterDeviceIDsByUserPermission(allDevices, TestData.User2).Count());
+        }
+
+        [TestMethod]
+        [DoNotParallelize]
+        public async Task UpdateDevice()
+        {
+            var newDevice = await DeviceInformation.Create("Device1", TestData.OrganizationID);
+            Assert.IsTrue(DataService.AddOrUpdateDevice(newDevice, out _));
+            Assert.AreEqual(TestData.Device1.OrganizationID, TestData.OrganizationID);
+            Assert.AreEqual(TestData.Device1.DeviceName, Environment.MachineName);
+            Assert.IsTrue(TestData.Device1.CpuUtilization > 0);
+            Assert.IsTrue(TestData.Device1.TotalMemory > 0);
+            Assert.IsTrue(TestData.Device1.TotalStorage > 0);
+            Assert.IsTrue(TestData.Device1.UsedMemory > 0);
+            Assert.IsTrue(TestData.Device1.UsedStorage > 0);
+            Assert.IsTrue(TestData.Device1.IsOnline);
+            Assert.AreEqual(Environment.Is64BitOperatingSystem, TestData.Device1.Is64Bit);
         }
     }
 }
