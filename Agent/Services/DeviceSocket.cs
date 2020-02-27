@@ -60,7 +60,7 @@ namespace Remotely.Agent.Services
 
             await HubConnection.StartAsync();
 
-            var device = await DeviceInformation.Create(ConnectionInfo);
+            var device = await DeviceInformation.Create(ConnectionInfo.DeviceID, ConnectionInfo.OrganizationID);
 
             var result = await HubConnection.InvokeAsync<bool>("DeviceCameOnline", device);
 
@@ -98,7 +98,7 @@ namespace Remotely.Agent.Services
 
         public async Task SendHeartbeat()
         {
-            var currentInfo = await DeviceInformation.Create(ConnectionInfo);
+            var currentInfo = await DeviceInformation.Create(ConnectionInfo.DeviceID, ConnectionInfo.OrganizationID);
             await HubConnection.InvokeAsync("DeviceHeartbeat", currentInfo);
         }
 

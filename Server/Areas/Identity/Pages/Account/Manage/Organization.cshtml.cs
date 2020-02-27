@@ -57,6 +57,40 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         public async Task<IActionResult> OnPostSendInviteAsync()
         {
             var currentUser = await UserManager.FindByEmailAsync(User.Identity.Name);
+            return await SendInvite(currentUser);
+        }
+
+        public async Task<IActionResult> OnPostCreateDeviceGroupAsync()
+        {
+            var currentUser = await UserManager.FindByEmailAsync(User.Identity.Name);
+            if (!currentUser.IsAdministrator)
+            {
+                return RedirectToPage("Index");
+            }
+
+            if (ModelState.IsValid)
+            {
+                var deviceGroup = new DeviceGroup()
+                {
+                    Name = Input.DeviceGroupName
+                };
+
+                var result = DataService.AddDeviceGroup(currentUser.OrganizationID, deviceGroup, out _, out var errorMessage);
+                if (!result)
+                {
+                    PopulateViewModel();
+                    ModelState.AddModelError("AddDeviceGroup", errorMessage);
+                    return Page();
+                }
+                StatusMessage = "Device group created.";
+                return RedirectToPage();
+            }
+            PopulateViewModel();
+            return Page();
+        }
+
+        public async Task<IActionResult> SendInvite(RemotelyUser currentUser)
+        {
             if (!currentUser.IsAdministrator)
             {
                 return RedirectToPage("Index");
@@ -66,15 +100,22 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             {
                 if (!DataService.DoesUserExist(Input.UserEmail))
                 {
-                    var user = new RemotelyUser { UserName = Input.UserEmail, Email = Input.UserEmail };
+                    var user = new RemotelyUser
+                    { 
+                        UserName = Input.UserEmail,
+                        Email = Input.UserEmail, 
+                        OrganizationID = currentUser.OrganizationID,
+                        Organization = currentUser.Organization,
+                        IsAdministrator = Input.IsAdmin
+                    };
                     var result = await UserManager.CreateAsync(user);
                     if (result.Succeeded)
                     {
-                        if (!DataService.SetNewUserProperties(user.UserName, currentUser.OrganizationID, Input.IsAdmin))
-                        {
-                            ModelState.AddModelError("OrgID", "Failed to set organization ID.");
-                            return Page();
-                        }
+                        //if (!DataService.SetNewUserProperties(user.UserName, currentUser.OrganizationID, Input.IsAdmin))
+                        //{
+                        //    ModelState.AddModelError("OrgID", "Failed to set organization ID.");
+                        //    return Page();
+                        //}
 
                         user = await UserManager.FindByEmailAsync(Input.UserEmail);
 
@@ -115,35 +156,6 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }
-            return Page();
-        }
-
-        public async Task<IActionResult> OnPostCreateDeviceGroupAsync()
-        {
-            var currentUser = await UserManager.FindByEmailAsync(User.Identity.Name);
-            if (!currentUser.IsAdministrator)
-            {
-                return RedirectToPage("Index");
-            }
-
-            if (ModelState.IsValid)
-            {
-                var deviceGroup = new DeviceGroup()
-                {
-                    Name = Input.DeviceGroupName
-                };
-
-                var result = DataService.AddDeviceGroup(currentUser.OrganizationID, deviceGroup, out _, out var errorMessage);
-                if (!result)
-                {
-                    PopulateViewModel();
-                    ModelState.AddModelError("AddDeviceGroup", errorMessage);
-                    return Page();
-                }
-                StatusMessage = "Device group created.";
-                return RedirectToPage();
-            }
-            PopulateViewModel();
             return Page();
         }
 
