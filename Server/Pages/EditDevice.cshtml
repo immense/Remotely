@@ -14,7 +14,10 @@ else
     <div class="col-sm-8 offset-sm-2">
         @if (Model.SaveSucessful)
         {
-            <h5 class="text-success">Saved successfully.</h5>
+            <div class="alert alert-success alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                Saved successfully.
+            </div>
         }
         <h3>Edit Device</h3>
         <form method="post">
