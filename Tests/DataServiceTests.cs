@@ -3,14 +3,17 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Remotely.Server.Data;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
+using Remotely.Shared.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,47 +22,81 @@ namespace Remotely.Tests
     [TestClass]
     public class DataServiceTests
     {
-        [ClassInitialize]
-        public static void ClassInit(TestContext context)
-        {
-            IoCActivator.Activate();
-        }
-
-
         private DataService DataService { get; set; }
 
-        private DataService GetDataService()
+        [TestInitialize]
+        public async Task TestInit()
         {
-            //var contextOptions = new DbContextOptions<ApplicationDbContext>();
-            //var appDbContext = new ApplicationDbContext(contextOptions);
-            //var appConfig = new ApplicationConfig(new ConfigurationRoot());
-            //var dataService = new DataService(appDbContext);
+            await TestData.PopulateTestData();
+            DataService = IoCActivator.ServiceProvider.GetRequiredService<DataService>();
+        }
 
-            //return dataService;
-            return null;
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            TestData.ClearData();
         }
 
         [TestMethod]
-        public async Task Test()
+        [DoNotParallelize]
+        public void VerifyInitialData()
         {
-            var dataService = IoCActivator.ServiceProvider.GetRequiredService<DataService>();
-            var userManager = IoCActivator.ServiceProvider.GetRequiredService <UserManager<RemotelyUser>>();
+            Assert.IsNotNull(DataService.GetUserByName(TestData.Admin1.UserName));
+            Assert.IsNotNull(DataService.GetUserByName(TestData.Admin2.UserName));
+            Assert.IsNotNull(DataService.GetUserByName(TestData.User1.UserName));
+            Assert.IsNotNull(DataService.GetUserByName(TestData.User2.UserName));
+            Assert.AreEqual(1, DataService.GetOrganizationCount());
 
-            Assert.IsNull(dataService.GetUserByName(TestData.TestAdmin1.UserName));
-            Assert.AreEqual(0, dataService.GetOrganizationCount());
+            var devices = DataService.GetAllDevices(TestData.Admin1.OrganizationID);
 
-            await userManager.CreateAsync(TestData.TestAdmin1);
+            Assert.AreEqual(2, devices.Count());
+            Assert.IsTrue(devices.Any(x => x.ID == "Device1"));
+            Assert.IsTrue(devices.Any(x => x.ID == "Device2"));
 
-            Assert.IsNotNull(dataService.GetUserByName(TestData.TestAdmin1.UserName));
-            Assert.AreEqual(1, dataService.GetOrganizationCount());
+            var orgIDs = new string[]
+            {
+                TestData.Group1.OrganizationID,
+                TestData.Group2.OrganizationID,
+                TestData.Admin1.OrganizationID,
+                TestData.Admin2.OrganizationID,
+                TestData.User1.OrganizationID,
+                TestData.User2.OrganizationID,
+                TestData.Device1.OrganizationID,
+                TestData.Device2.OrganizationID
+            };
+
+            Assert.IsTrue(orgIDs.All(x => x == TestData.Admin1.OrganizationID));
         }
+
 
         [TestMethod]
-        public void Test2()
+        [DoNotParallelize]
+        public void UpdateOrganizationName()
         {
-            var test = IoCActivator.ServiceProvider;
+            Assert.IsTrue(string.IsNullOrWhiteSpace(TestData.Admin1.Organization.OrganizationName));
+            DataService.UpdateOrganizationName(TestData.Admin1.OrganizationID, "Test Org");
+            Assert.AreEqual(TestData.Admin1.Organization.OrganizationName, "Test Org");
         }
 
+
+        [TestMethod]
+        [DoNotParallelize]
+        public void DeviceGroupPermissions()
+        {
+            Assert.IsTrue(DataService.GetDevicesForUser(TestData.Admin1.UserName).Count() == 2);
+            Assert.IsTrue(DataService.GetDevicesForUser(TestData.Admin2.UserName).Count() == 2);
+            Assert.IsTrue(DataService.GetDevicesForUser(TestData.User1.UserName).Count() == 2);
+            Assert.IsTrue(DataService.GetDevicesForUser(TestData.User2.UserName).Count() == 2);
+
+            var groupID = DataService.GetDeviceGroups(TestData.Admin1.UserName).First().ID;
+
+            DataService.UpdateDevice(TestData.Device1.ID, "", "", groupID);
+            DataService.AddUserToDeviceGroup(TestData.Admin1.OrganizationID, groupID, TestData.User1.UserName, out _);
+
+            Assert.IsTrue(DataService.GetDevicesForUser(TestData.Admin1.UserName).Count() == 2);
+            Assert.IsTrue(DataService.GetDevicesForUser(TestData.Admin2.UserName).Count() == 2);
+            Assert.IsTrue(DataService.GetDevicesForUser(TestData.User1.UserName).Count() == 2);
+            Assert.IsTrue(DataService.GetDevicesForUser(TestData.User2.UserName).Count() == 1);
+        }
     }
-
 }

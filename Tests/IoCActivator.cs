@@ -11,9 +11,13 @@ using Microsoft.EntityFrameworkCore.InMemory.Internal;
 using Microsoft.EntityFrameworkCore;
 using Remotely.Shared.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace Remotely.Tests
 {
+    [TestClass]
     public class IoCActivator
     {
         public static IServiceProvider ServiceProvider { get; set; }
@@ -30,6 +34,13 @@ namespace Remotely.Tests
                 builder.Build();
             }
         }
+
+
+        [AssemblyInitialize]
+        public static void AssemblyInit(TestContext context)
+        {
+            Activate();
+        }
     }
 
     public class Startup
@@ -44,14 +55,17 @@ namespace Remotely.Tests
              .AddDefaultUI()
              .AddDefaultTokenProviders();
 
-            services.AddScoped<DataService>();
-            services.AddScoped<ApplicationConfig>();
+            services.AddTransient<DataService>();
+            services.AddTransient<ApplicationConfig>();
+            services.AddTransient<IEmailSender, EmailSender>();
             IoCActivator.ServiceProvider = services.BuildServiceProvider();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext context, DataService dataService)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
 
         }
     }
+
+
 }

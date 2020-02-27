@@ -14,7 +14,7 @@ namespace Remotely.Shared.Services
 {
     public class DeviceInformation
     {
-        public static async Task<Device> Create(ConnectionInfo connectionInfo)
+        public static async Task<Device> Create(string deviceID, string orgID)
         {
             OSPlatform platform = OSUtils.GetPlatform();
 
@@ -24,7 +24,7 @@ namespace Remotely.Shared.Services
 
             var device = new Device()
             {
-                ID = connectionInfo.DeviceID,
+                ID = deviceID,
                 DeviceName = Environment.MachineName,
                 Platform = platform.ToString(),
                 ProcessorCount = Environment.ProcessorCount,
@@ -42,7 +42,7 @@ namespace Remotely.Shared.Services
                     TotalSize = x.TotalSize > 0 ? Math.Round((double)(x.TotalSize / 1024 / 1024 / 1024), 2) : 0,
                     VolumeLabel = x.VolumeLabel
                 }).ToList(),
-                OrganizationID = connectionInfo.OrganizationID,
+                OrganizationID = orgID,
                 CurrentUser = DeviceInformation.GetCurrentUser()
             };
 
@@ -53,11 +53,11 @@ namespace Remotely.Shared.Services
             }
 
 
-            var (usedMemory, totalMemory) = DeviceInformation.GetMemoryInGB();
+            var (usedMemory, totalMemory) = GetMemoryInGB();
             device.UsedMemory = usedMemory;
             device.TotalMemory = totalMemory;
 
-            device.CpuUtilization = await DeviceInformation.GetCpuUtilization();
+            device.CpuUtilization = await GetCpuUtilization();
 
             if (File.Exists("Remotely_Agent.dll"))
             {

@@ -8,6 +8,8 @@
     <RootNamespace>Remotely.Tests</RootNamespace>
 
     <AssemblyName>Remotely_Tests</AssemblyName>
+
+    <Platforms>AnyCPU;x64;x86</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
