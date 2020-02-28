@@ -13,8 +13,7 @@
   "exclude": [
     "node_modules",
     "obj",
-    "bin",
-    "wwwroot/lib/@types/"
+    "bin"
   ],
   "compileOnSave": true
 }
