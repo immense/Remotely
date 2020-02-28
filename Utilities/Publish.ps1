@@ -11,6 +11,17 @@
    Or run "powershell -f Publish.ps1 -rid win10-x64 -outdir path\to\dir -hostname https://mysite.mydomain.com
 #>
 
+param (
+	[string]$OutDir = "",
+    # RIDs are described here: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+	[string]$RID = "",
+	[string]$Hostname = "",
+	[string]$CertificatePath = "",
+    [string]$CertificatePassword = ""
+)
+
+
+
 $ErrorActionPreference = "Stop"
 $Year = (Get-Date).Year.ToString()
 $Month = (Get-Date).Month.ToString().PadLeft(2, "0")
@@ -18,18 +29,11 @@ $Day = (Get-Date).Day.ToString().PadLeft(2, "0")
 $Hour = (Get-Date).Hour.ToString().PadLeft(2, "0")
 $Minute = (Get-Date).Minute.ToString().PadLeft(2, "0")
 $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
-$OutDir = ""
-# RIDs are described here: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
-$RID = ""
-$Hostname = ""
 $MSBuildPath = (Get-ChildItem -Path "${env:ProgramFiles(x86)}\Microsoft Visual Studio\" -Recurse -Filter "MSBuild.exe" -File)[0].FullName
 $Root = (Get-Item -Path $PSScriptRoot).Parent.FullName
-$CertificatePath = ""
-$CertificatePassword = ""
 $SignAssemblies = $false
 
 Set-Location -Path $Root
-
 
 #region Functions
 
@@ -57,27 +61,6 @@ if ([string]::IsNullOrWhiteSpace($MSBuildPath) -or !(Test-Path -Path $MSBuildPat
     Write-Host
     pause
     return
-}
-
-
-for ($i = 0; $i -lt $args.Count; $i++)
-{ 
-    $arg = $args[$i].ToString().ToLower()
-    if ($arg.Contains("outdir")){
-        $OutDir = $args[$i+1]
-    }
-    elseif ($arg.Contains("rid")){
-        $RID = $args[$i+1]
-    }
-    elseif ($arg.Contains("hostname")){
-        $Hostname = $args[$i+1]
-    }
-    elseif ($arg.Contains("certificate")){
-        $CertificatePath = $args[$i+1]
-    }
-     elseif ($arg.Contains("certpassword")){
-        $CertificatePassword = $args[$i+1]
-    }
 }
 
 if ($CertificatePath.Length -gt 0 -and 
