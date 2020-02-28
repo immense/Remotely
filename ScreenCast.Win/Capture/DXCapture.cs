@@ -40,7 +40,7 @@ namespace Remotely.ScreenCast.Win.Capture
     public class DXCapture : ICapturer
     {
         private Adapter1 adapter;
-        private SharpDX.Direct3D11.Device device;
+        private SharpDX.Direct3D11.Device1 device;
         private OutputDuplication duplicatedOutput;
         private Factory1 factory;
         private int height;
@@ -192,7 +192,7 @@ namespace Remotely.ScreenCast.Win.Capture
             //Get first adapter
             adapter = factory.Adapters1.FirstOrDefault(x => x.Outputs.Length > 0);
             //Get device from adapter
-            device = new SharpDX.Direct3D11.Device(adapter);
+            device = new SharpDX.Direct3D11.Device1(adapter.NativePointer);
             //Get front buffer of the adapter
             if (adapter.GetOutputCount() < SelectedScreen + 1)
             {
