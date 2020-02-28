@@ -2,15 +2,24 @@
 .SYNOPSIS
    Configures IIS and installs the Remotely server.
 .COPYRIGHT
-   Copyright ©  2019 Translucency Software.  All rights reserved.
+   Copyright ©  2020 Translucency Software.  All rights reserved.
 #>
+param (
+    [Parameter(Mandatory=$True)]
+	[string]$AppPoolName,
+    [Parameter(Mandatory=$True)]
+	[string]$SiteName,
+    [Parameter(Mandatory=$True)]
+    [string]$SitePath,
+    [Parameter(Mandatory=$True)]
+	[string]$BindingHostname
+)
+
 $ErrorActionPreference = "Stop"
 $Host.UI.RawUI.WindowTitle = "Remotely Setup"
 Clear-Host
 
 #region Variables
-$InstallPath = ""
-$Website = $null
 $ServerCmdlets = $false
 $FirewallSet = $false
 $CopyErrors = $false
@@ -88,6 +97,13 @@ if ((New-Object Security.Principal.WindowsPrincipal $User).IsInRole([Security.Pr
     Read-Host "Press Enter to exit"
     return
 }
+### Check PS version. ###
+if ((Get-Host).Version.Major -lt 5) {
+    Wrap-Host
+    Wrap-Host "Error: PowerShell 5 is required.  Please install it via the Windows Management Framework 5.1 download from Microsoft." -ForegroundColor Red
+    Read-Host "Press Enter to exit"
+    return
+}
 ### Check Script Root ###
 if (!$PSScriptRoot) {
     Wrap-Host
@@ -111,6 +127,16 @@ if ((Get-Command -Name "Add-WindowsFeature" -ErrorAction Ignore) -eq $null) {
 else {
     $ServerCmdlets = $true
 }
+### Check if PostgreSQL is installed. ###
+if ((Get-Package -Name "*PostgreSQL*" -ErrorAction SilentlyContinue) -eq $null){
+    Wrap-Host
+    Wrap-Host "ERROR: PostgreSQL was not found.  Please install it from https://postgresql.org." -ForegroundColor Red
+    Wrap-Host
+    pause
+    return
+}
+
+
 #endregion
 
 ### Hosting Requirements ###
@@ -219,19 +245,18 @@ else
 }
 
 Clear-Host
-$Sites = Get-Website
-### Site Selection ###
-while ($Website -eq $null) {
-    Wrap-Host
-    $Sites
-    Wrap-Host
-    Wrap-Host "Enter the ID of the website where Remotely will be installed." -ForegroundColor Green
-    Wrap-Host
-    $ID = Read-Host "Website ID"
+### Create IIS Site ##
+[System.IO.Directory]::CreateDirectory($FilePath)
 
-    $Website = Get-Website | Where-Object {$_.ID -like $ID}
+if ((Get-IISAppPool -Name $AppPoolName) -eq $null) {
+    New-WebAppPool -Name $AppPoolName
 }
-$InstallPath = $Website.physicalPath.Replace("%SystemDrive%", $env:SystemDrive)
+
+if ((Get-Website -Name $SiteName) -eq $null) {
+    New-Website -Name $SiteName -PhysicalPath $SitePath -HostHeader $BindingHostname
+    New-WebBinding -Name $SiteName -Protocol "https" -Port 443 -HostHeader $BindingHostname
+}
+
 
 Wrap-Host
 Wrap-Host "This will DELETE ALL FILES in the selected website and install Remotely Server.  If this is not your intention, close this window now and create a new website where Remotely Server will be installed." -ForegroundColor Red
@@ -242,7 +267,7 @@ pause
 Clear-Host
 Wrap-Host
 Wrap-Host "Stopping website..." -ForegroundColor Green
-Stop-Website -Name $($Website.name)
+Stop-Website -Name $SiteName
 
 
 ### File Cleanup ###
@@ -252,7 +277,7 @@ $Success = $false
 
 while ($Success -eq $false) {
     try {
-        Get-ChildItem -Path "$InstallPath" -Recurse | Remove-Item -Force -Recurse
+        Get-ChildItem -Path "$SitePath" -Recurse | Remove-Item -Force -Recurse
         $Success = $true
     }
     catch {
@@ -272,7 +297,7 @@ try {
     Invoke-WebRequest -Uri "https://github.com/Jay-Rad/Remotely/releases/latest/download/Remotely_Server_Win-x64.zip" -OutFile "$env:TEMP\Remotely_Server_Win-x64.zip"
     Wrap-Host "Extracting server files..."
 	[System.Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem") | Out-Null
-	[System.IO.Compression.ZipFile]::ExtractToDirectory("$env:TEMP\Remotely_Server_Win-x64.zip", $InstallPath)
+	[System.IO.Compression.ZipFile]::ExtractToDirectory("$env:TEMP\Remotely_Server_Win-x64.zip", $SitePath)
 }
 catch {
     Wrap-Host
@@ -284,12 +309,12 @@ catch {
 ### Set ACL on website folders and files ###
 Wrap-Host
 Wrap-Host "Setting ACLs..." -ForegroundColor Green
-$Acl = Get-Acl -Path $InstallPath
+$Acl = Get-Acl -Path $SitePath
 $Rule = New-Object System.Security.AccessControl.FileSystemAccessRule("BUILTIN\IIS_IUSRS", "Modify", "ContainerInherit,ObjectInherit", "None", "Allow")
 $Acl.AddAccessRule($Rule)
 $Acl.SetOwner((New-Object System.Security.Principal.NTAccount("Administrators")))
-Set-Acl -Path $InstallPath -AclObject $Acl
-Get-ChildItem -Path $InstallPath -Recurse | ForEach-Object {
+Set-Acl -Path $SitePath -AclObject $Acl
+Get-ChildItem -Path $SitePath -Recurse | ForEach-Object {
     Set-Acl -Path $_.FullName -AclObject $Acl   
 }
 
@@ -315,7 +340,7 @@ catch
 }
 
 # Start website.
-Start-Website -Name $($Website.name)
+Start-Website -Name $SiteName
 
 Wrap-Host
 Wrap-Host
