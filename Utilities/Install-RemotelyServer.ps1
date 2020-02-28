@@ -12,7 +12,9 @@ param (
     [Parameter(Mandatory=$True)]
     [string]$SitePath,
     [Parameter(Mandatory=$True)]
-	[string]$BindingHostname
+	[string]$BindingHostname,
+
+    [switch]$Quiet
 )
 
 $ErrorActionPreference = "Stop"
@@ -31,6 +33,11 @@ $Root = (Get-Item -Path $PSScriptRoot).Parent.FullName
 #endregion
 
 #region Functions
+function Do-Pause {
+    if (!$Quiet){
+        pause
+    }
+}
 function Wrap-Host
 {
     [CmdletBinding()]
@@ -94,21 +101,21 @@ $User = [Security.Principal.WindowsIdentity]::GetCurrent()
 if ((New-Object Security.Principal.WindowsPrincipal $User).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator) -eq $false) {
     Wrap-Host
     Wrap-Host "Error: This installation needs to be run from an elevated process (Run as Administrator)." -ForegroundColor Red
-    Read-Host "Press Enter to exit"
+    Do-Pause
     return
 }
 ### Check PS version. ###
 if ((Get-Host).Version.Major -lt 5) {
     Wrap-Host
     Wrap-Host "Error: PowerShell 5 is required.  Please install it via the Windows Management Framework 5.1 download from Microsoft." -ForegroundColor Red
-    Read-Host "Press Enter to exit"
+    Do-Pause
     return
 }
 ### Check Script Root ###
 if (!$PSScriptRoot) {
     Wrap-Host
     Wrap-Host "Error: Unable to determine working directory.  Please make sure you're running the full script and not just a section." -ForegroundColor Red
-    Read-Host "Press Enter to exit"
+    Do-Pause
     return
 }
 
@@ -117,7 +124,7 @@ $OS = Get-WmiObject -Class Win32_OperatingSystem
 if ($OS.Name.ToLower().Contains("home") -or $OS.Caption.ToLower().Contains("home")) {
     Wrap-Host
     Wrap-Host "Error: Windows Home version does not have the necessary features to run Remotely." -ForegroundColor Red
-    Read-Host "Press Enter to exit"
+    Do-Pause
     return
 }
 ### Test if Windows Feature cmdlets are available. ###
@@ -151,7 +158,7 @@ Wrap-Host "If you have not already done so, please download and install it from 
 Wrap-Host
 Wrap-Host "https://dotnet.microsoft.com/download"
 Wrap-Host
-Read-Host "Press Enter to continue"
+Do-Pause
 Clear-Host
 
 
@@ -168,7 +175,7 @@ Wrap-Host "This setup script will install Remotely on this machine.  Please make
 Wrap-Host
 Wrap-Host "If you encounter any problems or have any questions, please contact Translucency_Software@outlook.com." -ForegroundColor Green
 Wrap-Host
-Read-Host "Press Enter to begin installation"
+Do-Pause
 Clear-Host
 
 
@@ -261,7 +268,7 @@ if ((Get-Website -Name $SiteName) -eq $null) {
 Wrap-Host
 Wrap-Host "This will DELETE ALL FILES in the selected website and install Remotely Server.  If this is not your intention, close this window now and create a new website where Remotely Server will be installed." -ForegroundColor Red
 Wrap-Host
-pause
+Do-Pause
 
 # Stop site.
 Clear-Host
@@ -302,7 +309,7 @@ try {
 catch {
     Wrap-Host
     Wrap-Host "Error: Unable to download or extract client files." -ForegroundColor Red
-    Read-Host "Press Enter to exit"
+    Do-Pause
     return
 }
 
@@ -367,4 +374,4 @@ if ($CopyErrors)
     Wrap-Host "There were errors copying some of the server files.  Please try deleting all files in the website directory and trying again." -ForegroundColor Red
 }
 Wrap-Host
-Read-Host "Press Enter to exit..."
+Do-Pause
