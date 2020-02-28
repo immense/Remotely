@@ -130,6 +130,15 @@
 
 
   <ItemGroup>
+    <TypeScriptCompile Include="wwwroot\lib\%40types\bootstrap\index.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\dist\jquery.slim.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\index.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\JQuery.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\JQueryStatic.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\legacy.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\misc.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\%40types\sizzle\index.d.ts" />
+    <TypeScriptCompile Include="wwwroot\lib\%40types\popper\index.d.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Chat.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\CommandCompletion.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Commands\BashCommands.ts" />
