@@ -353,14 +353,17 @@ namespace Remotely.Agent.Installer.Win.Services
             if (serv == null)
             {
                 var command = new string[] { "/assemblypath=" + Path.Combine(InstallPath, "Remotely_Agent.exe") };
-                var serviceInstaller = new ServiceInstaller();
                 var context = new InstallContext("", command);
-                serviceInstaller.Context = context;
-                serviceInstaller.DisplayName = "Remotely Service";
-                serviceInstaller.Description = "Background service that maintains a connection to the Remotely server.  The service is used for remote support and maintenance by this computer's administrators.";
-                serviceInstaller.ServiceName = "Remotely_Service";
-                serviceInstaller.StartType = ServiceStartMode.Automatic;
-                serviceInstaller.Parent = new ServiceProcessInstaller();
+                var serviceInstaller = new ServiceInstaller()
+                {
+                    Context = context,
+                    DisplayName = "Remotely Service",
+                    Description = "Background service that maintains a connection to the Remotely server.  The service is used for remote support and maintenance by this computer's administrators.",
+                    ServiceName = "Remotely_Service",
+                    StartType = ServiceStartMode.Automatic,
+                    DelayedAutoStart = true,
+                    Parent = new ServiceProcessInstaller()
+                };
 
                 var state = new System.Collections.Specialized.ListDictionary();
                 serviceInstaller.Install(state);

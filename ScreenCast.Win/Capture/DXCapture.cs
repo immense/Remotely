@@ -24,6 +24,7 @@ using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Services;
 using Remotely.Shared.Win32;
 using SharpDX;
+using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
@@ -40,7 +41,7 @@ namespace Remotely.ScreenCast.Win.Capture
     public class DXCapture : ICapturer
     {
         private Adapter1 adapter;
-        private SharpDX.Direct3D11.Device1 device;
+        private SharpDX.Direct3D11.Device device;
         private OutputDuplication duplicatedOutput;
         private Factory1 factory;
         private int height;
@@ -192,7 +193,7 @@ namespace Remotely.ScreenCast.Win.Capture
             //Get first adapter
             adapter = factory.Adapters1.FirstOrDefault(x => x.Outputs.Length > 0);
             //Get device from adapter
-            device = new SharpDX.Direct3D11.Device1(adapter.NativePointer);
+            device = new SharpDX.Direct3D11.Device(adapter, DeviceCreationFlags.None, FeatureLevel.Level_11_1);
             //Get front buffer of the adapter
             if (adapter.GetOutputCount() < SelectedScreen + 1)
             {
