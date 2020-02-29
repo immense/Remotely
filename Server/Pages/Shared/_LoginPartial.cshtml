@@ -19,7 +19,7 @@
     }
     else
     {
-        if (DataService.GetOrganizationCount() < AppConfig.MaxOrganizationCount)
+        if (AppConfig.MaxOrganizationCount < 0 || DataService.GetOrganizationCount() < AppConfig.MaxOrganizationCount)
         {
             <li class="nav-item">
                 <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Register</a>

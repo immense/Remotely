@@ -23,7 +23,7 @@
                 <a href="~/Identity/Account/Login" class="btn btn-primary btn-lg login-button">
                     Login
                 </a>
-                @if (organizationCount < 0 || organizationCount < AppConfig.MaxOrganizationCount)
+                @if (AppConfig.MaxOrganizationCount < 0 || organizationCount < AppConfig.MaxOrganizationCount)
                 {
                     <br />
                     <br />
