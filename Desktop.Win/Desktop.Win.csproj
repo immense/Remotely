@@ -14,7 +14,7 @@
     <Authors>Jared Goodwin</Authors>
     <Company>Translucency Software</Company>
     <Product>Remotely Desktop</Product>
-    <PackageProjectUrl>https://remotely.lucency.co</PackageProjectUrl>
+    <PackageProjectUrl>https://remotely.one</PackageProjectUrl>
     <Platforms>AnyCPU;x86;x64</Platforms>
   </PropertyGroup>
 

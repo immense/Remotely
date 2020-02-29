@@ -12,7 +12,7 @@
     <Product>Remotely ScreenCast</Product>
     <Description>Allows unattended remote control via the Remotely server.</Description>
     <Copyright>Copyright ©  2020 Translucency Software</Copyright>
-    <PackageProjectUrl>https://remotely.lucency.co</PackageProjectUrl>
+    <PackageProjectUrl>https://remotely.one</PackageProjectUrl>
     <Platforms>AnyCPU;x86;x64</Platforms>
   </PropertyGroup>
 

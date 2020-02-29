@@ -5,8 +5,8 @@ A remote control and remote scripting solution, built with .NET Core, SignalR Co
 [![Donate](https://www.paypalobjects.com/webstatic/en_US/i/buttons/pp-acceptance-small.png)](https://paypal.me/translucency)
 
 
-Website: https://remotely.lucency.co  
-Public Server: https://tryremotely.lucency.co (not intended for production use)
+Website: https://remotely.one
+Multi-Tenant Demo Server: https://app.remotely.one
 
 
 ## Client Prerequisites:
@@ -124,7 +124,7 @@ Note: To retain your settings between upgrades, copy your settings to appsetting
     * Session recording will not work if a WebRTC connection is made.
 
 ## API and Integrations
-Remotely has a basic API, which can be browsed at https://tryremotely.lucency.co/swagger (or your own server instance).  Most endpoints require authentication via an API access token, which can be created by going to Account - API Access.
+Remotely has a basic API, which can be browsed at https://app.remotely.one/swagger (or your own server instance).  Most endpoints require authentication via an API access token, which can be created by going to Account - API Access.
 
 When accessing the API from the browser on another website, you'll need to set up CORS in appsettings by adding the website origin URL to the TrustedCorsOrigins array.  If you're not familiar with how CORS works, I recommend reading up on it before proceeding.  For example, if I wanted to create a login form on https://lucency.co that logged into the Remotely API, I'd need to add "https://lucency.co" to the TrustedCorsOrigins.
 
