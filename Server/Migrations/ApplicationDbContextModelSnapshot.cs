@@ -514,9 +514,6 @@ namespace Remotely.Server.Migrations
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
-                    b.Property<string>("DeviceGroupID")
-                        .HasColumnType("text");
-
                     b.Property<bool>("IsAdministrator")
                         .HasColumnType("boolean");
 
@@ -525,8 +522,6 @@ namespace Remotely.Server.Migrations
 
                     b.Property<string>("UserOptions")
                         .HasColumnType("text");
-
-                    b.HasIndex("DeviceGroupID");
 
                     b.HasIndex("OrganizationID");
 
@@ -652,10 +647,6 @@ namespace Remotely.Server.Migrations
 
             modelBuilder.Entity("Remotely.Shared.Models.RemotelyUser", b =>
                 {
-                    b.HasOne("Remotely.Shared.Models.DeviceGroup", null)
-                        .WithMany("Users")
-                        .HasForeignKey("DeviceGroupID");
-
                     b.HasOne("Remotely.Shared.Models.Organization", "Organization")
                         .WithMany("RemotelyUsers")
                         .HasForeignKey("OrganizationID");

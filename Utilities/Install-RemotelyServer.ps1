@@ -14,8 +14,14 @@ param (
     [Parameter(Mandatory=$True)]
 	[string]$BindingHostname,
 
-    [switch]$Quiet
+    [switch]$Quiet,
+
+    [string]$WacsPath,
+  
+    [string]$EmailAddress
 )
+
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 $ErrorActionPreference = "Stop"
 $Host.UI.RawUI.WindowTitle = "Remotely Setup"
@@ -139,10 +145,19 @@ if ((Get-Package -Name "*PostgreSQL*" -ErrorAction SilentlyContinue) -eq $null){
     Wrap-Host
     Wrap-Host "ERROR: PostgreSQL was not found.  Please install it from https://postgresql.org." -ForegroundColor Red
     Wrap-Host
-    pause
+    Do-Pause
     return
 }
 
+if ((Get-Package -Name "*3.1.2 - Windows Server Hosting*" -ErrorAction SilentlyContinue) -eq $null){
+    Wrap-Host "Downloading .NET Core Runtime and Hosting Bundle..."
+    $ProgressPreference = "SilentlyContinue"
+    Invoke-WebRequest -Uri "https://download.visualstudio.microsoft.com/download/pr/dd119832-dc46-4ccf-bc12-69e7bfa61b18/990843c6e0cbd97f9df68c94f6de6bb6/dotnet-hosting-3.1.2-win.exe" -OutFile "$env:TEMP\dotnet-hosting-3.1.2-win.exe"
+    $ProgressPreference = "Continue"
+    Start-Process -FilePath "$env:TEMP\dotnet-hosting-3.1.2-win.exe" -ArgumentList "/install /quiet /norestart" -Wait
+    Wrap-Host
+    Wrap-Host ".NET Runtime installation completed."
+}
 
 #endregion
 
@@ -171,7 +186,7 @@ Wrap-Host "**********************************"
 Wrap-Host
 Wrap-Host "Hello, and thank you for trying out Remotely!" -ForegroundColor Green
 Wrap-Host
-Wrap-Host "This setup script will install Remotely on this machine.  Please make sure you've already created a website in IIS where Remotely will be installed." -ForegroundColor Green
+Wrap-Host "This setup script will create an IIS site and install Remotely on this machine." -ForegroundColor Green
 Wrap-Host
 Wrap-Host "If you encounter any problems or have any questions, please contact Translucency_Software@outlook.com." -ForegroundColor Green
 Wrap-Host
@@ -190,36 +205,36 @@ if ($ServerCmdlets) {
     {
         $RebootRequired = $true
     }
-    Write-Progress -Activity "IIS Component Installation" -Status "Installing ASP.NET" -PercentComplete (2/7*100)
-    $Result = Add-WindowsFeature Web-Asp-Net
-    if ($Result.RestartNeeded -like "Yes")
-    {
-        $RebootRequired = $true
-    }
-    Write-Progress -Activity "IIS Component Installation" -Status "Installing ASP.NET 4.5" -PercentComplete (3/7*100)
-    $Result = Add-WindowsFeature Web-Asp-Net45
-    if ($Result.RestartNeeded -like "Yes")
-    {
-        $RebootRequired = $true
-    }
-    Write-Progress -Activity "IIS Component Installation" -Status "Installing web sockets" -PercentComplete (4/7*100)
-    $Result = Add-WindowsFeature Web-WebSockets
-    if ($Result.RestartNeeded -like "Yes")
-    {
-        $RebootRequired = $true
-    }
+    #Write-Progress -Activity "IIS Component Installation" -Status "Installing ASP.NET" -PercentComplete (2/7*100)
+    #$Result = Add-WindowsFeature Web-Asp-Net
+    #if ($Result.RestartNeeded -like "Yes")
+    #{
+    #    $RebootRequired = $true
+    #}
+    #Write-Progress -Activity "IIS Component Installation" -Status "Installing ASP.NET 4.5" -PercentComplete (3/7*100)
+    #$Result = Add-WindowsFeature Web-Asp-Net45
+    #if ($Result.RestartNeeded -like "Yes")
+    #{
+    #    $RebootRequired = $true
+    #}
+    #Write-Progress -Activity "IIS Component Installation" -Status "Installing web sockets" -PercentComplete (4/7*100)
+    #$Result = Add-WindowsFeature Web-WebSockets
+    #if ($Result.RestartNeeded -like "Yes")
+    #{
+    #    $RebootRequired = $true
+    #}
     Write-Progress -Activity "IIS Component Installation" -Status "Installing IIS management tools" -PercentComplete (5/7*100)
     $Result = Add-WindowsFeature Web-Mgmt-Tools
     if ($Result.RestartNeeded -like "Yes")
     {
         $RebootRequired = $true
     }
-    Write-Progress -Activity "IIS Component Installation" -Status "Installing web filtering" -PercentComplete (6/7*100)
-    $Result = Add-WindowsFeature Web-Filtering
-    if ($Result.RestartNeeded -like "Yes")
-    {
-        $RebootRequired = $true
-    }
+    #Write-Progress -Activity "IIS Component Installation" -Status "Installing web filtering" -PercentComplete (6/7*100)
+    #$Result = Add-WindowsFeature Web-Filtering
+    #if ($Result.RestartNeeded -like "Yes")
+    #{
+    #    $RebootRequired = $true
+    #}
 
     Write-Progress -Activity "IIS Component Installation" -Status "IIS setup completed" -PercentComplete (7/7*100) -Completed
     Start-Sleep 2
@@ -231,20 +246,20 @@ else
     Write-Progress -Activity "IIS Component Installation" -Status "Installing web server" -PercentComplete (1/7*100)
     DISM /Online /Enable-Feature /FeatureName:IIS-WebServer /All /Quiet
 
-    Write-Progress -Activity "IIS Component Installation" -Status "Installing ASP.NET" -PercentComplete (2/7*100)
-    DISM /Online /Enable-Feature /FeatureName:IIS-ASPNET /All /Quiet
+    #Write-Progress -Activity "IIS Component Installation" -Status "Installing ASP.NET" -PercentComplete (2/7*100)
+    #DISM /Online /Enable-Feature /FeatureName:IIS-ASPNET /All /Quiet
 
-    Write-Progress -Activity "IIS Component Installation" -Status "Installing ASP.NET 4.5" -PercentComplete (3/7*100)
-    DISM /Online /Enable-Feature /FeatureName:IIS-ASPNET45 /All /Quiet
+    #Write-Progress -Activity "IIS Component Installation" -Status "Installing ASP.NET 4.5" -PercentComplete (3/7*100)
+    #DISM /Online /Enable-Feature /FeatureName:IIS-ASPNET45 /All /Quiet
 
-    Write-Progress -Activity "IIS Component Installation" -Status "Installing web sockets" -PercentComplete (4/7*100)
-    DISM /Online /Enable-Feature /FeatureName:IIS-WebSockets /All /Quiet
+    #Write-Progress -Activity "IIS Component Installation" -Status "Installing web sockets" -PercentComplete (4/7*100)
+    #DISM /Online /Enable-Feature /FeatureName:IIS-WebSockets /All /Quiet
 
     Write-Progress -Activity "IIS Component Installation" -Status "Installing IIS management tools" -PercentComplete (5/7*100)
     DISM /Online /Enable-Feature /FeatureName:IIS-ManagementConsole /All /Quiet
 
-    Write-Progress -Activity "IIS Component Installation" -Status "Installing web filtering" -PercentComplete (6/7*100)
-    DISM /Online /Enable-Feature /FeatureName:IIS-RequestFiltering /All /Quiet
+    #Write-Progress -Activity "IIS Component Installation" -Status "Installing web filtering" -PercentComplete (6/7*100)
+    #DISM /Online /Enable-Feature /FeatureName:IIS-RequestFiltering /All /Quiet
 
     Write-Progress -Activity "IIS Component Installation" -Status "IIS setup completed" -PercentComplete (7/7*100) -Completed
     Start-Sleep 2
@@ -253,15 +268,14 @@ else
 
 Clear-Host
 ### Create IIS Site ##
-[System.IO.Directory]::CreateDirectory($FilePath)
+[System.IO.Directory]::CreateDirectory($SitePath)
 
 if ((Get-IISAppPool -Name $AppPoolName) -eq $null) {
     New-WebAppPool -Name $AppPoolName
 }
 
 if ((Get-Website -Name $SiteName) -eq $null) {
-    New-Website -Name $SiteName -PhysicalPath $SitePath -HostHeader $BindingHostname
-    New-WebBinding -Name $SiteName -Protocol "https" -Port 443 -HostHeader $BindingHostname
+    New-Website -Name $SiteName -PhysicalPath $SitePath -HostHeader $BindingHostname -ApplicationPool $AppPoolName
 }
 
 
@@ -300,8 +314,9 @@ try {
         Remove-Item -Path "$env:TEMP\Remotely_Server_Win-x64.zip" -Force
     }
     Wrap-Host "Downloading server package..."
-	[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+	$ProgressPreference = "SilentlyContinue"
     Invoke-WebRequest -Uri "https://github.com/Jay-Rad/Remotely/releases/latest/download/Remotely_Server_Win-x64.zip" -OutFile "$env:TEMP\Remotely_Server_Win-x64.zip"
+    $ProgressPreference = "Continue"
     Wrap-Host "Extracting server files..."
 	[System.Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem") | Out-Null
 	[System.IO.Compression.ZipFile]::ExtractToDirectory("$env:TEMP\Remotely_Server_Win-x64.zip", $SitePath)
@@ -349,6 +364,12 @@ catch
 # Start website.
 Start-Website -Name $SiteName
 
+
+### SSL certificate installation. ###
+if ($WacsPath -ne $null -and (Test-Path -Path $WacsPath)) {
+    &"$WacsPath" --target iis --siteid (Get-Website -Name $SiteName).ID --installation iis --emailaddress $EmailAddress --accepttos 
+}
+
 Wrap-Host
 Wrap-Host
 Wrap-Host
@@ -356,7 +377,7 @@ Wrap-Host "**********************************"
 Wrap-Host "      Server setup complete!" -ForegroundColor Green
 Wrap-Host "**********************************"
 Wrap-Host
-Wrap-Host "Website bindings and SSL need to be set up in IIS, if they're not already.  This process needs to be completed manually.  I recommend researching Let's Encrypt for free, automated SSL certificates." -ForegroundColor Green
+Wrap-Host "If a path to Win-Acme exe path (WacsPath) wasn't provided, SSL/TLS needs to be set up in IIS.  I recommend checking out Let's Encrypt for free, automated SSL certificates." -ForegroundColor Green
 
 if ($RebootRequired) {
     Wrap-Host

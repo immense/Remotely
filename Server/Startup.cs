@@ -71,17 +71,20 @@ namespace Remotely.Server
             }
             else if (dbProvider == "postgresql")
             {
-                var connectionBuilder = new NpgsqlConnectionStringBuilder(Configuration.GetConnectionString("PostgreSQL"));
-
-                // Password needs to be set in User Secrets in dev environment.
+                // Password should be set in User Secrets in dev environment.
                 // See https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-3.1
-                if (IsDev)
+                if (!string.IsNullOrWhiteSpace(Configuration.GetValue<string>("PostgresPassword")))
                 {
+                    var connectionBuilder = new NpgsqlConnectionStringBuilder(Configuration.GetConnectionString("PostgreSQL"));
                     connectionBuilder.Password = Configuration["PostgresPassword"];
+                    services.AddDbContext<ApplicationDbContext>(options =>
+                        options.UseNpgsql(connectionBuilder.ConnectionString));
                 }
-
-                services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseNpgsql(connectionBuilder.ConnectionString));
+                else
+                {
+                    services.AddDbContext<ApplicationDbContext>(options =>
+                        options.UseNpgsql(Configuration.GetConnectionString("PostgreSQL")));
+                }
             }
 
             services.AddIdentity<RemotelyUser, IdentityRole>(options => options.Stores.MaxLengthForKeys = 128)

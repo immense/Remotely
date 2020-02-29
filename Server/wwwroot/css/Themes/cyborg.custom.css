@@ -132,3 +132,7 @@ span.label.code {
 .chat-input {
     background-color: lightgray;
 }
+
+#deviceGrid .fas:hover {
+    color: #2A9FD6 !important;
+}
