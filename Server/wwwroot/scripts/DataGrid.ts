@@ -4,6 +4,7 @@ import { Main } from "./Main.js";
 import { DeviceGrid } from "./UI.js";
 import { AddConsoleOutput } from "./Console.js";
 import { CreateChatWindow } from "./Chat.js";
+import * as BrowserSockets from "./BrowserSockets.js"
 
 
 export const DataSource: Array<Device> = new Array<Device>();
@@ -74,7 +75,8 @@ export function AddOrUpdateDevice(device: Device) {
                     <td>${device.TotalMemory.toLocaleString()}</td>
                     <td>
                         <i class="fas fa-comment device-chat-button mr-2" title="Chat" style="font-size:1.5em"></i>
-                        <span class="fas fa-edit device-edit-button" title="Edit" style="font-size:1.5em" />
+                        <i class="fas fa-mouse device-remotecontrol-button mr-2" title="Remote Control" style="font-size:1.5em"></i>
+                        <i class="fas fa-edit device-edit-button" title="Edit" style="font-size:1.5em"></i>
                     </td>`;
 
 
@@ -87,6 +89,12 @@ export function AddOrUpdateDevice(device: Device) {
         ev.preventDefault();
         ev.stopPropagation();
         CreateChatWindow(device.ID, device.DeviceName);
+    };
+    (recordRow.querySelector(".device-remotecontrol-button") as HTMLButtonElement).onclick = (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        AddConsoleOutput("Launching remote control on client device...");
+        BrowserSockets.Connection.invoke("RemoteControl", device.ID);
     };
     UpdateDeviceCounts();
 }

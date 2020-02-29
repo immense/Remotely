@@ -124,3 +124,7 @@ span.label.code {
     color: white;
     background-color: #008cba;
 }
+
+#deviceGrid .fas:hover {
+    color: #008cba !important;
+}

@@ -70,6 +70,8 @@ namespace Remotely.Agent.Services
                 // The above can be caused by temporary issues on the server.  So we'll do
                 // nothing here and wait for it to get resolved.
                 Logger.Write("There was an issue registering with the server.  The server might be undergoing maintenance, or the supplied organization ID might be incorrect.");
+                await Task.Delay(TimeSpan.FromMinutes(1));
+                await HubConnection.StopAsync();
                 return;
             }
 
