@@ -103,7 +103,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
                         protocol: Request.Scheme);
 
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"<img src='https://remotely.one/images/Remotely_Logo.png'/><br><br>Please confirm your Remotely account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                        $"<img src='https://remotely.one/media/Remotely_Logo.png'/><br><br>Please confirm your Remotely account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
