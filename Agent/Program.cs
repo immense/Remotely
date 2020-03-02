@@ -27,7 +27,7 @@ namespace Remotely.Agent
             {
                 BuildServices();
 
-                Task.Run(() => { Init(); });
+                Task.Run(() => {_ = Init(); });
 
                 Thread.Sleep(Timeout.Infinite);
 
@@ -98,26 +98,27 @@ namespace Remotely.Agent
             }
         }
 
-        private static async void Init()
+        private static async Task Init()
         {
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-
-#if DEBUG
-            IsDebug = true;
-#endif
-
-            SetWorkingDirectory();
-
-            if (!IsDebug && OSUtils.IsWindows)
-            {
-                _ = Task.Run(() =>
-                {
-                    ServiceBase.Run(new WindowsService());
-                });
-            }
-
             try
             {
+                AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
+#if DEBUG
+                IsDebug = true;
+#endif
+
+                SetWorkingDirectory();
+
+                if (!IsDebug && OSUtils.IsWindows)
+                {
+                    _ = Task.Run(() =>
+                    {
+                        ServiceBase.Run(new WindowsService());
+                    });
+                }
+
+
                 await Services.GetRequiredService<DeviceSocket>().Connect();
             }
             finally
