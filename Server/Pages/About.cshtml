@@ -18,5 +18,5 @@
     Open-Source Licenses: <a asp-page="/Credits">@Request.Scheme://@Request.Host/Credits</a>
 </p>
 <p>
-    Version: @System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()
+    Version: @System.Diagnostics.FileVersionInfo.GetVersionInfo("Remotely_Server.dll").FileVersion.ToString()
 </p>

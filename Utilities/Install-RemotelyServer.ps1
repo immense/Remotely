@@ -272,6 +272,8 @@ Clear-Host
 
 if ((Get-IISAppPool -Name $AppPoolName) -eq $null) {
     New-WebAppPool -Name $AppPoolName
+    Set-ItemProperty -Path "IIS:\AppPools\$AppPoolName" -name processModel.identityType -Value 4
+    Set-ItemProperty -Path "IIS:\AppPools\$AppPoolName" -name processModel.loadUserProfile -Value $true
 }
 
 if ((Get-Website -Name $SiteName) -eq $null) {

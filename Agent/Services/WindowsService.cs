@@ -20,18 +20,25 @@ namespace Remotely.Agent.Services
 
         protected override void OnSessionChange(SessionChangeDescription changeDescription)
         {
-            Logger.Write($"Session changed.  Reason: {changeDescription.Reason}.  Session: {changeDescription.SessionId}");
-            if (changeDescription.Reason == SessionChangeReason.ConsoleDisconnect ||
-               changeDescription.Reason == SessionChangeReason.RemoteDisconnect)
+            try
             {
-
-                foreach (var screenCaster in Process.GetProcessesByName("Remotely_ScreenCast"))
+                Logger.Write($"Session changed.  Reason: {changeDescription.Reason}.  Session: {changeDescription.SessionId}");
+                if (changeDescription.Reason == SessionChangeReason.ConsoleDisconnect ||
+                   changeDescription.Reason == SessionChangeReason.RemoteDisconnect)
                 {
-                    Logger.Write($"Session changed.  Kill process ID {screenCaster.Id}.");
-                    screenCaster.Kill();
+
+                    foreach (var screenCaster in Process.GetProcessesByName("Remotely_ScreenCast"))
+                    {
+                        Logger.Write($"Session changed.  Kill process ID {screenCaster.Id}.");
+                        screenCaster.Kill();
+                    }
                 }
+                base.OnSessionChange(changeDescription);
             }
-            base.OnSessionChange(changeDescription);
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+            }
         }
 
         protected override void OnStart(string[] args)
@@ -49,7 +56,6 @@ namespace Remotely.Agent.Services
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                throw;
             }
         }
 
@@ -70,7 +76,6 @@ namespace Remotely.Agent.Services
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                throw;
             }
         }
     }
