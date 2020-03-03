@@ -69,21 +69,13 @@
                     Command="{Binding OpenLogsCommand}">
                 Logs
             </Button>
+
             <Button DockPanel.Dock="Right" 
                     HorizontalAlignment="Right" 
                     Style="{StaticResource NormalButton}" 
                     Margin="5,0,0,0"
                     Click="CloseButton_Click">
                 Close
-            </Button>
-            <Button DockPanel.Dock="Right" 
-                    HorizontalAlignment="Right" 
-                    Style="{StaticResource NormalButton}" 
-                    Margin="5,0,0,0"
-                    IsEnabled="{Binding IsReadyState}"
-                    Visibility="{Binding IsServiceMissing, Converter={StaticResource BooleanToVisibilityConverter}}"
-                    Command="{Binding InstallCommand}">
-                Install
             </Button>
             <Button DockPanel.Dock="Right" 
                     HorizontalAlignment="Right"
@@ -93,6 +85,14 @@
                     Visibility="{Binding IsServiceInstalled, Converter={StaticResource BooleanToVisibilityConverter}}"
                     Command="{Binding UninstallCommand}">
                 Uninstall
+            </Button>
+            <Button DockPanel.Dock="Right" 
+                    HorizontalAlignment="Right" 
+                    Style="{StaticResource NormalButton}" 
+                    Content="{Binding InstallButtonText}"
+                    Margin="5,0,0,0"
+                    IsEnabled="{Binding IsReadyState}"
+                    Command="{Binding InstallCommand}">
             </Button>
         </DockPanel>
     </Grid>
