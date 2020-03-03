@@ -35,7 +35,7 @@ namespace Remotely.Shared.Models
 
         public bool IsOnline { get; set; }
 
-        public DateTime LastOnline { get; set; }
+        public DateTimeOffset LastOnline { get; set; }
         [JsonIgnore]
         public Organization Organization { get; set; }
         public string OrganizationID { get; set; }
