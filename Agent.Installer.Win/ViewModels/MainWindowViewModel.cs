@@ -49,6 +49,8 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             }
         }
 
+        public string InstallButtonText => IsServiceMissing ? "Install" : "Reinstall";
+
         public ICommand InstallCommand => new Executor(async (param) => { await Install(param); });
 
         public bool IsProgressVisible => Progress > 0;
@@ -77,6 +79,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
                 isServiceInstalled = value;
                 FirePropertyChanged(nameof(IsServiceInstalled));
                 FirePropertyChanged(nameof(IsServiceMissing));
+                FirePropertyChanged(nameof(InstallButtonText));
             }
         }
 
@@ -180,8 +183,9 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             }
             else
             {
-                HeaderMessage = "Uninstall the Remotely service.";
-                StatusMessage = "Uninstalling the Remotely service will remove all remote acess to this device.";
+                HeaderMessage = "Modify the Remotely installation.";
+                StatusMessage = "Uninstalling the Remotely service will remove all remote acess to this device.\r\n\r\n" +
+                    "Reinstalling will retain the current settings and install the service again.";
             }
 
             var installerSettings = ReadInstallerSettings();
