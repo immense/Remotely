@@ -3,13 +3,13 @@
   "name": "asp.net",
   "private": true,
   "devDependencies": {
-    "@microsoft/signalr": "^3.1.0",
-    "@microsoft/signalr-protocol-msgpack": "^3.1.0",
+    "@microsoft/signalr": "^3.1.2",
+    "@microsoft/signalr-protocol-msgpack": "^3.1.2",
     "@types/bootstrap": "^4.3.1",
-    "@types/jquery": "^3.3.31",
+    "@types/jquery": "^3.3.33",
     "msgpack5": "^4.2.1"
   },
   "dependencies": {
-    "@msgpack/msgpack": "^1.11.0"
+    "@msgpack/msgpack": "^1.12.0"
   }
 }

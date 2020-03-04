@@ -103,8 +103,6 @@ namespace Remotely.Server.Services
 
         public bool AddOrUpdateDevice(Device device, out Device updatedDevice)
         {
-            device.LastOnline = DateTimeOffset.Now;
-
             var existingDevice = RemotelyContext.Devices.Find(device.ID);
             if (existingDevice != null)
             {
@@ -123,12 +121,12 @@ namespace Remotely.Server.Services
                 existingDevice.TotalMemory = device.TotalMemory;
                 existingDevice.TotalStorage = device.TotalStorage;
                 existingDevice.AgentVersion = device.AgentVersion;
-                existingDevice.LastOnline = device.LastOnline;
+                existingDevice.LastOnline = DateTimeOffset.Now;
                 updatedDevice = existingDevice;
             }
             else
             {
-
+                device.LastOnline = DateTimeOffset.Now;
                 if (HostEnvironment.IsDevelopment() && RemotelyContext.Organizations.Any())
                 {
                     var org = RemotelyContext.Organizations.FirstOrDefault();

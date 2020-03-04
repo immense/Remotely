@@ -72,7 +72,7 @@ namespace Remotely.ScreenCast.Core.Communication
                     Width = width,
                     Height = height,
                     EndOfFrame = false,
-                    ImageBytes = imageBytes.Skip(i).Take(50000).ToArray(),
+                    ImageBytes = imageBytes.Skip(i).Take(50_000).ToArray(),
                     DtoType = Shared.Enums.DynamicDtoType.FrameInfo
                 }));
             }

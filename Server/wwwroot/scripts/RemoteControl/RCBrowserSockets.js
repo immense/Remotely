@@ -1,6 +1,6 @@
 import * as Utilities from "../Utilities.js";
 import * as UI from "./UI.js";
-import { RemoteControl } from "./Main.js";
+import { Remotely } from "./Main.js";
 import { Sound } from "../Sound.js";
 import { PopupMessage } from "../UI.js";
 import { WatchClipboard } from "./ClipboardWatcher.js";
@@ -47,7 +47,7 @@ export class RCBrowserSockets {
         this.Connection.invoke("SendRtcAnswerToAgent", sessionDescription.sdp);
     }
     SendScreenCastRequestToDevice() {
-        this.Connection.invoke("SendScreenCastRequestToDevice", RemoteControl.ClientID, RemoteControl.RequesterName, RemoteControl.Mode);
+        this.Connection.invoke("SendScreenCastRequestToDevice", Remotely.ClientID, Remotely.RequesterName, Remotely.Mode);
     }
     SendLatencyUpdate(sentTime, bytesReceived) {
         this.Connection.invoke("SendLatencyUpdate", sentTime, bytesReceived);
@@ -182,7 +182,7 @@ export class RCBrowserSockets {
             document.title = `${machineName} - Remotely Session`;
         });
         hubConnection.on("RelaunchedScreenCasterReady", (newClientID) => {
-            RemoteControl.ClientID = newClientID;
+            Remotely.ClientID = newClientID;
             this.Connection.stop();
             this.Connect();
         });
@@ -206,12 +206,12 @@ export class RCBrowserSockets {
         });
         hubConnection.on("ReceiveRtcOffer", async (sdp) => {
             console.log("Rtc offer SDP received.");
-            RemoteControl.RtcSession.Init();
-            await RemoteControl.RtcSession.ReceiveRtcOffer(sdp);
+            Remotely.RtcSession.Init();
+            await Remotely.RtcSession.ReceiveRtcOffer(sdp);
         });
         hubConnection.on("ReceiveIceCandidate", (candidate, sdpMlineIndex, sdpMid) => {
             console.log("Ice candidate received.");
-            RemoteControl.RtcSession.ReceiveCandidate({
+            Remotely.RtcSession.ReceiveCandidate({
                 candidate: candidate,
                 sdpMLineIndex: sdpMlineIndex,
                 sdpMid: sdpMid
