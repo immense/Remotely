@@ -18,7 +18,7 @@ export const RemoteControl = {
 
     Init: () => {
         UI.ApplyInputHandlers(RemoteControl.RCBrowserSockets);
-        
+
         if (queryString["clientID"]) {
             RemoteControl.Mode = RemoteControlMode.Unattended;
             UI.ConnectBox.style.display = "none";

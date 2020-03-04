@@ -49,6 +49,11 @@ namespace Remotely.Agent.Services
                             ConfigService.GetConnectionInfo().Host + $"/API/ClientDownloads/{connectionInfo.OrganizationID}/Windows",
                             filePath);
 
+                        foreach (var proc in Process.GetProcessesByName("Remotely_Installer"))
+                        {
+                            proc.Kill();
+                        }
+
                         Process.Start(filePath, $"-install -quiet");
                     }
                     else if (OSUtils.IsLinux)

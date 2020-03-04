@@ -3,6 +3,7 @@ import * as UI from "./UI.js";
 import { RemoteControl } from "./Main.js";
 import { Sound } from "../Sound.js";
 import { PopupMessage } from "../UI.js";
+import { WatchClipboard } from "./ClipboardWatcher.js";
 var signalR = window["signalR"];
 export class RCBrowserSockets {
     Connect() {
@@ -31,6 +32,7 @@ export class RCBrowserSockets {
             UI.ScreenViewer.setAttribute("hidden", "hidden");
             UI.ConnectBox.style.removeProperty("display");
         });
+        WatchClipboard();
     }
     ;
     SendIceCandidate(candidate) {

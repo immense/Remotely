@@ -4,6 +4,7 @@ import { RemoteControl } from "./Main.js";
 import { CursorInfo } from "../Models/CursorInfo.js";
 import { Sound } from "../Sound.js";
 import { PopupMessage } from "../UI.js";
+import { WatchClipboard } from "./ClipboardWatcher.js";
 
 var signalR = window["signalR"];
 
@@ -45,6 +46,8 @@ export class RCBrowserSockets {
             UI.ScreenViewer.setAttribute("hidden", "hidden");
             UI.ConnectBox.style.removeProperty("display");
         });
+
+        WatchClipboard();
     };
 
     SendIceCandidate(candidate: RTCIceCandidate) {
