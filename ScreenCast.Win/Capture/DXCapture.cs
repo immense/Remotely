@@ -44,6 +44,18 @@ namespace Remotely.ScreenCast.Win.Capture
         private SharpDX.Direct3D11.Device device;
         private OutputDuplication duplicatedOutput;
         private Factory1 factory;
+        private FeatureLevel[] featureLevels = new FeatureLevel[]
+        {
+            FeatureLevel.Level_9_1,
+            FeatureLevel.Level_9_2,
+            FeatureLevel.Level_9_3,
+            FeatureLevel.Level_10_0,
+            FeatureLevel.Level_10_1,
+            FeatureLevel.Level_11_0,
+            FeatureLevel.Level_11_1,
+            FeatureLevel.Level_12_0,
+            FeatureLevel.Level_12_1
+        };
         private int height;
         private Output output;
         private Output1 output1;
@@ -193,7 +205,7 @@ namespace Remotely.ScreenCast.Win.Capture
             //Get first adapter
             adapter = factory.Adapters1.FirstOrDefault(x => x.Outputs.Length > 0);
             //Get device from adapter
-            device = new SharpDX.Direct3D11.Device(adapter, DeviceCreationFlags.None, FeatureLevel.Level_11_1);
+            device = new SharpDX.Direct3D11.Device(adapter);
             //Get front buffer of the adapter
             if (adapter.GetOutputCount() < SelectedScreen + 1)
             {

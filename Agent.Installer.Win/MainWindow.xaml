@@ -29,7 +29,7 @@
         <Border Grid.Row="0" Height="50" Background="#FF464646" VerticalAlignment="Top">
             <DockPanel Margin="10,0,0,0">
                 <Image Height="50" Width="50" Source="Assets/Remotely_Icon.png" Margin="0,0,10,0"></Image>
-                <TextBlock Foreground="DeepSkyBlue" FontWeight="Bold" FontSize="20" VerticalAlignment="Center">Remotely Installer</TextBlock>
+                <TextBlock Foreground="#FF1D90F1" FontWeight="Bold" FontSize="20" VerticalAlignment="Center">Remotely Installer</TextBlock>
                 <Button Style="{StaticResource TitlebarButton}" Click="CloseButton_Click" Content="X" />
                 <Button Style="{StaticResource TitlebarButton}" Click="MinimizeButton_Click" Content="_"/>
             </DockPanel>
