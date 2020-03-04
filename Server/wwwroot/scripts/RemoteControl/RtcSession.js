@@ -1,6 +1,6 @@
 import * as UI from "./UI.js";
 import * as Utilities from "../Utilities.js";
-import { RemoteControl } from "./Main.js";
+import { Remotely } from "./Main.js";
 import { DynamicDtoType } from "../Models/DynamicDtoType.js";
 export class RtcSession {
     constructor() {
@@ -44,13 +44,11 @@ export class RtcSession {
             console.log("Connection state changed to " + this.iceConnectionState);
         };
         this.PeerConnection.onicecandidate = async (ev) => {
-            await RemoteControl.RCBrowserSockets.SendIceCandidate(ev.candidate);
+            await Remotely.RCBrowserSockets.SendIceCandidate(ev.candidate);
         };
     }
     ParseBinaryMessage(data) {
-        //console.log("WebRTC frame received. Size: " + data.byteLength);
         var model = this.MessagePack.decode(data);
-        //console.log("Received model type " + model.ModelType);
         switch (model.DtoType) {
             case DynamicDtoType.FrameInfo:
                 this.ProcessFrameInfo(model);
@@ -82,7 +80,7 @@ export class RtcSession {
             return this.PeerConnection.remoteDescription.sdp.length > 0;
         }).then(async () => {
             await this.PeerConnection.setLocalDescription(await this.PeerConnection.createAnswer());
-            await RemoteControl.RCBrowserSockets.SendRtcAnswer(this.PeerConnection.localDescription);
+            await Remotely.RCBrowserSockets.SendRtcAnswer(this.PeerConnection.localDescription);
         });
     }
     async ReceiveCandidate(candidate) {

@@ -1,6 +1,6 @@
 ﻿import { RCBrowserSockets } from "./RCBrowserSockets.js";
 import { GetDistanceBetween, SetClipboardText } from "../Utilities.js";
-import { RemoteControl } from "./Main.js";
+import { Remotely } from "./Main.js";
 import { PopupMessage } from "../UI.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 import { Point } from "../Models/Point.js";
@@ -74,19 +74,19 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
         PopupMessage("Clipboard sent!");
     });
     ConnectButton.addEventListener("click", (ev) => {
-        RemoteControl.ConnectToClient();
+        Remotely.ConnectToClient();
     });
     CtrlAltDelButton.addEventListener("click", (ev) => {
-        if (!RemoteControl.ServiceID) {
+        if (!Remotely.ServiceID) {
             ShowMessage("Not available for this session.");
             return;
         }
         closeAllHorizontalBars(null);
-        RemoteControl.RCBrowserSockets.SendCtrlAltDel();
+        Remotely.RCBrowserSockets.SendCtrlAltDel();
     });
     DisconnectButton.addEventListener("click", (ev) => {
         ConnectButton.removeAttribute("disabled");
-        RemoteControl.RCBrowserSockets.Connection.stop();
+        Remotely.RCBrowserSockets.Connection.stop();
         if (location.search.includes("fromApi=true")) {
             window.close();
         }
@@ -94,7 +94,7 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
     document.querySelectorAll("#sessionIDInput, #nameInput").forEach(x => {
         x.addEventListener("keypress", (ev: KeyboardEvent) => {
             if (ev.key.toLowerCase() == "enter") {
-                RemoteControl.ConnectToClient();
+                Remotely.ConnectToClient();
             }
         })
     });
@@ -120,19 +120,19 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
         var button = ev.currentTarget as HTMLButtonElement;
         button.classList.toggle("toggled");
         if (button.classList.contains("toggled")) {
-            RemoteControl.RCBrowserSockets.SendToggleBlockInput(true);
+            Remotely.RCBrowserSockets.SendToggleBlockInput(true);
         }
         else {
-            RemoteControl.RCBrowserSockets.SendToggleBlockInput(false);
+            Remotely.RCBrowserSockets.SendToggleBlockInput(false);
         }
     });
     InviteButton.addEventListener("click", (ev) => {
         var url = "";
-        if (RemoteControl.Mode == RemoteControlMode.Normal) {
-            url = `${location.origin}${location.pathname}?sessionID=${RemoteControl.ClientID}`;
+        if (Remotely.Mode == RemoteControlMode.Normal) {
+            url = `${location.origin}${location.pathname}?sessionID=${Remotely.ClientID}`;
         }
         else {
-            url = `${location.origin}${location.pathname}?clientID=${RemoteControl.ClientID}&serviceID=${RemoteControl.ServiceID}`;
+            url = `${location.origin}${location.pathname}?clientID=${Remotely.ClientID}&serviceID=${Remotely.ServiceID}`;
         }
         SetClipboardText(url);
         PopupMessage("Link copied to clipboard.");
@@ -443,7 +443,7 @@ function uploadFiles(fileList: FileList) {
         FileTransferProgress.parentElement.setAttribute("hidden", "hidden");
         if (xhr.status === 200) {
             ShowMessage("File upload completed.");
-            RemoteControl.RCBrowserSockets.SendSharedFileIDs(xhr.responseText);
+            Remotely.RCBrowserSockets.SendSharedFileIDs(xhr.responseText);
         }
         else {
             ShowMessage("File upload failed.");

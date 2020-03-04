@@ -7,7 +7,7 @@ import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 
 var queryString = Utilities.ParseSearchString();
 
-export const RemoteControl = {
+export const Remotely = {
 
     RCBrowserSockets: new RCBrowserSockets(),
     RtcSession: new RtcSession(),
@@ -17,12 +17,12 @@ export const RemoteControl = {
     Mode: RemoteControlMode.None,
 
     Init: () => {
-        UI.ApplyInputHandlers(RemoteControl.RCBrowserSockets);
+        UI.ApplyInputHandlers(Remotely.RCBrowserSockets);
 
         if (queryString["clientID"]) {
-            RemoteControl.Mode = RemoteControlMode.Unattended;
+            Remotely.Mode = RemoteControlMode.Unattended;
             UI.ConnectBox.style.display = "none";
-            RemoteControl.RCBrowserSockets.Connect();
+            Remotely.RCBrowserSockets.Connect();
         }
         else if (queryString["sessionID"]) {
             UI.SessionIDInput.value = decodeURIComponent(queryString["sessionID"]);
@@ -34,12 +34,12 @@ export const RemoteControl = {
     },
     ConnectToClient: () => {
         UI.ConnectButton.disabled = true;
-        RemoteControl.ClientID = UI.SessionIDInput.value.split(" ").join("");
-        RemoteControl.RequesterName = UI.RequesterNameInput.value;
-        RemoteControl.Mode = RemoteControlMode.Normal;
-        RemoteControl.RCBrowserSockets.Connect();
+        Remotely.ClientID = UI.SessionIDInput.value.split(" ").join("");
+        Remotely.RequesterName = UI.RequesterNameInput.value;
+        Remotely.Mode = RemoteControlMode.Normal;
+        Remotely.RCBrowserSockets.Connect();
         UI.StatusMessage.innerHTML = "Sending connection request...";
     }
 }
 
-window["RemoteControl"] = RemoteControl;
+window["Remotely"] = Remotely;

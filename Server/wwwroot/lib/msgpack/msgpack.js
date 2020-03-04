@@ -123,7 +123,10 @@ var __spread = (undefined && undefined.__spread) || function () {
     return ar;
 };
 var utf8_a;
-var TEXT_ENCODING_AVAILABLE =  true && typeof TextEncoder !== "undefined" && typeof TextDecoder !== "undefined";
+var TEXT_ENCODING_AVAILABLE = typeof process !== "undefined" &&
+    undefined !== "never" &&
+    typeof TextEncoder !== "undefined" &&
+    typeof TextDecoder !== "undefined";
 function utf8Count(str) {
     var strLength = str.length;
     var byteLength = 0;
@@ -206,7 +209,7 @@ function utf8EncodeJs(str, output, outputOffset) {
     }
 }
 var sharedTextEncoder = TEXT_ENCODING_AVAILABLE ? new TextEncoder() : undefined;
-var TEXT_ENCODER_THRESHOLD =  true ? 200 : undefined;
+var TEXT_ENCODER_THRESHOLD = typeof process !== "undefined" && undefined !== "force" ? 200 : 0;
 function utf8EncodeTEencode(str, output, outputOffset) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     output.set(sharedTextEncoder.encode(str), outputOffset);
@@ -266,7 +269,7 @@ function utf8DecodeJs(bytes, inputOffset, byteLength) {
     return result;
 }
 var sharedTextDecoder = TEXT_ENCODING_AVAILABLE ? new TextDecoder() : null;
-var TEXT_DECODER_THRESHOLD =  true ? 200 : undefined;
+var TEXT_DECODER_THRESHOLD = typeof process !== "undefined" && undefined !== "force" ? 200 : 0;
 function utf8DecodeTD(bytes, inputOffset, byteLength) {
     var stringBytes = bytes.subarray(inputOffset, inputOffset + byteLength);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -524,18 +527,20 @@ var Encoder_values = (undefined && undefined.__values) || function(o) {
 var DEFAULT_MAX_DEPTH = 100;
 var DEFAULT_INITIAL_BUFFER_SIZE = 2048;
 var Encoder_Encoder = /** @class */ (function () {
-    function Encoder(extensionCodec, context, maxDepth, initialBufferSize, sortKeys, forceFloat32) {
+    function Encoder(extensionCodec, context, maxDepth, initialBufferSize, sortKeys, forceFloat32, ignoreUndefined) {
         if (extensionCodec === void 0) { extensionCodec = ExtensionCodec_ExtensionCodec.defaultCodec; }
         if (maxDepth === void 0) { maxDepth = DEFAULT_MAX_DEPTH; }
         if (initialBufferSize === void 0) { initialBufferSize = DEFAULT_INITIAL_BUFFER_SIZE; }
         if (sortKeys === void 0) { sortKeys = false; }
         if (forceFloat32 === void 0) { forceFloat32 = false; }
+        if (ignoreUndefined === void 0) { ignoreUndefined = false; }
         this.extensionCodec = extensionCodec;
         this.context = context;
         this.maxDepth = maxDepth;
         this.initialBufferSize = initialBufferSize;
         this.sortKeys = sortKeys;
         this.forceFloat32 = forceFloat32;
+        this.ignoreUndefined = ignoreUndefined;
         this.pos = 0;
         this.view = new DataView(new ArrayBuffer(this.initialBufferSize));
         this.bytes = new Uint8Array(this.view.buffer);
@@ -776,12 +781,33 @@ var Encoder_Encoder = /** @class */ (function () {
             finally { if (e_1) throw e_1.error; }
         }
     };
+    Encoder.prototype.countWithoutUndefined = function (object, keys) {
+        var e_2, _a;
+        var count = 0;
+        try {
+            for (var keys_1 = Encoder_values(keys), keys_1_1 = keys_1.next(); !keys_1_1.done; keys_1_1 = keys_1.next()) {
+                var key = keys_1_1.value;
+                if (object[key] !== undefined) {
+                    count++;
+                }
+            }
+        }
+        catch (e_2_1) { e_2 = { error: e_2_1 }; }
+        finally {
+            try {
+                if (keys_1_1 && !keys_1_1.done && (_a = keys_1.return)) _a.call(keys_1);
+            }
+            finally { if (e_2) throw e_2.error; }
+        }
+        return count;
+    };
     Encoder.prototype.encodeMap = function (object, depth) {
+        var e_3, _a;
         var keys = Object.keys(object);
         if (this.sortKeys) {
             keys.sort();
         }
-        var size = keys.length;
+        var size = this.ignoreUndefined ? this.countWithoutUndefined(object, keys) : keys.length;
         if (size < 16) {
             // fixmap
             this.writeU8(0x80 + size);
@@ -799,10 +825,22 @@ var Encoder_Encoder = /** @class */ (function () {
         else {
             throw new Error("Too large map object: " + size);
         }
-        for (var i = 0; i < size; i++) {
-            var key = keys[i];
-            this.encodeString(key);
-            this.encode(object[key], depth + 1);
+        try {
+            for (var keys_2 = Encoder_values(keys), keys_2_1 = keys_2.next(); !keys_2_1.done; keys_2_1 = keys_2.next()) {
+                var key = keys_2_1.value;
+                var value = object[key];
+                if (!(this.ignoreUndefined && value === undefined)) {
+                    this.encodeString(key);
+                    this.encode(value, depth + 1);
+                }
+            }
+        }
+        catch (e_3_1) { e_3 = { error: e_3_1 }; }
+        finally {
+            try {
+                if (keys_2_1 && !keys_2_1.done && (_a = keys_2.return)) _a.call(keys_2);
+            }
+            finally { if (e_3) throw e_3.error; }
         }
     };
     Encoder.prototype.encodeExtension = function (ext) {
@@ -919,7 +957,7 @@ var defaultEncodeOptions = {};
  */
 function encode(value, options) {
     if (options === void 0) { options = defaultEncodeOptions; }
-    var encoder = new Encoder_Encoder(options.extensionCodec, options.context, options.maxDepth, options.initialBufferSize, options.sortKeys, options.forceFloat32);
+    var encoder = new Encoder_Encoder(options.extensionCodec, options.context, options.maxDepth, options.initialBufferSize, options.sortKeys, options.forceFloat32, options.ignoreUndefined);
     encoder.encode(value, 1);
     return encoder.getUint8Array();
 }

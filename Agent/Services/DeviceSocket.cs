@@ -53,7 +53,6 @@ namespace Remotely.Agent.Services
 
             HubConnection = new HubConnectionBuilder()
                 .WithUrl(ConnectionInfo.Host + "/DeviceHub")
-                .AddMessagePackProtocol()
                 .Build();
 
             RegisterMessageHandlers();

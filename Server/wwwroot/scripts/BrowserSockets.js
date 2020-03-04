@@ -12,7 +12,6 @@ export function Connect() {
     var signalR = window["signalR"];
     Connection = new signalR.HubConnectionBuilder()
         .withUrl("/BrowserHub")
-        .withHubProtocol(new signalR.protocols.msgpack.MessagePackHubProtocol())
         .configureLogging(signalR.LogLevel.Information)
         .build();
     applyMessageHandlers(Connection);

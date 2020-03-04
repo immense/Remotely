@@ -1,6 +1,6 @@
 ﻿import * as Utilities from "../Utilities.js";
 import * as UI from "./UI.js";
-import { RemoteControl } from "./Main.js";
+import { Remotely } from "./Main.js";
 import { CursorInfo } from "../Models/CursorInfo.js";
 import { Sound } from "../Sound.js";
 import { PopupMessage } from "../UI.js";
@@ -64,7 +64,7 @@ export class RCBrowserSockets {
 
 
     SendScreenCastRequestToDevice() {
-        this.Connection.invoke("SendScreenCastRequestToDevice", RemoteControl.ClientID, RemoteControl.RequesterName, RemoteControl.Mode);
+        this.Connection.invoke("SendScreenCastRequestToDevice", Remotely.ClientID, Remotely.RequesterName, Remotely.Mode);
     }
     SendLatencyUpdate(sentTime: Date, bytesReceived: number) {
         this.Connection.invoke("SendLatencyUpdate", sentTime, bytesReceived);
@@ -200,7 +200,7 @@ export class RCBrowserSockets {
             document.title = `${machineName} - Remotely Session`;
         });
         hubConnection.on("RelaunchedScreenCasterReady", (newClientID: string) => {
-            RemoteControl.ClientID = newClientID;
+            Remotely.ClientID = newClientID;
             this.Connection.stop();
             this.Connect();
         });
@@ -229,13 +229,13 @@ export class RCBrowserSockets {
 
         hubConnection.on("ReceiveRtcOffer", async (sdp: string) => {
             console.log("Rtc offer SDP received.");
-            RemoteControl.RtcSession.Init();
-            await RemoteControl.RtcSession.ReceiveRtcOffer(sdp);
+            Remotely.RtcSession.Init();
+            await Remotely.RtcSession.ReceiveRtcOffer(sdp);
             
         });
         hubConnection.on("ReceiveIceCandidate", (candidate: string, sdpMlineIndex: number, sdpMid: string) => {
             console.log("Ice candidate received.");
-            RemoteControl.RtcSession.ReceiveCandidate({
+            Remotely.RtcSession.ReceiveCandidate({
                 candidate: candidate,
                 sdpMLineIndex: sdpMlineIndex,
                 sdpMid: sdpMid
