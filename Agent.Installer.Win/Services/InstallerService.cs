@@ -30,7 +30,8 @@ namespace Remotely.Agent.Installer.Win.Services
         public async Task<bool> Install(string serverUrl,
             string organizationId,
             string deviceGroup,
-            string deviceAlias)
+            string deviceAlias,
+            string deviceUuid)
         {
             try
             {
@@ -48,7 +49,7 @@ namespace Remotely.Agent.Installer.Win.Services
 
                 BackupDirectory();
 
-                var connectionInfo = GetConnectionInfo(organizationId, serverUrl);
+                var connectionInfo = GetConnectionInfo(organizationId, serverUrl, deviceUuid);
 
                 ClearInstallDirectory();
 
@@ -262,7 +263,7 @@ namespace Remotely.Agent.Installer.Win.Services
             ProgressValueChanged?.Invoke(this, 0);
         }
 
-        private ConnectionInfo GetConnectionInfo(string organizationId, string serverUrl)
+        private ConnectionInfo GetConnectionInfo(string organizationId, string serverUrl, string deviceUuid)
         {
             ConnectionInfo connectionInfo;
             var connectionInfoPath = Path.Combine(InstallPath, "ConnectionInfo.json");
@@ -279,6 +280,10 @@ namespace Remotely.Agent.Installer.Win.Services
                 };
             }
 
+            if (!string.IsNullOrWhiteSpace(deviceUuid) && Guid.TryParse(deviceUuid, out _))
+            {
+                connectionInfo.DeviceID = deviceUuid;
+            }
             connectionInfo.OrganizationID = organizationId;
             connectionInfo.Host = serverUrl;
             return connectionInfo;
