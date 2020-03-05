@@ -141,13 +141,13 @@ else {
     $ServerCmdlets = $true
 }
 ### Check if PostgreSQL is installed. ###
-if ((Get-Package -Name "*PostgreSQL*" -ErrorAction SilentlyContinue) -eq $null){
-    Wrap-Host
-    Wrap-Host "ERROR: PostgreSQL was not found.  Please install it from https://postgresql.org." -ForegroundColor Red
-    Wrap-Host
-    Do-Pause
-    return
-}
+##if ((Get-Package -Name "*PostgreSQL*" -ErrorAction SilentlyContinue) -eq $null){
+##    Wrap-Host
+##    Wrap-Host "ERROR: PostgreSQL was not found.  Please install it from https://postgresql.org." -ForegroundColor Red
+##    Wrap-Host
+##    Do-Pause
+##    return
+##}
 
 if ((Get-Package -Name "*3.1.2 - Windows Server Hosting*" -ErrorAction SilentlyContinue) -eq $null){
     Wrap-Host "Downloading .NET Core Runtime and Hosting Bundle..."

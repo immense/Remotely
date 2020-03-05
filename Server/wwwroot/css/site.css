@@ -24,15 +24,6 @@ h6 {
     max-width: 95vw !important;
 }
 
-.login-frame {
-    display: inline-block;
-    margin-bottom: 150px;
-}
-
-.login-button {
-    width: 100%;
-}
-
 .work-area {
     display: grid;
     grid-template-rows: min-content auto;
