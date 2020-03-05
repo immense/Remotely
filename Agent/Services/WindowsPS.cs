@@ -43,7 +43,7 @@ namespace Remotely.Agent.Services
         private string ConnectionID { get; set; }
         private string ErrorOut { get; set; }
         private string LastInputID { get; set; }
-        private bool OutputDone { get; set; }
+        private ManualResetEvent OutputDone { get; } = new ManualResetEvent(false);
         private System.Timers.Timer ProcessIdleTimeout { get; set; }
         private Process PSProc { get; }
         private string StandardOut { get; set; }
@@ -73,17 +73,12 @@ namespace Remotely.Agent.Services
             lock (PSProc)
             {
                 LastInputID = commandID;
-                OutputDone = false;
+                OutputDone.Reset();
                 PSProc.StandardInput.WriteLine(input);
                 PSProc.StandardInput.WriteLine("echo " + commandID);
-                var startWait = DateTime.Now;
-                while (!OutputDone)
+                if (!OutputDone.WaitOne(TimeSpan.FromSeconds(30)))
                 {
-                    if (DateTime.Now - startWait > TimeSpan.FromSeconds(30))
-                    {
-                        return GeneratePartialResult();
-                    }
-                    Thread.Sleep(1);
+                    return GeneratePartialResult();
                 }
             }
 
@@ -102,9 +97,9 @@ namespace Remotely.Agent.Services
         {
             if (e?.Data?.Contains(LastInputID) == true)
             {
-                OutputDone = true;
+                OutputDone.Set();
             }
-            else if (!OutputDone)
+            else
             {
                 StandardOut += e.Data + Environment.NewLine;
             }
@@ -124,14 +119,13 @@ namespace Remotely.Agent.Services
 
         private GenericCommandResult GeneratePartialResult()
         {
-            OutputDone = true;
             var partialResult = new GenericCommandResult()
             {
                 CommandContextID = LastInputID,
                 DeviceID = ConfigService.GetConnectionInfo().DeviceID,
                 CommandType = "WinPS",
                 StandardOutput = StandardOut,
-                ErrorOutput = "WARNING: The command execution froze and was forced to return before finishing.  " +
+                ErrorOutput = "WARNING: The command execution timed out and was forced to return before finishing.  " +
                     "The results may be partial, and the console process has been reset.  " +
                     "Please note that interactive commands aren't supported." + Environment.NewLine + ErrorOut
             };
