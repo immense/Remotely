@@ -162,7 +162,7 @@ namespace Remotely.Server.Services
             {
                 EventType = EventType.Info,
                 Message = $"File transfer started by {RemotelyUser.UserName}.  File transfer IDs: {string.Join(", ", fileIDs)}.",
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTimeOffset.Now,
                 OrganizationID = RemotelyUser.OrganizationID
             });
             deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);

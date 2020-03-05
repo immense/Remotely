@@ -195,7 +195,7 @@ namespace Remotely.Server.Services
             DataService.WriteEvent(new EventLog()
             {
                 EventType = EventType.Info,
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTimeOffset.Now,
                 Message = $"Remote control session requested.  " +
                                 $"Login ID (if logged in): {Context?.User?.Identity?.Name}.  " +
                                 $"Machine Name: {sessionInfo.MachineName}.  " +

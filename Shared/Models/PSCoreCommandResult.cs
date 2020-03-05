@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace Remotely.Shared.Models
@@ -8,12 +9,18 @@ namespace Remotely.Shared.Models
     {
         public string CommandContextID { get; set; }
         public string DeviceID { get; set; }
+        [NotMapped]
         public List<string> VerboseOutput { get; set; }
+        [NotMapped]
         public List<string> DebugOutput { get; set; }
+        [NotMapped]
         public List<string> ErrorOutput { get; set; }
+        [NotMapped]
         public string HostOutput { get; set; }
+        [NotMapped]
         public List<string> InformationOutput { get; set; }
+        [NotMapped]
         public List<string> WarningOutput { get; set; }
-        public DateTime TimeStamp { get; set; } = DateTime.Now;
+        public DateTimeOffset TimeStamp { get; set; } = DateTimeOffset.Now;
     }
 }

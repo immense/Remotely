@@ -11,7 +11,7 @@ namespace Remotely.Shared.Models
         [Key]
         public string ID { get; set; } = Guid.NewGuid().ToString();
 
-        public DateTime? LastUsed { get; set; }
+        public DateTimeOffset? LastUsed { get; set; }
 
         [StringLength(200)]
         public string Name { get; set; }

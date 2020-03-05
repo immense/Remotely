@@ -34,7 +34,7 @@ namespace Remotely.ScreenCast.Core.Capture
             Logger.Write($"Starting screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}. Capturer: {capturer.GetType().ToString()}.  App Mode: {mode}");
 
             byte[] encodedImageBytes;
-            var fpsQueue = new Queue<DateTime>();
+            var fpsQueue = new Queue<DateTimeOffset>();
 
             var viewer = new Viewer()
             {
@@ -83,11 +83,11 @@ namespace Remotely.ScreenCast.Core.Capture
 
                     if (conductor.IsDebug)
                     {
-                        while (fpsQueue.Any() && DateTime.Now - fpsQueue.Peek() > TimeSpan.FromSeconds(1))
+                        while (fpsQueue.Any() && DateTimeOffset.Now - fpsQueue.Peek() > TimeSpan.FromSeconds(1))
                         {
                             fpsQueue.Dequeue();
                         }
-                        fpsQueue.Enqueue(DateTime.Now);
+                        fpsQueue.Enqueue(DateTimeOffset.Now);
                         Debug.WriteLine($"Capture FPS: {fpsQueue.Count}");
                     }
 

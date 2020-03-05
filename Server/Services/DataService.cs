@@ -74,7 +74,7 @@ namespace Remotely.Server.Services
 
             var newInvite = new InviteLink()
             {
-                DateSent = DateTime.Now,
+                DateSent = DateTimeOffset.Now,
                 InvitedUser = invite.InvitedUser,
                 IsAdmin = invite.IsAdmin,
                 Organization = organization,
@@ -154,7 +154,7 @@ namespace Remotely.Server.Services
 
         public string AddSharedFile(IFormFile file, string organizationID)
         {
-            var expirationDate = DateTime.Now.AddDays(-AppConfig.DataRetentionInDays);
+            var expirationDate = DateTimeOffset.Now.AddDays(-AppConfig.DataRetentionInDays);
             var expiredFiles = RemotelyContext.SharedFiles.Where(x => x.Timestamp < expirationDate);
             RemotelyContext.RemoveRange(expiredFiles);
 
@@ -196,7 +196,7 @@ namespace Remotely.Server.Services
             if (AppConfig.DataRetentionInDays > 0)
             {
 
-                var expirationDate = DateTime.Now - TimeSpan.FromDays(AppConfig.DataRetentionInDays);
+                var expirationDate = DateTimeOffset.Now - TimeSpan.FromDays(AppConfig.DataRetentionInDays);
 
                 var eventLogs = RemotelyContext.EventLogs
                                     .Where(x => x.TimeStamp < expirationDate);
@@ -474,14 +474,14 @@ namespace Remotely.Server.Services
                     )));
         }
 
-        public IEnumerable<EventLog> GetEventLogs(string userName, DateTime from, DateTime to)
+        public IEnumerable<EventLog> GetEventLogs(string userName, DateTimeOffset from, DateTimeOffset to)
         {
             var orgID = RemotelyContext.Users
                         .FirstOrDefault(x => x.UserName == userName)
                         ?.OrganizationID;
 
-            var fromDate = DateTime.Now.Date;
-            var toDate = DateTime.Now.Date.AddDays(1);
+            var fromDate = from.Date;
+            var toDate = to.Date.AddDays(1);
 
             return RemotelyContext.EventLogs
                 .Where(x => x.OrganizationID == orgID && x.TimeStamp >= fromDate && x.TimeStamp <= toDate)
@@ -789,7 +789,7 @@ namespace Remotely.Server.Services
 
             if (token != null)
             {
-                token.LastUsed = DateTime.Now;
+                token.LastUsed = DateTimeOffset.Now;
                 RemotelyContext.SaveChanges();
             }
 
@@ -811,7 +811,7 @@ namespace Remotely.Server.Services
                 Message = ex.Message,
                 Source = ex.Source,
                 StackTrace = ex.StackTrace,
-                TimeStamp = DateTime.Now
+                TimeStamp = DateTimeOffset.Now
             });
             RemotelyContext.SaveChanges();
         }
@@ -822,7 +822,7 @@ namespace Remotely.Server.Services
             {
                 EventType = EventType.Info,
                 Message = message,
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTimeOffset.Now,
                 OrganizationID = organizationId
             });
             RemotelyContext.SaveChanges();
@@ -834,7 +834,7 @@ namespace Remotely.Server.Services
             {
                 EventType = eventType,
                 Message = message,
-                TimeStamp = DateTime.Now,
+                TimeStamp = DateTimeOffset.Now,
                 OrganizationID = organizationId
             });
             RemotelyContext.SaveChanges();

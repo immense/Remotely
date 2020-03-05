@@ -18,6 +18,6 @@ namespace Remotely.Server.Models
         public string RequesterSocketID { get; set; }
         public string RequesterUserName { get; set; }
         public string ServiceID { get; set; }
-        public DateTime StartTime { get; set; }
+        public DateTimeOffset StartTime { get; set; }
     }
 }

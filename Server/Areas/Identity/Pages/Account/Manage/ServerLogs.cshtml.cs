@@ -36,13 +36,13 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
             if (Input.FromDate.HasValue || Input.ToDate.HasValue)
             {
-                var from = Input.FromDate ?? DateTime.MinValue;
-                var to = Input.ToDate ?? DateTime.MaxValue;
+                var from = Input.FromDate ?? DateTimeOffset.MinValue;
+                var to = Input.ToDate ?? DateTimeOffset.MaxValue;
                 EventLogs = DataService.GetEventLogs(User.Identity.Name, from, to);
             }
             else
             {
-                EventLogs = DataService.GetEventLogs(User.Identity.Name, DateTime.Now.AddDays(-10), DateTime.Now);
+                EventLogs = DataService.GetEventLogs(User.Identity.Name, DateTimeOffset.Now.AddDays(-10), DateTimeOffset.Now);
             }
 
         }
@@ -54,8 +54,8 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
-            public DateTime? FromDate { get; set; } = DateTime.Now.AddDays(-10);
-            public DateTime? ToDate { get; set; } = DateTime.Now;
+            public DateTimeOffset? FromDate { get; set; } = DateTimeOffset.Now.AddDays(-10);
+            public DateTimeOffset? ToDate { get; set; } = DateTimeOffset.Now;
         }
     }
 }

@@ -70,16 +70,16 @@ namespace Remotely.Shared.Services
         public static async Task<double> GetCpuUtilization()
         {
             double totalUtilization = 0;
-            var utilizations = new Dictionary<int, Tuple<DateTime, TimeSpan>>();
+            var utilizations = new Dictionary<int, Tuple<DateTimeOffset, TimeSpan>>();
             var processes = Process.GetProcesses();
 
             foreach (var proc in processes)
             {
                 try
                 {
-                    var startTime = DateTime.UtcNow;
+                    var startTime = DateTimeOffset.Now;
                     var startCpuUsage = proc.TotalProcessorTime;
-                    utilizations.Add(proc.Id, new Tuple<DateTime, TimeSpan>(startTime, startCpuUsage));
+                    utilizations.Add(proc.Id, new Tuple<DateTimeOffset, TimeSpan>(startTime, startCpuUsage));
                 }
                 catch
                 {
@@ -91,7 +91,7 @@ namespace Remotely.Shared.Services
 
             foreach (var kvp in utilizations)
             {
-                var endTime = DateTime.UtcNow;
+                var endTime = DateTimeOffset.Now;
                 try
                 {
                     var proc = Process.GetProcessById(kvp.Key);

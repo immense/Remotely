@@ -15,7 +15,7 @@ namespace Remotely.Shared.Models
         public string Source { get; set; }
         public string StackTrace { get; set; }
         public string OrganizationID { get; set; }
-        public DateTime TimeStamp { get; set; } = DateTime.Now;
+        public DateTimeOffset TimeStamp { get; set; } = DateTimeOffset.Now;
         [JsonIgnore]
         public Organization Organization { get; set; }
     }

@@ -17,7 +17,7 @@ namespace Remotely.Shared.Models
         public string[] TargetDeviceIDs { get; set; }
         public ICollection<PSCoreCommandResult> PSCoreResults { get; set; } = new List<PSCoreCommandResult>();
         public ICollection<GenericCommandResult> CommandResults { get; set; } = new List<GenericCommandResult>();
-        public DateTime TimeStamp { get; set; } = DateTime.Now;
+        public DateTimeOffset TimeStamp { get; set; } = DateTimeOffset.Now;
         [JsonIgnore]
         public Organization Organization { get; set; }
         public string OrganizationID { get; set; }
