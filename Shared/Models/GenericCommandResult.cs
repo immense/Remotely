@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Remotely.Shared.Models
@@ -11,6 +12,6 @@ namespace Remotely.Shared.Models
         public string CommandType { get; set; }
         public string StandardOutput { get; set; }
         public string ErrorOutput { get; set; }
-        public DateTime TimeStamp { get; set; } = DateTime.Now;
+        public DateTimeOffset TimeStamp { get; set; } = DateTimeOffset.Now;
     }
 }

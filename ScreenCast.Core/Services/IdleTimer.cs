@@ -17,7 +17,7 @@ namespace Remotely.ScreenCast.Core.Services
 
         public ConcurrentDictionary<string, Viewer> ViewerList { get; }
 
-        public DateTime ViewersLastSeen { get; private set; } = DateTime.Now;
+        public DateTimeOffset ViewersLastSeen { get; private set; } = DateTimeOffset.Now;
 
         private Timer Timer { get; } = new Timer(100);
 
@@ -30,9 +30,9 @@ namespace Remotely.ScreenCast.Core.Services
         {
             if (ViewerList.Count > 0)
             {
-                ViewersLastSeen = DateTime.Now;
+                ViewersLastSeen = DateTimeOffset.Now;
             }
-            else if (DateTime.Now - ViewersLastSeen > TimeSpan.FromSeconds(10))
+            else if (DateTimeOffset.Now - ViewersLastSeen > TimeSpan.FromSeconds(10))
             {
                 Logger.Write("No viewers connected after 10 seconds.  Shutting down.");
                 Environment.Exit(0);

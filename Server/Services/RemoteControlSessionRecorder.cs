@@ -27,7 +27,7 @@ namespace Remotely.Server.Services
         private static ConcurrentDictionary<string, RecordingSessionState> SessionStates { get; } = new ConcurrentDictionary<string, RecordingSessionState>();
         private DataService DataService { get; }
         private IWebHostEnvironment HostingEnv { get; }
-        internal void SaveFrame(byte[] frameBytes, int left, int top, int width, int height, string viewerID, string machineName, DateTime startTime)
+        internal void SaveFrame(byte[] frameBytes, int left, int top, int width, int height, string viewerID, string machineName, DateTimeOffset startTime)
         {
             var rcFrame = new RemoteControlFrame(frameBytes, left, top, width, height, viewerID, machineName, startTime);
             FrameQueue.Enqueue(rcFrame);

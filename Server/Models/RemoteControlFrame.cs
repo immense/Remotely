@@ -7,7 +7,7 @@ namespace Remotely.Server.Models
     public class RemoteControlFrame
     {
 
-        public RemoteControlFrame(byte[] frameBytes, int left, int top, int width, int height, string viewerID, string machineName, DateTime startTime)
+        public RemoteControlFrame(byte[] frameBytes, int left, int top, int width, int height, string viewerID, string machineName, DateTimeOffset startTime)
         {
             this.FrameBytes = frameBytes;
             this.Left = left;
@@ -25,6 +25,6 @@ namespace Remotely.Server.Models
         public int Height { get; private set; }
         public string ViewerID { get; private set; }
         public string MachineName { get; private set; }
-        public DateTime StartTime { get; private set; }
+        public DateTimeOffset StartTime { get; private set; }
     }
 }
