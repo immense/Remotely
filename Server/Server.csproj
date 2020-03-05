@@ -35,8 +35,8 @@
     <Content Remove="wwwroot\scripts\Enums\RemoteControlMode.ts" />
     <Content Remove="wwwroot\scripts\InputEventHandlers.ts" />
     <Content Remove="wwwroot\scripts\Main.ts" />
-    <Content Remove="wwwroot\scripts\Models\CommandContext.ts" />
     <Content Remove="wwwroot\scripts\Models\CommandLineParameter.ts" />
+    <Content Remove="wwwroot\scripts\Models\CommandResult.ts" />
     <Content Remove="wwwroot\scripts\Models\ConsoleCommand.ts" />
     <Content Remove="wwwroot\scripts\Models\CursorInfo.ts" />
     <Content Remove="wwwroot\scripts\Models\Device.ts" />
@@ -112,7 +112,7 @@
     <None Include="wwwroot\lib\signalr\signalr.js.map" />
     <None Include="wwwroot\lib\signalr\signalr.min.js" />
     <None Include="wwwroot\lib\signalr\signalr.min.js.map" />
-    <None Include="wwwroot\scripts\Models\CommandContext.ts">
+    <None Include="wwwroot\scripts\Models\CommandResult.ts">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </None>
