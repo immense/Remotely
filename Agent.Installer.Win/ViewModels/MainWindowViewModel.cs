@@ -36,6 +36,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
         {
             Installer = new InstallerService();
         }
+
         public string HeaderMessage
         {
             get
@@ -161,6 +162,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
 
         private string DeviceAlias { get; set; }
         private string DeviceGroup { get; set; }
+        private string DeviceUuid { get; set; }
         private InstallerService Installer { get; }
         public async Task Init()
         {
@@ -290,6 +292,11 @@ namespace Remotely.Agent.Installer.Win.ViewModels
                 DeviceAlias = deviceAlias;
             }
 
+            if (CommandLineParser.CommandLineArgs.TryGetValue("deviceuuid", out var deviceUuid))
+            {
+                DeviceUuid = deviceUuid;
+            }
+
             if (ServerUrl?.EndsWith("/") == true)
             {
                 ServerUrl = ServerUrl.Substring(0, ServerUrl.LastIndexOf("/"));
@@ -312,7 +319,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
 
                 HeaderMessage = "Installing Remotely...";
                 
-                if (await Installer.Install(ServerUrl, OrganizationID, DeviceGroup, DeviceAlias))
+                if (await Installer.Install(ServerUrl, OrganizationID, DeviceGroup, DeviceAlias, DeviceUuid))
                 {
                     IsServiceInstalled = true;
                     Progress = 0;
