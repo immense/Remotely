@@ -85,9 +85,9 @@ namespace Remotely.Server.Services
             return newInvite;
         }
 
-        public void AddOrUpdateCommandContext(CommandContext commandContext)
+        public void AddOrUpdateCommandContext(CommandResult commandContext)
         {
-            var existingContext = RemotelyContext.CommandContexts.Find(commandContext.ID);
+            var existingContext = RemotelyContext.CommandResults.Find(commandContext.ID);
             if (existingContext != null)
             {
                 var entry = RemotelyContext.Entry(existingContext);
@@ -96,7 +96,7 @@ namespace Remotely.Server.Services
             }
             else
             {
-                RemotelyContext.CommandContexts.Add(commandContext);
+                RemotelyContext.CommandResults.Add(commandContext);
             }
             RemotelyContext.SaveChanges();
         }
@@ -203,7 +203,7 @@ namespace Remotely.Server.Services
 
                 RemotelyContext.RemoveRange(eventLogs);
 
-                var commandContexts = RemotelyContext.CommandContexts
+                var commandContexts = RemotelyContext.CommandResults
                                         .Where(x => x.TimeStamp < expirationDate);
 
                 RemotelyContext.RemoveRange(commandContexts);
@@ -360,9 +360,9 @@ namespace Remotely.Server.Services
                 .OrderByDescending(x => x.LastUsed);
         }
 
-        public IEnumerable<CommandContext> GetAllCommandContexts(string orgID)
+        public IEnumerable<CommandResult> GetAllCommandContexts(string orgID)
         {
-            return RemotelyContext.CommandContexts
+            return RemotelyContext.CommandResults
                 .Where(x => x.OrganizationID == orgID)
                 .OrderByDescending(x => x.TimeStamp);
         }
@@ -400,17 +400,17 @@ namespace Remotely.Server.Services
             return RemotelyContext.ApiTokens.FirstOrDefault(x => x.Token == apiToken);
         }
 
-        public CommandContext GetCommandContext(string commandContextID, string orgID)
+        public CommandResult GetCommandContext(string commandContextID, string orgID)
         {
-            return RemotelyContext.CommandContexts
+            return RemotelyContext.CommandResults
                 .FirstOrDefault(x =>
                     x.OrganizationID == orgID &&
                     x.ID == commandContextID);
         }
 
-        public CommandContext GetCommandContext(string commandContextID)
+        public CommandResult GetCommandContext(string commandContextID)
         {
-            return RemotelyContext.CommandContexts.Find(commandContextID);
+            return RemotelyContext.CommandResults.Find(commandContextID);
         }
 
         public string GetDefaultPrompt(string userName)

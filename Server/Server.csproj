@@ -21,11 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20200305070438_DateTimeOffsets.cs" />
-    <Compile Remove="Migrations\20200305070438_DateTimeOffsets.Designer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Remove="wwwroot\scripts\BrowserSockets.ts" />
     <Content Remove="wwwroot\scripts\Chat.ts" />
     <Content Remove="wwwroot\scripts\CommandCompletion.ts" />

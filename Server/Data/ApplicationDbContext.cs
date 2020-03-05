@@ -5,9 +5,9 @@ using Remotely.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Linq;
+using System.Text.Json;
 
 namespace Remotely.Server.Data
 {
@@ -20,7 +20,7 @@ namespace Remotely.Server.Data
 
         public DbSet<ApiToken> ApiTokens { get; set; }
 
-        public DbSet<CommandContext> CommandContexts { get; set; }
+        public DbSet<CommandResult> CommandResults { get; set; }
 
         public DbSet<Device> Devices { get; set; }
 
@@ -76,21 +76,21 @@ namespace Remotely.Server.Data
               .WithOne(x => x.Organization);
 
 
-            builder.Entity<CommandContext>()
+            builder.Entity<CommandResult>()
                 .Property(x=>x.TargetDeviceIDs)
                 .HasConversion(
-                    x => JsonConvert.SerializeObject(x),
-                    x => JsonConvert.DeserializeObject<string[]>(x));
-            builder.Entity<CommandContext>()
+                    x => JsonSerializer.Serialize(x, null),
+                    x => JsonSerializer.Deserialize<string[]>(x, null));
+            builder.Entity<CommandResult>()
                .Property(x => x.PSCoreResults)
                .HasConversion(
-                   x => JsonConvert.SerializeObject(x),
-                   x => JsonConvert.DeserializeObject<List<PSCoreCommandResult>>(x));
-            builder.Entity<CommandContext>()
+                   x => JsonSerializer.Serialize(x, null),
+                   x => JsonSerializer.Deserialize<List<PSCoreCommandResult>>(x, null));
+            builder.Entity<CommandResult>()
                 .Property(x => x.CommandResults)
                 .HasConversion(
-                    x => JsonConvert.SerializeObject(x),
-                    x => JsonConvert.DeserializeObject<List<GenericCommandResult>>(x));
+                    x => JsonSerializer.Serialize(x, null),
+                    x => JsonSerializer.Deserialize<List<GenericCommandResult>>(x, null));
 
             builder.Entity<GenericCommandResult>()
                 .HasNoKey();
@@ -109,8 +109,8 @@ namespace Remotely.Server.Data
             builder.Entity<RemotelyUser>()
                 .Property(x => x.UserOptions)
                 .HasConversion(
-                    x => JsonConvert.SerializeObject(x),
-                    x => JsonConvert.DeserializeObject<RemotelyUserOptions>(x));
+                    x => JsonSerializer.Serialize(x, null),
+                    x => JsonSerializer.Deserialize<RemotelyUserOptions>(x, null));
 
             builder.Entity<RemotelyUser>()
                 .HasIndex(x => x.UserName);
@@ -118,8 +118,8 @@ namespace Remotely.Server.Data
             builder.Entity<Device>()
                 .Property(x => x.Drives)
                 .HasConversion(
-                    x => JsonConvert.SerializeObject(x),
-                    x => JsonConvert.DeserializeObject<List<Drive>>(x));
+                    x => JsonSerializer.Serialize(x, null),
+                    x => JsonSerializer.Deserialize<List<Drive>>(x, null));
 
             builder.Entity<Device>()
                 .HasIndex(x => x.DeviceName);

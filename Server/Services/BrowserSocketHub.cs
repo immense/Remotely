@@ -61,7 +61,7 @@ namespace Remotely.Server.Services
         {
             deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
             var connections = GetActiveClientConnections(deviceIDs);
-            var commandContext = new CommandContext()
+            var commandContext = new CommandResult()
             {
                 CommandMode = mode,
                 CommandText = Encoding.UTF8.GetString(DataService.GetSharedFiled(fileID).FileContents),
@@ -94,7 +94,7 @@ namespace Remotely.Server.Services
             deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
             var connections = GetActiveClientConnections(deviceIDs);
 
-            var commandContext = new CommandContext()
+            var commandContext = new CommandResult()
             {
                 CommandMode = mode,
                 CommandText = command,

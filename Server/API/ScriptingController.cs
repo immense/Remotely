@@ -34,7 +34,7 @@ namespace Remotely.Server.API
 
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
         [HttpPost("[action]/{mode}/{deviceID}")]
-        public async Task<ActionResult<CommandContext>> ExecuteCommand(string mode, string deviceID)
+        public async Task<ActionResult<CommandResult>> ExecuteCommand(string mode, string deviceID)
         {
             var command = string.Empty;
             using (var sr = new StreamReader(Request.Body))
@@ -66,7 +66,7 @@ namespace Remotely.Server.API
                 return NotFound();
             }
 
-            var commandContext = new CommandContext()
+            var commandContext = new CommandResult()
             {
                 CommandMode = "PSCore",
                 CommandText = command,
