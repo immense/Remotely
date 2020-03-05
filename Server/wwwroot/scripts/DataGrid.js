@@ -65,7 +65,7 @@ export function AddOrUpdateDevice(device) {
                     <td>${device.TotalStorage.toLocaleString()}</td>
                     <td>${Math.round(device.UsedMemory / device.TotalMemory * 100)}%</td>
                     <td>${device.TotalMemory.toLocaleString()}</td>
-                    <td>
+                    <td style="white-space: nowrap">
                         <i class="fas fa-comment device-chat-button mr-2" title="Chat" style="font-size:1.5em"></i>
                         <i class="fas fa-mouse device-remotecontrol-button mr-2" title="Remote Control" style="font-size:1.5em"></i>
                         <i class="fas fa-edit device-edit-button" title="Edit" style="font-size:1.5em"></i>

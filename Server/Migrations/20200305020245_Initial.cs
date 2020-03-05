@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Remotely.Server.Migrations
 {
@@ -39,7 +38,7 @@ namespace Remotely.Server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                        .Annotation("Sqlite:Autoincrement", true),
                     RoleId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -240,7 +239,7 @@ namespace Remotely.Server.Migrations
                     UsedStorage = table.Column<double>(nullable: false),
                     Is64Bit = table.Column<bool>(nullable: false),
                     IsOnline = table.Column<bool>(nullable: false),
-                    LastOnline = table.Column<DateTime>(nullable: false),
+                    LastOnline = table.Column<DateTimeOffset>(nullable: false),
                     OrganizationID = table.Column<string>(nullable: true),
                     OSArchitecture = table.Column<int>(nullable: false),
                     OSDescription = table.Column<string>(nullable: true),
@@ -273,7 +272,7 @@ namespace Remotely.Server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                        .Annotation("Sqlite:Autoincrement", true),
                     UserId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)

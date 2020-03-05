@@ -1,37 +1,27 @@
 ﻿@inject Remotely.Server.Services.ApplicationConfig AppConfig
 @inject Remotely.Server.Services.DataService DataService
 @model IndexModel
-@{ 
+@{
     var organizationCount = DataService.GetOrganizationCount();
+    var registrationAvailable = AppConfig.MaxOrganizationCount < 0 || organizationCount < AppConfig.MaxOrganizationCount;
 }
-<div class="console">
-    <div id="consoleOutputDiv">
-        <div class="console-block">
-            <div class="console-prompt">@Model.DefaultPrompt</div>
-            <div class="console-output">Authentication required.</div>
-        </div>
 
-        <div class="console-block">
-            <div class="console-prompt">@Model.DefaultPrompt</div>
-            <div class="console-output">Please log in or register.</div>
-        </div>
-        <br />
-        <br />
-
-        <div class="text-center">
-            <div class="login-frame">
-                <a href="~/Identity/Account/Login" class="btn btn-primary btn-lg login-button">
-                    Login
-                </a>
-                @if (AppConfig.MaxOrganizationCount < 0 || organizationCount < AppConfig.MaxOrganizationCount)
-                {
-                    <br />
-                    <br />
-                    <a href="~/Identity/Account/Register" class="btn btn-secondary btn-lg login-button">
-                        Register
-                    </a>
-                }
-            </div>
-        </div>
+<div class="text-center mt-5" style="margin-bottom:150px">
+    <h1>Remotely Login</h1>
+    <div class="lead">
+        Welcome.  Please log in@(registrationAvailable ? " or register" : "").
+    </div>
+    <div class="mt-5">
+        <a href="~/Identity/Account/Login" class="btn btn-primary btn-lg">
+            Login
+        </a>
+        @if (registrationAvailable)
+        {
+            <br />
+            <br />
+            <a href="~/Identity/Account/Register" class="btn btn-secondary btn-lg">
+                Register
+            </a>
+        }
     </div>
 </div>
