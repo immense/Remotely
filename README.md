@@ -18,10 +18,16 @@ Multi-Tenant Demo Server: https://app.remotely.one
 The following steps will configure your Windows 10 machine for building the Remotely server and clients.
 * Install Visual Studio 2019.
     * Link: https://visualstudio.microsoft.com/downloads/
+	* You only need the below Individual Components:
+	    * .NET Core SDK (latest version).
+		* MSBuild (which auto-selects Roslyn compilers).
+		* NuGet targets and build tasks.
+		* .NET Framework 4.6.2 SDK.
+		* .NET Framework 4.6.2 targeting pack.
 * Install the latest .NET Core SDK.
     * Link: https://dotnet.microsoft.com/download
 * Clone the git repository and open the solution in Visual Studio.
-* Run Publish.ps1 in the [Utilities folder in source control](https://raw.githubusercontent.com/Jay-Rad/Remotely/master/Utilities/Install-RemotelyServer.ps1).
+* Run Publish.ps1 in the [Utilities folder in source control](https://raw.githubusercontent.com/Jay-Rad/Remotely/master/Utilities/Publish.ps1).
     * Example: powershell -f [path]\Publish.ps1 -outdir C:\inetpub\remotely -rid win10-x64 -hostname https://mysite.mydomain.com
     * The output folder will now contain the server, with the clients in the Downloads folder.
 	* The above hostname will be hardcoded in the screen-sharing desktop apps, but can be changed via the options menu.
@@ -39,7 +45,9 @@ The following steps will configure your Windows 10 machine for building the Remo
 	* This includes the Hosting Bundle for Windows, which allows you to run ASP.NET Core in IIS.
 	* Important: If you installed .NET Core Runtime before installing all the required IIS features, you may need to run a repair on the .NET Core Runtime installation.
 * Change values in appsettings.json for your environment.
-* If using SQLite configuration, make sure the ApplicationPool's account has write access to the DB file location.
+* By default, SQLite is used for the database.
+    * The "Remotely.db" database file is automatically created in the root folder of your site.
+	* You can browse and modify the contents using [DB Browser for SQLite](https://sqlitebrowser.org/).
 * If the site will be public-facing, configure your bindings in IIS.
 * An SSL certificate for HTTPS is recommended.  You can install one for free using Let's Encrypt.
 	* Resources: https://letsencrypt.org/, https://certifytheweb.com/
