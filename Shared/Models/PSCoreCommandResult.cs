@@ -7,7 +7,7 @@ namespace Remotely.Shared.Models
 {
     public class PSCoreCommandResult
     {
-        public string CommandContextID { get; set; }
+        public string CommandResultID { get; set; }
         public string DeviceID { get; set; }
         [NotMapped]
         public List<string> VerboseOutput { get; set; }

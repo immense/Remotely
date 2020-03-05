@@ -35,17 +35,17 @@ namespace Remotely.Server.API
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
 
             var content = "";
-            var commandContexts = DataService.GetAllCommandContexts(orgID);
+            var commandResults = DataService.GetAllCommandResults(orgID);
             switch (fileExt.ToUpper())
             {
                 case "JSON":
-                    content = System.Text.Json.JsonSerializer.Serialize(commandContexts);
+                    content = System.Text.Json.JsonSerializer.Serialize(commandResults);
                     break;
                 case "XML":
                     var serializer = new DataContractSerializer(typeof(CommandResult));
                     using (var ms = new MemoryStream())
                     {
-                        serializer.WriteObject(ms, commandContexts);
+                        serializer.WriteObject(ms, commandResults);
                         content = Encoding.UTF8.GetString(ms.ToArray());
                     }
                     break;
@@ -63,17 +63,17 @@ namespace Remotely.Server.API
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
 
             var content = "";
-            var commandContext = DataService.GetCommandContext(commandID, orgID);
+            var commandResult = DataService.GetCommandResult(commandID, orgID);
             switch (fileExt.ToUpper())
             {
                 case "JSON":
-                    content = System.Text.Json.JsonSerializer.Serialize(commandContext);
+                    content = System.Text.Json.JsonSerializer.Serialize(commandResult);
                     break;
                 case "XML":
                     var serializer = new DataContractSerializer(typeof(CommandResult));
                     using (var ms = new MemoryStream())
                     {
-                        serializer.WriteObject(ms, commandContext);
+                        serializer.WriteObject(ms, commandResult);
                         content = Encoding.UTF8.GetString(ms.ToArray());
                     }
                     break;
@@ -89,7 +89,7 @@ namespace Remotely.Server.API
         public PSCoreCommandResult PSCoreResult(string commandID, string deviceID)
         {
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
-            return DataService.GetCommandContext(commandID, orgID).PSCoreResults.FirstOrDefault(x => x.DeviceID == deviceID);
+            return DataService.GetCommandResult(commandID, orgID).PSCoreResults.FirstOrDefault(x => x.DeviceID == deviceID);
         }
 
         [HttpGet("GenericResult/{commandID}/{deviceID}")]
@@ -97,7 +97,7 @@ namespace Remotely.Server.API
         public GenericCommandResult GenericResult(string commandID, string deviceID)
         {
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
-            return DataService.GetCommandContext(commandID, orgID).CommandResults.FirstOrDefault(x => x.DeviceID == deviceID);
+            return DataService.GetCommandResult(commandID, orgID).CommandResults.FirstOrDefault(x => x.DeviceID == deviceID);
         }
 
         [HttpPost("{resultType}")]
@@ -111,9 +111,9 @@ namespace Remotely.Server.API
                     case "PSCore":
                         {
                             var result = System.Text.Json.JsonSerializer.Deserialize<PSCoreCommandResult>(content);
-                            var commandContext = DataService.GetCommandContext(result.CommandContextID);
-                            commandContext.PSCoreResults.Add(result);
-                            DataService.AddOrUpdateCommandContext(commandContext);
+                            var commandResult = DataService.GetCommandResult(result.CommandResultID);
+                            commandResult.PSCoreResults.Add(result);
+                            DataService.AddOrUpdateCommandResult(commandResult);
                             break;
                         }
                     case "WinPS":
@@ -121,9 +121,9 @@ namespace Remotely.Server.API
                     case "Bash":
                         {
                             var result = System.Text.Json.JsonSerializer.Deserialize<GenericCommandResult>(content);
-                            var commandContext = DataService.GetCommandContext(result.CommandContextID);
-                            commandContext.CommandResults.Add(result);
-                            DataService.AddOrUpdateCommandContext(commandContext);
+                            var commandResult = DataService.GetCommandResult(result.CommandResultID);
+                            commandResult.CommandResults.Add(result);
+                            DataService.AddOrUpdateCommandResult(commandResult);
                             break;
                         }
                     default:

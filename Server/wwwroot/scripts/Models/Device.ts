@@ -1,6 +1,4 @@
-﻿import { DevicePermissionLink } from "./DevicePermissionLink";
-
-export interface Device {
+﻿export interface Device {
     Alias: string;
     AgentVersion: string;
     CpuUtilization: number;

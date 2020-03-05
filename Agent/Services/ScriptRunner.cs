@@ -20,7 +20,7 @@ namespace Remotely.Agent.Services
         private CommandExecutor CommandExecutor { get; }
         private ConfigService ConfigService { get; }
 
-        public async Task RunScript(string mode, string fileID, string commandContextID, string requesterID, HubConnection hubConnection)
+        public async Task RunScript(string mode, string fileID, string commandResultID, string requesterID, HubConnection hubConnection)
         {
             var connectionInfo = ConfigService.GetConnectionInfo();
             var sharedFilePath = Directory.CreateDirectory(Path.Combine(
@@ -40,7 +40,7 @@ namespace Remotely.Agent.Services
                 using (var sr = new StreamReader(rs))
                 {
                     var result = await sr.ReadToEndAsync();
-                    await CommandExecutor.ExecuteCommand(mode, result, commandContextID, requesterID, hubConnection);
+                    await CommandExecutor.ExecuteCommand(mode, result, commandResultID, requesterID, hubConnection);
                 }
             }
         }

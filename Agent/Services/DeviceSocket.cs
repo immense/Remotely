@@ -181,7 +181,7 @@ namespace Remotely.Agent.Services
                 }
                 await this.HubConnection.InvokeAsync("TransferCompleted", transferID, requesterID);
             });
-            HubConnection.On("DeployScript", async (string mode, string fileID, string commandContextID, string requesterID) => {
+            HubConnection.On("DeployScript", async (string mode, string fileID, string commandResultID, string requesterID) => {
                 if (!IsServerVerified)
                 {
                     Logger.Write($"Script deploy attempted before server was verified.  Mode: {mode}.  File ID: {fileID}.  Sender: {requesterID}");
@@ -189,7 +189,7 @@ namespace Remotely.Agent.Services
                     return;
                 }
 
-                await ScriptRunner.RunScript(mode, fileID, commandContextID, requesterID, HubConnection);
+                await ScriptRunner.RunScript(mode, fileID, commandResultID, requesterID, HubConnection);
             });
             HubConnection.On("UninstallClient", () =>
             {
