@@ -421,7 +421,7 @@ namespace Remotely.Server.Migrations
 
             modelBuilder.Entity("Remotely.Shared.Models.GenericCommandResult", b =>
                 {
-                    b.Property<string>("CommandContextID")
+                    b.Property<string>("CommandResultID")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CommandType")
@@ -485,7 +485,7 @@ namespace Remotely.Server.Migrations
 
             modelBuilder.Entity("Remotely.Shared.Models.PSCoreCommandResult", b =>
                 {
-                    b.Property<string>("CommandContextID")
+                    b.Property<string>("CommandResultID")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("DeviceID")
@@ -625,7 +625,7 @@ namespace Remotely.Server.Migrations
             modelBuilder.Entity("Remotely.Shared.Models.CommandResult", b =>
                 {
                     b.HasOne("Remotely.Shared.Models.Organization", "Organization")
-                        .WithMany("CommandContexts")
+                        .WithMany("CommandResults")
                         .HasForeignKey("OrganizationID");
                 });
 

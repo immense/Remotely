@@ -1,6 +1,6 @@
 export interface GenericCommandResult {
     DeviceID: string;
-    CommandContextID: string;
+    CommandResultID: string;
     CommandType: string;
     StandardOutput: string;
     ErrorOutput: string;

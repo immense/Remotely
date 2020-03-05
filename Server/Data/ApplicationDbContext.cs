@@ -52,7 +52,7 @@ namespace Remotely.Server.Data
                 .HasMany(x => x.RemotelyUsers)
                 .WithOne(x=> x.Organization);
             builder.Entity<Organization>()
-                .HasMany(x => x.CommandContexts)
+                .HasMany(x => x.CommandResults)
                 .WithOne(x => x.Organization);
             builder.Entity<Organization>()
                 .HasMany(x => x.EventLogs)

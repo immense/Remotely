@@ -22,7 +22,7 @@ export function CreateCommandHarness(result) {
     return commandHarness;
 }
 export function AddPSCoreResultsHarness(result) {
-    var contextID = "c" + result.CommandContextID;
+    var contextID = "c" + result.CommandResultID;
     var deviceName = DataGrid.DataSource.find(x => x.ID == result.DeviceID).DeviceName;
     var resultsWrapper = document.getElementById(contextID + "-results");
     var totalDevices = parseInt(document.getElementById(contextID + "-totaldevices").innerText);
@@ -51,7 +51,7 @@ export function AddPSCoreResultsHarness(result) {
     ConsoleFrame.scrollTop = ConsoleFrame.scrollHeight;
 }
 export function AddCommandResultsHarness(result) {
-    var contextID = "c" + result.CommandContextID;
+    var contextID = "c" + result.CommandResultID;
     var deviceName = DataGrid.DataSource.find(x => x.ID == result.DeviceID).DeviceName;
     var resultsWrapper = document.getElementById(contextID + "-results");
     var totalDevices = parseInt(document.getElementById(contextID + "-totaldevices").innerText);
@@ -76,8 +76,8 @@ export function AddCommandResultsHarness(result) {
     resultsWrapper.appendChild(resultDiv);
     ConsoleFrame.scrollTop = ConsoleFrame.scrollHeight;
 }
-export function UpdateResultsCount(commandContextID) {
-    var contextID = "c" + commandContextID;
+export function UpdateResultsCount(commandResultID) {
+    var contextID = "c" + commandResultID;
     var totalDevices = parseInt(document.getElementById(`${contextID}-totaldevices`).innerText);
     var percentComplete = Math.round(document.getElementById(`${contextID}-results`).children.length / totalDevices * 100);
     document.getElementById(`${contextID}-completed`).innerText = String(percentComplete) + "%";

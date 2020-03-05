@@ -44,8 +44,8 @@ namespace Remotely.Server.Services
 
 		public Task BashResultViaAjax(string commandID)
 		{
-			var commandContext = DataService.GetCommandContext(commandID);
-			return BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("BashResultViaAjax", commandID, Device.ID);
+			var commandResult = DataService.GetCommandResult(commandID);
+			return BrowserHub.Clients.Client(commandResult.SenderConnectionID).SendAsync("BashResultViaAjax", commandID, Device.ID);
 		}
 
         public Task Chat(string message, string senderConnectionID)
@@ -55,17 +55,17 @@ namespace Remotely.Server.Services
 
         public Task CMDResultViaAjax(string commandID)
 		{
-			var commandContext = DataService.GetCommandContext(commandID);
-            return BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("CMDResultViaAjax", commandID, Device.ID);
+			var commandResult = DataService.GetCommandResult(commandID);
+            return BrowserHub.Clients.Client(commandResult.SenderConnectionID).SendAsync("CMDResultViaAjax", commandID, Device.ID);
 		}
 
         public Task CommandResult(GenericCommandResult result)
 		{
 			result.DeviceID = Device.ID;
-			var commandContext = DataService.GetCommandContext(result.CommandContextID);
-			commandContext.CommandResults.Add(result);
-			DataService.AddOrUpdateCommandContext(commandContext);
-            return BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("CommandResult", result);
+			var commandResult = DataService.GetCommandResult(result.CommandResultID);
+			commandResult.CommandResults.Add(result);
+			DataService.AddOrUpdateCommandResult(commandResult);
+            return BrowserHub.Clients.Client(commandResult.SenderConnectionID).SendAsync("CommandResult", result);
 		}
 
         public void CommandResultViaApi(string commandID, string requestID)
@@ -169,15 +169,15 @@ namespace Remotely.Server.Services
         public Task PSCoreResult(PSCoreCommandResult result)
         {
             result.DeviceID = Device.ID;
-            var commandContext = DataService.GetCommandContext(result.CommandContextID);
-            commandContext.PSCoreResults.Add(result);
-            DataService.AddOrUpdateCommandContext(commandContext);
-            return BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("PSCoreResult", result);
+            var commandResult = DataService.GetCommandResult(result.CommandResultID);
+            commandResult.PSCoreResults.Add(result);
+            DataService.AddOrUpdateCommandResult(commandResult);
+            return BrowserHub.Clients.Client(commandResult.SenderConnectionID).SendAsync("PSCoreResult", result);
         }
 		public async void PSCoreResultViaAjax(string commandID)
 		{
-			var commandContext = DataService.GetCommandContext(commandID);
-			await BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("PSCoreResultViaAjax", commandID, Device.ID);
+			var commandResult = DataService.GetCommandResult(commandID);
+			await BrowserHub.Clients.Client(commandResult.SenderConnectionID).SendAsync("PSCoreResultViaAjax", commandID, Device.ID);
 		}
 
         public Task SendConnectionFailedToViewers(List<string> viewerIDs)
@@ -201,8 +201,8 @@ namespace Remotely.Server.Services
         }
         public Task WinPSResultViaAjax(string commandID)
         {
-            var commandContext = DataService.GetCommandContext(commandID);
-            return BrowserHub.Clients.Client(commandContext.SenderConnectionID).SendAsync("WinPSResultViaAjax", commandID, Device.ID);
+            var commandResult = DataService.GetCommandResult(commandID);
+            return BrowserHub.Clients.Client(commandResult.SenderConnectionID).SendAsync("WinPSResultViaAjax", commandID, Device.ID);
         }
     }
 }

@@ -1,7 +1,7 @@
 declare module server {
 	interface genericCommandResult {
 		deviceID: string;
-		commandContextID: string;
+		commandResultID: string;
 		commandType: string;
 		standardOutput: string;
 		errorOutput: string;

@@ -40,7 +40,6 @@
     <Content Remove="wwwroot\scripts\Models\ConsoleCommand.ts" />
     <Content Remove="wwwroot\scripts\Models\CursorInfo.ts" />
     <Content Remove="wwwroot\scripts\Models\Device.ts" />
-    <Content Remove="wwwroot\scripts\Models\DevicePermissionLink.ts" />
     <Content Remove="wwwroot\scripts\Models\DynamicDto.ts" />
     <Content Remove="wwwroot\scripts\Models\DynamicDtoType.ts" />
     <Content Remove="wwwroot\scripts\Models\FrameInfo.ts" />
@@ -117,10 +116,6 @@
       <AutoGen>True</AutoGen>
     </None>
     <None Include="wwwroot\scripts\Models\CursorInfo.ts">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </None>
-    <None Include="wwwroot\scripts\Models\DevicePermissionLink.ts">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </None>

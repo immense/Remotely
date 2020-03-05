@@ -61,7 +61,7 @@ namespace Remotely.Server.Services
         {
             deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
             var connections = GetActiveClientConnections(deviceIDs);
-            var commandContext = new CommandResult()
+            var commandResult = new CommandResult()
             {
                 CommandMode = mode,
                 CommandText = Encoding.UTF8.GetString(DataService.GetSharedFiled(fileID).FileContents),
@@ -70,11 +70,11 @@ namespace Remotely.Server.Services
                 TargetDeviceIDs = connections.Select(x => x.Value.ID).ToArray(),
                 OrganizationID = RemotelyUser.OrganizationID
             };
-            DataService.AddOrUpdateCommandContext(commandContext);
-            Clients.Caller.SendAsync("CommandContextCreated", commandContext);
+            DataService.AddOrUpdateCommandResult(commandResult);
+            Clients.Caller.SendAsync("CommandResultCreated", commandResult);
             foreach (var connection in connections)
             {
-                DeviceHub.Clients.Client(connection.Key).SendAsync("DeployScript", mode, fileID, commandContext.ID, Context.ConnectionId);
+                DeviceHub.Clients.Client(connection.Key).SendAsync("DeployScript", mode, fileID, commandResult.ID, Context.ConnectionId);
             }
             return Task.CompletedTask;
         }
@@ -94,7 +94,7 @@ namespace Remotely.Server.Services
             deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
             var connections = GetActiveClientConnections(deviceIDs);
 
-            var commandContext = new CommandResult()
+            var commandResult = new CommandResult()
             {
                 CommandMode = mode,
                 CommandText = command,
@@ -103,11 +103,11 @@ namespace Remotely.Server.Services
                 TargetDeviceIDs = connections.Select(x => x.Value.ID).ToArray(),
                 OrganizationID = RemotelyUser.OrganizationID
             };
-            DataService.AddOrUpdateCommandContext(commandContext);
-            Clients.Caller.SendAsync("CommandContextCreated", commandContext);
+            DataService.AddOrUpdateCommandResult(commandResult);
+            Clients.Caller.SendAsync("CommandResultCreated", commandResult);
             foreach (var connection in connections)
             {
-                DeviceHub.Clients.Client(connection.Key).SendAsync("ExecuteCommand", mode, command, commandContext.ID, Context.ConnectionId);
+                DeviceHub.Clients.Client(connection.Key).SendAsync("ExecuteCommand", mode, command, commandResult.ID, Context.ConnectionId);
             }
 
             return Task.CompletedTask;

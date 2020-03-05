@@ -1,4 +1,4 @@
-	interface commandContext {
+	interface commandResult {
 		iD: string;
 		commandMode: string;
 		commandText: string;
@@ -13,7 +13,7 @@
 			organizationName: string;
 			remotelyUsers: any[];
 			devices: any[];
-			commandContexts: .commandContext[];
+			commandResults: .commandResult[];
 			eventLogs: any[];
 			permissionGroups: any[];
 			inviteLinks: any[];

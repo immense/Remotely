@@ -64,11 +64,11 @@ function applyMessageHandlers(hubConnection) {
     });
     hubConnection.on("PSCoreResult", (result) => {
         AddPSCoreResultsHarness(result);
-        UpdateResultsCount(result.CommandContextID);
+        UpdateResultsCount(result.CommandResultID);
     });
     hubConnection.on("CommandResult", (result) => {
         AddCommandResultsHarness(result);
-        UpdateResultsCount(result.CommandContextID);
+        UpdateResultsCount(result.CommandResultID);
     });
     hubConnection.on("DisplayMessage", (consoleMessage, popupMessage) => {
         if (consoleMessage) {
@@ -137,7 +137,7 @@ function applyMessageHandlers(hubConnection) {
         };
         xhr.send();
     });
-    hubConnection.on("CommandContextCreated", (result) => {
+    hubConnection.on("CommandResultCreated", (result) => {
         AddConsoleHTML(CreateCommandHarness(result).outerHTML);
     });
     hubConnection.on("ServiceID", (serviceID) => {

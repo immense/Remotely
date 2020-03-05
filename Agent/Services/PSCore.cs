@@ -79,7 +79,7 @@ namespace Remotely.Agent.Services
 
             return new PSCoreCommandResult()
             {
-                CommandContextID = commandID,
+                CommandResultID = commandID,
                 DeviceID = ConfigService.GetConnectionInfo().DeviceID,
                 DebugOutput = debugOut,
                 ErrorOutput = errorOut,

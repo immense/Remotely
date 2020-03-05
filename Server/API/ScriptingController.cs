@@ -66,7 +66,7 @@ namespace Remotely.Server.API
                 return NotFound();
             }
 
-            var commandContext = new CommandResult()
+            var commandResult = new CommandResult()
             {
                 CommandMode = "PSCore",
                 CommandText = command,
@@ -75,18 +75,18 @@ namespace Remotely.Server.API
                 TargetDeviceIDs = new string[] { deviceID },
                 OrganizationID = orgID
             };
-            DataService.AddOrUpdateCommandContext(commandContext);
+            DataService.AddOrUpdateCommandResult(commandResult);
             var requestID = Guid.NewGuid().ToString();
-            await DeviceHub.Clients.Client(connection.Key).SendAsync("ExecuteCommandFromApi", mode, requestID, command, commandContext.ID, Guid.NewGuid().ToString());
+            await DeviceHub.Clients.Client(connection.Key).SendAsync("ExecuteCommandFromApi", mode, requestID, command, commandResult.ID, Guid.NewGuid().ToString());
             var success = await TaskHelper.DelayUntil(() => DeviceSocketHub.ApiScriptResults.TryGetValue(requestID, out _), TimeSpan.FromSeconds(30));
             if (!success)
             {
-                return commandContext;
+                return commandResult;
             }
             DeviceSocketHub.ApiScriptResults.TryGetValue(requestID, out var commandID);
             DeviceSocketHub.ApiScriptResults.Remove(requestID);
-            DataService.DetachEntity(commandContext);
-            var result = DataService.GetCommandContext(commandID.ToString(), orgID);
+            DataService.DetachEntity(commandResult);
+            var result = DataService.GetCommandResult(commandID.ToString(), orgID);
             return result;
         }
     }

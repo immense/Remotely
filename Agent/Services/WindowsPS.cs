@@ -109,7 +109,7 @@ namespace Remotely.Agent.Services
         {
             return new GenericCommandResult()
             {
-                CommandContextID = LastInputID,
+                CommandResultID = LastInputID,
                 DeviceID = ConfigService.GetConnectionInfo().DeviceID,
                 CommandType = "WinPS",
                 StandardOutput = StandardOut,
@@ -121,7 +121,7 @@ namespace Remotely.Agent.Services
         {
             var partialResult = new GenericCommandResult()
             {
-                CommandContextID = LastInputID,
+                CommandResultID = LastInputID,
                 DeviceID = ConfigService.GetConnectionInfo().DeviceID,
                 CommandType = "WinPS",
                 StandardOutput = StandardOut,

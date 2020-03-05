@@ -9,7 +9,7 @@ namespace Remotely.Shared.Models
     {
         public ICollection<ApiToken> ApiTokens { get; set; }
 
-        public ICollection<CommandResult> CommandContexts { get; set; }
+        public ICollection<CommandResult> CommandResults { get; set; }
 
         public ICollection<DeviceGroup> DeviceGroups { get; set; }
 

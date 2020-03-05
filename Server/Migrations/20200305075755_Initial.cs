@@ -26,7 +26,7 @@ namespace Remotely.Server.Migrations
                 columns: table => new
                 {
                     DeviceID = table.Column<string>(nullable: true),
-                    CommandContextID = table.Column<string>(nullable: true),
+                    CommandResultID = table.Column<string>(nullable: true),
                     CommandType = table.Column<string>(nullable: true),
                     StandardOutput = table.Column<string>(nullable: true),
                     ErrorOutput = table.Column<string>(nullable: true),
@@ -52,7 +52,7 @@ namespace Remotely.Server.Migrations
                 name: "PSCoreCommandResult",
                 columns: table => new
                 {
-                    CommandContextID = table.Column<string>(nullable: true),
+                    CommandResultID = table.Column<string>(nullable: true),
                     DeviceID = table.Column<string>(nullable: true),
                     TimeStamp = table.Column<long>(nullable: false)
                 },
