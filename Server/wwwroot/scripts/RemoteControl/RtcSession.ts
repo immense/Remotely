@@ -20,6 +20,7 @@ export class RtcSession {
         this.PeerConnection.ondatachannel = (ev) => {
             console.log("Data channel received.");
             this.DataChannel = ev.channel;
+            this.DataChannel.binaryType = "arraybuffer";
             this.DataChannel.onbufferedamountlow = (ev) => {
                 console.log("Buffer amount low.");
             };
@@ -32,9 +33,6 @@ export class RtcSession {
             this.DataChannel.onmessage = async (ev) => {
                 var data = ev.data as ArrayBuffer;
 
-                if (ev.data.arrayBuffer) {
-                    data = await ev.data.arrayBuffer();
-                }
                 this.ParseBinaryMessage(data);
                
             };
