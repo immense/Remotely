@@ -92,12 +92,11 @@ namespace Remotely.Server.Data
                     x => JsonSerializer.Serialize(x, null),
                     x => JsonSerializer.Deserialize<List<GenericCommandResult>>(x, null));
 
-            builder.Entity<GenericCommandResult>()
-                .HasNoKey();
+            //builder.Entity<GenericCommandResult>()
+            //    .HasNoKey();
 
-            builder.Entity<PSCoreCommandResult>()
-               .HasNoKey();
-
+            //builder.Entity<PSCoreCommandResult>()
+            //   .HasNoKey();
 
             builder.Entity<RemotelyUser>()
                .HasOne(x => x.Organization)
@@ -137,6 +136,10 @@ namespace Remotely.Server.Data
                 // This only supports millisecond precision, but should be sufficient for most use cases.
                 foreach (var entityType in builder.Model.GetEntityTypes())
                 {
+                    if (entityType.IsKeyless)
+                    {
+                        continue;
+                    }
                     var properties = entityType.ClrType.GetProperties().Where(p => p.PropertyType == typeof(DateTimeOffset)
                                                                                 || p.PropertyType == typeof(DateTimeOffset?));
                     foreach (var property in properties)
@@ -144,7 +147,7 @@ namespace Remotely.Server.Data
                         builder
                              .Entity(entityType.Name)
                              .Property(property.Name)
-                             .HasConversion(new DateTimeOffsetToBinaryConverter());
+                             .HasConversion(new DateTimeOffsetToStringConverter());
                     }
                 }
             }

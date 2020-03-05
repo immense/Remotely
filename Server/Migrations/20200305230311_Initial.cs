@@ -22,21 +22,6 @@ namespace Remotely.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GenericCommandResult",
-                columns: table => new
-                {
-                    DeviceID = table.Column<string>(nullable: true),
-                    CommandResultID = table.Column<string>(nullable: true),
-                    CommandType = table.Column<string>(nullable: true),
-                    StandardOutput = table.Column<string>(nullable: true),
-                    ErrorOutput = table.Column<string>(nullable: true),
-                    TimeStamp = table.Column<long>(nullable: false)
-                },
-                constraints: table =>
-                {
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Organizations",
                 columns: table => new
                 {
@@ -46,18 +31,6 @@ namespace Remotely.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Organizations", x => x.ID);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PSCoreCommandResult",
-                columns: table => new
-                {
-                    CommandResultID = table.Column<string>(nullable: true),
-                    DeviceID = table.Column<string>(nullable: true),
-                    TimeStamp = table.Column<long>(nullable: false)
-                },
-                constraints: table =>
-                {
                 });
 
             migrationBuilder.CreateTable(
@@ -86,7 +59,7 @@ namespace Remotely.Server.Migrations
                 columns: table => new
                 {
                     ID = table.Column<string>(nullable: false),
-                    LastUsed = table.Column<long>(nullable: true),
+                    LastUsed = table.Column<string>(nullable: true),
                     Name = table.Column<string>(maxLength: 200, nullable: true),
                     OrganizationID = table.Column<string>(nullable: true),
                     Secret = table.Column<string>(nullable: true),
@@ -115,7 +88,7 @@ namespace Remotely.Server.Migrations
                     TargetDeviceIDs = table.Column<string>(nullable: true),
                     PSCoreResults = table.Column<string>(nullable: true),
                     CommandResults = table.Column<string>(nullable: true),
-                    TimeStamp = table.Column<long>(nullable: false),
+                    TimeStamp = table.Column<string>(nullable: false),
                     OrganizationID = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -158,7 +131,7 @@ namespace Remotely.Server.Migrations
                     Source = table.Column<string>(nullable: true),
                     StackTrace = table.Column<string>(nullable: true),
                     OrganizationID = table.Column<string>(nullable: true),
-                    TimeStamp = table.Column<long>(nullable: false)
+                    TimeStamp = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -178,7 +151,7 @@ namespace Remotely.Server.Migrations
                     ID = table.Column<string>(nullable: false),
                     InvitedUser = table.Column<string>(nullable: true),
                     IsAdmin = table.Column<bool>(nullable: false),
-                    DateSent = table.Column<long>(nullable: false),
+                    DateSent = table.Column<string>(nullable: false),
                     OrganizationID = table.Column<string>(nullable: true),
                     ResetUrl = table.Column<string>(nullable: true)
                 },
@@ -209,7 +182,7 @@ namespace Remotely.Server.Migrations
                     PhoneNumber = table.Column<string>(nullable: true),
                     PhoneNumberConfirmed = table.Column<bool>(nullable: false),
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
-                    LockoutEnd = table.Column<long>(nullable: true),
+                    LockoutEnd = table.Column<string>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
                     Discriminator = table.Column<string>(nullable: false),
@@ -236,7 +209,7 @@ namespace Remotely.Server.Migrations
                     FileName = table.Column<string>(nullable: true),
                     ContentType = table.Column<string>(nullable: true),
                     FileContents = table.Column<byte[]>(nullable: true),
-                    Timestamp = table.Column<long>(nullable: false),
+                    Timestamp = table.Column<string>(nullable: false),
                     OrganizationID = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -266,7 +239,7 @@ namespace Remotely.Server.Migrations
                     UsedStorage = table.Column<double>(nullable: false),
                     Is64Bit = table.Column<bool>(nullable: false),
                     IsOnline = table.Column<bool>(nullable: false),
-                    LastOnline = table.Column<long>(nullable: false),
+                    LastOnline = table.Column<string>(nullable: false),
                     OrganizationID = table.Column<string>(nullable: true),
                     OSArchitecture = table.Column<int>(nullable: false),
                     OSDescription = table.Column<string>(nullable: true),
@@ -542,16 +515,10 @@ namespace Remotely.Server.Migrations
                 name: "EventLogs");
 
             migrationBuilder.DropTable(
-                name: "GenericCommandResult");
-
-            migrationBuilder.DropTable(
                 name: "InviteLinks");
 
             migrationBuilder.DropTable(
                 name: "PermissionLinks");
-
-            migrationBuilder.DropTable(
-                name: "PSCoreCommandResult");
 
             migrationBuilder.DropTable(
                 name: "SharedFiles");

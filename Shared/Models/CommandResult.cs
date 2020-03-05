@@ -16,7 +16,9 @@ namespace Remotely.Shared.Models
         public string SenderUserID { get; set; }
         public string SenderConnectionID { get; set; }
         public string[] TargetDeviceIDs { get; set; }
+        [NotMapped]
         public ICollection<PSCoreCommandResult> PSCoreResults { get; set; } = new List<PSCoreCommandResult>();
+        [NotMapped]
         public ICollection<GenericCommandResult> CommandResults { get; set; } = new List<GenericCommandResult>();
         public DateTimeOffset TimeStamp { get; set; } = DateTimeOffset.Now;
         [JsonIgnore]

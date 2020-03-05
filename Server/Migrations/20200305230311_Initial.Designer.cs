@@ -9,7 +9,7 @@ using Remotely.Server.Data;
 namespace Remotely.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200305075755_Initial")]
+    [Migration("20200305230311_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -93,8 +93,8 @@ namespace Remotely.Server.Migrations
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("INTEGER");
 
-                    b.Property<long?>("LockoutEnd")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("LockoutEnd")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("NormalizedEmail")
                         .HasColumnType("TEXT")
@@ -225,8 +225,8 @@ namespace Remotely.Server.Migrations
                     b.Property<string>("ID")
                         .HasColumnType("TEXT");
 
-                    b.Property<long?>("LastUsed")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("LastUsed")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .HasColumnType("TEXT")
@@ -279,8 +279,9 @@ namespace Remotely.Server.Migrations
                     b.Property<string>("TargetDeviceIDs")
                         .HasColumnType("TEXT");
 
-                    b.Property<long>("TimeStamp")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("TimeStamp")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.HasKey("ID");
 
@@ -322,8 +323,9 @@ namespace Remotely.Server.Migrations
                     b.Property<bool>("IsOnline")
                         .HasColumnType("INTEGER");
 
-                    b.Property<long>("LastOnline")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("LastOnline")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("OSArchitecture")
                         .HasColumnType("INTEGER");
@@ -409,8 +411,9 @@ namespace Remotely.Server.Migrations
                     b.Property<string>("StackTrace")
                         .HasColumnType("TEXT");
 
-                    b.Property<long>("TimeStamp")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("TimeStamp")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.HasKey("ID");
 
@@ -419,36 +422,14 @@ namespace Remotely.Server.Migrations
                     b.ToTable("EventLogs");
                 });
 
-            modelBuilder.Entity("Remotely.Shared.Models.GenericCommandResult", b =>
-                {
-                    b.Property<string>("CommandResultID")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("CommandType")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("DeviceID")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ErrorOutput")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("StandardOutput")
-                        .HasColumnType("TEXT");
-
-                    b.Property<long>("TimeStamp")
-                        .HasColumnType("INTEGER");
-
-                    b.ToTable("GenericCommandResult");
-                });
-
             modelBuilder.Entity("Remotely.Shared.Models.InviteLink", b =>
                 {
                     b.Property<string>("ID")
                         .HasColumnType("TEXT");
 
-                    b.Property<long>("DateSent")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("DateSent")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("InvitedUser")
                         .HasColumnType("TEXT");
@@ -483,20 +464,6 @@ namespace Remotely.Server.Migrations
                     b.ToTable("Organizations");
                 });
 
-            modelBuilder.Entity("Remotely.Shared.Models.PSCoreCommandResult", b =>
-                {
-                    b.Property<string>("CommandResultID")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("DeviceID")
-                        .HasColumnType("TEXT");
-
-                    b.Property<long>("TimeStamp")
-                        .HasColumnType("INTEGER");
-
-                    b.ToTable("PSCoreCommandResult");
-                });
-
             modelBuilder.Entity("Remotely.Shared.Models.SharedFile", b =>
                 {
                     b.Property<string>("ID")
@@ -514,8 +481,9 @@ namespace Remotely.Server.Migrations
                     b.Property<string>("OrganizationID")
                         .HasColumnType("TEXT");
 
-                    b.Property<long>("Timestamp")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Timestamp")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.HasKey("ID");
 
