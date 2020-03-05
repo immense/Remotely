@@ -280,7 +280,7 @@ namespace Remotely.Agent.Installer.Win.Services
                 };
             }
 
-            if (!string.IsNullOrWhiteSpace(deviceUuid) && Guid.TryParse(deviceUuid, out _))
+            if (!string.IsNullOrWhiteSpace(deviceUuid))
             {
                 connectionInfo.DeviceID = deviceUuid;
             }
