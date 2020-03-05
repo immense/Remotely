@@ -3,7 +3,6 @@ import * as UI from "./UI.js";
 import { Remotely } from "./Main.js";
 import { Sound } from "../Sound.js";
 import { PopupMessage } from "../UI.js";
-import { WatchClipboard } from "./ClipboardWatcher.js";
 var signalR = window["signalR"];
 export class RCBrowserSockets {
     Connect() {
@@ -32,7 +31,7 @@ export class RCBrowserSockets {
             UI.ScreenViewer.setAttribute("hidden", "hidden");
             UI.ConnectBox.style.removeProperty("display");
         });
-        WatchClipboard();
+        Remotely.ClipboardWatcher.WatchClipboard();
     }
     ;
     SendIceCandidate(candidate) {
@@ -115,8 +114,7 @@ export class RCBrowserSockets {
     }
     ApplyMessageHandlers(hubConnection) {
         hubConnection.on("ClipboardTextChanged", (clipboardText) => {
-            Utilities.SetClipboardText(clipboardText);
-            UI.ClipboardTransferTextArea.value = clipboardText;
+            Remotely.ClipboardWatcher.SetClipboardText(clipboardText);
             PopupMessage("Clipboard updated.");
         });
         hubConnection.on("ScreenCount", (primaryScreenIndex, screenCount) => {

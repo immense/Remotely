@@ -1,19 +1,32 @@
 import { ClipboardTransferTextArea } from "./UI.js";
 import { Remotely } from "./Main.js";
-var clipboardTimer = -1;
-var lastClipboardText = "";
-export function WatchClipboard() {
-    navigator.clipboard.readText().then(currentText => {
-        lastClipboardText = currentText;
-        clipboardTimer = setInterval(() => {
-            navigator.clipboard.readText().then(newText => {
-                if (lastClipboardText != newText) {
-                    lastClipboardText = newText;
-                    ClipboardTransferTextArea.value = newText;
-                    Remotely.RCBrowserSockets.SendClipboardTransfer(newText, false);
+export class ClipboardWatcher {
+    WatchClipboard() {
+        navigator.clipboard.readText().then(currentText => {
+            this.LastClipboardText = currentText;
+            this.ClipboardTimer = setInterval(() => {
+                if (this.PauseMonitoring) {
+                    return;
                 }
-            });
-        }, 100);
-    });
+                if (!document.hasFocus()) {
+                    return;
+                }
+                navigator.clipboard.readText().then(newText => {
+                    if (this.LastClipboardText != newText) {
+                        this.LastClipboardText = newText;
+                        ClipboardTransferTextArea.value = newText;
+                        Remotely.RCBrowserSockets.SendClipboardTransfer(newText, false);
+                    }
+                });
+            }, 100);
+        });
+    }
+    SetClipboardText(text) {
+        this.PauseMonitoring = true;
+        this.LastClipboardText = text;
+        navigator.clipboard.writeText(text);
+        ClipboardTransferTextArea.value = text;
+        this.PauseMonitoring = false;
+    }
 }
 //# sourceMappingURL=ClipboardWatcher.js.map

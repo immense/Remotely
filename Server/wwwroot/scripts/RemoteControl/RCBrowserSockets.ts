@@ -4,7 +4,6 @@ import { Remotely } from "./Main.js";
 import { CursorInfo } from "../Models/CursorInfo.js";
 import { Sound } from "../Sound.js";
 import { PopupMessage } from "../UI.js";
-import { WatchClipboard } from "./ClipboardWatcher.js";
 
 var signalR = window["signalR"];
 
@@ -47,7 +46,7 @@ export class RCBrowserSockets {
             UI.ConnectBox.style.removeProperty("display");
         });
 
-        WatchClipboard();
+        Remotely.ClipboardWatcher.WatchClipboard();
     };
 
     SendIceCandidate(candidate: RTCIceCandidate) {
@@ -132,8 +131,7 @@ export class RCBrowserSockets {
     }
     private ApplyMessageHandlers(hubConnection) {
         hubConnection.on("ClipboardTextChanged", (clipboardText: string) => {
-            Utilities.SetClipboardText(clipboardText);
-            UI.ClipboardTransferTextArea.value = clipboardText;
+            Remotely.ClipboardWatcher.SetClipboardText(clipboardText);
             PopupMessage("Clipboard updated.");
         });
         hubConnection.on("ScreenCount", (primaryScreenIndex: number, screenCount: number) => {

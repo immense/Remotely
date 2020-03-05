@@ -1,5 +1,4 @@
 ﻿import { RCBrowserSockets } from "./RCBrowserSockets.js";
-import { GetDistanceBetween, SetClipboardText } from "../Utilities.js";
 import { Remotely } from "./Main.js";
 import { PopupMessage } from "../UI.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
@@ -134,7 +133,7 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
         else {
             url = `${location.origin}${location.pathname}?clientID=${Remotely.ClientID}&serviceID=${Remotely.ServiceID}`;
         }
-        SetClipboardText(url);
+        Remotely.ClipboardWatcher.SetClipboardText(url);
         PopupMessage("Link copied to clipboard.");
     });
     KeyboardButton.addEventListener("click", (ev) => {
