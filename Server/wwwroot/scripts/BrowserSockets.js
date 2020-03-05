@@ -137,8 +137,8 @@ function applyMessageHandlers(hubConnection) {
         };
         xhr.send();
     });
-    hubConnection.on("CommandContextCreated", (context) => {
-        AddConsoleHTML(CreateCommandHarness(context).outerHTML);
+    hubConnection.on("CommandContextCreated", (result) => {
+        AddConsoleHTML(CreateCommandHarness(result).outerHTML);
     });
     hubConnection.on("ServiceID", (serviceID) => {
         ServiceID = serviceID;

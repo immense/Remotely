@@ -3,7 +3,7 @@ import * as DataGrid from "./DataGrid.js";
 import { Device } from "./Models/Device.js";
 import { PSCoreCommandResult } from "./Models/PSCoreCommandResult.js";
 import { GenericCommandResult } from "./Models/GenericCommandResult.js";
-import { CommandContext } from "./Models/CommandContext.js";
+import { CommandResult } from "./Models/CommandResult.js";
 import { CreateCommandHarness, AddCommandResultsHarness, AddPSCoreResultsHarness, UpdateResultsCount } from "./ResultsParser.js";
 import { Store } from "./Store.js";
 import { UserOptions } from "./Models/UserOptions.js";
@@ -152,8 +152,8 @@ function applyMessageHandlers(hubConnection) {
         };
         xhr.send();
     });
-    hubConnection.on("CommandContextCreated", (context: CommandContext) => {
-        AddConsoleHTML(CreateCommandHarness(context).outerHTML);
+    hubConnection.on("CommandContextCreated", (result: CommandResult) => {
+        AddConsoleHTML(CreateCommandHarness(result).outerHTML);
     });
     hubConnection.on("ServiceID", (serviceID: string) => {
         ServiceID = serviceID;

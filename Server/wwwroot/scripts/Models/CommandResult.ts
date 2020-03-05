@@ -1,4 +1,4 @@
-export interface CommandContext {
+export interface CommandResult {
     ID: string;
     CommandMode: string;
     CommandText: string;

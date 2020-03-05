@@ -1,25 +1,25 @@
-﻿import { CommandContext } from "./Models/CommandContext.js";
+﻿import { CommandResult } from "./Models/CommandResult.js";
 import { PSCoreCommandResult } from "./Models/PSCoreCommandResult.js";
 import * as DataGrid from "./DataGrid.js";
 import { GenericCommandResult } from "./Models/GenericCommandResult.js";
 import { ConsoleOutputDiv, TabContentWrapper, ConsoleFrame } from "./UI.js";
 import { FormatScriptOutput, FormatScriptOutputArray } from "./Utilities.js";
 
-export function CreateCommandHarness(context: CommandContext): HTMLDivElement {
-    var collapseClass = context.TargetDeviceIDs.length > 1 ? "collapse" : "collapse show";
+export function CreateCommandHarness(result: CommandResult): HTMLDivElement {
+    var collapseClass = result.TargetDeviceIDs.length > 1 ? "collapse" : "collapse show";
     var commandHarness = document.createElement("div");
-    var contextID = "c" + context.ID;
+    var contextID = "c" + result.ID;
     commandHarness.id = contextID;
     commandHarness.classList.add("command-harness");
     commandHarness.innerHTML = `
         <div class="command-harness-title">
-            Command Type: ${context.CommandMode}  |  
-            Total Devices: <span id="${contextID}-totaldevices">${context.TargetDeviceIDs.length}</span>  |  
+            Command Type: ${result.CommandMode}  |  
+            Total Devices: <span id="${contextID}-totaldevices">${result.TargetDeviceIDs.length}</span>  |  
             Completed: <span id="${contextID}-completed">0%</span>  |
             Errors: <span id="${contextID}-errors">0</span>  |  
             <button class="btn btn-sm btn-secondary" data-toggle="collapse" data-target='#${contextID}-results'>View</button> 
-            <a class="btn btn-sm btn-secondary" target="_blank" href="${location.origin}/API/Commands/JSON/${context.ID}">JSON</a>
-            <a class="btn btn-sm btn-secondary" target="_blank" href="${location.origin}/API/Commands/XML/${context.ID}">XML</a> 
+            <a class="btn btn-sm btn-secondary" target="_blank" href="${location.origin}/API/Commands/JSON/${result.ID}">JSON</a>
+            <a class="btn btn-sm btn-secondary" target="_blank" href="${location.origin}/API/Commands/XML/${result.ID}">XML</a> 
         </div>
         <div id="${contextID}-results" class="${collapseClass}">
         </div>`;
