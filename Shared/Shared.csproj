@@ -15,8 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Models\CommandContext.cs">
-      <LastGenOutput>CommandContext.cs.d.ts</LastGenOutput>
+    <Compile Update="Models\CommandResult.cs">
+      <LastGenOutput>CommandResult.cs.d.ts</LastGenOutput>
       <Generator>DtsGenerator</Generator>
     </Compile>
     <Compile Update="Models\CursorInfo.cs">
@@ -39,8 +39,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Models\CommandContext.cs.d.ts">
-      <DependentUpon>CommandContext.cs</DependentUpon>
+    <None Update="Models\CommandResult.cs.d.ts">
+      <DependentUpon>CommandResult.cs</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </None>

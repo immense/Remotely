@@ -42,7 +42,7 @@ namespace Remotely.Server.API
                     content = System.Text.Json.JsonSerializer.Serialize(commandContexts);
                     break;
                 case "XML":
-                    var serializer = new DataContractSerializer(typeof(CommandContext));
+                    var serializer = new DataContractSerializer(typeof(CommandResult));
                     using (var ms = new MemoryStream())
                     {
                         serializer.WriteObject(ms, commandContexts);
@@ -70,7 +70,7 @@ namespace Remotely.Server.API
                     content = System.Text.Json.JsonSerializer.Serialize(commandContext);
                     break;
                 case "XML":
-                    var serializer = new DataContractSerializer(typeof(CommandContext));
+                    var serializer = new DataContractSerializer(typeof(CommandResult));
                     using (var ms = new MemoryStream())
                     {
                         serializer.WriteObject(ms, commandContext);

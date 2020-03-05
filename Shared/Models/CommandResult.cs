@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace Remotely.Shared.Models
 {
-    public class CommandContext
+    public class CommandResult
     {
         [Key]
         public string ID { get; set; } = Guid.NewGuid().ToString();
