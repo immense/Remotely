@@ -1,0 +1,255 @@
+﻿@page
+@using Remotely.Server.Areas.Identity.Pages.Account.Manage
+@model ServerConfigModel
+@{
+    ViewData["Title"] = "Server Config";
+}
+
+<h4>@ViewData["Title"]</h4>
+
+@if (Model.IsServerAdmin)
+{
+    <partial name="_StatusMessage" for="StatusMessage" />
+    <div class="row">
+        <div class="col-md-6">
+            <form method="post" autocomplete="off">
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <h4>Application Settings</h4>
+
+
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.AllowApiLogin"></label>
+                    <br />
+                    <input type="checkbox" asp-for="AppSettingsInput.AllowApiLogin" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.AllowApiLogin" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.DataRetentionInDays" class="control-label"></label>
+                    <br />
+                    <input asp-for="AppSettingsInput.DataRetentionInDays" class="form-control" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.DataRetentionInDays" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.DBProvider" class="control-label"></label>
+                    <br />
+                    <select asp-for="AppSettingsInput.DBProvider" asp-items="@Html.GetEnumSelectList<ServerConfigModel.DBProviders>()" class="form-control"></select>
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.DBProvider" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.DefaultPrompt" class="control-label"></label>
+                    <br />
+                    <input asp-for="AppSettingsInput.DefaultPrompt" class="form-control" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.DefaultPrompt" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.EnableWindowsEventLog"></label>
+                    <br />
+                    <input type="checkbox" asp-for="AppSettingsInput.EnableWindowsEventLog" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.EnableWindowsEventLog" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.KnownProxies" class="control-label"></label>
+                    <br />
+                    <select id="knownProxiesSelect" asp-for="AppSettingsInput.KnownProxies" class="form-control"></select>
+                    <div class="text-right mb-2 mt-1">
+                        <button id="knownProxiesRemoveButton" type="button" class="btn btn-secondary">Remove</button>
+                    </div>
+                    <div class="input-group">
+                        <input id="knownProxiesInput" placeholder="Add a known proxy" class="form-control" />
+                        <button id="knownProxiesAddButton" type="button" class="btn btn-secondary">Add</button>
+                    </div>
+                    <span asp-validation-for="AppSettingsInput.KnownProxies" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.MaxOrganizationCount" class="control-label"></label>
+                    <br />
+                    <input asp-for="AppSettingsInput.MaxOrganizationCount" class="form-control" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.MaxOrganizationCount" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.RecordRemoteControlSessions"></label>
+                    <br />
+                    <input type="checkbox" asp-for="AppSettingsInput.RecordRemoteControlSessions" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.RecordRemoteControlSessions" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.RedirectToHttps"></label>
+                    <br />
+                    <input type="checkbox" asp-for="AppSettingsInput.RedirectToHttps" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.RedirectToHttps" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.RemoteControlRequiresAuthentication"></label>
+                    <br />
+                    <input type="checkbox" asp-for="AppSettingsInput.RemoteControlRequiresAuthentication" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.RemoteControlRequiresAuthentication" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.RemoteControlSessionLimit" class="control-label"></label>
+                    <br />
+                    <input asp-for="AppSettingsInput.RemoteControlSessionLimit" class="form-control" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.RemoteControlSessionLimit" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.Require2FA"></label>
+                    <br />
+                    <input type="checkbox" asp-for="AppSettingsInput.Require2FA" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.Require2FA" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.SmtpDisplayName" class="control-label"></label>
+                    <br />
+                    <input asp-for="AppSettingsInput.SmtpDisplayName" class="form-control" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.SmtpDisplayName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.SmtpEmail" class="control-label"></label>
+                    <br />
+                    <input type="email" asp-for="AppSettingsInput.SmtpEmail" class="form-control" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.SmtpEmail" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.SmtpEnableSsl"></label>
+                    <br />
+                    <input type="checkbox" asp-for="AppSettingsInput.SmtpEnableSsl" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.SmtpEnableSsl" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.SmtpHost" class="control-label"></label>
+                    <br />
+                    <input asp-for="AppSettingsInput.SmtpHost" class="form-control" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.SmtpHost" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.SmtpPassword" class="control-label"></label>
+                    <br />
+                    <input type="password" asp-for="AppSettingsInput.SmtpPassword" class="form-control" autocomplete="new-password" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.SmtpPassword" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.SmtpPort" class="control-label"></label>
+                    <br />
+                    <input asp-for="AppSettingsInput.SmtpPort" class="form-control" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.SmtpPort" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.SmtpUserName" class="control-label"></label>
+                    <br />
+                    <input asp-for="AppSettingsInput.SmtpUserName" class="form-control" autocomplete="new-password" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.SmtpUserName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.Theme" class="control-label"></label>
+                    <br />
+                    <select asp-for="AppSettingsInput.Theme" asp-items="@Html.GetEnumSelectList<Remotely.Shared.Enums.Theme>()" class="form-control"></select>
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.Theme" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.TrustedCorsOrigins" class="control-label"></label>
+                    <br />
+                    <select id="trustedCorsSelect" asp-for="AppSettingsInput.TrustedCorsOrigins" class="form-control"></select>
+
+                    <div class="text-right mb-2 mt-1">
+                        <button id="trustedCorsRemoveButton" type="button" class="btn btn-secondary">Remove</button>
+                    </div>
+                    <div class="input-group">
+                        <input id="trustedCorsInput" placeholder="Add trusted URL" class="form-control" />
+                        <button id="trustedCorsAddButton" type="button" class="btn btn-secondary">Add</button>
+                    </div>
+                    <span asp-validation-for="AppSettingsInput.TrustedCorsOrigins" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.UseHsts"></label>
+                    <br />
+                    <input type="checkbox" asp-for="AppSettingsInput.UseHsts" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.UseHsts" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.UseWebRtc"></label>
+                    <br />
+                    <input type="checkbox" asp-for="AppSettingsInput.UseWebRtc" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.UseWebRtc" class="text-danger"></span>
+                </div>
+
+
+                <h4>Connection Strings</h4>
+
+                <div class="form-group">
+                    <label asp-for="ConnectionStrings.PostgreSQL" class="control-label"></label>
+                    <br />
+                    <input asp-for="ConnectionStrings.PostgreSQL" class="form-control" />
+                    <br />
+                    <span asp-validation-for="ConnectionStrings.PostgreSQL" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ConnectionStrings.SQLite" class="control-label"></label>
+                    <br />
+                    <input asp-for="ConnectionStrings.SQLite" class="form-control" />
+                    <br />
+                    <span asp-validation-for="ConnectionStrings.SQLite" class="text-danger"></span>
+                </div>
+
+
+                <div class="form-group">
+                    <label asp-for="ConnectionStrings.SQLServer" class="control-label"></label>
+                    <br />
+                    <input asp-for="ConnectionStrings.SQLServer" class="form-control" />
+                    <br />
+                    <span asp-validation-for="ConnectionStrings.SQLServer" class="text-danger"></span>
+                </div>
+
+
+                <h4>Server Admins</h4>
+
+                <div class="form-group">
+                    <label asp-for="ServerAdmins" class="control-label"></label>
+                    <br />
+                    <select id="serverAdminsSelect" asp-for="ServerAdmins" class="form-control"></select>
+                    <div class="text-right mb-2 mt-1">
+                        <button id="serverAdminsRemoveButton" type="button" class="btn btn-secondary">Remove</button>
+                    </div>
+                    <div class="input-group">
+                        <input id="serverAdminsInput" placeholder="Add a user as a server admin" class="form-control" />
+                        <button id="serverAdminsAddButton" type="button" class="btn btn-secondary">Add</button>
+                    </div>
+                    <span asp-validation-for="ServerAdmins" class="text-danger"></span>
+                </div>
+
+
+                <div class="form-group mt-3">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="~/scripts/Pages/ServerConfig.js"></script>
+
+}
+else
+{
+    <h5 class="text-muted">Only organization administrators can view this page.</h5>
+}

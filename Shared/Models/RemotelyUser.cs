@@ -22,7 +22,7 @@ namespace Remotely.Shared.Models
         public string OrganizationID { get; set; }
 
         public bool IsAdministrator { get; set; } = true;
-
+        public bool IsServerAdmin { get; set; }
         public List<UserDevicePermission> PermissionLinks { get; set; }
     }
 }
