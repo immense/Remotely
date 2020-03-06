@@ -1,4 +1,7 @@
-﻿var trustedCorsAddButton = document.getElementById("trustedCorsAddButton") as HTMLButtonElement;
+﻿var serverConfigForm = document.getElementById("serverConfigForm") as HTMLFormElement;
+var serverConfigSaveButton = document.getElementById("serverConfigSaveButton") as HTMLButtonElement;
+
+var trustedCorsAddButton = document.getElementById("trustedCorsAddButton") as HTMLButtonElement;
 var trustedCorsRemoveButton = document.getElementById("trustedCorsRemoveButton") as HTMLButtonElement;
 var trustedCorsInput = document.getElementById("trustedCorsInput") as HTMLInputElement;
 var trustedCorsSelect = document.getElementById("trustedCorsSelect") as HTMLSelectElement;
@@ -13,7 +16,19 @@ var serverAdminsRemoveButton = document.getElementById("serverAdminsRemoveButton
 var serverAdminsInput = document.getElementById("serverAdminsInput") as HTMLInputElement;
 var serverAdminsSelect = document.getElementById("serverAdminsSelect") as HTMLSelectElement;
 
+serverConfigSaveButton.addEventListener("click", e => {
+    for (var i = 0; i < trustedCorsSelect.options.length; i++) {
+        trustedCorsSelect.options[i].selected = true;
+    }
+    for (var i = 0; i < knownProxiesSelect.options.length; i++) {
+        knownProxiesSelect.options[i].selected = true;
+    }
+    for (var i = 0; i < serverAdminsSelect.options.length; i++) {
+        serverAdminsSelect.options[i].selected = true;
+    }
 
+    serverConfigForm.submit();
+});
 
 trustedCorsAddButton.addEventListener("click", ev => {
     if (trustedCorsInput.value.length > 0) {

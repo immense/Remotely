@@ -1,11 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Dynamic;
-using System.Linq;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,38 +6,54 @@ using Microsoft.Extensions.Configuration;
 using Remotely.Server.Services;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 {
     public class ServerConfigModel : PageModel
     {
-        public ServerConfigModel(IConfiguration configuration, IWebHostEnvironment hostEnv, UserManager<RemotelyUser> userManager)
+        public ServerConfigModel(IConfiguration configuration,
+            IWebHostEnvironment hostEnv,
+            UserManager<RemotelyUser> userManager,
+            DataService dataService)
         {
             Configuration = configuration;
             HostEnv = hostEnv;
             UserManager = userManager;
+            DataService = dataService;
         }
 
-
-        public IConfiguration Configuration { get; }
-        public IWebHostEnvironment HostEnv { get; }
+        public enum DBProviders
+        {
+            PostgreSQL,
+            SQLite,
+            SQLServer
+        }
 
         [BindProperty]
         public AppSettingsModel AppSettingsInput { get; set; } = new AppSettingsModel();
-
-        [BindProperty]
-        [Display(Name = "Server Admins")]
-        public List<string> ServerAdmins { get; set; } = new List<string>();
 
         [BindProperty]
         public ConnectionStringsModel ConnectionStrings { get; set; } = new ConnectionStringsModel();
 
         public bool IsServerAdmin { get; set; }
 
+        [BindProperty]
+        [Display(Name = "Server Admins")]
+        public List<string> ServerAdmins { get; set; } = new List<string>();
+
         [TempData]
         public string StatusMessage { get; set; }
 
-        public UserManager<RemotelyUser> UserManager { get; }
+        private IConfiguration Configuration { get; }
+        private DataService DataService { get; }
+        private IWebHostEnvironment HostEnv { get; }
+        private UserManager<RemotelyUser> UserManager { get; }
+
         public async Task<IActionResult> OnGet()
         {
             IsServerAdmin = (await UserManager.GetUserAsync(User)).IsServerAdmin;
@@ -56,9 +64,11 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
             Configuration.Bind("ApplicationOptions", AppSettingsInput);
             Configuration.Bind("ConnectionStrings", ConnectionStrings);
+            ServerAdmins = DataService.GetServerAdmins();
 
             return Page();
         }
+
         public async Task<IActionResult> OnPost()
         {
             IsServerAdmin = (await UserManager.GetUserAsync(User)).IsServerAdmin;
@@ -72,10 +82,20 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
+            var configReloaded = false;
+            Configuration.GetReloadToken().RegisterChangeCallback((e) =>
+            {
+                configReloaded = true;
+            }, null);
+
             await SaveAppSettings();
 
-            return RedirectToPage();
+            while (!configReloaded)
+            {
+                await Task.Delay(10);
+            }
 
+            return RedirectToPage();
         }
 
         private async Task SaveAppSettings()
@@ -103,9 +123,8 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
             await System.IO.File.WriteAllTextAsync(savePath, JsonSerializer.Serialize(settingsJson, new JsonSerializerOptions() { WriteIndented = true }));
 
-            // TODO: Save server admins.
+            await DataService.UpdateServerAdmins(ServerAdmins, User.Identity.Name);
         }
-
 
         public class AppSettingsModel
         {
@@ -130,6 +149,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
             [Display(Name = "Max Organizations")]
             public int MaxOrganizationCount { get; set; }
+
             [Display(Name = "Record Remote Control Sessions")]
             public bool RecordRemoteControlSessions { get; set; }
 
@@ -189,17 +209,8 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             [Display(Name = "SQLite")]
             public string SQLite { get; set; }
 
-
             [Display(Name = "SQL Server")]
             public string SQLServer { get; set; }
-
-        }
-
-        public enum DBProviders
-        {
-            PostgreSQL,
-            SQLite,
-            SQLServer
         }
     }
 }

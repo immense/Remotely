@@ -64,6 +64,14 @@ namespace Remotely.Server.Services
             return true;
         }
 
+        public List<string> GetServerAdmins()
+        {
+            return RemotelyContext.Users
+                .Where(x => x.IsServerAdmin)
+                .Select(x => x.UserName)
+                .ToList();
+        }
+
         public InviteLink AddInvite(string orgID, Invite invite)
         {
             invite.InvitedUser = invite.InvitedUser.ToLower();
@@ -100,6 +108,7 @@ namespace Remotely.Server.Services
             }
             RemotelyContext.SaveChanges();
         }
+
 
         public bool AddOrUpdateDevice(Device device, out Device updatedDevice)
         {
@@ -150,6 +159,31 @@ namespace Remotely.Server.Services
             }
             RemotelyContext.SaveChanges();
             return true;
+        }
+
+        public async Task UpdateServerAdmins(List<string> serverAdmins, string callerUserName)
+        {
+            var currentAdmins = RemotelyContext.Users.Where(x => x.IsServerAdmin).ToList();
+
+            var removeAdmins = currentAdmins.Where(currentAdmin =>
+                !serverAdmins.Contains(currentAdmin.UserName.Trim().ToLower()) &&
+                currentAdmin.UserName.Trim().ToLower() != callerUserName.Trim().ToLower());
+
+            foreach (var removeAdmin in removeAdmins)
+            {
+                removeAdmin.IsServerAdmin = false;
+            }
+
+            var newAdmins = RemotelyContext.Users.Where(user =>
+                serverAdmins.Contains(user.UserName.Trim().ToLower()) && 
+                !user.IsServerAdmin);
+
+            foreach (var newAdmin in newAdmins)
+            {
+                newAdmin.IsServerAdmin = true;
+            }
+
+            await RemotelyContext.SaveChangesAsync();
         }
 
         public string AddSharedFile(IFormFile file, string organizationID)
@@ -231,6 +265,21 @@ namespace Remotely.Server.Services
             RemotelyContext.ApiTokens.Add(newToken);
             await RemotelyContext.SaveChangesAsync();
             return newToken;
+        }
+
+
+        public async Task<(IdentityResult, RemotelyUser)> CreateUser(string email, string password, bool isOrgAdmin)
+        {
+            var user = new RemotelyUser
+            {
+                UserName = email,
+                Email = email,
+                IsServerAdmin = RemotelyContext.Organizations.Count() == 0,
+                IsAdministrator = isOrgAdmin
+            };
+            var result = await UserManager.CreateAsync(user, password);
+
+            return (result, user);
         }
 
         public async Task DeleteApiToken(string userName, string tokenId)
@@ -720,17 +769,6 @@ namespace Remotely.Server.Services
             }
         }
 
-        public bool SetNewUserProperties(string targetName, string organizationID, bool isAdmin)
-        {
-            var targetUser = GetUserByName(targetName);
-
-            targetUser.OrganizationID = organizationID;
-            targetUser.IsAdministrator = isAdmin;
-
-            RemotelyContext.SaveChanges();
-
-            return true;
-        }
         public void SetServerVerificationToken(string deviceID, string verificationToken)
         {
             var device = RemotelyContext.Devices.Find(deviceID);

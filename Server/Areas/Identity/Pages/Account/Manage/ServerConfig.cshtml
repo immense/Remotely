@@ -12,7 +12,7 @@
     <partial name="_StatusMessage" for="StatusMessage" />
     <div class="row">
         <div class="col-md-6">
-            <form method="post" autocomplete="off">
+            <form id="serverConfigForm" method="post" autocomplete="off">
                 <div asp-validation-summary="All" class="text-danger"></div>
 
                 <h4>Application Settings</h4>
@@ -56,7 +56,10 @@
                 <div class="form-group">
                     <label asp-for="AppSettingsInput.KnownProxies" class="control-label"></label>
                     <br />
-                    <select id="knownProxiesSelect" asp-for="AppSettingsInput.KnownProxies" class="form-control"></select>
+                    <select id="knownProxiesSelect" 
+                            asp-for="AppSettingsInput.KnownProxies"
+                            asp-items="Model.AppSettingsInput.KnownProxies?.Select(x=>new SelectListItem(x,x))"
+                            class="form-control"></select>
                     <div class="text-right mb-2 mt-1">
                         <button id="knownProxiesRemoveButton" type="button" class="btn btn-secondary">Remove</button>
                     </div>
@@ -167,7 +170,10 @@
                 <div class="form-group">
                     <label asp-for="AppSettingsInput.TrustedCorsOrigins" class="control-label"></label>
                     <br />
-                    <select id="trustedCorsSelect" asp-for="AppSettingsInput.TrustedCorsOrigins" class="form-control"></select>
+                    <select id="trustedCorsSelect" 
+                            asp-for="AppSettingsInput.TrustedCorsOrigins" 
+                            asp-items="Model.AppSettingsInput.TrustedCorsOrigins?.Select(x=>new SelectListItem(x,x))" 
+                            class="form-control"></select>
 
                     <div class="text-right mb-2 mt-1">
                         <button id="trustedCorsRemoveButton" type="button" class="btn btn-secondary">Remove</button>
@@ -227,7 +233,10 @@
                 <div class="form-group">
                     <label asp-for="ServerAdmins" class="control-label"></label>
                     <br />
-                    <select id="serverAdminsSelect" asp-for="ServerAdmins" class="form-control"></select>
+                    <select id="serverAdminsSelect" 
+                            asp-for="ServerAdmins" 
+                            asp-items="Model.ServerAdmins?.Select(x=>new SelectListItem(x,x))"
+                            class="form-control"></select>
                     <div class="text-right mb-2 mt-1">
                         <button id="serverAdminsRemoveButton" type="button" class="btn btn-secondary">Remove</button>
                     </div>
@@ -240,13 +249,20 @@
 
 
                 <div class="form-group mt-3">
-                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button id="serverConfigSaveButton" type="button" class="btn btn-primary">Save</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script type="module" src="~/scripts/Pages/ServerConfig.js"></script>
+    <style>
+        input[type='checkbox'] {
+            width: 25px;
+            height: 25px;
+        }
+
+    </style>
 
 }
 else
