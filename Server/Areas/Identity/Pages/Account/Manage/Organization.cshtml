@@ -61,9 +61,7 @@
 
                     <div class="input-group">
                         <input id="deviceGroupInput" placeholder="Add new device group" asp-for="Input.DeviceGroupName" class="form-control" maxlength="200" />
-                        <span class="input-group-btn">
-                            <button id="addDeviceGroupButton" type="submit" class="btn btn-secondary">Add</button>
-                        </span>
+                        <button id="addDeviceGroupButton" type="submit" class="btn btn-secondary">Add</button>
                     </div>
                 </div>
             </form>
@@ -161,7 +159,7 @@
                         </div>
                         <div class="input-group-append">
                             <div class="input-group-text pl-1">
-                                <input asp-for="Input.IsAdmin" class="checkbox-inline" type="checkbox" />
+                                <input asp-for="Input.IsAdmin" type="checkbox" />
                             </div>
                         </div>
                         <div class="input-group-append">
@@ -210,11 +208,9 @@
 
                         <div class="input-group">
                             <input placeholder="Add user to device group" class="form-control add-user-to-devicegroup-input" group="@Model.DeviceGroups[i].ID" maxlength="200" />
-                            <span class="input-group-btn">
-                                <button type="button" class="btn btn-secondary add-user-to-devicegroup-button" group="@Model.DeviceGroups[i].ID">
-                                    Add
-                                </button>
-                            </span>
+                            <button type="button" class="btn btn-secondary add-user-to-devicegroup-button" group="@Model.DeviceGroups[i].ID">
+                                Add
+                            </button>
                         </div>
                     </div>
                     <div class="modal-footer">

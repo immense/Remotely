@@ -9,14 +9,14 @@
     <div class="col-md-6">
         <partial name="_StatusMessage" for="Message" />
         <form method="post">
-            <div asp-validation-summary="All"></div>
+            <div asp-validation-summary="All" class="text-danger"></div>
 
                         <div class="form-group">
                 <label asp-for="Options.Theme" class="control-label"></label>
                 <br />
                 <select asp-for="Options.Theme" asp-items="@Html.GetEnumSelectList<Remotely.Shared.Enums.Theme>()" class="form-control" ></select>
                 <br />
-                <span asp-validation-for="Options.Theme"></span>
+                <span asp-validation-for="Options.Theme" class="text-danger"></span>
             </div>
 
 
@@ -25,7 +25,7 @@
                 <br />
                 <input asp-for="Options.ConsolePrompt" class="form-control" />
                 <br />
-                <span asp-validation-for="Options.ConsolePrompt"></span>
+                <span asp-validation-for="Options.ConsolePrompt" class="text-danger"></span>
             </div>
 
             <div class="form-group">
@@ -40,39 +40,39 @@
                 <br />
                 <input asp-for="Options.CommandModeShortcutWeb" class="form-control" />
                 <br />
-                <span asp-validation-for="Options.CommandModeShortcutWeb"></span>
+                <span asp-validation-for="Options.CommandModeShortcutWeb" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Options.CommandModeShortcutPSCore" class="control-label"></label>
                 <br />
                 <input asp-for="Options.CommandModeShortcutPSCore" class="form-control" />
                 <br />
-                <span asp-validation-for="Options.CommandModeShortcutPSCore"></span>
+                <span asp-validation-for="Options.CommandModeShortcutPSCore" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Options.CommandModeShortcutWinPS" class="control-label"></label>
                 <br />
                 <input asp-for="Options.CommandModeShortcutWinPS" class="form-control" />
                 <br />
-                <span asp-validation-for="Options.CommandModeShortcutWinPS"></span>
+                <span asp-validation-for="Options.CommandModeShortcutWinPS" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Options.CommandModeShortcutCMD" class="control-label"></label>
                 <br />
                 <input asp-for="Options.CommandModeShortcutCMD" class="form-control" />
                 <br />
-                <span asp-validation-for="Options.CommandModeShortcutCMD"></span>
+                <span asp-validation-for="Options.CommandModeShortcutCMD" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Options.CommandModeShortcutBash" class="control-label"></label>
                 <br />
                 <input asp-for="Options.CommandModeShortcutBash" class="form-control" />
                 <br />
-                <span asp-validation-for="Options.CommandModeShortcutBash"></span>
+                <span asp-validation-for="Options.CommandModeShortcutBash" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <button type="submit" class="btn btn-secondary">Save</button>
+                <button type="submit" class="btn btn-primary">Save</button>
             </div>
         </form>
     </div>

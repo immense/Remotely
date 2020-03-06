@@ -50,6 +50,7 @@
     <Content Remove="wwwroot\scripts\Pages\ApiTokens.ts" />
     <Content Remove="wwwroot\scripts\Pages\IndexNotLoggedIn.ts" />
     <Content Remove="wwwroot\scripts\Pages\OrganizationManagement.ts" />
+    <Content Remove="wwwroot\scripts\Pages\ServerConfig.ts" />
     <Content Remove="wwwroot\scripts\RemoteControl\ClipboardWatcher.ts" />
     <Content Remove="wwwroot\scripts\RemoteControl\Main.ts" />
     <Content Remove="wwwroot\scripts\RemoteControl\RtcSession.ts" />
@@ -161,6 +162,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\Pages\ApiTokens.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Pages\IndexNotLoggedIn.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Pages\OrganizationManagement.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Pages\ServerConfig.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\ClipboardWatcher.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\Main.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RtcSession.ts" />

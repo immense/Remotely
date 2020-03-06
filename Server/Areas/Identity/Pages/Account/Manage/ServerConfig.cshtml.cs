@@ -1,0 +1,205 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Dynamic;
+using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Configuration;
+using Remotely.Server.Services;
+using Remotely.Shared.Enums;
+using Remotely.Shared.Models;
+
+namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
+{
+    public class ServerConfigModel : PageModel
+    {
+        public ServerConfigModel(IConfiguration configuration, IWebHostEnvironment hostEnv, UserManager<RemotelyUser> userManager)
+        {
+            Configuration = configuration;
+            HostEnv = hostEnv;
+            UserManager = userManager;
+        }
+
+
+        public IConfiguration Configuration { get; }
+        public IWebHostEnvironment HostEnv { get; }
+
+        [BindProperty]
+        public AppSettingsModel AppSettingsInput { get; set; } = new AppSettingsModel();
+
+        [BindProperty]
+        [Display(Name = "Server Admins")]
+        public List<string> ServerAdmins { get; set; } = new List<string>();
+
+        [BindProperty]
+        public ConnectionStringsModel ConnectionStrings { get; set; } = new ConnectionStringsModel();
+
+        public bool IsServerAdmin { get; set; }
+
+        [TempData]
+        public string StatusMessage { get; set; }
+
+        public UserManager<RemotelyUser> UserManager { get; }
+        public async Task<IActionResult> OnGet()
+        {
+            IsServerAdmin = (await UserManager.GetUserAsync(User)).IsServerAdmin;
+            if (!IsServerAdmin)
+            {
+                return Unauthorized();
+            }
+
+            Configuration.Bind("ApplicationOptions", AppSettingsInput);
+            Configuration.Bind("ConnectionStrings", ConnectionStrings);
+
+            return Page();
+        }
+        public async Task<IActionResult> OnPost()
+        {
+            IsServerAdmin = (await UserManager.GetUserAsync(User)).IsServerAdmin;
+            if (!IsServerAdmin)
+            {
+                return Unauthorized();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
+            await SaveAppSettings();
+
+            return RedirectToPage();
+
+        }
+
+        private async Task SaveAppSettings()
+        {
+            string savePath;
+            var prodSettings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.Production.json");
+            var settings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.json");
+            if (prodSettings.Exists)
+            {
+                savePath = prodSettings.PhysicalPath;
+            }
+            else if (settings.Exists)
+            {
+                savePath = settings.PhysicalPath;
+            }
+            else
+            {
+                return;
+            }
+
+            var settingsJson = JsonSerializer.Deserialize<IDictionary<string, object>>(await System.IO.File.ReadAllTextAsync(savePath));
+
+            settingsJson["ApplicationOptions"] = AppSettingsInput;
+            settingsJson["ConnectionStrings"] = ConnectionStrings;
+
+            await System.IO.File.WriteAllTextAsync(savePath, JsonSerializer.Serialize(settingsJson, new JsonSerializerOptions() { WriteIndented = true }));
+
+            // TODO: Save server admins.
+        }
+
+
+        public class AppSettingsModel
+        {
+            [Display(Name = "Allow API Login")]
+            public bool AllowApiLogin { get; set; }
+
+            [Display(Name = "Data Retention (days)")]
+            public double DataRetentionInDays { get; set; }
+
+            [Display(Name = "Database Provider")]
+            [JsonConverter(typeof(JsonStringEnumConverter))]
+            public DBProviders DBProvider { get; set; }
+
+            [Display(Name = "Default Prompt")]
+            public string DefaultPrompt { get; set; }
+
+            [Display(Name = "Enable Windows Event Log")]
+            public bool EnableWindowsEventLog { get; set; }
+
+            [Display(Name = "Known Proxies")]
+            public string[] KnownProxies { get; set; }
+
+            [Display(Name = "Max Organizations")]
+            public int MaxOrganizationCount { get; set; }
+            [Display(Name = "Record Remote Control Sessions")]
+            public bool RecordRemoteControlSessions { get; set; }
+
+            [Display(Name = "Redirect To HTTPS")]
+            public bool RedirectToHttps { get; set; }
+
+            [Display(Name = "Remote Control Requires Authentication")]
+            public bool RemoteControlRequiresAuthentication { get; set; }
+
+            [Display(Name = "Remote Control Session Limit")]
+            public double RemoteControlSessionLimit { get; set; }
+
+            [Display(Name = "Require 2FA")]
+            public bool Require2FA { get; set; }
+
+            [Display(Name = "SMTP Display Name")]
+            public string SmtpDisplayName { get; set; }
+
+            [Display(Name = "SMTP Email")]
+            [EmailAddress]
+            public string SmtpEmail { get; set; }
+
+            [Display(Name = "SMTP Enable SSL")]
+            public bool SmtpEnableSsl { get; set; }
+
+            [Display(Name = "SMTP Host")]
+            public string SmtpHost { get; set; }
+
+            [Display(Name = "SMTP Password")]
+            public string SmtpPassword { get; set; }
+
+            [Display(Name = "SMTP Port")]
+            public int SmtpPort { get; set; }
+
+            [Display(Name = "SMTP Username")]
+            public string SmtpUserName { get; set; }
+
+            [Display(Name = "Theme")]
+            [JsonConverter(typeof(JsonStringEnumConverter))]
+            public Theme Theme { get; set; }
+
+            [Display(Name = "Trusted CORS Origins")]
+            public string[] TrustedCorsOrigins { get; set; }
+
+            [Display(Name = "Use HSTS")]
+            public bool UseHsts { get; set; }
+
+            [Display(Name = "Use WebRTC")]
+            public bool UseWebRtc { get; set; }
+        }
+
+        public class ConnectionStringsModel
+        {
+            [Display(Name = "PostgreSQL")]
+            public string PostgreSQL { get; set; }
+
+            [Display(Name = "SQLite")]
+            public string SQLite { get; set; }
+
+
+            [Display(Name = "SQL Server")]
+            public string SQLServer { get; set; }
+
+        }
+
+        public enum DBProviders
+        {
+            PostgreSQL,
+            SQLite,
+            SQLServer
+        }
+    }
+}

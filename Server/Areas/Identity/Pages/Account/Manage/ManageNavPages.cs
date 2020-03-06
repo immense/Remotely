@@ -27,6 +27,8 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
         public static string ServerLogs => "ServerLogs";
 
+        public static string ServerConfig => "ServerConfig";
+
         public static string IndexNavClass(ViewContext viewContext) => PageNavClass(viewContext, Index);
 
         public static string ChangePasswordNavClass(ViewContext viewContext) => PageNavClass(viewContext, ChangePassword);
@@ -44,6 +46,8 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         public static string OrganizationNavClass(ViewContext viewContext) => PageNavClass(viewContext, Organization);
         public static string ApiTokensNavClass(ViewContext viewContext) => PageNavClass(viewContext, ApiTokens);
         public static string ServerLogsNavClass(ViewContext viewContext) => PageNavClass(viewContext, ServerLogs);
+
+        public static string ServerConfigNavClass(ViewContext viewContext) => PageNavClass(viewContext, ServerConfig);
 
         public static string PageNavClass(ViewContext viewContext, string page)
         {
