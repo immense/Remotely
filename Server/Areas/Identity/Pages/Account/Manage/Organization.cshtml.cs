@@ -111,14 +111,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
                     var result = await UserManager.CreateAsync(user);
                     if (result.Succeeded)
                     {
-                        //if (!DataService.SetNewUserProperties(user.UserName, currentUser.OrganizationID, Input.IsAdmin))
-                        //{
-                        //    ModelState.AddModelError("OrgID", "Failed to set organization ID.");
-                        //    return Page();
-                        //}
-
                         user = await UserManager.FindByEmailAsync(Input.UserEmail);
-
 
                         await UserManager.ConfirmEmailAsync(user, await UserManager.GenerateEmailConfirmationTokenAsync(user));
 

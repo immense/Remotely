@@ -1,3 +1,5 @@
+var serverConfigForm = document.getElementById("serverConfigForm");
+var serverConfigSaveButton = document.getElementById("serverConfigSaveButton");
 var trustedCorsAddButton = document.getElementById("trustedCorsAddButton");
 var trustedCorsRemoveButton = document.getElementById("trustedCorsRemoveButton");
 var trustedCorsInput = document.getElementById("trustedCorsInput");
@@ -10,6 +12,18 @@ var serverAdminsAddButton = document.getElementById("serverAdminsAddButton");
 var serverAdminsRemoveButton = document.getElementById("serverAdminsRemoveButton");
 var serverAdminsInput = document.getElementById("serverAdminsInput");
 var serverAdminsSelect = document.getElementById("serverAdminsSelect");
+serverConfigSaveButton.addEventListener("click", e => {
+    for (var i = 0; i < trustedCorsSelect.options.length; i++) {
+        trustedCorsSelect.options[i].selected = true;
+    }
+    for (var i = 0; i < knownProxiesSelect.options.length; i++) {
+        knownProxiesSelect.options[i].selected = true;
+    }
+    for (var i = 0; i < serverAdminsSelect.options.length; i++) {
+        serverAdminsSelect.options[i].selected = true;
+    }
+    serverConfigForm.submit();
+});
 trustedCorsAddButton.addEventListener("click", ev => {
     if (trustedCorsInput.value.length > 0) {
         var option = document.createElement("option");

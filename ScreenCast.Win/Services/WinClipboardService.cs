@@ -69,14 +69,20 @@ namespace Remotely.ScreenCast.Win.Services
         {
             try
             {
-                if (clipboardText is null)
-                {
-                    return;
-                }
-
                 var thread = new Thread(() =>
                 {
-                    Clipboard.SetText(clipboardText);
+                    try
+                    {
+                        if (string.IsNullOrWhiteSpace(clipboardText))
+                        {
+                            Clipboard.Clear();
+                        }
+                        else
+                        {
+                            Clipboard.SetText(clipboardText);
+                        }
+                    }
+                    catch { }
                 });
                 thread.SetApartmentState(ApartmentState.STA);
                 thread.Start();

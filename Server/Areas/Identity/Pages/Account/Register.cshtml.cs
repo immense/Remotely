@@ -88,13 +88,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new RemotelyUser
-                { 
-                    UserName = Input.Email,
-                    Email = Input.Email ,
-                    IsServerAdmin = organizationCount == 0
-                };
-                var result = await _userManager.CreateAsync(user, Input.Password);
+                var (result, user) = await _dataService.CreateUser(Input.Email, Input.Password, true);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");

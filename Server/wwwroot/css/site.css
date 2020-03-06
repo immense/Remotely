@@ -19,12 +19,6 @@ h6 {
     font-size: 1rem !important;
 }
 
-input[type='checkbox'] {
-    width: 25px;
-    height: 25px;
-}
-
-
 .container {
     max-width: 95vw !important;
 }
