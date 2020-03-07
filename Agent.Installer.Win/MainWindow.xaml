@@ -67,7 +67,7 @@
                              Cursor="Hand" 
                              ToolTip="Enter the organization ID that will have access to this device."></Run>
                     </TextBlock>
-                    <TextBox  Grid.Column="1" Grid.Row="2" TextWrapping="Wrap" Text="{Binding OrganizationName}" FontSize="14" />
+                    <TextBox  Grid.Column="1" Grid.Row="2" TextWrapping="Wrap" Text="{Binding OrganizationID}" FontSize="14" />
 
                 </Grid>
 
