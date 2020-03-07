@@ -70,9 +70,9 @@ namespace Remotely.Server.API
                     {
                         case "Windows":
                             {
-                                fileName = $"Remotely_Installer-{organizationID}.exe";
-                                var filePath = Path.Combine(HostEnv.WebRootPath, "Downloads", $"{fileName}");
+                                var filePath = Path.Combine(HostEnv.WebRootPath, "Downloads", $"Remotely_Installer.exe");
                                 fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+                                fileName = $"Remotely_Installer-{organizationID}.exe";
                                 break;
                             }
                         // TODO: Remove after a few versions.
