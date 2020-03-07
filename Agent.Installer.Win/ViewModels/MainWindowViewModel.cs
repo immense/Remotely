@@ -1,4 +1,4 @@
-﻿using Remotely.Agent.Installer.Win.Services;
+using Remotely.Agent.Installer.Win.Services;
 using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;
@@ -193,9 +193,10 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             CopyCommandLineArgs();
 
             var fileName = Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location);
-            if (fileName.Length > 36)
+
+            for (var i = 0; i < fileName.Length; i++)
             {
-                var guid = fileName.Substring(fileName.Length - 36);
+                var guid = string.Join("", fileName.Skip(i).Take(36));
                 if (Guid.TryParse(guid, out _))
                 {
                     OrganizationID = guid;
