@@ -45,14 +45,30 @@
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
+                        <RowDefinition Height="20" />
                         <RowDefinition/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Column="0" Grid.Row="0" Text="Provider:"  Margin="0,0,15,0" FontSize="14" />
-                    <TextBox  Grid.Column="1" Grid.Row="0" IsReadOnly="True" Margin="0,0,0,10" TextWrapping="Wrap" Text="{Binding OrganizationName}" FontSize="14" />
+                    <TextBlock Grid.Column="0" Grid.Row="0" Margin="0,0,15,0" FontSize="14">
+                        <Run>Server URL:</Run>
+                        <Run Text="&#xE897;" 
+                             FontWeight="Bold"
+                             FontFamily="Segoe MDL2 Assets" 
+                             Cursor="Hand" 
+                             ToolTip="This is the URL of the server that your device will connect to after Remotely is installed."></Run>
+                    </TextBlock>
+                    <TextBox Grid.Column="1" Grid.Row="0" TextWrapping="Wrap" Text="{Binding ServerUrl}" FontSize="14" />
 
-                    <TextBlock Grid.Column="0" Grid.Row="1" Margin="0,0,15,0" Text="Server URL:" FontSize="14" />
-                    <TextBox Grid.Column="1" Grid.Row="1" IsReadOnly="True" TextWrapping="Wrap" Text="{Binding ServerUrl}" FontSize="14" />
+                    <TextBlock Grid.Column="0" Grid.Row="2" Margin="0,0,15,0" FontSize="14">
+                        <Run>Organization ID:</Run>
+                        <Run Text="&#xE897;" 
+                             FontWeight="Bold"
+                             FontFamily="Segoe MDL2 Assets" 
+                             Cursor="Hand" 
+                             ToolTip="Enter the organization ID that will have access to this device."></Run>
+                    </TextBlock>
+                    <TextBox  Grid.Column="1" Grid.Row="2" TextWrapping="Wrap" Text="{Binding OrganizationName}" FontSize="14" />
+
                 </Grid>
 
                 <TextBlock TextWrapping="Wrap" Margin="0,25,0,0" Text="{Binding StatusMessage}" FontSize="14"></TextBlock>

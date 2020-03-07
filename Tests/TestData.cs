@@ -20,7 +20,8 @@ namespace Remotely.Tests
         public static RemotelyUser Admin1 { get; } = new RemotelyUser()
         {
             UserName = "admin1@test.com",
-            IsAdministrator = true
+            IsAdministrator = true,
+            IsServerAdmin = true
         };
 
         public static RemotelyUser Admin2 { get; private set; } = new RemotelyUser()
