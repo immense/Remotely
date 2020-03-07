@@ -203,6 +203,8 @@ namespace Remotely.Agent.Installer.Win.ViewModels
                 }
             }
 
+            AddExistingConnectionInfo();
+           
             if (CommandLineParser.CommandLineArgs.ContainsKey("install"))
             {
                 await Install(null);
@@ -235,6 +237,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             var result = !string.IsNullOrWhiteSpace(OrganizationID) || !string.IsNullOrWhiteSpace(ServerUrl);
             if (!result)
             {
+                Logger.Write("ServerUrl or OrganizationID param is missing.  Unable to install.");
                 MessageBoxEx.Show("Required settings are missing.  Please enter a server URL and organization ID.", "Invalid Installer", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return result;
@@ -271,6 +274,39 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             {
                 ServerUrl = ServerUrl.Substring(0, ServerUrl.LastIndexOf("/"));
             }
+        }
+
+        private void AddExistingConnectionInfo()
+        {
+            try
+            {
+                var connectionInfoPath = Path.Combine(
+               Path.GetPathRoot(Environment.SystemDirectory),
+                   "Program Files",
+                   "Remotely",
+                   "ConnectionInfo.json");
+
+                if (File.Exists(connectionInfoPath))
+                {
+                    var serializer = new JavaScriptSerializer();
+                    var connectionInfo = serializer.Deserialize<ConnectionInfo>(File.ReadAllText(connectionInfoPath));
+
+                    if (string.IsNullOrWhiteSpace(OrganizationID))
+                    {
+                        OrganizationID = connectionInfo.OrganizationID;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(ServerUrl))
+                    {
+                        ServerUrl = connectionInfo.Host;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+            }
+
         }
         private async Task Install(object param)
         {
