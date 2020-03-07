@@ -104,8 +104,8 @@ namespace Remotely.Agent.Installer.Win.ViewModels
                 });
             }
         }
-        public string OrganizationID { get; set; }
-        public string OrganizationName
+      
+        public string OrganizationID
         {
             get
             {
@@ -114,7 +114,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             set
             {
                 organizationName = value;
-                FirePropertyChanged(nameof(OrganizationName));
+                FirePropertyChanged(nameof(OrganizationID));
             }
         }
 
@@ -190,13 +190,17 @@ namespace Remotely.Agent.Installer.Win.ViewModels
                     "Reinstalling will retain the current settings and install the service again.";
             }
 
-            var installerSettings = ReadInstallerSettings();
-
-            OrganizationName = installerSettings?.OrganizationName;
-            ServerUrl = installerSettings?.ServerUrl;
-            OrganizationID = installerSettings?.OrganizationID;
-
             CopyCommandLineArgs();
+
+            var fileName = Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location);
+            if (fileName.Length > 36)
+            {
+                var guid = fileName.Substring(fileName.Length - 36);
+                if (Guid.TryParse(guid, out _))
+                {
+                    OrganizationID = guid;
+                }
+            }
 
             if (CommandLineParser.CommandLineArgs.ContainsKey("install"))
             {
@@ -206,40 +210,10 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             {
                 await Uninstall(null);
             }
-            else
-            {
-                CheckParams();
-            }
 
             if (CommandLineParser.CommandLineArgs.ContainsKey("quiet"))
             {
                 App.Current.Shutdown();
-            }
-        }
-
-        public InstallerSettings ReadInstallerSettings()
-        {
-            try
-            {
-                var fileBytes = File.ReadAllBytes(Assembly.GetExecutingAssembly().Location);
-                using (var peStream = new MemoryStream(fileBytes))
-                using (var br = new BinaryReader(peStream))
-                {
-                    peStream.Seek(-4, SeekOrigin.End);
-                    var payloadSize = br.ReadInt32();
-                    peStream.Seek(-4 - payloadSize, SeekOrigin.End);
-                    var payloadBytes = br.ReadBytes(payloadSize);
-                    var payloadJson = Encoding.UTF8.GetString(payloadBytes);
-                    var serializer = new JavaScriptSerializer();
-                    var installerSettings = serializer.Deserialize<InstallerSettings>(payloadJson);
-                    return installerSettings;
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
-                MessageBoxEx.Show("There was an error reading the installer settings.  Try re-downloading the installer.", "Configuration Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null;
             }
         }
 
@@ -260,18 +234,13 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             var result = !string.IsNullOrWhiteSpace(OrganizationID) || !string.IsNullOrWhiteSpace(ServerUrl);
             if (!result)
             {
-                MessageBoxEx.Show("Required settings are missing.  Try re-downloading the installer.", "Invalid Installer", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxEx.Show("Required settings are missing.  Please enter a server URL and organization ID.", "Invalid Installer", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return result;
         }
 
         private void CopyCommandLineArgs()
         {
-            if (CommandLineParser.CommandLineArgs.TryGetValue("organization", out var orgName))
-            {
-                OrganizationName = orgName;
-            }
-
             if (CommandLineParser.CommandLineArgs.TryGetValue("organizationid", out var orgID))
             {
                 OrganizationID = orgID;
@@ -300,11 +269,6 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             if (ServerUrl?.EndsWith("/") == true)
             {
                 ServerUrl = ServerUrl.Substring(0, ServerUrl.LastIndexOf("/"));
-            }
-
-            if (string.IsNullOrWhiteSpace(OrganizationName))
-            {
-                OrganizationName = "(IT provider has not set a name.)";
             }
         }
         private async Task Install(object param)
@@ -346,8 +310,6 @@ namespace Remotely.Agent.Installer.Win.ViewModels
                 IsReadyState = true;
             }
         }
-
-       
 
         private async Task Uninstall(object param)
         {

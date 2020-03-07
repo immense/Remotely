@@ -267,21 +267,6 @@ namespace Remotely.Server.Services
             return newToken;
         }
 
-
-        public async Task<(IdentityResult, RemotelyUser)> CreateUser(string email, string password, bool isOrgAdmin)
-        {
-            var user = new RemotelyUser
-            {
-                UserName = email,
-                Email = email,
-                IsServerAdmin = RemotelyContext.Organizations.Count() == 0,
-                IsAdministrator = isOrgAdmin
-            };
-            var result = await UserManager.CreateAsync(user, password);
-
-            return (result, user);
-        }
-
         public async Task DeleteApiToken(string userName, string tokenId)
         {
             var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);

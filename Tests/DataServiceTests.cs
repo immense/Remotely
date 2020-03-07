@@ -127,5 +127,29 @@ namespace Remotely.Tests
             Assert.IsTrue(TestData.Device1.IsOnline);
             Assert.AreEqual(Environment.Is64BitOperatingSystem, TestData.Device1.Is64Bit);
         }
+
+        [TestMethod]
+        [DoNotParallelize]
+        public async Task UpdateServerAdmins()
+        {
+            var currentAdmins = DataService.GetServerAdmins();
+            Assert.AreEqual(1, currentAdmins.Count);
+            var newAdmins = new List<string>()
+            {
+                TestData.Admin2.UserName
+            };
+
+            await DataService.UpdateServerAdmins(newAdmins, TestData.Admin1.UserName);
+
+            currentAdmins = DataService.GetServerAdmins();
+            Assert.AreEqual(2, currentAdmins.Count);
+            Assert.IsTrue(currentAdmins.Contains(TestData.Admin1.UserName));
+            Assert.IsTrue(currentAdmins.Contains(TestData.Admin2.UserName));
+
+            await DataService.UpdateServerAdmins(newAdmins, TestData.Admin2.UserName);
+            currentAdmins = DataService.GetServerAdmins();
+            Assert.AreEqual(1, currentAdmins.Count);
+            Assert.AreEqual(TestData.Admin2.UserName, currentAdmins[0]);
+        }
     }
 }

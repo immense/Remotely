@@ -70,27 +70,9 @@ namespace Remotely.Server.API
                     {
                         case "Windows":
                             {
-                                fileName = $"Remotely_Installer.exe";
+                                fileName = $"Remotely_Installer-{organizationID}.exe";
                                 var filePath = Path.Combine(HostEnv.WebRootPath, "Downloads", $"{fileName}");
-                                var installerBytes = await System.IO.File.ReadAllBytesAsync(filePath);
-
-                                var installerSettings = new InstallerSettings()
-                                {
-                                    OrganizationID = organizationID,
-                                    ServerUrl = $"{scheme}://{Request.Host}",
-                                    OrganizationName = organizationName
-                                };
-
-                                using (var ms = new MemoryStream())
-                                using (var br = new BinaryWriter(ms))
-                                {
-                                    var payloadBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(installerSettings));
-                                    br.Write(installerBytes);
-                                    br.Write(payloadBytes);
-                                    br.Write(payloadBytes.Length);
-                                    ms.Seek(0, SeekOrigin.Begin);
-                                    fileBytes = ms.ToArray();
-                                }
+                                fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
                                 break;
                             }
                         // TODO: Remove after a few versions.
