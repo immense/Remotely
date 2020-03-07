@@ -78,6 +78,7 @@ Set-Content -Path "$Root\Server\CurrentVersion.txt" -Value $CurrentVersion.Trim(
 if ($Hostname.Length -gt 0) {
     Replace-LineInFile -FilePath "$Root\Desktop.Win\Services\Config.cs" -MatchPattern "public string Host " -ReplaceLineWith "public string Host { get; set; } = `"$($Hostname)`";" -MaxCount 1
     Replace-LineInFile -FilePath "$Root\Desktop.Linux\Services\Config.cs" -MatchPattern "public string Host " -ReplaceLineWith "public string Host { get; set; } = `"$($Hostname)`";" -MaxCount 1
+    Replace-LineInFile -FilePath "$Root\Agent.Installer.Win\ViewModels\MainWindowViewModel.cs" -MatchPattern "private string serverUrl;" -ReplaceLineWith "private string serverUrl = `"$($Hostname)`";" -MaxCount 1
 }
 else {
     Write-Host "`nWARNING: No hostname parameter was specified.  The server name will need to be entered manually in the desktop client.`n" -ForegroundColor DarkYellow
