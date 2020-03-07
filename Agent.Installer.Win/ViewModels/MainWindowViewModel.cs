@@ -24,7 +24,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
         private bool isReadyState = true;
         private bool isServiceInstalled;
 
-        private string organizationName;
+        private string organizationID;
 
         private int progress;
 
@@ -109,11 +109,11 @@ namespace Remotely.Agent.Installer.Win.ViewModels
         {
             get
             {
-                return organizationName;
+                return organizationID;
             }
             set
             {
-                organizationName = value;
+                organizationID = value;
                 FirePropertyChanged(nameof(OrganizationID));
             }
         }
