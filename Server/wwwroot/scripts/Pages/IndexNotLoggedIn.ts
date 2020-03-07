@@ -20,9 +20,15 @@
         textParts.shift();
 
         if (textParts.length > 0) {
+            var timeout = 100;
+
+            if (textParts[0].split('').every(x => x == " ")) {
+                timeout = 800;
+            }
+            console.log(timeout);
             window.setTimeout(() => {
                 typeText(textParts, header);
-            }, 800)
+            }, timeout);
         }   
     }
 }

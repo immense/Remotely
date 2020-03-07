@@ -46,7 +46,7 @@ namespace Remotely.Agent.Services
                         var filePath = Path.Combine(Path.GetTempPath(), "Remotely_Installer.exe");
 
                         wc.DownloadFile(
-                            ConfigService.GetConnectionInfo().Host + $"/API/ClientDownloads/{connectionInfo.OrganizationID}/Windows",
+                            ConfigService.GetConnectionInfo().Host + $"/Downloads/Remotely_Installer.exe",
                             filePath);
 
                         foreach (var proc in Process.GetProcessesByName("Remotely_Installer"))
