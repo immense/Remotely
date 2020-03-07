@@ -38,7 +38,7 @@
 
             <StackPanel>
                 <TextBlock Style="{StaticResource SectionHeader}" Text="{Binding HeaderMessage}"></TextBlock>
-                <Grid Margin="25,5,0,0" Visibility="{Binding IsServiceMissing, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid Margin="25,5,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />

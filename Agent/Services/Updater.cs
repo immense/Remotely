@@ -54,7 +54,7 @@ namespace Remotely.Agent.Services
                             proc.Kill();
                         }
 
-                        Process.Start(filePath, $"-install -quiet");
+                        Process.Start(filePath, $"-install -quiet -serverurl {connectionInfo.Host} -organizationid {connectionInfo.OrganizationID}");
                     }
                     else if (OSUtils.IsLinux)
                     {
