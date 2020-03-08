@@ -162,7 +162,9 @@ namespace Remotely.Agent.Services
 
         private int StartLinuxScreenCaster(string args)
         {
-            var xauthority = OSUtils.StartProcessWithResults("find", $"/ -name Xauthority").Split('\n', StringSplitOptions.RemoveEmptyEntries).First();
+            var xauthority = OSUtils.StartProcessWithResults("find", $"/ -name Xauthority")
+                .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+                .FirstOrDefault();
             var display = ":0";
             var whoString = OSUtils.StartProcessWithResults("who", "")?.Trim();
             var username = string.Empty;
@@ -173,6 +175,7 @@ namespace Remotely.Agent.Services
                 var whoSplit = whoLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 username = whoSplit[0];
                 display = whoSplit.Last().Trim('(').Trim(')');
+                xauthority = $"/home/{username}/.Xauthority";
                 args = $"-u {username} {args}";
             }
 
