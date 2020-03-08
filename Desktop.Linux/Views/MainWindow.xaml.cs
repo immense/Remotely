@@ -33,7 +33,12 @@ namespace Remotely.Desktop.Linux.Views
 
             this.FindControl<Border>("TitleBanner").PointerPressed += TitleBanner_PointerPressed;
 
-            _ = (this.DataContext as MainWindowViewModel).Init();
+            this.Opened += MainWindow_Opened;
+        }
+
+        private async void MainWindow_Opened(object sender, System.EventArgs e)
+        {
+            await (this.DataContext as MainWindowViewModel).Init();
         }
     }
 }
