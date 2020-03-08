@@ -18,9 +18,23 @@ namespace Remotely.Shared.Services
         {
             OSPlatform platform = OSUtils.GetPlatform();
 
-            var systemDrive = DriveInfo.GetDrives().FirstOrDefault(x =>
-                x.IsReady &&
-                x.RootDirectory.FullName.Contains(Path.GetPathRoot(Environment.SystemDirectory ?? Environment.CurrentDirectory)));
+            DriveInfo systemDrive;
+
+            if (OSUtils.IsWindows)
+            {
+                systemDrive = DriveInfo.GetDrives().FirstOrDefault(x =>
+                     x.IsReady &&
+                     x.RootDirectory.FullName.Contains(Path.GetPathRoot(Environment.SystemDirectory ?? Environment.CurrentDirectory)));
+            }
+            else if (OSUtils.IsLinux)
+            {
+                systemDrive = new DriveInfo("/");
+            }
+            else
+            {
+                systemDrive = DriveInfo.GetDrives().FirstOrDefault();
+            }
+ 
 
             var device = new Device()
             {
