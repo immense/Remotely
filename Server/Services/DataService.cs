@@ -514,6 +514,7 @@ namespace Remotely.Server.Services
                     x.OrganizationID == user.OrganizationID && 
                     (
                         user.IsAdministrator ||
+                        x.PermissionLinks.Count == 0 ||
                         x.PermissionLinks.Any(x=>x.UserID == user.Id)
                     )
                 ) ?? Enumerable.Empty<DeviceGroup>();
