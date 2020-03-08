@@ -168,7 +168,7 @@ namespace Remotely.Agent.Services
 
             var xauthority = string.Empty;
 
-            var xorgLine = OSUtils.StartProcessWithResults("ps", "ps -eaf | grep [x]org");
+            var xorgLine = OSUtils.StartProcessWithResults("ps", "-eaf | grep [x]org");
             var xorgSplit = xorgLine.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
             var auth = xorgSplit[xorgSplit.IndexOf("auth") + 1];
             if (!string.IsNullOrWhiteSpace(auth))
