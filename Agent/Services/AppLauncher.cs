@@ -162,15 +162,13 @@ namespace Remotely.Agent.Services
 
         private int StartLinuxScreenCaster(string args)
         {
-            //var xauthority = OSUtils.StartProcessWithResults("find", $"/ -name Xauthority")
-            //    .Split('\n', StringSplitOptions.RemoveEmptyEntries)
-            //    .FirstOrDefault();
-
             var xauthority = string.Empty;
 
-            var xorgLine = OSUtils.StartProcessWithResults("ps", "-eaf | grep [x]org");
+            var processes = OSUtils.StartProcessWithResults("ps", "-eaf").Split(Environment.NewLine);
+            var xorgLine = processes.FirstOrDefault(x => x.Contains("xorg"));
+            Logger.Write($"Xorg Line: {xorgLine}");
             var xorgSplit = xorgLine.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
-            var auth = xorgSplit[xorgSplit.IndexOf("auth") + 1];
+            var auth = xorgSplit[xorgSplit.IndexOf("-auth") + 1];
             if (!string.IsNullOrWhiteSpace(auth))
             {
                 xauthority = auth;
