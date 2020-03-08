@@ -162,9 +162,20 @@ namespace Remotely.Agent.Services
 
         private int StartLinuxScreenCaster(string args)
         {
-            var xauthority = OSUtils.StartProcessWithResults("find", $"/ -name Xauthority")
-                .Split('\n', StringSplitOptions.RemoveEmptyEntries)
-                .FirstOrDefault();
+            //var xauthority = OSUtils.StartProcessWithResults("find", $"/ -name Xauthority")
+            //    .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            //    .FirstOrDefault();
+
+            var xauthority = string.Empty;
+
+            var xorgLine = OSUtils.StartProcessWithResults("ps", "ps -eaf | grep [x]org");
+            var xorgSplit = xorgLine.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
+            var auth = xorgSplit[xorgSplit.IndexOf("auth") + 1];
+            if (!string.IsNullOrWhiteSpace(auth))
+            {
+                xauthority = auth;
+            }
+
             var display = ":0";
             var whoString = OSUtils.StartProcessWithResults("who", "")?.Trim();
             var username = string.Empty;
@@ -175,7 +186,10 @@ namespace Remotely.Agent.Services
                 var whoSplit = whoLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 username = whoSplit[0];
                 display = whoSplit.Last().Trim('(').Trim(')');
-                xauthority = $"/home/{username}/.Xauthority";
+                if (string.IsNullOrWhiteSpace(xauthority))
+                {
+                    xauthority = $"/home/{username}/.Xauthority";
+                }
                 args = $"-u {username} {args}";
             }
 
@@ -187,7 +201,7 @@ namespace Remotely.Agent.Services
 
             psi.Environment.Add("DISPLAY", display);
             psi.Environment.Add("XAUTHORITY", xauthority);
-            Logger.Write($"Attempting to launch screen caster with username {username}, xauthority {xauthority}, and display {display}.");
+            Logger.Write($"Attempting to launch screen caster with username {username}, xauthority {xauthority}, display {display}, and args {args}.");
             return Process.Start(psi).Id;
         }
     }
