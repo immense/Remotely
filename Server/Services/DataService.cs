@@ -267,6 +267,34 @@ namespace Remotely.Server.Services
             return newToken;
         }
 
+
+        public async Task<bool> CreateUser(string userEmail, bool isAdmin, string organizationID)
+        {
+            try
+            {
+                var user = new RemotelyUser()
+                {
+                    UserName = userEmail.Trim().ToLower(),
+                    Email = userEmail.Trim().ToLower(),
+                    IsAdministrator = isAdmin,
+                    OrganizationID = organizationID
+                };
+                var org = RemotelyContext.Organizations
+                    .Include(x=>x.RemotelyUsers)
+                    .FirstOrDefault(x=>x.ID == organizationID);
+                org.RemotelyUsers.Add(user);
+                await RemotelyContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                WriteEvent(ex);
+                return false;
+            }
+
+        }
+
+
         public async Task DeleteApiToken(string userName, string tokenId)
         {
             var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);

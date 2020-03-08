@@ -100,18 +100,10 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             {
                 if (!DataService.DoesUserExist(Input.UserEmail))
                 {
-                    var user = new RemotelyUser
-                    { 
-                        UserName = Input.UserEmail,
-                        Email = Input.UserEmail, 
-                        OrganizationID = currentUser.OrganizationID,
-                        Organization = currentUser.Organization,
-                        IsAdministrator = Input.IsAdmin
-                    };
-                    var result = await UserManager.CreateAsync(user);
-                    if (result.Succeeded)
+                    var result = await DataService.CreateUser(Input.UserEmail, Input.IsAdmin, currentUser.OrganizationID);
+                    if (result)
                     {
-                        user = await UserManager.FindByEmailAsync(Input.UserEmail);
+                        var user = DataService.GetUserByName(Input.UserEmail);
 
                         await UserManager.ConfirmEmailAsync(user, await UserManager.GenerateEmailConfirmationTokenAsync(user));
 
