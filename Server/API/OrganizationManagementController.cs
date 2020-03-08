@@ -249,23 +249,10 @@ namespace Remotely.Server.API
 
             if (!DataService.DoesUserExist(invite.InvitedUser))
             {
-                var user = new RemotelyUser 
-                { 
-                    UserName = invite.InvitedUser, 
-                    Email = invite.InvitedUser, 
-                    OrganizationID = orgID,
-                    IsAdministrator = invite.IsAdmin
-                };
-                var result = await UserManager.CreateAsync(user);
-                if (result.Succeeded)
+                var result = await DataService.CreateUser(invite.InvitedUser, invite.IsAdmin, orgID);
+                if (result)
                 {
-                    //if (!DataService.SetNewUserProperties(user.UserName, orgID, invite.IsAdmin))
-                    //{
-                    //    return BadRequest();
-                    //}
-
-
-                    user = await UserManager.FindByEmailAsync(invite.InvitedUser);
+                    var user = await UserManager.FindByEmailAsync(invite.InvitedUser);
 
                     await UserManager.ConfirmEmailAsync(user, await UserManager.GenerateEmailConfirmationTokenAsync(user));
 
