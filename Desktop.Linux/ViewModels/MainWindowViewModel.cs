@@ -139,18 +139,20 @@ namespace Remotely.Desktop.Linux.ViewModels
 
         public async Task Init()
         {
-            SessionID = "Retrieving...";
-            Host = Config.GetConfig().Host;
-            while (string.IsNullOrWhiteSpace(Host))
-            {
-                Host = "https://";
-                await PromptForHostName();
-            }
-            Host = Host;
-            Conductor.ProcessArgs(new string[] { "-mode", "Normal", "-host", Host });
             try
             {
+                SessionID = "Retrieving...";
+                Host = Config.GetConfig().Host;
+                while (string.IsNullOrWhiteSpace(Host))
+                {
+                    Host = "https://";
+                    await PromptForHostName();
+                }
+                Conductor.ProcessArgs(new string[] { "-mode", "Normal", "-host", Host });
                 await Conductor.Connect();
+
+                await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
+                await Conductor.CasterSocket.GetSessionID();
             }
             catch (Exception ex)
             {
@@ -158,9 +160,6 @@ namespace Remotely.Desktop.Linux.ViewModels
                 await MessageBox.Show("Failed to connect to server.", "Connection Failed", MessageBoxType.OK);
                 return;
             }
-
-            await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
-            await Conductor.CasterSocket.GetSessionID();
         }
 
         public async Task PromptForHostName()
