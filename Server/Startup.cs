@@ -166,7 +166,8 @@ namespace Remotely.Server
             });
 
             services.AddLogging();
-            services.AddScoped<IEmailSender, EmailSender>();;
+            services.AddScoped<IEmailSenderEx, EmailSenderEx>();
+            services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<DataService>();
             services.AddScoped<RemoteControlSessionRecorder>();
             services.AddSingleton<ApplicationConfig>();

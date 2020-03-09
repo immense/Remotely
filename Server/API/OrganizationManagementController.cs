@@ -24,7 +24,7 @@ namespace Remotely.Server.API
     [ApiController]
     public class OrganizationManagementController : ControllerBase
     {
-        public OrganizationManagementController(DataService dataService, UserManager<RemotelyUser> userManager, IEmailSender emailSender)
+        public OrganizationManagementController(DataService dataService, UserManager<RemotelyUser> userManager, IEmailSenderEx emailSender)
         {
             this.DataService = dataService;
             this.UserManager = userManager;
@@ -32,7 +32,7 @@ namespace Remotely.Server.API
         }
 
         private DataService DataService { get; }
-        private IEmailSender EmailSender { get; }
+        private IEmailSenderEx EmailSender { get; }
         private UserManager<RemotelyUser> UserManager { get; }
 
 
@@ -268,14 +268,20 @@ namespace Remotely.Server.API
                 var newInvite = DataService.AddInvite(orgID, invite);
 
                 var inviteURL = $"{Request.Scheme}://{Request.Host}/Invite?id={newInvite.ID}";
-                await EmailSender.SendEmailAsync(invite.InvitedUser, "Invitation to Organization in Remotely",
+                var emailResult = await EmailSender.SendEmailAsync(invite.InvitedUser, "Invitation to Organization in Remotely",
                             $@"<img src='https://remotely.one/media/Remotely_Logo.png'/>
                             <br><br>
                             Hello!
                             <br><br>
                             You've been invited to join an organization in Remotely.
                             <br><br>
-                            You can join the organization by <a href='{HtmlEncoder.Default.Encode(inviteURL)}'>clicking here</a>.");
+                            You can join the organization by <a href='{HtmlEncoder.Default.Encode(inviteURL)}'>clicking here</a>.",
+                            orgID);
+
+                if (!emailResult)
+                {
+                    return Problem("There was an error sending the invitation email.");
+                }
 
                 return Ok();
             }

@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 using Remotely.Shared.Models;
 using Remotely.Server.Data;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
+using Remotely.Server.Services;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 {
@@ -19,12 +19,12 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<RemotelyUser> _userManager;
         private readonly SignInManager<RemotelyUser> _signInManager;
-        private readonly IEmailSender _emailSender;
+        private readonly IEmailSenderEx _emailSender;
 
         public IndexModel(
             UserManager<RemotelyUser> userManager,
             SignInManager<RemotelyUser> signInManager,
-            IEmailSender emailSender)
+            IEmailSenderEx emailSender)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -131,7 +131,6 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             }
 
 
-            var userId = await _userManager.GetUserIdAsync(user);
             var email = await _userManager.GetEmailAsync(user);
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -140,12 +139,20 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
                 pageHandler: null,
                 values: new { area = "Identity", userId = user.Id, code = code },
                 protocol: Request.Scheme);
-            await _emailSender.SendEmailAsync(
+            var emailResult = await _emailSender.SendEmailAsync(
                 email,
                 "Confirm your email",
-                $"<img src='https://remotely.one/media/Remotely_Logo.png'/><br><br>Please confirm your Remotely account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                $"<img src='https://remotely.one/media/Remotely_Logo.png'/><br><br>Please confirm your Remotely account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.",
+                user.OrganizationID);
 
-            StatusMessage = "Verification email sent. Please check your email.";
+            if (!emailResult)
+            {
+                StatusMessage = "Error sending verification email.";
+            }
+            else
+            {
+                StatusMessage = "Verification email sent. Please check your email.";
+            }
             return RedirectToPage();
         }
     }
