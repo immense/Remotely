@@ -10,7 +10,6 @@
 
 button {
     cursor: pointer;
-    /*background-color: #008cba;*/
     background-color: #017ea7;
     color: white;
     border-radius: 5px;
@@ -291,4 +290,16 @@ footer a {
 #touchKeyboardTextArea {
     position: fixed;
     top: -100%;
+}
+
+.connection-icon {
+    padding: 5px;
+}
+
+#connectionRelayedIcon {
+    background-color: orange;
+}
+
+#connectionP2PIcon {
+    background-color: green;
 }

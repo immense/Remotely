@@ -23,9 +23,13 @@ export class RtcSession {
             };
             this.DataChannel.onclose = (ev) => {
                 console.log("Data channel closed.");
+                UI.ConnectionP2PIcon.style.display = "none";
+                UI.ConnectionRelayedIcon.style.display = "unset";
             };
             this.DataChannel.onerror = (ev) => {
                 console.log("Data channel error.", ev.error);
+                UI.ConnectionP2PIcon.style.display = "none";
+                UI.ConnectionRelayedIcon.style.display = "unset";
             };
             this.DataChannel.onmessage = async (ev) => {
                 var data = ev.data;
@@ -33,13 +37,23 @@ export class RtcSession {
             };
             this.DataChannel.onopen = (ev) => {
                 console.log("Data channel opened.");
+                UI.ConnectionP2PIcon.style.display = "unset";
+                UI.ConnectionRelayedIcon.style.display = "none";
             };
         };
         this.PeerConnection.onconnectionstatechange = function (ev) {
             console.log("Connection state changed to " + this.connectionState);
+            if (this.connectionState != "connected") {
+                UI.ConnectionP2PIcon.style.display = "none";
+                UI.ConnectionRelayedIcon.style.display = "unset";
+            }
         };
         this.PeerConnection.oniceconnectionstatechange = function (ev) {
-            console.log("Connection state changed to " + this.iceConnectionState);
+            console.log("ICE connection state changed to " + this.iceConnectionState);
+            if (this.iceConnectionState != "connected") {
+                UI.ConnectionP2PIcon.style.display = "none";
+                UI.ConnectionRelayedIcon.style.display = "unset";
+            }
         };
         this.PeerConnection.onicecandidate = async (ev) => {
             await Remotely.RCBrowserSockets.SendIceCandidate(ev.candidate);

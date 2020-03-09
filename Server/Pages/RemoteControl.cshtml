@@ -1,5 +1,7 @@
 ﻿@page
+@using Remotely.Shared.Models
 @inject Remotely.Server.Services.ApplicationConfig AppConfig
+@inject UserManager<RemotelyUser> UserManager
 @model Remotely.Server.Pages.RemoteControlModel
 @{
     Layout = null;
@@ -26,6 +28,35 @@
     {
         <link href="~/css/remote-control-dark.css" rel="stylesheet" asp-append-version="true" />
     }
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        var user = await UserManager.GetUserAsync(User);
+        switch (user.UserOptions.Theme)
+        {
+            case Remotely.Shared.Enums.Theme.Light:
+                <link href="~/css/remote-control-light.css" rel="stylesheet" asp-append-version="true" />
+                break;
+            case Remotely.Shared.Enums.Theme.Dark:
+                <link href="~/css/remote-control-dark.css" rel="stylesheet" asp-append-version="true" />
+                break;
+            default:
+                break;
+        }
+    }
+    else
+    {
+        if (AppConfig.Theme.ToLower() == "light")
+        {
+            <link href="~/css/remote-control-light.css" rel="stylesheet" asp-append-version="true" />
+        }
+        else
+        {
+            <link href="~/css/remote-control-dark.css" rel="stylesheet" asp-append-version="true" />
+        }
+    }
+
+
     <link href="~/lib/fontawesome/css/all.min.css" rel="stylesheet" />
 
     <environment include="Development">
@@ -81,6 +112,12 @@
             <button id="changeScreenButton" class="option-button">Monitors <i class="fas fa-desktop"></i></button>
             <button id="fitToScreenButton" class="toggled option-button">Fit <i class="fas fa-expand"></i></button>
             <button id="qualityButton" class="option-button">Quality <i class="far fa-image"></i></button>
+        </div>
+
+        <div style="margin-top:5px;">
+            <span>Connection: </span>
+            <i id="connectionRelayedIcon" class="fas fa-wifi connection-icon" title="Connection is relayed"></i>
+            <i id="connectionP2PIcon" class="fas fa-wifi connection-icon" title="Connection is peer-to-peer" style="display:none"></i>
         </div>
 
     </div>
