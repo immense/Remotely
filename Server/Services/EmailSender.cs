@@ -1,5 +1,4 @@
 using Remotely.Server.Data;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,12 +7,19 @@ using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace Remotely.Server.Services
 {
-    public class EmailSender : IEmailSender
+    public interface IEmailSenderEx
     {
-        public EmailSender(ApplicationConfig appConfig, DataService dataService)
+        Task<bool> SendEmailAsync(string email, string replyTo, string subject, string htmlMessage, string organizationID = null);
+        Task<bool> SendEmailAsync(string email, string subject, string htmlMessage, string organizationID = null);
+    }
+
+    public class EmailSenderEx : IEmailSenderEx
+    {
+        public EmailSenderEx(ApplicationConfig appConfig, DataService dataService)
         {
             AppConfig = appConfig;
             DataService = dataService;
@@ -22,7 +28,7 @@ namespace Remotely.Server.Services
         private ApplicationConfig AppConfig { get; }
         private DataService DataService { get; }
 
-        public Task SendEmailAsync(string email, string replyTo, string subject, string htmlMessage)
+        public Task<bool> SendEmailAsync(string email, string replyTo, string subject, string htmlMessage, string organizationID = null)
         {
             try
             {
@@ -42,17 +48,33 @@ namespace Remotely.Server.Services
                 mailMessage.Body = htmlMessage;
                 mailMessage.ReplyToList.Add(new MailAddress(replyTo));
                 mailClient.Send(mailMessage);
+                return Task.FromResult(true);
             }
             catch (Exception ex)
             {
-                DataService.WriteEvent(ex);
+                DataService.WriteEvent(ex, organizationID);
+                return Task.FromResult(false);
             }
-            return Task.CompletedTask;
         }
+
+        public Task<bool> SendEmailAsync(string email, string subject, string htmlMessage, string organizationID = null)
+        {
+            return SendEmailAsync(email, AppConfig.SmtpEmail, subject, htmlMessage, organizationID);
+        }
+    }
+    public class EmailSender : IEmailSender
+    {
+        public EmailSender(IEmailSenderEx emailSenderEx)
+        {
+            EmailSenderEx = emailSenderEx;
+        }
+
+        private IEmailSenderEx EmailSenderEx { get; }
 
         public Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
-            return SendEmailAsync(email, AppConfig.SmtpEmail, subject, htmlMessage);
+            return EmailSenderEx.SendEmailAsync(email, subject, htmlMessage, string.Empty);
         }
     }
+
 }

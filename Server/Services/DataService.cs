@@ -288,7 +288,7 @@ namespace Remotely.Server.Services
             }
             catch (Exception ex)
             {
-                WriteEvent(ex);
+                WriteEvent(ex, organizationID);
                 return false;
             }
 
@@ -851,45 +851,62 @@ namespace Remotely.Server.Services
         }
         public void WriteEvent(EventLog eventLog)
         {
-            RemotelyContext.EventLogs.Add(eventLog);
-            RemotelyContext.SaveChanges();
+            try
+            {
+                RemotelyContext.EventLogs.Add(eventLog);
+                RemotelyContext.SaveChanges();
+            }
+            catch { }
         }
 
-        public void WriteEvent(Exception ex)
+        public void WriteEvent(Exception ex, string organizationID = null)
         {
-            RemotelyContext.EventLogs.Add(new EventLog()
+            try
             {
-                EventType = EventType.Error,
-                Message = ex.Message,
-                Source = ex.Source,
-                StackTrace = ex.StackTrace,
-                TimeStamp = DateTimeOffset.Now
-            });
-            RemotelyContext.SaveChanges();
+                RemotelyContext.EventLogs.Add(new EventLog()
+                {
+                    EventType = EventType.Error,
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace,
+                    TimeStamp = DateTimeOffset.Now,
+                    OrganizationID = organizationID
+                });
+                RemotelyContext.SaveChanges();
+            }
+            catch { }
         }
 
-        public void WriteEvent(string message, string organizationId)
+        public void WriteEvent(string message, string organizationID)
         {
-            RemotelyContext.EventLogs.Add(new EventLog()
+            try
             {
-                EventType = EventType.Info,
-                Message = message,
-                TimeStamp = DateTimeOffset.Now,
-                OrganizationID = organizationId
-            });
-            RemotelyContext.SaveChanges();
+                RemotelyContext.EventLogs.Add(new EventLog()
+                {
+                    EventType = EventType.Info,
+                    Message = message,
+                    TimeStamp = DateTimeOffset.Now,
+                    OrganizationID = organizationID
+                });
+                RemotelyContext.SaveChanges();
+            }
+            catch { }
         }
 
-        public void WriteEvent(string message, EventType eventType, string organizationId)
+        public void WriteEvent(string message, EventType eventType, string organizationID)
         {
-            RemotelyContext.EventLogs.Add(new EventLog()
+            try
             {
-                EventType = eventType,
-                Message = message,
-                TimeStamp = DateTimeOffset.Now,
-                OrganizationID = organizationId
-            });
-            RemotelyContext.SaveChanges();
+                RemotelyContext.EventLogs.Add(new EventLog()
+                {
+                    EventType = eventType,
+                    Message = message,
+                    TimeStamp = DateTimeOffset.Now,
+                    OrganizationID = organizationID
+                });
+                RemotelyContext.SaveChanges();
+            }
+            catch { }
         }
     }
 }

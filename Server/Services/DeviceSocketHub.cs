@@ -109,7 +109,7 @@ namespace Remotely.Server.Services
             }
             catch (Exception ex)
             {
-                DataService.WriteEvent(ex);
+                DataService.WriteEvent(ex, Device?.OrganizationID);
             }
 
             Context.Abort();

@@ -18,7 +18,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 {
     public class OrganizationModel : PageModel
     {
-        public OrganizationModel(DataService dataService, UserManager<RemotelyUser> userManager, IEmailSender emailSender)
+        public OrganizationModel(DataService dataService, UserManager<RemotelyUser> userManager, IEmailSenderEx emailSender)
         {
             DataService = dataService;
             UserManager = userManager;
@@ -45,7 +45,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
         private DataService DataService { get; }
 
-        private IEmailSender EmailSender { get; }
+        private IEmailSenderEx EmailSender { get; }
 
         private UserManager<RemotelyUser> UserManager { get; }
 
@@ -127,16 +127,23 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
                     var newInvite = DataService.AddInvite(currentUser.OrganizationID, invite);
 
                     var inviteURL = $"{Request.Scheme}://{Request.Host}/Invite?id={newInvite.ID}";
-                    await EmailSender.SendEmailAsync(invite.InvitedUser, "Invitation to Organization in Remotely",
-                                $@"<img src='https://remotely.one/media/Remotely_Logo.png'/>
+                    var emailResult = await EmailSender.SendEmailAsync(invite.InvitedUser, "Invitation to Organization in Remotely",
+                            $@"<img src='https://remotely.one/media/Remotely_Logo.png'/>
                             <br><br>
                             Hello!
                             <br><br>
                             You've been invited to join an organization in Remotely.
                             <br><br>
-                            You can join the organization by <a href='{HtmlEncoder.Default.Encode(inviteURL)}'>clicking here</a>.");
-
-                    StatusMessage = "Invitation sent.";
+                            You can join the organization by <a href='{HtmlEncoder.Default.Encode(inviteURL)}'>clicking here</a>.",
+                            currentUser.OrganizationID);
+                    if (emailResult)
+                    {
+                        StatusMessage = "Invitation sent.";
+                    }
+                    else
+                    {
+                        StatusMessage = "Error sending invititation email.";
+                    }
 
                     return RedirectToPage();
                 }

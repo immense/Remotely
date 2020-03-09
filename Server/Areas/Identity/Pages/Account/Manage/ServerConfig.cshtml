@@ -56,7 +56,7 @@
                 <div class="form-group">
                     <label asp-for="AppSettingsInput.KnownProxies" class="control-label"></label>
                     <br />
-                    <select id="knownProxiesSelect" 
+                    <select id="knownProxiesSelect"
                             asp-for="AppSettingsInput.KnownProxies"
                             asp-items="Model.AppSettingsInput.KnownProxies?.Select(x=>new SelectListItem(x,x))"
                             class="form-control"></select>
@@ -170,9 +170,9 @@
                 <div class="form-group">
                     <label asp-for="AppSettingsInput.TrustedCorsOrigins" class="control-label"></label>
                     <br />
-                    <select id="trustedCorsSelect" 
-                            asp-for="AppSettingsInput.TrustedCorsOrigins" 
-                            asp-items="Model.AppSettingsInput.TrustedCorsOrigins?.Select(x=>new SelectListItem(x,x))" 
+                    <select id="trustedCorsSelect"
+                            asp-for="AppSettingsInput.TrustedCorsOrigins"
+                            asp-items="Model.AppSettingsInput.TrustedCorsOrigins?.Select(x=>new SelectListItem(x,x))"
                             class="form-control"></select>
 
                     <div class="text-right mb-2 mt-1">
@@ -233,8 +233,8 @@
                 <div class="form-group">
                     <label asp-for="ServerAdmins" class="control-label"></label>
                     <br />
-                    <select id="serverAdminsSelect" 
-                            asp-for="ServerAdmins" 
+                    <select id="serverAdminsSelect"
+                            asp-for="ServerAdmins"
                             asp-items="Model.ServerAdmins?.Select(x=>new SelectListItem(x,x))"
                             class="form-control"></select>
                     <div class="text-right mb-2 mt-1">

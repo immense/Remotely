@@ -19,11 +19,11 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
     public class ForgotPasswordModel : PageModel
     {
         private readonly UserManager<RemotelyUser> _userManager;
-        private readonly IEmailSender _emailSender;
+        private readonly IEmailSenderEx _emailSender;
 
         private DataService DataService { get; }
 
-        public ForgotPasswordModel(UserManager<RemotelyUser> userManager, IEmailSender emailSender, DataService dataService)
+        public ForgotPasswordModel(UserManager<RemotelyUser> userManager, IEmailSenderEx emailSender, DataService dataService)
         {
             _userManager = userManager;
             _emailSender = emailSender;
@@ -63,10 +63,17 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
 
                 DataService.WriteEvent($"Sending password reset for user {user.UserName}. Reset URL: {callbackUrl}", user.OrganizationID);
 
-                await _emailSender.SendEmailAsync(
+                var emailResult = await _emailSender.SendEmailAsync(
                     Input.Email,
                     "Reset Password",
                     $"<img src='https://remotely.one/media/Remotely_Logo.png'/><br><br>Please reset your Remotely password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+                if (!emailResult)
+                {
+                    ModelState.AddModelError("EmailError", "Error sending email.");
+                    return Page();
+                }
+              
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }

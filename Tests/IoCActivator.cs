@@ -57,7 +57,7 @@ namespace Remotely.Tests
 
             services.AddTransient<DataService>();
             services.AddTransient<ApplicationConfig>();
-            services.AddTransient<IEmailSender, EmailSender>();
+            services.AddTransient<IEmailSenderEx, EmailSenderEx>();
             IoCActivator.ServiceProvider = services.BuildServiceProvider();
         }
 
