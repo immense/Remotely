@@ -34,6 +34,8 @@ export var ClipboardTransferBar = document.getElementById("clipboardTransferBar"
 export var ClipboardTransferTextArea = document.getElementById("clipboardTransferTextArea");
 export var ClipboardTransferButton = document.getElementById("clipboardTransferButton");
 export var ClipboardTransferTypeCheckbox = document.getElementById("clipboardTransferTypeCheckbox");
+export var ConnectionP2PIcon = document.getElementById("connectionP2PIcon");
+export var ConnectionRelayedIcon = document.getElementById("connectionRelayedIcon");
 var lastPointerMove = Date.now();
 var isDragging;
 var currentPointerDevice;

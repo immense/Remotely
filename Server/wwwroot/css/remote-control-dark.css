@@ -292,3 +292,15 @@ footer a {
     position: fixed;
     top: -100%;
 }
+
+.connection-icon {
+    padding: 5px;
+}
+
+#connectionRelayedIcon {
+    background-color: orange;
+}
+
+#connectionP2PIcon {
+    background-color: green;
+}
