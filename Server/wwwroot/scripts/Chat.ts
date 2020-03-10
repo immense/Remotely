@@ -58,6 +58,8 @@ export function CreateChatWindow(deviceID: string, deviceName: string) {
                 `;
                 (ev.currentTarget as HTMLTextAreaElement).value = "";
                 BrowserSockets.Connection.invoke("Chat", inputText, [deviceID]);
+                var chatMessages = chatWindow.querySelector(".chat-messages") as HTMLDivElement;
+                chatMessages.scrollTo({ top: chatMessages.scrollHeight });
             }
         };
     }
