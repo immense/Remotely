@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Remotely.Shared.Enums;
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
@@ -56,23 +57,26 @@ namespace Remotely.Shared.Services
             }
         }
 
-        public static OSPlatform GetPlatform()
+        public static Platform Platform
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            get
             {
-                return OSPlatform.Windows;
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                return OSPlatform.Linux;
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                return OSPlatform.OSX;
-            }
-            else
-            {
-                return OSPlatform.Create("Unknown");
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    return Platform.Windows;
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    return Platform.Linux;
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    return Platform.OSX;
+                }
+                else
+                {
+                    return Platform.Unknown;
+                }
             }
         }
 
@@ -92,5 +96,6 @@ namespace Remotely.Shared.Services
 
             return proc.StandardOutput.ReadToEnd();
         }
+
     }
 }

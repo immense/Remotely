@@ -184,10 +184,7 @@ namespace Remotely.Agent.Services
                 var whoSplit = whoLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 username = whoSplit[0];
                 display = whoSplit.Last().Trim('(').Trim(')');
-                if (string.IsNullOrWhiteSpace(xauthority))
-                {
-                    xauthority = $"/home/{username}/.Xauthority";
-                }
+                xauthority = $"/home/{username}/.Xauthority";
                 args = $"-u {username} {args}";
             }
 
