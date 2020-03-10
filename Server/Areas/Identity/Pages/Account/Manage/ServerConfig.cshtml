@@ -142,7 +142,7 @@
                 <div class="form-group">
                     <label asp-for="AppSettingsInput.SmtpPassword" class="control-label"></label>
                     <br />
-                    <input type="password" asp-for="AppSettingsInput.SmtpPassword" class="form-control" autocomplete="new-password" />
+                    <input type="password" asp-for="AppSettingsInput.SmtpPassword" value="@Model.AppSettingsInput.SmtpPassword" class="form-control" autocomplete="new-password" />
                     <br />
                     <span asp-validation-for="AppSettingsInput.SmtpPassword" class="text-danger"></span>
                 </div>
