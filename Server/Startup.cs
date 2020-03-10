@@ -253,7 +253,7 @@ namespace Remotely.Server
             }
             catch (Exception ex)
             {
-                dataService.WriteEvent(ex);
+                dataService.WriteEvent(ex, null);
             }
             dataService.SetAllDevicesNotOnline();
             dataService.CleanupOldRecords();

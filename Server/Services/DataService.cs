@@ -859,7 +859,7 @@ namespace Remotely.Server.Services
             catch { }
         }
 
-        public void WriteEvent(Exception ex, string organizationID = null)
+        public void WriteEvent(Exception ex, string organizationID)
         {
             try
             {
