@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Remotely.Server.Data;
 using Remotely.Server.Models;
+using Remotely.Shared.Services;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -62,7 +63,20 @@ namespace Remotely.Server.Services
                             var ffmpegProc = new Process();
                             SessionStates[frame.ViewerID].FfmpegProcess = ffmpegProc;
 
-                            ffmpegProc.StartInfo.FileName = "ffmpeg.exe";
+                            switch (OSUtils.Platform)
+                            {
+                                case Shared.Enums.Platform.Windows:
+                                    ffmpegProc.StartInfo.FileName = "ffmpeg.exe";
+                                    break;
+                                case Shared.Enums.Platform.Linux:
+                                    ffmpegProc.StartInfo.FileName = "ffmpeg";
+                                    break;
+                                case Shared.Enums.Platform.OSX:
+                                case Shared.Enums.Platform.Unknown:
+                                default:
+                                    return;
+                            }
+
                             ffmpegProc.StartInfo.Arguments = $"-y -f image2pipe -i pipe:.jpg -r 5 \"{saveFile}\"";
                             ffmpegProc.StartInfo.UseShellExecute = false;
                             ffmpegProc.StartInfo.RedirectStandardInput = true;

@@ -16,8 +16,6 @@ namespace Remotely.Shared.Services
     {
         public static async Task<Device> Create(string deviceID, string orgID)
         {
-            OSPlatform platform = OSUtils.GetPlatform();
-
             DriveInfo systemDrive;
 
             if (OSUtils.IsWindows)
@@ -40,7 +38,7 @@ namespace Remotely.Shared.Services
             {
                 ID = deviceID,
                 DeviceName = Environment.MachineName,
-                Platform = platform.ToString(),
+                Platform = OSUtils.Platform.ToString(),
                 ProcessorCount = Environment.ProcessorCount,
                 OSArchitecture = RuntimeInformation.OSArchitecture,
                 OSDescription = RuntimeInformation.OSDescription,
