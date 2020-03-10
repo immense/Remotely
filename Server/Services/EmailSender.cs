@@ -48,6 +48,7 @@ namespace Remotely.Server.Services
                 mailMessage.Body = htmlMessage;
                 mailMessage.ReplyToList.Add(new MailAddress(replyTo));
                 mailClient.Send(mailMessage);
+                DataService.WriteEvent($"Email successfully sent to {email}.  Subject: \"{subject}\".", organizationID);
                 return Task.FromResult(true);
             }
             catch (Exception ex)
