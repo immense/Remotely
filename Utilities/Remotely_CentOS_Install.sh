@@ -1,8 +1,8 @@
 #!/bin/bash
-echo "Thanks for trying remotely!  If you have any questions, feel free to email me at Translucency_Software@outlook.com."
+echo "Thanks for trying Remotely!  If you have any questions, feel free to email me at Translucency_Software@outlook.com."
 echo
 
-read -p "Enter path where the Remotely server files are located (typically /var/www/remotely): " appRoot
+read -p "Enter path where the Remotely server files should be installed (typically /var/www/remotely): " appRoot
 if [ -z "$appRoot" ]; then
     appRoot="/var/www/remotely"
 fi
