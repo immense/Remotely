@@ -150,9 +150,9 @@ namespace Remotely.Agent.Services
 
                 await CommandExecutor.ExecuteCommandFromApi(mode, requestID, command, commandID, senderUserName, HubConnection);
             }));
-            HubConnection.On("TransferFiles", async (string transferID, List<string> fileIDs, string requesterID) =>
+            HubConnection.On("UploadFiles", async (string transferID, List<string> fileIDs, string requesterID) =>
             {
-                Logger.Write($"File transfer started by {requesterID}.");
+                Logger.Write($"File upload started by {requesterID}.");
                 var sharedFilePath = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(),"RemotelySharedFiles")).FullName;
                 
                 foreach (var fileID in fileIDs)
