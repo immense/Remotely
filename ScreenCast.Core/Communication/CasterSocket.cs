@@ -35,16 +35,16 @@ namespace Remotely.ScreenCast.Core.Communication
             ClipboardService.ClipboardTextChanged += ClipboardService_ClipboardTextChanged;
         }
 
+        public bool IsConnected => Connection?.State == HubConnectionState.Connected;
         public IScreenCaster ScreenCaster { get; }
 
         private IAudioCapturer AudioCapturer { get; }
 
         private IClipboardService ClipboardService { get; }
 
-        private HubConnection Connection { get; set; }
+        public HubConnection Connection { get; private set; }
 
         private IKeyboardMouseInput KeyboardMouseInput { get; }
-
         public async Task Connect(string host)
         {
             if (Connection != null)
@@ -55,6 +55,7 @@ namespace Remotely.ScreenCast.Core.Communication
             Connection = new HubConnectionBuilder()
                 .WithUrl($"{host}/RCDeviceHub")
                 .AddMessagePackProtocol()
+                .WithAutomaticReconnect()
                 .Build();
 
             ApplyConnectionHandlers();
@@ -108,6 +109,11 @@ namespace Remotely.ScreenCast.Core.Communication
             await Connection.SendAsync("ReceiveDeviceInfo", serviceID, machineName, deviceID);
         }
 
+        public async Task SendIceCandidateToBrowser(string candidate, int sdpMlineIndex, string sdpMid, string viewerConnectionID)
+        {
+            await Connection.SendAsync("SendIceCandidateToBrowser", candidate, sdpMlineIndex, sdpMid, viewerConnectionID);
+        }
+
         public async Task SendMachineName(string machineName, string viewerID)
         {
             await Connection.SendAsync("SendMachineName", machineName, viewerID);
@@ -136,11 +142,6 @@ namespace Remotely.ScreenCast.Core.Communication
         public async Task SendViewerRemoved(string viewerID)
         {
             await Connection.SendAsync("SendViewerRemoved", viewerID);
-        }
-
-        public async Task SendIceCandidateToBrowser(string candidate, int sdpMlineIndex, string sdpMid, string viewerConnectionID)
-        {
-            await Connection.SendAsync("SendIceCandidateToBrowser", candidate, sdpMlineIndex, sdpMid, viewerConnectionID);
         }
         private void ApplyConnectionHandlers()
         {

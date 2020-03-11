@@ -27,7 +27,7 @@ namespace Remotely.ScreenCast.Win
         }
         public static async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)
         {
-            if (Conductor?.CasterSocket != null)
+            if (Conductor?.CasterSocket?.IsConnected == true)
             {
                 await Conductor.CasterSocket.SendCursorChange(cursor, Conductor.Viewers.Keys.ToList());
             }

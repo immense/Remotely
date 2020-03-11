@@ -71,7 +71,7 @@ namespace Remotely.ScreenCast.Core.Capture
                 await casterSocket.SendScreenSize(bounds.Width, bounds.Height, viewerID);
             };
 
-            while (!viewer.DisconnectRequested)
+            while (!viewer.DisconnectRequested && casterSocket.IsConnected)
             {
                 try
                 {
