@@ -156,7 +156,7 @@ namespace Remotely.Server.Services
         }
 
 
-        public Task TransferFiles(List<string> fileIDs, string transferID, string[] deviceIDs)
+        public Task UploadFiles(List<string> fileIDs, string transferID, string[] deviceIDs)
         {
             DataService.WriteEvent(new EventLog()
             {
@@ -169,7 +169,7 @@ namespace Remotely.Server.Services
             var connections = GetActiveClientConnections(deviceIDs);
             foreach (var connection in connections)
             {
-                DeviceHub.Clients.Client(connection.Key).SendAsync("TransferFiles", transferID, fileIDs, Context.ConnectionId);
+                DeviceHub.Clients.Client(connection.Key).SendAsync("UploadFiles", transferID, fileIDs, Context.ConnectionId);
             }
             return Task.CompletedTask;
         }

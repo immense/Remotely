@@ -478,11 +478,11 @@ var commands: Array<ConsoleCommand> = [
         }
     ),
     new ConsoleCommand(
-        "TransferFiles",
+        "UploadFiles",
         [
         ],
-        "Transfer file(s) to the selected devices.",
-        "transferfiles",
+        "Upload file(s) to the selected devices.  The files get saved in C:\\Windows\\Temp on the remote computer.",
+        "uploadfiles",
         "",
         (parameters, parameterDict) => {
             var selectedDevices = Main.DataGrid.GetSelectedDevices();
@@ -499,7 +499,7 @@ var commands: Array<ConsoleCommand> = [
             document.body.appendChild(fileInput);
             fileInput.onchange = () => {
                 uploadFiles(fileInput.files).then(value => {
-                    BrowserSockets.Connection.invoke("TransferFiles", value, transferID, selectedDevices.map(x => x.ID));
+                    BrowserSockets.Connection.invoke("UploadFiles", value, transferID, selectedDevices.map(x => x.ID));
                     fileInput.remove();
                 });
             }

@@ -341,7 +341,7 @@ var commands = [
             BrowserSockets.Connection.invoke("UpdateTags", x.ID, parameterDict["tags"]);
         });
     }),
-    new ConsoleCommand("TransferFiles", [], "Transfer file(s) to the selected devices.", "transferfiles", "", (parameters, parameterDict) => {
+    new ConsoleCommand("UploadFiles", [], "Upload file(s) to the selected devices.  The files get saved in C:\\Windows\\Temp on the remote computer.", "uploadfiles", "", (parameters, parameterDict) => {
         var selectedDevices = Main.DataGrid.GetSelectedDevices();
         if (selectedDevices.length == 0) {
             AddConsoleOutput("No devices are selected.");
@@ -356,7 +356,7 @@ var commands = [
         document.body.appendChild(fileInput);
         fileInput.onchange = () => {
             uploadFiles(fileInput.files).then(value => {
-                BrowserSockets.Connection.invoke("TransferFiles", value, transferID, selectedDevices.map(x => x.ID));
+                BrowserSockets.Connection.invoke("UploadFiles", value, transferID, selectedDevices.map(x => x.ID));
                 fileInput.remove();
             });
         };
