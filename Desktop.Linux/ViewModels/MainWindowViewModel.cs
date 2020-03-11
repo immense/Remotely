@@ -142,7 +142,12 @@ namespace Remotely.Desktop.Linux.ViewModels
             try
             {
                 SessionID = "Retrieving...";
-                Host = Config.GetConfig().Host;
+
+                if (string.IsNullOrWhiteSpace(Host))
+                {
+                    Host = Config.GetConfig().Host;
+                }
+               
                 while (string.IsNullOrWhiteSpace(Host))
                 {
                     Host = "https://";

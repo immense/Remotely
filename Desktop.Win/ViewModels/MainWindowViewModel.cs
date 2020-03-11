@@ -170,8 +170,10 @@ namespace Remotely.Desktop.Win.ViewModels
         {
             SessionID = "Retrieving...";
 
-            var config = Config.GetConfig();
-            Host = config.Host;
+            if (string.IsNullOrWhiteSpace(Host))
+            {
+                Host = Config.GetConfig().Host;
+            }
 
             while (string.IsNullOrWhiteSpace(Host))
             {
@@ -187,7 +189,7 @@ namespace Remotely.Desktop.Win.ViewModels
 
                 Conductor.CasterSocket.Connection.Closed += async (ex) =>
                 {
-                    App.Current.Dispatcher.Invoke(() =>
+                    await App.Current.Dispatcher.InvokeAsync(() =>
                     {
                         SessionID = "Disconnected";
                     });
@@ -195,7 +197,7 @@ namespace Remotely.Desktop.Win.ViewModels
 
                 Conductor.CasterSocket.Connection.Reconnecting += async (ex) =>
                 {
-                    App.Current.Dispatcher.Invoke(() =>
+                    await App.Current.Dispatcher.InvokeAsync(() =>
                     {
                         SessionID = "Reconnecting";
                     });
