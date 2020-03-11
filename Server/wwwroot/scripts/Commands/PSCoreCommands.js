@@ -7,6 +7,8 @@ var commands = [
     }),
     new ConsoleCommand(`Add-DnsClientNrptRule`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Add-DtcClusterTMMapping`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Add-EtwTraceProvider`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Add-InitiatorIdToMaskingSet`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -43,8 +45,6 @@ var commands = [
     }),
     new ConsoleCommand(`Add-NetSwitchTeamMember`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`Add-NodeKeys`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
     new ConsoleCommand(`Add-OdbcDsn`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Add-PartitionAccessPath`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -73,19 +73,25 @@ var commands = [
     }),
     new ConsoleCommand(`Add-VpnConnectionTriggerTrustedNetwork`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`AddDscResourceProperty`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    new ConsoleCommand(`AfterAll`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`AddDscResourcePropertyFromMetadata`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    new ConsoleCommand(`AfterEach`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Assert-MockCalled`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Assert-VerifiableMocks`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Backup-BitLockerKeyProtector`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`BackupToAAD-BitLockerKeyProtector`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`BeforeAll`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`BeforeEach`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Block-FileShareAccess`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Block-SmbShareAccess`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`CheckResourceFound`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Clear-AssignedAccess`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -101,6 +107,8 @@ var commands = [
     }),
     new ConsoleCommand(`Clear-PcsvDeviceLog`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Clear-StorageBusDisk`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Clear-StorageDiagnosticInfo`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Close-SmbOpenFile`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -109,11 +117,17 @@ var commands = [
     }),
     new ConsoleCommand(`Compress-Archive`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Compress-Archive`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Configuration`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Configuration`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Connect-IscsiTarget`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Connect-VirtualDisk`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`ConvertTo-MOFInstance`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    new ConsoleCommand(`Context`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Copy-NetFirewallRule`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -137,6 +151,8 @@ var commands = [
     }),
     new ConsoleCommand(`Debug-Volume`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Describe`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Disable-BC`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Disable-BCDowngrading`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -148,6 +164,8 @@ var commands = [
     new ConsoleCommand(`Disable-BitLockerAutoUnlock`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Disable-DAManualEntryPointSelection`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Disable-DscDebug`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Disable-MMAgent`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -207,11 +225,19 @@ var commands = [
     }),
     new ConsoleCommand(`Disable-PSTrace`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Disable-PSTrace`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Disable-PSWSManCombinedTrace`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Disable-PSWSManCombinedTrace`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Disable-ScheduledTask`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Disable-SmbDelegation`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Disable-StorageBusCache`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Disable-StorageBusDisk`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Disable-StorageEnclosureIdentification`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -224,6 +250,10 @@ var commands = [
     new ConsoleCommand(`Disable-WdacBidTrace`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Disable-WSManTrace`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Disable-WSManTrace`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Disconnect-IscsiTarget`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Disconnect-VirtualDisk`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -246,6 +276,8 @@ var commands = [
     new ConsoleCommand(`Enable-BitLockerAutoUnlock`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Enable-DAManualEntryPointSelection`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Enable-DscDebug`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Enable-MMAgent`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -305,11 +337,19 @@ var commands = [
     }),
     new ConsoleCommand(`Enable-PSTrace`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Enable-PSTrace`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Enable-PSWSManCombinedTrace`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Enable-PSWSManCombinedTrace`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Enable-ScheduledTask`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Enable-SmbDelegation`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Enable-StorageBusCache`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Enable-StorageBusDisk`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Enable-StorageEnclosureIdentification`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -323,17 +363,29 @@ var commands = [
     }),
     new ConsoleCommand(`Enable-WSManTrace`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Enable-WSManTrace`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Expand-Archive`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Expand-Archive`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Export-BCCachePackage`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Export-BCSecretKey`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Export-ODataEndpointProxy`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Export-ScheduledTask`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Find-Command`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Find-Command`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Find-DSCResource`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Find-DscResource`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Find-Module`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Find-Module`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -343,15 +395,19 @@ var commands = [
     }),
     new ConsoleCommand(`Find-RoleCapability`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Find-RoleCapability`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Find-Script`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Find-Script`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Flush-EtwTraceSession`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Format-Volume`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`Generate-VersionInfo`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
     new ConsoleCommand(`Get-AppBackgroundTask`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-AppvVirtualProcess`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-AppxLastError`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -381,11 +437,7 @@ var commands = [
     }),
     new ConsoleCommand(`Get-ClusteredScheduledTask`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`Get-CompatibleVersionAddtionaPropertiesStr`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Get-ComplexResourceQualifier`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Get-ConfigurationErrorCount`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    new ConsoleCommand(`Get-CredsFromCredentialProvider`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-DAClientExperienceConfiguration`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -415,11 +467,39 @@ var commands = [
     }),
     new ConsoleCommand(`Get-DnsClientServerAddress`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Get-DscConfiguration`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-DscConfigurationStatus`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-DscLocalConfigurationManager`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Get-DscResource`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`Get-DSCResourceModules`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    new ConsoleCommand(`Get-DscResource`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`Get-EncryptedPassword`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    new ConsoleCommand(`Get-Dtc`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-DtcAdvancedHostSetting`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-DtcAdvancedSetting`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-DtcClusterDefault`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-DtcClusterTMMapping`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-DtcDefault`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-DtcLog`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-DtcNetworkSetting`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-DtcTransaction`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-DtcTransactionsStatistics`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-DtcTransactionsTraceSession`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-DtcTransactionsTraceSetting`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-EtwTraceProvider`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -437,11 +517,25 @@ var commands = [
     }),
     new ConsoleCommand(`Get-InitiatorPort`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`Get-InnerMostErrorRecord`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    new ConsoleCommand(`Get-InstalledModule`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-InstalledModule`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-InstalledScript`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-InstalledScript`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-IscsiConnection`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-IscsiSession`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-IscsiTarget`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-IscsiTargetPortal`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-IseSnippet`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-LogProperties`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-LogProperties`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -449,9 +543,7 @@ var commands = [
     }),
     new ConsoleCommand(`Get-MMAgent`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`Get-MofInstanceName`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Get-MofInstanceText`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    new ConsoleCommand(`Get-MockDynamicParameters`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-MpComputerStatus`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -647,6 +739,8 @@ var commands = [
     }),
     new ConsoleCommand(`Get-NetUDPSetting`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Get-NetView`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Get-NetworkSwitchEthernetPort`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-NetworkSwitchFeature`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -662,6 +756,8 @@ var commands = [
     new ConsoleCommand(`Get-OdbcPerfCounter`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-OffloadDataTransferSetting`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-OperationValidation`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-Partition`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -683,8 +779,6 @@ var commands = [
     }),
     new ConsoleCommand(`Get-PnpDeviceProperty`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`Get-PositionInfo`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
     new ConsoleCommand(`Get-PrintConfiguration`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-Printer`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -697,21 +791,9 @@ var commands = [
     }),
     new ConsoleCommand(`Get-PrintJob`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`Get-PSCurrentConfigurationNode`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Get-PSDefaultConfigurationDocument`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Get-PSMetaConfigDocumentInstVersionInfo`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Get-PSMetaConfigurationProcessed`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
     new ConsoleCommand(`Get-PSRepository`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`Get-PSTopConfigurationName`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Get-PublicKeyFromFile`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Get-PublicKeyFromStore`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    new ConsoleCommand(`Get-PSRepository`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-ResiliencySetting`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -754,6 +836,10 @@ var commands = [
     new ConsoleCommand(`Get-StartApps`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-StorageAdvancedProperty`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-StorageBusBinding`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-StorageBusDisk`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-StorageChassis`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -813,6 +899,8 @@ var commands = [
     }),
     new ConsoleCommand(`Get-TargetPortal`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Get-TestDriveItem`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Get-VirtualDisk`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-VirtualDiskSupportedSize`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -839,18 +927,6 @@ var commands = [
     }),
     new ConsoleCommand(`Get-WULastScanSuccessDate`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`GetCompositeResource`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`GetImplementingModulePath`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`GetModule`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`GetPatterns`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`GetResourceFromKeyword`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`GetSyntax`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
     new ConsoleCommand(`Grant-FileShareAccess`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Grant-SmbShareAccess`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -861,25 +937,41 @@ var commands = [
     }),
     new ConsoleCommand(`Import-BCSecretKey`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`ImportCimAndScriptKeywordsFromModule`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    new ConsoleCommand(`Import-IseSnippet`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`ImportClassResourcesFromModule`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Initialize-ConfigurationRuntimeState`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    new ConsoleCommand(`In`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Initialize-Disk`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`InModuleScope`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Install-Dtc`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Install-Module`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Install-Module`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Install-Script`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Install-Script`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Install-WUUpdates`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`IsHiddenResource`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    new ConsoleCommand(`Invoke-AsWorkflow`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`IsPatternMatched`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    new ConsoleCommand(`Invoke-DscResource`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Invoke-Mock`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Invoke-OperationValidation`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Invoke-Pester`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`It`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Lock-BitLocker`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Mock`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Mount-DiskImage`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -891,11 +983,19 @@ var commands = [
     }),
     new ConsoleCommand(`New-DscChecksum`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`New-DscChecksum`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`New-EapConfiguration`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`New-EtwTraceSession`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`New-FileShare`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`New-Fixture`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`New-IscsiTargetPortal`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`New-IseSnippet`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`New-MaskingSet`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -943,6 +1043,10 @@ var commands = [
     }),
     new ConsoleCommand(`New-Partition`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`New-PesterOption`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`New-PSWorkflowSession`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`New-ScheduledTask`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`New-ScheduledTaskAction`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -955,6 +1059,8 @@ var commands = [
     }),
     new ConsoleCommand(`New-ScriptFileInfo`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`New-ScriptFileInfo`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`New-SmbGlobalMapping`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`New-SmbMapping`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -962,6 +1068,10 @@ var commands = [
     new ConsoleCommand(`New-SmbMultichannelConstraint`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`New-SmbShare`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`New-StorageBusBinding`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`New-StorageBusCacheStore`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`New-StorageFileServer`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -981,8 +1091,6 @@ var commands = [
     }),
     new ConsoleCommand(`New-VpnServerAddress`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`Node`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
     new ConsoleCommand(`Open-NetGPO`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Optimize-StoragePool`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -997,15 +1105,21 @@ var commands = [
     }),
     new ConsoleCommand(`Publish-Module`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Publish-Module`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Publish-Script`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Publish-Script`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Read-PrinterNfcTag`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`ReadEnvironmentFile`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
     new ConsoleCommand(`Register-ClusteredScheduledTask`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Register-DnsClient`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Register-IscsiSession`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Register-PSRepository`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Register-PSRepository`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -1023,6 +1137,10 @@ var commands = [
     }),
     new ConsoleCommand(`Remove-DnsClientNrptRule`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Remove-DscConfigurationDocument`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Remove-DtcClusterTMMapping`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Remove-EtwTraceProvider`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Remove-FileShare`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -1030,6 +1148,8 @@ var commands = [
     new ConsoleCommand(`Remove-InitiatorId`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Remove-InitiatorIdFromMaskingSet`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Remove-IscsiTargetPortal`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Remove-MaskingSet`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -1143,6 +1263,8 @@ var commands = [
     }),
     new ConsoleCommand(`Remove-SmbShare`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Remove-StorageBusBinding`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Remove-StorageFaultDomain`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Remove-StorageFileServer`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -1211,6 +1333,8 @@ var commands = [
     }),
     new ConsoleCommand(`Reset-DAEntryPointTableItem`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Reset-DtcLog`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Reset-NCSIPolicyConfiguration`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Reset-Net6to4Configuration`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -1241,23 +1365,33 @@ var commands = [
     }),
     new ConsoleCommand(`Restart-PrintJob`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Restore-DscConfiguration`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Restore-NetworkSwitchConfiguration`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Resume-BitLocker`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Resume-PrintJob`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Resume-StorageBusDisk`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Revoke-FileShareAccess`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Revoke-SmbShareAccess`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`SafeGetCommand`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Save-EtwTraceSession`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Save-Module`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Save-Module`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Save-NetGPO`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Save-NetworkSwitchConfiguration`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Save-Script`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Save-Script`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -1293,6 +1427,28 @@ var commands = [
     }),
     new ConsoleCommand(`Set-DnsClientServerAddress`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Set-DtcAdvancedHostSetting`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-DtcAdvancedSetting`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-DtcClusterDefault`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-DtcClusterTMMapping`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-DtcDefault`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-DtcLog`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-DtcNetworkSetting`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-DtcTransaction`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-DtcTransactionsTraceSession`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-DtcTransactionsTraceSetting`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-DynamicParameterVariables`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Set-EtwTraceProvider`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Set-FileIntegrity`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -1302,6 +1458,10 @@ var commands = [
     new ConsoleCommand(`Set-FileStorageTier`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Set-InitiatorPort`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-IscsiChapSecret`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-LogProperties`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Set-LogProperties`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -1443,14 +1603,6 @@ var commands = [
     }),
     new ConsoleCommand(`Set-NetworkSwitchVlanProperty`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`Set-NodeExclusiveResources`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Set-NodeManager`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Set-NodeResources`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Set-NodeResourceSource`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
     new ConsoleCommand(`Set-OdbcDriver`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Set-OdbcDsn`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -1471,17 +1623,9 @@ var commands = [
     }),
     new ConsoleCommand(`Set-PrinterProperty`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`Set-PSCurrentConfigurationNode`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Set-PSDefaultConfigurationDocument`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Set-PSMetaConfigDocInsProcessedBeforeMeta`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Set-PSMetaConfigVersionInfoV2`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
     new ConsoleCommand(`Set-PSRepository`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`Set-PSTopConfigurationName`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    new ConsoleCommand(`Set-PSRepository`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Set-ResiliencySetting`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -1497,6 +1641,8 @@ var commands = [
     }),
     new ConsoleCommand(`Set-SmbShare`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Set-StorageBusProfile`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Set-StorageFileServer`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Set-StorageHealthSetting`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -1510,6 +1656,8 @@ var commands = [
     new ConsoleCommand(`Set-StorageSubSystem`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Set-StorageTier`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-TestInconclusive`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Set-VirtualDisk`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -1527,6 +1675,10 @@ var commands = [
     }),
     new ConsoleCommand(`Set-VpnConnectionTriggerTrustedNetwork`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Setup`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Should`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Show-NetFirewallRule`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Show-NetIPsecRule`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -1537,7 +1689,13 @@ var commands = [
     }),
     new ConsoleCommand(`Start-AppBackgroundTask`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Start-AppvVirtualProcess`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Start-AutologgerConfig`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Start-Dtc`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Start-DtcTransactionsTraceSession`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Start-EtwTraceSession`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -1559,7 +1717,15 @@ var commands = [
     }),
     new ConsoleCommand(`Start-Trace`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Start-Trace`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Start-WUScan`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Stop-DscConfiguration`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Stop-Dtc`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Stop-DtcTransactionsTraceSession`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Stop-EtwTraceSession`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -1575,37 +1741,35 @@ var commands = [
     }),
     new ConsoleCommand(`Stop-Trace`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`StrongConnect`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    new ConsoleCommand(`Stop-Trace`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Suspend-BitLocker`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Suspend-PrintJob`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Suspend-StorageBusDisk`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Sync-NetIPsecRule`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`Test-ConflictingResources`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Test-ModuleReloadRequired`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Test-MofInstanceText`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    new ConsoleCommand(`Test-Dtc`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Test-NetConnection`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`Test-NodeManager`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Test-NodeResources`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Test-NodeResourceSource`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
     new ConsoleCommand(`Test-ScriptFileInfo`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`ThrowError`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    new ConsoleCommand(`Test-ScriptFileInfo`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Unblock-FileShareAccess`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Unblock-SmbShareAccess`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Uninstall-Dtc`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Uninstall-Module`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Uninstall-Module`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Uninstall-Script`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Uninstall-Script`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -1615,6 +1779,10 @@ var commands = [
     }),
     new ConsoleCommand(`Unregister-ClusteredScheduledTask`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Unregister-IscsiSession`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Unregister-PSRepository`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Unregister-PSRepository`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Unregister-ScheduledTask`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -1623,25 +1791,25 @@ var commands = [
     }),
     new ConsoleCommand(`Update-AutologgerConfig`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`Update-ConfigurationDocumentRef`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Update-ConfigurationErrorCount`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Update-DependsOn`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
     new ConsoleCommand(`Update-Disk`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Update-DscConfiguration`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Update-EtwTraceSession`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Update-HostStorageCache`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`Update-LocalConfigManager`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    new ConsoleCommand(`Update-IscsiTarget`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Update-IscsiTargetPortal`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Update-Module`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Update-Module`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Update-ModuleManifest`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`Update-ModuleVersion`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    new ConsoleCommand(`Update-ModuleManifest`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Update-MpSignature`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -1650,6 +1818,10 @@ var commands = [
     new ConsoleCommand(`Update-NetIPsecRule`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Update-Script`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Update-Script`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Update-ScriptFileInfo`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Update-ScriptFileInfo`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -1661,37 +1833,21 @@ var commands = [
     }),
     new ConsoleCommand(`Update-StorageProviderCache`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`ValidateNoCircleInNodeResources`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`ValidateNodeExclusiveResources`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`ValidateNodeManager`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`ValidateNodeResources`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`ValidateNodeResourceSource`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`ValidateNoNameNodeResources`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`ValidateUpdate-ConfigurationData`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Write-Log`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Write-MetaConfigFile`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`Write-NodeMOFFile`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    new ConsoleCommand(`Write-DtcTransactionsTraceSession`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Write-PrinterNfcTag`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Write-VolumeCache`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
-    }),
-    new ConsoleCommand(`WriteFile`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Add-AppxPackage`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Add-AppxProvisionedPackage`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Add-AppxVolume`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Add-BitsFile`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Add-CertificateEnrollmentPolicyServer`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Add-Content`, [
         new Parameter(`AsByteStream`, `Specifies that the content should be read as a stream of bytes. This parameter was introduced in PowerShell 6.0.
@@ -1712,7 +1868,7 @@ The acceptable values for this parameter are as follows:
 
 
 Beginning with PowerShell 6.2, the Encoding parameter also allows numeric IDs of registered code pages (like "-Encoding 1251") or string names of registered code pages (like "-Encoding "windows-1251""). For more information, see the .NET documentation for Encoding.CodePage (/dotnet/api/system.text.encoding.codepage?view=netcore-2.2).`, `Encoding`),
-        new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as " .txt". Wildcard characters are permitted. The Exclude * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C\\Windows" directory.`, `String[]`),
+        new Parameter(`Exclude`, `Specifies, as a string array, an item or items that this cmdlet excludes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as " .txt". Wildcard characters are permitted. The Exclude * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
         new Parameter(`Filter`, `Specifies a filter to qualify the Path parameter. The FileSystem (../Microsoft.PowerShell.Core/About/about_FileSystem_Provider.md)provider is the only installed PowerShell provider that supports the use of filters. You can find the syntax for the FileSystem filter language in about_Wildcards (../Microsoft.PowerShell.Core/About/about_Wildcards.md). Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects rather than having PowerShell filter the objects after they are retrieved.`, `String`),
         new Parameter(`Force`, `Overrides the read-only attribute, allowing you to add content to a read-only file. For example, Force will override the read-only attribute or create directories to complete a file path, but it will not attempt to change file permissions.`, `SwitchParameter`),
         new Parameter(`Include`, `Specifies, as a string array, an item or items that this cmdlet includes in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as "" .txt"". Wildcard characters are permitted. The Include * parameter is effective only when the command includes the contents of an item, such as "C:\\Windows*", where the wildcard character specifies the contents of the "C:\\Windows" directory.`, `String[]`),
@@ -1747,6 +1903,10 @@ Add-Content [-Path] <String[]> [-Value] <Object[]> [-AsByteStream] [-Credential 
         new Parameter(`InputObject`, `Specifies an array of entries to add to the history as HistoryInfo object to the session history. You can use this parameter to submit a HistoryInfo object, such as the ones that are returned by the Get-History , Import-Clixml, or Import-Csv cmdlets, to Add-History .`, `PSObject[]`),
         new Parameter(`Passthru`, `Indicates that this cmdlet returns a history object for each history entry. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
     ], `Appends entries to the session history.`, `Add-History [[-InputObject] <PSObject[]>] [-Passthru] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Add-JobTrigger`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Add-KdsRootKey`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Add-LocalGroupMember`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -1834,6 +1994,8 @@ Add-Member [-MemberType] {AliasProperty | CodeProperty | Property | NoteProperty
 
 Add-Member -InputObject <PSObject> [-PassThru] [-TypeName <String>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Add-SignerRule`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Add-Type`, [
         new Parameter(`AssemblyName`, `Specifies the name of an assembly that includes the types. "Add-Type" takes the types from the specified assembly. This parameter is required when you're creating types based on an assembly name.
 
@@ -1841,7 +2003,7 @@ Add-Member -InputObject <PSObject> [-PassThru] [-TypeName <String>] [<CommonPara
 Enter the full or simple name, also known as the partial name, of an assembly. Wildcard characters are permitted in the assembly name. If you enter a simple or partial name, "Add-Type" resolves it to the full name, and then uses the full name to load the assembly.
 
 
-This parameter doesn't accept a path or a file name. To enter the path to the assembly dynamic-link library (DLL) file, use the Path parameter.`, `String[]`),
+This parameter doesn't accept a path or a filename. To enter the path to the assembly dynamic-link library (DLL) file, use the Path parameter.`, `String[]`),
         new Parameter(`CompilerOptions`, `Specifies the options for the source code compiler. These options are sent to the compiler without revision.
 
 
@@ -1864,7 +2026,7 @@ The type name and namespace must be unique within a session. You can't unload a 
 
 
 If this parameter isn't included in the command, the type is created in the Microsoft.PowerShell.Commands.AddType.AutoGeneratedTypes namespace. If the parameter is included in the command with an empty string value or a value of "$Null", the type is generated in the global namespace.`, `String`),
-        new Parameter(`OutputAssembly`, `Generates a DLL file for the assembly with the specified name in the location. Enter an optional path and file name. Wildcard characters are permitted. By default, "Add-Type" generates the assembly only in memory.`, `String`),
+        new Parameter(`OutputAssembly`, `Generates a DLL file for the assembly with the specified name in the location. Enter an optional path and filename. Wildcard characters are permitted. By default, "Add-Type" generates the assembly only in memory.`, `String`),
         new Parameter(`OutputType`, `Specifies the output type of the output assembly. By default, no output type is specified. This parameter is valid only when an output assembly is specified in the command. For more information about the values, see OutputAssemblyType Enumeration (/dotnet/api/microsoft.powershell.commands.outputassemblytype).
 
 
@@ -1882,7 +2044,7 @@ The acceptable values for this parameter are as follows:
         new Parameter(`Path`, `Specifies the path to source code files or assembly DLL files that contain the types.
 
 
-If you submit source code files, "Add-Type" compiles the code in the files and creates an in-memory assembly of the types. The file name extension specified in the value of Path determines the compiler that "Add-Type" uses.
+If you submit source code files, "Add-Type" compiles the code in the files and creates an in-memory assembly of the types. The file extension specified in the value of Path determines the compiler that "Add-Type" uses.
 
 
 If you submit an assembly file, "Add-Type" takes the types from the assembly. To specify an in-memory assembly or the global assembly cache, use the AssemblyName parameter.`, `String[]`),
@@ -1901,7 +2063,7 @@ Include a namespace declaration in your type definition. If you omit the namespa
 
 
 By default, "Add-Type" references the System namespace. When the MemberDefinition parameter is used, "Add-Type" also references the System.Runtime.InteropServices namespace by default. The namespaces that you add by using the UsingNamespace parameter are referenced in addition to the default namespaces.`, `String[]`),
-    ], `Adds a Microsoft .NET Core class to a PowerShell session.`, `Add-Type -AssemblyName <String[]> [-IgnoreWarnings] [-PassThru] [<CommonParameters>]
+    ], `Adds a Microsoft .NET Core class to a PowerShell session.`, `Add-Type -AssemblyName <String[]> [-PassThru] [<CommonParameters>]
 
 Add-Type [-TypeDefinition] <String> [-CompilerOptions <String[]>] [-IgnoreWarnings] [-Language {CSharp}] [-OutputAssembly <String>] [-OutputType {ConsoleApplication | Library | WindowsApplication}] [-PassThru] [-ReferencedAssemblies <String[]>] [<CommonParameters>]
 
@@ -1999,6 +2161,15 @@ For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/Abou
 
 Clear-ItemProperty [-Path] <String[]> [-Name] <String> [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] [-PassThru] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Clear-KdsCache`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Clear-RecycleBin`, [
+        new Parameter(`DriveLetter`, `Specifies the recycle bin to clear for a single drive letter or an array of drive letters.`, `String[]`),
+        new Parameter(`Force`, `Specifies that the user isn't prompted for confirmation to clear a recycle bin.`, `SwitchParameter`),
+        new Parameter(`Confirm`, `Prompts for user confirmation before running the cmdlet. The user is prompted for confirmation even if the Confirm parameter isn't specified.`, `SwitchParameter`),
+        new Parameter(`WhatIf`, `Shows what would happen if "Clear-RecycleBin" runs. The cmdlet isn't run.`, `SwitchParameter`),
+    ], `Clears the contents of a recycle bin.`, `Clear-RecycleBin [[-DriveLetter] <String[]>] [-Force] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Clear-Tpm`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Clear-Variable`, [
@@ -2051,6 +2222,10 @@ By default, the output also includes the differences between the reference and d
         new Parameter(`ReferenceObject`, `Specifies an array of objects used as a reference for comparison.`, `PSObject[]`),
         new Parameter(`SyncWindow`, `Specifies the number of adjacent objects that "Compare-Object" inspects while looking for a match in a collection of objects. "Compare-Object" examines adjacent objects when it doesn't find the object in the same position in a collection. The default value is "[Int32]::MaxValue", which means that "Compare-Object" examines the entire object collection.`, `Int32`),
     ], `Compares two sets of objects.`, `Compare-Object [-ReferenceObject] <PSObject[]> [-DifferenceObject] <PSObject[]> [-CaseSensitive] [-Culture <String>] [-ExcludeDifferent] [-IncludeEqual] [-PassThru] [-Property <Object[]>] [-SyncWindow <Int32>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Complete-BitsTransfer`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Complete-DtcDiagnosticTransaction`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Confirm-SecureBootUEFI`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -2115,7 +2290,7 @@ Type the NetBIOS name, an IP address, or a fully qualified domain name of one co
         new Parameter(`ConfigurationName`, `Connects only to sessions that use the specified session configuration.
 
 
-Enter a configuration name or the fully qualified resource URI for a session configuration. If you specify only the configuration name, the following schema URI is prepended: "http://schemas.microsoft.com/powershell". The configuration name of a session is stored in the ConfigurationName property of the session.
+Enter a configuration name or the fully qualified resource URI for a session configuration. If you specify only the configuration name, the following schema URI is prepended: "https://schemas.microsoft.com/powershell". The configuration name of a session is stored in the ConfigurationName property of the session.
 
 
 The value of this parameter is used to select and filter sessions. It does not change the session configuration that the session uses.
@@ -2228,6 +2403,8 @@ Connect-PSSession [-Session] <PSSession[]> [-ThrottleLimit <Int32>] [-Confirm] [
 
 Convert-Path [-Path] <String[]> [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`ConvertFrom-CIPolicy`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`ConvertFrom-Csv`, [
         new Parameter(`Delimiter`, `Specifies the delimiter that separates the property values in the CSV strings. The default is a comma (,).
 
@@ -2265,7 +2442,11 @@ This parameter was introduced in PowerShell 6.2.`, `Int32`),
 
 
 The InputObject parameter is required, but its value can be an empty string. When the input object is an empty string, "ConvertFrom-Json" does not generate any output. The InputObject value cannot be "$null".`, `String`),
-    ], `Converts a JSON-formatted string to a custom object or a hash table.`, `ConvertFrom-Json [-InputObject] <String> [-AsHashtable] [-Depth <Int32>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+        new Parameter(`NoEnumerate`, `Specifies that output is not enumerated.
+
+
+Setting this parameter causes arrays to be sent as a single object instead of sending every element separately. This guarantees that JSON can be round-tripped via "ConvertTo-Json".`, `SwitchParameter`),
+    ], `Converts a JSON-formatted string to a custom object or a hash table.`, `ConvertFrom-Json [-InputObject] <String> [-AsHashtable] [-Depth <Int32>] [-NoEnumerate] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`ConvertFrom-Markdown`, [
         new Parameter(`AsVT100EncodedString`, `Specifies if the output should be encoded as a string with VT100 escape codes.`, `SwitchParameter`),
@@ -2311,7 +2492,7 @@ The acceptable values for this parameter are:
 
 By default cmdlet uses file system rights.
 
-CryptoKeyRights and ActiveDirectoryRights are not supported in PowerShell Core.`, `Object`),
+CryptoKeyRights and ActiveDirectoryRights are not supported in PowerShell Core.`, `AccessRightTypeNames`),
     ], `Converts a SDDL string to a custom object.`, `ConvertFrom-SddlString [-Sddl] <String> [-Type {FileSystemRights | RegistryRights | ActiveDirectoryRights | MutexRights | SemaphoreRights | CryptoKeyRights | EventWaitHandleRights}] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`ConvertFrom-SecureString`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -2327,7 +2508,8 @@ You can include comments in the string, but the comments cannot be on the same l
 
 
 A here-string is a string consisting of one or more lines. Quotation marks within the here-string are interpreted literally as part of the string data. For more information, see about_Quoting_Rules (../Microsoft.PowerShell.Core/About/about_Quoting_Rules.md).`, `String`),
-    ], `Converts a string containing one or more key and value pairs to a hash table.`, `ConvertFrom-StringData [-StringData] <String> [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+        new Parameter(`Delimiter`, `The character used to separate the key from the value data in the string being converted. The default delimiter is the equals sign ("=") character. This parameter was added in PowerShell 7.`, `Char`),
+    ], `Converts a string containing one or more key and value pairs to a hash table.`, `ConvertFrom-StringData [-StringData] <String> [[-Delimiter] <Char>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`ConvertTo-Csv`, [
         new Parameter(`Delimiter`, `Specifies the delimiter to separate the property values in CSV strings. The default is a comma (","). Enter a character, such as a colon (":"). To specify a semicolon (";") enclose it in single quotation marks.`, `Char`),
@@ -2338,9 +2520,20 @@ This parameter was introduced in PowerShell 6.0.`, `SwitchParameter`),
         new Parameter(`InputObject`, `Specifies the objects that are converted to CSV strings. Enter a variable that contains the objects or type a command or expression that gets the objects. You can also pipe objects to "ConvertTo-CSV".`, `PSObject`),
         new Parameter(`NoTypeInformation`, `Removes the #TYPE information header from the output. This parameter became the default in PowerShell 6.0 and is included for backwards compatibility.`, `SwitchParameter`),
         new Parameter(`UseCulture`, `Uses the list separator for the current culture as the item delimiter. To find the list separator for a culture, use the following command: "(Get-Culture).TextInfo.ListSeparator".`, `SwitchParameter`),
-    ], `Converts objects into a series of character-separated value (CSV) strings.`, `ConvertTo-Csv [-InputObject] <PSObject> [[-Delimiter] <Char>] [-IncludeTypeInformation] [-NoTypeInformation] [<CommonParameters>]
+        new Parameter(`QuoteFields`, `Specifies the names of the columns that should be quoted. When this parameter is used only the specified columns are quoted.`, `String[]`),
+        new Parameter(`UseQuotes`, `Specifies when quotes are used in the CSV files. Possible values are:
 
-ConvertTo-Csv [-InputObject] <PSObject> [-IncludeTypeInformation] [-NoTypeInformation] [-UseCulture] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+
+- Never - don't quote anything
+
+
+- Always - quote everything (default behavior)
+
+
+- AsNeeded - only quote fields that contain a delimiter character`, `QuoteKind`),
+    ], `Converts objects into a series of character-separated value (CSV) strings.`, `ConvertTo-Csv [-InputObject] <PSObject> [[-Delimiter] <Char>] [-IncludeTypeInformation] [-NoTypeInformation] [-QuoteFields <String[]>] [-UseQuotes <QuoteKind>] [<CommonParameters>]
+
+ConvertTo-Csv [-InputObject] <PSObject> [-IncludeTypeInformation] [-NoTypeInformation] [-UseCulture] [-QuoteFields <String[]>] [-UseQuotes <QuoteKind>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`ConvertTo-Html`, [
         new Parameter(`As`, `Determines whether the object is formatted as a table or a list. Valid values are Table and List. The default value is Table.
@@ -2406,12 +2599,12 @@ Acceptable values are:
 
 
 
-This parameter was introduced in PowerShell 6.2.`, `NewtonSoft.Json.StringEscapeHandling`),
+This parameter was introduced in PowerShell 6.2.`, `StringEscapeHandling`),
         new Parameter(`InputObject`, `Specifies the objects to convert to JSON format. Enter a variable that contains the objects, or type a command or expression that gets the objects. You can also pipe an object to "ConvertTo-Json".
 
 
 The InputObject parameter is required, but its value can be null ("$null") or an empty string. When the input object is "$null", "ConvertTo-Json" does not generate any output. When the input object is an empty string, "ConvertTo-Json" returns an empty string.`, `Object`),
-    ], `Converts an object to a JSON-formatted string.`, `ConvertTo-Json [-InputObject] <Object> [-AsArray] [-Compress] [-Depth <Int32>] [-EnumsAsStrings] [-EscapeHandling <NewtonSoft.Json.StringEscapeHandling>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    ], `Converts an object to a JSON-formatted string.`, `ConvertTo-Json [-InputObject] <Object> [-AsArray] [-Compress] [-Depth <Int32>] [-EnumsAsStrings] [-EscapeHandling <StringEscapeHandling>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`ConvertTo-ProcessMitigationPolicy`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -2546,6 +2739,8 @@ Debug-Runspace [-Runspace] <Runspace> [-Confirm] [-WhatIf] [<CommonParameters>]`
         new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
     ], `Disable an experimental feature on startup of new instance of PowerShell.`, `Disable-ExperimentalFeature [-Name] <String[]> [-Confirm] [-Scope {AllUsers | CurrentUser}] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Disable-JobTrigger`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Disable-LocalUser`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Disable-PSBreakpoint`, [
@@ -2562,7 +2757,7 @@ Disable-PSBreakpoint [-Id] <Int32[]> [-PassThru] [-Confirm] [-WhatIf] [<CommonPa
         new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
         new Parameter(`Force`, `Forces the command to run without asking for user confirmation.`, `SwitchParameter`),
         new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
-    ], `Prevents remote users from running commands in PowerShell on the local computer.`, `Disable-PSRemoting [-Confirm] [-Force] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    ], `Prevents PowerShell endpoints from receiving remote connections.`, `Disable-PSRemoting [-Confirm] [-Force] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Disable-PSSessionConfiguration`, [
         new Parameter(`Force`, `Forces the command to run without asking for user confirmation.`, `SwitchParameter`),
@@ -2591,6 +2786,14 @@ Disable-RunspaceDebug [-RunspaceId] <Int32[]> [<CommonParameters>]
 Disable-RunspaceDebug [-RunspaceInstanceId] <Guid[]> [<CommonParameters>]
 
 Disable-RunspaceDebug [[-RunspaceName] <String[]>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Disable-ScheduledJob`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Disable-TlsCipherSuite`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Disable-TlsEccCurve`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Disable-TlsSessionTicketKey`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Disable-TpmAutoProvisioning`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -2666,6 +2869,8 @@ Disconnect-PSSession [-Session] <PSSession[]> [-IdleTimeoutSec <Int32>] [-Thrott
     }),
     new ConsoleCommand(`Dismount-WindowsImage`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Edit-CIPolicyRule`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Enable-AppBackgroundTaskDiagnosticLog`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Enable-ExperimentalFeature`, [
@@ -2674,6 +2879,8 @@ Disconnect-PSSession [-Session] <PSSession[]> [-IdleTimeoutSec <Int32>] [-Thrott
         new Parameter(`Scope`, `Determines which "powershell.config.json" to update whether it affects all users or just the current user.`, `ConfigScope`),
         new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
     ], `Enable an experimental feature on startup of new instance of PowerShell.`, `Enable-ExperimentalFeature [-Name] <String[]> [-Confirm] [-Scope {AllUsers | CurrentUser}] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Enable-JobTrigger`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Enable-LocalUser`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -2751,6 +2958,14 @@ Enable-RunspaceDebug [-Runspace] <Runspace[]> [[-BreakAll]] [<CommonParameters>]
 Enable-RunspaceDebug [-RunspaceId] <Int32[]> [[-BreakAll]] [<CommonParameters>]
 
 Enable-RunspaceDebug [-RunspaceInstanceId] <Guid[]> [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Enable-ScheduledJob`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Enable-TlsCipherSuite`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Enable-TlsEccCurve`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Enable-TlsSessionTicketKey`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Enable-TpmAutoProvisioning`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -2850,7 +3065,7 @@ Note: In Windows Vista and later versions of the Windows operating system, to in
         new Parameter(`ConfigurationName`, `Specifies the session configuration that is used for the interactive session.
 
 
-Enter a configuration name or the fully qualified resource URI for a session configuration. If you specify only the configuration name, the following schema URI is prepended: "http://schemas.microsoft.com/powershell".
+Enter a configuration name or the fully qualified resource URI for a session configuration. If you specify only the configuration name, the following schema URI is prepended: "https://schemas.microsoft.com/powershell".
 
 
 When used with SSH, this specifies the subsystem to use on the target as defined in sshd_config. The default value for SSH is the "powershell" subsystem.
@@ -3012,7 +3227,7 @@ Enter-PSSession [-VMName] <String> [[-Credential] <PSCredential>] [-Configuratio
 
 Enter-PSSession [-ContainerId] <String> [-ConfigurationName <String>] [-RunAsAdministrator] [<CommonParameters>]
 
-Enter-PSSession [-HostName] <String> [-KeyFilePath <String>] [-Port <Int32>] [-SSHTransport {true}] [-UserName <String>] [<CommonParameters>]
+Enter-PSSession [-HostName] <String> [-KeyFilePath <String>] [-Port <Int32>] [-SSHTransport {true}] [-Subsystem <String>] [-UserName <String>] [<CommonParameters>]
 
 Enter-PSSession [[-Id] <Int32>] [<CommonParameters>]
 
@@ -3020,9 +3235,7 @@ Enter-PSSession [-InstanceId <Guid>] [<CommonParameters>]
 
 Enter-PSSession [-Name <String>] [<CommonParameters>]
 
-Enter-PSSession [[-Session] <PSSession>] [<CommonParameters>]
-
-Enter-PSSession [-Subsystem <String>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+Enter-PSSession [[-Session] <PSSession>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Exit-PSHostProcess`, [], `Closes an interactive session with a local process.`, `Exit-PSHostProcess [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
@@ -3085,6 +3298,8 @@ The default value is Local. For more information, see about_Scopes.`, `String`),
 Export-Alias [-Path] <String> [[-Name] <String[]>] [-Append] [-As {Csv | Script}] [-Description <String>] [-Force] [-NoClobber] [-PassThru] [-Scope <String>] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Export-BinaryMiLog`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Export-Certificate`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Export-Clixml`, [
         new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
@@ -3149,9 +3364,20 @@ This parameter was introduced in PowerShell 6.0.`, `SwitchParameter`),
         new Parameter(`UseCulture`, `Uses the list separator for the current culture as the item delimiter. To find the list separator for a culture, use the following command: "(Get-Culture).TextInfo.ListSeparator".`, `SwitchParameter`),
         new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
         new Parameter(`WhatIf`, `Prevents the cmdlet from being processed or making changes. The output shows what would happen if the cmdlet were run.`, `SwitchParameter`),
-    ], `Converts objects into a series of comma-separated value (CSV) strings and saves the strings to a file.`, `Export-Csv [[-Path] <String>] [[-Delimiter] <Char>] [-Append] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Force] [-IncludeTypeInformation] -InputObject <PSObject> [-LiteralPath <String>] [-NoClobber] [-NoTypeInformation] [-Confirm] [-WhatIf] [<CommonParameters>]
+        new Parameter(`QuoteFields`, `Specifies the names of the columns that should be quoted. When this parameter is used, only the specified columns are quoted.`, `String[]`),
+        new Parameter(`UseQuotes`, `Specifies when quotes are used in the CSV files. Possible values are:
 
-Export-Csv [[-Path] <String>] [-Append] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Force] [-IncludeTypeInformation] -InputObject <PSObject> [-LiteralPath <String>] [-NoClobber] [-NoTypeInformation] [-UseCulture] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+
+- Never - don't quote anything
+
+
+- Always - quote everything (default behavior)
+
+
+- AsNeeded - only quote fields that contain a delimiter character`, `QuoteKind`),
+    ], `Converts objects into a series of comma-separated value (CSV) strings and saves the strings to a file.`, `Export-Csv [[-Path] <String>] [[-Delimiter] <Char>] [-Append] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Force] [-IncludeTypeInformation] -InputObject <PSObject> [-LiteralPath <String>] [-NoClobber] [-NoTypeInformation] [-Confirm] [-WhatIf] [-QuoteFields <String[]>] [-UseQuotes <QuoteKind>] [<CommonParameters>]
+
+Export-Csv [[-Path] <String>] [-Append] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Force] [-IncludeTypeInformation] -InputObject <PSObject> [-LiteralPath <String>] [-NoClobber] [-NoTypeInformation] [-UseCulture] [-Confirm] [-WhatIf] [-QuoteFields <String[]>] [-UseQuotes <QuoteKind>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Export-FormatData`, [
         new Parameter(`Force`, `Forces the command to run without asking for user confirmation.`, `SwitchParameter`),
@@ -3186,6 +3412,10 @@ You cannot create cmdlets in a script module file, but you can import cmdlets fr
         new Parameter(`Variable`, `Specifies the variables that are exported from the script module file. Enter the variable names, without a dollar sign. Wildcard characters are permitted.`, `String[]`),
     ], `Specifies the module members that are exported.`, `Export-ModuleMember [[-Function] <String[]>] [-Alias <String[]>] [-Cmdlet <String[]>] [-Variable <String[]>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Export-PfxCertificate`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Export-ProvisioningPackage`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Export-PSSession`, [
         new Parameter(`AllowClobber`, `Exports the specified commands, even if they have the same names as commands in the current session.
 
@@ -3194,7 +3424,7 @@ If you export a command with the same name as a command in the current session, 
         new Parameter(`ArgumentList`, `Exports the variant of the command that results from using the specified arguments (parameter values).
 
 
-For example, to export the variant of the "Get-Item" command in the certificate (Cert:) drive in the PSSession in "$S", type "export-pssession -session $S -command get-item -argumentlist cert:".`, `Object[]`),
+For example, to export the variant of the "Get-Item" command in the certificate (Cert:) drive in the PSSession in "$S", type "Export-PSSession -Session $S -Command Get-Item -ArgumentList cert:".`, `Object[]`),
         new Parameter(`Certificate`, `Specifies the client certificate that is used to sign the format files (*.Format.ps1xml) or script module files (.psm1) in the module that "Export-PSSession" creates. Enter a variable that contains a certificate or a command or expression that gets the certificate.
 
 
@@ -3277,6 +3507,10 @@ If the module subdirectory or any of the files that "Export-PSSession" creates a
     }),
     new ConsoleCommand(`Export-StartLayoutEdgeAssets`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Export-TlsSessionTicketKey`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Export-Trace`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Export-WindowsCapabilitySource`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Export-WindowsDriver`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -3301,7 +3535,7 @@ When you use the InputObject parameter with "ForEach-Object", instead of piping 
         new Parameter(`MemberName`, `Specifies the property to get or the method to call.
 
 
-Wildcard characters are permitted, but work only if the resulting string resolves to a unique value. If, for example, you run "Get-Process | ForEach -MemberName Name", and more than one member exists with a name that contains the string Name, such as the ProcessName and Name * properties, the command fails.
+Wildcard characters are permitted, but work only if the resulting string resolves to a unique value. If, for example, you run "Get-Process | ForEach -MemberName *Name", and more than one member exists with a name that contains the string Name, such as the ProcessName and Name properties, the command fails.
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `String`),
@@ -3310,11 +3544,29 @@ This parameter was introduced in Windows PowerShell 3.0.`, `String`),
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `ScriptBlock[]`),
+        new Parameter(`Parallel`, `Specifies the script block to be used for parallel processing of input objects. Enter a script block that describes the operation.
+
+
+This parameter was introduced in PowerShell 7.0.`, `ScriptBlock`),
+        new Parameter(`ThrottleLimit`, `Specifies the number of script blocks that will run at a time. Input objects will be blocked until the running script block count falls below the ThrottleLimit . The default value is "5".
+
+
+This parameter was introduced in PowerShell 7.0.`, `int`),
+        new Parameter(`TimeoutSeconds`, `Specifies the number of seconds to wait for all input to be processed in parallel. After the specified timeout time, all running scripts are stopped. And any remaining input objects to be processed are ignored. Default value of "0" disables the timeout, and "ForEach-Object -Parallel" can run indefinitely. Typing <kbd>Ctrl</kbd>+<kbd>C</kbd> at the command line stops a running "ForEach-Object -Parallel" command. This parameter cannot be used along with the "-AsJob" parameter.
+
+
+This parameter was introduced in PowerShell 7.0.`, `int`),
+        new Parameter(`AsJob`, `Causes the parallel invocation to run as a PowerShell job. A single job object is returned instead of output from the running script blocks. The job object contains child jobs for each parallel script block that runs. The job object can be used by all PowerShell job cmdlets, to monitor running state and retrieve data.
+
+
+This parameter was introduced in PowerShell 7.0.`, `SwitchParameter`),
         new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
         new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
     ], `Performs an operation against each item in a collection of input objects.`, `ForEach-Object [-MemberName] <String> [-ArgumentList <Object[]>] [-InputObject <PSObject>] [-Confirm] [-WhatIf] [<CommonParameters>]
 
-ForEach-Object [-Process] <ScriptBlock[]> [-Begin <ScriptBlock>] [-End <ScriptBlock>] [-InputObject <PSObject>] [-RemainingScripts <ScriptBlock[]>] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+ForEach-Object [-Process] <ScriptBlock[]> [-Begin <ScriptBlock>] [-End <ScriptBlock>] [-InputObject <PSObject>] [-RemainingScripts <ScriptBlock[]>] [-Confirm] [-WhatIf] [<CommonParameters>]
+
+ForEach-Object [-InputObject <PSObject>] -Parallel <ScriptBlock> [-ThrottleLimit <int>] [-TimeoutSeconds <int>] [-AsJob] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Format-Custom`, [
         new Parameter(`Depth`, `Specifies the number of columns in the display.`, `Int32`),
@@ -3396,7 +3648,15 @@ The supported scalar types are:
 - "[long]", "[ulong]", "[int64]", "[uint64]"
 
 
-- "[single]", "[float]", "[double]"`, `PSObject`),
+- "[single]", "[float]", "[double]"
+
+
+- "[boolean]"
+
+
+
+
+Prior to PowerShell 6.2, "Format-Hex" would handle a Pipeline input with multiple input types by grouping all like objects together. Now, it handles each individual object as it passes through the Pipeline and won't group objects together unless like objects are adjacent.`, `PSObject`),
         new Parameter(`LiteralPath`, `Specifies the complete path to a file. The value of LiteralPath is used exactly as it is typed. This parameter does not accept wildcard characters. To specify multiple paths to files, separate the paths with a comma. If the LiteralPath parameter includes escape characters, enclose the path in single quotation marks. PowerShell does not interpret any characters in a single quoted string as escape sequences. For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
         new Parameter(`Path`, `Specifies the path to files. Use a dot (".") to specify the current location. The wildcard character (" ") is accepted and can be used to specify all the items in a location. If the Path * parameter includes escape characters, enclose the path in single quotation marks. To specify multiple paths to files, separate the paths with a comma.`, `String[]`),
         new Parameter(`Raw`, `This parameter no longer does anything. It is retained for script compatibility.`, `SwitchParameter`),
@@ -3419,16 +3679,10 @@ Format-Hex [-Path] <String[]> [-Offset <Int64>] [-Count <Int64>] [<CommonParamet
         new Parameter(`Expand`, `Specifies the formatted collection object, as well as the objects in the collection. This parameter is designed to format objects that support the ICollection (System.Collections) interface. The default value is EnumOnly. The acceptable values for this parameter are:
 
 
-- EnumOnly. Displays the properties of the objects in the collection.
+- EnumOnly. Displays the properties of the objects in the collection. - CoreOnly. Displays the properties of the collection object.
 
 
-- CoreOnly. Displays the properties of the collection object.
-
-
-- Both. Displays the properties of the collection object and the properties of objects in the
-
-
-collection.`, `String`),
+- Both. Displays the properties of the collection object and the properties of objects in the  collection.`, `String`),
         new Parameter(`Force`, `Indicates that this cmdlet displays all of the error information. Use with the DisplayError or ShowError parameter. By default, when an error object is written to the error or display streams, only some of the error information is displayed.`, `SwitchParameter`),
         new Parameter(`GroupBy`, `Specifies the output in groups based on a shared property or value. Enter an expression or a property of the output.
 
@@ -3615,6 +3869,10 @@ Local is the default. For more information, see about_Scopes.`, `String`),
 
 Get-Alias [[-Name] <String[]>] [-Exclude <String[]>] [-Scope <String>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Get-AppLockerFileInformation`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-AppLockerPolicy`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Get-AppxDefaultVolume`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-AppxPackage`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -3626,6 +3884,16 @@ Get-Alias [[-Name] <String[]>] [-Exclude <String[]>] [-Scope <String>] [<CommonP
     new ConsoleCommand(`Get-AppxVolume`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-AuthenticodeSignature`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-BitsTransfer`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-Certificate`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-CertificateAutoEnrollmentPolicy`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-CertificateEnrollmentPolicyServer`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-CertificateNotificationTask`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-ChildItem`, [
         new Parameter(`Attributes`, `Gets files and folders with the specified attributes. This parameter supports all attributes and lets you specify complex combinations of attributes.
@@ -3717,6 +3985,16 @@ Get-ChildItem [[-Path] <String[]>] [[-Filter] <String>] [-Attributes {Archive | 
     }),
     new ConsoleCommand(`Get-CimSession`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Get-CIPolicy`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-CIPolicyIdInfo`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-CIPolicyInfo`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-Clipboard`, [
+        new Parameter(`Raw`, `Indicates that this cmdlet ignores newline characters and gets the entire contents of the clipboard.`, `SwitchParameter`),
+    ], `Gets the contents of the clipboard.`, `Get-Clipboard [-Raw] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Get-CmsMessage`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-Command`, [
@@ -3759,10 +4037,7 @@ value.`, `CommandTypes`),
         new Parameter(`FullyQualifiedModule`, `Specifies modules with names that are specified in the form of ModuleSpecification objects, described in the Remarks section of ModuleSpecification Constructor (Hashtable) (/dotnet/api/microsoft.powershell.commands.modulespecification.-ctor?view=powershellsdk-1.1.0#Microsoft_PowerShell_Commands_ModuleSpecification__ctor_System_Collections_Hashtable_). For example, the FullyQualifiedModule parameter accepts a module name that is specified in one of the following formats:
 
 
-- "@{ModuleName = "modulename"; ModuleVersion = "version_number"}"
-
-
-- "@{ModuleName = "modulename"; ModuleVersion = "version_number"; Guid = "GUID"}" ModuleName and ModuleVersion are required, but Guid is optional.
+- "@{ModuleName = "modulename"; ModuleVersion = "version_number"}" - "@{ModuleName = "modulename"; ModuleVersion = "version_number"; Guid = "GUID"}" ModuleName and ModuleVersion are required, but Guid is optional.
 
 
 You cannot specify the FullyQualifiedModule parameter in the same command as a Module parameter. The two parameters are mutually exclusive.`, `ModuleSpecification[]`),
@@ -3814,9 +4089,10 @@ This parameter was introduced in Windows PowerShell 5.0.`, `SwitchParameter`),
 
 - Scripts and applications or files. Gets the path and filename.`, `SwitchParameter`),
         new Parameter(`TotalCount`, `Specifies the number of commands to get. You can use this parameter to limit the output of a command.`, `Int32`),
+        new Parameter(`UseAbbreviationExpansion`, `Indicates using matching of the characters in the command to find with uppercase characters in a command. For example, "i-psdf" would match "Import-PowerShellDataFile" as each of the characters to find matches an uppercase character in the result. When using this type of match, any wildcards will result in no matches.`, `SwitchParameter`),
         new Parameter(`UseFuzzyMatching`, `Indicates using a fuzzy matching algorithm when finding commands. The order of the output is from closest match to least likely match. Wildcards should not be used with fuzzy matching as it will attempt to match commands that may contain those wildcard characters.`, `SwitchParameter`),
         new Parameter(`Verb`, `Specifies an array of command verbs. This cmdlet gets commands, which include cmdlets, functions, and aliases, that have names that include the specified verb. Enter one or more verbs or verb patterns. Wildcard characters are permitted.`, `String[]`),
-    ], `Gets all commands.`, `Get-Command [[-Name] <String[]>] [[-ArgumentList] <Object[]>] [-All] [-CommandType {Alias | Function | Filter | Cmdlet | ExternalScript | Application | Script | Workflow | Configuration | All}] [-FullyQualifiedModule <ModuleSpecification[]>] [-ListImported] [-Module <String[]>] [-ParameterName <String[]>] [-ParameterType <PSTypeName[]>] [-ShowCommandInfo] [-Syntax] [-TotalCount <Int32>] [-UseFuzzyMatching] [<CommonParameters>]
+    ], `Gets all commands.`, `Get-Command [[-Name] <String[]>] [[-ArgumentList] <Object[]>] [-All] [-CommandType {Alias | Function | Filter | Cmdlet | ExternalScript | Application | Script | Workflow | Configuration | All}] [-FullyQualifiedModule <ModuleSpecification[]>] [-ListImported] [-Module <String[]>] [-ParameterName <String[]>] [-ParameterType <PSTypeName[]>] [-ShowCommandInfo] [-Syntax] [-TotalCount <Int32>] [-UseAbbreviationExpansion] [-UseFuzzyMatching] [<CommonParameters>]
 
 Get-Command [-Noun <String[]>] [-Verb <String[]>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
@@ -3986,6 +4262,10 @@ Get-Date [[-Date] <DateTime>] [-Day <Int32>] [-DisplayHint {Date | Time | DateTi
     }),
     new ConsoleCommand(`Get-DOPercentageMaxForegroundBandwidth`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Get-Error`, [
+        new Parameter(`Newest`, `Specifies the number of errors to display that have occurred in the current session.`, `PSExtendedError`),
+    ], `Gets and displays the most recent error messages from the current session.`, `Get-Error [[-Newest] <PSExtendedError>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Get-Event`, [
         new Parameter(`EventIdentifier`, `Specifies the event identifiers for which this cmdlet gets events.`, `Int32`),
         new Parameter(`SourceIdentifier`, `Specifies source identifiers for which this cmdlet gets events. The default is all events in the event queue. Wildcards are not permitted.`, `String`),
@@ -4008,7 +4288,7 @@ Get-EventSubscriber [-SubscriptionId] <Int32> [[-Force]] [<CommonParameters>]`, 
     ], `Gets experimental features.`, `Get-ExperimentalFeature [[-Name] <String[]>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-FileHash`, [
-        new Parameter(`Algorithm`, `Specifies the cryptographic hash function to use for computing the hash value of the contents of the specified file. A cryptographic hash function includes the property that it is not possible to find two distinct inputs that generate the same hash values. Hash functions are commonly used with digital signatures and for data integrity. The acceptable values for this parameter are:
+        new Parameter(`Algorithm`, `Specifies the cryptographic hash function to use for computing the hash value of the contents of the specified file or stream. A cryptographic hash function has the property that it is infeasible to find two different files with the same hash value. Hash functions are commonly used with digital signatures and for data integrity. The acceptable values for this parameter are:
 
 
 - SHA1
@@ -4041,7 +4321,10 @@ Get-FileHash [-LiteralPath] <String[]> [[-Algorithm] {SHA1 | SHA256 | SHA384 | S
 Get-FileHash [-Path] <String[]> [[-Algorithm] {SHA1 | SHA256 | SHA384 | SHA512 | MD5}] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-FormatData`, [
-        new Parameter(`PowerShellVersion`, `Specify the version of PowerShell this cmdlet gets for the formatting data. Enter a two digit number separated by a period.`, `Version`),
+        new Parameter(`PowerShellVersion`, `Specify the version of PowerShell this cmdlet gets for the formatting data. Enter a two digit number separated by a period.
+
+
+This parameter was added in PowerShell 5.1 to improve compatibility when remoting computers running older versions of PowerShell.`, `Version`),
         new Parameter(`TypeName`, `Specifies the type names that this cmdlet gets for the formatting data. Enter the type names. Wildcards are permitted.`, `String[]`),
     ], `Gets the formatting data in the current session.`, `Get-FormatData [[-TypeName] <String[]>] [-PowerShellVersion <Version>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
@@ -4147,6 +4430,13 @@ For more information about PowerShell providers, see about_Providers (./About/ab
 
 
 Enter the role that the user plays in an organization. Some cmdlets display different text in their help files based on the value of this parameter. This parameter has no effect on help for the core cmdlets.`, `String[]`),
+        new Parameter(`ShowWindow`, `Displays the help topic in a window for easier reading. The window includes a Find search feature and a Settings box that lets you set options for the display, including options to display only selected sections of a help topic.
+
+
+The ShowWindow parameter supports help topics for commands (cmdlets, functions, CIM commands, scripts) and conceptual About articles. It does not support provider help.
+
+
+This parameter was reintroduced in PowerShell 7.0.`, `SwitchParameter`),
     ], `Displays information about PowerShell commands and concepts.`, `Get-Help [[-Name] <String>] [-Category {Alias | Cmdlet | Provider | General | FAQ | Glossary | HelpFile | ScriptCommand | Function | Filter | ExternalScript | All | DefaultHelp | Workflow | DscResource | Class | Configuration}] [-Component <String[]>] -Detailed [-Functionality <String[]>] [-Path <String>] [-Role <String[]>] [<CommonParameters>]
 
 Get-Help [[-Name] <String>] [-Category {Alias | Cmdlet | Provider | General | FAQ | Glossary | HelpFile | ScriptCommand | Function | Filter | ExternalScript | All | DefaultHelp | Workflow | DscResource | Class | Configuration}] [-Component <String[]>] -Examples [-Functionality <String[]>] [-Path <String>] [-Role <String[]>] [<CommonParameters>]
@@ -4155,7 +4445,9 @@ Get-Help [[-Name] <String>] [-Category {Alias | Cmdlet | Provider | General | FA
 
 Get-Help [[-Name] <String>] [-Category {Alias | Cmdlet | Provider | General | FAQ | Glossary | HelpFile | ScriptCommand | Function | Filter | ExternalScript | All | DefaultHelp | Workflow | DscResource | Class | Configuration}] [-Component <String[]>] [-Functionality <String[]>] -Online [-Path <String>] [-Role <String[]>] [<CommonParameters>]
 
-Get-Help [[-Name] <String>] [-Category {Alias | Cmdlet | Provider | General | FAQ | Glossary | HelpFile | ScriptCommand | Function | Filter | ExternalScript | All | DefaultHelp | Workflow | DscResource | Class | Configuration}] [-Component <String[]>] [-Functionality <String[]>] -Parameter <String> [-Path <String>] [-Role <String[]>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+Get-Help [[-Name] <String>] [-Category {Alias | Cmdlet | Provider | General | FAQ | Glossary | HelpFile | ScriptCommand | Function | Filter | ExternalScript | All | DefaultHelp | Workflow | DscResource | Class | Configuration}] [-Component <String[]>] [-Functionality <String[]>] -Parameter <String> [-Path <String>] [-Role <String[]>] [<CommonParameters>]
+
+Get-Help [[-Name] <String>] [-Category {Alias | Cmdlet | Provider | General | FAQ | Glossary | HelpFile | ScriptCommand | Function | Filter | ExternalScript | All | DefaultHelp | Workflow | DscResource | Class | Configuration}] [-Component <String[]>] [-Functionality <String[]>] [-Path <String>] [-Role <String[]>] -ShowWindow [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-History`, [
         new Parameter(`Count`, `Specifies the number of the most recent history entries that this cmdlet gets. By, default, Get-History gets all entries in the session history. If you use both the Count and Id parameters in a command, the display ends with the command that is specified by the Id parameter.
@@ -4166,6 +4458,30 @@ In Windows PowerShell 2.0, by default, Get-History gets the 32 most recent entri
     ], `Gets a list of the commands entered during the current session.`, `Get-History [[-Id] <Int64[]>] [[-Count] <Int32>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-Host`, [], `Gets an object that represents the current host program.`, `Get-Host [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-HotFix`, [
+        new Parameter(`ComputerName`, `Specifies a remote computer. Type the NetBIOS name, an Internet Protocol (IP) address, or a fully qualified domain name (FQDN) of a remote computer.
+
+
+When the ComputerName parameter isn't specified, "Get-Hotfix" runs on the local computer.
+
+
+The ComputerName parameter doesn't rely on Windows PowerShell remoting. If your computer isn't configured to run remote commands, use the ComputerName parameter.`, `String[]`),
+        new Parameter(`Credential`, `Specifies a user account that has permission to access the computer and run commands. The default is the current user
+
+
+Type a user name, such as User01 or Domain01\\User01 , or enter a PSCredential object generated by the "Get-Credential" cmdlet. If you type a user name, you're prompted to enter the password.
+
+
+Credentials are stored in a PSCredential (/dotnet/api/system.management.automation.pscredential)object and the password is stored as a SecureString (/dotnet/api/system.security.securestring).
+
+
+> [!NOTE] > For more information about SecureString data protection, see > How secure is SecureString? (/dotnet/api/system.security.securestring#how-secure-is-securestring).`, `PSCredential`),
+        new Parameter(`Description`, `"Get-HotFix" uses the Description parameter to specify hotfix types. Wildcards are permitted.`, `String[]`),
+        new Parameter(`Id`, `Filters the "Get-HotFix" results for specific hotfix Ids. Wildcards aren't accepted.`, `String[]`),
+    ], `Gets the hotfixes that are installed on local or remote computers.`, `Get-HotFix [-ComputerName <String[]>] [-Credential <PSCredential>] [-Description <String[]>] [<CommonParameters>]
+
+Get-HotFix [[-Id] <String[]>] [-ComputerName <String[]>] [-Credential <PSCredential>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-Item`, [
         new Parameter(`Stream`, `Gets the specified alternate NTFS file stream from the file. Enter the stream name. Wildcards are supported. To get all streams, use an asterisk ("*"). This parameter is not valid on folders. Stream is a dynamic parameter that the FileSystem provider adds to the "Get-Item" cmdlet. This parameter works only in file system drives.`, `String[]`),
@@ -4363,6 +4679,12 @@ Get-Job [-After <DateTime>] [-Before <DateTime>] [-ChildJobState {NotStarted | R
 
 Get-Job [-Filter] <Hashtable> [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Get-JobTrigger`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-KdsConfiguration`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-KdsRootKey`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Get-LocalGroup`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-LocalGroupMember`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -4396,9 +4718,7 @@ This cmdlet cannot display the locations in the unnamed default stack unless it 
 
 Get-Location [-Stack] [-StackName <String[]>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
-    new ConsoleCommand(`Get-MarkdownOption`, [], `Get-MarkdownOption [<CommonParameters>]`, `syntaxItem
-----------
-{@{name=Get-MarkdownOption; CommonParameters=True; parameter=System.Object[]}}`, "", (parameters, paramDictionary) => {
+    new ConsoleCommand(`Get-MarkdownOption`, [], `Returns the current colors and styles used for rendering Markdown content in the console.`, `Get-MarkdownOption [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-Member`, [
         new Parameter(`Force`, `Adds the intrinsic members (PSBase, PSAdapted, PSObject, PSTypeNames) and the compiler-generated get_ and set_ methods to the display. By default, Get-Member gets these properties in all views other than Base and Adapted, but it does not display them.
@@ -4628,6 +4948,14 @@ Get-Module [[-Name] <String[]>] [-FullyQualifiedName <ModuleSpecification[]>] [-
     }),
     new ConsoleCommand(`Get-PfxCertificate`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Get-PfxData`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-PmemDisk`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-PmemPhysicalDevice`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-PmemUnusedRegion`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Get-Process`, [
         new Parameter(`FileVersionInfo`, `Indicates that this cmdlet gets the file version information for the program that runs in the process.
 
@@ -4669,6 +4997,8 @@ Get-Process [[-Name] <String[]>] -IncludeUserName [<CommonParameters>]
 Get-Process -IncludeUserName -InputObject <Process[]> [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-ProcessMitigation`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-ProvisioningPackage`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-PSBreakpoint`, [
         new Parameter(`Command`, `Specifies an array of command breakpoints that are set on the specified command names. Enter the command names, such as the name of a cmdlet or function.`, `String[]`),
@@ -4835,7 +5165,7 @@ Note: This parameter gets sessions only from computers that run Windows PowerShe
         new Parameter(`ConfigurationName`, `Specifies the name of a configuration. This cmdlet gets only to sessions that use the specified session configuration.
 
 
-Enter a configuration name or the fully qualified resource URI for a session configuration. If you specify only the configuration name, the following schema URI is prepended: http://schemas.microsoft.com/powershell. The configuration name of a session is stored in the ConfigurationName property of the session.
+Enter a configuration name or the fully qualified resource URI for a session configuration. If you specify only the configuration name, the following schema URI is prepended: https://schemas.microsoft.com/powershell. The configuration name of a session is stored in the ConfigurationName property of the session.
 
 
 The value of this parameter is used to select and filter sessions. It does not change the session configuration that the session uses.
@@ -4867,7 +5197,7 @@ This parameter was introduced in Windows PowerShell 3.0.
 
 
 This parameter gets sessions only from computers that run Windows PowerShell 3.0 or later versions of Windows PowerShell or PowerShell Core. Earlier versions do not store sessions.`, `Uri[]`),
-        new Parameter(`ContainerId`, `Specifies an array of IDs of containers. This cmdlet starts an interactive session with each of the specified containers. To see the containers that are available to you, use the Get-Container cmdlet.`, `String[]`),
+        new Parameter(`ContainerId`, `Specifies an array of IDs of containers. This cmdlet starts an interactive session with each of the specified containers. Use the "docker ps" command to get a list of container IDs. For more information, see the help for the docker ps (https://docs.docker.com/engine/reference/commandline/ps/)command.`, `String[]`),
         new Parameter(`Credential`, `Specifies a user credential. This cmdlet runs the command with the permissions of the specified user. Specify a user account that has permission to connect to the remote computer and run a "Get-PSSession" command. The default is the current user.
 
 
@@ -4996,7 +5326,10 @@ Get-PSSession [-Name <String[]>] [<CommonParameters>]`, "", (parameters, paramDi
 
 
 When used with "InputObject", if the value of Count exceeds the number of objects in the collection, "Get-Random" returns all of the objects in random order.`, `Int32`),
-        new Parameter(`InputObject`, `Specifies a collection of objects. "Get-Random" gets randomly selected objects in random order from the collection up to the number specified by Count . Enter the objects, a variable that contains the objects, or a command or expression that gets the objects. You can also pipe a collection of objects to "Get-Random".`, `Object[]`),
+        new Parameter(`InputObject`, `Specifies a collection of objects. "Get-Random" gets randomly selected objects in random order from the collection up to the number specified by Count . Enter the objects, a variable that contains the objects, or a command or expression that gets the objects. You can also pipe a collection of objects to "Get-Random".
+
+
+Beginning in PowerShell 7, the InputObject parameter accepts arrays that can contain an empty string or "$null". The array can be sent down the pipeline or as an InputObject parameter value.`, `Object[]`),
         new Parameter(`Maximum`, `Specifies a maximum value for the random number. "Get-Random" returns a value that is less than the maximum (not equal). Enter an integer, a double-precision floating-point number, or an object that can be converted to an integer or double, such as a numeric string ("100").
 
 
@@ -5011,10 +5344,10 @@ If the value of Minimum is a double (a floating-point number), the default value
 
 
 The value of Minimum must be less than (not equal to) the value of Maximum . If the value of Maximum or Minimum is a floating-point number, "Get-Random" returns a randomly selected floating-point number.`, `Object`),
-        new Parameter(`SetSeed`, `Specifies a seed value for the random number generator. This seed value is used for the current command and for all subsequent "Get-Random" commands in the current session until you use SetSeed again or close the session. You cannot reset the seed to its default value.
+        new Parameter(`SetSeed`, `Specifies a seed value for the random number generator. This seed value is used for the current command and for all subsequent "Get-Random" commands in the current session until you use SetSeed again or close the session. You can't reset the seed to its default value.
 
 
-The SetSeed parameter is not required. By default, "Get-Random" uses the RandomNumberGenerator() (/dotnet/api/system.security.cryptography.randomnumbergenerator)method to generate a seed value. Because SetSeed results in non-random behavior, it is typically used only when trying to reproduce behavior, such as when debugging or analyzing a script that includes "Get-Random" commands.`, `Int32`),
+The SetSeed parameter is not required. By default, "Get-Random" uses the RandomNumberGenerator() (/dotnet/api/system.security.cryptography.randomnumbergenerator)method to generate a seed value. Because SetSeed results in non-random behavior, it's typically used only when trying to reproduce behavior, such as when debugging or analyzing a script that includes "Get-Random" commands.`, `Int32`),
     ], `Gets a random number, or selects objects randomly from a collection.`, `Get-Random [-InputObject] <Object[]> [-Count <Int32>] [-SetSeed <Int32>] [<CommonParameters>]
 
 Get-Random [[-Maximum] <Object>] [-Minimum <Object>] [-SetSeed <Int32>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
@@ -5046,6 +5379,10 @@ Get-RunspaceDebug [-RunspaceInstanceId] <Guid[]> [<CommonParameters>]
 
 Get-RunspaceDebug [[-RunspaceName] <String[]>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Get-ScheduledJob`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-ScheduledJobOption`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Get-SecureBootPolicy`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-SecureBootUEFI`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -5064,6 +5401,8 @@ Get-Service [-DependentServices] [-Exclude <String[]>] [-Include <String[]>] [-I
 
 Get-Service [[-Name] <String[]>] [-DependentServices] [-Exclude <String[]>] [-Include <String[]>] [-RequiredServices] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Get-SystemDriver`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Get-TimeZone`, [
         new Parameter(`Id`, `Specifies, as a string array, the ID or IDs of the time zones that this cmdlet gets.`, `String[]`),
         new Parameter(`ListAvailable`, `Indicates that this cmdlet gets all available time zones.`, `SwitchParameter`),
@@ -5073,6 +5412,10 @@ Get-Service [[-Name] <String[]>] [-DependentServices] [-Exclude <String[]>] [-In
 Get-TimeZone -ListAvailable [<CommonParameters>]
 
 Get-TimeZone [[-Name] <String[]>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-TlsCipherSuite`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-TlsEccCurve`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-Tpm`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -5085,6 +5428,8 @@ Get-TimeZone [[-Name] <String[]>] [<CommonParameters>]`, "", (parameters, paramD
     ], `Gets PowerShell components that are instrumented for tracing.`, `Get-TraceSource [[-Name] <String[]>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-TroubleshootingPack`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Get-TrustedProvisioningCertificate`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Get-TypeData`, [
         new Parameter(`TypeName`, `Specifies type data as an array only for the types with the specified names. By default, Get-TypeData gets all types in the session.
@@ -5179,9 +5524,15 @@ This parameter was introduced in PowerShell 6.0.`, `String[]`),
         new Parameter(`AsHashTable`, `Indicates that this cmdlet returns the group as a hash table. The keys of the hash table are the property values by which the objects are grouped. The values of the hash table are the objects that have that property value.
 
 
-By itself, the AsHashTable parameter returns each hash table in which each key is an instance of the grouped object. When used with the AsString parameter, the keys in the hash table are strings.`, `SwitchParameter`),
+By itself, the AsHashTable parameter returns each hash table in which each key is an instance of the grouped object. When used with the AsString parameter, the keys in the hash table are strings.
+
+
+Beginning in PowerShell 7, to create case-sensitive hash tables, include CaseSensitive and AsHashtable in your command.`, `SwitchParameter`),
         new Parameter(`AsString`, `Indicates that this cmdlet converts the hash table keys to strings. By default, the hash table keys are instances of the grouped object. This parameter is valid only when used with the AsHashTable parameter.`, `SwitchParameter`),
-        new Parameter(`CaseSensitive`, `Indicates that this cmdlet makes the grouping case-sensitive. Without this parameter, the property values of objects in a group might have different cases.`, `SwitchParameter`),
+        new Parameter(`CaseSensitive`, `Indicates that this cmdlet makes the grouping case-sensitive. Without this parameter, the property values of objects in a group might have different cases.
+
+
+Beginning in PowerShell 7, to create case-sensitive hash tables, include CaseSensitive and AsHashtable in your command.`, `SwitchParameter`),
         new Parameter(`Culture`, `Specifies the culture to use when comparing strings.`, `String`),
         new Parameter(`InputObject`, `Specifies the objects to group. Enter a variable that contains the objects, or type a command or expression that gets the objects.
 
@@ -5233,6 +5584,8 @@ The default is Local. For more information, see about_Scopes.`, `String`),
 Import-Alias [-Path] <String> [-Force] [-PassThru] [-Scope <String>] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Import-BinaryMiLog`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Import-Certificate`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Import-Clixml`, [
         new Parameter(`First`, `Gets only the specified number of objects. Enter the number of objects to get.`, `UInt64`),
@@ -5319,7 +5672,7 @@ The cmdlet searches for a subdirectory with the same name as the value of the UI
 
 
 Some modules automatically export selected aliases into your session when you import the module. This parameter lets you select from among the exported aliases.`, `String[]`),
-        new Parameter(`ArgumentList`, `Specifies an array of arguments, or parameter values, that are passed to a script module during the "Import-Module" command. This parameter is valid only when you are importing a script module.
+        new Parameter(`ArgumentList`, `Specifies an array of arguments, or parameter values, that are passed to a script module during the "Import-Module" command. This parameter is valid only when you're importing a script module.
 
 
 You can also refer to the ArgumentList parameter by its alias, args . For more information, see about_Aliases (About/about_Aliases.md).`, `Object[]`),
@@ -5330,28 +5683,28 @@ When you use the AsCustomObject parameter, "Import-Module" imports the module me
         new Parameter(`Assembly`, `Specifies an array of assembly objects. This cmdlet imports the cmdlets and providers implemented in the specified assembly objects. Enter a variable that contains assembly objects or a command that creates assembly objects. You can also pipe an assembly object to "Import-Module".
 
 
-When you use this parameter, only the cmdlets and providers implemented by the specified assemblies are imported. If the module contains other files, they are not imported, and you might be missing important members of the module. Use this parameter for debugging and testing the module, or when you are instructed to use it by the module author.`, `Assembly[]`),
+When you use this parameter, only the cmdlets and providers implemented by the specified assemblies are imported. If the module contains other files, they aren't imported, and you might be missing important members of the module. Use this parameter for debugging and testing the module, or when you're instructed to use it by the module author.`, `Assembly[]`),
         new Parameter(`CimNamespace`, `Specifies the namespace of an alternate CIM provider that exposes CIM modules. The default value is the namespace of the Module Discovery WMI provider.
 
 
-Use this parameter to import CIM modules from computers and devices that are not running a Windows operating system.
+Use this parameter to import CIM modules from computers and devices that aren't running a Windows operating system.
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `String`),
         new Parameter(`CimResourceUri`, `Specifies an alternate location for CIM modules. The default value is the resource URI of the Module Discovery WMI provider on the remote computer.
 
 
-Use this parameter to import CIM modules from computers and devices that are not running a Windows operating system.
+Use this parameter to import CIM modules from computers and devices that aren't running a Windows operating system.
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `Uri`),
         new Parameter(`CimSession`, `Specifies a CIM session on the remote computer. Enter a variable that contains the CIM session or a command that gets the CIM session, such as a Get-CimSession (../CimCmdlets/Get-CimSession.md)command.
 
 
-"Import-Module" uses the CIM session connection to import modules from the remote computer into the current session. When you use the commands from the imported module in the current session, the commands actually run on the remote computer.
+"Import-Module" uses the CIM session connection to import modules from the remote computer into the current session. When you use the commands from the imported module in the current session, the commands run on the remote computer.
 
 
-You can use this parameter to import modules from computers and devices that are not running the Windows operating system, and Windows computers that have PowerShell, but don't have PowerShell remoting enabled.
+You can use this parameter to import modules from computers and devices that aren't running the Windows operating system, and Windows computers that have PowerShell, but don't have PowerShell remoting enabled.
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `CimSession`),
@@ -5369,39 +5722,30 @@ By default, when a module that you import exports cmdlets or functions that have
 
 
 This message is only a warning. The complete module is still imported, including the non-conforming commands. Although the message is displayed to module users, the naming problem should be fixed by the module author.`, `SwitchParameter`),
-        new Parameter(`Force`, `This parameter causes a module to be loaded, or reloaded, over top of the current one`, `SwitchParameter`),
+        new Parameter(`Force`, `This parameter causes a module to be loaded, or reloaded, over top of the current one.`, `SwitchParameter`),
         new Parameter(`FullyQualifiedName`, `Specifies the fully qualified name of the module as a hash table. The value can be a combination of strings and hash tables. The hash table has the following keys.
 
 
 - "ModuleName" - Required Specifies the module name. - "GUID" - Optional Specifies the GUID of the module. - It's also Required to specify one of the three below keys. These keys   can't be used together.   - "ModuleVersion" - Specifies a minimum acceptable version of the module.   - "RequiredVersion" - Specifies an exact, required version of the module.   - "MaximumVersion" - Specifies the maximum acceptable version of the module.`, `ModuleSpecification[]`),
-        new Parameter(`Function`, `Specifies an array of functions that this cmdlet imports from the module into the current session. Wildcard characters are permitted.
-
-
-Some modules automatically export selected functions into your session when you import the module. This parameter lets you select from among the exported functions.`, `String[]`),
+        new Parameter(`Function`, `Specifies an array of functions that this cmdlet imports from the module into the current session. Wildcard characters are permitted. Some modules automatically export selected functions into your session when you import the module. This parameter lets you select from among the exported functions.`, `String[]`),
         new Parameter(`Global`, `Indicates that this cmdlet imports modules into the global session state so they are available to all commands in the session.
 
 
 By default, when "Import-Module" cmdlet is called from the command prompt, script file, or scriptblock, all the commands are imported into the global session state.
 
 
-When invoked from another module, "Import-Module" cmdlet imports the commands in a module, including commands from nested modules, into the caller's session state.
+When invoked from another module, "Import-Module" cmdlet imports the commands in a module, including commands from nested modules, into the calling module's session state.
 
 
 > [!TIP] > You should avoid calling "Import-Module" from within a module. Instead, declare the target module > as a nested module in the parent module's manifest. Declaring nested modules improves the > discoverability of dependencies.
 
 
-The Global parameter is equivalent to the Scope parameter with a value of Global.
+The Global parameter is equivalent to the Scope parameter with a value of Global .
 
 
 To restrict the commands that a module exports, use an "Export-ModuleMember" command in the script module.`, `SwitchParameter`),
-        new Parameter(`MaximumVersion`, `Specifies a maximum version. This cmdlet imports only a version of the module that is less than or equal to the specified value. If no version qualifies, "Import-Module" generates an error.`, `String`),
-        new Parameter(`MinimumVersion`, `Specifies a minimum version. This cmdlet imports only a version of the module that is greater than or equal to the specified value. If no version qualifies, "Import-Module" generates an error.
-
-
-By default, "Import-Module" imports the module without checking the version number.
-
-
-Use the MinimumVersion parameter name or its alias, Version.
+        new Parameter(`MaximumVersion`, `Specifies a maximum version. This cmdlet imports only a version of the module that is less than or equal to the specified value. If no version qualifies, "Import-Module" returns an error.`, `String`),
+        new Parameter(`MinimumVersion`, `Specifies a minimum version. This cmdlet imports only a version of the module that is greater than or equal to the specified value. Use the MinimumVersion parameter name or its alias, Version . If no version qualifies, "Import-Module" generates an error.
 
 
 To specify an exact version, use the RequiredVersion parameter. You can also use the Module and Version parameters of the #Requires keyword to require a specific version of a module in a script.
@@ -5409,21 +5753,21 @@ To specify an exact version, use the RequiredVersion parameter. You can also use
 
 This parameter was introduced in Windows PowerShell 3.0.`, `Version`),
         new Parameter(`ModuleInfo`, `Specifies an array of module objects to import. Enter a variable that contains the module objects, or a command that gets the module objects, such as the following command: "Get-Module -ListAvailable". You can also pipe module objects to "Import-Module".`, `PSModuleInfo[]`),
-        new Parameter(`Name`, `Specifies the names of the modules to import. Enter the name of the module or the name of a file in the module, such as a .psd1, .psm1, .dll, or ps1 file. File paths are optional. Wildcard characters are not permitted. You can also pipe module names and file names to "Import-Module".
+        new Parameter(`Name`, `Specifies the names of the modules to import. Enter the name of the module or the name of a file in the module, such as a ".psd1", ".psm1", ".dll", or ".ps1" file. File paths are optional. Wildcard characters aren't permitted. You can also pipe module names and filenames to "Import-Module".
 
 
 If you omit a path, "Import-Module" looks for the module in the paths saved in the "$env:PSModulePath" environment variable.
 
 
-Specify only the module name whenever possible. When you specify a file name, only the members that are implemented in that file are imported. If the module contains other files, they are not imported, and you might be missing important members of the module.`, `String[]`),
-        new Parameter(`NoClobber`, `Indicates that this cmdlet does not import commands that have the same names as existing commands in the current session. By default, "Import-Module" imports all exported module commands.
+Specify only the module name whenever possible. When you specify a file name, only the members that are implemented in that file are imported. If the module contains other files, they aren't imported, and you might be missing important members of the module.`, `String[]`),
+        new Parameter(`NoClobber`, `Prevents importing commands that have the same names as existing commands in the current session. By default, "Import-Module" imports all exported module commands.
 
 
 Commands that have the same names can hide or replace commands in the session. To avoid command name conflicts in a session, use the Prefix or NoClobber parameters. For more information about name conflicts and command precedence, see "Modules and Name Conflicts" in about_Modules (about/about_Modules.md)and about_Command_Precedence (about/about_Command_Precedence.md).
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
-        new Parameter(`PassThru`, `Returns an object representing the item with which you are working. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
+        new Parameter(`PassThru`, `Returns an object representing the item with which you're working. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
         new Parameter(`Prefix`, `Specifies a prefix that this cmdlet adds to the nouns in the names of imported module members.
 
 
@@ -5434,10 +5778,10 @@ For example, if you specify the prefix UTC and then import a "Get-Date" cmdlet, 
 
 
 The value of this parameter takes precedence over the DefaultCommandPrefix property of the module, which specifies the default prefix.`, `String`),
-        new Parameter(`PSSession`, `Specifies a PowerShell user-managed session ( PSSession ) from which this cmdlet import modules into the current session. Enter a variable that contains a PSSession or a command that gets a PSSession , such as a "Get-PSSession" command.
+        new Parameter(`PSSession`, `Specifies a PowerShell user-managed session ( PSSession ) from which this cmdlet imports modules into the current session. Enter a variable that contains a PSSession or a command that gets a PSSession , such as a "Get-PSSession" command.
 
 
-When you import a module from a different session into the current session, you can use the cmdlets from the module in the current session, just as you would use cmdlets from a local module. Commands that use the remote cmdlets actually run in the remote session, but the remoting details are managed in the background by PowerShell.
+When you import a module from a different session into the current session, you can use the cmdlets from the module in the current session, just as you would use cmdlets from a local module. Commands that use the remote cmdlets run in the remote session, but the remoting details are managed in the background by PowerShell.
 
 
 This parameter uses the Implicit Remoting feature of PowerShell. It is equivalent to using the "Import-PSSession" cmdlet to import particular modules from a session.
@@ -5492,25 +5836,28 @@ Allows loading a module from the ""$($env:windir)\\System32\\WindowsPowerShell\\
 When importing a module from another path, this switch does nothing, since the check is not performed. On Linux and macOS, this switch does nothing.
 
 
-See about_PowerShell_Editions (About/about_PowerShell_Editions.md)for more information.
+For more information, see about_PowerShell_Editions (About/about_PowerShell_Editions.md).
 
 
 > [!WARNING] > "Import-Module -SkipEditionCheck" is still likely to fail to import a module. Even if it does > succeed, invoking a command from the module may later fail when it tries to use an > incompatible API.`, `SwitchParameter`),
-    ], `Adds modules to the current session.`, `Import-Module [-Assembly] <Assembly[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-NoClobber] [-PassThru] [-Prefix <String>] [-Scope {Local | Global}] [-Variable <String[]>] [-SkipEditionCheck] [<CommonParameters>]
+        new Parameter(`UseWindowsPowerShell`, `Loads module using Windows PowerShell Compatibility functionality. See about_Windows_PowerShell_Compatibility (About/about_Windows_PowerShell_Compatibility.md)for more information.`, `SwitchParameter`),
+    ], `Adds modules to the current session.`, `Import-Module [-Assembly] <Assembly[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-NoClobber] [-PassThru] [-Prefix <String>] [-Scope {Local | Global}] [-Variable <String[]>] [-SkipEditionCheck] [-UseWindowsPowerShell] [<CommonParameters>]
 
-Import-Module [-Name] <String[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-CimNamespace <String>] [-CimResourceUri <Uri>] -CimSession <CimSession> [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-MaximumVersion <String>] [-MinimumVersion <Version>] [-NoClobber] [-PassThru] [-Prefix <String>] [-RequiredVersion <Version>] [-Scope {Local | Global}] [-Variable <String[]>] [-SkipEditionCheck] [<CommonParameters>]
+Import-Module [-Name] <String[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-CimNamespace <String>] [-CimResourceUri <Uri>] -CimSession <CimSession> [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-MaximumVersion <String>] [-MinimumVersion <Version>] [-NoClobber] [-PassThru] [-Prefix <String>] [-RequiredVersion <Version>] [-Scope {Local | Global}] [-Variable <String[]>] [-SkipEditionCheck] [-UseWindowsPowerShell] [<CommonParameters>]
 
-Import-Module [-FullyQualifiedName] <ModuleSpecification[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-NoClobber] [-PassThru] [-Prefix <String>] [-Scope {Local | Global}] [-Variable <String[]>] [-SkipEditionCheck] [<CommonParameters>]
+Import-Module [-FullyQualifiedName] <ModuleSpecification[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-NoClobber] [-PassThru] [-Prefix <String>] [-Scope {Local | Global}] [-Variable <String[]>] [-SkipEditionCheck] [-UseWindowsPowerShell] [<CommonParameters>]
 
-Import-Module [-FullyQualifiedName] <ModuleSpecification[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-NoClobber] [-PassThru] [-Prefix <String>] -PSSession <PSSession> [-Scope {Local | Global}] [-Variable <String[]>] [-SkipEditionCheck] [<CommonParameters>]
+Import-Module [-FullyQualifiedName] <ModuleSpecification[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-NoClobber] [-PassThru] [-Prefix <String>] -PSSession <PSSession> [-Scope {Local | Global}] [-Variable <String[]>] [-SkipEditionCheck] [-UseWindowsPowerShell] [<CommonParameters>]
 
-Import-Module [-Name] <String[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-MaximumVersion <String>] [-MinimumVersion <Version>] [-NoClobber] [-PassThru] [-Prefix <String>] [-RequiredVersion <Version>] [-Scope {Local | Global}] [-Variable <String[]>] [-SkipEditionCheck] [<CommonParameters>]
+Import-Module [-Name] <String[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-MaximumVersion <String>] [-MinimumVersion <Version>] [-NoClobber] [-PassThru] [-Prefix <String>] [-RequiredVersion <Version>] [-Scope {Local | Global}] [-Variable <String[]>] [-SkipEditionCheck] [-UseWindowsPowerShell] [<CommonParameters>]
 
-Import-Module [-Name] <String[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-MaximumVersion <String>] [-MinimumVersion <Version>] [-NoClobber] [-PassThru] [-Prefix <String>] -PSSession <PSSession> [-RequiredVersion <Version>] [-Scope {Local | Global}] [-Variable <String[]>] [-SkipEditionCheck] [<CommonParameters>]
+Import-Module [-Name] <String[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-MaximumVersion <String>] [-MinimumVersion <Version>] [-NoClobber] [-PassThru] [-Prefix <String>] -PSSession <PSSession> [-RequiredVersion <Version>] [-Scope {Local | Global}] [-Variable <String[]>] [-SkipEditionCheck] [-UseWindowsPowerShell] [<CommonParameters>]
 
-Import-Module [-ModuleInfo] <PSModuleInfo[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-NoClobber] [-PassThru] [-Prefix <String>] [-Scope {Local | Global}] [-Variable <String[]>] [-SkipEditionCheck] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+Import-Module [-ModuleInfo] <PSModuleInfo[]> [-Alias <String[]>] [-ArgumentList <Object[]>] [-AsCustomObject] [-Cmdlet <String[]>] [-DisableNameChecking] [-Force] [-Function <String[]>] [-Global] [-NoClobber] [-PassThru] [-Prefix <String>] [-Scope {Local | Global}] [-Variable <String[]>] [-SkipEditionCheck] [-UseWindowsPowerShell] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Import-PackageProvider`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Import-PfxCertificate`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Import-PowerShellDataFile`, [
         new Parameter(`LiteralPath`, `The path to the file being imported. All characters in the path are treated as literal values. Wildcard characters are not processed.`, `String[]`),
@@ -5594,11 +5941,17 @@ For instance, if you specify the prefix Remote and then import a Get-Date cmdlet
     }),
     new ConsoleCommand(`Import-TpmOwnerAuth`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Initialize-PmemPhysicalDevice`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Initialize-Tpm`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Install-Package`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Install-PackageProvider`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Install-ProvisioningPackage`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Install-TrustedProvisioningCertificate`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Invoke-CimMethod`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -5698,7 +6051,7 @@ On Windows Vista and later versions of the Windows operating system, to include 
         new Parameter(`ConfigurationName`, `Specifies the session configuration that is used for the new PSSession .
 
 
-Enter a configuration name or the fully qualified resource URI for a session configuration. If you specify only the configuration name, the following schema URI is prepended: "http://schemas.microsoft.com/PowerShell".
+Enter a configuration name or the fully qualified resource URI for a session configuration. If you specify only the configuration name, the following schema URI is prepended: "https://schemas.microsoft.com/PowerShell".
 
 
 When used with SSH, this parameter specifies the subsystem to use on the target as defined in "sshd_config". The default value for SSH is the "powershell" subsystem.
@@ -5896,6 +6249,7 @@ WS-Management encrypts all PowerShell content transmitted over the network. The 
 If you use this parameter, but SSL isn't available on the port that's used for the command, the command fails.`, `SwitchParameter`),
         new Parameter(`VMId`, `Specifies an array of IDs of virtual machines.`, `Guid[]`),
         new Parameter(`VMName`, `Specifies an array of names of virtual machines.`, `String[]`),
+        new Parameter(`Subsystem`, `The name of the ssh subsystem. The default subsystem used is "powershell".`, `String`),
     ], `Runs commands on local and remote computers.`, `Invoke-Command [[-ConnectionUri] <Uri[]>] [-ScriptBlock] <ScriptBlock> [-AllowRedirection] [-ArgumentList <Object[]>] [-AsJob] [-Authentication {Basic | Default | Credssp | Digest | Kerberos | Negotiate | NegotiateWithImplicitCredential}] [-CertificateThumbprint <String>] [-ConfigurationName <String>] [-Credential <PSCredential>] [-EnableNetworkAccess] [-HideComputerName] [-InDisconnectedSession] [-InputObject <PSObject>] [-JobName <String>] [-RemoteDebug] [-SessionOption <PSSessionOption>] [-ThrottleLimit <Int32>] [<CommonParameters>]
 
 Invoke-Command [[-ConnectionUri] <Uri[]>] [-FilePath] <String> [-AllowRedirection] [-ArgumentList <Object[]>] [-AsJob] [-Authentication {Basic | Default | Credssp | Digest | Kerberos | Negotiate | NegotiateWithImplicitCredential}] [-ConfigurationName <String>] [-Credential <PSCredential>] [-EnableNetworkAccess] [-HideComputerName] [-InDisconnectedSession] [-InputObject <PSObject>] [-JobName <String>] [-RemoteDebug] [-SessionOption <PSSessionOption>] [-ThrottleLimit <Int32>] [<CommonParameters>]
@@ -5916,13 +6270,13 @@ Invoke-Command [-VMId] <Guid[]> [-FilePath] <String> [-ArgumentList <Object[]>] 
 
 Invoke-Command [-FilePath] <String> [-ArgumentList <Object[]>] [-AsJob] [-ConfigurationName <String>] [-Credential <PSCredential>] [-HideComputerName] [-InputObject <PSObject>] [-RemoteDebug] [-ThrottleLimit <Int32>] -VMName <String[]> [<CommonParameters>]
 
-Invoke-Command [-ScriptBlock] <ScriptBlock> [-ArgumentList <Object[]>] [-AsJob] [-HideComputerName] -HostName <String[]> [-InputObject <PSObject>] [-KeyFilePath <String>] [-Port <Int32>] [-RemoteDebug] [-SSHTransport {true}] [-UserName <String>] [<CommonParameters>]
+Invoke-Command [-ScriptBlock] <ScriptBlock> [-ArgumentList <Object[]>] [-AsJob] [-HideComputerName] -HostName <String[]> [-InputObject <PSObject>] [-JobName <String>] [-KeyFilePath <String>] [-Port <Int32>] [-RemoteDebug] [-SSHTransport {true}] [-UserName <String>] [-Subsystem <String>] [<CommonParameters>]
 
 Invoke-Command [-FilePath] <String> [-ArgumentList <Object[]>] [-AsJob] [-ConfigurationName <String>] -ContainerId <String[]> [-HideComputerName] [-InputObject <PSObject>] [-JobName <String>] [-RemoteDebug] [-RunAsAdministrator] [-ThrottleLimit <Int32>] [<CommonParameters>]
 
 Invoke-Command [-ScriptBlock] <ScriptBlock> [-ArgumentList <Object[]>] [-AsJob] [-ConfigurationName <String>] -ContainerId <String[]> [-HideComputerName] [-InputObject <PSObject>] [-JobName <String>] [-RemoteDebug] [-RunAsAdministrator] [-ThrottleLimit <Int32>] [<CommonParameters>]
 
-Invoke-Command [-ScriptBlock] <ScriptBlock> [-ArgumentList <Object[]>] [-AsJob] [-HideComputerName] [-InputObject <PSObject>] [-RemoteDebug] -SSHConnection <Hashtable[]> [<CommonParameters>]
+Invoke-Command [-ScriptBlock] <ScriptBlock> [-ArgumentList <Object[]>] [-AsJob] [-HideComputerName] [-InputObject <PSObject>] [-JobName <String>] [-RemoteDebug] -SSHConnection <Hashtable[]> [<CommonParameters>]
 
 Invoke-Command [-FilePath] <String> [-ArgumentList <Object[]>] [-AsJob] [-HideComputerName] -HostName <String[]> [-InputObject <PSObject>] [-KeyFilePath <String>] [-RemoteDebug] [-SSHTransport {true}] [-UserName <String>] [<CommonParameters>]
 
@@ -5931,6 +6285,8 @@ Invoke-Command [-FilePath] <String> [-ArgumentList <Object[]>] [-AsJob] [-HideCo
 Invoke-Command [-ScriptBlock] <ScriptBlock> [-ArgumentList <Object[]>] [-InputObject <PSObject>] [-NoNewScope] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Invoke-CommandInDesktopPackage`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Invoke-DscResource`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Invoke-Expression`, [
         new Parameter(`Command`, `Specifies the command or expression to run. Type the command or expression or enter a variable that contains the command or expression. The Command parameter is required.`, `String`),
@@ -5975,7 +6331,7 @@ This feature was added in PowerShell 6.0.0.`, `SwitchParameter`),
 Available Authentication Options:
 
 
-- None : This is the default option when Authentication is not supplied. No explicit   authentication will be used. - Basic : Requires Credential . The credentials will be used to send an RFC 7617 Basic   Authentication "Authorization: Basic" header in the format of "base64(user:password)". - Bearer : Requires Token . Will send and RFC 6750 "Authorization: Bearer" header with the   supplied token. This is an alias for OAuth - OAuth : Requires Token . Will send and RFC 6750 "Authorization: Bearer" header with the   supplied token. This is an alias for Bearer Supplying Authentication will override any "Authorization" headers supplied to Headers or included in WebSession .
+- None : This is the default option when Authentication is not supplied. No explicit   authentication will be used. - Basic : Requires Credential . The credentials will be used to send an RFC 7617 Basic   Authentication "Authorization: Basic" header in the format of "base64(user:password)". - Bearer : Requires Token . Will send and RFC 6750 "Authorization: Bearer" header with the   supplied token. This is an alias for OAuth - OAuth : Requires Token . Will send an RFC 6750 "Authorization: Bearer" header with the   supplied token. This is an alias for Bearer Supplying Authentication will override any "Authorization" headers supplied to Headers or included in WebSession .
 
 
 This feature was added in PowerShell 6.0.0.`, `WebAuthenticationType`),
@@ -6226,6 +6582,10 @@ This will disable validation for values passed to the ContentType , Headers, and
 
 
 This feature was added in PowerShell 6.0.0.`, `SwitchParameter`),
+        new Parameter(`SkipHttpErrorCheck`, `This parameter causes the cmdlet to ignore HTTP error statuses and continue to process responses. The error responses are written to the pipeline just as if they were successful.
+
+
+This parameter was introduced in PowerShell 7.`, `SwitchParameter`),
         new Parameter(`SslProtocol`, `Sets the SSL/TLS protocols that are permissible for the web request. By default all, SSL/TLS protocols supported by the system are allowed. SslProtocol allows for limiting to specific protocols for compliance purposes. SslProtocol uses the "WebSslProtocol" Flag Enum. It is possible to supply more than one protocol using flag notation or combining multiple "WebSslProtocol" options with "-bor", however supplying multiple protocols is not supported on all platforms.
 
 
@@ -6233,6 +6593,13 @@ This feature was added in PowerShell 6.0.0.`, `SwitchParameter`),
 
 
 This feature was added in PowerShell 6.0.0.`, `WebSslProtocol`),
+        new Parameter(`StatusCodeVariable`, `This parameter specifies a variable that's assigned a status code's integer value. The parameter can identify success messages or failure messages when used with the SkipHttpErrorCheck parameter.
+
+
+Input the parameter's variable name as a string such as "-StatusCodeVariable "scv"".
+
+
+This parameter was introduced in PowerShell 7.`, `String`),
         new Parameter(`TimeoutSec`, `Specifies how long the request can be pending before it times out. Enter a value in seconds. The default value, 0, specifies an indefinite time-out.
 
 
@@ -6292,13 +6659,13 @@ To create a web request session, enter a variable name, without a dollar sign, i
 
 
 You can't use the SessionVariable and WebSession parameters in the same command.`, `WebRequestSession`),
-    ], `Sends an HTTP or HTTPS request to a RESTful web service.`, `Invoke-RestMethod [-Uri] <Uri> [-AllowUnencryptedAuthentication] [-Authentication {None | Basic | Bearer | OAuth}] [-Body <Object>] [-Certificate <X509Certificate>] [-CertificateThumbprint <String>] [-ContentType <String>] [-Credential <PSCredential>] -CustomMethod <String> [-DisableKeepAlive] [-FollowRelLink] [-Form <IDictionary>] [-Headers <IDictionary>] [-InFile <String>] [-MaximumFollowRelLink <Int32>] [-MaximumRedirection <Int32>] [-MaximumRetryCount <Int32>] -NoProxy [-OutFile <String>] [-PassThru] [-PreserveAuthorizationOnRedirect] [-ResponseHeadersVariable <String>] [-Resume] [-RetryIntervalSec <Int32>] [-SessionVariable <String>] [-SkipCertificateCheck] [-SkipHeaderValidation] [-SslProtocol {Default | Tls | Tls11 | Tls12}] [-TimeoutSec <Int32>] [-Token <SecureString>] [-TransferEncoding {chunked | compress | deflate | gzip | identity}] [-UseBasicParsing] [-UseDefaultCredentials] [-UserAgent <String>] [-WebSession <WebRequestSession>] [<CommonParameters>]
+    ], `Sends an HTTP or HTTPS request to a RESTful web service.`, `Invoke-RestMethod [-Uri] <Uri> [-AllowUnencryptedAuthentication] [-Authentication {None | Basic | Bearer | OAuth}] [-Body <Object>] [-Certificate <X509Certificate>] [-CertificateThumbprint <String>] [-ContentType <String>] [-Credential <PSCredential>] -CustomMethod <String> [-DisableKeepAlive] [-FollowRelLink] [-Form <IDictionary>] [-Headers <IDictionary>] [-InFile <String>] [-MaximumFollowRelLink <Int32>] [-MaximumRedirection <Int32>] [-MaximumRetryCount <Int32>] [-OutFile <String>] [-PassThru] [-PreserveAuthorizationOnRedirect] [-Proxy <Uri>] [-ProxyCredential <PSCredential>] [-ProxyUseDefaultCredentials] [-ResponseHeadersVariable <String>] [-Resume] [-RetryIntervalSec <Int32>] [-SessionVariable <String>] [-SkipCertificateCheck] [-SkipHeaderValidation] [-SkipHttpErrorCheck] [-SslProtocol {Default | Tls | Tls11 | Tls12}] [-StatusCodeVariable <String>] [-TimeoutSec <Int32>] [-Token <SecureString>] [-TransferEncoding {chunked | compress | deflate | gzip | identity}] [-UseBasicParsing] [-UseDefaultCredentials] [-UserAgent <String>] [-WebSession <WebRequestSession>] [<CommonParameters>]
 
-Invoke-RestMethod [-Uri] <Uri> [-AllowUnencryptedAuthentication] [-Authentication {None | Basic | Bearer | OAuth}] [-Body <Object>] [-Certificate <X509Certificate>] [-CertificateThumbprint <String>] [-ContentType <String>] [-Credential <PSCredential>] -CustomMethod <String> [-DisableKeepAlive] [-FollowRelLink] [-Form <IDictionary>] [-Headers <IDictionary>] [-InFile <String>] [-MaximumFollowRelLink <Int32>] [-MaximumRedirection <Int32>] [-MaximumRetryCount <Int32>] [-OutFile <String>] [-PassThru] [-PreserveAuthorizationOnRedirect] [-Proxy <Uri>] [-ProxyCredential <PSCredential>] [-ProxyUseDefaultCredentials] [-ResponseHeadersVariable <String>] [-Resume] [-RetryIntervalSec <Int32>] [-SessionVariable <String>] [-SkipCertificateCheck] [-SkipHeaderValidation] [-SslProtocol {Default | Tls | Tls11 | Tls12}] [-TimeoutSec <Int32>] [-Token <SecureString>] [-TransferEncoding {chunked | compress | deflate | gzip | identity}] [-UseBasicParsing] [-UseDefaultCredentials] [-UserAgent <String>] [-WebSession <WebRequestSession>] [<CommonParameters>]
+Invoke-RestMethod [-Uri] <Uri> [-AllowUnencryptedAuthentication] [-Authentication {None | Basic | Bearer | OAuth}] [-Body <Object>] [-Certificate <X509Certificate>] [-CertificateThumbprint <String>] [-ContentType <String>] [-Credential <PSCredential>] -CustomMethod <String> [-DisableKeepAlive] [-FollowRelLink] [-Form <IDictionary>] [-Headers <IDictionary>] [-InFile <String>] [-MaximumFollowRelLink <Int32>] [-MaximumRedirection <Int32>] [-MaximumRetryCount <Int32>] -NoProxy [-OutFile <String>] [-PassThru] [-PreserveAuthorizationOnRedirect] [-ResponseHeadersVariable <String>] [-Resume] [-RetryIntervalSec <Int32>] [-SessionVariable <String>] [-SkipCertificateCheck] [-SkipHeaderValidation] [-SkipHttpErrorCheck] [-SslProtocol {Default | Tls | Tls11 | Tls12}] [-StatusCodeVariable <String>] [-TimeoutSec <Int32>] [-Token <SecureString>] [-TransferEncoding {chunked | compress | deflate | gzip | identity}] [-UseBasicParsing] [-UseDefaultCredentials] [-UserAgent <String>] [-WebSession <WebRequestSession>] [<CommonParameters>]
 
-Invoke-RestMethod [-Uri] <Uri> [-AllowUnencryptedAuthentication] [-Authentication {None | Basic | Bearer | OAuth}] [-Body <Object>] [-Certificate <X509Certificate>] [-CertificateThumbprint <String>] [-ContentType <String>] [-Credential <PSCredential>] [-DisableKeepAlive] [-FollowRelLink] [-Form <IDictionary>] [-Headers <IDictionary>] [-InFile <String>] [-MaximumFollowRelLink <Int32>] [-MaximumRedirection <Int32>] [-MaximumRetryCount <Int32>] [-Method {Default | Get | Head | Post | Put | Delete | Trace | Options | Merge | Patch}] [-OutFile <String>] [-PassThru] [-PreserveAuthorizationOnRedirect] [-Proxy <Uri>] [-ProxyCredential <PSCredential>] [-ProxyUseDefaultCredentials] [-ResponseHeadersVariable <String>] [-Resume] [-RetryIntervalSec <Int32>] [-SessionVariable <String>] [-SkipCertificateCheck] [-SkipHeaderValidation] [-SslProtocol {Default | Tls | Tls11 | Tls12}] [-TimeoutSec <Int32>] [-Token <SecureString>] [-TransferEncoding {chunked | compress | deflate | gzip | identity}] [-UseBasicParsing] [-UseDefaultCredentials] [-UserAgent <String>] [-WebSession <WebRequestSession>] [<CommonParameters>]
+Invoke-RestMethod [-Uri] <Uri> [-AllowUnencryptedAuthentication] [-Authentication {None | Basic | Bearer | OAuth}] [-Body <Object>] [-Certificate <X509Certificate>] [-CertificateThumbprint <String>] [-ContentType <String>] [-Credential <PSCredential>] [-DisableKeepAlive] [-FollowRelLink] [-Form <IDictionary>] [-Headers <IDictionary>] [-InFile <String>] [-MaximumFollowRelLink <Int32>] [-MaximumRedirection <Int32>] [-MaximumRetryCount <Int32>] [-Method {Default | Get | Head | Post | Put | Delete | Trace | Options | Merge | Patch}] [-OutFile <String>] [-PassThru] [-PreserveAuthorizationOnRedirect] [-Proxy <Uri>] [-ProxyCredential <PSCredential>] [-ProxyUseDefaultCredentials] [-ResponseHeadersVariable <String>] [-Resume] [-RetryIntervalSec <Int32>] [-SessionVariable <String>] [-SkipCertificateCheck] [-SkipHeaderValidation] [-SkipHttpErrorCheck] [-SslProtocol {Default | Tls | Tls11 | Tls12}] [-StatusCodeVariable <String>] [-TimeoutSec <Int32>] [-Token <SecureString>] [-TransferEncoding {chunked | compress | deflate | gzip | identity}] [-UseBasicParsing] [-UseDefaultCredentials] [-UserAgent <String>] [-WebSession <WebRequestSession>] [<CommonParameters>]
 
-Invoke-RestMethod [-Uri] <Uri> [-AllowUnencryptedAuthentication] [-Authentication {None | Basic | Bearer | OAuth}] [-Body <Object>] [-Certificate <X509Certificate>] [-CertificateThumbprint <String>] [-ContentType <String>] [-Credential <PSCredential>] [-DisableKeepAlive] [-FollowRelLink] [-Form <IDictionary>] [-Headers <IDictionary>] [-InFile <String>] [-MaximumFollowRelLink <Int32>] [-MaximumRedirection <Int32>] [-MaximumRetryCount <Int32>] [-Method {Default | Get | Head | Post | Put | Delete | Trace | Options | Merge | Patch}] -NoProxy [-OutFile <String>] [-PassThru] [-PreserveAuthorizationOnRedirect] [-ResponseHeadersVariable <String>] [-Resume] [-RetryIntervalSec <Int32>] [-SessionVariable <String>] [-SkipCertificateCheck] [-SkipHeaderValidation] [-SslProtocol {Default | Tls | Tls11 | Tls12}] [-TimeoutSec <Int32>] [-Token <SecureString>] [-TransferEncoding {chunked | compress | deflate | gzip | identity}] [-UseBasicParsing] [-UseDefaultCredentials] [-UserAgent <String>] [-WebSession <WebRequestSession>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+Invoke-RestMethod [-Uri] <Uri> [-AllowUnencryptedAuthentication] [-Authentication {None | Basic | Bearer | OAuth}] [-Body <Object>] [-Certificate <X509Certificate>] [-CertificateThumbprint <String>] [-ContentType <String>] [-Credential <PSCredential>] [-DisableKeepAlive] [-FollowRelLink] [-Form <IDictionary>] [-Headers <IDictionary>] [-InFile <String>] [-MaximumFollowRelLink <Int32>] [-MaximumRedirection <Int32>] [-MaximumRetryCount <Int32>] [-Method {Default | Get | Head | Post | Put | Delete | Trace | Options | Merge | Patch}] -NoProxy [-OutFile <String>] [-PassThru] [-PreserveAuthorizationOnRedirect] [-ResponseHeadersVariable <String>] [-Resume] [-RetryIntervalSec <Int32>] [-SessionVariable <String>] [-SkipCertificateCheck] [-SkipHeaderValidation] [-SkipHttpErrorCheck] [-SslProtocol {Default | Tls | Tls11 | Tls12}] [-StatusCodeVariable <String>] [-TimeoutSec <Int32>] [-Token <SecureString>] [-TransferEncoding {chunked | compress | deflate | gzip | identity}] [-UseBasicParsing] [-UseDefaultCredentials] [-UserAgent <String>] [-WebSession <WebRequestSession>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Invoke-TroubleshootingPack`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -6534,6 +6901,10 @@ This switch disables validation for values passed to the ContentType , Headers a
 
 
 This feature was added in PowerShell 6.0.0.`, `SwitchParameter`),
+        new Parameter(`SkipHttpErrorCheck`, `This parameter causes the cmdlet to ignore HTTP error statuses and continue to process responses. The error responses are written to the pipeline just as if they were successful.
+
+
+This parameter was introduced in PowerShell 7.`, `SwitchParameter`),
         new Parameter(`SslProtocol`, `Sets the SSL/TLS protocols that are permissible for the web request. By default all, SSL/TLS protocols supported by the system are allowed. SslProtocol allows for limiting to specific protocols for compliance purposes. SslProtocol uses the WebSslProtocol Flag Enum. It is possible to supply more than one protocol using flag notation or combining multiple WebSslProtocol options with bor , however supplying multiple protocols is not supported on all platforms.
 
 
@@ -6602,15 +6973,17 @@ To create a web request session, enter a variable name, without a dollar sign, i
 
 
 You can't use the SessionVariable and WebSession parameters in the same command.`, `WebRequestSession`),
-    ], `Gets content from a web page on the internet.`, `Invoke-WebRequest [-Uri] <Uri> [-AllowUnencryptedAuthentication] [-Authentication {None | Basic | Bearer | OAuth}] [-Body <Object>] [-Certificate <X509Certificate>] [-CertificateThumbprint <String>] [-ContentType <String>] [-Credential <PSCredential>] -CustomMethod <String> [-DisableKeepAlive] [-Form <IDictionary>] [-Headers <IDictionary>] [-InFile <String>] [-MaximumRedirection <Int32>] [-MaximumRetryCount <Int32>] [-OutFile <String>] [-PassThru] [-PreserveAuthorizationOnRedirect] [-Proxy <Uri>] [-ProxyCredential <PSCredential>] [-ProxyUseDefaultCredentials] [-Resume] [-RetryIntervalSec <Int32>] [-SessionVariable <String>] [-SkipCertificateCheck] [-SkipHeaderValidation] [-SslProtocol {Default | Tls | Tls11 | Tls12}] [-TimeoutSec <Int32>] [-Token <SecureString>] [-TransferEncoding {chunked | compress | deflate | gzip | identity}] [-UseBasicParsing] [-UseDefaultCredentials] [-UserAgent <String>] [-WebSession <WebRequestSession>] [<CommonParameters>]
+    ], `Gets content from a web page on the internet.`, `Invoke-WebRequest [-Uri] <Uri> [-AllowUnencryptedAuthentication] [-Authentication {None | Basic | Bearer | OAuth}] [-Body <Object>] [-Certificate <X509Certificate>] [-CertificateThumbprint <String>] [-ContentType <String>] [-Credential <PSCredential>] -CustomMethod <String> [-DisableKeepAlive] [-Form <IDictionary>] [-Headers <IDictionary>] [-InFile <String>] [-MaximumRedirection <Int32>] [-MaximumRetryCount <Int32>] [-OutFile <String>] [-PassThru] [-PreserveAuthorizationOnRedirect] [-Proxy <Uri>] [-ProxyCredential <PSCredential>] [-ProxyUseDefaultCredentials] [-Resume] [-RetryIntervalSec <Int32>] [-SessionVariable <String>] [-SkipCertificateCheck] [-SkipHeaderValidation] [-SkipHttpErrorCheck] [-SslProtocol {Default | Tls | Tls11 | Tls12}] [-TimeoutSec <Int32>] [-Token <SecureString>] [-TransferEncoding {chunked | compress | deflate | gzip | identity}] [-UseBasicParsing] [-UseDefaultCredentials] [-UserAgent <String>] [-WebSession <WebRequestSession>] [<CommonParameters>]
 
-Invoke-WebRequest [-Uri] <Uri> [-AllowUnencryptedAuthentication] [-Authentication {None | Basic | Bearer | OAuth}] [-Body <Object>] [-Certificate <X509Certificate>] [-CertificateThumbprint <String>] [-ContentType <String>] [-Credential <PSCredential>] -CustomMethod <String> [-DisableKeepAlive] [-Form <IDictionary>] [-Headers <IDictionary>] [-InFile <String>] [-MaximumRedirection <Int32>] [-MaximumRetryCount <Int32>] -NoProxy [-OutFile <String>] [-PassThru] [-PreserveAuthorizationOnRedirect] [-Resume] [-RetryIntervalSec <Int32>] [-SessionVariable <String>] [-SkipCertificateCheck] [-SkipHeaderValidation] [-SslProtocol {Default | Tls | Tls11 | Tls12}] [-TimeoutSec <Int32>] [-Token <SecureString>] [-TransferEncoding {chunked | compress | deflate | gzip | identity}] [-UseBasicParsing] [-UseDefaultCredentials] [-UserAgent <String>] [-WebSession <WebRequestSession>] [<CommonParameters>]
+Invoke-WebRequest [-Uri] <Uri> [-AllowUnencryptedAuthentication] [-Authentication {None | Basic | Bearer | OAuth}] [-Body <Object>] [-Certificate <X509Certificate>] [-CertificateThumbprint <String>] [-ContentType <String>] [-Credential <PSCredential>] -CustomMethod <String> [-DisableKeepAlive] [-Form <IDictionary>] [-Headers <IDictionary>] [-InFile <String>] [-MaximumRedirection <Int32>] [-MaximumRetryCount <Int32>] -NoProxy [-OutFile <String>] [-PassThru] [-PreserveAuthorizationOnRedirect] [-Resume] [-RetryIntervalSec <Int32>] [-SessionVariable <String>] [-SkipCertificateCheck] [-SkipHeaderValidation] [-SkipHttpErrorCheck] [-SslProtocol {Default | Tls | Tls11 | Tls12}] [-TimeoutSec <Int32>] [-Token <SecureString>] [-TransferEncoding {chunked | compress | deflate | gzip | identity}] [-UseBasicParsing] [-UseDefaultCredentials] [-UserAgent <String>] [-WebSession <WebRequestSession>] [<CommonParameters>]
 
-Invoke-WebRequest [-Uri] <Uri> [-AllowUnencryptedAuthentication] [-Authentication {None | Basic | Bearer | OAuth}] [-Body <Object>] [-Certificate <X509Certificate>] [-CertificateThumbprint <String>] [-ContentType <String>] [-Credential <PSCredential>] [-DisableKeepAlive] [-Form <IDictionary>] [-Headers <IDictionary>] [-InFile <String>] [-MaximumRedirection <Int32>] [-MaximumRetryCount <Int32>] [-Method {Default | Get | Head | Post | Put | Delete | Trace | Options | Merge | Patch}] [-OutFile <String>] [-PassThru] [-PreserveAuthorizationOnRedirect] [-Proxy <Uri>] [-ProxyCredential <PSCredential>] [-ProxyUseDefaultCredentials] [-Resume] [-RetryIntervalSec <Int32>] [-SessionVariable <String>] [-SkipCertificateCheck] [-SkipHeaderValidation] [-SslProtocol {Default | Tls | Tls11 | Tls12}] [-TimeoutSec <Int32>] [-Token <SecureString>] [-TransferEncoding {chunked | compress | deflate | gzip | identity}] [-UseBasicParsing] [-UseDefaultCredentials] [-UserAgent <String>] [-WebSession <WebRequestSession>] [<CommonParameters>]
+Invoke-WebRequest [-Uri] <Uri> [-AllowUnencryptedAuthentication] [-Authentication {None | Basic | Bearer | OAuth}] [-Body <Object>] [-Certificate <X509Certificate>] [-CertificateThumbprint <String>] [-ContentType <String>] [-Credential <PSCredential>] [-DisableKeepAlive] [-Form <IDictionary>] [-Headers <IDictionary>] [-InFile <String>] [-MaximumRedirection <Int32>] [-MaximumRetryCount <Int32>] [-Method {Default | Get | Head | Post | Put | Delete | Trace | Options | Merge | Patch}] [-OutFile <String>] [-PassThru] [-PreserveAuthorizationOnRedirect] [-Proxy <Uri>] [-ProxyCredential <PSCredential>] [-ProxyUseDefaultCredentials] [-Resume] [-RetryIntervalSec <Int32>] [-SessionVariable <String>] [-SkipCertificateCheck] [-SkipHeaderValidation] [-SkipHttpErrorCheck] [-SslProtocol {Default | Tls | Tls11 | Tls12}] [-TimeoutSec <Int32>] [-Token <SecureString>] [-TransferEncoding {chunked | compress | deflate | gzip | identity}] [-UseBasicParsing] [-UseDefaultCredentials] [-UserAgent <String>] [-WebSession <WebRequestSession>] [<CommonParameters>]
 
-Invoke-WebRequest [-Uri] <Uri> [-AllowUnencryptedAuthentication] [-Authentication {None | Basic | Bearer | OAuth}] [-Body <Object>] [-Certificate <X509Certificate>] [-CertificateThumbprint <String>] [-ContentType <String>] [-Credential <PSCredential>] [-DisableKeepAlive] [-Form <IDictionary>] [-Headers <IDictionary>] [-InFile <String>] [-MaximumRedirection <Int32>] [-MaximumRetryCount <Int32>] [-Method {Default | Get | Head | Post | Put | Delete | Trace | Options | Merge | Patch}] -NoProxy [-OutFile <String>] [-PassThru] [-PreserveAuthorizationOnRedirect] [-Resume] [-RetryIntervalSec <Int32>] [-SessionVariable <String>] [-SkipCertificateCheck] [-SkipHeaderValidation] [-SslProtocol {Default | Tls | Tls11 | Tls12}] [-TimeoutSec <Int32>] [-Token <SecureString>] [-TransferEncoding {chunked | compress | deflate | gzip | identity}] [-UseBasicParsing] [-UseDefaultCredentials] [-UserAgent <String>] [-WebSession <WebRequestSession>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+Invoke-WebRequest [-Uri] <Uri> [-AllowUnencryptedAuthentication] [-Authentication {None | Basic | Bearer | OAuth}] [-Body <Object>] [-Certificate <X509Certificate>] [-CertificateThumbprint <String>] [-ContentType <String>] [-Credential <PSCredential>] [-DisableKeepAlive] [-Form <IDictionary>] [-Headers <IDictionary>] [-InFile <String>] [-MaximumRedirection <Int32>] [-MaximumRetryCount <Int32>] [-Method {Default | Get | Head | Post | Put | Delete | Trace | Options | Merge | Patch}] -NoProxy [-OutFile <String>] [-PassThru] [-PreserveAuthorizationOnRedirect] [-Resume] [-RetryIntervalSec <Int32>] [-SessionVariable <String>] [-SkipCertificateCheck] [-SkipHeaderValidation] [-SkipHttpErrorCheck] [-SslProtocol {Default | Tls | Tls11 | Tls12}] [-TimeoutSec <Int32>] [-Token <SecureString>] [-TransferEncoding {chunked | compress | deflate | gzip | identity}] [-UseBasicParsing] [-UseDefaultCredentials] [-UserAgent <String>] [-WebSession <WebRequestSession>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Invoke-WSManAction`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Join-DtcDiagnosticResourceManager`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Join-Path`, [
         new Parameter(`AdditionalChildPath`, `Specifies additional elements to append to the value of the Path parameter. The "ChildPath" parameter is still mandatory and must be specified as well.
@@ -6635,22 +7008,22 @@ The value of "Path" determines which provider joins the paths and adds the path 
     new ConsoleCommand(`Join-String`, [
         new Parameter(`DoubleQuote`, `Wraps the string value of each pipeline object in double-quotes.`, `SwitchParameter`),
         new Parameter(`FormatString`, `A format string that specifies how each item should be formatted.`, `String`),
-        new Parameter(`InputObject`, `Specifies the text to be joined. Enter a variable that contains the text, or type a command or expression that gets the objects to join into strings.`, `PSObject`),
+        new Parameter(`InputObject`, `Specifies the text to be joined. Enter a variable that contains the text, or type a command or expression that gets the objects to join into strings.`, `PSObject[]`),
         new Parameter(`OutputPrefix`, `Text that's inserted before the output string. The string can contain special characters such as carriage return ("" "r ""), newline ("" "n ""), and tab ("" "t "").`, `String`),
         new Parameter(`OutputSuffix`, `Text that's appended to the output string. The string can contain special characters such as carriage return ("" "r ""), newline ("" "n ""), and tab ("" "t "").`, `String`),
         new Parameter(`Property`, `The name of a property, or a property expression, that will project the pipeline object to text.`, `PSPropertyExpression`),
         new Parameter(`Separator`, `Text or characters such as a comma or semicolon that's inserted between the text for each pipeline object.`, `String`),
         new Parameter(`SingleQuote`, `Wraps the string value of each pipeline object in single quotes.`, `SwitchParameter`),
         new Parameter(`UseCulture`, `Uses the list separator for the current culture as the item delimiter. To find the list separator for a culture, use the following command: "(Get-Culture).TextInfo.ListSeparator".`, `SwitchParameter`),
-    ], `Combines objects from the pipeline into a single string.`, `Join-String [[-Property] <PSPropertyExpression>] [[-Separator] <String>] [-DoubleQuote] [-InputObject <PSObject>] [-OutputPrefix <String>] [-OutputSuffix <String>] [-UseCulture] [<CommonParameters>]
+    ], `Combines objects from the pipeline into a single string.`, `Join-String [[-Property] <PSPropertyExpression>] [[-Separator] <String>] [-DoubleQuote] [-InputObject <PSObject[]>] [-OutputPrefix <String>] [-OutputSuffix <String>] [-UseCulture] [<CommonParameters>]
 
-Join-String [[-Property] <PSPropertyExpression>] [[-Separator] <String>] [-FormatString <String>] [-InputObject <PSObject>] [-OutputPrefix <String>] [-OutputSuffix <String>] [-UseCulture] [<CommonParameters>]
+Join-String [[-Property] <PSPropertyExpression>] [[-Separator] <String>] [-FormatString <String>] [-InputObject <PSObject[]>] [-OutputPrefix <String>] [-OutputSuffix <String>] [-UseCulture] [<CommonParameters>]
 
-Join-String [[-Property] <PSPropertyExpression>] [[-Separator] <String>] [-InputObject <PSObject>] [-OutputPrefix <String>] [-OutputSuffix <String>] [-SingleQuote] [-UseCulture] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+Join-String [[-Property] <PSPropertyExpression>] [[-Separator] <String>] [-InputObject <PSObject[]>] [-OutputPrefix <String>] [-OutputSuffix <String>] [-SingleQuote] [-UseCulture] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Measure-Command`, [
-        new Parameter(`Expression`, `Specifies the expression that is being timed. Enclose the expression in braces ({}). The parameter name (" Expression ") is optional.`, `ScriptBlock`),
-        new Parameter(`InputObject`, `Objects bound to the "InputObject" parameter are optional input for the "ScriptBlock" passed to the "Expression" parameter. Inside the "ScriptBlock", "$_" can be used to reference the current object in the pipeline.`, `PSObject`),
+        new Parameter(`Expression`, `Specifies the expression that is being timed. Enclose the expression in braces ("{}").`, `ScriptBlock`),
+        new Parameter(`InputObject`, `Objects bound to the InputObject parameter are optional input for the script block passed to the Expression parameter. Inside the script block, "$_" can be used to reference the current object in the pipeline.`, `PSObject`),
     ], `Measures the time it takes to run script blocks and cmdlets.`, `Measure-Command [-Expression] <ScriptBlock> [-InputObject <PSObject>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Measure-Object`, [
@@ -6684,6 +7057,8 @@ It is recommended that you use "Measure-Object" in the pipeline if you want to m
     ], `Calculates the numeric properties of objects, and the characters, words, and lines in string objects, such as files of text.`, `Measure-Object [[-Property] <PSPropertyExpression[]>] [-Average] [-InputObject <PSObject>] [-Maximum] [-Minimum] [-StandardDeviation] [-Sum] [-AllStats] [<CommonParameters>]
 
 Measure-Object [[-Property] <PSPropertyExpression[]>] [-Character] [-IgnoreWhiteSpace] [-InputObject <PSObject>] [-Line] [-Word] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Merge-CIPolicy`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Mount-AppxVolume`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -6782,11 +7157,21 @@ Local is the default. For more information, see about_Scopes.`, `String`),
         new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
     ], `Creates a new alias.`, `New-Alias [-Name] <String> [-Value] <String> [-Description <String>] [-Force] [-Option {None | ReadOnly | Constant | Private | AllScope | Unspecified}] [-PassThru] [-Scope <String>] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`New-AppLockerPolicy`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`New-CertificateNotificationTask`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`New-CimInstance`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`New-CimSession`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`New-CimSessionOption`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`New-CIPolicy`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`New-CIPolicyRule`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`New-DtcDiagnosticTransaction`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`New-Event`, [
         new Parameter(`EventArguments`, `Specifies an object that contains options for the event.`, `PSObject[]`),
@@ -6848,11 +7233,11 @@ In a "Certificate" drive, these are the values you can specify:
 
 
 For more information see about_Providers (../Microsoft.PowerShell.Core/About/about_Providers.md).`, `String`),
-        new Parameter(`Name`, `Specifies the name of the new item.
+        new Parameter(`Name`, `Specifies the name of the new item. You can specify the name of the new item in the Name or Path parameter value, and you can specify the path of the new item in Name or Path value. Items names passed using the Name parameter are created relative to the value of the Path parameter.`, `String`),
+        new Parameter(`Path`, `Specifies the path of the location of the new item. The default is the current location when Path is omitted. You can specify the name of the new item in Name , or include it in Path . Items names passed using the Name parameter are created relative to the value of the Path parameter.
 
 
-You can specify the name of the new item in the Name or Path parameter value, and you can specify the path of the new item in Name or Path value.`, `String`),
-        new Parameter(`Path`, `Specifies the path of the location of the new item. Wildcard characters are permitted. You can specify the name of the new item in Name , or include it in Path .`, `String[]`),
+For this cmdlet, the Path parameter works like the LiteralPath parameter of other cmdlets. Wildcard characters are not interpreted. All characters are passed to the location's provider. The provider may not support all characters. For example, you cannot create a filename that contains an asterisk ("*") character.`, `String[]`),
         new Parameter(`Value`, `Specifies the value of the new item. You can also pipe a value to "New-Item".`, `Object`),
         new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
         new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
@@ -6875,13 +7260,15 @@ For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/Abou
         new Parameter(`PropertyType`, `Specifies the type of property that this cmdlet adds. The acceptable values for this parameter are:
 
 
-- String :   Specifies a null-terminated string.   Equivalent to REG_SZ . - ExpandString :   Specifies a null-terminated string that contains unexpanded references to environment variables that are expanded when the value is retrieved.   Equivalent to REG_EXPAND_SZ . - Binary :   Specifies binary data in any form.   Equivalent to REG_BINARY . - DWord :   Specifies a 32-bit binary number.   Equivalent to REG_DWORD . - MultiString :   Specifies an array of null-terminated strings terminated by two null characters.   Equivalent to REG_MULTI_SZ . - Qword :   Specifies a 64-bit binary number.   Equivalent to REG_QWORD . - Unknown :   Indicates an unsupported registry data type, such as REG_RESOURCE_LIST .`, `String`),
+- String : Specifies a null-terminated string. Equivalent to REG_SZ . - ExpandString : Specifies a null-terminated string that contains unexpanded references to   environment variables that are expanded when the value is retrieved. Equivalent to REG_EXPAND_SZ . - Binary : Specifies binary data in any form. Equivalent to REG_BINARY . - DWord : Specifies a 32-bit binary number. Equivalent to REG_DWORD . - MultiString : Specifies an array of null-terminated strings terminated by two null characters.   Equivalent to REG_MULTI_SZ . - Qword : Specifies a 64-bit binary number. Equivalent to REG_QWORD . - Unknown : Indicates an unsupported registry data type, such as REG_RESOURCE_LIST .`, `String`),
         new Parameter(`Value`, `Specifies the property value. If the property is a registry entry, this parameter specifies the value of the entry.`, `Object`),
         new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
         new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
     ], `Creates a new property for an item and sets its value.`, `New-ItemProperty [-Name] <String> [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] -LiteralPath <String[]> [-PropertyType <String>] [-Value <Object>] [-Confirm] [-WhatIf] [<CommonParameters>]
 
 New-ItemProperty [-Path] <String[]> [-Name] <String> [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] [-PropertyType <String>] [-Value <Object>] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`New-JobTrigger`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`New-LocalGroup`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -6918,7 +7305,7 @@ If you omit this parameter, "New-ModuleManifest" creates an AliasesToExport key 
 
 
 If you omit this parameter, "New-ModuleManifest" creates an Author key with the name of the current user.`, `String`),
-        new Parameter(`ClrVersion`, `Specifies the minimum version of the Common Language Runtime (CLR) of the Microsoft .NET Framework that the module requires.`, `Version`),
+        new Parameter(`CLRVersion`, `Specifies the minimum version of the Common Language Runtime (CLR) of the Microsoft .NET Framework that the module requires.`, `Version`),
         new Parameter(`CmdletsToExport`, `Specifies the cmdlets that the module exports. Wildcards are permitted.
 
 
@@ -6930,15 +7317,22 @@ If you omit this parameter, "New-ModuleManifest" creates a CmdletsToExport key w
 
 
 If you omit this parameter, "New-ModuleManifest" creates a CompanyName key with a value of "Unknown".`, `String`),
-        new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
         new Parameter(`CompatiblePSEditions`, `Specifies the module's compatible PSEditions. For information about PSEdition, see Modules with compatible PowerShell Editions (/powershell/scripting/gallery/concepts/module-psedition-support).`, `String[]`),
         new Parameter(`Copyright`, `Specifies a copyright statement for the module.
 
 
 If you omit this parameter, "New-ModuleManifest" creates a Copyright key with a value of "(c) <year> <username>. All rights reserved." where "<year>" is the current year and "<username>" is the value of the Author key.`, `String`),
+        new Parameter(`DefaultCommandPrefix`, `Specifies a prefix that is prepended to the nouns of all commands in the module when they're imported into a session. Enter a prefix string. Prefixes prevent command name conflicts in a user's session.
+
+
+Module users can override this prefix by specifying the Prefix parameter of the "Import-Module" cmdlet.
+
+
+This parameter was introduced in PowerShell 3.0.`, `String`),
         new Parameter(`Description`, `Describes the contents of the module.`, `String`),
         new Parameter(`DotNetFrameworkVersion`, `Specifies the minimum version of the Microsoft .NET Framework that the module requires.`, `Version`),
         new Parameter(`DscResourcesToExport`, `Specifies the Desired State Configuration (DSC) resources that the module exports. Wildcards are permitted.`, `String[]`),
+        new Parameter(`ExternalModuleDependencies`, `A list of external modules that this module is depends on.`, `String[]`),
         new Parameter(`FileList`, `Specifies all items that are included in the module.
 
 
@@ -7014,6 +7408,7 @@ The manifest should be located in the module's directory, and the manifest file 
 To find the name of a host program, in the program, type "$Host.Name".`, `String`),
         new Parameter(`PowerShellHostVersion`, `Specifies the minimum version of the PowerShell host program that works with the module. Enter a version number, such as 1.1.`, `Version`),
         new Parameter(`PowerShellVersion`, `Specifies the minimum version of PowerShell that works with this module. For example, you can enter 1.0, 2.0, or 3.0 as the parameter's value.`, `Version`),
+        new Parameter(`Prerelease`, `Prerelease string of this module. Adding a Prerelease string identifies the module as a prerelease version. When the module is published to the PowerShell Gallery, this data is used to identify prerelease packages. To acquire prerelease packages from the Gallery, you must use the AllowPrerelease parameter with the PowerShellGet commands "Find-Module", "Install-Module", "Update-Module", and "Save-Module".`, `String`),
         new Parameter(`PrivateData`, `Specifies data that is passed to the module when it's imported.`, `Object`),
         new Parameter(`ProcessorArchitecture`, `Specifies the processor architecture that the module requires. Valid values are x86, AMD64, IA64, MSIL, and None (unknown or unspecified).`, `ProcessorArchitecture`),
         new Parameter(`ProjectUri`, `Specifies the URL of a web page about this project.`, `Uri`),
@@ -7029,6 +7424,17 @@ Enter each module name as a string or as a hash table with ModuleName and Module
 
 
 In PowerShell 2.0, "Import-Module" doesn't import required modules automatically. It just verifies that the required modules are in the global session state.`, `Object[]`),
+        new Parameter(`RequireLicenseAcceptance`, `Flag to indicate whether the module requires explicit user acceptance for install, update, orsave.`, `SwitchParameter`),
+        new Parameter(`RootModule`, `Specifies the primary or root file of the module. Enter the file name of a script (".ps1"), a script module (".psm1"), a module manifest(".psd1"), an assembly (".dll"), a cmdlet definition XML file (".cdxml"), or a workflow (".xaml"). When the module is imported, the members that are exported from the root module file are imported into the caller's session state.
+
+
+If a module has a manifest file and no root file was designated in the RootModule key, the manifest becomes the primary file for the module, and the module becomes a manifest module (ModuleType = Manifest).
+
+
+To export members from ".psm1" or ".dll" files in a module that has a manifest, the names of those files must be specified in the values of the RootModule or NestedModules keys in the manifest. Otherwise, their members aren't exported.
+
+
+> [!NOTE] > In PowerShell 2.0, this key was called ModuleToProcess . You can use the RootModule > parameter name or its ModuleToProcess alias.`, `String`),
         new Parameter(`ScriptsToProcess`, `Specifies script (".ps1") files that run in the caller's session state when the module is imported. You can use these scripts to prepare an environment, just as you might use a login script.
 
 
@@ -7045,25 +7451,9 @@ You can use this parameter to restrict the variables that are exported by the mo
 
 
 If you omit this parameter, "New-ModuleManifest" creates a VariablesToExport key with a value of "*" (all), meaning that all variables defined in the module are exported by the manifest.`, `String[]`),
-        new Parameter(`DefaultCommandPrefix`, `Specifies a prefix that is prepended to the nouns of all commands in the module when they're imported into a session. Enter a prefix string. Prefixes prevent command name conflicts in a user's session.
-
-
-Module users can override this prefix by specifying the Prefix parameter of the "Import-Module" cmdlet.
-
-
-This parameter was introduced in PowerShell 3.0.`, `String`),
-        new Parameter(`RootModule`, `Specifies the primary or root file of the module. Enter the file name of a script (".ps1"), a script module (".psm1"), a module manifest(".psd1"), an assembly (".dll"), a cmdlet definition XML file (".cdxml"), or a workflow (".xaml"). When the module is imported, the members that are exported from the root module file are imported into the caller's session state.
-
-
-If a module has a manifest file and no root file was designated in the RootModule key, the manifest becomes the primary file for the module, and the module becomes a manifest module (ModuleType = Manifest).
-
-
-To export members from ".psm1" or ".dll" files in a module that has a manifest, the names of those files must be specified in the values of the RootModule or NestedModules keys in the manifest. Otherwise, their members aren't exported.
-
-
-> [!NOTE] > In PowerShell 2.0, this key was called ModuleToProcess . You can use the RootModule > parameter name or its ModuleToProcess alias.`, `String`),
+        new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
         new Parameter(`WhatIf`, `Shows what would happen if "New-ModuleManifest" runs. The cmdlet isn't run.`, `SwitchParameter`),
-    ], `Creates a new module manifest.`, `New-ModuleManifest [-Path] <String> [-AliasesToExport <String[]>] [-Author <String>] [-ClrVersion <Version>] [-CmdletsToExport <String[]>] [-CompanyName <String>] [-Confirm] [-CompatiblePSEditions {Desktop | Core}] [-Copyright <String>] [-Description <String>] [-DotNetFrameworkVersion <Version>] [-DscResourcesToExport <String[]>] [-FileList <String[]>] [-FormatsToProcess <String[]>] [-FunctionsToExport <String[]>] [-Guid <Guid>] [-HelpInfoUri <String>] [-IconUri <Uri>] [-LicenseUri <Uri>] [-ModuleList <Object[]>] [-ModuleVersion <Version>] [-NestedModules <Object[]>] [-PassThru] [-PowerShellHostName <String>] [-PowerShellHostVersion <Version>] [-PowerShellVersion <Version>] [-PrivateData <Object>] [-ProcessorArchitecture {None | MSIL | X86 | IA64 | Amd64 | Arm}] [-ProjectUri <Uri>] [-ReleaseNotes <String>] [-RequiredAssemblies <String[]>] [-RequiredModules <Object[]>] [-ScriptsToProcess <String[]>] [-Tags <String[]>] [-TypesToProcess <String[]>] [-VariablesToExport <String[]>] [-DefaultCommandPrefix <String>] [-RootModule <String>] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    ], `Creates a new module manifest.`, `New-ModuleManifest [-Path] <String> [-AliasesToExport <String[]>] [-Author <String>] [-CLRVersion <Version>] [-CmdletsToExport <String[]>] [-CompanyName <String>] [-CompatiblePSEditions {Desktop | Core}] [-Copyright <String>] [-DefaultCommandPrefix <String>] [-Description <String>] [-DotNetFrameworkVersion <Version>] [-DscResourcesToExport <String[]>] [-ExternalModuleDependencies <String[]>] [-FileList <String[]>] [-FormatsToProcess <String[]>] [-FunctionsToExport <String[]>] [-Guid <Guid>] [-HelpInfoUri <String>] [-IconUri <Uri>] [-LicenseUri <Uri>] [-ModuleList <Object[]>] [-ModuleVersion <Version>] [-NestedModules <Object[]>] [-PassThru] [-PowerShellHostName <String>] [-PowerShellHostVersion <Version>] [-PowerShellVersion <Version>] [-Prerelease <String>] [-PrivateData <Object>] [-ProcessorArchitecture {None | MSIL | X86 | IA64 | Amd64 | Arm}] [-ProjectUri <Uri>] [-ReleaseNotes <String>] [-RequiredAssemblies <String[]>] [-RequiredModules <Object[]>] [-RequireLicenseAcceptance] [-RootModule <String>] [-ScriptsToProcess <String[]>] [-Tags <String[]>] [-TypesToProcess <String[]>] [-VariablesToExport <String[]>] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`New-NetIPsecAuthProposal`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -7092,6 +7482,10 @@ If the new object is derived from the PSObject class, and you specify a property
     ], `Creates an instance of a Microsoft .NET Framework or COM object.`, `New-Object [-TypeName] <String> [[-ArgumentList] <Object[]>] [-Property <IDictionary>] [<CommonParameters>]
 
 New-Object [-ComObject] <String> [-Property <IDictionary>] [-Strict] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`New-PmemDisk`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`New-ProvisioningRepro`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`New-PSDrive`, [
         new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
@@ -7276,11 +7670,11 @@ When any Visible parameter is included in the session configuration file, PowerS
 When you use the ConnectionURI parameter, the remote destination can return an instruction to redirect to a different URI. By default, PowerShell does not redirect connections, but you can use this parameter to enable it to redirect the connection.
 
 
-You can also limit the number of times the connection is redirected by changing the MaximumConnectionRedirectionCount session option value. Use the MaximumRedirection parameter of the New-PSSessionOption cmdlet or set the MaximumConnectionRedirectionCount property of the $PSSessionOption preference variable. The default value is 5.`, `SwitchParameter`),
+You can also limit the number of times the connection is redirected by changing the MaximumConnectionRedirectionCount session option value. Use the MaximumRedirection parameter of the "New-PSSessionOption" cmdlet or set the MaximumConnectionRedirectionCount property of the $PSSessionOption preference variable. The default value is 5.`, `SwitchParameter`),
         new Parameter(`ApplicationName`, `Specifies the application name segment of the connection URI. Use this parameter to specify the application name when you are not using the ConnectionURI parameter in the command.
 
 
-The default value is the value of the $PSSessionApplicationName preference variable on the local computer. If this preference variable is not defined, the default value is WSMAN. This value is appropriate for most uses. For more information, see about_Preference_Variables (About/about_Preference_Variables.md).
+The default value is the value of the "$PSSessionApplicationName" preference variable on the local computer. If this preference variable is not defined, the default value is WSMAN. This value is appropriate for most uses. For more information, see about_Preference_Variables (About/about_Preference_Variables.md).
 
 
 The WinRM service uses the application name to select a listener to service the connection request. The value of this parameter should match the value of the URLPrefix property of a listener on the remote computer.`, `String`),
@@ -7313,43 +7707,40 @@ The WinRM service uses the application name to select a listener to service the 
 The default value is Default.
 
 
-For more information about the values of this parameter, see AuthenticationMechanism Enumeration (https://msdn.microsoft.com/library/system.management.automation.runspaces.authenticationmechanism)in the MSDN library.
+For more information about the values of this parameter, see AuthenticationMechanism Enumeration (/dotnet/api/system.management.automation.runspaces.authenticationmechanism).
 
-Caution: Credential Security Support Provider (CredSSP) authentication, in which the user credentials are passed to a remote computer to be authenticated, is designed for commands that require authentication on more than one resource, such as accessing a remote network share. This mechanism increases the security risk of the remote operation. If the remote computer is compromised, the credentials that are passed to it can be used to control the network session.`, `AuthenticationMechanism`),
+> [!CAUTION] > Credential Security Support Provider (CredSSP) authentication, in which the user credentials are > passed to a remote computer to be authenticated, is designed for commands that require > authentication on more than one resource, such as accessing a remote network share. This mechanism > increases the security risk of the remote operation. If the remote computer is compromised, the > credentials that are passed to it can be used to control the network session.`, `AuthenticationMechanism`),
         new Parameter(`CertificateThumbprint`, `Specifies the digital public key certificate (X509) of a user account that has permission to perform this action. Enter the certificate thumbprint of the certificate.
 
 
 Certificates are used in client certificate-based authentication. They can be mapped only to local user accounts; they do not work with domain accounts.
 
 
-To get a certificate, use the Get-Item or Get-ChildItem command in the PowerShell Cert: drive.`, `String`),
-        new Parameter(`ComputerName`, `Specifies an array of names of computers. This cmdlet creates a persistent connection ( PSSession ) to the specified computer. If you enter multiple computer names, New-PSSession creates multiple PSSession objects, one for each computer. The default is the local computer.
+To get a certificate, use the "Get-Item" or "Get-ChildItem" command in the PowerShell Cert: drive.`, `String`),
+        new Parameter(`ComputerName`, `Specifies an array of names of computers. This cmdlet creates a persistent connection ( PSSession ) to the specified computer. If you enter multiple computer names, "New-PSSession" creates multiple PSSession objects, one for each computer. The default is the local computer.
 
 
-Type the NetBIOS name, an IP address, or a fully qualified domain name of one or more remote computers. To specify the local computer, type the computer name, localhost, or a dot (.). When the computer is in a different domain than the user, the fully qualified domain name is required. You can also pipe a computer name, in quotation marks, to New-PSSession .
+Type the NetBIOS name, an IP address, or a fully qualified domain name of one or more remote computers. To specify the local computer, type the computer name, localhost, or a dot (.). When the computer is in a different domain than the user, the fully qualified domain name is required. You can also pipe a computer name, in quotation marks, to "New-PSSession".
 
 
 To use an IP address in the value of the ComputerName parameter, the command must include the Credential parameter. Also, the computer must be configured for HTTPS transport or the IP address of the remote computer must be included in the WinRM TrustedHosts list on the local computer. For instructions for adding a computer name to the TrustedHosts list, see "How to Add a Computer to the Trusted Host List" in about_Remote_Troubleshooting (about/about_Remote_Troubleshooting.md).
 
 
-To include the local computer in the value of the ComputerName parameter, start PowerShell by using the Run as administrator option.`, `String[]`),
+To include the local computer in the value of the ComputerName parameter, start Windows PowerShell by using the Run as administrator option.`, `String[]`),
         new Parameter(`ConfigurationName`, `Specifies the session configuration that is used for the new PSSession .
 
 
-Enter a configuration name or the fully qualified resource URI for a session configuration. If you specify only the configuration name, the following schema URI is prepended: "http://schemas.microsoft.com/PowerShell".
-
-
-When used with SSH, this specifies the subsystem to use on the target as defined in sshd_config. The default value for SSH is the "powershell" subsystem.
+Enter a configuration name or the fully qualified resource URI for a session configuration. If you specify only the configuration name, the following schema URI is prepended: "https://schemas.microsoft.com/PowerShell".
 
 
 The session configuration for a session is located on the remote computer. If the specified session configuration does not exist on the remote computer, the command fails.
 
 
-The default value is the value of the $PSSessionConfigurationName preference variable on the local computer. If this preference variable is not set, the default is Microsoft.PowerShell. For more information, see about_Preference_Variables (About/about_Preference_Variables.md).`, `String`),
+The default value is the value of the "$PSSessionConfigurationName" preference variable on the local computer. If this preference variable is not set, the default is Microsoft.PowerShell. For more information, see about_Preference_Variables (About/about_Preference_Variables.md).`, `String`),
         new Parameter(`ConnectionUri`, `Specifies a URI that defines the connection endpoint for the session. The URI must be fully qualified. The format of this string is as follows:
 
 
-<Transport>://<ComputerName>:<Port>/<ApplicationName>
+"<Transport>://<ComputerName>:<Port>/<ApplicationName>"
 
 
 The default value is as follows:
@@ -7365,7 +7756,7 @@ Valid values for the Transport segment of the URI are HTTP and HTTPS. If you spe
 
 
 If the destination computer redirects the connection to a different URI, PowerShell prevents the redirection unless you use the AllowRedirection parameter in the command.`, `Uri[]`),
-        new Parameter(`ContainerId`, `Specifies an array of IDs of containers. This cmdlet starts an interactive session with each of the specified containers. To see the containers that are available to you, use the Get-Container cmdlet.`, `String[]`),
+        new Parameter(`ContainerId`, `Specifies an array of IDs of containers. This cmdlet starts an interactive session with each of the specified containers. Use the "docker ps" command to get a list of container IDs. For more information, see the help for the docker ps (https://docs.docker.com/engine/reference/commandline/ps/)command.`, `String[]`),
         new Parameter(`Credential`, `Specifies a user account that has permission to do this action. The default is the current user.
 
 
@@ -7391,10 +7782,10 @@ The EnableNetworkAccess parameter is effective only in loopback sessions. If you
 You can also enable remote access in a loopback session by using the CredSSP value of the Authentication parameter, which delegates the session credentials to other computers.
 
 
-To protect the computer from malicious access, disconnected loopback sessions that have interactive tokens, which are those created by using the EnableNetworkAccess parameter, can be reconnected only from the computer on which the session was created. Disconnected sessions that use CredSSP authentication can be reconnected from other computers. For more information, see Disconnect-PSSession.
+To protect the computer from malicious access, disconnected loopback sessions that have interactive tokens, which are those created by using the EnableNetworkAccess parameter, can be reconnected only from the computer on which the session was created. Disconnected sessions that use CredSSP authentication can be reconnected from other computers. For more information, see "Disconnect-PSSession".
 
 
-This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
+This parameter was introduced in PowerShell 3.0.`, `SwitchParameter`),
         new Parameter(`HostName`, `Specifies an array of computer names for a Secure Shell (SSH) based connection. This is similar to the ComputerName parameter except that the connection to the remote computer is made using SSH rather than Windows WinRM.
 
 
@@ -7409,41 +7800,35 @@ This parameter was introduced in PowerShell 6.0.`, `String`),
         new Parameter(`Name`, `Specifies a friendly name for the PSSession .
 
 
-You can use the name to refer to the PSSession when you use other cmdlets, such as Get-PSSession and Enter-PSSession. The name is not required to be unique to the computer or the current session.`, `String[]`),
-        new Parameter(`Port`, `Specifies the network port on the remote computer that is used for this connection.
-
-
-In PowerShell 6.0 this parameter was included in the HostName and SSHConnection parameter sets which support Secure Shell (SSH) connections. WinRM (ComputerName parameter set) To connect to a remote computer, the remote computer must be listening on the port that the connection uses. The default ports are 5985, which is the WinRM port for HTTP, and 5986, which is the WinRM port for HTTPS.
+You can use the name to refer to the PSSession when you use other cmdlets, such as "Get-PSSession" and "Enter-PSSession". The name is not required to be unique to the computer or the current session.`, `String[]`),
+        new Parameter(`Port`, `Specifies the network port on the remote computer that is used for this connection. To connect to a remote computer, the remote computer must be listening on the port that the connection uses. The default ports are 5985, which is the WinRM port for HTTP, and 5986, which is the WinRM port for HTTPS.
 
 
 Before using another port, you must configure the WinRM listener on the remote computer to listen at that port. Use the following commands to configure the listener:
 
 
-1. "winrm delete winrm/config/listener?Address=*+Transport=HTTP"
+1. "winrm delete winrm/config/listener?Address=*+Transport=HTTP" 2. "winrm create winrm/config/listener?Address=*+Transport=HTTP @{Port="<port-number>"}"
 
 
-2. "winrm create winrm/config/listener?Address=*+Transport=HTTP @{Port="<port-number>"}"
-
-
-Do not use the Port parameter unless you must. The port setting in the command applies to all computers or sessions on which the command runs. An alternate port setting might prevent the command from running on all computers. SSH (HostName and SSHConnection parameter sets) To connect to a remote computer, the remote computer must be configured with the SSH service (SSHD) and must be listening on the port that the connection uses. The default port for SSH is 22.`, `Int32`),
+Do not use the Port parameter unless you must. The port setting in the command applies to all computers or sessions on which the command runs. An alternate port setting might prevent the command from running on all computers.`, `Int32`),
         new Parameter(`RunAsAdministrator`, `Indicates that the PSSession runs as administrator.`, `SwitchParameter`),
         new Parameter(`Session`, `Specifies an array of PSSession objects that this cmdlet uses as a model for the new PSSession . This parameter creates new PSSession objects that have the same properties as the specified PSSession objects.
 
 
-Enter a variable that contains the PSSession objects or a command that creates or gets the PSSession objects, such as a New-PSSession or Get-PSSession command.
+Enter a variable that contains the PSSession objects or a command that creates or gets the PSSession objects, such as a "New-PSSession" or "Get-PSSession" command.
 
 
 The resulting PSSession objects have the same computer name, application name, connection URI, port, configuration name, throttle limit, and Secure Sockets Layer (SSL) value as the originals, but they have a different display name, ID, and instance ID (GUID).`, `PSSession[]`),
-        new Parameter(`SessionOption`, `Specifies advanced options for the session. Enter a SessionOption object, such as one that you create by using the New-PSSessionOption cmdlet, or a hash table in which the keys are session option names and the values are session option values.
+        new Parameter(`SessionOption`, `Specifies advanced options for the session. Enter a SessionOption object, such as one that you create by using the "New-PSSessionOption" cmdlet, or a hash table in which the keys are session option names and the values are session option values.
 
 
-The default values for the options are determined by the value of the $PSSessionOption preference variable, if it is set. Otherwise, the default values are established by options set in the session configuration.
+The default values for the options are determined by the value of the "$PSSessionOption" preference variable, if it is set. Otherwise, the default values are established by options set in the session configuration.
 
 
-The session option values take precedence over default values for sessions set in the $PSSessionOption preference variable and in the session configuration. However, they do not take precedence over maximum values, quotas or limits set in the session configuration.
+The session option values take precedence over default values for sessions set in the "$PSSessionOption" preference variable and in the session configuration. However, they do not take precedence over maximum values, quotas or limits set in the session configuration.
 
 
-For a description of the session options that includes the default values, see New-PSSessionOption. For information about the $PSSessionOption preference variable, see about_Preference_Variables (About/about_Preference_Variables.md). For more information about session configurations, see about_Session_Configurations (About/about_Session_Configurations.md).`, `PSSessionOption`),
+For a description of the session options that includes the default values, see "New-PSSessionOption". For information about the "$PSSessionOption" preference variable, see about_Preference_Variables (About/about_Preference_Variables.md). For more information about session configurations, see about_Session_Configurations (About/about_Session_Configurations.md).`, `PSSessionOption`),
         new Parameter(`SSHConnection`, `This parameter takes an array of hashtables where each hashtable contains one or more connection parameters needed to establish a Secure Shell (SSH) connection (HostName, Port, UserName, KeyFilePath).
 
 
@@ -7489,7 +7874,7 @@ If you use this parameter, but SSL is not available on the port that is used for
 
 
 "Get-VM | Select-Object -Property Name, ID"`, `Guid[]`),
-        new Parameter(`VMName`, `Specifies an array of names of virtual machines. This cmdlet starts an interactive session with each of the specified virtual machines. To see the virtual machines that are available to you, use the Get-VM cmdlet.`, `String[]`),
+        new Parameter(`VMName`, `Specifies an array of names of virtual machines. This cmdlet starts an interactive session with each of the specified virtual machines. To see the virtual machines that are available to you, use the "Get-VM" cmdlet.`, `String[]`),
         new Parameter(`HostName`, `Specifies an array of computer names for a Secure Shell (SSH) based connection. This is similar to the ComputerName parameter except that the connection to the remote computer is made using SSH rather than Windows WinRM. This parameter supports specifying the user name and/or port as part of the host name parameter value using the form "user@hostname:port". The user name and/or port specified as part of the host name takes precedence over the "-UserName" and "-Port" parameters, if specified. This allows passing multiple computer names to this parameter where some have specific user names and/or ports, while others use the user name and/or port from the "-UserName" and "-Port" parameters.
 
 
@@ -7542,9 +7927,9 @@ If this parameter is not used, the default is the 'powershell' subsystem.`, `Str
 
 New-PSSession [[-ComputerName] <String[]>] [-ApplicationName <String>] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-CertificateThumbprint <String>] [-ConfigurationName <String>] [-Credential <PSCredential>] [-EnableNetworkAccess] [-Name <String[]>] [-Port <Int32>] [-SessionOption <PSSessionOption>] [-ThrottleLimit <Int32>] [-UseSSL] [<CommonParameters>]
 
-New-PSSession [-ConfigurationName <String>] [-Credential <PSCredential>] [-Name <String[]>] [-ThrottleLimit <Int32>] -VMName <String[]> [<CommonParameters>]
-
 New-PSSession [-VMId] <Guid[]> [-ConfigurationName <String>] [-Credential <PSCredential>] [-Name <String[]>] [-ThrottleLimit <Int32>] [<CommonParameters>]
+
+New-PSSession [-ConfigurationName <String>] [-Credential <PSCredential>] [-Name <String[]>] [-ThrottleLimit <Int32>] -VMName <String[]> [<CommonParameters>]
 
 New-PSSession [-ConfigurationName <String>] -ContainerId <String[]> [-Name <String[]>] [-RunAsAdministrator] [-ThrottleLimit <Int32>] [<CommonParameters>]
 
@@ -7941,6 +8326,12 @@ The default value of the OutputBufferingMode property of sessions is Block.`, `O
 Other session configurations have per-process time-out values. For example, the Microsoft.PowerShell.Workflow session configuration has a per-process time-out value of 28800 seconds (8 hours).`, `Int32`),
     ], `Creates an object that contains advanced options for a session configuration.`, `New-PSTransportOption [-IdleTimeoutSec <Int32>] [-MaxConcurrentCommandsPerSession <Int32>] [-MaxConcurrentUsers <Int32>] [-MaxIdleTimeoutSec <Int32>] [-MaxMemoryPerSessionMB <Int32>] [-MaxProcessesPerSession <Int32>] [-MaxSessions <Int32>] [-MaxSessionsPerUser <Int32>] [-OutputBufferingMode {None | Drop | Block}] [-ProcessIdleTimeoutSec <Int32>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`New-PSWorkflowExecutionOption`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`New-ScheduledJobOption`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`New-SelfSignedCertificate`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`New-Service`, [
         new Parameter(`BinaryPathName`, `Specifies the path of the executable file for the service. This parameter is required.`, `String`),
         new Parameter(`Credential`, `Specifies the account used by the service as the Service Logon Account (/windows/desktop/ad/about-service-logon-accounts).
@@ -7964,9 +8355,10 @@ Credentials are stored in a PSCredential (/dotnet/api/system.management.automati
 
 
 The default value is Automatic .`, `ServiceStartupType`),
+        new Parameter(`SecurityDescriptorSddl`, `Specifies the SecurityDescriptor for the service in Sddl format.`, `String`),
         new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
         new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
-    ], `Creates a new Windows service.`, `New-Service [-Name] <String> [-BinaryPathName] <String> [-Credential <PSCredential>] [-DependsOn <String[]>] [-Description <String>] [-DisplayName <String>] [-StartupType {Automatic | Manual | Disabled | AutomaticDelayedStart | InvalidValue}] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    ], `Creates a new Windows service.`, `New-Service [-Name] <String> [-BinaryPathName] <String> [-Credential <PSCredential>] [-DependsOn <String[]>] [-Description <String>] [-DisplayName <String>] [-StartupType {Automatic | Manual | Disabled | AutomaticDelayedStart | InvalidValue}] [-SecurityDescriptorSddl <String>] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`New-TemporaryFile`, [
         new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
@@ -7986,6 +8378,8 @@ You can use Start or its alias, LastWriteTime . The LastWriteTime alias lets you
     ], `Creates a TimeSpan object.`, `New-TimeSpan [-Days <Int32>] [-Hours <Int32>] [-Minutes <Int32>] [-Seconds <Int32>] [<CommonParameters>]
 
 New-TimeSpan [[-Start] <DateTime>] [[-End] <DateTime>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`New-TlsSessionTicketKey`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`New-Variable`, [
         new Parameter(`Description`, `Specifies a description of the variable.`, `String`),
@@ -8063,12 +8457,45 @@ Beginning with PowerShell 6.2, the Encoding parameter also allows numeric IDs of
         new Parameter(`LiteralPath`, `Specifies the path to the output file. The LiteralPath parameter is used exactly as it is typed. Wildcard characters are not accepted. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences. For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String`),
         new Parameter(`NoClobber`, `NoClobber prevents an existing file from being overwritten and displays a message that the file already exists. By default, if a file exists in the specified path, "Out-File" overwrites the file without warning.`, `SwitchParameter`),
         new Parameter(`NoNewline`, `Specifies that the content written to the file does not end with a newline character. The string representations of the input objects are concatenated to form the output. No spaces or newlines are inserted between the output strings. No newline is added after the last output string.`, `SwitchParameter`),
-        new Parameter(`Width`, `Specifies the number of characters in each line of output. Any additional characters are truncated, not wrapped. If this parameter is not used, the width is determined by the characteristics of the host. The default for the PowerShell console is 80 characters.`, `Int`),
+        new Parameter(`Width`, `Specifies the number of characters in each line of output. Any additional characters are truncated, not wrapped. If this parameter is not used, the width is determined by the characteristics of the host. The default for the PowerShell console is 80 characters.`, `Int32`),
         new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
         new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
-    ], `Sends output to a file.`, `Out-File [-FilePath] <String> [[-Encoding] {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Append] [-Force] [-InputObject <PSObject>] [-NoClobber] [-NoNewline] [-Width <Int>] [-Confirm] [-WhatIf] [<CommonParameters>]
+    ], `Sends output to a file.`, `Out-File [-FilePath] <String> [[-Encoding] {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Append] [-Force] [-InputObject <PSObject>] [-NoClobber] [-NoNewline] [-Width <Int32>] [-Confirm] [-WhatIf] [<CommonParameters>]
 
-Out-File [[-Encoding] {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Append] [-Force] [-InputObject <PSObject>] -LiteralPath <String> [-NoClobber] [-NoNewline] [-Width <Int>] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+Out-File [[-Encoding] {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Append] [-Force] [-InputObject <PSObject>] -LiteralPath <String> [-NoClobber] [-NoNewline] [-Width <Int32>] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Out-GridView`, [
+        new Parameter(`InputObject`, `Specifies object that the cmdlet accepts as input for "Out-GridView".
+
+
+When you use the InputObject parameter to send a collection of objects to "Out-GridView", "Out-GridView" treats the collection as one collection object, and it displays one row that represents the collection. To display the each object in the collection, use a pipeline operator (|) to send objects to "Out-GridView".`, `PSObject`),
+        new Parameter(`OutputMode`, `Specifies the items that the interactive window sends down the pipeline as input to other commands. By default, this cmdlet does not generate any output. To send items from the interactive window down the pipeline, click to select the items and then click OK.
+
+
+The values of this parameter determine how many items you can send down the pipeline.
+
+
+- None.  No items. This is the default value.
+
+
+- Single. Zero items or one item. Use this value when the next command can take only one input
+
+
+object. - Multiple. Zero, one, or many items. Use this value when the next command can take multiple input   objects. This value is equivalent to the Passthru parameter.`, `OutputModeOption`),
+        new Parameter(`PassThru`, `Indicates that the cmdlet sends items from the interactive window down the pipeline as input to other commands. By default, this cmdlet does not generate any output. This parameter is equivalent to using the Multiple value of the OutputMode parameter.
+
+
+To send items from the interactive window down the pipeline, click to select the items and then click OK. Shift-click and Ctrl-click are supported.`, `SwitchParameter`),
+        new Parameter(`Title`, `Specifies the text that appears in the title bar of the "Out-GridView" window. By default, the title bar displays the command that invokes "Out-GridView".`, `String`),
+        new Parameter(`Wait`, `Indicates that the cmdlet suppresses the command prompt and prevents Windows PowerShell from closing until the "Out-GridView" window is closed. By default, the command prompt returns when the "Out-GridView" window opens.
+
+
+This feature lets you use the "Out-GridView" cmdlets in Windows shortcuts. When "Out-GridView" is used in a shortcut without the Wait parameter, the "Out-GridView" window appears only momentarily before PowerShell closes.`, `SwitchParameter`),
+    ], `Sends output to an interactive table in a separate window.`, `Out-GridView [-InputObject <PSObject>] [-OutputMode {None | Single | Multiple}] [-Title <String>] [<CommonParameters>]
+
+Out-GridView [-InputObject <PSObject>] [-PassThru] [-Title <String>] [<CommonParameters>]
+
+Out-GridView [-InputObject <PSObject>] [-Title <String>] [-Wait] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Out-Host`, [
         new Parameter(`InputObject`, `Specifies the objects that are written to the console. Enter a variable that contains the objects, or type a command or expression that gets the objects.`, `PSObject`),
@@ -8084,6 +8511,11 @@ Press the <kbd>Space</kbd> bar to display the next page of output or the <kbd>En
     new ConsoleCommand(`Out-Null`, [
         new Parameter(`InputObject`, `Specifies the object to be sent to NULL (removed from pipeline). Enter a variable that contains the objects, or type a command or expression that gets the objects.`, `PSObject`),
     ], `Hides the output instead of sending it down the pipeline or displaying it.`, `Out-Null [-InputObject <PSObject>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Out-Printer`, [
+        new Parameter(`InputObject`, `Specifies the objects to be sent to the printer. Enter a variable that contains the objects, or type a command or expression that gets the objects.`, `PSObject`),
+        new Parameter(`Name`, `Sends the output to the specified printer. The parameter name Name is optional.`, `String`),
+    ], `Sends output to a printer.`, `Out-Printer [[-Name] <String>] [-InputObject <PSObject>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Out-String`, [
         new Parameter(`InputObject`, `Specifies the objects to be written to a string. Enter a variable that contains the objects, or type a command or expression that gets the objects.`, `PSObject`),
@@ -8102,10 +8534,15 @@ Out-String [-InputObject <PSObject>] [-Stream] [-Width <Int32>] [<CommonParamete
         new Parameter(`StackName`, `Specifies the location stack from which the location is popped. Enter a location stack name.
 
 
-Without this parameter, Pop-Location pops a location from the current location stack. By default, the current location stack is the unnamed default location stack that PowerShell creates. To make a location stack the current location stack, use the StackName parameter of Set-Location . Pop-Location cannot pop a location from the unnamed default stack unless it is the current location stack.`, `String`),
+Without this parameter, "Pop-Location" pops a location from the current location stack. By default, the current location stack is the unnamed default location stack that PowerShell creates. To make a location stack the current location stack, use the StackName parameter of "Set-Location".
+
+
+"Pop-Location" cannot pop a location from the unnamed default stack unless it is the current location stack.`, `String`),
     ], `Changes the current location to the location most recently pushed onto the stack.`, `Pop-Location [-PassThru] [-StackName <String>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Protect-CmsMessage`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Publish-DscConfiguration`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Push-Location`, [
         new Parameter(`LiteralPath`, `Specifies the path to the new location. Unlike the Path parameter, the value of the LiteralPath parameter is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String`),
@@ -8129,6 +8566,8 @@ Push-Location [[-Path] <String>] [-PassThru] [-StackName <String>] [<CommonParam
 When you use this parameter, the output of the Read-Host cmdlet is a SecureString object ( System.Security.SecureString ).`, `SwitchParameter`),
         new Parameter(`Prompt`, `Specifies the text of the prompt. Type a string. If the string includes spaces, enclose it in quotation marks. PowerShell appends a colon (:) to the text that you enter.`, `Object`),
     ], `Reads a line of input from the console.`, `Read-Host [[-Prompt] <Object>] [-AsSecureString] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Receive-DtcDiagnosticTransaction`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Receive-Job`, [
         new Parameter(`AutoRemoveJob`, `Indicates that this cmdlet deletes the job after it returns the job results. If the job has more results, the job is still deleted, but "Receive-Job" displays a message.
@@ -8307,7 +8746,7 @@ Type the NetBIOS name, an IP address, or a fully qualified domain name (FQDN) of
 Enter a configuration name or the fully qualified resource URI for a session configuration. If you specify only the configuration name, the following schema URI is prepended:
 
 
-"http://schemas.microsoft.com/powershell".
+"https://schemas.microsoft.com/powershell".
 
 
 The configuration name of a session is stored in the ConfigurationName property of the session.
@@ -8415,9 +8854,9 @@ If you use this parameter and SSL isn't available on the port that's used for th
 
 Receive-PSSession [-ConnectionUri] <Uri> [-AllowRedirection] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-CertificateThumbprint <String>] [-ConfigurationName <String>] [-Credential <PSCredential>] -InstanceId <Guid> [-JobName <String>] [-OutTarget {Default | Host | Job}] [-SessionOption <PSSessionOption>] [-Confirm] [-WhatIf] [<CommonParameters>]
 
-Receive-PSSession [-ComputerName] <String> [-ApplicationName <String>] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-CertificateThumbprint <String>] [-ConfigurationName <String>] [-Credential <PSCredential>] -InstanceId <Guid> [-JobName <String>] [-OutTarget {Default | Host | Job}] [-Port <Int32>] [-SessionOption <PSSessionOption>] [-UseSSL] [-Confirm] [-WhatIf] [<CommonParameters>]
-
 Receive-PSSession [-ComputerName] <String> [-ApplicationName <String>] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-CertificateThumbprint <String>] [-ConfigurationName <String>] [-Credential <PSCredential>] [-JobName <String>] -Name <String> [-OutTarget {Default | Host | Job}] [-Port <Int32>] [-SessionOption <PSSessionOption>] [-UseSSL] [-Confirm] [-WhatIf] [<CommonParameters>]
+
+Receive-PSSession [-ComputerName] <String> [-ApplicationName <String>] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-CertificateThumbprint <String>] [-ConfigurationName <String>] [-Credential <PSCredential>] -InstanceId <Guid> [-JobName <String>] [-OutTarget {Default | Host | Job}] [-Port <Int32>] [-SessionOption <PSSessionOption>] [-UseSSL] [-Confirm] [-WhatIf] [<CommonParameters>]
 
 Receive-PSSession [-Id] <Int32> [-JobName <String>] [-OutTarget {Default | Host | Job}] [-Confirm] [-WhatIf] [<CommonParameters>]
 
@@ -8446,7 +8885,7 @@ The script block must accept the following parameters in the order specified bel
 When you specify the Native parameter, the script block must take the following parameters in the specified order. The names of the parameters aren't important because PowerShell passes in the values by position.
 
 
-- "$commandName" (Position 0) - This parameter is set to the name of the   command for which the script block is providing tab completion. - "$wordToComplete" (Position 1) - This parameter is set to value the user has   provided before they pressed <kbd>Tab</kbd>. Your script block should use this value   to determine tab completion values. - "$cursorPosition" (Position 2) - This parameter is set to the position of the cursor when the user   pressed <kbd>Tab</kbd>.
+- "$wordToComplete" (Position 0) - This parameter is set to value the user has provided before they   pressed <kbd>Tab</kbd>. Your script block should use this value to determine tab completion   values. - "$commandAst" (Position 1) - This parameter is set to the Abstract Syntax   Tree (AST) for the current input line. For more information, see Ast Class (/dotnet/api/system.management.automation.language.ast). - "$cursorPosition" (Position 2) - This parameter is set to the position of the cursor when the user   pressed <kbd>Tab</kbd>.
 
 
 You can also provide an ArgumentCompleter as a parameter attribute. For more information, see about_Functions_Advanced_Parameters (./About/about_Functions_Advanced_Parameters.md).`, `ScriptBlock`),
@@ -8460,18 +8899,12 @@ Register-ArgumentCompleter [-CommandName <String[]>] -ParameterName <String> -Sc
         new Parameter(`Action`, `Specifies commands to handle the events. The commands in the Action run when an event is raised, instead of sending the event to the event queue. Enclose the commands in braces ( { } ) to create a script block.
 
 
-The value of the Action parameter can include the $Event, $EventSubscriber, $Sender, $EventArgs, and $Args automatic variables, which provide information about the event to the Action script block. For more information, see about_Automatic_Variables (../Microsoft.PowerShell.Core/About/about_Automatic_Variables.md).
+The value of the Action parameter can include the "$Event", "$EventSubscriber", "$Sender", "$EventArgs", and "$Args" automatic variables, which provide information about the event to the Action script block. For more information, see about_Automatic_Variables (../Microsoft.PowerShell.Core/About/about_Automatic_Variables.md).
 
 
-When you specify an action, Register-EngineEvent returns an event job object that represents that action. You can use the Job cmdlets to manage the event job.`, `ScriptBlock`),
+When you specify an action, "Register-EngineEvent" returns an event job object that represents that action. You can use the Job cmdlets to manage the event job.`, `ScriptBlock`),
         new Parameter(`Forward`, `Indicates that the cmdlet sends events for this subscription to the session on the local computer. Use this parameter when you are registering for events on a remote computer or in a remote session.`, `SwitchParameter`),
-        new Parameter(`MaxTriggerCount`, `Specifies the max trigger count.
-
-
-The value of the Action parameter can include the $Event, $EventSubscriber, $Sender, $EventArgs, and $Args automatic variables, which provide information about the event to the Action script block. For more information, see about_Automatic_Variables (../Microsoft.PowerShell.Core/about/about_Automatic_Variables.md).
-
-
-When you specify an action, Register-EngineEvent returns an event job object that represents that action. You can use the Job cmdlets to manage the event job.`, `Int32`),
+        new Parameter(`MaxTriggerCount`, `Specifies the maximum number of times that the action will be executed for the event subscription.`, `Int32`),
         new Parameter(`MessageData`, `Specifies additional data associated with the event. The value of this parameter appears in the MessageData property of the event object.`, `PSObject`),
         new Parameter(`SourceIdentifier`, `Specifies the source identifier of the event to which you are subscribing. The source identifier must be unique in the current session. This parameter is required.
 
@@ -8479,11 +8912,11 @@ When you specify an action, Register-EngineEvent returns an event job object tha
 The value of this parameter appears in the value of the SourceIdentifier property of the subscriber object and of all event objects associated with this subscription.
 
 
-Supported EngineEvent values include PowerShell.Exiting, PowerShell.OnIdle, and PowerShell.OnScriptBlockInvoke.`, `String`),
+The value is specific to the source of the event. This can be an arbitrary value you created to use with the "New-Event" cmdlet. The PowerShell engine supports the EngineEvent values PowerShell.Exiting and PowerShell.OnIdle .`, `String`),
         new Parameter(`SupportEvent`, `Indicates that the cmdlet hides the event subscription. Add this parameter when the current subscription is part of a more complex event registration mechanism and it should not be discovered independently.
 
 
-To view or cancel a subscription that was created with the SupportEvent parameter, add the Force parameter to the Get-EventSubscriber or Unregister-Event cmdlets.`, `SwitchParameter`),
+To view or cancel a subscription that was created with the SupportEvent parameter, add the Force parameter to the "Get-EventSubscriber" or "Unregister-Event" cmdlets.`, `SwitchParameter`),
     ], `Subscribes to events that are generated by the PowerShell engine and by the New-Event cmdlet.`, `Register-EngineEvent [-SourceIdentifier] <String> [[-Action] <ScriptBlock>] [-Forward] [-MaxTriggerCount <Int32>] [-MessageData <PSObject>] [-SupportEvent] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Register-ObjectEvent`, [
@@ -8669,6 +9102,8 @@ Register-PSSessionConfiguration [-Name] <String> [-AssemblyName] <String> [-Conf
 
 Register-PSSessionConfiguration [-Name] <String> [-AccessMode {Disabled | Local | Remote}] [-Force] [-MaximumReceivedDataSizePerCommandMB <Double>] [-MaximumReceivedObjectSizeMB <Double>] [-NoServiceRestart] -Path <String> [-ProcessorArchitecture {x86 | amd64}] [-RunAsCredential <PSCredential>] [-SecurityDescriptorSddl <String>] [-ShowSecurityDescriptorUI] [-StartupScript <String>] [-ThreadOptions {Default | UseNewThread | ReuseThread | UseCurrentThread}] [-TransportOption <PSTransportOption>] [-UseSharedProcess] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Register-ScheduledJob`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Remove-Alias`, [
         new Parameter(`Force`, `Indicates that the cmdlet removes an alias, including aliases with the Option property set to ReadOnly . The Force parameter can't remove an alias with an Option property set to Constant .`, `SwitchParameter`),
         new Parameter(`Name`, `Specifies the name of the alias to remove.`, `String[]`),
@@ -8699,9 +9134,17 @@ scope and 1 is its parent)`, `String`),
     }),
     new ConsoleCommand(`Remove-AppxVolume`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Remove-BitsTransfer`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Remove-CertificateEnrollmentPolicyServer`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Remove-CertificateNotificationTask`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Remove-CimInstance`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Remove-CimSession`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Remove-CIPolicyRule`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Remove-Event`, [
         new Parameter(`EventIdentifier`, `Specifies the event identifier for which the cmdlet deletes. An EventIdentifier or SourceIdentifier parameter is required in every command.`, `Int32`),
@@ -8837,6 +9280,8 @@ Remove-Job [-InstanceId] <Guid[]> [-Confirm] [-Force] [-WhatIf] [<CommonParamete
 
 Remove-Job [-State] {AtBreakpoint | Blocked | Completed | Disconnected | Failed | NotStarted | Running | Stopped | Stopping | Suspended | Suspending} [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Remove-JobTrigger`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Remove-LocalGroup`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Remove-LocalGroupMember`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
@@ -8858,6 +9303,8 @@ The ReadOnly and ReadWrite values are stored in AccessMode property of a module.
 Remove-Module [-ModuleInfo] <PSModuleInfo[]> [-Force] [-Confirm] [-WhatIf] [<CommonParameters>]
 
 Remove-Module [-Name] <String[]> [-Force] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Remove-PmemDisk`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Remove-PSBreakpoint`, [
         new Parameter(`Breakpoint`, `Specifies the breakpoints to delete. Enter a variable that contains breakpoint objects or a command that gets breakpoint objects, such as a Get-PSBreakpoint command. You can also pipe breakpoint objects to Remove-PSBreakpoint .`, `Breakpoint[]`),
@@ -8895,7 +9342,7 @@ Remove-PSDrive [-Name] <String[]> [-Force] [-PSProvider <String[]>] [-Scope <Str
 
 
 Type the NetBIOS name, an IP address, or a fully qualified domain name of one or more remote computers. To specify the local computer, type the computer name, localhost, or a dot (.).`, `String[]`),
-        new Parameter(`ContainerId`, `Specifies an array of IDs of containers. This cmdlet starts an interactive session with each of the specified containers. To see the containers that are available to you, use the Get-Container cmdlet.`, `String[]`),
+        new Parameter(`ContainerId`, `Specifies an array of IDs of containers. This cmdlet removes sessions for each of the specified containers. Use the "docker ps" command to get a list of container IDs. For more information, see the help for the docker ps (https://docs.docker.com/engine/reference/commandline/ps/)command.`, `String[]`),
         new Parameter(`Id`, `Specifies an array of IDs of sessions. This cmdlet closes the PSSessions with the specified IDs. Type one or more IDs, separated by commas, or use the range operator (..) to specify a range of IDs.
 
 
@@ -8936,7 +9383,7 @@ Remove-PSSession -VMId <Guid[]> [-Confirm] [-WhatIf] [<CommonParameters>]
 Remove-PSSession -VMName <String[]> [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Remove-Service`, [
-        new Parameter(`InputObject`, `Specifies ServiceController objects that represent the services to stop. Enter a variable that contains the objects, or type a command or expression that gets the objects.`, `ServiceController`),
+        new Parameter(`InputObject`, `Specifies ServiceController objects that represent the services to remove. Enter a variable that contains the objects, or type a command or expression that gets the objects.`, `ServiceController`),
         new Parameter(`Name`, `Specifies the service names of the services to remove. Wildcard characters are permitted.`, `String`),
         new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
         new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
@@ -9205,6 +9652,10 @@ Restart-Service [-InputObject] <ServiceController[]> [-Exclude <String[]>] [-For
 
 Restart-Service [-Name] <String[]> [-Exclude <String[]>] [-Force] [-Include <String[]>] [-PassThru] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Resume-BitsTransfer`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Resume-ProvisioningSession`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Resume-Service`, [
         new Parameter(`DisplayName`, `Specifies the display names of the services to be resumed. Wildcard characters are permitted.`, `String[]`),
         new Parameter(`Exclude`, `Specifies services that this cmdlet omits. The value of this parameter qualifies the Name parameter. Enter a name element or pattern, such as s*. Wildcard characters are permitted.`, `String[]`),
@@ -9277,9 +9728,10 @@ By default, Save-Help gets help files in the UI culture set for Windows or its f
 
 
 This parameter is effective only when the web download uses NTLM, negotiate, or Kerberos-based authentication.`, `SwitchParameter`),
-    ], `Downloads and saves the newest help files to a file system directory.`, `Save-Help [-DestinationPath] <String[]> [[-Module] <PSModuleInfo[]>] [[-UICulture] <CultureInfo[]>] [-Credential <PSCredential>] [-Force] [-FullyQualifiedModule <ModuleSpecification[]>] [-UseDefaultCredentials] [<CommonParameters>]
+        new Parameter(`Scope`, `This paramater does nothing in this cmdlet.`, `UpdateHelpScope`),
+    ], `Downloads and saves the newest help files to a file system directory.`, `Save-Help [-DestinationPath] <String[]> [[-Module] <PSModuleInfo[]>] [[-UICulture] <CultureInfo[]>] [-Credential <PSCredential>] [-Force] [-FullyQualifiedModule <ModuleSpecification[]>] [-UseDefaultCredentials] [-Scope <UpdateHelpScope>] [<CommonParameters>]
 
-Save-Help [[-Module] <PSModuleInfo[]>] [[-UICulture] <CultureInfo[]>] [-Credential <PSCredential>] [-Force] [-FullyQualifiedModule <ModuleSpecification[]>] -LiteralPath <String[]> [-UseDefaultCredentials] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+Save-Help [[-Module] <PSModuleInfo[]>] [[-UICulture] <CultureInfo[]>] [-Credential <PSCredential>] [-Force] [-FullyQualifiedModule <ModuleSpecification[]>] -LiteralPath <String[]> [-UseDefaultCredentials] [-Scope <UpdateHelpScope>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Save-Package`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -9339,17 +9791,23 @@ This parameter is case-sensitive. As a result, strings that differ only in chara
 
 
 This parameter was introduced in Windows PowerShell 3.0.`, `SwitchParameter`),
+        new Parameter(`SkipIndex`, ``, `Int32[]`),
     ], `Selects objects or object properties.`, `Select-Object [[-Property] <Object[]>] [-ExcludeProperty <String[]>] [-ExpandProperty <String>] [-First <Int32>] [-InputObject <PSObject>] [-Last <Int32>] [-Skip <Int32>] [-Unique] [-Wait] [<CommonParameters>]
 
 Select-Object [[-Property] <Object[]>] [-ExcludeProperty <String[]>] [-ExpandProperty <String>] [-InputObject <PSObject>] [-SkipLast <Int32>] [-Unique] [<CommonParameters>]
 
-Select-Object [-Index <Int32[]>] [-InputObject <PSObject>] [-Unique] [-Wait] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+Select-Object [-Index <Int32[]>] [-InputObject <PSObject>] [-Unique] [-Wait] [<CommonParameters>]
+
+Select-Object [-InputObject <PSObject>] [-Unique] [-SkipIndex <Int32[]>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Select-String`, [
         new Parameter(`AllMatches`, `Indicates that the cmdlet searches for more than one match in each line of text. Without this parameter, "Select-String" finds only the first match in each line of text.
 
 
-When "Select-String" finds more than one match in a line of text, it still emits only one MatchInfo object for the line, but the Matches property of the object contains all of the matches.`, `SwitchParameter`),
+When "Select-String" finds more than one match in a line of text, it still emits only one MatchInfo object for the line, but the Matches property of the object contains all the matches.
+
+
+> [!NOTE] > This parameter is ignored when used in combination with the SimpleMatch parameter. If you wish > to return all matches and the pattern that you are searching for contains regular expression > characters, you must escape those characters rather than using SimpleMatch . See > about_Regular_Expressions (../Microsoft.PowerShell.Core/About/about_Regular_Expressions.md)for > more information about escaping regular expressions.`, `SwitchParameter`),
         new Parameter(`CaseSensitive`, `Indicates that the cmdlet matches are case-sensitive. By default, matches aren't case-sensitive.`, `SwitchParameter`),
         new Parameter(`Context`, `Captures the specified number of lines before and after the line that matches the pattern.
 
@@ -9367,6 +9825,38 @@ When the output of a "Select-String" command is sent down the pipeline to anothe
 
 
 When the context includes a match, the MatchInfo object for each match includes all the context lines, but the overlapping lines appear only once in the display.`, `Int32[]`),
+        new Parameter(`Culture`, `Specifies a culture name to match the specified pattern. The Culture parameter must be used with the SimpleMatch parameter. The default behavior uses the culture of the current PowerShell runspace (session).
+
+
+To get a list of all supported cultures, use "Get-Culture -ListAvailable" command.
+
+
+In addition, this parameter accepts the following arguments:
+
+
+- CurrentCulture, that is default;
+
+
+- Ordinal, that is non-linguistic binary comparison;
+
+
+- Invariant, that is culture independent comparison.
+
+
+
+
+With "Select-String -Culture Ordinal -CaseSensitive -SimpleMatch" command you gets fastest binary comparison.
+
+
+The Culture parameter uses tab completion to scroll through the list of arguments that specify the available cultures. To list all available arguments, use the following command:
+
+
+"(Get-Command Select-String).Parameters.Culture.Attributes.ValidValues"
+
+
+For more information about .NET CultureInfo.Name property, see CultureInfo.Name (/dotnet/api//system.globalization.cultureinfo.name).
+
+The Culture parameter was introduced in PowerShell 7.`, `String`),
         new Parameter(`Encoding`, `Specifies the type of encoding for the target file. The default value is UTF8NoBOM .
 
 
@@ -9394,22 +9884,45 @@ When you use the InputObject parameter to submit a collection of strings, "Selec
 
 By default, "Select-String" returns a MatchInfo object for each match it finds.`, `SwitchParameter`),
         new Parameter(`LiteralPath`, `Specifies the path to the files to be searched. The value of the LiteralPath parameter is used exactly as it's typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences. For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/About/about_Quoting_Rules.md).`, `String[]`),
+        new Parameter(`NoEmphasis`, `By default, "Select-String" highlights the string that matches the pattern you searched for with the Pattern parameter. The NoEmphasis parameter disables the highlighting.
+
+
+The emphasis uses negative colors based on your PowerShell background and text colors. For example, if your PowerShell colors are a black background with white text. The emphasis is a white background with black text.
+
+
+This parameter was introduced in PowerShell 7.`, `SwitchParameter`),
         new Parameter(`NotMatch`, `The NotMatch parameter finds text that doesn't match the specified pattern.`, `SwitchParameter`),
         new Parameter(`Path`, `Specifies the path to the files to search. Wildcards are permitted. The default location is the local directory.
 
 
 Specify files in the directory, such as "log1.txt", " .doc", or " .*". If you specify only a directory, the command fails.`, `String[]`),
-        new Parameter(`Pattern`, `Specifies the text to find on each line. Type a string or regular expression. If you type a string, use the SimpleMatch parameter.
+        new Parameter(`Pattern`, `Specifies the text to find on each line. The pattern value is treated as a regular expression.
 
 
 To learn about regular expressions, see about_Regular_Expressions (../Microsoft.PowerShell.Core/About/about_Regular_Expressions.md).`, `String[]`),
         new Parameter(`Quiet`, `Indicates that the cmdlet returns a Boolean value (True or False), instead of a MatchInfo object. The value is True if the pattern is found; otherwise the value is False.`, `SwitchParameter`),
-        new Parameter(`SimpleMatch`, `Indicates that the cmdlet uses a simple match rather than a regular expression match. In a simple match, "Select-String" searches the input for the text in the Pattern parameter. It doesn't interpret the value of the Pattern parameter as a regular expression statement.`, `SwitchParameter`),
-    ], `Finds text in strings and files.`, `Select-String [-Pattern] <String[]> [-AllMatches] [-CaseSensitive] [-Context <Int32[]>] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Exclude <String[]>] [-Include <String[]>] -InputObject <PSObject> [-List] [-NotMatch] [-Quiet] [-SimpleMatch] [<CommonParameters>]
+        new Parameter(`Raw`, `Causes the cmdlet to output only the matching strings, rather than MatchInfo objects. This is the results in behavior that's the most similar to the Unix grep or Windows findstr.exe commands.
 
-Select-String [-Pattern] <String[]> [-AllMatches] [-CaseSensitive] [-Context <Int32[]>] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Exclude <String[]>] [-Include <String[]>] [-List] -LiteralPath <String[]> [-NotMatch] [-Quiet] [-SimpleMatch] [<CommonParameters>]
 
-Select-String [-Pattern] <String[]> [-Path] <String[]> [-AllMatches] [-CaseSensitive] [-Context <Int32[]>] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Exclude <String[]>] [-Include <String[]>] [-List] [-NotMatch] [-Quiet] [-SimpleMatch] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+This parameter was introduced in PowerShell 7.`, `SwitchParameter`),
+        new Parameter(`SimpleMatch`, `Indicates that the cmdlet uses a simple match rather than a regular expression match. In a simple match, "Select-String" searches the input for the text in the Pattern parameter. It doesn't interpret the value of the Pattern parameter as a regular expression statement.
+
+
+Also, when SimpleMatch is used, the Matches property of the MatchInfo object returned is empty.
+
+
+> [!NOTE] > When this parameter is used with the AllMatches parameter, the AllMatches is ignored.`, `SwitchParameter`),
+    ], `Finds text in strings and files.`, `Select-String [-Pattern] <String[]> [-AllMatches] [-CaseSensitive] [-Context <Int32[]>] [-Culture <String>] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Exclude <String[]>] [-Include <String[]>] -InputObject <PSObject> [-List] [-NoEmphasis] [-NotMatch] -Raw [-SimpleMatch] [<CommonParameters>]
+
+Select-String [-Pattern] <String[]> [-AllMatches] [-CaseSensitive] [-Context <Int32[]>] [-Culture <String>] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Exclude <String[]>] [-Include <String[]>] -InputObject <PSObject> [-List] [-NoEmphasis] [-NotMatch] [-Quiet] [-SimpleMatch] [<CommonParameters>]
+
+Select-String [-Pattern] <String[]> [-AllMatches] [-CaseSensitive] [-Context <Int32[]>] [-Culture <String>] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Exclude <String[]>] [-Include <String[]>] [-List] -LiteralPath <String[]> [-NoEmphasis] [-NotMatch] -Raw [-SimpleMatch] [<CommonParameters>]
+
+Select-String [-Pattern] <String[]> [-AllMatches] [-CaseSensitive] [-Context <Int32[]>] [-Culture <String>] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Exclude <String[]>] [-Include <String[]>] [-List] -LiteralPath <String[]> [-NoEmphasis] [-NotMatch] [-Quiet] [-SimpleMatch] [<CommonParameters>]
+
+Select-String [-Pattern] <String[]> [-Path] <String[]> [-AllMatches] [-CaseSensitive] [-Context <Int32[]>] [-Culture <String>] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Exclude <String[]>] [-Include <String[]>] [-List] [-NoEmphasis] [-NotMatch] [-Quiet] [-SimpleMatch] [<CommonParameters>]
+
+Select-String [-Pattern] <String[]> [-Path] <String[]> [-AllMatches] [-CaseSensitive] [-Context <Int32[]>] [-Culture <String>] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] [-Exclude <String[]>] [-Include <String[]>] [-List] [-NoEmphasis] [-NotMatch] -Raw [-SimpleMatch] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Select-Xml`, [
         new Parameter(`Content`, `Specifies a string that contains the XML to search. You can also pipe strings to Select-Xml .`, `String[]`),
@@ -9431,6 +9944,8 @@ Select-Xml [-XPath] <String> -LiteralPath <String[]> [-Namespace <Hashtable>] [<
 Select-Xml [-XPath] <String> [-Path] <String[]> [-Namespace <Hashtable>] [<CommonParameters>]
 
 Select-Xml [-XPath] <String> [-Xml] <XmlNode[]> [-Namespace <Hashtable>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Send-DtcDiagnosticTransaction`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Send-MailMessage`, [
         new Parameter(`Attachments`, `Specifies the path and file names of files to be attached to the email message. You can use this parameter or pipe the paths and file names to "Send-MailMessage".`, `String[]`),
@@ -9479,10 +9994,10 @@ This parameter was introduced in PowerShell 6.2.`, `String[]`),
 
 
 The default value is the value of the "$PSEmailServer" preference variable. If the preference variable is not set and this parameter is not used, the "Send-MailMessage" command fails.`, `String`),
-        new Parameter(`Subject`, `The Subject parameter is required. This parameter specifies the subject of the email message.`, `String`),
+        new Parameter(`Subject`, `The Subject parameter isn't required. This parameter specifies the subject of the email message.`, `String[]`),
         new Parameter(`To`, `The To parameter is required. This parameter specifies the recipient's email address. If there are multiple recipients, separate their addresses with a comma (","). Enter names (optional) and the email address, such as "Name <someone@fabrikam.com>".`, `String[]`),
         new Parameter(`UseSsl`, `The Secure Sockets Layer (SSL) protocol is used to establish a secure connection to the remote computer to send mail. By default, SSL is not used.`, `SwitchParameter`),
-    ], `Sends an email message.`, `Send-MailMessage [-To] <String[]> [-Subject] <String> [[-Body] <String>] [[-SmtpServer] <String>] [-Attachments <String[]>] [-Bcc <String[]>] [-BodyAsHtml] [-Cc <String[]>] [-Credential <PSCredential>] [-DeliveryNotificationOption {None | OnSuccess | OnFailure | Delay | Never}] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] -From <String> [-Port <Int32>] [-Priority {Normal | High | Low}] [-ReplyTo <String[]>] [-UseSsl] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    ], `Sends an email message.`, `Send-MailMessage [-To] <String[]> [[-Subject] <String[]>] [[-Body] <String>] [[-SmtpServer] <String>] [-Attachments <String[]>] [-Bcc <String[]>] [-BodyAsHtml] [-Cc <String[]>] [-Credential <PSCredential>] [-DeliveryNotificationOption {None | OnSuccess | OnFailure | Delay | Never}] [-Encoding {ASCII | BigEndianUnicode | OEM | Unicode | UTF7 | UTF8 | UTF8BOM | UTF8NoBOM | UTF32}] -From <String> [-Port <Int32>] [-Priority {Normal | High | Low}] [-ReplyTo <String[]>] [-UseSsl] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Set-Acl`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -9527,13 +10042,31 @@ The acceptable values are as follows:
     }),
     new ConsoleCommand(`Set-AppBackgroundTaskResourcePolicy`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Set-AppLockerPolicy`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Set-AppxDefaultVolume`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Set-AppXProvisionedDataFile`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Set-AuthenticodeSignature`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Set-BitsTransfer`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-CertificateAutoEnrollmentPolicy`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Set-CimInstance`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-CIPolicyIdInfo`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-CIPolicySetting`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-CIPolicyVersion`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-Clipboard`, [
+        new Parameter(`Append`, `Indicates that the cmdlet does not clear the clipboard and appends content to it.`, `SwitchParameter`),
+        new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
+        new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
+    ], `Sets the contents of the clipboard.`, `Set-Clipboard [-Append] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Set-Content`, [
         new Parameter(`AsByteStream`, `Specifies that the content should be read as a stream of bytes. This parameter was introduced in PowerShell 6.0.
@@ -9608,7 +10141,11 @@ Set-Date [-Date] <DateTime> [-DisplayHint {Date | Time | DateTime}] [-Confirm] [
     }),
     new ConsoleCommand(`Set-DOPercentageMaxForegroundBandwidth`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Set-DscLocalConfigurationManager`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Set-ExecutionPolicy`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-HVCIOptions`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Set-Item`, [
         new Parameter(`Credential`, `> [!NOTE] > This parameter is not supported by any providers installed with PowerShell. > To impersonate another user, or elevate your credentials when running this cmdlet, > use Invoke-Command (../Microsoft.PowerShell.Core/Invoke-Command.md).`, `PSCredential`),
@@ -9643,35 +10180,43 @@ For more information, see about_Quoting_Rules (../Microsoft.Powershell.Core/Abou
         new Parameter(`Name`, `Specifies the name of the property.`, `String`),
         new Parameter(`PassThru`, `Returns an object that represents the item property. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
         new Parameter(`Path`, `Specifies the path of the items with the property to modify. Wildcard characters are permitted.`, `String[]`),
+        new Parameter(`Type`, `Type is a dynamic parameter that the Registry provider adds to the "Set-ItemProperty" cmdlet. This parameter only works in the registry drives.
+
+
+Specifies the type of property that this cmdlet adds. The acceptable values for this parameter are:
+
+
+- String : Specifies a null-terminated string. Equivalent to REG_SZ . - ExpandString : Specifies a null-terminated string that contains unexpanded references to   environment variables that are expanded when the value is retrieved. Equivalent to REG_EXPAND_SZ . - Binary : Specifies binary data in any form. Equivalent to REG_BINARY . - DWord : Specifies a 32-bit binary number. Equivalent to REG_DWORD . - MultiString : Specifies an array of null-terminated strings terminated by two null characters.   Equivalent to REG_MULTI_SZ . - Qword : Specifies a 64-bit binary number. Equivalent to REG_QWORD . - Unknown : Indicates an unsupported registry data type, such as REG_RESOURCE_LIST .`, `RegistryValueKind`),
         new Parameter(`Value`, `Specifies the value of the property.`, `Object`),
         new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
         new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
-    ], `Creates or changes the value of a property of an item.`, `Set-ItemProperty [-Path] <String[]> [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] -InputObject <PSObject> [-PassThru] [-Confirm] [-WhatIf] [<CommonParameters>]
+    ], `Creates or changes the value of a property of an item.`, `Set-ItemProperty [-Path] <String[]> [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] -InputObject <PSObject> [-PassThru] [-Type <RegistryValueKind>] [-Confirm] [-WhatIf] [<CommonParameters>]
 
-Set-ItemProperty [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] -InputObject <PSObject> -LiteralPath <String[]> [-PassThru] [-Confirm] [-WhatIf] [<CommonParameters>]
+Set-ItemProperty [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] -InputObject <PSObject> -LiteralPath <String[]> [-PassThru] [-Type <RegistryValueKind>] [-Confirm] [-WhatIf] [<CommonParameters>]
 
-Set-ItemProperty [-Name] <String> [-Value] <Object> [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] -LiteralPath <String[]> [-PassThru] [-Confirm] [-WhatIf] [<CommonParameters>]
+Set-ItemProperty [-Name] <String> [-Value] <Object> [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] -LiteralPath <String[]> [-PassThru] [-Type <RegistryValueKind>] [-Confirm] [-WhatIf] [<CommonParameters>]
 
-Set-ItemProperty [-Path] <String[]> [-Name] <String> [-Value] <Object> [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] [-PassThru] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+Set-ItemProperty [-Path] <String[]> [-Name] <String> [-Value] <Object> [-Credential <PSCredential>] [-Exclude <String[]>] [-Filter <String>] [-Force] [-Include <String[]>] [-PassThru] [-Type <RegistryValueKind>] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-JobTrigger`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-KdsConfiguration`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Set-LocalGroup`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Set-LocalUser`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Set-Location`, [
-        new Parameter(`LiteralPath`, `Specifies a path of the location. The value of the LiteralPath parameter is used exactly as it is typed. No characters are interpreted as wildcard characters. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.
-
-
-PowerShell keeps a history of the last 20 locations you have set. If the path is the "-" character, then the new working location will be the previous working location in history (if it exists). Similarly, if the path is the "+" character, then the new working location will be the next working location in history (if it exists). This is similar to using "Pop-Location" and "Push-Location" except that the history is a list, not a stack, and there is no way to display this history list.`, `String`),
+        new Parameter(`LiteralPath`, `Specifies a path of the location. The value of the LiteralPath parameter is used exactly as it is typed. No characters are interpreted as wildcard characters. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String`),
         new Parameter(`PassThru`, `Returns a PathInfo object that represents the location. By default, this cmdlet does not generate any output.`, `SwitchParameter`),
         new Parameter(`Path`, `Specify the path of a new working location. If no path is provided, "Set-Location" defaults to the current user's home directory. When wildcards are used, the cmdlet chooses the first path that matches the wildcard pattern.
 
 
-PowerShell keeps a history of the last 20 locations you have set. If the path is the "-" character, then the new working location will be the previous working location in history (if it exists). Similarly, if the path is the "+" character, then the new working location will be the next working location in history (if it exists). This is similar to using "Pop-Location" and "Push-Location" except that the history is a list, not a stack, and there is no way to display this history list.`, `String`),
+PowerShell keeps a history of the last 20 locations you have set. If the path is the "-" character, then the new working location will be the previous working location in history (if it exists). Similarly, if the path is the "+" character, then the new working location will be the next working location in history (if it exists). This is similar to using "Pop-Location" and "Push-Location" except that the history is a list, not a stack, and is implicitly tracked, not manually controlled. Currently, there is no way to view the history list.`, `String`),
         new Parameter(`StackName`, `Specifies the location stack name that this cmdlet makes the current location stack. Enter a location stack name. To indicate the unnamed default location stack, type "$null" or an empty string ("").
 
 
-The " -Location" cmdlets act on the current stack unless you use the StackName * parameter to specify a different stack.`, `String`),
+The " -Location" cmdlets act on the current stack unless you use the StackName * parameter to specify a different stack. For more information about location stacks, see the Notes (#notes).`, `String`),
     ], `Sets the current working location to a specified location.`, `Set-Location -LiteralPath <String> [-PassThru] [<CommonParameters>]
 
 Set-Location [[-Path] <String>] [-PassThru] [<CommonParameters>]
@@ -9679,27 +10224,25 @@ Set-Location [[-Path] <String>] [-PassThru] [<CommonParameters>]
 Set-Location [-PassThru] [-StackName <String>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Set-MarkdownOption`, [
-        new Parameter(`BoldForegroundColor`, ``, `string`),
-        new Parameter(`Code`, ``, `string`),
-        new Parameter(`Header1Color`, ``, `string`),
-        new Parameter(`Header2Color`, ``, `string`),
-        new Parameter(`Header3Color`, ``, `string`),
-        new Parameter(`Header4Color`, ``, `string`),
-        new Parameter(`Header5Color`, ``, `string`),
-        new Parameter(`Header6Color`, ``, `string`),
-        new Parameter(`ImageAltTextForegroundColor`, ``, `string`),
-        new Parameter(`InputObject`, ``, `psobject`),
-        new Parameter(`ItalicsForegroundColor`, ``, `string`),
-        new Parameter(`LinkForegroundColor`, ``, `string`),
-        new Parameter(`PassThru`, ``, `switch`),
-        new Parameter(`Theme`, ``, `string`),
-    ], `Set-MarkdownOption [-Header1Color <string>] [-Header2Color <string>] [-Header3Color <string>] [-Header4Color <string>] [-Header5Color <string>] [-Header6Color <string>] [-Code <string>] [-ImageAltTextForegroundColor <string>] [-LinkForegroundColor <string>] [-ItalicsForegroundColor <string>] [-BoldForegroundColor <string>] [-PassThru] [<CommonParameters>]
+        new Parameter(`BoldForegroundColor`, `Sets the foreground color for rendering bold Markdown text.`, `String`),
+        new Parameter(`Code`, `Sets the color for rendering code blocks and spans in Markdown text.`, `String`),
+        new Parameter(`Header1Color`, `Sets the color for rendering Header1 blocks in Markdown text.`, `String`),
+        new Parameter(`Header2Color`, `Sets the color for rendering Header2 blocks in Markdown text.`, `String`),
+        new Parameter(`Header3Color`, `Sets the color for rendering Header3 blocks in Markdown text.`, `String`),
+        new Parameter(`Header4Color`, `Sets the color for rendering Header4 blocks in Markdown text.`, `String`),
+        new Parameter(`Header5Color`, `Sets the color for rendering Header5 blocks in Markdown text.`, `String`),
+        new Parameter(`Header6Color`, `Sets the color for rendering Header6 blocks in Markdown text.`, `String`),
+        new Parameter(`ImageAltTextForegroundColor`, `Sets the foreground color for rendering the alternate text of an image element in Markdown text.`, `String`),
+        new Parameter(`InputObject`, `A PSMarkdownOptionInfo object containing the configuration to be set.`, `PSObject`),
+        new Parameter(`ItalicsForegroundColor`, `Sets the foreground color for rendering the italics in Markdown text.`, `String`),
+        new Parameter(`LinkForegroundColor`, `Sets the foreground color for rendering hyperlinks in Markdown text.`, `String`),
+        new Parameter(`PassThru`, `Causes the cmdlet to output a PSMarkdownOptionInfo object containing the new configuration.`, `SwitchParameter`),
+        new Parameter(`Theme`, `Selects a theme containing predefined color settings. The possible values are Dark and Light .`, `String`),
+    ], `Sets the colors and styles used for rendering Markdown content in the console.`, `Set-MarkdownOption [-BoldForegroundColor <String>] [-Code <String>] [-Header1Color <String>] [-Header2Color <String>] [-Header3Color <String>] [-Header4Color <String>] [-Header5Color <String>] [-Header6Color <String>] [-ImageAltTextForegroundColor <String>] [-ItalicsForegroundColor <String>] [-LinkForegroundColor <String>] [-PassThru] [<CommonParameters>]
 
-Set-MarkdownOption -Theme <string> [-PassThru] [<CommonParameters>]
+Set-MarkdownOption [-InputObject] <PSObject> [-PassThru] [<CommonParameters>]
 
-Set-MarkdownOption [-InputObject] <psobject> [-PassThru] [<CommonParameters>]`, `syntaxItem
-----------
-{@{name=Set-MarkdownOption; CommonParameters=True; parameter=System.Object[]}, @{name=Set-MarkdownOption; CommonParamet…`, "", (parameters, paramDictionary) => {
+Set-MarkdownOption [-PassThru] -Theme {Dark | Light} [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Set-NonRemovableAppsPolicy`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -9830,16 +10373,31 @@ function prompt { Write-Host -NoNewLine -ForegroundColor Yellow "$pwd"; return "
 Then set:
 
 
-Set-PSReadLineOption -PromptText "# "`, `String`),
+Set-PSReadLineOption -PromptText "# ", "! "
+
+
+This would change the "#" in your prompt to "!" when a parse error is detected. This is especially useful with virtual terminal escape sequences to use colors in your prompt.`, `String[]`),
         new Parameter(`ContinuationPrompt`, `Specifies the string displayed at the beginning of the second and subsequent lines when multi-line input is being entered. Defaults to '>> '. The empty string is valid.`, `String`),
         new Parameter(`HistoryNoDuplicates`, `Repeated commands will usually be added to history to preserve ordering during recall, but typically you don't want to see the same command multiple times when recalling or searching the history.
 
 
 This option controls the recall behavior - duplicates will are still added to the history file, but if this option is set, only the most recent invocation will appear when recalling commands.`, `SwitchParameter`),
-        new Parameter(`AddToHistoryHandler`, `Specifies a ScriptBlock that can be used to control which commands get added to PSReadLine history.
+        new Parameter(`AddToHistoryHandler`, `Specifies a ScriptBlock that can be used to control which commands get added to PSReadLine history, and whether they should be saved to the history file.
 
 
-The ScriptBlock is passed the command line. If the ScriptBlock returns "$true", the command line is added to history, otherwise it is not.`, `Func[String, Boolean]`),
+The ScriptBlock is passed the command line, and it is expected to return either a Boolean value, or an enum value of the type "[Microsoft.PowerShell.AddToHistoryOption]". The enum type "AddToHistoryOption" has 3 members: "SkipAdding", "MemoryOnly", and "MemoryAndFile".
+
+
+If the ScriptBlock returns "$true", it's equivalent to "AddToHistoryOption.MemoryAndFile". The command line is added to the in-memory history queue and saved to the history file. If the ScriptBlock returns "$false", it's equivalent to "AddToHistoryOption.SkipAdding", and the command line is not added to history at all.
+
+
+If the ScriptBlock returns "AddToHistoryOption.MemoryOnly", then the command line is added to the in-memory history queue, but will not be saved to the history file. This usually indicates the command line has sensitive content that should not be written to disk.
+
+
+PSReadLine provides a default handler to this option:     "[Microsoft.PowerShell.PSConsoleReadLine]::GetDefaultAddToHistoryOption(string line)" The default handler attempts to detect sensitive information in a command line by matching with a simple regex pattern:     ""password|asplaintext|token|key|secret"" When successfully matched, the command line is considered to contain sensitive content, and "MemoryOnly" is returned. Otherwise, "MemoryAndFile" is returned.
+
+
+To turn off the default handler, just set this option to "$null".`, `Func[String, Object]`),
         new Parameter(`CommandValidationHandler`, `Specifies a ScriptBlock that is called from ValidateAndAcceptLine. If an exception is thrown, validation fails and the error is reported.
 
 
@@ -9986,8 +10544,12 @@ Valid values are:
 -- Prompt - the prompt changes color
 
 
--- Cursor - the cursor changes size`, `ViModeStyle`),
-    ], `Customizes the behavior of command line editing in PSReadLine.`, `Set-PSReadLineOption [-EditMode <EditMode>] [-PromptText <String>] [-ContinuationPrompt <String>] [-HistoryNoDuplicates] [-AddToHistoryHandler <Func[String, Boolean]>] [-CommandValidationHandler <Action[CommandAst]>] [-HistorySearchCursorMovesToEnd] [-MaximumHistoryCount <Int32>] [-MaximumKillRingCount <Int32>] [-ShowToolTips] [-ExtraPromptLineCount <Int32>] [-Colors <Hashtable>] [-DingTone <Int32>] [-DingDuration <Int32>] [-BellStyle <BellStyle>] [-CompletionQueryItems <Int32>] [-WordDelimiters <string>] [-HistorySearchCaseSensitive] [-HistorySaveStyle <HistorySaveStyle>] [-HistorySavePath <String>] [-AnsiEscapeTimeout <int>] [-ViModeIndicator <ViModeStyle>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+-- Cursor - the cursor changes size
+
+
+-- Script - user-specified text is printed`, `ViModeStyle`),
+        new Parameter(`ViModeChangeHandler`, `When the "ViModeIndicator" is set to "Script", the script block provided will be invoked every time the mode changes. The script block is provided one argument of type "ViMode". Example usage is shown in Example 3 in this document.`, `ScriptBlock`),
+    ], `Customizes the behavior of command line editing in PSReadLine.`, `Set-PSReadLineOption [-EditMode <EditMode>] [-PromptText <String[]>] [-ContinuationPrompt <String>] [-HistoryNoDuplicates] [-AddToHistoryHandler <Func[String, Object]>] [-CommandValidationHandler <Action[CommandAst]>] [-HistorySearchCursorMovesToEnd] [-MaximumHistoryCount <Int32>] [-MaximumKillRingCount <Int32>] [-ShowToolTips] [-ExtraPromptLineCount <Int32>] [-Colors <Hashtable>] [-DingTone <Int32>] [-DingDuration <Int32>] [-BellStyle <BellStyle>] [-CompletionQueryItems <Int32>] [-WordDelimiters <string>] [-HistorySearchCaseSensitive] [-HistorySaveStyle <HistorySaveStyle>] [-HistorySavePath <String>] [-AnsiEscapeTimeout <int>] [-ViModeIndicator <ViModeStyle>] [-ViModeChangeHandler <ScriptBlock>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Set-PSSessionConfiguration`, [
         new Parameter(`AccessMode`, `Enables and disables the session configuration and determines whether it can be used for remote or local sessions on the computer. The acceptable values for this parameter are:
@@ -10136,6 +10698,12 @@ Set-PSSessionConfiguration [-Name] <String> [-AssemblyName] <String> [-Configura
 
 Set-PSSessionConfiguration [-Name] <String> [-AccessMode {Disabled | Local | Remote}] [-Force] [-MaximumReceivedDataSizePerCommandMB <Double>] [-MaximumReceivedObjectSizeMB <Double>] [-NoServiceRestart] -Path <String> [-RunAsCredential <PSCredential>] [-SecurityDescriptorSddl <String>] [-ShowSecurityDescriptorUI] [-StartupScript <String>] [-ThreadOptions {Default | UseNewThread | ReuseThread | UseCurrentThread}] [-TransportOption <PSTransportOption>] [-UseSharedProcess] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Set-RuleOption`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-ScheduledJob`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Set-ScheduledJobOption`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Set-SecureBootUEFI`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Set-Service`, [
@@ -10176,10 +10744,11 @@ The acceptable values for this parameter are as follows:
 
 
 - Paused . Suspends the service. - Running . Starts the service. - Stopped . Stops the service.`, `String`),
+        new Parameter(`SecurityDescriptorSddl`, `Specifies the SecurityDescriptor for the service in Sddl format.`, `String`),
         new Parameter(`WhatIf`, `Shows what would happen if "Set-Service" runs. The cmdlet isn't run.`, `SwitchParameter`),
-    ], `Starts, stops, and suspends a service, and changes its properties.`, `Set-Service [-InputObject] <ServiceController> [-Confirm] [-Credential <PSCredential>] [-Description <String>] [-DisplayName <String>] [-Force] [-PassThru] [-StartupType {Automatic | AutomaticDelayedStart | Disabled | InvalidValue | Manual}] [-Status {Paused | Running | Stopped}] [-WhatIf] [<CommonParameters>]
+    ], `Starts, stops, and suspends a service, and changes its properties.`, `Set-Service [-InputObject] <ServiceController> [-Confirm] [-Credential <PSCredential>] [-Description <String>] [-DisplayName <String>] [-Force] [-PassThru] [-StartupType {Automatic | AutomaticDelayedStart | Disabled | InvalidValue | Manual}] [-Status {Paused | Running | Stopped}] [-SecurityDescriptorSddl <String>] [-WhatIf] [<CommonParameters>]
 
-Set-Service [-Name] <String> [-Confirm] [-Credential <PSCredential>] [-Description <String>] [-DisplayName <String>] [-Force] [-PassThru] [-StartupType {Automatic | AutomaticDelayedStart | Disabled | InvalidValue | Manual}] [-Status {Paused | Running | Stopped}] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+Set-Service [-Name] <String> [-Confirm] [-Credential <PSCredential>] [-Description <String>] [-DisplayName <String>] [-Force] [-PassThru] [-StartupType {Automatic | AutomaticDelayedStart | Disabled | InvalidValue | Manual}] [-Status {Paused | Running | Stopped}] [-SecurityDescriptorSddl <String>] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Set-StrictMode`, [
         new Parameter(`Off`, `Indicates that this cmdlet turns strict mode off for the current scope and all child scopes.`, `SwitchParameter`),
@@ -10457,6 +11026,18 @@ When a variable is private, it does not appear in lists of variables, such as th
     }),
     new ConsoleCommand(`Set-WSManQuickConfig`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Show-Command`, [
+        new Parameter(`ErrorPopup`, `Indicates that the cmdlet displays errors in a pop-up window, in addition to displaying them at the command line. By default, when a command that is run in a "Show-Command" window generates an error, the error is displayed only at the command line.
+
+
+Also, when you run the command (by using the Run button in the "Show-Command" window), the ErrorPopup parameter returns the command results to the current command, instead of running the command and returning its output to a new command. You can use this feature to save the command results in a variable.`, `SwitchParameter`),
+        new Parameter(`Height`, `Specifies the height of the "Show-Command" window in pixels. Enter a value between 300 and the number of pixels in the screen resolution. If the value is too large to display the command window on the screen, "Show-Command" generates an error. The default height is 600 pixels. For a "Show-Command" command that includes the Name parameter, the default height is 300 pixels.`, `Double`),
+        new Parameter(`Name`, `Displays a command window for the specified command. Enter the name of one command, such as the name of a cmdlet, function, or CIM command. If you omit this parameter, "Show-Command" displays a command window that lists all of the PowerShell commands in all modules installed on the computer.`, `String`),
+        new Parameter(`NoCommonParameter`, `Indicates that this cmdlet omits the Common Parameters section of the command display. By default, the Common Parameters appear in an expandable section at the bottom of the command window.`, `SwitchParameter`),
+        new Parameter(`PassThru`, `Returns an object representing the item with which you are working. By default, this cmdlet does not generate any output. To run the command string, copy and paste it at the command prompt or save it in a variable and use the "Invoke-Expression" cmdlet to run the string in the variable.`, `SwitchParameter`),
+        new Parameter(`Width`, `Specifies the width of the "Show-Command" window in pixels. Enter a value between 300 and the number of pixels in the screen resolution. If the value is too large to display the command window on the screen, "Show-Command" generates an error. The default width is 300 pixels.`, `Double`),
+    ], `Displays PowerShell command information in a graphical window.`, `Show-Command [[-Name] <String>] [-ErrorPopup] [-Height <Double>] [-NoCommonParameter] [-PassThru] [-Width <Double>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Show-Markdown`, [
         new Parameter(`InputObject`, `A Markdown string that will be shown in the terminal. If you do not pass in a supported format, "Show-Markdown" will emit an error.`, `PSObject`),
         new Parameter(`LiteralPath`, `Specifies the path to a Markdown file. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell PowerShell not to interpret any characters as escape sequences.`, `String[]`),
@@ -10552,6 +11133,12 @@ Split-Path [-Path] <String[]> [[-Qualifier]] [-Credential <PSCredential>] [-Reso
     }),
     new ConsoleCommand(`Split-WindowsImage`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Start-BitsTransfer`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Start-DscConfiguration`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Start-DtcDiagnosticResourceManager`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Start-Job`, [
         new Parameter(`ArgumentList`, `Specifies an array of arguments, or parameter values, for the script that is specified by the FilePath parameter or a command specified with the ScriptBlock parameter.
 
@@ -10639,11 +11226,14 @@ In the value of the ScriptBlock parameter, use the "$input" automatic variable t
 
 
 The default friendly name is "Job#", where "#" is an ordinal number that is incremented for each job.`, `String`),
-        new Parameter(`PSVersion`, `Specifies a version. "Start-Job" runs the job with the version of PowerShell. The acceptable values for this parameter are: "2.0" and "3.0".
+        new Parameter(`PSVersion`, `Specifies a version of PowerShell to use for running the job. When the value of PSVersion is 5.1 The job is run in a Windows PowerShell 5.1 session. For any other value, the job is run using the current version of PowerShell.
 
 
-This parameter was introduced in PowerShell 3.0.`, `Version`),
-        new Parameter(`RunAs32`, `Indicates that "Start-Job" runs the job in a 32-bit process. RunAs32 forces the job to run in a 32-bit process, even on a 64-bit operating system.
+This parameter was added in PowerShell 7 and only works on Windows.`, `Version`),
+        new Parameter(`RunAs32`, `Beginning with PowerShell 7, the RunAs32 parameter doesn't work on 64-bit PowerShell ("pwsh"). If RunAs32 is specified in 64-bit PowerShell, "Start-Job" throws a terminating exception error. To start a 32-bit PowerShell ("pwsh") process with RunAs32 , you need to have the 32-bit PowerShell installed.
+
+
+In 32-bit PowerShell, RunAs32 forces the job to run in a 32-bit process, even on a 64-bit operating system.
 
 
 On 64-bit versions of Windows 7 and Windows Server 2008 R2, when the "Start-Job" command includes the RunAs32 parameter, you can't use the Credential parameter to specify the credentials of another user.`, `SwitchParameter`),
@@ -10652,13 +11242,19 @@ On 64-bit versions of Windows 7 and Windows Server 2008 R2, when the "Start-Job"
 
 
 This parameter was introduced in PowerShell 3.0.`, `String`),
-    ], `Starts a PowerShell background job.`, `Start-Job [-ScriptBlock] <ScriptBlock> [[-InitializationScript] <ScriptBlock>] [-ArgumentList <Object[]>] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-Credential <PSCredential>] [-InputObject <PSObject>] [-Name <String>] [-PSVersion <Version>] [-RunAs32] [<CommonParameters>]
+        new Parameter(`WorkingDirectory`, `Specifies the initial working directory of the background job. If the parameter isn't specified, the job runs from the default location. The default location is the current working directory of the caller that started the job.
 
-Start-Job [-FilePath] <String> [[-InitializationScript] <ScriptBlock>] [-ArgumentList <Object[]>] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-Credential <PSCredential>] [-InputObject <PSObject>] [-Name <String>] [-PSVersion <Version>] [-RunAs32] [<CommonParameters>]
+
+This parameter was introduced in PowerShell 7.`, `String`),
+    ], `Starts a PowerShell background job.`, `Start-Job [-ScriptBlock] <ScriptBlock> [[-InitializationScript] <ScriptBlock>] [-ArgumentList <Object[]>] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-Credential <PSCredential>] [-InputObject <PSObject>] [-Name <String>] [-PSVersion <Version>] [-RunAs32] [<CommonParameters>]
 
 Start-Job [[-InitializationScript] <ScriptBlock>] [-ArgumentList <Object[]>] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-Credential <PSCredential>] [-InputObject <PSObject>] -LiteralPath <String> [-Name <String>] [-PSVersion <Version>] [-RunAs32] [<CommonParameters>]
 
-Start-Job [-DefinitionName] <String> [[-DefinitionPath] <String>] [[-Type] <String>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+Start-Job [-FilePath] <String> [[-InitializationScript] <ScriptBlock>] [-ArgumentList <Object[]>] [-Authentication {Default | Basic | Negotiate | NegotiateWithImplicitCredential | Credssp | Digest | Kerberos}] [-Credential <PSCredential>] [-InputObject <PSObject>] [-Name <String>] [-PSVersion <Version>] [-RunAs32] [<CommonParameters>]
+
+Start-Job [-DefinitionName] <String> [[-DefinitionPath] <String>] [[-Type] <String>] [<CommonParameters>]
+
+Start-Job [-WorkingDirectory <String>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Start-OSUninstall`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -10800,6 +11396,8 @@ This parameter was introduced in PowerShell 3.0.`, `String`),
         new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet isn't run.`, `SwitchParameter`),
     ], `Stops (shuts down) local and remote computers.`, `Stop-Computer [[-ComputerName] <String[]>] [[-Credential] <PSCredential>] [-Confirm] [-Force] [-WsmanAuthentication {Default | Basic | Negotiate | CredSSP | Digest | Kerberos}] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Stop-DtcDiagnosticResourceManager`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Stop-Job`, [
         new Parameter(`Filter`, `Specifies a hash table of conditions. This cmdlet stops jobs that satisfy all of the conditions. Enter a hash table where the keys are job properties and the values are job property values.
 
@@ -10908,6 +11506,8 @@ Stop-Service [-Name] <String[]> [-Exclude <String[]>] [-Force] [-Include <String
     }),
     new ConsoleCommand(`Stop-Transcript`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Suspend-BitsTransfer`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Suspend-Service`, [
         new Parameter(`DisplayName`, `Specifies the display names of the services to be suspended. Wildcard characters are permitted.`, `String[]`),
         new Parameter(`Exclude`, `Specifies services to omit from the specified services. The value of this parameter qualifies the Name parameter. Enter a name element or pattern, such as "s*". Wildcard characters are permitted.`, `String[]`),
@@ -10925,6 +11525,8 @@ The parameter name is optional. You can use Name or its alias, ServiceName , or 
 Suspend-Service [-InputObject] <ServiceController[]> [-Exclude <String[]>] [-Include <String[]>] [-PassThru] [-Confirm] [-WhatIf] [<CommonParameters>]
 
 Suspend-Service [-Name] <String[]> [-Exclude <String[]>] [-Include <String[]>] [-PassThru] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Switch-Certificate`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Tee-Object`, [
         new Parameter(`Append`, `Indicates that the cmdlet appends the output to the specified file. Without this parameter, the new content replaces any existing content in the file without warning.
@@ -10944,45 +11546,57 @@ Tee-Object [-InputObject <PSObject>] -LiteralPath <String> [<CommonParameters>]
 
 Tee-Object [-InputObject <PSObject>] -Variable <String> [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Test-AppLockerPolicy`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Test-Certificate`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Test-Connection`, [
         new Parameter(`BufferSize`, `Specifies the size, in bytes, of the buffer sent with this command. The default value is 32.`, `Int32`),
-        new Parameter(`Continues`, `Causes the cmdlet to send ping requests continuously. This parameter can't be used with the Count parameter.`, `SwitchParameter`),
+        new Parameter(`Repeat`, `Causes the cmdlet to send ping requests continuously. This parameter can't be used with the Count parameter.`, `SwitchParameter`),
         new Parameter(`Count`, `Specifies the number of echo requests to send. The default value is 4.`, `Int32`),
         new Parameter(`Delay`, `Specifies the interval between pings, in seconds.`, `System.Int32`),
         new Parameter(`DontFragment`, `This parameter sets the Don't Fragment flag in the IP header. You can use this parameter with the BufferSize parameter to test the Path MTU size. For more information about Path MTU, see the Path MTU Discovery (https://wikipedia.org/wiki/Path_MTU_Discovery)article in wikipedia.`, `SwitchParameter`),
         new Parameter(`IPv4`, `Forces the cmdlet to use the IPv4 protocol for the test.`, `SwitchParameter`),
         new Parameter(`IPv6`, `Forces the cmdlet to use the IPv6 protocol for the test.`, `SwitchParameter`),
         new Parameter(`MaxHops`, `Sets the maximum number of hops that an ICMP request message can be sent. The default value is controlled by the operating system. The default value for Windows 10 is 128 hops.`, `Int32`),
-        new Parameter(`MTUSizeDetect`, `This parameter is used to discover the Path MTU size. The cmdlet returns a PingReply#MTUSize object that contains the Path MTU size to the target. For more information about Path MTU, see the Path MTU Discovery (https://wikipedia.org/wiki/Path_MTU_Discovery)article in wikipedia.`, `SwitchParameter`),
-        new Parameter(`Ping`, `Causes the cmdlet to do a ping test, which is the default action.`, `SwitchParameter`),
-        new Parameter(`Quiet`, `The Quiet parameter returns a Boolean value in a System.Boolean object. Using this parameter suppresses all errors.
+        new Parameter(`MTUSize`, `This parameter is used to discover the Path MTU size. The cmdlet returns a PingReply#MTUSize object that contains the Path MTU size to the target. For more information about Path MTU, see the Path MTU Discovery (https://wikipedia.org/wiki/Path_MTU_Discovery)article in wikipedia.`, `SwitchParameter`),
+        new Parameter(`Ping`, `Causes the cmdlet to do a ping test. This is the default mode for the "Test-Connection" cmdlet.`, `SwitchParameter`),
+        new Parameter(`Quiet`, `The Quiet parameter returns a Boolean value. Using this parameter suppresses all errors.
 
 
 Each connection that's tested returns a Boolean value. If the TargetName parameter specifies multiple computers, an array of Boolean values is returned.
 
 
-If any ping succeeds, "$True" is returned.
+If any ping to a given target succeeds, "$True" is returned.
 
 
-If all pings fail, "$False" is returned.`, `SwitchParameter`),
-        new Parameter(`ResolveDestination`, `Causes the cmdlet to attempt to resolve the DNS name of the target.`, `SwitchParameter`),
-        new Parameter(`Source`, `Specifies the names of the computers where the ping originates. Enter a comma-separated list of computer names. The default is the local computer.`, `String`),
-        new Parameter(`TargetName`, `Specifies the computers to test. Type the computer names or type IP addresses in IPv4 or IPv6 format. Wildcard characters aren't permitted. This parameter is required. ComputerName is an alias for this parameter.`, `String[]`),
-        new Parameter(`TCPPort`, `Specifies the TCP port number on the target to be used in the TCP connection test. The cmdlet will attempt to make a TCP connection to the specified port on the target.`, `Int32`),
+If all pings to a given target fail, "$False" is returned.`, `SwitchParameter`),
+        new Parameter(`ResolveDestination`, `Causes the cmdlet to attempt to resolve the DNS name of the target. When used in conjunction with the Traceroute parameter, the DNS names of all intermediate hosts will also be retrieved, if possible.`, `SwitchParameter`),
+        new Parameter(`Source`, `Specifies the names of the computers where the ping originates. Enter a comma-separated list of computer names. The default is the local computer. NOTE: This parameter is not functional in PowerShell versions 6 and up. Supplying this parameter will have no effect on the command.`, `String`),
+        new Parameter(`TargetName`, `Specifies the computer(s) to test. Type the computer names or type IP addresses in IPv4 or IPv6 format.`, `String[]`),
+        new Parameter(`TCPPort`, `Specifies the TCP port number on the target to be used in the TCP connection test. The cmdlet will attempt to make a TCP connection to the specified port on the target.
+
+
+If a connection can be made, "$True" will be returned.
+
+
+If a connection cannot be made, "$False" will be returned.`, `Int32`),
         new Parameter(`TimeoutSeconds`, `Sets the timeout value for the test. The test fails if a response isn't received before the timeout expires. The default is five seconds.
 
 
 This parameter was introduced in PowerShell 6.0.`, `Int32`),
-        new Parameter(`Traceroute`, `Causes the cmdlet to do a traceroute test. When this parameter is used, the cmdlet returns a "TestConnectionCommand+TraceRouteResult" object.`, `SwitchParameter`),
+        new Parameter(`Traceroute`, `Causes the cmdlet to do a traceroute test. When this parameter is used, the cmdlet returns a "TestConnectionCommand+TraceStatus" object.`, `SwitchParameter`),
     ], `Sends ICMP echo request packets, or pings, to one or more computers.`, `Test-Connection [-TargetName] <String[]> [-BufferSize <Int32>] [-Count <Int32>] [-Delay <System.Int32>] [-DontFragment] [-IPv4] [-IPv6] [-MaxHops <Int32>] [-Ping] [-Quiet] [-ResolveDestination] [-Source <String>] [-TimeoutSeconds <Int32>] [<CommonParameters>]
 
-Test-Connection [-TargetName] <String[]> [-BufferSize <Int32>] [-Continues] [-Delay <System.Int32>] [-DontFragment] [-IPv4] [-IPv6] [-MaxHops <Int32>] [-Ping] [-Quiet] [-ResolveDestination] [-Source <String>] [-TimeoutSeconds <Int32>] [<CommonParameters>]
+Test-Connection [-TargetName] <String[]> [-BufferSize <Int32>] [-Repeat] [-Delay <System.Int32>] [-DontFragment] [-IPv4] [-IPv6] [-MaxHops <Int32>] [-Ping] [-Quiet] [-ResolveDestination] [-Source <String>] [-TimeoutSeconds <Int32>] [<CommonParameters>]
 
 Test-Connection [-TargetName] <String[]> [-IPv4] [-IPv6] [-MaxHops <Int32>] [-Quiet] [-ResolveDestination] [-Source <String>] [-TimeoutSeconds <Int32>] -Traceroute [<CommonParameters>]
 
-Test-Connection [-TargetName] <String[]> [-IPv4] [-IPv6] -MTUSizeDetect [-Quiet] [-ResolveDestination] [-TimeoutSeconds <Int32>] [<CommonParameters>]
+Test-Connection [-TargetName] <String[]> [-IPv4] [-IPv6] -MTUSize [-Quiet] [-ResolveDestination] [-TimeoutSeconds <Int32>] [<CommonParameters>]
 
 Test-Connection [-TargetName] <String[]> [-IPv4] [-IPv6] [-Quiet] [-ResolveDestination] [-Source <String>] -TCPPort <Int32> [-TimeoutSeconds <Int32>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Test-DscConfiguration`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Test-FileCatalog`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -10996,6 +11610,8 @@ The Json parameter is required.`, `String`),
 
 For more information, see JSON Schema (https://json-schema.org/).`, `String`),
     ], `Tests whether a string is a valid JSON document`, `Test-Json [-Json] <String> [[-Schema] <String>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Test-KdsRootKey`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Test-ModuleManifest`, [
         new Parameter(`Path`, `Specifies a path and file name for the manifest file. Enter an optional path and name of the module manifest file that has the .psd1 file name extension. The default location is the current directory. Wildcard characters are supported, but must resolve to a single module manifest file. This parameter is required. You can also pipe a path to Test-ModuleManifest .`, `String`),
@@ -11170,7 +11786,13 @@ Unblock-File [-Path] <String[]> [-Confirm] [-WhatIf] [<CommonParameters>]`, "", 
     }),
     new ConsoleCommand(`Unblock-Tpm`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
+    new ConsoleCommand(`Undo-DtcDiagnosticTransaction`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
     new ConsoleCommand(`Uninstall-Package`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Uninstall-ProvisioningPackage`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Uninstall-TrustedProvisioningCertificate`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Unprotect-CmsMessage`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -11211,6 +11833,8 @@ To restart the WinRM service without prompting, specify the Force parameter. To 
         new Parameter(`Confirm`, `Prompts you for confirmation before running the cmdlet.`, `SwitchParameter`),
         new Parameter(`WhatIf`, `Shows what would happen if the cmdlet runs. The cmdlet is not run.`, `SwitchParameter`),
     ], `Deletes registered session configurations from the computer.`, `Unregister-PSSessionConfiguration [-Name] <String> [-Force] [-NoServiceRestart] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Unregister-ScheduledJob`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Unregister-WindowsDeveloperLicense`, [], `See help file for details.`, ``, "", (parameters, paramDictionary) => {
     }),
@@ -11327,6 +11951,16 @@ This parameter is effective only when the web download uses NT LAN Manager (NTLM
     ], `Downloads and installs the newest help files on your computer.`, `Update-Help [[-Module] <String[]>] [[-UICulture] <CultureInfo[]>] [-Credential <PSCredential>] [-Force] [-FullyQualifiedModule <ModuleSpecification[]>] [-LiteralPath <String[]>] [-Recurse] [-Scope <UpdateHelpScope>] [-UseDefaultCredentials] [-Confirm] [-WhatIf] [<CommonParameters>]
 
 Update-Help [[-Module] <String[]>] [[-SourcePath] <String[]>] [[-UICulture] <CultureInfo[]>] [-Credential <PSCredential>] [-Force] [-FullyQualifiedModule <ModuleSpecification[]>] [-Recurse] [-Scope <UpdateHelpScope>] [-UseDefaultCredentials] [-Confirm] [-WhatIf] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+    }),
+    new ConsoleCommand(`Update-List`, [
+        new Parameter(`Add`, `Specifies the property values to be added to the collection. Enter the values in the order that they should appear in the collection.`, `Object[]`),
+        new Parameter(`InputObject`, `Specifies the objects to be updated. You can also pipe the object to be updated to "Update-List".`, `PSObject`),
+        new Parameter(`Property`, `Specifies the property that contains the collection that is being updated. If you omit this parameter, "Update-List" returns an object that represents the change instead of changing the object.`, `String`),
+        new Parameter(`Remove`, `Specifies the property values to be removed from the collection.`, `Object[]`),
+        new Parameter(`Replace`, `Specifies a new collection. This parameter replaces all items in the original collection with the items specified by this parameter.`, `Object[]`),
+    ], `Adds items to and removes items from a property value that contains a collection of objects.`, `Update-List [[-Property] <String>] [-Add <Object[]>] [-InputObject <PSObject>] [-Remove <Object[]>] [<CommonParameters>]
+
+Update-List [[-Property] <String>] [-InputObject <PSObject>] -Replace <Object[]> [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Update-TypeData`, [
         new Parameter(`AppendPath`, `Specifies the path to optional .ps1xml files. The specified files are loaded in the order that they are listed after the built-in files are loaded. You can also pipe an AppendPath value to Update-TypeData .`, `String[]`),
@@ -11886,7 +12520,7 @@ Where-Object [-Property] <String> [[-Value] <Object>] [-InputObject <PSObject>] 
 
 Where-Object [-Property] <String> [[-Value] <Object>] [-InputObject <PSObject>] -NE [<CommonParameters>]
 
-Where-Object [-InputObject <PSObject>] -Not [<CommonParameters>]
+Where-Object [-Property] <String> [-InputObject <PSObject>] -Not [<CommonParameters>]
 
 Where-Object [-Property] <String> [[-Value] <Object>] [-InputObject <PSObject>] -NotContains [<CommonParameters>]
 
@@ -12019,9 +12653,9 @@ To create an exception object, use a hash table or use the "New-Object" cmdlet.`
         new Parameter(`Message`, `Specifies the message text of the error. If the text includes spaces or special characters, enclose it in quotation marks. You can also pipe a message string to "Write-Error".`, `String`),
         new Parameter(`RecommendedAction`, `Specifies the action that the user should take to resolve or prevent the error.`, `String`),
         new Parameter(`TargetObject`, `Specifies the object that was being processed when the error occurred. Enter the object, a variable that contains the object, or a command that gets the object.`, `Object`),
-    ], `Writes an object to the error stream.`, `Write-Error [-Message] <String> [-Category {NotSpecified | OpenError | CloseError | DeviceError | DeadlockDetected | InvalidArgument | InvalidData | InvalidOperation | InvalidResult | InvalidType | MetadataError | NotImplemented | NotInstalled | ObjectNotFound | OperationStopped | OperationTimeout | SyntaxError | ParserError | PermissionDenied | ResourceBusy | ResourceExists | ResourceUnavailable | ReadError | WriteError | FromStdErr | SecurityError | ProtocolError | ConnectionError | AuthenticationError | LimitsExceeded | QuotaExceeded | NotEnabled}] [-CategoryActivity <String>] [-CategoryReason <String>] [-CategoryTargetName <String>] [-CategoryTargetType <String>] [-ErrorId <String>] [-RecommendedAction <String>] [-TargetObject <Object>] [<CommonParameters>]
+    ], `Writes an object to the error stream.`, `Write-Error [[-Message] <String>] [-Category {NotSpecified | OpenError | CloseError | DeviceError | DeadlockDetected | InvalidArgument | InvalidData | InvalidOperation | InvalidResult | InvalidType | MetadataError | NotImplemented | NotInstalled | ObjectNotFound | OperationStopped | OperationTimeout | SyntaxError | ParserError | PermissionDenied | ResourceBusy | ResourceExists | ResourceUnavailable | ReadError | WriteError | FromStdErr | SecurityError | ProtocolError | ConnectionError | AuthenticationError | LimitsExceeded | QuotaExceeded | NotEnabled}] [-CategoryActivity <String>] [-CategoryReason <String>] [-CategoryTargetName <String>] [-CategoryTargetType <String>] [-ErrorId <String>] [-RecommendedAction <String>] [-TargetObject <Object>] [<CommonParameters>]
 
-Write-Error [-Message] <String> [-Category {NotSpecified | OpenError | CloseError | DeviceError | DeadlockDetected | InvalidArgument | InvalidData | InvalidOperation | InvalidResult | InvalidType | MetadataError | NotImplemented | NotInstalled | ObjectNotFound | OperationStopped | OperationTimeout | SyntaxError | ParserError | PermissionDenied | ResourceBusy | ResourceExists | ResourceUnavailable | ReadError | WriteError | FromStdErr | SecurityError | ProtocolError | ConnectionError | AuthenticationError | LimitsExceeded | QuotaExceeded | NotEnabled}] [-CategoryActivity <String>] [-CategoryReason <String>] [-CategoryTargetName <String>] [-CategoryTargetType <String>] [-ErrorId <String>] -Exception <Exception> [-RecommendedAction <String>] [-TargetObject <Object>] [<CommonParameters>]
+Write-Error [[-Message] <String>] [-Category {NotSpecified | OpenError | CloseError | DeviceError | DeadlockDetected | InvalidArgument | InvalidData | InvalidOperation | InvalidResult | InvalidType | MetadataError | NotImplemented | NotInstalled | ObjectNotFound | OperationStopped | OperationTimeout | SyntaxError | ParserError | PermissionDenied | ResourceBusy | ResourceExists | ResourceUnavailable | ReadError | WriteError | FromStdErr | SecurityError | ProtocolError | ConnectionError | AuthenticationError | LimitsExceeded | QuotaExceeded | NotEnabled}] [-CategoryActivity <String>] [-CategoryReason <String>] [-CategoryTargetName <String>] [-CategoryTargetType <String>] [-ErrorId <String>] -Exception <Exception> [-RecommendedAction <String>] [-TargetObject <Object>] [<CommonParameters>]
 
 Write-Error [-CategoryActivity <String>] [-CategoryReason <String>] [-CategoryTargetName <String>] [-CategoryTargetType <String>] -ErrorRecord <ErrorRecord> [-RecommendedAction <String>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
@@ -12135,12 +12769,12 @@ Write-Error [-CategoryActivity <String>] [-CategoryReason <String>] [-CategoryTa
     ], `Specifies how PowerShell handles information stream data for a command.`, `Write-Information [-MessageData] <Object> [[-Tags] <String[]>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Write-Output`, [
-        new Parameter(`InputObject`, `Specifies the objects to send down the pipeline. Enter a variable that contains the objects, or type a command or expression that gets the objects.`, `PSObject[]`),
-        new Parameter(`NoEnumerate`, `By default, the Write-Output cmdlet always enumerates its output. The NoEnumerate parameter suppresses the default behavior, and prevents Write-Output from enumerating output. The NoEnumerate parameter has no effect on collections that were created by wrapping commands in parentheses, because the parentheses force enumeration.
+        new Parameter(`InputObject`, `Specifies the objects to send down the pipeline. Enter a variable that contains the objects, or type a command or expression that gets the objects.`, `PSObject`),
+        new Parameter(`NoEnumerate`, `By default, the "Write-Output" cmdlet always enumerates its output. The NoEnumerate parameter suppresses the default behavior, and prevents "Write-Output" from enumerating output. The NoEnumerate parameter has no effect on collections that were created by wrapping commands in parentheses, because the parentheses force enumeration.
 
 
-> [!NOTE] > This switch only works correctly with PowerShell Core 6.2 and newer. On older > versions of PowerShell Core, the collection is still enumerated even with > use of this switch.  The behavior in PowerShell Core 6.2 is consistent with > Windows PowerShell.`, `SwitchParameter`),
-    ], `Sends the specified objects to the next command in the pipeline. If the command is the last command in the pipeline, the objects are displayed in the console.`, `Write-Output [-InputObject] <PSObject[]> [-NoEnumerate] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
+> [!NOTE] > This switch only works correctly with PowerShell Core 6.2 and newer. On older versions of > PowerShell Core, the collection is still enumerated even with use of this switch.`, `SwitchParameter`),
+    ], `Sends the specified objects to the next command in the pipeline. If the command is the last command in the pipeline, the objects are displayed in the console.`, `Write-Output [-InputObject] <PSObject> [-NoEnumerate] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
     new ConsoleCommand(`Write-Progress`, [
         new Parameter(`Activity`, `Specifies the first line of text in the heading above the status bar. This text describes the activity whose progress is being reported.`, `String`),
@@ -12150,7 +12784,7 @@ Write-Error [-CategoryActivity <String>] [-CategoryReason <String>] [-CategoryTa
         new Parameter(`ParentId`, `Specifies the parent activity of the current activity. Use the value -1 if the current activity has no parent activity.`, `Int32`),
         new Parameter(`PercentComplete`, `Specifies the percentage of the activity that is completed. Use the value -1 if the percentage complete is unknown or not applicable.`, `Int32`),
         new Parameter(`SecondsRemaining`, `Specifies the projected number of seconds remaining until the activity is completed. Use the value -1 if the number of seconds remaining is unknown or not applicable.`, `Int32`),
-        new Parameter(`SourceId`, `Specifies the source of the record.`, `Int32`),
+        new Parameter(`SourceId`, `Specifies the source of the record. You can use this in place of Id but cannot be used with other parameters like ParentId .`, `Int32`),
         new Parameter(`Status`, `Specifies the second line of text in the heading above the status bar. This text describes current state of the activity.`, `String`),
     ], `Displays a progress bar within a PowerShell command window.`, `Write-Progress [-Activity] <String> [[-Status] <String>] [[-Id] <Int32>] [-Completed] [-CurrentOperation <String>] [-ParentId <Int32>] [-PercentComplete <Int32>] [-SecondsRemaining <Int32>] [-SourceId <Int32>] [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     }),
@@ -12161,7 +12795,7 @@ Write-Error [-CategoryActivity <String>] [-CategoryReason <String>] [-CategoryTa
     new ConsoleCommand(`Write-Warning`, [
         new Parameter(`Message`, `Specifies the warning message.`, `String`),
     ], `Writes a warning message.`, `Write-Warning [-Message] <String> [<CommonParameters>]`, "", (parameters, paramDictionary) => {
-    }),
+    })
 ];
 export const PSCoreCommands = commands;
 //# sourceMappingURL=PSCoreCommands.js.map
