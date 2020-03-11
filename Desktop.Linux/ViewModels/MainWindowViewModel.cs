@@ -149,7 +149,30 @@ namespace Remotely.Desktop.Linux.ViewModels
                     await PromptForHostName();
                 }
                 Conductor.ProcessArgs(new string[] { "-mode", "Normal", "-host", Host });
+
                 await Conductor.Connect();
+
+                Conductor.CasterSocket.Connection.Closed += async (ex) =>
+                {
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        SessionID = "Disconnected";
+                    });
+                };
+
+                Conductor.CasterSocket.Connection.Reconnecting += async (ex) =>
+                {
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        SessionID = "Reconnecting";
+                    });
+                };
+
+                Conductor.CasterSocket.Connection.Reconnected += async (arg) =>
+                {
+                    await GetSessionID();
+                };
+
 
                 await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
                 await Conductor.CasterSocket.GetSessionID();
@@ -161,6 +184,13 @@ namespace Remotely.Desktop.Linux.ViewModels
                 return;
             }
         }
+
+        public async Task GetSessionID()
+        {
+            await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
+            await Conductor.CasterSocket.GetSessionID();
+        }
+
 
         public async Task PromptForHostName()
         {
@@ -205,6 +235,7 @@ namespace Remotely.Desktop.Linux.ViewModels
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
         }
+
         private void ScreenCastRequested(object sender, ScreenCastRequest screenCastRequest)
         {
             Dispatcher.UIThread.InvokeAsync(async () =>

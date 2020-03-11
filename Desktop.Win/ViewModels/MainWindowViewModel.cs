@@ -64,39 +64,6 @@ namespace Remotely.Desktop.Win.ViewModels
         public Conductor Conductor { get; }
         public CursorIconWatcher CursorIconWatcher { get; private set; }
 
-        public string Host
-        {
-            get => host;
-            set
-            {
-                host = value;
-                FirePropertyChanged("Host");
-            }
-        }
-
-        public bool IsAdministrator => new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
-
-        public ICommand RemoveViewersCommand
-        {
-            get
-            {
-                return new Executor(async (param) =>
-                {
-                    foreach (Viewer viewer in (param as IList<object>).ToArray())
-                    {
-                        viewer.DisconnectRequested = true;
-                        ViewerRemoved(this, viewer.ViewerConnectionID);
-                        await Conductor.CasterSocket.SendViewerRemoved(viewer.ViewerConnectionID);
-                    }
-                },
-                (param) =>
-                {
-                    return (param as IList<object>)?.Count > 0;
-                });
-            }
-
-        }
-
         public ICommand ElevateToAdminCommand
         {
             get
@@ -151,6 +118,38 @@ namespace Remotely.Desktop.Win.ViewModels
             }
         }
 
+        public string Host
+        {
+            get => host;
+            set
+            {
+                host = value;
+                FirePropertyChanged("Host");
+            }
+        }
+
+        public bool IsAdministrator => new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
+
+        public ICommand RemoveViewersCommand
+        {
+            get
+            {
+                return new Executor(async (param) =>
+                {
+                    foreach (Viewer viewer in (param as IList<object>).ToArray())
+                    {
+                        viewer.DisconnectRequested = true;
+                        ViewerRemoved(this, viewer.ViewerConnectionID);
+                        await Conductor.CasterSocket.SendViewerRemoved(viewer.ViewerConnectionID);
+                    }
+                },
+                (param) =>
+                {
+                    return (param as IList<object>)?.Count > 0;
+                });
+            }
+
+        }
         public string SessionID
         {
             get => sessionID;
@@ -184,6 +183,30 @@ namespace Remotely.Desktop.Win.ViewModels
             try
             {
                 await Conductor.Connect();
+
+
+                Conductor.CasterSocket.Connection.Closed += async (ex) =>
+                {
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        SessionID = "Disconnected";
+                    });
+                };
+
+                Conductor.CasterSocket.Connection.Reconnecting += async (ex) =>
+                {
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        SessionID = "Reconnecting";
+                    });
+                };
+
+                Conductor.CasterSocket.Connection.Reconnected += async (arg) => 
+                {
+                    await GetSessionID();
+                };
+
+                await GetSessionID();
             }
             catch (Exception ex)
             {
@@ -191,7 +214,10 @@ namespace Remotely.Desktop.Win.ViewModels
                 MessageBox.Show(Application.Current.MainWindow, "Failed to connect to server.", "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
+        }
 
+        public async Task GetSessionID()
+        {
             await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
             await Conductor.CasterSocket.GetSessionID();
         }
@@ -235,7 +261,8 @@ namespace Remotely.Desktop.Win.ViewModels
             serviceCollection.AddSingleton<CasterSocket>();
             serviceCollection.AddSingleton<IdleTimer>();
             serviceCollection.AddSingleton<Conductor>();
-            serviceCollection.AddTransient<ICapturer>(provider => {
+            serviceCollection.AddTransient<ICapturer>(provider =>
+            {
                 try
                 {
                     var dxCapture = new DXCapture();
@@ -259,9 +286,10 @@ namespace Remotely.Desktop.Win.ViewModels
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
         }
+
         private async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)
         {
-            if (Conductor?.CasterSocket != null && Conductor?.Viewers?.Count > 0)
+            if (Conductor?.CasterSocket?.IsConnected == true && Conductor?.Viewers?.Count > 0)
             {
                 await Conductor?.CasterSocket?.SendCursorChange(cursor, Conductor.Viewers.Keys.ToList());
             }
