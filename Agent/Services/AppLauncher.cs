@@ -166,7 +166,6 @@ namespace Remotely.Agent.Services
 
             var processes = OSUtils.StartProcessWithResults("ps", "-eaf").Split(Environment.NewLine);
             var xorgLine = processes.FirstOrDefault(x => x.Contains("xorg"));
-            Logger.Write($"Xorg Line: {xorgLine}");
             var xorgSplit = xorgLine.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
             var auth = xorgSplit[xorgSplit.IndexOf("-auth") + 1];
             if (!string.IsNullOrWhiteSpace(auth))
@@ -175,17 +174,27 @@ namespace Remotely.Agent.Services
             }
 
             var display = ":0";
-            var whoString = OSUtils.StartProcessWithResults("who", "")?.Trim();
+            var whoString = OSUtils.StartProcessWithResults("w", "-h")?.Trim();
             var username = string.Empty;
 
             if (!string.IsNullOrWhiteSpace(whoString))
             {
-                var whoLine = whoString.Split('\n', StringSplitOptions.RemoveEmptyEntries).First();
-                var whoSplit = whoLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                username = whoSplit[0];
-                display = whoSplit.Last().Trim('(').Trim(')');
-                xauthority = $"/home/{username}/.Xauthority";
-                args = $"-u {username} {args}";
+                try
+                {
+                    var whoLine = whoString
+                        .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+                        .First();
+
+                    var whoSplit = whoLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    username = whoSplit[0];
+                    display = whoSplit[2];
+                    xauthority = $"/home/{username}/.Xauthority";
+                    args = $"-u {username} {args}";
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
             }
 
             var psi = new ProcessStartInfo()
