@@ -170,10 +170,7 @@ namespace Remotely.Desktop.Win.ViewModels
         {
             SessionID = "Retrieving...";
 
-            if (string.IsNullOrWhiteSpace(Host))
-            {
-                Host = Config.GetConfig().Host;
-            }
+            Host = Config.GetConfig().Host;
 
             while (string.IsNullOrWhiteSpace(Host))
             {

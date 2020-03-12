@@ -61,7 +61,6 @@ namespace Remotely.Server.API
             {
                 if (await FileLock.WaitAsync(TimeSpan.FromSeconds(15)))
                 {
-                    var organizationName = DataService.GetOrganizationNameById(organizationID);
                     var scheme = AppConfig.RedirectToHttps ? "https" : Request.Scheme;
                     var fileContents = new List<string>();
                     string fileName;
