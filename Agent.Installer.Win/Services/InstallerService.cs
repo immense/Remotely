@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using Microsoft.VisualBasic.FileIO;
+using Microsoft.Win32;
 using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;
@@ -251,7 +252,7 @@ namespace Remotely.Agent.Installer.Win.Services
                     }
                     else if (Directory.Exists(entry))
                     {
-                        Directory.Move(entry, Path.Combine(InstallPath, new DirectoryInfo(entry).Name));
+                        FileSystem.CopyDirectory(entry, Path.Combine(InstallPath, new DirectoryInfo(entry).Name), true);
                     }
                     await Task.Delay(1);
                 }
