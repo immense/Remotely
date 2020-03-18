@@ -23,11 +23,11 @@ param (
 
 
 $ErrorActionPreference = "Stop"
-$Year = (Get-Date).Year.ToString()
-$Month = (Get-Date).Month.ToString().PadLeft(2, "0")
-$Day = (Get-Date).Day.ToString().PadLeft(2, "0")
-$Hour = (Get-Date).Hour.ToString().PadLeft(2, "0")
-$Minute = (Get-Date).Minute.ToString().PadLeft(2, "0")
+$Year = ([DateTime]::UtcNow).Year.ToString()
+$Month = ([DateTime]::UtcNow).Month.ToString().PadLeft(2, "0")
+$Day = ([DateTime]::UtcNow).Day.ToString().PadLeft(2, "0")
+$Hour = ([DateTime]::UtcNow).Hour.ToString().PadLeft(2, "0")
+$Minute = ([DateTime]::UtcNow).Minute.ToString().PadLeft(2, "0")
 $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
 $MSBuildPath = (Get-ChildItem -Path "${env:ProgramFiles(x86)}\Microsoft Visual Studio\" -Recurse -Filter "MSBuild.exe" -File)[0].FullName
 $Root = (Get-Item -Path $PSScriptRoot).Parent.FullName
