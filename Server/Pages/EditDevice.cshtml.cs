@@ -31,10 +31,21 @@ namespace Remotely.Server.Pages
 
         private DataService DataService { get; }
 
-        public void OnGet(string deviceID, bool success)
+        public IActionResult OnGet(string deviceID, bool success)
         {
+            var user = DataService.GetUserByName(User.Identity.Name);
+            if (!DataService.DoesUserHaveAccessToDevice(deviceID, user))
+            {
+                var targetDevice = DataService.GetDevice(deviceID);
+                DataService.WriteEvent($"Edit device attempted by unauthorized user.  Device ID: {deviceID}.  User Name: {user.UserName}.",
+                    Remotely.Shared.Models.EventType.Warning,
+                    targetDevice.OrganizationID);
+                return Unauthorized();
+            }
             SaveSucessful = success;
             PopulateViewModel(deviceID);
+
+            return Page();
         }
 
         public IActionResult OnPost(string deviceID)

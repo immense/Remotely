@@ -134,9 +134,9 @@ namespace Remotely.Server.Services
 
 		public Task RemoteControl(string deviceID)
 		{
-			if (DataService.DoesUserHaveAccessToDevice(deviceID, RemotelyUser))
+            var targetDevice = DeviceSocketHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == deviceID);
+            if (DataService.DoesUserHaveAccessToDevice(deviceID, RemotelyUser))
 			{
-				var targetDevice = DeviceSocketHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == deviceID);
 				var currentUsers = RCDeviceSocketHub.SessionInfoList.Count(x => x.Value.OrganizationID == RemotelyUser.OrganizationID);
 				if (currentUsers >= AppConfig.RemoteControlSessionLimit)
 				{
@@ -145,6 +145,10 @@ namespace Remotely.Server.Services
 				Clients.Caller.SendAsync("ServiceID", targetDevice.Key);
                 return DeviceHub.Clients.Client(targetDevice.Key).SendAsync("RemoteControl", Context.ConnectionId, targetDevice.Key);
 			}
+            else
+            {
+                DataService.WriteEvent($"Remote control attempted by unauthorized user.  Device ID: {deviceID}.  User Name: {RemotelyUser.UserName}.", EventType.Warning, targetDevice.Value.OrganizationID);
+            }
             return Task.CompletedTask;
 		}
 
