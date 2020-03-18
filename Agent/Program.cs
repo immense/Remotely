@@ -88,6 +88,7 @@ namespace Remotely.Agent
                         Logger.Write($"Websocket closed.  Reconnecting in {waitTime / 1000} seconds...");
                         await Task.Delay(waitTime);
                         await Services.GetRequiredService<DeviceSocket>().Connect();
+                        await Services.GetRequiredService<Updater>().CheckForUpdates();
                     }
                 }
                 catch (Exception ex)
