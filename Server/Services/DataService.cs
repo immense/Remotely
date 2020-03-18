@@ -549,7 +549,12 @@ namespace Remotely.Server.Services
                 ) ?? Enumerable.Empty<DeviceGroup>();
         }
 
-        public IEnumerable<Device> GetDevicesForUser(string userName)
+        public Device GetDevice(string deviceID)
+        {
+            return RemotelyContext.Devices.FirstOrDefault(x => x.ID == deviceID);
+        }
+
+        public IEnumerable<DeviceGroup> GetDeviceGroupsForUserName(string username)
         {
             var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);
             var userID = user.Id;

@@ -21,14 +21,37 @@ namespace Remotely.Agent.Services
         }
 
         private ConfigService ConfigService { get; }
+        private System.Timers.Timer UpdateTimer { get; } = new System.Timers.Timer(TimeSpan.FromHours(6).TotalMilliseconds);
+
+
+        public async Task BeginChecking()
+        {
+            await CheckForUpdates();
+            UpdateTimer.Elapsed += UpdateTimer_Elapsed;
+            UpdateTimer.Start();
+        }
+
+        private async void UpdateTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            await CheckForUpdates();
+        }
 
         public async Task CheckForUpdates()
         {
             try
             {
+                var hc = new HttpClient();
                 var wc = new WebClient();
                 var connectionInfo = ConfigService.GetConnectionInfo();
-                var response = new HttpClient().GetAsync(connectionInfo.Host + $"/API/AgentUpdate/CurrentVersion").Result;
+                var response = await hc.GetAsync(connectionInfo.Host + $"/API/AgentUpdate/ServerVerificationToken/{connectionInfo.DeviceID}");
+
+                if (await response.Content.ReadAsStringAsync() != connectionInfo.ServerVerificationToken)
+                {
+                    Logger.Write("Server responded with incorrect verification token.  Skipping update.");
+                    return;
+                }
+
+                response = await hc.GetAsync(connectionInfo.Host + $"/API/AgentUpdate/CurrentVersion");
                 var latestVersion = response.Content.ReadAsStringAsync().Result;
                 var thisVersion = FileVersionInfo.GetVersionInfo("Remotely_Agent.dll").FileVersion.ToString().Trim();
                 if (thisVersion != latestVersion)
