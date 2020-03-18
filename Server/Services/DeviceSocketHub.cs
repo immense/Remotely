@@ -92,11 +92,16 @@ namespace Remotely.Server.Services
                 {
                     Device = updatedDevice;
                     ServiceConnections.AddOrUpdate(Context.ConnectionId, Device, (id, d) => Device);
+                    
+                    var userIDs = BrowserSocketHub.ConnectionIdToUserLookup.Values.Select(x => x.Id);
+
+                    var filteredUserIDs = DataService.FilterUsersByDevicePermission(userIDs, Device.ID);
 
                     var connectionIds = BrowserSocketHub.ConnectionIdToUserLookup
-                                                    .Where(x => x.Value.OrganizationID == Device.OrganizationID)
-                                                    .Select(x => x.Key)
-                                                    .ToList();
+                                                   .Where(x => x.Value.OrganizationID == Device.OrganizationID &&
+                                                                filteredUserIDs.Contains(x.Value.Id))
+                                                   .Select(x => x.Key)
+                                                   .ToList();
 
                     BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceCameOnline", Device);
                     return Task.FromResult(true);
@@ -120,10 +125,16 @@ namespace Remotely.Server.Services
         {
             DataService.AddOrUpdateDevice(device, out var updatedDevice);
             Device = updatedDevice;
+
+            var userIDs = BrowserSocketHub.ConnectionIdToUserLookup.Values.Select(x => x.Id);
+
+            var filteredUserIDs = DataService.FilterUsersByDevicePermission(userIDs, Device.ID);
+
             var connectionIds = BrowserSocketHub.ConnectionIdToUserLookup
-                                            .Where(x => x.Value.OrganizationID == Device.OrganizationID)
-                                            .Select(x => x.Key)
-                                            .ToList();
+                                           .Where(x => x.Value.OrganizationID == Device.OrganizationID &&
+                                                        filteredUserIDs.Contains(x.Value.Id))
+                                           .Select(x => x.Key)
+                                           .ToList();
 
             return BrowserHub.Clients.Clients(connectionIds).SendAsync("DeviceHeartbeat", Device);
         }

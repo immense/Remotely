@@ -380,12 +380,12 @@ namespace Remotely.Server.Services
             return RemotelyContext.Devices
                 .Include(x => x.DeviceGroup)
                 .ThenInclude(x => x.PermissionLinks)
-                .Any(x => x.OrganizationID == remotelyUser.OrganizationID &&
-                    x.ID == deviceID &&
+                .Any(device => device.OrganizationID == remotelyUser.OrganizationID &&
+                    device.ID == deviceID &&
                     (
                         remotelyUser.IsAdministrator ||
-                        x.DeviceGroup.PermissionLinks.Count == 0 ||
-                        x.DeviceGroup.PermissionLinks.Any(x => x.UserID == remotelyUser.Id
+                        device.DeviceGroup.PermissionLinks.Count == 0 ||
+                        device.DeviceGroup.PermissionLinks.Any(permission => permission.UserID == remotelyUser.Id
                     )));
         }
 
@@ -401,17 +401,41 @@ namespace Remotely.Server.Services
             return RemotelyContext.Devices
                 .Include(x => x.DeviceGroup)
                 .ThenInclude(x => x.PermissionLinks)
-                .Where(x => 
-                    x.OrganizationID == remotelyUser.OrganizationID &&
-                    deviceIDs.Contains(x.ID) &&
+                .Where(device => 
+                    device.OrganizationID == remotelyUser.OrganizationID &&
+                    deviceIDs.Contains(device.ID) &&
                     (
                         remotelyUser.IsAdministrator ||
-                        x.DeviceGroup.PermissionLinks.Count == 0 ||
-                        x.DeviceGroup.PermissionLinks.Any(x => x.UserID == remotelyUser.Id
+                        device.DeviceGroup.PermissionLinks.Count == 0 ||
+                        device.DeviceGroup.PermissionLinks.Any(permission => permission.UserID == remotelyUser.Id
                     )))
                 .Select(x => x.ID)
                 .ToArray();
         }
+
+        public IEnumerable<string> FilterUsersByDevicePermission(IEnumerable<string> userIDs, string deviceID)
+        {
+            var device = RemotelyContext.Devices
+                .Include(x => x.DeviceGroup)
+                .ThenInclude(x => x.PermissionLinks)
+                .FirstOrDefault(x => x.ID == deviceID);
+
+            var allowedUsers = device.DeviceGroup.PermissionLinks.Select(x => x.UserID);
+
+            return RemotelyContext.Users
+                .Include(x => x.PermissionLinks)
+                .Where(user =>
+                    user.OrganizationID == device.OrganizationID &&
+                    userIDs.Contains(user.Id) &&
+                    (
+                        user.IsAdministrator ||
+                        device.DeviceGroup.PermissionLinks.Count == 0 ||
+                        allowedUsers.Contains(user.Id)
+                    )
+                )
+                .Select(x => x.Id);
+        }
+
 
         public IEnumerable<ApiToken> GetAllApiTokens(string userID)
         {
@@ -493,6 +517,11 @@ namespace Remotely.Server.Services
                             x.ID == deviceID);
         }
 
+        public Device GetDevice(string deviceID)
+        {
+            return RemotelyContext.Devices.FirstOrDefault(x => x.ID == deviceID);
+        }
+
         public int GetDeviceCount()
         {
             return RemotelyContext.Devices.Count();
@@ -533,7 +562,7 @@ namespace Remotely.Server.Services
                     (
                         user.IsAdministrator ||
                         x.DeviceGroup.PermissionLinks.Count == 0 ||
-                        x.DeviceGroup.PermissionLinks.Any(x => x.UserID == userID
+                        x.DeviceGroup.PermissionLinks.Any(permission => permission.UserID == userID
                     )));
         }
 
