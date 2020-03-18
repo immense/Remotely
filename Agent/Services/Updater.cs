@@ -21,6 +21,7 @@ namespace Remotely.Agent.Services
         }
 
         private ConfigService ConfigService { get; }
+        private SemaphoreSlim UpdateLock { get; } = new SemaphoreSlim(1);
         private System.Timers.Timer UpdateTimer { get; } = new System.Timers.Timer(TimeSpan.FromHours(6).TotalMilliseconds);
 
 
@@ -40,18 +41,13 @@ namespace Remotely.Agent.Services
         {
             try
             {
+                await UpdateLock.WaitAsync();
+
                 var hc = new HttpClient();
                 var wc = new WebClient();
                 var connectionInfo = ConfigService.GetConnectionInfo();
-                var response = await hc.GetAsync(connectionInfo.Host + $"/API/AgentUpdate/ServerVerificationToken/{connectionInfo.DeviceID}");
 
-                if (await response.Content.ReadAsStringAsync() != connectionInfo.ServerVerificationToken)
-                {
-                    Logger.Write("Server responded with incorrect verification token.  Skipping update.");
-                    return;
-                }
-
-                response = await hc.GetAsync(connectionInfo.Host + $"/API/AgentUpdate/CurrentVersion");
+                var response = await hc.GetAsync(connectionInfo.Host + $"/API/AgentUpdate/CurrentVersion");
                 var latestVersion = response.Content.ReadAsStringAsync().Result;
                 var thisVersion = FileVersionInfo.GetVersionInfo("Remotely_Agent.dll").FileVersion.ToString().Trim();
                 if (thisVersion != latestVersion)
@@ -96,6 +92,10 @@ namespace Remotely.Agent.Services
             catch (Exception ex)
             {
                 Logger.Write(ex);
+            }
+            finally
+            {
+                UpdateLock.Release();
             }
         }
     }
