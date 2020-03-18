@@ -33,6 +33,12 @@ namespace Remotely.Server.API
             return System.IO.File.ReadAllText(filePath).Trim();
         }
 
+        [HttpGet("[action]/{deviceID}")]
+        public string ServerVerificationToken(string deviceID)
+        {
+            return DataService.GetDevice(deviceID)?.ServerVerificationToken;
+        }
+
         [HttpGet("[action]")]
         public int UpdateWindow()
         {

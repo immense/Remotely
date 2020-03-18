@@ -53,7 +53,7 @@ namespace Remotely.Agent
             serviceCollection.AddTransient<WindowsPS>();
             serviceCollection.AddScoped<ConfigService>();
             serviceCollection.AddScoped<Logger>();
-            serviceCollection.AddScoped<Updater>();
+            serviceCollection.AddSingleton<Updater>();
             serviceCollection.AddScoped<Uninstaller>();
             serviceCollection.AddScoped<ScriptRunner>();
             serviceCollection.AddScoped<CommandExecutor>();
@@ -108,6 +108,11 @@ namespace Remotely.Agent
 
             SetWorkingDirectory();
             var argDict = ProcessArgs(args);
+
+            if (!IsDebug)
+            {
+                await Services.GetRequiredService<Updater>().BeginChecking();
+            }
 
             if (!IsDebug && OSUtils.IsWindows)
             {

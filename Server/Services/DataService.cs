@@ -371,6 +371,11 @@ namespace Remotely.Server.Services
                             x.ID == deviceID);
         }
 
+        public Device GetDevice(string deviceID)
+        {
+            return RemotelyContext.Devices.FirstOrDefault(x => x.ID == deviceID);
+        }
+
         public IEnumerable<DeviceGroup> GetDeviceGroupsForUserName(string username)
         {
             var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == username);
