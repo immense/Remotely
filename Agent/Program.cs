@@ -111,18 +111,19 @@ namespace Remotely.Agent
 
                 SetWorkingDirectory();
 
-            if (!IsDebug)
-            {
-                await Services.GetRequiredService<Updater>().BeginChecking();
-            }
 
-            if (!IsDebug && OSUtils.IsWindows)
-            {
-                _ = Task.Run(() =>
+                if (!IsDebug && OSUtils.IsWindows)
                 {
-                    ServiceBase.Run(new WindowsService());
-                });
-            }
+                    _ = Task.Run(() =>
+                    {
+                        ServiceBase.Run(new WindowsService());
+                    });
+                }
+
+                if (!IsDebug)
+                {
+                    await Services.GetRequiredService<Updater>().BeginChecking();
+                }
 
 
                 await Services.GetRequiredService<DeviceSocket>().Connect();
