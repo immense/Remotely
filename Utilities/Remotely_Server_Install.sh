@@ -135,7 +135,7 @@ echo "$serviceConfig" > /etc/systemd/system/remotely.service
 # Enable service.
 systemctl enable remotely.service
 # Start service.
-systemctl start remotely.service
+systemctl restart remotely.service
 
 
 # Install Certbot and get SSL cert.
