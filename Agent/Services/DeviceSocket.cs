@@ -19,15 +19,13 @@ namespace Remotely.Agent.Services
 {
     public class DeviceSocket
     {
-        public DeviceSocket(Updater updater, 
-            ConfigService configService, 
+        public DeviceSocket(ConfigService configService, 
             Uninstaller uninstaller, 
             CommandExecutor commandExecutor,
             ScriptRunner scriptRunner,
             AppLauncher appLauncher,
             ChatClientService chatService)
         {
-            Updater = updater;
             ConfigService = configService;
             Uninstaller = uninstaller;
             CommandExecutor = commandExecutor;
@@ -46,7 +44,6 @@ namespace Remotely.Agent.Services
         private bool IsServerVerified { get; set; }
         private ScriptRunner ScriptRunner { get; }
         private Uninstaller Uninstaller { get; }
-        private Updater Updater { get; }
         public async Task Connect()
         {
             ConnectionInfo = ConfigService.GetConnectionInfo();
@@ -226,10 +223,6 @@ namespace Remotely.Agent.Services
                 if (verificationToken == ConnectionInfo.ServerVerificationToken)
                 {
                     IsServerVerified = true;
-                    if (!Program.IsDebug)
-                    {
-                        _ = Task.Run(Updater.CheckForUpdates);
-                    }
                 }
                 else
                 {

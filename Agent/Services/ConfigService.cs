@@ -88,6 +88,7 @@ namespace Remotely.Agent.Services
         {
             lock (fileLock)
             {
+                this.connectionInfo = connectionInfo;
                 File.WriteAllText("ConnectionInfo.json", JsonSerializer.Serialize(connectionInfo));
             }
         }

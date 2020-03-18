@@ -53,7 +53,7 @@ namespace Remotely.Agent
             serviceCollection.AddTransient<WindowsPS>();
             serviceCollection.AddScoped<ConfigService>();
             serviceCollection.AddScoped<Logger>();
-            serviceCollection.AddScoped<Updater>();
+            serviceCollection.AddSingleton<Updater>();
             serviceCollection.AddScoped<Uninstaller>();
             serviceCollection.AddScoped<ScriptRunner>();
             serviceCollection.AddScoped<CommandExecutor>();
@@ -110,13 +110,18 @@ namespace Remotely.Agent
 
                 SetWorkingDirectory();
 
-                if (!IsDebug && OSUtils.IsWindows)
+            if (!IsDebug)
+            {
+                await Services.GetRequiredService<Updater>().BeginChecking();
+            }
+
+            if (!IsDebug && OSUtils.IsWindows)
+            {
+                _ = Task.Run(() =>
                 {
-                    _ = Task.Run(() =>
-                    {
-                        ServiceBase.Run(new WindowsService());
-                    });
-                }
+                    ServiceBase.Run(new WindowsService());
+                });
+            }
 
 
                 await Services.GetRequiredService<DeviceSocket>().Connect();
