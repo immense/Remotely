@@ -420,7 +420,7 @@ namespace Remotely.Server.Services
                 .ThenInclude(x => x.PermissionLinks)
                 .FirstOrDefault(x => x.ID == deviceID);
 
-            var allowedUsers = device.DeviceGroup.PermissionLinks.Select(x => x.UserID);
+            var allowedUsers = device?.DeviceGroup?.PermissionLinks?.Select(x => x.UserID) ?? Array.Empty<string>();
 
             return RemotelyContext.Users
                 .Include(x => x.PermissionLinks)
