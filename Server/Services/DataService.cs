@@ -413,7 +413,7 @@ namespace Remotely.Server.Services
                 .ToArray();
         }
 
-        public IEnumerable<string> FilterUsersByDevicePermission(IEnumerable<string> userIDs, string deviceID)
+        public string[] FilterUsersByDevicePermission(IEnumerable<string> userIDs, string deviceID)
         {
             var device = RemotelyContext.Devices
                 .Include(x => x.DeviceGroup)
@@ -429,11 +429,12 @@ namespace Remotely.Server.Services
                     userIDs.Contains(user.Id) &&
                     (
                         user.IsAdministrator ||
-                        device.DeviceGroup.PermissionLinks.Count == 0 ||
+                        allowedUsers.Count() == 0 ||
                         allowedUsers.Contains(user.Id)
                     )
                 )
-                .Select(x => x.Id);
+                .Select(x => x.Id)
+                .ToArray();
         }
 
 
