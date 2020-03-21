@@ -13,11 +13,11 @@ namespace Remotely.ScreenCast.Core.Models
 {
     public class Viewer : IDisposable
     {
-        private long imageQuality = 50;
+        private long imageQuality;
 
         public Viewer()
         {
-            ImageQuality = 50;
+            ImageQuality = 75;
         }
         public bool AutoAdjustQuality { get; internal set; } = true;
         public ICapturer Capturer { get; set; }
