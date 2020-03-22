@@ -5,19 +5,25 @@
    Copyright ©  2020 Translucency Software.  All rights reserved.
 #>
 param (
+     # The name to use for the IIS Application Pool for the Remotely site.
     [Parameter(Mandatory=$True)]
 	[string]$AppPoolName,
+     # The name to use for the IIS site.
     [Parameter(Mandatory=$True)]
 	[string]$SiteName,
+     # The folder path where the Remotely server files should be located.
     [Parameter(Mandatory=$True)]
     [string]$SitePath,
+     # The hostname that IIS will use for the site (e.g. remotely.mydomain.com).
     [Parameter(Mandatory=$True)]
 	[string]$BindingHostname,
-
+    # Whether to run the script without any prompts.
     [switch]$Quiet,
-
+    # The path to Windows ACME Simple (wacs.exe) to use for automatically obtaining and
+    # installing a Let's Encrypt certificate.
+    # (Project and downloads: https://github.com/win-acme/win-acme)
     [string]$WacsPath,
-  
+    # The email address to use when registering the certificate with WACS.
     [string]$EmailAddress
 )
 
