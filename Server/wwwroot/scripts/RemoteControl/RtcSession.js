@@ -4,6 +4,7 @@ import { Remotely } from "./Main.js";
 import { DynamicDtoType } from "../Models/DynamicDtoType.js";
 export class RtcSession {
     constructor() {
+        this.FpsStack = [];
         this.MessagePack = window['MessagePack'];
         this.PartialFrames = [];
     }
@@ -78,6 +79,13 @@ export class RtcSession {
             };
             img.src = url;
             this.PartialFrames = [];
+            if (Remotely.Debug) {
+                this.FpsStack.push(Date.now());
+                while (Date.now() - this.FpsStack[0] > 1000) {
+                    this.FpsStack.shift();
+                }
+                console.log("FPS: " + String(this.FpsStack.length));
+            }
         }
         else {
             this.PartialFrames.push(frameInfo.ImageBytes);

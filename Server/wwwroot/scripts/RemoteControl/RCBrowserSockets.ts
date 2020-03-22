@@ -16,7 +16,7 @@ type HubConnection = {
 
 export class RCBrowserSockets {
     Connection: HubConnection;
-
+    FpsStack: Array<number> = [];
     Connect() {
         this.Connection = new signalR.HubConnectionBuilder()
             .withUrl("/RCBrowserHub")
@@ -169,6 +169,14 @@ export class RCBrowserSockets {
                 window.URL.revokeObjectURL(url);
             };
             img.src = url;
+
+            if (Remotely.Debug) {
+                this.FpsStack.push(Date.now());
+                while (Date.now() - this.FpsStack[0] > 1000) {
+                    this.FpsStack.shift();
+                }
+                console.log("FPS: " + String(this.FpsStack.length));
+            }
         });
         hubConnection.on("AudioSample", (buffer: Uint8Array) => {
             Sound.Play(buffer);
