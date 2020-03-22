@@ -7,6 +7,7 @@ import { ClipboardWatcher } from "./ClipboardWatcher.js";
 var queryString = Utilities.ParseSearchString();
 export const Remotely = {
     ClipboardWatcher: new ClipboardWatcher(),
+    Debug: false,
     RCBrowserSockets: new RCBrowserSockets(),
     RtcSession: new RtcSession(),
     ClientID: queryString["clientID"] ? decodeURIComponent(queryString["clientID"]) : "",

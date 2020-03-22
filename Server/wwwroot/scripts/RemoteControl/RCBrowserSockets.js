@@ -5,6 +5,9 @@ import { Sound } from "../Sound.js";
 import { PopupMessage } from "../UI.js";
 var signalR = window["signalR"];
 export class RCBrowserSockets {
+    constructor() {
+        this.FpsStack = [];
+    }
     Connect() {
         this.Connection = new signalR.HubConnectionBuilder()
             .withUrl("/RCBrowserHub")
@@ -151,6 +154,13 @@ export class RCBrowserSockets {
                 window.URL.revokeObjectURL(url);
             };
             img.src = url;
+            if (Remotely.Debug) {
+                this.FpsStack.push(Date.now());
+                while (Date.now() - this.FpsStack[0] > 1000) {
+                    this.FpsStack.shift();
+                }
+                console.log("FPS: " + String(this.FpsStack.length));
+            }
         });
         hubConnection.on("AudioSample", (buffer) => {
             Sound.Play(buffer);

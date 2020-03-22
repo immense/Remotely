@@ -7,6 +7,7 @@ import { DynamicDtoType } from "../Models/DynamicDtoType.js";
 export class RtcSession {
     PeerConnection: RTCPeerConnection;
     DataChannel: RTCDataChannel;
+    FpsStack: Array<number> = [];
     MessagePack: any = window['MessagePack'];
     PartialFrames: Uint8Array[] = [];
     Init() {
@@ -84,6 +85,14 @@ export class RtcSession {
             };
             img.src = url;
             this.PartialFrames = [];
+
+            if (Remotely.Debug) {
+                this.FpsStack.push(Date.now());
+                while (Date.now() - this.FpsStack[0] > 1000) {
+                    this.FpsStack.shift();
+                }
+                console.log("FPS: " + String(this.FpsStack.length));
+            }
         }
         else {
             this.PartialFrames.push(frameInfo.ImageBytes);
