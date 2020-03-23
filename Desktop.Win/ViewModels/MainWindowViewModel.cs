@@ -188,6 +188,7 @@ namespace Remotely.Desktop.Win.ViewModels
                 {
                     await App.Current.Dispatcher.InvokeAsync(() =>
                     {
+                        Viewers.Clear();
                         SessionID = "Disconnected";
                     });
                 };
@@ -196,6 +197,7 @@ namespace Remotely.Desktop.Win.ViewModels
                 {
                     await App.Current.Dispatcher.InvokeAsync(() =>
                     {
+                        Viewers.Clear();
                         SessionID = "Reconnecting";
                     });
                 };
