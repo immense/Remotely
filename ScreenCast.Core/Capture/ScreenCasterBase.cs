@@ -149,10 +149,6 @@ namespace Remotely.ScreenCast.Core.Capture
                 {
                     Logger.Write(ex);
                 }
-                finally
-                {
-                    GC.Collect();
-                }
             }
 
             Logger.Write($"Ended screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}.");
