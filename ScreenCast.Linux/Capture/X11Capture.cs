@@ -30,6 +30,7 @@ namespace Remotely.ScreenCast.Linux.Capture
         {
             try
             {
+                PreviousFrame.Dispose();
                 PreviousFrame = (Bitmap)CurrentFrame.Clone();
                 RefreshCurrentFrame();
             }

@@ -42,6 +42,7 @@ namespace Remotely.ScreenCast.Win.Capture
             try
             {
                 Win32Interop.SwitchToInputDesktop();
+                PreviousFrame.Dispose();
                 PreviousFrame = (Bitmap)CurrentFrame.Clone();
                 Graphic.CopyFromScreen(CurrentScreenBounds.Left, CurrentScreenBounds.Top, 0, 0, new Size(CurrentScreenBounds.Width, CurrentScreenBounds.Height));
             }
