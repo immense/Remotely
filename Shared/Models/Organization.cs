@@ -7,6 +7,8 @@ namespace Remotely.Shared.Models
 {
     public class Organization
     {
+        public ICollection<Alert> Alerts { get; set; }
+
         public ICollection<ApiToken> ApiTokens { get; set; }
 
         public ICollection<CommandResult> CommandResults { get; set; }
