@@ -27,12 +27,6 @@ namespace Remotely.Desktop.Win
             e.Handled = true;
         }
 
-        private void Application_Exit(object sender, ExitEventArgs e)
-        {
-            // Hack to fix application not exiting when window closed.
-            Environment.Exit(0);
-        }
-
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             if (Environment.GetCommandLineArgs().Contains("-elevate"))
@@ -48,6 +42,18 @@ namespace Remotely.Desktop.Win
                 Logger.Write($"Elevate result: {result}. Process ID: {procInfo.dwProcessId}.");
                 Environment.Exit(0);
             }
+        }
+
+        private void Application_Exit(object sender, ExitEventArgs e)
+        {
+            var conductor = ServiceContainer.Instance.GetService<Conductor>();
+            foreach (var viewer in conductor.Viewers.Values)
+            {
+                viewer.DisconnectRequested = true;
+                conductor.InvokeViewerRemoved(viewer.ViewerConnectionID);
+            }
+            System.Windows.Forms.Application.Exit();
+            Environment.Exit(0);
         }
     }
 }

@@ -8,6 +8,7 @@ using System.Threading;
 using Remotely.ScreenCast.Core.Services;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using Remotely.ScreenCast.Core;
 
 namespace Remotely.ScreenCast.Win.Services
 {
@@ -16,29 +17,19 @@ namespace Remotely.ScreenCast.Win.Services
         public WinInput()
         {
             StartInputActionThread();
+            Application.ApplicationExit += Application_ApplicationExit;
         }
 
-        private void StartInputActionThread()
-        {
-            InputActionsThread?.Abort();
-            InputActionsThread = new Thread(() =>
-            {
-                while (true)
-                {
-                    if (InputActions.TryDequeue(out var action))
-                    {
-                        action();
-                    }
-                    Thread.Sleep(1);
-                }
-            });
-            InputActionsThread.SetApartmentState(ApartmentState.STA);
-            InputActionsThread.Start();
-        }
+        public Conductor Conductor { get; }
 
         private ConcurrentQueue<Action> InputActions { get; } = new ConcurrentQueue<Action>();
+
         private Thread InputActionsThread { get; set; }
+
         private bool IsInputBlocked { get; set; }
+
+        private bool ShutdownStarted { get; set; }
+
         public Tuple<double, double> GetAbsolutePercentFromRelativePercent(double percentX, double percentY, ICapturer capturer)
         {
             var absoluteX = (capturer.CurrentScreenBounds.Width * percentX) + capturer.CurrentScreenBounds.Left - capturer.GetVirtualScreenBounds().Left;
@@ -52,6 +43,7 @@ namespace Remotely.ScreenCast.Win.Services
             var absoluteY = (capturer.CurrentScreenBounds.Height * percentY) + capturer.CurrentScreenBounds.Top;
             return new Tuple<double, double>(absoluteX, absoluteY);
         }
+
         public void SendKeyDown(string key, Viewer viewer)
         {
             TryOnInputDesktop(() =>
@@ -199,6 +191,10 @@ namespace Remotely.ScreenCast.Win.Services
             });
         }
 
+        private void Application_ApplicationExit(object sender, EventArgs e)
+        {
+            ShutdownStarted = true;
+        }
         private VirtualKey ConvertJavaScriptKeyToVirtualKey(string key)
         {
             VirtualKey keyCode;
@@ -321,6 +317,23 @@ namespace Remotely.ScreenCast.Win.Services
             return keyCode;
         }
 
+        private void StartInputActionThread()
+        {
+            InputActionsThread?.Abort();
+            InputActionsThread = new Thread(() =>
+            {
+                while (!ShutdownStarted && !Environment.HasShutdownStarted)
+                {
+                    if (InputActions.TryDequeue(out var action))
+                    {
+                        action();
+                    }
+                    Thread.Sleep(1);
+                }
+            });
+            InputActionsThread.SetApartmentState(ApartmentState.STA);
+            InputActionsThread.Start();
+        }
         private void TryOnInputDesktop(Action inputAction)
         {
             if (!InputActionsThread.IsAlive)

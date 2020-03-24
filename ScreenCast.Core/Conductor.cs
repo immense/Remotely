@@ -13,8 +13,6 @@ namespace Remotely.ScreenCast.Core
 {
     public class Conductor
     {
-        public bool IsDebug { get; }
-
         public Conductor(CasterSocket casterSocket)
         {
             CasterSocket = casterSocket;
@@ -22,6 +20,7 @@ namespace Remotely.ScreenCast.Core
             IsDebug = true;
 #endif
         }
+
         public event EventHandler<ScreenCastRequest> ScreenCastRequested;
 
         public event EventHandler<string> SessionIDChanged;
@@ -29,19 +28,40 @@ namespace Remotely.ScreenCast.Core
         public event EventHandler<Viewer> ViewerAdded;
 
         public event EventHandler<string> ViewerRemoved;
+
         public Dictionary<string, string> ArgDict { get; set; }
         public CasterSocket CasterSocket { get; private set; }
         public string DeviceID { get; private set; }
         public string Host { get; private set; }
+        public bool IsDebug { get; }
         public AppMode Mode { get; private set; }
         public string OrganizationName { get; private set; }
         public string RequesterID { get; private set; }
         public string ServiceID { get; private set; }
         public ConcurrentDictionary<string, Viewer> Viewers { get; } = new ConcurrentDictionary<string, Viewer>();
-
         public async Task Connect()
         {
             await CasterSocket.Connect(Host);
+        }
+
+        public void InvokeScreenCastRequested(ScreenCastRequest viewerIdAndRequesterName)
+        {
+            ScreenCastRequested?.Invoke(null, viewerIdAndRequesterName);
+        }
+
+        public void InvokeSessionIDChanged(string sessionID)
+        {
+            SessionIDChanged?.Invoke(null, sessionID);
+        }
+
+        public void InvokeViewerAdded(Viewer viewer)
+        {
+            ViewerAdded?.Invoke(null, viewer);
+        }
+
+        public void InvokeViewerRemoved(string viewerID)
+        {
+            ViewerRemoved?.Invoke(null, viewerID);
         }
 
         public void ProcessArgs(string[] args)
@@ -111,24 +131,6 @@ namespace Remotely.ScreenCast.Core
             {
                 OrganizationName = orgName;
             }
-        }
-
-        public void InvokeScreenCastRequested(ScreenCastRequest viewerIdAndRequesterName)
-        {
-            ScreenCastRequested?.Invoke(null, viewerIdAndRequesterName);
-        }
-        public void InvokeSessionIDChanged(string sessionID)
-        {
-            SessionIDChanged?.Invoke(null, sessionID);
-        }
-
-        public void InvokeViewerAdded(Viewer viewer)
-        {
-            ViewerAdded?.Invoke(null, viewer);
-        }
-        public void InvokeViewerRemoved(string viewerID)
-        {
-            ViewerRemoved?.Invoke(null, viewerID);
         }
     }
 }

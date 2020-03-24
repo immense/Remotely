@@ -31,30 +31,15 @@ namespace Remotely.Desktop.Win
             InitializeComponent();
         }
 
-        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            DragMove();
-        }
-
+        public MainWindowViewModel ViewModel => DataContext as MainWindowViewModel;
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             App.Current.Shutdown();
         }
 
-        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.WindowState = WindowState.Minimized;
-        }
-
-        private async void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            await MainWindowViewModel.Current.Init();
-        }
-
-
         private async void CopyLinkButton_Click(object sender, RoutedEventArgs e)
         {
-            MainWindowViewModel.Current.CopyLink();
+            ViewModel.CopyLink();
             var tooltip = new ToolTip();
             tooltip.PlacementTarget = sender as Button;
             tooltip.Placement = PlacementMode.Bottom;
@@ -69,9 +54,24 @@ namespace Remotely.Desktop.Win
             tooltip.BeginAnimation(OpacityProperty, animation);
         }
 
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
         private void OptionsButton_Click(object sender, RoutedEventArgs e)
         {
             (sender as Button).ContextMenu.IsOpen = true;
+        }
+
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            await ViewModel.Init();
+        }
+
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            DragMove();
         }
     }
 }
