@@ -31,7 +31,7 @@ namespace Remotely.ScreenCast.Core.Communication
 
         public void Dispose()
         {
-            CaptureChannel.Dispose();
+            CaptureChannel?.Dispose();
             PeerConnection?.Dispose();
         }
 
