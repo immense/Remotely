@@ -61,7 +61,6 @@ namespace Remotely.ScreenCast.Core.Models
 
         public void Dispose()
         {
-            EncoderParams?.Dispose();
             RtcSession?.Dispose();
         }
 

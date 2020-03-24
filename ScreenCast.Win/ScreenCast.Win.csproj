@@ -14,6 +14,7 @@
     <Copyright>Copyright ©  2020 Translucency Software</Copyright>
     <PackageProjectUrl>https://remotely.one</PackageProjectUrl>
     <Platforms>AnyCPU;x86;x64</Platforms>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>
