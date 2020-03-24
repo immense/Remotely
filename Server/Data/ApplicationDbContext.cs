@@ -18,6 +18,8 @@ namespace Remotely.Server.Data
         {
         }
 
+        public DbSet<Alert> Alerts { get; set; }
+
         public DbSet<ApiToken> ApiTokens { get; set; }
 
         public DbSet<CommandResult> CommandResults { get; set; }
@@ -74,6 +76,9 @@ namespace Remotely.Server.Data
             builder.Entity<Organization>()
               .HasMany(x => x.ApiTokens)
               .WithOne(x => x.Organization);
+            builder.Entity<Organization>()
+                .HasMany(x => x.Alerts)
+                .WithOne(x => x.Organization);
 
 
             builder.Entity<CommandResult>()
@@ -122,6 +127,9 @@ namespace Remotely.Server.Data
 
             builder.Entity<Device>()
                 .HasIndex(x => x.DeviceName);
+            builder.Entity<Device>()
+                .HasMany(x => x.Alerts)
+                .WithOne(x => x.Device);
 
             builder.Entity<ApiToken>()
                 .HasIndex(x => x.Token);

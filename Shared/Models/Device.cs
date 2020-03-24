@@ -15,6 +15,7 @@ namespace Remotely.Shared.Models
     public class Device
     {
         public string AgentVersion { get; set; }
+        public ICollection<Alert> Alerts { get; set; }
         [StringLength(100)]
         public string Alias { get; set; }
         public double CpuUtilization { get; set; }
