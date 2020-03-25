@@ -9,7 +9,7 @@ using Remotely.Server.Data;
 namespace Remotely.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200325144430_Alerts")]
+    [Migration("20200325145606_Alerts")]
     partial class Alerts
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -238,10 +238,7 @@ namespace Remotely.Server.Migrations
                     b.Property<string>("OrganizationID")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("UserIDId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UserId")
+                    b.Property<string>("UserID")
                         .HasColumnType("TEXT");
 
                     b.HasKey("ID");
@@ -250,9 +247,7 @@ namespace Remotely.Server.Migrations
 
                     b.HasIndex("OrganizationID");
 
-                    b.HasIndex("UserIDId");
-
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserID");
 
                     b.ToTable("Alerts");
                 });
@@ -633,13 +628,9 @@ namespace Remotely.Server.Migrations
                         .WithMany("Alerts")
                         .HasForeignKey("OrganizationID");
 
-                    b.HasOne("Remotely.Shared.Models.RemotelyUser", "UserID")
-                        .WithMany()
-                        .HasForeignKey("UserIDId");
-
                     b.HasOne("Remotely.Shared.Models.RemotelyUser", "User")
                         .WithMany("Alerts")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserID");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.ApiToken", b =>
