@@ -109,6 +109,9 @@ namespace Remotely.Server.Data
 
             builder.Entity<RemotelyUser>()
                 .HasMany(x => x.PermissionLinks);
+            builder.Entity<RemotelyUser>()
+                .HasMany(x => x.Alerts)
+                .WithOne(x => x.User);
 
             builder.Entity<RemotelyUser>()
                 .Property(x => x.UserOptions)
@@ -133,6 +136,10 @@ namespace Remotely.Server.Data
 
             builder.Entity<ApiToken>()
                 .HasIndex(x => x.Token);
+
+            builder.Entity<Alert>()
+                .HasOne(x => x.User)
+                .WithMany(x => x.Alerts);
 
             if (Database.ProviderName == "Microsoft.EntityFrameworkCore.Sqlite")
             {
