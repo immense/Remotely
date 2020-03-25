@@ -36,7 +36,11 @@ namespace Remotely.Server.Services
 
         public async Task AddAlert(Alert alert)
         {
-            RemotelyContext.Alerts.Add(alert);
+            await RemotelyContext.Users
+                .Include(x => x.Alerts)
+                .Where(x => x.OrganizationID == alert.OrganizationID)
+                .ForEachAsync(x => x.Alerts.Add(alert));
+
             await RemotelyContext.SaveChangesAsync();
         }
 

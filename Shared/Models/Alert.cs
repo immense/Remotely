@@ -22,6 +22,8 @@ namespace Remotely.Shared.Models
 
         public string OrganizationID { get; set; }
 
-        public ICollection<RemotelyUser> SeenBy { get; set; }
+        [JsonIgnore]
+        public RemotelyUser User { get; set; }
+        public RemotelyUser UserID { get; set; }
     }
 }

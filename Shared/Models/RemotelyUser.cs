@@ -15,14 +15,15 @@ namespace Remotely.Shared.Models
             UserOptions = new RemotelyUserOptions();
             Organization = new Organization();
         }
-        public RemotelyUserOptions UserOptions { get; set; }
 
-        [JsonIgnore]
-        public Organization Organization { get; set; }
-        public string OrganizationID { get; set; }
-
+        public ICollection<Alert> Alerts { get; set; }
         public bool IsAdministrator { get; set; } = true;
         public bool IsServerAdmin { get; set; }
+        [JsonIgnore]
+        public Organization Organization { get; set; }
+
+        public string OrganizationID { get; set; }
         public List<UserDevicePermission> PermissionLinks { get; set; }
+        public RemotelyUserOptions UserOptions { get; set; }
     }
 }
