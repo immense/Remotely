@@ -40,14 +40,7 @@ namespace Remotely.Server.API
             {
                 try
                 {
-                    var alert = new Alert()
-                    {
-                        CreatedOn = DateTimeOffset.Now,
-                        DeviceID = alertOptions.AlertDeviceID,
-                        Message = alertOptions.AlertMessage,
-                        OrganizationID = orgID
-                    };
-                    await DataService.AddAlert(alert);
+                    await DataService.AddAlert(alertOptions, orgID);
                 }
                 catch (Exception ex)
                 {
@@ -60,9 +53,9 @@ namespace Remotely.Server.API
                 try
                 {
                     await EmailSender.SendEmailAsync(alertOptions.EmailTo,
-                  alertOptions.EmailSubject,
-                  alertOptions.EmailBody,
-                  orgID);
+                        alertOptions.EmailSubject,
+                        alertOptions.EmailBody,
+                        orgID);
                 }
                 catch (Exception ex)
                 {

@@ -34,12 +34,21 @@ namespace Remotely.Server.Services
         private ApplicationDbContext RemotelyContext { get; }
         private UserManager<RemotelyUser> UserManager { get; }
 
-        public async Task AddAlert(Alert alert)
+        public async Task AddAlert(AlertOptions alertOptions, string organizationID)
         {
             await RemotelyContext.Users
                 .Include(x => x.Alerts)
-                .Where(x => x.OrganizationID == alert.OrganizationID)
-                .ForEachAsync(x => x.Alerts.Add(alert));
+                .Where(x => x.OrganizationID == organizationID)
+                .ForEachAsync(x => {
+                    var alert = new Alert()
+                    {
+                        CreatedOn = DateTimeOffset.Now,
+                        DeviceID = alertOptions.AlertDeviceID,
+                        Message = alertOptions.AlertMessage,
+                        OrganizationID = organizationID
+                    };
+                    x.Alerts.Add(alert);
+                });
 
             await RemotelyContext.SaveChangesAsync();
         }

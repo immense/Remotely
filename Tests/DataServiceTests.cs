@@ -156,14 +156,13 @@ namespace Remotely.Tests
         [DoNotParallelize]
         public async Task AddAlert()
         {
-            var alert = new Alert()
+            var options = new AlertOptions()
             {
-                DeviceID = TestData.Device1.ID,
-                OrganizationID = TestData.OrganizationID,
-                Message = "Test Message",
-                UserID = TestData.Admin1.Id
+                AlertDeviceID = TestData.Device1.ID,
+                AlertMessage = "Test Message",
+                ShouldAlert = true
             };
-            await DataService.AddAlert(alert);
+            await DataService.AddAlert(options, TestData.OrganizationID);
         }
     }
 }
