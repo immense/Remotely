@@ -151,5 +151,19 @@ namespace Remotely.Tests
             Assert.AreEqual(1, currentAdmins.Count);
             Assert.AreEqual(TestData.Admin2.UserName, currentAdmins[0]);
         }
+
+        [TestMethod]
+        [DoNotParallelize]
+        public async Task AddAlert()
+        {
+            var alert = new Alert()
+            {
+                DeviceID = TestData.Device1.ID,
+                OrganizationID = TestData.OrganizationID,
+                Message = "Test Message",
+                UserID = TestData.Admin1.Id
+            };
+            await DataService.AddAlert(alert);
+        }
     }
 }

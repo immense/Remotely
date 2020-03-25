@@ -15,8 +15,7 @@ namespace Remotely.Server.Migrations
                     DeviceID = table.Column<string>(nullable: true),
                     Message = table.Column<string>(nullable: true),
                     OrganizationID = table.Column<string>(nullable: true),
-                    UserId = table.Column<string>(nullable: true),
-                    UserIDId = table.Column<string>(nullable: true)
+                    UserID = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -34,14 +33,8 @@ namespace Remotely.Server.Migrations
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Alerts_RemotelyUsers_UserIDId",
-                        column: x => x.UserIDId,
-                        principalTable: "RemotelyUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Alerts_RemotelyUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Alerts_RemotelyUsers_UserID",
+                        column: x => x.UserID,
                         principalTable: "RemotelyUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -58,14 +51,9 @@ namespace Remotely.Server.Migrations
                 column: "OrganizationID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Alerts_UserIDId",
+                name: "IX_Alerts_UserID",
                 table: "Alerts",
-                column: "UserIDId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Alerts_UserId",
-                table: "Alerts",
-                column: "UserId");
+                column: "UserID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
