@@ -16,6 +16,9 @@ export var ConsoleTab = document.getElementById("consoleTab");
 export var ConsoleAlert = document.getElementById("consoleAlert");
 export var DeviceGroupSelect = document.getElementById("deviceGroupSelect");
 export var GridFilter = document.getElementById("gridFilter");
+export var AlertsButton = document.getElementById("alertsButton");
+export var CloseAlertsButton = document.getElementById("closeAlertsFrameButton");
+export var AlertsFrame = document.getElementById("alertsFrame");
 export function PopupMessage(message) {
     var messageDiv = document.createElement("div");
     messageDiv.classList.add("float-message");

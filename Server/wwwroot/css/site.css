@@ -236,6 +236,39 @@ span.label.code {
     margin-bottom: -5px;
 }
 
+
+#alertsButton {
+    position: absolute;
+    top: 75px;
+    right: 5px;
+    z-index: 2;
+    transition: .5s ease left;
+    user-select: none;
+}
+
+
+#alertsFrame {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    text-align: center;
+    opacity: 0;
+    z-index: 2;
+    transition: .5s ease all;
+}
+
+#alertsFrame.open {
+    width: 350px;
+    opacity: 1;
+    transition: .5s ease all;
+}
+
+
+
 .float-message {
     position: fixed;
     top: 20px;

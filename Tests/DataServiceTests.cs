@@ -163,6 +163,12 @@ namespace Remotely.Tests
                 ShouldAlert = true
             };
             await DataService.AddAlert(options, TestData.OrganizationID);
+
+            var alerts = DataService.GetAlerts(TestData.Admin1.Id);
+
+            var json = System.Text.Json.JsonSerializer.Serialize(options);
+
+            Assert.AreEqual("Test Message", alerts.First().Message);
         }
     }
 }

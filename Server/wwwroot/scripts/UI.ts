@@ -18,6 +18,9 @@ export var ConsoleTab = document.getElementById("consoleTab") as HTMLAnchorEleme
 export var ConsoleAlert = document.getElementById("consoleAlert") as HTMLAnchorElement;
 export var DeviceGroupSelect = document.getElementById("deviceGroupSelect") as HTMLSelectElement;
 export var GridFilter = document.getElementById("gridFilter") as HTMLInputElement;
+export var AlertsButton = document.getElementById("alertsButton") as HTMLButtonElement;
+export var CloseAlertsButton = document.getElementById("closeAlertsFrameButton") as HTMLButtonElement;
+export var AlertsFrame = document.getElementById("alertsFrame") as HTMLDivElement;
 
 
 export function PopupMessage(message: string) {
