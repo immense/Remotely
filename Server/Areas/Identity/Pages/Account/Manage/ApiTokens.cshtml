@@ -4,6 +4,7 @@
 @{
     ViewData["Title"] = "API Access Tokens";
 }
+
 <h4>@ViewData["Title"]</h4>
 
 @if (!string.IsNullOrWhiteSpace(Model.Message))
@@ -27,11 +28,12 @@
 
 @if (Model.IsAdmin)
 {
-    <form method="post" asp-page-handler="Create" class="mb-2 mt-4">
-        <label class="mr-1">New Token Name:</label>
-        <input class="form-control form-control-sm custom-control-inline mr-1" style="width:200px" asp-for="Input.TokenName" />
-        <button class="btn btn-primary" type="submit">Create</button>
-    </form>
+<form method="post" asp-page-handler="Create" class="mb-2 mt-4">
+    <label class="mr-1">New Token Name:</label>
+    <input class="form-control form-control-sm custom-control-inline mr-1" style="width:200px" asp-for="Input.TokenName" />
+    <button class="btn btn-primary" type="submit">Create</button>
+    <span data-toggle="modal" data-target="#apiTokensModal" class="fas fa-question-circle pointer"></span>
+</form>
 
     <table class="table table-hover table-striped">
         <thead>
@@ -67,6 +69,28 @@
             }
         </tbody>
     </table>
+
+    <div id="apiTokensModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Using API Tokens</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        API tokens should be added to the request header when making API calls.  The key should be "Authorization", and value should be "{token}:{secret}".
+                    </p>
+                    <p>
+                        Example: <span class="code">Authorization=e5da1c09-e851-4bd4-a8c1-532144b3f894:2xbA3TLPodNTVNAK+d7Cr3mK6o8CtSCT</span>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script type="module" src="~/scripts/Pages/ApiTokens.js">
     </script>
