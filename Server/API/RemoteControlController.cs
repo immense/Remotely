@@ -13,6 +13,7 @@ using Remotely.Server.Data;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
 using Remotely.Server.Auth;
+using Remotely.Shared.Helpers;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -100,12 +101,9 @@ namespace Remotely.Server.API
 
                 var stopWatch = Stopwatch.StartNew();
 
-                while (!RCDeviceSocketHub.SessionInfoList.Values.Any(x => x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y => y.Key != x.RCDeviceSocketID)) && stopWatch.Elapsed.TotalSeconds < 5)
-                {
-                    await Task.Delay(10);
-                }
+                Func<bool> remoteControlStarted = () => RCDeviceSocketHub.SessionInfoList.Values.Any(x => x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y => y.Key != x.RCDeviceSocketID));
 
-                if (!RCDeviceSocketHub.SessionInfoList.Values.Any(x => x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y => y.Key != x.RCDeviceSocketID)))
+                if (!await TaskHelper.DelayUntil(remoteControlStarted, TimeSpan.FromSeconds(15)))
                 {
                     return StatusCode(408, "The remote control process failed to start in time on the remote device.");
                 }
