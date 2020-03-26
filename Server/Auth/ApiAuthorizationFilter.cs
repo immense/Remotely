@@ -35,6 +35,12 @@ namespace Remotely.Server.Auth
                 if (DataService.ValidateApiToken(apiToken, apiSecret, context.HttpContext.Request.Path, context.HttpContext.Connection.RemoteIpAddress.ToString()))
                 {
                     var orgID = DataService.GetApiToken(apiToken)?.OrganizationID;
+
+                    // In case the filter gets run twice.
+                    if (context.HttpContext.Request.Headers.ContainsKey("OrganizationID"))
+                    {
+                        return;
+                    }
                     context.HttpContext.Request.Headers.Add("OrganizationID", orgID);
                     return;
                 }

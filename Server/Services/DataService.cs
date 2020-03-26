@@ -36,20 +36,27 @@ namespace Remotely.Server.Services
 
         public async Task AddAlert(AlertOptions alertOptions, string organizationID)
         {
-            await RemotelyContext.Users
+            var users = RemotelyContext.Users
                 .Include(x => x.Alerts)
-                .Where(x => x.OrganizationID == organizationID)
-                .ForEachAsync(x => {
-                    var alert = new Alert()
-                    {
-                        CreatedOn = DateTimeOffset.Now,
-                        DeviceID = alertOptions.AlertDeviceID,
-                        Message = alertOptions.AlertMessage,
-                        OrganizationID = organizationID
-                    };
-                    x.Alerts.Add(alert);
-                });
+                .Where(x => x.OrganizationID == organizationID);
 
+            if (!string.IsNullOrWhiteSpace(alertOptions.AlertDeviceID))
+            {
+                var filteredUserIDs = FilterUsersByDevicePermission(users.Select(x => x.Id), alertOptions.AlertDeviceID);
+                users = users.Where(x => filteredUserIDs.Contains(x.Id));
+            }
+
+            await users.ForEachAsync(x => {
+                var alert = new Alert()
+                {
+                    CreatedOn = DateTimeOffset.Now,
+                    DeviceID = alertOptions.AlertDeviceID,
+                    Message = alertOptions.AlertMessage,
+                    OrganizationID = organizationID
+                };
+                x.Alerts.Add(alert);
+            });
+            
             await RemotelyContext.SaveChangesAsync();
         }
 
@@ -81,11 +88,6 @@ namespace Remotely.Server.Services
             RemotelyContext.SaveChanges();
             deviceGroupID = newDeviceGroup.ID;
             return true;
-        }
-
-        public async Task<Alert> GetAlert(string alertID)
-        {
-            return await RemotelyContext.Alerts.FirstOrDefaultAsync(x => x.ID == alertID);
         }
 
         public InviteLink AddInvite(string orgID, Invite invite)
@@ -485,6 +487,21 @@ namespace Remotely.Server.Services
                 .ToArray();
         }
 
+        public async Task<Alert> GetAlert(string alertID)
+        {
+            return await RemotelyContext.Alerts
+                .Include(x => x.Device)
+                .Include(x => x.User)
+                .FirstOrDefaultAsync(x => x.ID == alertID);
+        }
+
+        public IEnumerable<Alert> GetAlerts(string userID)
+        {
+            return RemotelyContext.Alerts
+                .Include(x => x.Device)
+                .Include(x => x.User)
+                .Where(x => x.UserID == userID);
+        }
         public IEnumerable<ApiToken> GetAllApiTokens(string userID)
         {
             var user = RemotelyContext.Users.FirstOrDefault(x => x.Id == userID);

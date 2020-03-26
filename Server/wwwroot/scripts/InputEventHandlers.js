@@ -15,6 +15,7 @@ export function ApplyInputEventHandlers() {
     clickStartRemoteControlButton();
     consoleTabSelected();
     deviceGroupSelectChanged();
+    clickAlertsButtons();
     window.addEventListener("resize", ev => {
         PositionCommandCompletionWindow();
     });
@@ -154,6 +155,14 @@ function consoleTabSelected() {
     $(UI.ConsoleTab).on("shown.bs.tab", () => {
         UI.ConsoleAlert.hidden = true;
         UI.ConsoleFrame.scrollTop = UI.ConsoleFrame.scrollHeight;
+    });
+}
+function clickAlertsButtons() {
+    UI.AlertsButton.addEventListener("click", ev => {
+        UI.AlertsFrame.classList.toggle("open");
+    });
+    UI.CloseAlertsButton.addEventListener("click", ev => {
+        UI.AlertsFrame.classList.toggle("open");
     });
 }
 function clickToggleAllDevices() {

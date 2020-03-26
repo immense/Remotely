@@ -29,7 +29,6 @@ namespace Remotely.Server.API
         private IEmailSenderEx EmailSender { get; }
 
         [HttpPost("Create")]
-        [ServiceFilter(typeof(ApiAuthorizationFilter))]
         public async Task<IActionResult> Create(AlertOptions alertOptions)
         {
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
@@ -94,7 +93,6 @@ namespace Remotely.Server.API
         }
 
         [HttpPost("Delete/{alertID}")]
-        [ServiceFilter(typeof(ApiAuthorizationFilter))]
         public async Task<IActionResult> Delete(string alertID)
         {
             Request.Headers.TryGetValue("OrganizationID", out var orgID);

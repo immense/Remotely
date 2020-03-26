@@ -24,10 +24,10 @@ namespace Remotely.Server.Pages
 
         public string DefaultPrompt { get; set; }
         public List<SelectListItem> DeviceGroups { get; set; } = new List<SelectListItem>();
+        public List<Alert> Alerts { get; set; } = new List<Alert>();
+        private ApplicationConfig AppConfig { get; }
         private DataService DataService { get; }
         private SignInManager<RemotelyUser> SignInManager { get; }
-        private ApplicationConfig AppConfig { get; }
-
         public async Task<IActionResult> OnGet()
         {
             if (User?.Identity?.IsAuthenticated == true)
@@ -50,6 +50,12 @@ namespace Remotely.Server.Pages
                 {
                     DeviceGroups.AddRange(groups.Select(x => new SelectListItem(x.Name, x.ID)));
                 }
+                var alerts = DataService.GetAlerts(user.Id);
+                if (alerts.Any())
+                {
+                    Alerts.AddRange(alerts);
+                }
+
             }
             else
             {
