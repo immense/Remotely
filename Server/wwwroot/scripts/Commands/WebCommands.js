@@ -206,6 +206,8 @@ var commands = [
                     <li>FreeMemory (between 0 and 1)</li>
                     <li>TotalMemory (number in GB)</li>
                     <li>ProcessorCount (number)</li>
+                    <li>Tags (text)</li>
+                    <li>Notes (text)</li>
                 </ul>`, (parameters, paramDictionary) => {
         if (typeof paramDictionary["all"] != "undefined") {
             Main.DataGrid.DataSource.forEach(x => {

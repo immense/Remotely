@@ -316,6 +316,8 @@ var commands: Array<ConsoleCommand> = [
                     <li>FreeMemory (between 0 and 1)</li>
                     <li>TotalMemory (number in GB)</li>
                     <li>ProcessorCount (number)</li>
+                    <li>Tags (text)</li>
+                    <li>Notes (text)</li>
                 </ul>`,
         (parameters, paramDictionary) => {
 

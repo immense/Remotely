@@ -500,7 +500,8 @@ namespace Remotely.Server.Services
             return RemotelyContext.Alerts
                 .Include(x => x.Device)
                 .Include(x => x.User)
-                .Where(x => x.UserID == userID);
+                .Where(x => x.UserID == userID)
+                .OrderByDescending(x => x.CreatedOn);
         }
         public IEnumerable<ApiToken> GetAllApiTokens(string userID)
         {
@@ -611,7 +612,8 @@ namespace Remotely.Server.Services
                         x.PermissionLinks.Count == 0 ||
                         x.PermissionLinks.Any(x => x.UserID == user.Id)
                     )
-                ) ?? Enumerable.Empty<DeviceGroup>();
+                )
+                .OrderBy(x=>x.Name) ?? Enumerable.Empty<DeviceGroup>();
         }
 
         public IEnumerable<Device> GetDevicesForUser(string userName)
@@ -841,7 +843,7 @@ namespace Remotely.Server.Services
             }
         }
 
-        public void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID)
+        public void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes)
         {
             var device = RemotelyContext.Devices.Find(deviceID);
             if (device == null)
@@ -852,6 +854,7 @@ namespace Remotely.Server.Services
             device.Tags = tag;
             device.DeviceGroupID = deviceGroupID;
             device.Alias = alias;
+            device.Notes = notes;
             RemotelyContext.SaveChanges();
         }
 

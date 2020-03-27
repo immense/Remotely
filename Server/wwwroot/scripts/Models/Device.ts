@@ -10,6 +10,7 @@
     Is64Bit: boolean;
     IsOnline: boolean;
     LastOnline: Date;
+    Notes: string;
     OrganizationID: string;
     OSArchitecture: any;
     OSDescription: string;

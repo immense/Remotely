@@ -57,7 +57,7 @@ namespace Remotely.Server.Pages
                 return Page();
             }
 
-            DataService.UpdateDevice(deviceID, Input.Tags, Input.Alias, Input.DeviceGroupID);
+            DataService.UpdateDevice(deviceID, Input.Tags, Input.Alias, Input.DeviceGroupID, Input.Notes);
 
             return RedirectToPage("EditDevice", new { deviceID, success = true });
         }
@@ -74,6 +74,7 @@ namespace Remotely.Server.Pages
                 Input.Alias = device?.Alias;
                 Input.DeviceGroupID = device?.DeviceGroupID;
                 Input.Tags = device?.Tags;
+                Input.Notes = device?.Notes;
 
             }
             var groups = DataService.GetDeviceGroups(User.Identity.Name);
@@ -89,6 +90,8 @@ namespace Remotely.Server.Pages
 
             [StringLength(200)]
             public string Tags { get; set; }
+
+            public string Notes { get; set; }
         }
     }
 }
