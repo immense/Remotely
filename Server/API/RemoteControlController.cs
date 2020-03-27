@@ -101,7 +101,7 @@ namespace Remotely.Server.API
 
                 var stopWatch = Stopwatch.StartNew();
 
-                Func<bool> remoteControlStarted = () => RCDeviceSocketHub.SessionInfoList.Values.Any(x => x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y => y.Key != x.RCDeviceSocketID));
+                bool remoteControlStarted() => RCDeviceSocketHub.SessionInfoList.Values.Any(x => x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y => y.Key != x.RCDeviceSocketID));
 
                 if (!await TaskHelper.DelayUntil(remoteControlStarted, TimeSpan.FromSeconds(15)))
                 {

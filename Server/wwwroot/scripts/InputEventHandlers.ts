@@ -17,7 +17,7 @@ export function ApplyInputEventHandlers() {
     clickStartRemoteControlButton();
     consoleTabSelected();
     deviceGroupSelectChanged();
-    clickAlertsButtons();
+    addAlertHandlers();
 
     window.addEventListener("resize", ev => {
         PositionCommandCompletionWindow();
@@ -164,12 +164,32 @@ function consoleTabSelected() {
         UI.ConsoleFrame.scrollTop = UI.ConsoleFrame.scrollHeight;
     });
 }
-function clickAlertsButtons() {
+function addAlertHandlers() {
     UI.AlertsButton.addEventListener("click", ev => {
         UI.AlertsFrame.classList.toggle("open");
     });
     UI.CloseAlertsButton.addEventListener("click", ev => {
         UI.AlertsFrame.classList.toggle("open");
+    });
+
+    document.querySelectorAll(".alert-dismiss-button").forEach(element => {
+        element.addEventListener("click", ev => {
+            var alertID = (ev.currentTarget as HTMLButtonElement).getAttribute("alert");
+            var xhr = new XMLHttpRequest();
+            xhr.open("delete", location.origin + "/api/Alerts/Delete/" + alertID);
+            xhr.onload = function () {
+                if (xhr.status == 200) {
+                    document.getElementById(alertID).remove();
+                    var currentCount = Number(UI.AlertsCount.innerText);
+                    currentCount--;
+                    UI.AlertsCount.innerText = String(currentCount);
+                }
+                else {
+                    UI.ShowModal("API Error", "There was an error deleting the alert.");
+                }
+            };
+            xhr.send();
+        })
     });
 }
 function clickToggleAllDevices() {
