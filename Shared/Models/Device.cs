@@ -25,26 +25,20 @@ namespace Remotely.Shared.Models
         public string DeviceName { get; set; }
         public List<Drive> Drives { get; set; }
 
-        public double UsedMemory { get; set; }
-
-        public double UsedStorage { get; set; }
-
         [Key]
         public string ID { get; set; }
 
         public bool Is64Bit { get; set; }
-
         public bool IsOnline { get; set; }
-
         public DateTimeOffset LastOnline { get; set; }
+        public string Notes { get; set; }
         [JsonIgnore]
         public Organization Organization { get; set; }
+
         public string OrganizationID { get; set; }
         public Architecture OSArchitecture { get; set; }
-
         public string OSDescription { get; set; }
         public string Platform { get; set; }
-
         public int ProcessorCount { get; set; }
         public string ServerVerificationToken { get; set; }
         [StringLength(200)]
@@ -52,7 +46,8 @@ namespace Remotely.Shared.Models
 
         public double TotalMemory { get; set; }
         public double TotalStorage { get; set; }
-       
+        public double UsedMemory { get; set; }
 
+        public double UsedStorage { get; set; }
     }
 }
