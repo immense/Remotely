@@ -19,6 +19,7 @@ export var GridFilter = document.getElementById("gridFilter");
 export var AlertsButton = document.getElementById("alertsButton");
 export var CloseAlertsButton = document.getElementById("closeAlertsFrameButton");
 export var AlertsFrame = document.getElementById("alertsFrame");
+export var AlertsCount = document.getElementById("alertsCount");
 export function PopupMessage(message) {
     var messageDiv = document.createElement("div");
     messageDiv.classList.add("float-message");

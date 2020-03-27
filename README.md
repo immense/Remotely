@@ -13,6 +13,7 @@ Multi-Tenant Demo Server: https://app.remotely.one
 * Endpoint devices require the .NET Core runtime to be installed.
 	* For Windows, the Desktop Runtime is required.
     * Download Link: https://dotnet.microsoft.com/download/dotnet-core/current/runtime
+		* The installer will automatically download and install the runtime if missing.
 
 ## Build Instructions (Windows 10)  
 The following steps will configure your Windows 10 machine for building the Remotely server and clients.
@@ -98,14 +99,6 @@ Ideally, you'd be doing remote control from an actual computer or laptop.  Howev
 * Click-and-drag: Tap and hold with one finger, tap and release a second finger (without pinch-zooming)
 	* The click-and-drag operation will begin where finger one is held.
 
-## Shortcut Keys
-There are a few shortcut keys available when using the console.
-* / : Slash will open the autocomplete for selecting the current command mode.  The names are configurable in the Account - Options page.
-* Up/Down: Use arrow up/down to cycle through input history.
-* Ctrl + Up/Down: Scroll the console output window.
-* Ctrl + Q: Clear the output window.
-* Esc: Close the autocomplete window.
-
 ## Configuration
 The following settings are available in appsettings.json.
 
@@ -131,6 +124,24 @@ Note: To retain your settings between upgrades, copy your settings to appsetting
     * Only works on Windows agents.
     * Session recording will not work if a WebRTC connection is made.
 
+	
+## .NET Core Deployments
+* .NET Core has two methods of deployment: framework-dependent and self-contained.
+	* Framework-dependent deployments require the .NET Core runtime to be installed on the target computers.  It must be the same version that was used to build the app.
+	* Self-contained deployments include a copy of the runtime, so you don't need to install it on the target computers.  As a result, the total file size is much larger.
+* .NET Core uses runtime identifiers that are targeted when building.
+	* Link: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+
+
+## Shortcut Keys
+There are a few shortcut keys available when using the console.
+* / : Slash will open the autocomplete for selecting the current command mode.  The names are configurable in the Account - Options page.
+* Up/Down: Use arrow up/down to cycle through input history.
+* Ctrl + Up/Down: Scroll the console output window.
+* Ctrl + Q: Clear the output window.
+* Esc: Close the autocomplete window.
+
+
 ## API and Integrations
 Remotely has a basic API, which can be browsed at https://app.remotely.one/swagger (or your own server instance).  Most endpoints require authentication via an API access token, which can be created by going to Account - API Access.
 
@@ -153,10 +164,39 @@ Below is an example API request:
 
 	Get-Location
 
+## Alerts
+The Alerts API gives you the ability to add monitoring and alerting functionality to your device endpoints.  This feature is intended to add basic RMM-type functionality without diverging too far from Remotely's primary purpose.
 
-## .NET Core Deployments
-* .NET Core has two methods of deployment: framework-dependent and self-contained.
-	* Framework-dependent deployments require the .NET Core runtime to be installed on the target computers.  It must be the same version or higher that was used to build the app.
-	* Self-contained deployments include a copy of the runtime, so you don't need to install it on the target computers.  As a result, the total file size is much larger.
-* .NET Core uses runtime identifiers that are targeted when building.
-	* Link: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+Alerts can be set up to show a notification on the Remotely website, send an email, and/or perform a separate API request.
+
+To use Alerts, you'd first need to make an API token (or multiple tokens) for your devices to use.  Then create a scheduled task or some other recurring script to do the work.  Below is an example of how to use PowerShell to create a Scheduled Job that checks the disk space on a daily schedule.
+
+```
+$Trigger = New-JobTrigger -Daily -At "5 AM"
+$Option = New-ScheduledJobOption -RequireNetwork
+
+Register-ScheduledJob -ScriptBlock {
+    $OsDrive = Get-PSDrive -Name C
+    $FreeSpace = $OsDrive.Free / ($OsDrive.Used + $OsDrive.Free)
+    if ($FreeSpace -lt .1) {
+        Invoke-WebRequest -Uri "https://localhost:5001/api/Alerts/Create/" -Method Post -Headers @{ 
+            Authorization="3e9d8273-1dc1-4303-bd50-7a133e36b9b7:S+82XKZdvg278pSFHWtUklqHENuO5IhH"
+        } -Body @"
+            {
+                "AlertDeviceID": "f2b0a595-5ea8-471b-975f-12e70e0f3497",
+                "AlertMessage": "Low hard drive space. Free Space: $([Math]::Round($FreeSpace * 100))%",
+                "ApiRequestBody": null,
+                "ApiRequestHeaders": null,
+                "ApiRequestMethod": null,
+                "ApiRequestUrl": null,
+                "EmailBody": "Low hard drive space for device Maker.",
+                "EmailSubject": "Hard Drive Space Alert",
+                "EmailTo": "translucency_software@outlook.com",
+                "ShouldAlert": true,
+                "ShouldEmail": true,
+                "ShouldSendApiRequest": false
+            }
+"@ -ContentType "application/json"
+    }
+} -Name "Check OS Drive Space" -Trigger $Trigger -ScheduledJobOption $Option
+```

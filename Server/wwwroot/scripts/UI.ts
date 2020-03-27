@@ -21,6 +21,7 @@ export var GridFilter = document.getElementById("gridFilter") as HTMLInputElemen
 export var AlertsButton = document.getElementById("alertsButton") as HTMLButtonElement;
 export var CloseAlertsButton = document.getElementById("closeAlertsFrameButton") as HTMLButtonElement;
 export var AlertsFrame = document.getElementById("alertsFrame") as HTMLDivElement;
+export var AlertsCount = document.getElementById("alertsCount") as HTMLSpanElement;
 
 
 export function PopupMessage(message: string) {

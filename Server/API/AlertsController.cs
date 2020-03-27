@@ -92,7 +92,7 @@ namespace Remotely.Server.API
             return Ok();
         }
 
-        [HttpPost("Delete/{alertID}")]
+        [HttpDelete("Delete/{alertID}")]
         public async Task<IActionResult> Delete(string alertID)
         {
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
