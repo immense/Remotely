@@ -4,9 +4,11 @@ A remote control and remote scripting solution, built with .NET Core, SignalR Co
 [![Build Status](https://dev.azure.com/translucency/Remotely/_apis/build/status/Remotely-ReleaseBuild?branchName=master)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=17&branchName=master)
 [![Donate](https://www.paypalobjects.com/webstatic/en_US/i/buttons/pp-acceptance-small.png)](https://paypal.me/translucency)
 
-
 Website: https://remotely.one  
 Multi-Tenant Demo Server: https://app.remotely.one
+
+## Notice:  Work on Remotely will be temporarily stopped.
+Recently, I've been overwhelmed with questions and support requests, and Remotely is taking up almost all of my free time.  It's been especially taxing with everything that's going in the world right now.  I'm taking a break for a while to spend more time with my family.
 
 
 ## Client Prerequisites:
