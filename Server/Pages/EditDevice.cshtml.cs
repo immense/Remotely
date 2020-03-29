@@ -35,15 +35,22 @@ namespace Remotely.Server.Pages
         public IActionResult OnGet(string deviceID, bool success)
         {
             var user = DataService.GetUserByName(User.Identity.Name);
-            if (!DataService.DoesUserHaveAccessToDevice(deviceID, user))
+            var targetDevice = DataService.GetDevice(deviceID);
+            if (targetDevice == null)
             {
-                var targetDevice = DataService.GetDevice(deviceID);
+                return Page();
+            }
+            else if (!DataService.DoesUserHaveAccessToDevice(deviceID, user))
+            {
                 DataService.WriteEvent($"Edit device attempted by unauthorized user.  Device ID: {deviceID}.  User Name: {user.UserName}.",
                     Remotely.Shared.Models.EventType.Warning,
                     targetDevice.OrganizationID);
                 return Unauthorized();
             }
-            SaveSucessful = success;
+            else
+            {
+                SaveSucessful = success;
+            }
             PopulateViewModel(deviceID);
 
             return Page();
@@ -70,7 +77,7 @@ namespace Remotely.Server.Pages
                 var device = DataService.GetDevice(user.OrganizationID, deviceID);
                 DeviceName = device?.DeviceName;
                 DeviceID = device?.ID;
-                AgentVersion = device.AgentVersion;
+                AgentVersion = device?.AgentVersion;
                 Input.Alias = device?.Alias;
                 Input.DeviceGroupID = device?.DeviceGroupID;
                 Input.Tags = device?.Tags;
