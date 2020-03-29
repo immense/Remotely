@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Linq;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Remotely.Server.Data
 {
@@ -87,15 +88,27 @@ namespace Remotely.Server.Data
                     x => JsonSerializer.Serialize(x, null),
                     x => JsonSerializer.Deserialize<string[]>(x, null));
             builder.Entity<CommandResult>()
+               .Property(x => x.TargetDeviceIDs)
+               .Metadata.SetValueComparer(new ValueComparer<string[]>(true));
+
+            builder.Entity<CommandResult>()
                .Property(x => x.PSCoreResults)
                .HasConversion(
                    x => JsonSerializer.Serialize(x, null),
-                   x => JsonSerializer.Deserialize<List<PSCoreCommandResult>>(x, null));
+                   x => JsonSerializer.Deserialize<ICollection<PSCoreCommandResult>>(x, null));
+            builder.Entity<CommandResult>()
+              .Property(x => x.PSCoreResults)
+              .Metadata.SetValueComparer(new ValueComparer<ICollection<PSCoreCommandResult>>(true));
+
+
             builder.Entity<CommandResult>()
                 .Property(x => x.CommandResults)
                 .HasConversion(
                     x => JsonSerializer.Serialize(x, null),
-                    x => JsonSerializer.Deserialize<List<GenericCommandResult>>(x, null));
+                    x => JsonSerializer.Deserialize<ICollection<GenericCommandResult>>(x, null));
+            builder.Entity<CommandResult>()
+                .Property(x => x.CommandResults)
+                .Metadata.SetValueComparer(new ValueComparer<ICollection<GenericCommandResult>>(true));
 
             //builder.Entity<GenericCommandResult>()
             //    .HasNoKey();
@@ -127,6 +140,9 @@ namespace Remotely.Server.Data
                 .HasConversion(
                     x => JsonSerializer.Serialize(x, null),
                     x => JsonSerializer.Deserialize<List<Drive>>(x, null));
+            builder.Entity<Device>()
+               .Property(x => x.Drives)
+               .Metadata.SetValueComparer(new ValueComparer<List<Drive>>(true));
 
             builder.Entity<Device>()
                 .HasIndex(x => x.DeviceName);
