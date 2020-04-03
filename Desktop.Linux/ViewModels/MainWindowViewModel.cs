@@ -224,13 +224,13 @@ namespace Remotely.Desktop.Linux.ViewModels
             });
 
             serviceCollection.AddSingleton<IScreenCaster, ScreenCasterLinux>();
-            serviceCollection.AddSingleton<IKeyboardMouseInput, X11Input>();
+            serviceCollection.AddSingleton<IKeyboardMouseInput, KeyboardMouseInputLinux>();
             serviceCollection.AddSingleton<IClipboardService, ClipboardServiceLinux>();
             serviceCollection.AddSingleton<IAudioCapturer, AudioCapturerLinux>();
             serviceCollection.AddSingleton<CasterSocket>();
             serviceCollection.AddSingleton<IdleTimer>();
             serviceCollection.AddSingleton<Conductor>();
-            serviceCollection.AddTransient<IScreenCapturer, X11Capture>();
+            serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerLinux>();
 
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();

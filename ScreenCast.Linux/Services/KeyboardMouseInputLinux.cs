@@ -10,9 +10,9 @@ using Remotely.ScreenCast.Core.Models;
 
 namespace Remotely.ScreenCast.Linux.Services
 {
-    public class X11Input : IKeyboardMouseInput
+    public class KeyboardMouseInputLinux : IKeyboardMouseInput
     {
-        public X11Input()
+        public KeyboardMouseInputLinux()
         {
             Display = LibX11.XOpenDisplay(null);
         }
