@@ -26,19 +26,26 @@ namespace Remotely.ScreenCast.Win.Services
 
         public async Task BeginScreenCasting(ScreenCastRequest screenCastRequest)
         {
-            if (Win32Interop.GetCurrentDesktop(out var currentDesktopName))
+            try
             {
-                Logger.Write($"Setting desktop to {currentDesktopName} before screen casting.");
-                Win32Interop.SwitchToInputDesktop();
-            }
-            else
-            {
-                Logger.Write("Failed to get current desktop before screen casting.");
-            }
+                if (Win32Interop.GetCurrentDesktop(out var currentDesktopName))
+                {
+                    Logger.Write($"Setting desktop to {currentDesktopName} before screen casting.");
+                    Win32Interop.SwitchToInputDesktop();
+                }
+                else
+                {
+                    Logger.Write("Failed to get current desktop before screen casting.");
+                }
 
-            var conductor = ServiceContainer.Instance.GetRequiredService<Conductor>();
-            await conductor.CasterSocket.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
-            _ = BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, ServiceContainer.Instance.GetRequiredService<IScreenCapturer>());
+                var conductor = ServiceContainer.Instance.GetRequiredService<Conductor>();
+                await conductor.CasterSocket.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
+                _ = BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, ServiceContainer.Instance.GetRequiredService<IScreenCapturer>());
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+            }
         }
     }
 }
