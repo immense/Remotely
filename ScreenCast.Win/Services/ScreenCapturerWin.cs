@@ -100,6 +100,10 @@ namespace Remotely.ScreenCast.Win.Services
                         GetBitBltFrame();
                     }
                 }
+                else
+                {
+                    GetBitBltFrame();
+                }
             }
             catch (Exception e)
             {
