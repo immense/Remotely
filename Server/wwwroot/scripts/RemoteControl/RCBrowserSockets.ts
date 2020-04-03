@@ -135,7 +135,7 @@ export class RCBrowserSockets {
             PopupMessage("Clipboard updated.");
         });
         hubConnection.on("ScreenData", (selectedDisplay: string, displayNames: string[]) => {
-            document.querySelector("#screenSelectBar").innerHTML = "";
+            UI.ScreenSelectBar.innerHTML = "";
             for (let i = 0; i < displayNames.length; i++) {
                 var button = document.createElement("button");
                 button.innerHTML = `Monitor ${i}`;
