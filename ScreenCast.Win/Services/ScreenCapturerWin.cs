@@ -23,6 +23,7 @@
 
 using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Services;
+using Remotely.ScreenCast.Win.Models;
 using Remotely.Shared.Win32;
 using SharpDX;
 using SharpDX.Direct3D;
@@ -43,26 +44,7 @@ namespace Remotely.ScreenCast.Win.Services
     public class ScreenCapturerWin : IScreenCapturer
     {
         private readonly Dictionary<string, int> bitBltScreens = new Dictionary<string, int>();
-        private readonly Dictionary<string, OutputDuplication> directxScreens = new Dictionary<string, OutputDuplication>();
-        private Adapter1 adapter;
-        private SharpDX.Direct3D11.Device device;
-        private Factory1 factory;
-        private FeatureLevel[] featureLevels = new FeatureLevel[]
-        {
-            FeatureLevel.Level_9_1,
-            FeatureLevel.Level_9_2,
-            FeatureLevel.Level_9_3,
-            FeatureLevel.Level_10_0,
-            FeatureLevel.Level_10_1,
-            FeatureLevel.Level_11_0,
-            FeatureLevel.Level_11_1,
-            FeatureLevel.Level_12_0,
-            FeatureLevel.Level_12_1
-        };
-        private int height;
-        private Texture2D screenTexture;
-        private Texture2DDescription textureDesc;
-        private int width;
+        private readonly Dictionary<string, DirectXOutput> directxScreens = new Dictionary<string, DirectXOutput>();
         public ScreenCapturerWin()
         {
             Init();
@@ -80,7 +62,7 @@ namespace Remotely.ScreenCast.Win.Services
 
         public void Dispose()
         {
-            DisposeDirectX();
+            ClearDirectXOutputs();
 
             CurrentFrame?.Dispose();
             PreviousFrame?.Dispose();
@@ -162,16 +144,13 @@ namespace Remotely.ScreenCast.Win.Services
             ScreenChanged?.Invoke(this, CurrentScreenBounds);
         }
 
-        private void DisposeDirectX()
+        private void ClearDirectXOutputs()
         {
-            foreach (var output in directxScreens.Values)
+            foreach (var screen in directxScreens.Values)
             {
-                output.Dispose();
+                screen.Dispose();
             }
             directxScreens.Clear();
-            device?.Dispose();
-            adapter?.Dispose();
-            factory?.Dispose();
         }
         private void GetBitBltFrame()
         {
@@ -202,7 +181,10 @@ namespace Remotely.ScreenCast.Win.Services
                 SharpDX.DXGI.Resource screenResource;
                 OutputDuplicateFrameInformation duplicateFrameInformation;
 
-                var duplicatedOutput = directxScreens[SelectedScreen];
+                var duplicatedOutput = directxScreens[SelectedScreen].OutputDuplication;
+                var device = directxScreens[SelectedScreen].Device;
+                var texture2D = directxScreens[SelectedScreen].Texture2D;
+                
 
                 // Try to get duplicated frame within given time is ms
                 var result = duplicatedOutput.TryAcquireNextFrame(100, out duplicateFrameInformation, out screenResource);
@@ -233,22 +215,22 @@ namespace Remotely.ScreenCast.Win.Services
                 // copy resource into memory that can be accessed by the CPU
                 using (var screenTexture2D = screenResource.QueryInterface<Texture2D>())
                 {
-                    device.ImmediateContext.CopyResource(screenTexture2D, screenTexture);
+                    device.ImmediateContext.CopyResource(screenTexture2D, texture2D);
                 }
 
                 // Get the desktop capture texture
-                var mapSource = device.ImmediateContext.MapSubresource(screenTexture, 0, MapMode.Read, SharpDX.Direct3D11.MapFlags.None);
+                var mapSource = device.ImmediateContext.MapSubresource(texture2D, 0, MapMode.Read, SharpDX.Direct3D11.MapFlags.None);
 
-                var boundsRect = new Rectangle(0, 0, width, height);
+                var boundsRect = new Rectangle(0, 0, texture2D.Description.Width, texture2D.Description.Height);
 
                 // Copy pixels from screen capture Texture to GDI bitmap
                 var mapDest = CurrentFrame.LockBits(boundsRect, ImageLockMode.WriteOnly, CurrentFrame.PixelFormat);
                 var sourcePtr = mapSource.DataPointer;
                 var destPtr = mapDest.Scan0;
-                for (int y = 0; y < height; y++)
+                for (int y = 0; y < texture2D.Description.Height; y++)
                 {
                     // Copy a single line 
-                    SharpDX.Utilities.CopyMemory(destPtr, sourcePtr, width * 4);
+                    SharpDX.Utilities.CopyMemory(destPtr, sourcePtr, texture2D.Description.Width * 4);
 
                     // Advance pointers
                     sourcePtr = IntPtr.Add(sourcePtr, mapSource.RowPitch);
@@ -257,7 +239,7 @@ namespace Remotely.ScreenCast.Win.Services
 
                 // Release source and dest locks
                 CurrentFrame.UnlockBits(mapDest);
-                device.ImmediateContext.UnmapSubresource(screenTexture, 0);
+                device.ImmediateContext.UnmapSubresource(texture2D, 0);
 
                 screenResource.Dispose();
                 duplicatedOutput.ReleaseFrame();
@@ -283,53 +265,53 @@ namespace Remotely.ScreenCast.Win.Services
         }
         private void InitDirectX()
         {
-            DisposeDirectX();
+            ClearDirectXOutputs();
 
-            factory = new Factory1();
-
-            //Get first adapter
-            adapter = factory.Adapters1.FirstOrDefault(x => x.Outputs.Length > 0);
-            //Get device from adapter
-            device = new SharpDX.Direct3D11.Device(adapter);
-
-            for (var i = 0; i < adapter.GetOutputCount(); i++)
+            using (var factory = new Factory1())
             {
-                using (var output = adapter.GetOutput(i))
-                using (var output1 = output.QueryInterface<Output1>())
+                foreach (var adapter in factory.Adapters1.Where(x => (x.Outputs?.Length ?? 0) > 0))
                 {
-                    // Width/Height of desktop to capture
-                    var bounds = output1.Description.DesktopBounds;
-                    var newWidth = bounds.Right - bounds.Left;
-                    var newHeight = bounds.Bottom - bounds.Top;
-                    CurrentScreenBounds = new Rectangle(bounds.Left, bounds.Top, newWidth, newHeight);
-                    if (newWidth != width || newHeight != height)
+                    try
                     {
-                        ScreenChanged?.Invoke(this, CurrentScreenBounds);
+                        var device = new SharpDX.Direct3D11.Device(adapter);
+                        var output = adapter.Outputs.FirstOrDefault();
+                        var output1 = output.QueryInterface<Output1>();
+
+                        var bounds = output1.Description.DesktopBounds;
+                        var width = bounds.Right - bounds.Left;
+                        var height = bounds.Bottom - bounds.Top;
+
+                        // Create Staging texture CPU-accessible
+                        var textureDesc = new Texture2DDescription
+                        {
+                            CpuAccessFlags = CpuAccessFlags.Read,
+                            BindFlags = BindFlags.None,
+                            Format = Format.B8G8R8A8_UNorm,
+                            Width = width,
+                            Height = height,
+                            OptionFlags = ResourceOptionFlags.None,
+                            MipLevels = 1,
+                            ArraySize = 1,
+                            SampleDescription = { Count = 1, Quality = 0 },
+                            Usage = ResourceUsage.Staging
+                        };
+
+                        var texture2D = new Texture2D(device, textureDesc);
+
+                        directxScreens.Add(
+                            output1.Description.DeviceName,
+                            new DirectXOutput(adapter, 
+                                device, 
+                                output1.DuplicateOutput(device),
+                                texture2D));
                     }
-                    width = newWidth;
-                    height = newHeight;
-
-                    CurrentFrame = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-                    PreviousFrame = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-
-                    // Create Staging texture CPU-accessible
-                    textureDesc = new Texture2DDescription
+                    catch (Exception ex)
                     {
-                        CpuAccessFlags = CpuAccessFlags.Read,
-                        BindFlags = BindFlags.None,
-                        Format = Format.B8G8R8A8_UNorm,
-                        Width = width,
-                        Height = height,
-                        OptionFlags = ResourceOptionFlags.None,
-                        MipLevels = 1,
-                        ArraySize = 1,
-                        SampleDescription = { Count = 1, Quality = 0 },
-                        Usage = ResourceUsage.Staging
-                    };
-                    screenTexture = new Texture2D(device, textureDesc);
-                    directxScreens.Add(output1.Description.DeviceName, output1.DuplicateOutput(device));
+                        Logger.Write(ex);
+                    }
                 }
             }
+
 
             NeedsInit = false;
         }
