@@ -217,7 +217,7 @@ namespace Remotely.Desktop.Linux.ViewModels
             }
         }
 
-        private static void BuildServices()
+        private void BuildServices()
         {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddLogging(builder =>
