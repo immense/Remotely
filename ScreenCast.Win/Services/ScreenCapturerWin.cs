@@ -77,20 +77,14 @@ namespace Remotely.ScreenCast.Win.Services
         public Bitmap PreviousFrame { get; set; }
         public string SelectedScreen { get; private set; } = Screen.PrimaryScreen.DeviceName;
         private Graphics Graphic { get; set; }
+
         public void Dispose()
         {
-            foreach (var output in directxScreens.Values)
-            {
-                output.Dispose();
-            }
-            directxScreens.Clear();
-            device?.Dispose();
-            adapter?.Dispose();
-            factory?.Dispose();
+            DisposeDirectX();
+
             CurrentFrame?.Dispose();
             PreviousFrame?.Dispose();
         }
-
         public IEnumerable<string> GetDisplayNames() => Screen.AllScreens.Select(x => x.DeviceName);
 
         public void GetNextFrame()
@@ -146,6 +140,7 @@ namespace Remotely.ScreenCast.Win.Services
             InitBitBlt();
             InitDirectX();
         }
+
         public void SetSelectedScreen(string displayName)
         {
             if (displayName == SelectedScreen)
@@ -167,6 +162,17 @@ namespace Remotely.ScreenCast.Win.Services
             ScreenChanged?.Invoke(this, CurrentScreenBounds);
         }
 
+        private void DisposeDirectX()
+        {
+            foreach (var output in directxScreens.Values)
+            {
+                output.Dispose();
+            }
+            directxScreens.Clear();
+            device?.Dispose();
+            adapter?.Dispose();
+            factory?.Dispose();
+        }
         private void GetBitBltFrame()
         {
             try
@@ -268,6 +274,7 @@ namespace Remotely.ScreenCast.Win.Services
 
         private void InitBitBlt()
         {
+            bitBltScreens.Clear();
             Graphic = Graphics.FromImage(CurrentFrame);
             for (var i = 0; i < Screen.AllScreens.Length; i++)
             {
@@ -276,7 +283,7 @@ namespace Remotely.ScreenCast.Win.Services
         }
         private void InitDirectX()
         {
-            Dispose();
+            DisposeDirectX();
 
             factory = new Factory1();
 

@@ -11,10 +11,10 @@ using System.Text;
 
 namespace Remotely.ScreenCast.Linux.Services
 {
-    public class X11Capture : IScreenCapturer
+    public class ScreenCapturerLinux : IScreenCapturer
     {
         private readonly Dictionary<string, int> x11Screens = new Dictionary<string, int>();
-        public X11Capture()
+        public ScreenCapturerLinux()
         {
             Display = LibX11.XOpenDisplay(null);
             Init();
