@@ -134,11 +134,20 @@ namespace Remotely.Desktop.Linux.ViewModels
         }
 
         public ObservableCollection<Viewer> Viewers { get; } = new ObservableCollection<Viewer>();
+        public async Task GetSessionID()
+        {
+            await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
+            await Conductor.CasterSocket.GetSessionID();
+        }
 
         public async Task Init()
         {
             try
             {
+                SessionID = "Installing dependencies...";
+
+                await Task.Run(InstallDependencies);
+
                 SessionID = "Retrieving...";
 
                 Host = Config.GetConfig().Host;
@@ -185,13 +194,6 @@ namespace Remotely.Desktop.Linux.ViewModels
             }
         }
 
-        public async Task GetSessionID()
-        {
-            await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
-            await Conductor.CasterSocket.GetSessionID();
-        }
-
-
         public async Task PromptForHostName()
         {
             var prompt = new HostNamePrompt();
@@ -236,6 +238,20 @@ namespace Remotely.Desktop.Linux.ViewModels
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
         }
 
+        private void InstallDependencies()
+        {
+            var psi = new ProcessStartInfo()
+            {
+                FileName = "bash",
+                Arguments = "-c apt-get -y install libc6-dev ; " +
+                            "apt-get -y install libgdiplus ; " +
+                            "apt-get -y install libxtst-dev ; " +
+                            "apt-get -y install xclip",
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden
+            };
+            Process.Start(psi).WaitForExit();
+        }
         private void ScreenCastRequested(object sender, ScreenCastRequest screenCastRequest)
         {
             Dispatcher.UIThread.InvokeAsync(async () =>
