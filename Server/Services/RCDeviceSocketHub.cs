@@ -210,13 +210,13 @@ namespace Remotely.Server.Services
             return RCBrowserHub.Clients.Client(rcBrowserHubConnectionID).SendAsync("ScreenCapture", captureBytes, left, top, width, height, captureTime);
         }
 
-        public Task SendScreenCountToBrowser(int primaryScreenIndex, int screenCount, string rcBrowserHubConnectionID)
+        public Task SendScreenDataToBrowser(string selectedDisplay, string[] displayNames, string browserHubConnectionId)
         {
             lock (ViewerList)
             {
-                ViewerList.Add(rcBrowserHubConnectionID);
+                ViewerList.Add(browserHubConnectionId);
             }
-            return RCBrowserHub.Clients.Client(rcBrowserHubConnectionID).SendAsync("ScreenCount", primaryScreenIndex, screenCount);
+            return RCBrowserHub.Clients.Client(browserHubConnectionId).SendAsync("ScreenData", selectedDisplay, displayNames);
         }
 
         public Task SendScreenSize(int width, int height, string rcBrowserHubConnectionID)

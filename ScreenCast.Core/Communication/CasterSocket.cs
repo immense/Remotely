@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Remotely.ScreenCast.Core.Capture;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -129,9 +128,9 @@ namespace Remotely.ScreenCast.Core.Communication
             await Connection.SendAsync("SendScreenCapture", captureBytes, viewerID, left, top, width, height, captureTime);
         }
 
-        public async Task SendScreenCount(int primaryScreenIndex, int screenCount, string viewerID)
+        public async Task SendScreenData(string selectedScreen, string[] displayNames, string viewerID)
         {
-            await Connection.SendAsync("SendScreenCountToBrowser", primaryScreenIndex, screenCount, viewerID);
+            await Connection.SendAsync("SendScreenDataToBrowser", selectedScreen, displayNames, viewerID);
         }
 
         public async Task SendScreenSize(int width, int height, string viewerID)
@@ -332,11 +331,11 @@ namespace Remotely.ScreenCast.Core.Communication
                 }
             });
 
-            Connection.On("SelectScreen", (int screenIndex, string viewerID) =>
+            Connection.On("SelectScreen", (string displayName, string viewerID) =>
             {
                 if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
                 {
-                    viewer.Capturer.SetSelectedScreen(screenIndex);
+                    viewer.Capturer.SetSelectedScreen(displayName);
                 }
             });
 

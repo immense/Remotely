@@ -12,9 +12,9 @@ using Remotely.ScreenCast.Core;
 
 namespace Remotely.ScreenCast.Win.Services
 {
-    public class WinInput : IKeyboardMouseInput
+    public class KeyboardMouseInputWin : IKeyboardMouseInput
     {
-        public WinInput()
+        public KeyboardMouseInputWin()
         {
             StartInputActionThread();
             Application.ApplicationExit += Application_ApplicationExit;
@@ -30,14 +30,14 @@ namespace Remotely.ScreenCast.Win.Services
 
         private bool ShutdownStarted { get; set; }
 
-        public Tuple<double, double> GetAbsolutePercentFromRelativePercent(double percentX, double percentY, ICapturer capturer)
+        public Tuple<double, double> GetAbsolutePercentFromRelativePercent(double percentX, double percentY, IScreenCapturer capturer)
         {
             var absoluteX = (capturer.CurrentScreenBounds.Width * percentX) + capturer.CurrentScreenBounds.Left - capturer.GetVirtualScreenBounds().Left;
             var absoluteY = (capturer.CurrentScreenBounds.Height * percentY) + capturer.CurrentScreenBounds.Top - capturer.GetVirtualScreenBounds().Top;
             return new Tuple<double, double>(absoluteX / capturer.GetVirtualScreenBounds().Width, absoluteY / capturer.GetVirtualScreenBounds().Height);
         }
 
-        public Tuple<double, double> GetAbsolutePointFromRelativePercent(double percentX, double percentY, ICapturer capturer)
+        public Tuple<double, double> GetAbsolutePointFromRelativePercent(double percentX, double percentY, IScreenCapturer capturer)
         {
             var absoluteX = (capturer.CurrentScreenBounds.Width * percentX) + capturer.CurrentScreenBounds.Left;
             var absoluteY = (capturer.CurrentScreenBounds.Height * percentY) + capturer.CurrentScreenBounds.Top;

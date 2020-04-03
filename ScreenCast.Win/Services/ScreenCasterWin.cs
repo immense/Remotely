@@ -6,20 +6,18 @@ using System.Text;
 using System.Threading.Tasks;
 using Remotely.ScreenCast.Core.Enums;
 using Remotely.ScreenCast.Core.Services;
-using Remotely.ScreenCast.Core.Capture;
 using Remotely.ScreenCast.Core;
 using Remotely.ScreenCast.Core.Models;
 using Remotely.Shared.Models;
-using Remotely.ScreenCast.Win.Capture;
 using Remotely.Shared.Win32;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
 
 namespace Remotely.ScreenCast.Win.Services
 {
-    public class WinScreenCaster : ScreenCasterBase,  IScreenCaster
+    public class ScreenCasterWin : ScreenCasterBase,  IScreenCaster
     {
-        public WinScreenCaster(CursorIconWatcher cursorIconWatcher)
+        public ScreenCasterWin(CursorIconWatcher cursorIconWatcher)
         {
             CursorIconWatcher = cursorIconWatcher;
         }
@@ -40,7 +38,7 @@ namespace Remotely.ScreenCast.Win.Services
 
             var conductor = ServiceContainer.Instance.GetRequiredService<Conductor>();
             await conductor.CasterSocket.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
-            _ = BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, ServiceContainer.Instance.GetRequiredService<ICapturer>());
+            _ = BeginScreenCasting(screenCastRequest.ViewerID, screenCastRequest.RequesterName, ServiceContainer.Instance.GetRequiredService<IScreenCapturer>());
         }
     }
 }

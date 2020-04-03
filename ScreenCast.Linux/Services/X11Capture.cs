@@ -1,31 +1,42 @@
-﻿using Remotely.ScreenCast.Core.Capture;
-using Remotely.ScreenCast.Core.Interfaces;
+﻿using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Services;
 using Remotely.ScreenCast.Linux.X11Interop;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Remotely.ScreenCast.Linux.Capture
+namespace Remotely.ScreenCast.Linux.Services
 {
-    public class X11Capture : ICapturer
+    public class X11Capture : IScreenCapturer
     {
+        private readonly Dictionary<string, int> x11Screens = new Dictionary<string, int>();
         public X11Capture()
         {
             Display = LibX11.XOpenDisplay(null);
             Init();
         }
 
+        public event EventHandler<Rectangle> ScreenChanged;
+
         public bool CaptureFullscreen { get; set; }
         public Bitmap CurrentFrame { get; set; }
         public Rectangle CurrentScreenBounds { get; private set; }
         public IntPtr Display { get; private set; }
         public Bitmap PreviousFrame { get; set; }
-        public event EventHandler<Rectangle> ScreenChanged;
-        public int SelectedScreen { get; private set; } = -1;
+        public string SelectedScreen { get; private set; } = "0";
+        public void Dispose()
+        {
+            //Graphic.Dispose();
+            CurrentFrame.Dispose();
+            PreviousFrame.Dispose();
+        }
+
+        public IEnumerable<string> GetDisplayNames() => x11Screens.Keys;
+
         public void GetNextFrame()
         {
             try
@@ -40,18 +51,12 @@ namespace Remotely.ScreenCast.Linux.Capture
                 Init();
             }
         }
-
-        public void Dispose()
-        {
-            //Graphic.Dispose();
-            CurrentFrame.Dispose();
-            PreviousFrame.Dispose();
-        }
-
         public int GetScreenCount()
         {
             return LibX11.XScreenCount(Display);
         }
+
+        public int GetSelectedScreenIndex() => x11Screens[SelectedScreen];
 
         public Rectangle GetVirtualScreenBounds()
         {
@@ -72,8 +77,14 @@ namespace Remotely.ScreenCast.Linux.Capture
         {
             try
             {
+                x11Screens.Clear();
+
+                for (var i = 0; i < GetScreenCount(); i++)
+                {
+                    x11Screens.Add(i.ToString(), i);
+                }
                 var defaultScreen = LibX11.XDefaultScreen(Display);
-                SetSelectedScreen(defaultScreen);
+                SetSelectedScreen(defaultScreen.ToString());
                 CurrentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
                 PreviousFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
             }
@@ -82,25 +93,24 @@ namespace Remotely.ScreenCast.Linux.Capture
                 Logger.Write(ex);
             }
         }
-
-        public void SetSelectedScreen(int screenNumber)
+        public void SetSelectedScreen(string displayName)
         {
-            if (screenNumber == SelectedScreen)
+            if (displayName == SelectedScreen)
             {
                 return;
             }
             try
             {
-                if (GetScreenCount() >= screenNumber + 1)
+                if (x11Screens.ContainsKey(displayName))
                 {
-                    SelectedScreen = screenNumber;
+                    SelectedScreen = displayName;
                 }
                 else
                 {
-                    SelectedScreen = 0;
+                    SelectedScreen = x11Screens.Keys.First();
                 }
-                var width = LibX11.XDisplayWidth(Display, SelectedScreen);
-                var height = LibX11.XDisplayHeight(Display, SelectedScreen);
+                var width = LibX11.XDisplayWidth(Display, x11Screens[SelectedScreen]);
+                var height = LibX11.XDisplayHeight(Display, x11Screens[SelectedScreen]);
                 CurrentScreenBounds = new Rectangle(0, 0, width, height);
                 CaptureFullscreen = true;
                 Init();
@@ -115,7 +125,7 @@ namespace Remotely.ScreenCast.Linux.Capture
 
         private void RefreshCurrentFrame()
         {
-            var window = LibX11.XRootWindow(Display, SelectedScreen);
+            var window = LibX11.XRootWindow(Display, x11Screens[SelectedScreen]);
 
             var imagePointer = LibX11.XGetImage(Display, window, 0, 0, CurrentScreenBounds.Width, CurrentScreenBounds.Height, ~0, 2);
             var image = Marshal.PtrToStructure<LibX11.XImage>(imagePointer);

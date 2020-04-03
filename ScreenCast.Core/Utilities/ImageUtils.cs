@@ -10,7 +10,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely.ScreenCast.Core.Capture
+namespace Remotely.ScreenCast.Core.Utilities
 {
     public class ImageUtils
     {

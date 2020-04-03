@@ -68,8 +68,8 @@ export class RCBrowserSockets {
     SendLatencyUpdate(sentTime: Date, bytesReceived: number) {
         this.Connection.invoke("SendLatencyUpdate", sentTime, bytesReceived);
     }
-    SendSelectScreen(index: number) {
-        this.Connection.invoke("SelectScreen", index);
+    SendSelectScreen(displayName: string) {
+        this.Connection.invoke("SelectScreen", displayName);
     }
     SendMouseMove(percentX: number, percentY: number): any {
         this.Connection.invoke("MouseMove", percentX, percentY);
@@ -134,18 +134,18 @@ export class RCBrowserSockets {
             Remotely.ClipboardWatcher.SetClipboardText(clipboardText);
             PopupMessage("Clipboard updated.");
         });
-        hubConnection.on("ScreenCount", (primaryScreenIndex: number, screenCount: number) => {
+        hubConnection.on("ScreenData", (selectedDisplay: string, displayNames: string[]) => {
             document.querySelector("#screenSelectBar").innerHTML = "";
-            for (let i = 0; i < screenCount; i++) {
+            for (let i = 0; i < displayNames.length; i++) {
                 var button = document.createElement("button");
                 button.innerHTML = `Monitor ${i}`;
                 button.classList.add("horizontal-bar-button");
-                if (i == primaryScreenIndex) {
+                if (displayNames[i] == selectedDisplay) {
                     button.classList.add("toggled");
                 }
                 document.querySelector("#screenSelectBar").appendChild(button);
                 button.onclick = (ev: MouseEvent) => {
-                    this.SendSelectScreen(i);
+                    this.SendSelectScreen(displayNames[i]);
                     document.querySelectorAll("#screenSelectBar .horizontal-bar-button").forEach(button => {
                         button.classList.remove("toggled");
                     });
