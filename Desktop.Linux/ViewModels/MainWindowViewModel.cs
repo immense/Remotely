@@ -6,12 +6,10 @@ using Remotely.Desktop.Linux.Controls;
 using Remotely.Desktop.Linux.Services;
 using Remotely.Desktop.Linux.Views;
 using Remotely.ScreenCast.Core;
-using Remotely.ScreenCast.Core.Capture;
 using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Models;
 using Remotely.ScreenCast.Core.Services;
 using Remotely.ScreenCast.Core.Communication;
-using Remotely.ScreenCast.Linux.Capture;
 using Remotely.ScreenCast.Linux.Services;
 using Remotely.Shared.Models;
 using Remotely.Shared.Services;
@@ -225,14 +223,14 @@ namespace Remotely.Desktop.Linux.ViewModels
                 builder.AddConsole().AddEventLog();
             });
 
-            serviceCollection.AddSingleton<IScreenCaster, LinuxScreenCaster>();
+            serviceCollection.AddSingleton<IScreenCaster, ScreenCasterLinux>();
             serviceCollection.AddSingleton<IKeyboardMouseInput, X11Input>();
-            serviceCollection.AddSingleton<IClipboardService, LinuxClipboardService>();
-            serviceCollection.AddSingleton<IAudioCapturer, LinuxAudioCapturer>();
+            serviceCollection.AddSingleton<IClipboardService, ClipboardServiceLinux>();
+            serviceCollection.AddSingleton<IAudioCapturer, AudioCapturerLinux>();
             serviceCollection.AddSingleton<CasterSocket>();
             serviceCollection.AddSingleton<IdleTimer>();
             serviceCollection.AddSingleton<Conductor>();
-            serviceCollection.AddTransient<ICapturer, X11Capture>();
+            serviceCollection.AddTransient<IScreenCapturer, X11Capture>();
 
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();

@@ -7,19 +7,27 @@ using System.Threading.Tasks;
 
 namespace Remotely.ScreenCast.Core.Interfaces
 {
-    public interface ICapturer : IDisposable
+    public interface IScreenCapturer : IDisposable
     {
+        event EventHandler<Rectangle> ScreenChanged;
+
         bool CaptureFullscreen { get; set; }
         Bitmap CurrentFrame { get; set; }
         Rectangle CurrentScreenBounds { get; }
         Bitmap PreviousFrame { get; set; }
-        event EventHandler<Rectangle> ScreenChanged;
-        int SelectedScreen { get; }
-        void SetSelectedScreen(int screenNumber);
-        int GetScreenCount();
-        Rectangle GetVirtualScreenBounds();
+        string SelectedScreen { get; }
+
+        IEnumerable<string> GetDisplayNames();
 
         void GetNextFrame();
+
+        int GetScreenCount();
+
+        int GetSelectedScreenIndex();
+        Rectangle GetVirtualScreenBounds();
+
         void Init();
+
+        void SetSelectedScreen(string displayName);
     }
 }

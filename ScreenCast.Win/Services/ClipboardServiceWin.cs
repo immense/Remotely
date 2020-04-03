@@ -12,7 +12,7 @@ using System.Windows.Forms;
 
 namespace Remotely.ScreenCast.Win.Services
 {
-    public class WinClipboardService : IClipboardService
+    public class ClipboardServiceWin : IClipboardService
     {
         public event EventHandler<string> ClipboardTextChanged;
 

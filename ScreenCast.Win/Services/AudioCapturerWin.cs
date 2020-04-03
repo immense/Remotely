@@ -13,7 +13,7 @@ using Remotely.ScreenCast.Core.Interfaces;
 
 namespace Remotely.ScreenCast.Win.Services
 {
-    public class WinAudioCapturer : IAudioCapturer
+    public class AudioCapturerWin : IAudioCapturer
     {
         private WasapiLoopbackCapture Capturer { get; set; }
         private Stopwatch SendTimer { get; set; }

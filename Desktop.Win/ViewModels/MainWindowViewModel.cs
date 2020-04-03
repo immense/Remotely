@@ -2,10 +2,8 @@
 using Remotely.Desktop.Win.Services;
 using Remotely.Shared.Models;
 using Remotely.ScreenCast.Core;
-using Remotely.ScreenCast.Core.Capture;
 using Remotely.ScreenCast.Core.Models;
 using Remotely.ScreenCast.Core.Services;
-using Remotely.ScreenCast.Win.Capture;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -255,34 +253,14 @@ namespace Remotely.Desktop.Win.ViewModels
             });
 
             serviceCollection.AddSingleton<CursorIconWatcher>();
-            serviceCollection.AddSingleton<IScreenCaster, WinScreenCaster>();
-            serviceCollection.AddSingleton<IKeyboardMouseInput, WinInput>();
-            serviceCollection.AddSingleton<IClipboardService, WinClipboardService>();
-            serviceCollection.AddSingleton<IAudioCapturer, WinAudioCapturer>();
+            serviceCollection.AddSingleton<IScreenCaster, ScreenCasterWin>();
+            serviceCollection.AddSingleton<IKeyboardMouseInput, KeyboardMouseInputWin>();
+            serviceCollection.AddSingleton<IClipboardService, ClipboardServiceWin>();
+            serviceCollection.AddSingleton<IAudioCapturer, AudioCapturerWin>();
             serviceCollection.AddSingleton<CasterSocket>();
             serviceCollection.AddSingleton<IdleTimer>();
             serviceCollection.AddSingleton<Conductor>();
-            serviceCollection.AddTransient<ICapturer>(provider =>
-            {
-                try
-                {
-                    var dxCapture = new DXCapture();
-                    if (dxCapture.GetScreenCount() == Screen.AllScreens.Length)
-                    {
-                        return dxCapture;
-                    }
-                    else
-                    {
-                        Logger.Write("DX screen count doesn't match.  Using CPU capturer instead.");
-                        dxCapture.Dispose();
-                        return new BitBltCapture();
-                    }
-                }
-                catch
-                {
-                    return new BitBltCapture();
-                }
-            });
+            serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerWin>();
 
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();

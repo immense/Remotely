@@ -132,9 +132,9 @@ namespace Remotely.Server.Services
             return base.OnDisconnectedAsync(exception);
         }
 
-        public Task SelectScreen(int screenIndex)
+        public Task SelectScreen(string displayName)
         {
-            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("SelectScreen", screenIndex, Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("SelectScreen", displayName, Context.ConnectionId);
         }
 
         public Task SendClipboardTransfer(string transferText, bool typeText)

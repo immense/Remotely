@@ -3,7 +3,6 @@ using Remotely.ScreenCast.Core.Services;
 using System;
 using System.Threading;
 using Remotely.ScreenCast.Linux.Services;
-using Remotely.ScreenCast.Linux.Capture;
 using Remotely.ScreenCast.Core.Communication;
 using Remotely.ScreenCast.Core.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -60,15 +59,15 @@ namespace Remotely.ScreenCast.Linux
                 builder.AddConsole().AddEventLog();
             });
 
-            serviceCollection.AddSingleton<IScreenCaster, LinuxScreenCaster>();
+            serviceCollection.AddSingleton<IScreenCaster, ScreenCasterLinux>();
             serviceCollection.AddSingleton<IKeyboardMouseInput, X11Input>();
-            serviceCollection.AddSingleton<IClipboardService, LinuxClipboardService>();
-            serviceCollection.AddSingleton<IAudioCapturer, LinuxAudioCapturer>();
+            serviceCollection.AddSingleton<IClipboardService, ClipboardServiceLinux>();
+            serviceCollection.AddSingleton<IAudioCapturer, AudioCapturerLinux>();
             serviceCollection.AddSingleton<CasterSocket>();
             serviceCollection.AddSingleton<IdleTimer>();
             serviceCollection.AddSingleton<Conductor>();
             serviceCollection.AddSingleton<ChatHostService>();
-            serviceCollection.AddTransient<ICapturer, X11Capture>();
+            serviceCollection.AddTransient<IScreenCapturer, X11Capture>();
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
         }

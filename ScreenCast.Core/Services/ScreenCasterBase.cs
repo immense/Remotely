@@ -17,14 +17,15 @@ using System.Diagnostics;
 using System.Threading;
 using System.Drawing.Imaging;
 using Microsoft.Extensions.DependencyInjection;
+using Remotely.ScreenCast.Core.Utilities;
 
-namespace Remotely.ScreenCast.Core.Capture
+namespace Remotely.ScreenCast.Core.Services
 {
     public class ScreenCasterBase
     {
         public async Task BeginScreenCasting(string viewerID,
                                                    string requesterName,
-                                                   ICapturer capturer)
+                                                   IScreenCapturer capturer)
         {
             var conductor = ServiceContainer.Instance.GetRequiredService<Conductor>();
             var viewers = conductor.Viewers;
@@ -59,9 +60,9 @@ namespace Remotely.ScreenCast.Core.Capture
 
             await casterSocket.SendMachineName(Environment.MachineName, viewerID);
 
-            await casterSocket.SendScreenCount(
+            await casterSocket.SendScreenData(
                    capturer.SelectedScreen,
-                   capturer.GetScreenCount(),
+                   capturer.GetDisplayNames().ToArray(),
                    viewerID);
 
             await casterSocket.SendScreenSize(capturer.CurrentScreenBounds.Width, capturer.CurrentScreenBounds.Height, viewerID);

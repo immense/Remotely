@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Remotely.ScreenCast.Linux.Services
 {
-    public class LinuxAudioCapturer : IAudioCapturer
+    public class AudioCapturerLinux : IAudioCapturer
     {
         public void ToggleAudio(bool toggleOn)
         {

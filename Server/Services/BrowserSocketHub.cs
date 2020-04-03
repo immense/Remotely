@@ -135,6 +135,10 @@ namespace Remotely.Server.Services
 		public Task RemoteControl(string deviceID)
 		{
             var targetDevice = DeviceSocketHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == deviceID);
+            if (targetDevice.Value is null)
+            {
+                return Clients.Caller.SendAsync("DisplayMessage", $"The selected device is not online.", "Device is not online."); ;
+            }
             if (DataService.DoesUserHaveAccessToDevice(deviceID, RemotelyUser))
 			{
 				var currentUsers = RCDeviceSocketHub.SessionInfoList.Count(x => x.Value.OrganizationID == RemotelyUser.OrganizationID);

@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-using Remotely.ScreenCast.Linux.Capture;
 using Remotely.ScreenCast.Core.Models;
 
 namespace Remotely.ScreenCast.Linux.Services
@@ -98,7 +97,7 @@ namespace Remotely.ScreenCast.Linux.Services
             try
             {
                 LibXtst.XTestFakeMotionEvent(Display, 
-                    viewer.Capturer.SelectedScreen,
+                    viewer.Capturer.GetSelectedScreenIndex(),
                     (int)(viewer.Capturer.CurrentScreenBounds.Width * percentX), 
                     (int)(viewer.Capturer.CurrentScreenBounds.Height * percentY),
                     0);

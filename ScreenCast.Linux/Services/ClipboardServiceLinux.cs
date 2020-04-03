@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Remotely.ScreenCast.Linux.Services
 {
-    public class LinuxClipboardService : IClipboardService
+    public class ClipboardServiceLinux : IClipboardService
     {
         public event EventHandler<string> ClipboardTextChanged;
 

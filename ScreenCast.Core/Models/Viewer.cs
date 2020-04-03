@@ -1,5 +1,4 @@
-﻿using Remotely.ScreenCast.Core.Capture;
-using Remotely.ScreenCast.Core.Communication;
+﻿using Remotely.ScreenCast.Core.Communication;
 using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Services;
 using System;
@@ -20,7 +19,7 @@ namespace Remotely.ScreenCast.Core.Models
             ImageQuality = 75;
         }
         public bool AutoAdjustQuality { get; internal set; } = true;
-        public ICapturer Capturer { get; set; }
+        public IScreenCapturer Capturer { get; set; }
         public bool DisconnectRequested { get; set; }
         public EncoderParameters EncoderParams { get; private set; }
         public bool FullScreenRefreshNeeded { get; internal set; }
