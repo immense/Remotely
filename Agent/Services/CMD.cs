@@ -53,10 +53,10 @@ namespace Remotely.Agent.Services
         {
             if (Sessions.ContainsKey(connectionID))
             {
-                var bash = Sessions[connectionID];
-                bash.ProcessIdleTimeout.Stop();
-                bash.ProcessIdleTimeout.Start();
-                return bash;
+                var cmd = Sessions[connectionID];
+                cmd.ProcessIdleTimeout.Stop();
+                cmd.ProcessIdleTimeout.Start();
+                return cmd;
             }
             else
             {
