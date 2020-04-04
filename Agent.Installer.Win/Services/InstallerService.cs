@@ -42,7 +42,7 @@ namespace Remotely.Agent.Installer.Win.Services
                     return false;
                 }
 
-                await InstallDesktpRuntimeIfNeeded();
+                //await InstallDesktpRuntimeIfNeeded();
 
                 StopService();
 
