@@ -243,14 +243,14 @@ namespace Remotely.Desktop.Linux.ViewModels
             var psi = new ProcessStartInfo()
             {
                 FileName = "bash",
-                Arguments = "-c apt-get -y install libc6-dev ; " +
+                Arguments = "-c \"apt-get -y install libc6-dev ; " +
                             "apt-get -y install libgdiplus ; " +
                             "apt-get -y install libxtst-dev ; " +
-                            "apt-get -y install xclip",
+                            "apt-get -y install xclip\"",
                 CreateNoWindow = true,
                 WindowStyle = ProcessWindowStyle.Hidden
             };
-            Process.Start(psi).WaitForExit();
+            Process.Start(psi);
         }
         private void ScreenCastRequested(object sender, ScreenCastRequest screenCastRequest)
         {

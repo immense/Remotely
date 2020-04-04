@@ -162,6 +162,8 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
         window.addEventListener("mouseleave", removeMouseButtonWindowListeners);
     });
     MenuButton.addEventListener("touchmove", (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
         MenuButton.style.top = `${ev.touches[0].clientY}px`;
     });
     QualityButton.addEventListener("click", (ev) => {
@@ -483,5 +485,4 @@ function removeMouseButtonWindowListeners(ev: MouseEvent) {
     window.removeEventListener("mousemove", moveMenuButton);
     window.removeEventListener("mouseup", removeMouseButtonWindowListeners);
     window.removeEventListener("mouseleave", removeMouseButtonWindowListeners);
-    isMenuButtonDragging = false;
 }
