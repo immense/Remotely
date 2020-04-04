@@ -27,7 +27,7 @@ namespace Remotely.ScreenCast.Linux.Services
         public Rectangle CurrentScreenBounds { get; private set; }
         public IntPtr Display { get; private set; }
         public Bitmap PreviousFrame { get; set; }
-        public string SelectedScreen { get; private set; } = "0";
+        public string SelectedScreen { get; private set; }
         public void Dispose()
         {
             //Graphic.Dispose();
@@ -83,7 +83,6 @@ namespace Remotely.ScreenCast.Linux.Services
                 {
                     x11Screens.Add(i.ToString(), i);
                 }
-
                 SetSelectedScreen(x11Screens.Keys.First());
                 CurrentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
                 PreviousFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
