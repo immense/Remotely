@@ -1,6 +1,7 @@
 import { Remotely } from "./Main.js";
 import { PopupMessage } from "../UI.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
+import { GetDistanceBetween } from "../Utilities.js";
 export var AudioButton = document.getElementById("audioButton");
 export var MenuButton = document.getElementById("menuButton");
 export var MenuFrame = document.getElementById("menuFrame");
@@ -44,6 +45,7 @@ var cancelNextViewerClick;
 var isPinchZooming;
 var startPinchPoint1;
 var startPinchPoint2;
+var startPinchDistance;
 var isMenuButtonDragging;
 var startMenuDraggingY;
 var startLongPressTimeout;
@@ -101,11 +103,11 @@ export function ApplyInputHandlers(sockets) {
         uploadFiles(FileTransferInput.files);
     });
     FitToScreenButton.addEventListener("click", (ev) => {
-        var button = ev.currentTarget;
-        button.classList.toggle("toggled");
-        if (button.classList.contains("toggled")) {
+        FitToScreenButton.classList.toggle("toggled");
+        if (FitToScreenButton.classList.contains("toggled")) {
             ScreenViewer.style.removeProperty("max-width");
             ScreenViewer.style.removeProperty("max-height");
+            ScreenViewer.style.width = "100%";
         }
         else {
             ScreenViewer.style.maxWidth = "unset";
@@ -245,6 +247,7 @@ export function ApplyInputHandlers(sockets) {
         if (currentTouchCount == 2) {
             startPinchPoint1 = { X: e.touches[0].pageX, Y: e.touches[0].pageY, IsEmpty: false };
             startPinchPoint2 = { X: e.touches[1].pageX, Y: e.touches[1].pageY, IsEmpty: false };
+            startPinchDistance = GetDistanceBetween(startPinchPoint1.X, startPinchPoint1.Y, startPinchPoint2.X, startPinchPoint2.Y);
         }
         isDragging = false;
         KeyboardButton.removeAttribute("hidden");
@@ -259,10 +262,20 @@ export function ApplyInputHandlers(sockets) {
         var percentX = (e.touches[0].pageX - ScreenViewer.getBoundingClientRect().left) / ScreenViewer.clientWidth;
         var percentY = (e.touches[0].pageY - ScreenViewer.getBoundingClientRect().top) / ScreenViewer.clientHeight;
         if (e.touches.length == 2) {
-            var distance1 = Math.hypot(startPinchPoint1.X - e.touches[0].pageX, startPinchPoint1.Y - e.touches[0].pageY);
-            var distance2 = Math.hypot(startPinchPoint2.X - e.touches[1].pageX, startPinchPoint2.Y - e.touches[1].pageY);
-            if (distance1 > 5 || distance2 > 5) {
+            var pinchPoint1 = { X: e.touches[0].pageX, Y: e.touches[0].pageY, IsEmpty: false };
+            var pinchPoint2 = { X: e.touches[1].pageX, Y: e.touches[1].pageY, IsEmpty: false };
+            var pinchDistance = GetDistanceBetween(pinchPoint1.X, pinchPoint1.Y, pinchPoint2.X, pinchPoint2.Y);
+            if (Math.abs(pinchDistance - startPinchDistance) > 5) {
                 isPinchZooming = true;
+                if (FitToScreenButton.classList.contains("toggled")) {
+                    FitToScreenButton.click();
+                }
+                var currentWidth = Number(ScreenViewer.style.width.slice(0, -1));
+                var newWidth = Math.max(100, currentWidth + (pinchDistance - startPinchDistance));
+                currentWidth = newWidth;
+                ScreenViewer.style.width = String(currentWidth) + "%";
+                startPinchDistance = pinchDistance;
+                // TODO: Scroll wrapper.
             }
             return;
         }
