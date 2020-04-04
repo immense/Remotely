@@ -110,12 +110,22 @@ button {
     }
 
 
+#screenViewerWrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: auto;
+    -ms-touch-action: pan-x pan-y;
+    touch-action: pan-x pan-y;
+}
 #screenViewer {
     max-width: 99vw;
     max-height: 99vh;
     z-index: 1;
-    -ms-touch-action: none;
-    touch-action: none;
+    -ms-touch-action: pan-x pan-y;
+    touch-action: pan-x pan-y;
 }
 
 #connectBox {
@@ -253,6 +263,8 @@ footer {
 
 #touchKeyboardTextArea {
     position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
     top: -100%;
 }
 
