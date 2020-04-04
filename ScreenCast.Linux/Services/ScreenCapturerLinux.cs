@@ -83,8 +83,8 @@ namespace Remotely.ScreenCast.Linux.Services
                 {
                     x11Screens.Add(i.ToString(), i);
                 }
-                var defaultScreen = LibX11.XDefaultScreen(Display);
-                SetSelectedScreen(defaultScreen.ToString());
+
+                SetSelectedScreen(x11Screens.Keys.First());
                 CurrentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
                 PreviousFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
             }
@@ -113,7 +113,6 @@ namespace Remotely.ScreenCast.Linux.Services
                 var height = LibX11.XDisplayHeight(Display, x11Screens[SelectedScreen]);
                 CurrentScreenBounds = new Rectangle(0, 0, width, height);
                 CaptureFullscreen = true;
-                Init();
                 ScreenChanged?.Invoke(this, CurrentScreenBounds);
 
             }
