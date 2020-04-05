@@ -16,7 +16,14 @@ namespace Remotely.ScreenCast.Core.Models
 
         public Viewer()
         {
-            ImageQuality = 75;
+            ImageQuality = 60;
+            EncoderParams = new EncoderParameters()
+            {
+                Param = new[]
+                    {
+                        new EncoderParameter(Encoder.Quality, ImageQuality)
+                    }
+            };
         }
         public bool AutoAdjustQuality { get; internal set; } = true;
         public IScreenCapturer Capturer { get; set; }
@@ -42,13 +49,7 @@ namespace Remotely.ScreenCast.Core.Models
                 }
                 imageQuality = value;
 
-                EncoderParams = new EncoderParameters()
-                {
-                    Param = new[]
-                    {
-                        new EncoderParameter(Encoder.Quality, value)
-                    }
-                };
+                EncoderParams.Param[0] = new EncoderParameter(Encoder.Quality, value);
             }
         }
 
@@ -72,21 +73,24 @@ namespace Remotely.ScreenCast.Core.Models
         {
             if (IsUsingWebRtc() && RtcSession?.CurrentBuffer > 100_000)
             {
+                ImageQuality -= 5;
+                Logger.Debug($"Auto-adjusting image quality for WebRTC. Latency: {Latency}. Quality: {ImageQuality}");
                 var delay = (int)Math.Ceiling((RtcSession.CurrentBuffer - 100_000) * .0025);
                 Logger.Debug($"Throttling output due to WebRTC buffer.  Size: {RtcSession.CurrentBuffer}.  Delay: {delay}");
                 await Task.Delay(delay);
             }
             else if (!IsUsingWebRtc() && WebSocketBuffer > 150_000)
             {
+                ImageQuality -= 5;
+                Logger.Debug($"Auto-adjusting image quality for WebSocket. Latency: {Latency}. Quality: {ImageQuality}");
                 var delay = (int)Math.Ceiling((WebSocketBuffer - 150_000) * .0025);
                 Logger.Debug($"Throttling output due to websocket buffer.  Size: {WebSocketBuffer}.  Delay: {delay}");
                 await Task.Delay(delay);
             }
-        }
-
-        public bool ShouldAdjustQuality()
-        {
-            return !IsUsingWebRtc() && AutoAdjustQuality && Latency > 1000;
+            else
+            {
+                ImageQuality = 60;
+            }
         }
 
         public bool IsUsingWebRtc()
