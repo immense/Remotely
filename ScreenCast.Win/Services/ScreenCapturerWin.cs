@@ -214,8 +214,7 @@ namespace Remotely.ScreenCast.Win.Services
                 // TODO: Get dirty rects.
                 //RawRectangle[] dirtyRectsBuffer = new RawRectangle[duplicateFrameInformation.TotalMetadataBufferSize];
                 //duplicatedOutput.GetFrameDirtyRects(duplicateFrameInformation.TotalMetadataBufferSize, dirtyRectsBuffer, out var dirtyRectsSizeRequired);
-
-
+  
                 // copy resource into memory that can be accessed by the CPU
                 using (var screenTexture2D = screenResource.QueryInterface<Texture2D>())
                 {
@@ -301,12 +300,15 @@ namespace Remotely.ScreenCast.Win.Services
                         };
 
                         var texture2D = new Texture2D(device, textureDesc);
+                        var duplicatedOutput = output1.DuplicateOutput(device);
+                        duplicatedOutput.TryAcquireNextFrame(50, out _, out _);
+                        duplicatedOutput.ReleaseFrame();
 
                         directxScreens.Add(
                             output1.Description.DeviceName,
-                            new DirectXOutput(adapter, 
-                                device, 
-                                output1.DuplicateOutput(device),
+                            new DirectXOutput(adapter,
+                                device,
+                                duplicatedOutput,
                                 texture2D));
                     }
                     catch (Exception ex)
