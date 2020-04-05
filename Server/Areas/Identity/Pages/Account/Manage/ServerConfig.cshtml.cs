@@ -95,6 +95,8 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
                 await Task.Delay(10);
             }
 
+            StatusMessage = "Configuration saved.";
+
             return RedirectToPage();
         }
 
