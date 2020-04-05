@@ -110,23 +110,8 @@ namespace Remotely.ScreenCast.Core.Services
                         {
                             capturer.CaptureFullscreen = false;
                         }
-
-                        if (viewer.ShouldAdjustQuality())
-                        {
-                            var quality = (int)(viewer.ImageQuality * 1000 / viewer.Latency);
-                            Logger.Debug($"Auto-adjusting image quality. Latency: {viewer.Latency}. Quality: {quality}");
-                            encodedImageBytes = ImageUtils.EncodeBitmap(newImage, new EncoderParameters()
-                            {
-                                Param = new[]
-                                {
-                                    new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality)
-                                }
-                            });
-                        }
-                        else
-                        {
-                            encodedImageBytes = ImageUtils.EncodeBitmap(newImage, viewer.EncoderParams);
-                        }
+                        
+                        encodedImageBytes = ImageUtils.EncodeBitmap(newImage, viewer.EncoderParams);
 
                         if (encodedImageBytes?.Length > 0)
                         {
