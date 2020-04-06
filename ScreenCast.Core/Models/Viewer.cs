@@ -16,6 +16,7 @@ namespace Remotely.ScreenCast.Core.Models
 
         public Viewer()
         {
+            EncoderParams = new EncoderParameters();
             ImageQuality = 60;
         }
         public bool AutoAdjustQuality { get; internal set; } = true;
@@ -42,13 +43,7 @@ namespace Remotely.ScreenCast.Core.Models
                 }
                 imageQuality = value;
 
-                EncoderParams = new EncoderParameters()
-                {
-                    Param = new[]
-                    {
-                        new EncoderParameter(Encoder.Quality, value)
-                    }
-                };
+                EncoderParams.Param[0] = new EncoderParameter(Encoder.Quality, value);
             }
         }
         public string Name { get; set; }
@@ -73,18 +68,18 @@ namespace Remotely.ScreenCast.Core.Models
         public async Task ThrottleIfNeeded()
         {
             var currentBuffer = IsUsingWebRtc() ? 
-                RtcSession.CurrentBuffer :
-                (ulong)WebSocketBuffer;
+                (int)RtcSession.CurrentBuffer :
+                WebSocketBuffer;
 
             if (currentBuffer > 150_000)
             {
                 if (AutoAdjustQuality)
                 {
-                    ImageQuality = Math.Max(ImageQuality - 1, 0);
+                    ImageQuality = Math.Max(ImageQuality - (150_000 / currentBuffer), 0);
                     Logger.Debug($"Auto-adjusting image quality.  Quality: {ImageQuality}");
                 }
                
-                var delay = (int)Math.Ceiling((currentBuffer - 100_000) * .0025);
+                var delay = (int)Math.Ceiling((currentBuffer - 150_000) * .0025);
                 Logger.Debug($"Throttling output due to buffer size.  Size: {currentBuffer}.  Delay: {delay}");
                 await Task.Delay(delay);
             }
