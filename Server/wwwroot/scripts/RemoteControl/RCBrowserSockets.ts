@@ -65,8 +65,8 @@ export class RCBrowserSockets {
     SendScreenCastRequestToDevice() {
         this.Connection.invoke("SendScreenCastRequestToDevice", Remotely.ClientID, Remotely.RequesterName, Remotely.Mode);
     }
-    SendLatencyUpdate(sentTime: Date, bytesReceived: number) {
-        this.Connection.invoke("SendLatencyUpdate", sentTime, bytesReceived);
+    SendBufferUpdate(bytesReceived: number) {
+        this.Connection.invoke("SendBufferUpdate", bytesReceived);
     }
     SendSelectScreen(displayName: string) {
         this.Connection.invoke("SelectScreen", displayName);
@@ -158,9 +158,13 @@ export class RCBrowserSockets {
             UI.ScreenViewer.height = height;
             UI.Screen2DContext.clearRect(0, 0, width, height);
         });
-        hubConnection.on("ScreenCapture", (buffer: Uint8Array, left:number, top:number, width:number, height:number, captureTime: Date) => {
+        hubConnection.on("ScreenCapture", (buffer: Uint8Array, left:number, top:number, width:number, height:number, imageQuality: number) => {
             //console.log("Websocket frame received.");
-            this.SendLatencyUpdate(captureTime, buffer.byteLength);
+            this.SendBufferUpdate(buffer.byteLength);
+
+            if (Number(UI.QualitySlider.value) != imageQuality) {
+                UI.QualitySlider.value = String(imageQuality);
+            }
 
             var url = window.URL.createObjectURL(new Blob([buffer]));
             var img = document.createElement("img");

@@ -123,9 +123,9 @@ namespace Remotely.ScreenCast.Core.Communication
             await Connection.SendAsync("SendRtcOfferToBrowser", sdp, viewerID);
         }
 
-        public async Task SendScreenCapture(byte[] captureBytes, string viewerID, int left, int top, int width, int height, DateTime captureTime)
+        public async Task SendScreenCapture(byte[] captureBytes, string viewerID, int left, int top, int width, int height, long imageQuality)
         {
-            await Connection.SendAsync("SendScreenCapture", captureBytes, viewerID, left, top, width, height, captureTime);
+            await Connection.SendAsync("SendScreenCapture", captureBytes, viewerID, left, top, width, height, imageQuality);
         }
 
         public async Task SendScreenData(string selectedScreen, string[] displayNames, string viewerID)
@@ -321,12 +321,10 @@ namespace Remotely.ScreenCast.Core.Communication
                 conductor.InvokeViewerRemoved(viewerID);
 
             });
-            Connection.On("LatencyUpdate", (DateTime sentTime, int bytesReceived, string viewerID) =>
+            Connection.On("BufferUpdate", (int bytesReceived, string viewerID) =>
             {
                 if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
                 {
-                    var latency = DateTime.UtcNow - sentTime;
-                    viewer.Latency = latency.TotalMilliseconds;
                     viewer.WebSocketBuffer = Math.Max(0, viewer.WebSocketBuffer - bytesReceived);
                 }
             });

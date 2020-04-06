@@ -5,4 +5,5 @@
     Width: number;
     Height: number;
     ImageBytes: Uint8Array;
+    ImageQuality: number;
 }

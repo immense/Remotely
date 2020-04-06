@@ -93,7 +93,6 @@ namespace Remotely.ScreenCast.Core.Services
                     }
 
                     await viewer.ThrottleIfNeeded();
-                  
 
                     capturer.GetNextFrame();
 
@@ -117,14 +116,12 @@ namespace Remotely.ScreenCast.Core.Services
                         {
                             if (viewer.IsUsingWebRtc())
                             {
-                                viewer.RtcSession.SendCaptureFrame(diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, encodedImageBytes);
+                                viewer.RtcSession.SendCaptureFrame(diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, encodedImageBytes, viewer.ImageQuality);
                                 viewer.WebSocketBuffer = 0;
-                                viewer.Latency = 0;
                             }
                             else
                             {
-                                await casterSocket.SendScreenCapture(encodedImageBytes, viewerID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, DateTime.UtcNow);
-                                viewer.Latency += 300;
+                                await casterSocket.SendScreenCapture(encodedImageBytes, viewerID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, viewer.ImageQuality);
                                 // Shave some off so it doesn't get deadlocked by dropped frames.
                                 viewer.WebSocketBuffer += (int)(encodedImageBytes.Length * .9);
                             }
