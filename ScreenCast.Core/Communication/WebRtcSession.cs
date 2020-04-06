@@ -61,7 +61,7 @@ namespace Remotely.ScreenCast.Core.Communication
             CaptureChannel.StateChanged += CaptureChannel_StateChanged;
             PeerConnection.CreateOffer();
         }
-        public void SendCaptureFrame(int left, int top, int width, int height, byte[] imageBytes)
+        public void SendCaptureFrame(int left, int top, int width, int height, byte[] imageBytes, long imageQuality)
         {
             for (var i = 0; i < imageBytes.Length; i += 50_000)
             {
@@ -73,6 +73,7 @@ namespace Remotely.ScreenCast.Core.Communication
                     Height = height,
                     EndOfFrame = false,
                     ImageBytes = imageBytes.Skip(i).Take(50_000).ToArray(),
+                    ImageQuality = imageQuality,
                     DtoType = Shared.Enums.DynamicDtoType.FrameInfo
                 }));
             }
@@ -83,6 +84,7 @@ namespace Remotely.ScreenCast.Core.Communication
                 Width = width,
                 Height = height,
                 EndOfFrame = true,
+                ImageQuality = imageQuality,
                 DtoType = Shared.Enums.DynamicDtoType.FrameInfo
             }));
         }

@@ -199,7 +199,7 @@ namespace Remotely.Server.Services
             return Task.CompletedTask;
         }
 
-        public Task SendScreenCapture(byte[] captureBytes, string rcBrowserHubConnectionID, int left, int top, int width, int height, DateTime captureTime)
+        public Task SendScreenCapture(byte[] captureBytes, string rcBrowserHubConnectionID, int left, int top, int width, int height, long imageQuality)
         {
             if (AppConfig.RecordRemoteControlSessions)
             {
@@ -207,7 +207,7 @@ namespace Remotely.Server.Services
                                                 rcBrowserHubConnectionID, SessionInfo.MachineName, SessionInfo.StartTime);
             }
 
-            return RCBrowserHub.Clients.Client(rcBrowserHubConnectionID).SendAsync("ScreenCapture", captureBytes, left, top, width, height, captureTime);
+            return RCBrowserHub.Clients.Client(rcBrowserHubConnectionID).SendAsync("ScreenCapture", captureBytes, left, top, width, height, imageQuality);
         }
 
         public Task SendScreenDataToBrowser(string selectedDisplay, string[] displayNames, string browserHubConnectionId)

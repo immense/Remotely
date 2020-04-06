@@ -16,14 +16,8 @@ namespace Remotely.ScreenCast.Core.Models
 
         public Viewer()
         {
+            EncoderParams = new EncoderParameters();
             ImageQuality = 60;
-            EncoderParams = new EncoderParameters()
-            {
-                Param = new[]
-                    {
-                        new EncoderParameter(Encoder.Quality, ImageQuality)
-                    }
-            };
         }
         public bool AutoAdjustQuality { get; internal set; } = true;
         public IScreenCapturer Capturer { get; set; }
@@ -52,8 +46,6 @@ namespace Remotely.ScreenCast.Core.Models
                 EncoderParams.Param[0] = new EncoderParameter(Encoder.Quality, value);
             }
         }
-
-        public double Latency { get; set; } = 1;
         public string Name { get; set; }
         public int WebSocketBuffer { get; set; }
         public WebRtcSession RtcSession { get; set; }
@@ -66,30 +58,30 @@ namespace Remotely.ScreenCast.Core.Models
 
         public bool IsStalled()
         {
-            return RtcSession?.IsDataChannelOpen != true && Latency > 30000;
+            return RtcSession?.CurrentBuffer > 1_000_000 || WebSocketBuffer > 1_000_000;
         }
 
         public async Task ThrottleIfNeeded()
         {
-            if (IsUsingWebRtc() && RtcSession?.CurrentBuffer > 100_000)
+            var currentBuffer = IsUsingWebRtc() ? 
+                RtcSession.CurrentBuffer :
+                (ulong)WebSocketBuffer;
+
+            if (currentBuffer > 150_000)
             {
-                ImageQuality -= 5;
-                Logger.Debug($"Auto-adjusting image quality for WebRTC. Latency: {Latency}. Quality: {ImageQuality}");
-                var delay = (int)Math.Ceiling((RtcSession.CurrentBuffer - 100_000) * .0025);
-                Logger.Debug($"Throttling output due to WebRTC buffer.  Size: {RtcSession.CurrentBuffer}.  Delay: {delay}");
-                await Task.Delay(delay);
-            }
-            else if (!IsUsingWebRtc() && WebSocketBuffer > 150_000)
-            {
-                ImageQuality -= 5;
-                Logger.Debug($"Auto-adjusting image quality for WebSocket. Latency: {Latency}. Quality: {ImageQuality}");
-                var delay = (int)Math.Ceiling((WebSocketBuffer - 150_000) * .0025);
-                Logger.Debug($"Throttling output due to websocket buffer.  Size: {WebSocketBuffer}.  Delay: {delay}");
+                if (AutoAdjustQuality)
+                {
+                    ImageQuality -= 10;
+                    Logger.Debug($"Auto-adjusting image quality.  Quality: {ImageQuality}");
+                }
+               
+                var delay = (int)Math.Ceiling((currentBuffer - 100_000) * .0025);
+                Logger.Debug($"Throttling output due to buffer size.  Size: {currentBuffer}.  Delay: {delay}");
                 await Task.Delay(delay);
             }
             else
             {
-                ImageQuality = 60;
+                ImageQuality = Math.Min(ImageQuality + 10, 60);
             }
         }
 
