@@ -162,7 +162,8 @@ export class RCBrowserSockets {
             //console.log("Websocket frame received.");
             this.SendBufferUpdate(buffer.byteLength);
 
-            if (Number(UI.QualitySlider.value) != imageQuality) {
+            if (UI.AutoQualityAdjustCheckBox.checked &&
+                Number(UI.QualitySlider.value) != imageQuality) {
                 UI.QualitySlider.value = String(imageQuality);
             }
 
