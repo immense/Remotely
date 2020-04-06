@@ -122,8 +122,7 @@ namespace Remotely.ScreenCast.Core.Services
                             else
                             {
                                 await casterSocket.SendScreenCapture(encodedImageBytes, viewerID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, viewer.ImageQuality);
-                                // Shave some off so it doesn't get deadlocked by dropped frames.
-                                viewer.WebSocketBuffer += (int)(encodedImageBytes.Length * .9);
+                                viewer.WebSocketBuffer += encodedImageBytes.Length;
                             }
                         }
                     }

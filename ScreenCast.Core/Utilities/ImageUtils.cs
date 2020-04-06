@@ -19,7 +19,6 @@ namespace Remotely.ScreenCast.Core.Utilities
         {
             using (var ms = new MemoryStream())
             {
-                //bitmap.Save(ms, ImageFormat.Jpeg);
                 bitmap.Save(ms, JpegEncoder, encoderParams);
                 return ms.ToArray();
             }

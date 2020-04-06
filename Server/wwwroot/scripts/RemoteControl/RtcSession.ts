@@ -76,6 +76,11 @@ export class RtcSession {
         }
     }
     ProcessFrameInfo(frameInfo: FrameInfo) {
+        if (UI.AutoQualityAdjustCheckBox.checked &&
+            Number(UI.QualitySlider.value) != frameInfo.ImageQuality) {
+            UI.QualitySlider.value = String(frameInfo.ImageQuality);
+        }
+
         if (frameInfo.EndOfFrame) {
             var url = window.URL.createObjectURL(new Blob(this.PartialFrames));
             var img = document.createElement("img");

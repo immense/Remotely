@@ -12,11 +12,10 @@ namespace Remotely.ScreenCast.Core.Models
 {
     public class Viewer : IDisposable
     {
-        private long imageQuality;
+        private int imageQuality;
 
         public Viewer()
         {
-            EncoderParams = new EncoderParameters();
             ImageQuality = 60;
         }
         public bool AutoAdjustQuality { get; internal set; } = true;
@@ -25,7 +24,7 @@ namespace Remotely.ScreenCast.Core.Models
         public EncoderParameters EncoderParams { get; private set; }
         public bool FullScreenRefreshNeeded { get; internal set; }
         public bool HasControl { get; set; }
-        public long ImageQuality
+        public int ImageQuality
         {
             get
             {
@@ -43,14 +42,19 @@ namespace Remotely.ScreenCast.Core.Models
                 }
                 imageQuality = value;
 
-                EncoderParams.Param[0] = new EncoderParameter(Encoder.Quality, value);
+                EncoderParams = new EncoderParameters()
+                {
+                    Param = new[]
+                    {
+                        new EncoderParameter(Encoder.Quality, value)
+                    }
+                };
             }
         }
         public string Name { get; set; }
-        public int WebSocketBuffer { get; set; }
         public WebRtcSession RtcSession { get; set; }
         public string ViewerConnectionID { get; set; }
-
+        public int WebSocketBuffer { get; set; }
         public void Dispose()
         {
             RtcSession?.Dispose();
@@ -59,6 +63,11 @@ namespace Remotely.ScreenCast.Core.Models
         public bool IsStalled()
         {
             return RtcSession?.CurrentBuffer > 1_000_000 || WebSocketBuffer > 1_000_000;
+        }
+
+        public bool IsUsingWebRtc()
+        {
+            return RtcSession?.IsPeerConnected == true && RtcSession?.IsDataChannelOpen == true;
         }
 
         public async Task ThrottleIfNeeded()
@@ -71,7 +80,7 @@ namespace Remotely.ScreenCast.Core.Models
             {
                 if (AutoAdjustQuality)
                 {
-                    ImageQuality -= 10;
+                    ImageQuality = Math.Max(ImageQuality - 1, 0);
                     Logger.Debug($"Auto-adjusting image quality.  Quality: {ImageQuality}");
                 }
                
@@ -79,15 +88,10 @@ namespace Remotely.ScreenCast.Core.Models
                 Logger.Debug($"Throttling output due to buffer size.  Size: {currentBuffer}.  Delay: {delay}");
                 await Task.Delay(delay);
             }
-            else
+            else if (AutoAdjustQuality)
             {
-                ImageQuality = Math.Min(ImageQuality + 10, 60);
+                ImageQuality = Math.Min(ImageQuality + 1, 60);
             }
-        }
-
-        public bool IsUsingWebRtc()
-        {
-            return RtcSession?.IsPeerConnected == true && RtcSession?.IsDataChannelOpen == true;
         }
     }
 }
