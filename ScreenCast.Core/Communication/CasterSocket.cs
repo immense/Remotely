@@ -321,7 +321,7 @@ namespace Remotely.ScreenCast.Core.Communication
                 conductor.InvokeViewerRemoved(viewerID);
 
             });
-            Connection.On("BufferUpdate", (int bytesReceived, string viewerID) =>
+            Connection.On("FrameReceived", (int bytesReceived, string viewerID) =>
             {
                 if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
                 {

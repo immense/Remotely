@@ -142,9 +142,9 @@ namespace Remotely.Server.Services
             return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ClipboardTransfer", transferText, typeText, Context.ConnectionId);
         }
 
-        public Task SendBufferUpdate(int bytesReceived)
+        public Task SendFrameReceived(int bytesReceived)
         {
-            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("BufferUpdate", bytesReceived, Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("FrameReceived", bytesReceived, Context.ConnectionId);
         }
 
         public Task SendQualityChange(int qualityLevel)

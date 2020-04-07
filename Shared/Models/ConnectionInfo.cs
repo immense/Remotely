@@ -16,11 +16,7 @@ namespace Remotely.Shared.Models
             }
             set
             {
-                host = value.Trim();
-                if (host.EndsWith("/"))
-                {
-                    host = host.Substring(0, host.LastIndexOf("/"));
-                }
+                host = value.Trim().TrimEnd('/');
             }
         }
         public string OrganizationID { get; set; }

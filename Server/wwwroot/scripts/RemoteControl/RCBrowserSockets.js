@@ -51,8 +51,8 @@ export class RCBrowserSockets {
     SendScreenCastRequestToDevice() {
         this.Connection.invoke("SendScreenCastRequestToDevice", Remotely.ClientID, Remotely.RequesterName, Remotely.Mode);
     }
-    SendBufferUpdate(bytesReceived) {
-        this.Connection.invoke("SendBufferUpdate", bytesReceived);
+    SendFrameReceived(bytesReceived) {
+        this.Connection.invoke("SendFrameReceived", bytesReceived);
     }
     SendSelectScreen(displayName) {
         this.Connection.invoke("SelectScreen", displayName);
@@ -145,8 +145,7 @@ export class RCBrowserSockets {
             UI.Screen2DContext.clearRect(0, 0, width, height);
         });
         hubConnection.on("ScreenCapture", (buffer, left, top, width, height, imageQuality) => {
-            //console.log("Websocket frame received.");
-            this.SendBufferUpdate(buffer.byteLength);
+            this.SendFrameReceived(buffer.byteLength);
             if (UI.AutoQualityAdjustCheckBox.checked &&
                 Number(UI.QualitySlider.value) != imageQuality) {
                 UI.QualitySlider.value = String(imageQuality);
