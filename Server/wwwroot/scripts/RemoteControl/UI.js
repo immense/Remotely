@@ -10,6 +10,7 @@ export var ConnectButton = document.getElementById("connectButton");
 export var RequesterNameInput = document.getElementById("nameInput");
 export var StatusMessage = document.getElementById("statusMessage");
 export var ScreenViewer = document.getElementById("screenViewer");
+export var ScreenViewerWrapper = document.getElementById("screenViewerWrapper");
 export var Screen2DContext = ScreenViewer.getContext("2d");
 export var HorizontalBars = document.querySelectorAll(".horizontal-button-bar");
 export var ConnectBox = document.getElementById("connectBox");
@@ -45,7 +46,7 @@ var cancelNextViewerClick;
 var isPinchZooming;
 var startPinchPoint1;
 var startPinchPoint2;
-var startPinchDistance;
+var lastPinchDistance;
 var isMenuButtonDragging;
 var startMenuDraggingY;
 var startLongPressTimeout;
@@ -107,7 +108,6 @@ export function ApplyInputHandlers(sockets) {
         if (FitToScreenButton.classList.contains("toggled")) {
             ScreenViewer.style.removeProperty("max-width");
             ScreenViewer.style.removeProperty("max-height");
-            ScreenViewer.style.width = "100%";
         }
         else {
             ScreenViewer.style.maxWidth = "unset";
@@ -247,7 +247,7 @@ export function ApplyInputHandlers(sockets) {
         if (currentTouchCount == 2) {
             startPinchPoint1 = { X: e.touches[0].pageX, Y: e.touches[0].pageY, IsEmpty: false };
             startPinchPoint2 = { X: e.touches[1].pageX, Y: e.touches[1].pageY, IsEmpty: false };
-            startPinchDistance = GetDistanceBetween(startPinchPoint1.X, startPinchPoint1.Y, startPinchPoint2.X, startPinchPoint2.Y);
+            lastPinchDistance = GetDistanceBetween(startPinchPoint1.X, startPinchPoint1.Y, startPinchPoint2.X, startPinchPoint2.Y);
         }
         isDragging = false;
         KeyboardButton.removeAttribute("hidden");
@@ -265,17 +265,22 @@ export function ApplyInputHandlers(sockets) {
             var pinchPoint1 = { X: e.touches[0].pageX, Y: e.touches[0].pageY, IsEmpty: false };
             var pinchPoint2 = { X: e.touches[1].pageX, Y: e.touches[1].pageY, IsEmpty: false };
             var pinchDistance = GetDistanceBetween(pinchPoint1.X, pinchPoint1.Y, pinchPoint2.X, pinchPoint2.Y);
-            if (Math.abs(pinchDistance - startPinchDistance) > 5) {
+            if (Math.abs(pinchDistance - lastPinchDistance) > 5) {
                 isPinchZooming = true;
                 if (FitToScreenButton.classList.contains("toggled")) {
                     FitToScreenButton.click();
                 }
-                var currentWidth = Number(ScreenViewer.style.width.slice(0, -1));
-                var newWidth = Math.max(100, currentWidth + (pinchDistance - startPinchDistance));
-                currentWidth = newWidth;
-                ScreenViewer.style.width = String(currentWidth) + "%";
-                startPinchDistance = pinchDistance;
-                // TODO: Scroll wrapper.
+                var currentWidth = ScreenViewer.clientWidth;
+                var currentHeight = ScreenViewer.clientHeight;
+                var currentWidthPercent = Number(ScreenViewer.style.width.slice(0, -1));
+                var newWidthPercent = Math.max(100, currentWidthPercent + (pinchDistance - lastPinchDistance));
+                ScreenViewer.style.width = String(newWidthPercent) + "%";
+                var heightChange = ScreenViewer.clientHeight - currentHeight;
+                var widthChange = ScreenViewer.clientWidth - currentWidth;
+                var scrollPercentX = ScreenViewerWrapper.scrollLeft / (ScreenViewerWrapper.scrollWidth - ScreenViewerWrapper.clientWidth);
+                var scrollPercentY = ScreenViewerWrapper.scrollTop / (ScreenViewerWrapper.scrollHeight - ScreenViewerWrapper.clientHeight);
+                ScreenViewerWrapper.scrollBy(widthChange * scrollPercentX, heightChange * scrollPercentY);
+                lastPinchDistance = pinchDistance;
             }
             return;
         }

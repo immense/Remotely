@@ -58,7 +58,7 @@ namespace Remotely.Agent.Services
 
             var device = await DeviceInformation.Create(ConnectionInfo.DeviceID, ConnectionInfo.OrganizationID);
 
-            var result = await HubConnection.InvokeAsync<bool>("DeviceCameOnline", device);
+            var result = await HubConnection.SendAsync<bool>("DeviceCameOnline", device);
 
             if (!result)
             {
@@ -75,17 +75,17 @@ namespace Remotely.Agent.Services
             {
                 IsServerVerified = true;
                 ConnectionInfo.ServerVerificationToken = Guid.NewGuid().ToString();
-                await HubConnection.InvokeAsync("SetServerVerificationToken", ConnectionInfo.ServerVerificationToken);
+                await HubConnection.SendAsync("SetServerVerificationToken", ConnectionInfo.ServerVerificationToken);
                 ConfigService.SaveConnectionInfo(ConnectionInfo);
             }
             else
             {
-                await HubConnection.InvokeAsync("SendServerVerificationToken");
+                await HubConnection.SendAsync("SendServerVerificationToken");
             }
 
             if (ConfigService.TryGetDeviceSetupOptions(out DeviceSetupOptions options))
             {
-                await HubConnection.InvokeAsync("DeviceSetupOptions", options, ConnectionInfo.DeviceID);
+                await HubConnection.SendAsync("DeviceSetupOptions", options, ConnectionInfo.DeviceID);
             }
 
             HeartbeatTimer?.Dispose();
@@ -97,7 +97,7 @@ namespace Remotely.Agent.Services
         public async Task SendHeartbeat()
         {
             var currentInfo = await DeviceInformation.Create(ConnectionInfo.DeviceID, ConnectionInfo.OrganizationID);
-            await HubConnection.InvokeAsync("DeviceHeartbeat", currentInfo);
+            await HubConnection.SendAsync("DeviceHeartbeat", currentInfo);
         }
 
         private async void HeartbeatTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -176,7 +176,7 @@ namespace Remotely.Agent.Services
                         }
                     }
                 }
-                await this.HubConnection.InvokeAsync("TransferCompleted", transferID, requesterID);
+                await this.HubConnection.SendAsync("TransferCompleted", transferID, requesterID);
             });
             HubConnection.On("DeployScript", async (string mode, string fileID, string commandResultID, string requesterID) => {
                 if (!IsServerVerified)

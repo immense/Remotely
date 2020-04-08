@@ -208,7 +208,7 @@ namespace Remotely.ScreenCast.Core.Communication
             {
                 if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
-                    await Connection.InvokeAsync("CtrlAltDel");
+                    await Connection.SendAsync("CtrlAltDel");
                 }
             });
 
@@ -217,7 +217,7 @@ namespace Remotely.ScreenCast.Core.Communication
                 Logger.Write($"Disconnecting caster socket.  Reason: {reason}");
                 foreach (var viewer in conductor.Viewers.Values.ToList())
                 {
-                    await Connection.InvokeAsync("ViewerDisconnected", viewer.ViewerConnectionID);
+                    await Connection.SendAsync("ViewerDisconnected", viewer.ViewerConnectionID);
                     viewer.DisconnectRequested = true;
                 }
             });
@@ -313,7 +313,7 @@ namespace Remotely.ScreenCast.Core.Communication
 
             Connection.On("ViewerDisconnected", async (string viewerID) =>
             {
-                await Connection.InvokeAsync("ViewerDisconnected", viewerID);
+                await Connection.SendAsync("ViewerDisconnected", viewerID);
                 if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
                 {
                     viewer.DisconnectRequested = true;

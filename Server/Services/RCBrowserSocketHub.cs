@@ -180,7 +180,9 @@ namespace Remotely.Server.Services
             if (Context?.User?.Identity?.IsAuthenticated == true)
             {
                 orgId = DataService.GetUserByID(Context.UserIdentifier).OrganizationID;
-                var currentUsers = RCDeviceSocketHub.SessionInfoList.Count(x => x.Value.OrganizationID == orgId);
+                var currentUsers = RCDeviceSocketHub.SessionInfoList.Count(x => 
+                    x.Key != screenCasterID &&
+                    x.Value.OrganizationID == orgId);
                 if (currentUsers >= AppConfig.RemoteControlSessionLimit)
                 {
                     await Clients.Caller.SendAsync("ShowMessage", "Max number of concurrent sessions reached.");
