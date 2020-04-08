@@ -58,7 +58,7 @@ namespace Remotely.Agent.Services
 
             var device = await DeviceInformation.Create(ConnectionInfo.DeviceID, ConnectionInfo.OrganizationID);
 
-            var result = await HubConnection.SendAsync<bool>("DeviceCameOnline", device);
+            var result = await HubConnection.InvokeAsync<bool>("DeviceCameOnline", device);
 
             if (!result)
             {
