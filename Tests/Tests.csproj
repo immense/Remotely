@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Agent.Installer.Win\Agent.Installer.Win.csproj" />
+    <ProjectReference Include="..\ScreenCast.Win\ScreenCast.Win.csproj" />
     <ProjectReference Include="..\Server\Server.csproj" />
   </ItemGroup>
 
