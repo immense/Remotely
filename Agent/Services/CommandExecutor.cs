@@ -32,11 +32,11 @@ namespace Remotely.Agent.Services
                             if (Encoding.UTF8.GetBytes(serializedResult).Length > 400000)
                             {
                                 await SendResultsViaAjax("PSCore", psCoreResult);
-                                await hubConnection.InvokeAsync("PSCoreResultViaAjax", commandID);
+                                await hubConnection.SendAsync("PSCoreResultViaAjax", commandID);
                             }
                             else
                             {
-                                await hubConnection.InvokeAsync("PSCoreResult", psCoreResult);
+                                await hubConnection.SendAsync("PSCoreResult", psCoreResult);
                             }
                             break;
                         }
@@ -48,11 +48,11 @@ namespace Remotely.Agent.Services
                             if (Encoding.UTF8.GetBytes(serializedResult).Length > 400000)
                             {
                                 await SendResultsViaAjax("WinPS", result);
-                                await hubConnection.InvokeAsync("WinPSResultViaAjax", commandID);
+                                await hubConnection.SendAsync("WinPSResultViaAjax", commandID);
                             }
                             else
                             {
-                                await hubConnection.InvokeAsync("CommandResult", result);
+                                await hubConnection.SendAsync("CommandResult", result);
                             }
                         }
                         break;
@@ -64,11 +64,11 @@ namespace Remotely.Agent.Services
                             if (Encoding.UTF8.GetBytes(serializedResult).Length > 400000)
                             {
                                 await SendResultsViaAjax("CMD", result);
-                                await hubConnection.InvokeAsync("CMDResultViaAjax", commandID);
+                                await hubConnection.SendAsync("CMDResultViaAjax", commandID);
                             }
                             else
                             {
-                                await hubConnection.InvokeAsync("CommandResult", result);
+                                await hubConnection.SendAsync("CommandResult", result);
                             }
                         }
                         break;
@@ -80,11 +80,11 @@ namespace Remotely.Agent.Services
                             if (Encoding.UTF8.GetBytes(serializedResult).Length > 400000)
                             {
                                 await SendResultsViaAjax("Bash", result);
-                                await hubConnection.InvokeAsync("BashResultViaAjax", commandID);
+                                await hubConnection.SendAsync("BashResultViaAjax", commandID);
                             }
                             else
                             {
-                                await hubConnection.InvokeAsync("CommandResult", result);
+                                await hubConnection.SendAsync("CommandResult", result);
                             }
                         }
                         break;
@@ -95,7 +95,7 @@ namespace Remotely.Agent.Services
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                await hubConnection.InvokeAsync("DisplayMessage", "There was an error executing the command.  It has been logged on the client device.", "Error executing command.", senderConnectionID);
+                await hubConnection.SendAsync("DisplayMessage", "There was an error executing the command.  It has been logged on the client device.", "Error executing command.", senderConnectionID);
             }
         }
 
@@ -135,7 +135,7 @@ namespace Remotely.Agent.Services
                         break;
                 }
 
-                await hubConnection.InvokeAsync("CommandResultViaApi", commandID, requestID);
+                await hubConnection.SendAsync("CommandResultViaApi", commandID, requestID);
             }
             catch (Exception ex)
             {

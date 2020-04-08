@@ -32,7 +32,10 @@ namespace Remotely.Server
                     {
                         if (OSUtils.IsWindows && enableEventLog)
                         {
-                            logging.AddEventLog();
+                            logging.AddEventLog(settings => {
+                                settings.LogName = "Remotely_Server";
+                                settings.SourceName = "Remotely_Server";
+                            });
                         }
                     }
                 });

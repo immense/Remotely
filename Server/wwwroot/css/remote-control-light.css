@@ -18,7 +18,8 @@ button:active {
 }
 
 button.toggled {
-    background-color: #60d8ff;
+    background-color: #afecff;
+    color: black;
 }
 
 button[disabled] {

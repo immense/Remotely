@@ -28,12 +28,12 @@ namespace Remotely.Agent.Services
                 var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", OSUtils.ScreenCastExecutableFileName);
                 if (!File.Exists(rcBinaryPath))
                 {
-                    await hubConnection.InvokeAsync("DisplayMessage", "Chat executable not found on target device.", "Executable not found on device.", requesterID);
+                    await hubConnection.SendAsync("DisplayMessage", "Chat executable not found on target device.", "Executable not found on device.", requesterID);
                 }
 
 
                 // Start ScreenCast.
-                await hubConnection.InvokeAsync("DisplayMessage", $"Starting chat service...", "Starting chat service.", requesterID);
+                await hubConnection.SendAsync("DisplayMessage", $"Starting chat service...", "Starting chat service.", requesterID);
                 if (OSUtils.IsWindows)
                 {
 
@@ -46,7 +46,7 @@ namespace Remotely.Agent.Services
                         var result = Win32Interop.OpenInteractiveProcess($"{rcBinaryPath} -mode Chat -requester {requesterID} -organization \"{orgName}\"", "default", false, out var procInfo);
                         if (!result)
                         {
-                            await hubConnection.InvokeAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
+                            await hubConnection.SendAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
                         }
                         else
                         {
@@ -63,7 +63,7 @@ namespace Remotely.Agent.Services
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                await hubConnection.InvokeAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
+                await hubConnection.SendAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
             }
             return -1;
         }
@@ -75,13 +75,13 @@ namespace Remotely.Agent.Services
                 var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", OSUtils.ScreenCastExecutableFileName);
                 if (!File.Exists(rcBinaryPath))
                 {
-                    await hubConnection.InvokeAsync("DisplayMessage", "Remote control executable not found on target device.", "Executable not found on device.", requesterID);
+                    await hubConnection.SendAsync("DisplayMessage", "Remote control executable not found on target device.", "Executable not found on device.", requesterID);
                     return;
                 }
 
 
                 // Start ScreenCast.
-                await hubConnection.InvokeAsync("DisplayMessage", $"Starting remote control...", "Starting remote control.", requesterID);
+                await hubConnection.SendAsync("DisplayMessage", $"Starting remote control...", "Starting remote control.", requesterID);
                 if (OSUtils.IsWindows)
                 {
 
@@ -94,7 +94,7 @@ namespace Remotely.Agent.Services
                         var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host}", "default", true, out _);
                         if (!result)
                         {
-                            await hubConnection.InvokeAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
+                            await hubConnection.SendAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
                         }
                     }
                 }
@@ -107,7 +107,7 @@ namespace Remotely.Agent.Services
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                await hubConnection.InvokeAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
+                await hubConnection.SendAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
             }
         }
         public async Task RestartScreenCaster(List<string> viewerIDs, string serviceID, string requesterID, HubConnection hubConnection)
@@ -140,8 +140,8 @@ namespace Remotely.Agent.Services
                             if (!result)
                             {
                                 Logger.Write("Failed to relaunch screen caster.");
-                                await hubConnection.InvokeAsync("SendConnectionFailedToViewers", viewerIDs);
-                                await hubConnection.InvokeAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
+                                await hubConnection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
+                                await hubConnection.SendAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
                             }
                         }
                     }
@@ -154,7 +154,7 @@ namespace Remotely.Agent.Services
             }
             catch (Exception ex)
             {
-                await hubConnection.InvokeAsync("SendConnectionFailedToViewers", viewerIDs);
+                await hubConnection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
                 Logger.Write(ex);
                 throw;
             }
