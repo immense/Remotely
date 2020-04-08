@@ -300,15 +300,12 @@ namespace Remotely.ScreenCast.Win.Services
                         };
 
                         var texture2D = new Texture2D(device, textureDesc);
-                        var duplicatedOutput = output1.DuplicateOutput(device);
-                        duplicatedOutput.TryAcquireNextFrame(50, out _, out _);
-                        duplicatedOutput.ReleaseFrame();
 
                         directxScreens.Add(
                             output1.Description.DeviceName,
                             new DirectXOutput(adapter,
                                 device,
-                                duplicatedOutput,
+                                output1.DuplicateOutput(device),
                                 texture2D));
                     }
                     catch (Exception ex)
