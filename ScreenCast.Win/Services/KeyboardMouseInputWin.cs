@@ -310,6 +310,9 @@ namespace Remotely.ScreenCast.Win.Services
                 case "Meta":
                     keyCode = VirtualKey.LWIN;
                     break;
+                case "ContextMenu":
+                    keyCode = VirtualKey.MENU;
+                    break;
                 default:
                     keyCode = (VirtualKey)VkKeyScan(Convert.ToChar(key));
                     break;

@@ -44,17 +44,9 @@ export class RtcSession {
         };
         this.PeerConnection.onconnectionstatechange = function (ev) {
             console.log("Connection state changed to " + this.connectionState);
-            if (this.connectionState != "connected") {
-                UI.ConnectionP2PIcon.style.display = "none";
-                UI.ConnectionRelayedIcon.style.display = "unset";
-            }
         };
         this.PeerConnection.oniceconnectionstatechange = function (ev) {
             console.log("ICE connection state changed to " + this.iceConnectionState);
-            if (this.iceConnectionState != "connected") {
-                UI.ConnectionP2PIcon.style.display = "none";
-                UI.ConnectionRelayedIcon.style.display = "unset";
-            }
         };
         this.PeerConnection.onicecandidate = async (ev) => {
             await Remotely.RCBrowserSockets.SendIceCandidate(ev.candidate);

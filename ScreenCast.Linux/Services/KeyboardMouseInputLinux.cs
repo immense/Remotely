@@ -235,6 +235,9 @@ namespace Remotely.ScreenCast.Linux.Services
                 case "ScrollLock":
                     keySym = "Scroll_Lock";
                     break;
+                case "ContextMenu":
+                    keySym = "Menu";
+                    break;
                 case " ":
                     keySym = "space";
                     break;

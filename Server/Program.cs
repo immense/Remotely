@@ -24,6 +24,7 @@ namespace Remotely.Server
                 .CaptureStartupErrors(true)
                 .ConfigureLogging((hostingContext, logging) =>
                 {
+                    logging.ClearProviders();
                     logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                     logging.AddConsole();
                     logging.AddDebug();
@@ -32,10 +33,7 @@ namespace Remotely.Server
                     {
                         if (OSUtils.IsWindows && enableEventLog)
                         {
-                            logging.AddEventLog(settings => {
-                                settings.LogName = "Remotely_Server";
-                                settings.SourceName = "Remotely_Server";
-                            });
+                            logging.AddEventLog();
                         }
                     }
                 });
