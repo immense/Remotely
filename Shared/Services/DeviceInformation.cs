@@ -55,7 +55,7 @@ namespace Remotely.Shared.Services
                     VolumeLabel = x.VolumeLabel
                 }).ToList(),
                 OrganizationID = orgID,
-                CurrentUser = DeviceInformation.GetCurrentUser()
+                CurrentUser = GetCurrentUser()
             };
 
             if (systemDrive != null && systemDrive.TotalSize > 0 && systemDrive.TotalFreeSpace > 0)
@@ -153,14 +153,14 @@ namespace Remotely.Shared.Services
             }
             else if (OSUtils.IsLinux)
             {
-                return GetLinxMemoryInGB();
+                return GetLinuxMemoryInGB();
             }
             else
             {
                 return (0, 0);
             }
         }
-        private static (double, double) GetLinxMemoryInGB()
+        private static (double, double) GetLinuxMemoryInGB()
         {
             try
             {
