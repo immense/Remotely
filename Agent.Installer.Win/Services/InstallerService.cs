@@ -12,7 +12,6 @@ using System.Net;
 using System.Reflection;
 using System.Security.Principal;
 using System.ServiceProcess;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows;
@@ -24,7 +23,7 @@ namespace Remotely.Agent.Installer.Win.Services
         public event EventHandler<string> ProgressMessageChanged;
         public event EventHandler<int> ProgressValueChanged;
 
-        public static string CoreRuntimeVersion => "3.1.2";
+        public static string CoreRuntimeVersion => "3.1.3";
         private string InstallPath => Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), "Program Files", "Remotely");
         private string Platform => Environment.Is64BitOperatingSystem ? "x64" : "x86";
         private JavaScriptSerializer Serializer { get; } = new JavaScriptSerializer();
@@ -330,11 +329,11 @@ namespace Remotely.Agent.Installer.Win.Services
                 var downloadUrl = string.Empty;
                 if (Environment.Is64BitOperatingSystem)
                 {
-                    downloadUrl = "https://download.visualstudio.microsoft.com/download/pr/3240250e-6fe0-4258-af69-85abef6c00de/e01ee0af6c65d894f4a02bdf6705ec7b/windowsdesktop-runtime-3.1.2-win-x64.exe";
+                    downloadUrl = "https://download.visualstudio.microsoft.com/download/pr/5954c748-86a1-4823-9e7d-d35f6039317a/169e82cbf6fdeb678c5558c5d0a83834/windowsdesktop-runtime-3.1.3-win-x64.exe";
                 }
                 else
                 {
-                    downloadUrl = "https://download.visualstudio.microsoft.com/download/pr/b824906f-bd6e-4067-86a6-95c61620674d/cfcdab84a01cee94fdaa31271c3d4d47/windowsdesktop-runtime-3.1.2-win-x86.exe";
+                    downloadUrl = "https://download.visualstudio.microsoft.com/download/pr/7cd5c874-5d11-4e72-81f0-4a005d956708/0eb310169770c893407169fc3abaac4f/windowsdesktop-runtime-3.1.3-win-x86.exe";
                 }
                 var targetFile = Path.Combine(Path.GetTempPath(), "windowsdesktop-runtime.exe");
                 await client.DownloadFileTaskAsync(downloadUrl, targetFile);

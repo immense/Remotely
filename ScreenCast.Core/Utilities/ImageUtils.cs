@@ -1,14 +1,9 @@
-﻿using Remotely.ScreenCast.Core.Models;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Remotely.ScreenCast.Core.Utilities
 {

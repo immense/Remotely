@@ -3,25 +3,10 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace Remotely.Shared.Services
+namespace Remotely.Shared.Utilities
 {
-    public static class OSUtils
+    public static class EnvironmentHelper
     {
-        public static bool IsLinux
-        {
-            get
-            {
-                return RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
-            }
-        }
-
-        public static bool IsWindows
-        {
-            get
-            {
-                return RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-            }
-        }
         public static string ClientExecutableFileName
         {
             get
@@ -38,25 +23,33 @@ namespace Remotely.Shared.Services
                 return fileExt;
             }
         }
-        public static string ScreenCastExecutableFileName
+
+        public static bool IsDebug
         {
             get
             {
-                if (IsWindows)
-                {
-                    return "Remotely_ScreenCast.exe";
-                }
-                else if (IsLinux)
-                {
-                    return "Remotely_ScreenCast.Linux";
-                }
-                else
-                {
-                    throw new Exception("Unsupported operating system.");
-                }
+#if DEBUG
+                return true;
+#else
+                return false;
+#endif
+            }
+        }
+        public static bool IsLinux
+        {
+            get
+            {
+                return RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
             }
         }
 
+        public static bool IsWindows
+        {
+            get
+            {
+                return RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+            }
+        }
         public static Platform Platform
         {
             get
@@ -80,6 +73,24 @@ namespace Remotely.Shared.Services
             }
         }
 
+        public static string ScreenCastExecutableFileName
+        {
+            get
+            {
+                if (IsWindows)
+                {
+                    return "Remotely_ScreenCast.exe";
+                }
+                else if (IsLinux)
+                {
+                    return "Remotely_ScreenCast.Linux";
+                }
+                else
+                {
+                    throw new Exception("Unsupported operating system.");
+                }
+            }
+        }
         public static string StartProcessWithResults(string command, string arguments)
         {
             var psi = new ProcessStartInfo(command, arguments);

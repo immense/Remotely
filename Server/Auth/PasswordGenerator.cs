@@ -1,7 +1,4 @@
-﻿using System.Security.Principal;
-using System.Security.Cryptography;
-using System.Threading;
-using System.Collections.Specialized;
+﻿using System.Security.Cryptography;
 using System;
 
 namespace Remotely.Server.Auth

@@ -1,12 +1,8 @@
-﻿using Remotely.Server.Data;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using System.IO;
 using System.Drawing;
 using Remotely.Shared.Models;
 using Remotely.Server.Models;

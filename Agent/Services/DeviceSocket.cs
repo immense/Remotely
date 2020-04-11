@@ -3,17 +3,16 @@ using Remotely.Shared.Services;
 using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
-using System.Reflection;
 using Remotely.Shared.Win32;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
+using System.Threading;
 
 namespace Remotely.Agent.Services
 {
@@ -39,7 +38,7 @@ namespace Remotely.Agent.Services
         private CommandExecutor CommandExecutor { get; }
         private ConfigService ConfigService { get; }
         private ConnectionInfo ConnectionInfo { get; set; }
-        private Timer HeartbeatTimer { get; set; }
+        private System.Timers.Timer HeartbeatTimer { get; set; }
         private HubConnection HubConnection { get; set; }
         private bool IsServerVerified { get; set; }
         private ScriptRunner ScriptRunner { get; }
@@ -89,9 +88,32 @@ namespace Remotely.Agent.Services
             }
 
             HeartbeatTimer?.Dispose();
-            HeartbeatTimer = new Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
+            HeartbeatTimer = new System.Timers.Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
             HeartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
             HeartbeatTimer.Start();
+        }
+
+        public async Task HandleConnection()
+        {
+            while (true)
+            {
+                try
+                {
+                    if (!IsConnected)
+                    {
+                        var waitTime = new Random().Next(1000, 30000);
+                        Logger.Write($"Websocket closed.  Reconnecting in {waitTime / 1000} seconds...");
+                        await Task.Delay(waitTime);
+                        await Program.Services.GetRequiredService<DeviceSocket>().Connect();
+                        await Program.Services.GetRequiredService<Updater>().CheckForUpdates();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
+                Thread.Sleep(1000);
+            }
         }
 
         public async Task SendHeartbeat()

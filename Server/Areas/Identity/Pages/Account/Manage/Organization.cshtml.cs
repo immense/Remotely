@@ -1,5 +1,4 @@
 using Remotely.Shared.Models;
-using Remotely.Shared.ViewModels;
 using Remotely.Server.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -11,8 +10,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System.Text.Encodings.Web;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using System;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 {

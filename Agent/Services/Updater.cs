@@ -1,15 +1,11 @@
-﻿using Remotely.Shared.Services;
-using Microsoft.AspNetCore.SignalR.Client;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
-using System.Management.Automation;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Linq;
 using System.Threading;
+using Remotely.Shared.Utilities;
 
 namespace Remotely.Agent.Services
 {
@@ -60,7 +56,7 @@ namespace Remotely.Agent.Services
                     await Task.Delay(TimeSpan.FromSeconds(waitTime));
 
                     Logger.Write($"Service Updater: Downloading installer.");
-                    if (OSUtils.IsWindows)
+                    if (EnvironmentHelper.IsWindows)
                     {
                         var filePath = Path.Combine(Path.GetTempPath(), "Remotely_Installer.exe");
 
@@ -75,7 +71,7 @@ namespace Remotely.Agent.Services
 
                         Process.Start(filePath, $"-install -quiet -serverurl {connectionInfo.Host} -organizationid {connectionInfo.OrganizationID}");
                     }
-                    else if (OSUtils.IsLinux)
+                    else if (EnvironmentHelper.IsLinux)
                     {
                         var filePath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.sh");
 

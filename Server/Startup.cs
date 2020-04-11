@@ -1,12 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Remotely.Server.Data;
@@ -17,20 +13,13 @@ using System.IO;
 using Remotely.Server.Services;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.AspNetCore.SignalR;
 using Remotely.Shared.Models;
-using Microsoft.AspNetCore.Http.Connections;
 using Remotely.Shared.Services;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Identity.UI;
-using Microsoft.AspNetCore.Cors.Infrastructure;
-using Newtonsoft.Json;
 using System.Net;
 using Microsoft.Extensions.Hosting;
-using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.OpenApi.Models;
 using Remotely.Server.Auth;
-using Microsoft.Data.SqlClient;
 using Npgsql;
 
 namespace Remotely.Server

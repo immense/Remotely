@@ -12,19 +12,17 @@ using Remotely.ScreenCast.Core.Services;
 using Remotely.ScreenCast.Core.Communication;
 using Remotely.ScreenCast.Linux.Services;
 using Remotely.Shared.Models;
-using Remotely.Shared.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Remotely.Shared.Utilities;
 
 namespace Remotely.Desktop.Linux.ViewModels
 {
@@ -38,7 +36,7 @@ namespace Remotely.Desktop.Linux.ViewModels
         public MainWindowViewModel()
         {
             Current = this;
-            if (!OSUtils.IsLinux)
+            if (!EnvironmentHelper.IsLinux)
             {
                 return;
             }

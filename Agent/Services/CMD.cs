@@ -1,10 +1,7 @@
 ﻿using Remotely.Shared.Models;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 

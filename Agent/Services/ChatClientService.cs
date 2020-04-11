@@ -1,14 +1,11 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Remotely.Agent.Models;
-using Remotely.Shared.Services;
+using Remotely.Shared.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
-using System.Linq;
 using System.Runtime.Caching;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -44,7 +41,7 @@ namespace Remotely.Agent.Services
                     ChatSession chatSession;
                     if (!ChatClients.Contains(senderConnectionID))
                     {
-                        var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", OSUtils.ScreenCastExecutableFileName);
+                        var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", EnvironmentHelper.ScreenCastExecutableFileName);
                         var procID = await AppLauncher.LaunchChatService(orgName, senderConnectionID, hubConnection);
 
                         var clientPipe = new NamedPipeClientStream(".", "Remotely_Chat" + senderConnectionID, PipeDirection.InOut, PipeOptions.Asynchronous);

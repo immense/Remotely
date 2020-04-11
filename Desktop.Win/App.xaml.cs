@@ -1,16 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Remotely.Desktop.Win.Services;
-using Remotely.Desktop.Win.ViewModels;
 using Remotely.ScreenCast.Core;
 using Remotely.ScreenCast.Core.Services;
 using Remotely.Shared.Win32;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Remotely.Desktop.Win

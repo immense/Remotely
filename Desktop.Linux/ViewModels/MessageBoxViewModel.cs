@@ -1,9 +1,6 @@
 ﻿using Avalonia.Controls;
 using Remotely.Desktop.Linux.Controls;
 using Remotely.Desktop.Linux.Services;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Input;
 
 namespace Remotely.Desktop.Linux.ViewModels

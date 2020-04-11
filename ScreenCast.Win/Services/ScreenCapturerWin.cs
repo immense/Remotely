@@ -26,17 +26,13 @@ using Remotely.ScreenCast.Core.Services;
 using Remotely.ScreenCast.Win.Models;
 using Remotely.Shared.Win32;
 using SharpDX;
-using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
-using SharpDX.Mathematics.Interop;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace Remotely.ScreenCast.Win.Services

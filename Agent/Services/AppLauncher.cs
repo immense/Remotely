@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Remotely.Shared.Models;
-using Remotely.Shared.Services;
+using Remotely.Shared.Utilities;
 using Remotely.Shared.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Remotely.Agent.Services
@@ -25,7 +24,7 @@ namespace Remotely.Agent.Services
         {
             try
             {
-                var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", OSUtils.ScreenCastExecutableFileName);
+                var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", EnvironmentHelper.ScreenCastExecutableFileName);
                 if (!File.Exists(rcBinaryPath))
                 {
                     await hubConnection.SendAsync("DisplayMessage", "Chat executable not found on target device.", "Executable not found on device.", requesterID);
@@ -34,10 +33,10 @@ namespace Remotely.Agent.Services
 
                 // Start ScreenCast.
                 await hubConnection.SendAsync("DisplayMessage", $"Starting chat service...", "Starting chat service.", requesterID);
-                if (OSUtils.IsWindows)
+                if (EnvironmentHelper.IsWindows)
                 {
 
-                    if (Program.IsDebug)
+                    if (EnvironmentHelper.IsDebug)
                     {
                         return Process.Start(rcBinaryPath, $"-mode Chat -requester {requesterID} -organization \"{orgName}\"").Id;
                     }
@@ -54,7 +53,7 @@ namespace Remotely.Agent.Services
                         }
                     }
                 }
-                else if (OSUtils.IsLinux)
+                else if (EnvironmentHelper.IsLinux)
                 {
                     var args = $"xterm -e {rcBinaryPath} -mode Chat -requester {requesterID} -organization \"{orgName}\" & disown";
                     return StartLinuxScreenCaster(args);
@@ -72,7 +71,7 @@ namespace Remotely.Agent.Services
         {
             try
             {
-                var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", OSUtils.ScreenCastExecutableFileName);
+                var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", EnvironmentHelper.ScreenCastExecutableFileName);
                 if (!File.Exists(rcBinaryPath))
                 {
                     await hubConnection.SendAsync("DisplayMessage", "Remote control executable not found on target device.", "Executable not found on device.", requesterID);
@@ -82,10 +81,10 @@ namespace Remotely.Agent.Services
 
                 // Start ScreenCast.
                 await hubConnection.SendAsync("DisplayMessage", $"Starting remote control...", "Starting remote control.", requesterID);
-                if (OSUtils.IsWindows)
+                if (EnvironmentHelper.IsWindows)
                 {
 
-                    if (Program.IsDebug)
+                    if (EnvironmentHelper.IsDebug)
                     {
                         Process.Start(rcBinaryPath, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host}");
                     }
@@ -98,7 +97,7 @@ namespace Remotely.Agent.Services
                         }
                     }
                 }
-                else if (OSUtils.IsLinux)
+                else if (EnvironmentHelper.IsLinux)
                 {
                     var args = $"{rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} & disown";
                     StartLinuxScreenCaster(args);
@@ -114,12 +113,12 @@ namespace Remotely.Agent.Services
         {
             try
             {
-                var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", OSUtils.ScreenCastExecutableFileName);
+                var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", EnvironmentHelper.ScreenCastExecutableFileName);
                 // Start ScreenCast.                 
-                if (OSUtils.IsWindows)
+                if (EnvironmentHelper.IsWindows)
                 {
                     Logger.Write("Restarting screen caster.");
-                    if (Program.IsDebug)
+                    if (EnvironmentHelper.IsDebug)
                     {
                         Process.Start(rcBinaryPath, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} -relaunch true -viewers {String.Join(",", viewerIDs)}");
                     }
@@ -146,7 +145,7 @@ namespace Remotely.Agent.Services
                         }
                     }
                 }
-                else if (OSUtils.IsLinux)
+                else if (EnvironmentHelper.IsLinux)
                 {
                     var args = $"{rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} -relaunch true -viewers {string.Join(",", viewerIDs)} & disown";
                     StartLinuxScreenCaster(args);
@@ -164,7 +163,7 @@ namespace Remotely.Agent.Services
         {
             var xauthority = string.Empty;
 
-            var processes = OSUtils.StartProcessWithResults("ps", "-eaf").Split(Environment.NewLine);
+            var processes = EnvironmentHelper.StartProcessWithResults("ps", "-eaf").Split(Environment.NewLine);
             var xorgLine = processes.FirstOrDefault(x => x.Contains("xorg"));
             var xorgSplit = xorgLine.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
             var auth = xorgSplit[xorgSplit.IndexOf("-auth") + 1];
@@ -174,7 +173,7 @@ namespace Remotely.Agent.Services
             }
 
             var display = ":0";
-            var whoString = OSUtils.StartProcessWithResults("w", "-h")?.Trim();
+            var whoString = EnvironmentHelper.StartProcessWithResults("w", "-h")?.Trim();
             var username = string.Empty;
 
             if (!string.IsNullOrWhiteSpace(whoString))

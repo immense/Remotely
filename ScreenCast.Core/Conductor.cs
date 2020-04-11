@@ -1,6 +1,5 @@
 ﻿using Remotely.Shared.Models;
 using Remotely.ScreenCast.Core.Enums;
-using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Models;
 using Remotely.ScreenCast.Core.Communication;
 using Remotely.ScreenCast.Core.Services;
@@ -16,9 +15,6 @@ namespace Remotely.ScreenCast.Core
         public Conductor(CasterSocket casterSocket)
         {
             CasterSocket = casterSocket;
-#if DEBUG
-            IsDebug = true;
-#endif
         }
 
         public event EventHandler<ScreenCastRequest> ScreenCastRequested;
@@ -33,7 +29,6 @@ namespace Remotely.ScreenCast.Core
         public CasterSocket CasterSocket { get; private set; }
         public string DeviceID { get; private set; }
         public string Host { get; private set; }
-        public bool IsDebug { get; }
         public AppMode Mode { get; private set; }
         public string OrganizationName { get; private set; }
         public string RequesterID { get; private set; }

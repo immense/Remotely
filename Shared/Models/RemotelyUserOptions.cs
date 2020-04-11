@@ -1,6 +1,4 @@
 ﻿using Remotely.Shared.Enums;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Remotely.Shared.Models

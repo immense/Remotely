@@ -5,15 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Remotely.Server.Data;
 using Remotely.Server.Services;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.EntityFrameworkCore.InMemory.Internal;
 using Microsoft.EntityFrameworkCore;
 using Remotely.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace Remotely.Tests
 {

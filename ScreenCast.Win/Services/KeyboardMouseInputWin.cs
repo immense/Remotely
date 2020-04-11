@@ -9,6 +9,7 @@ using Remotely.ScreenCast.Core.Services;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Remotely.ScreenCast.Core;
+using System.Runtime.InteropServices;
 
 namespace Remotely.ScreenCast.Win.Services
 {
@@ -16,7 +17,7 @@ namespace Remotely.ScreenCast.Win.Services
     {
         public KeyboardMouseInputWin()
         {
-            StartInputActionThread();
+            StartInputActionTask();
             Application.ApplicationExit += Application_ApplicationExit;
         }
 
@@ -24,7 +25,7 @@ namespace Remotely.ScreenCast.Win.Services
 
         private ConcurrentQueue<Action> InputActions { get; } = new ConcurrentQueue<Action>();
 
-        private Thread InputActionsThread { get; set; }
+        private Task InputActionsTask { get; set; }
 
         private bool IsInputBlocked { get; set; }
 
@@ -320,54 +321,36 @@ namespace Remotely.ScreenCast.Win.Services
             return keyCode;
         }
 
-        private void StartInputActionThread()
+        private void StartInputActionTask()
         {
-            InputActionsThread?.Abort();
-            InputActionsThread = new Thread(() =>
+            InputActionsTask?.Dispose();
+            InputActionsTask = Task.Run(CheckQueue);
+        }
+        private void CheckQueue()
+        {
+            while (!ShutdownStarted && !Environment.HasShutdownStarted)
             {
-                while (!ShutdownStarted && !Environment.HasShutdownStarted)
+                if (InputActions.TryDequeue(out var action))
                 {
-                    if (InputActions.TryDequeue(out var action))
-                    {
-                        action();
-                    }
-                    Thread.Sleep(1);
+                    action();
                 }
-            });
-            InputActionsThread.SetApartmentState(ApartmentState.STA);
-            InputActionsThread.Start();
+                Thread.Sleep(1);
+            }
         }
         private void TryOnInputDesktop(Action inputAction)
         {
-            if (!InputActionsThread.IsAlive)
+            if (InputActionsTask.Status != TaskStatus.Running)
             {
-                StartInputActionThread();
+                StartInputActionTask();
             }
 
             InputActions.Enqueue(() =>
             {
                 if (!Win32Interop.SwitchToInputDesktop())
                 {
-                    if (IsInputBlocked)
-                    {
-                        BlockInput(false);
-                    }
-
-                    Task.Run(() =>
-                    {
-                        Win32Interop.SwitchToInputDesktop();
-                        inputAction();
-                    }).Wait();
-
-                    if (IsInputBlocked)
-                    {
-                        BlockInput(true);
-                    }
+                    Logger.Write("Switch failed.  Last Error: " + Marshal.GetLastWin32Error().ToString());
                 }
-                else
-                {
-                    inputAction();
-                }
+                inputAction();
             });
         }
     }

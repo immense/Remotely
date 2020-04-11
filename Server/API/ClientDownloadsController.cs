@@ -1,22 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Hosting;
 using Remotely.Server.Services;
 using Remotely.Server.Auth;
-using Remotely.Shared.Models;
-using System.Text.Json;
 using System.Text;
 using Microsoft.Extensions.Configuration;
-using System.Diagnostics;
 using System.Threading;
-using Remotely.Shared.Services;
 
 namespace Remotely.Server.API
 {

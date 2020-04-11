@@ -1,15 +1,12 @@
 using Remotely.Agent.Installer.Win.Services;
 using Remotely.Shared.Models;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Principal;
 using System.ServiceProcess;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows;

@@ -3,7 +3,6 @@ using Remotely.ScreenCast.Core;
 using Remotely.ScreenCast.Core.Services;
 using System;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Remotely.Shared.Win32;
 using System.Threading;
@@ -12,7 +11,6 @@ using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Communication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.Windows.Forms;
 
 namespace Remotely.ScreenCast.Win
 {

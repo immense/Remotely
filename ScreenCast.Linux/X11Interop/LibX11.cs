@@ -25,11 +25,7 @@ in this Software without prior written authorization from The Open Group.
 */
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Security;
-using System.Security.Permissions;
-using System.Text;
 
 namespace Remotely.ScreenCast.Linux.X11Interop
 {

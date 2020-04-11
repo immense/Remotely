@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Remotely.Shared.Models;
-using Remotely.Server.Data;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
 using Microsoft.AspNetCore.SignalR;

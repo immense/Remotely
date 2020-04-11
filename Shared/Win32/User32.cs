@@ -1,9 +1,7 @@
 ﻿using Microsoft.Win32.SafeHandles;
 using System;
-using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Remotely.Shared.Win32
 {

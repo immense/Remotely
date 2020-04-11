@@ -1,16 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Remotely.Server.Areas.Identity.Pages.Account.Manage;
 using Remotely.Server.Data;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
-using Remotely.Shared.Services;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Remotely.Tests

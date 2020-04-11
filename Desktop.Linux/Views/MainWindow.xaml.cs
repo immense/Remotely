@@ -2,7 +2,6 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Remotely.Desktop.Linux.ViewModels;
-using System.Threading.Tasks;
 
 namespace Remotely.Desktop.Linux.Views
 {

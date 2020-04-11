@@ -2,10 +2,7 @@
 using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Services;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Remotely.ScreenCast.Core.Models
