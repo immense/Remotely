@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Remotely.Shared.ViewModels.Organization
+﻿namespace Remotely.Shared.ViewModels.Organization
 {
     public class OrganizationUser
     {

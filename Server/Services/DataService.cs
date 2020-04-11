@@ -1,5 +1,4 @@
 ﻿using Remotely.Shared.Models;
-using Remotely.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,8 +10,6 @@ using Remotely.Shared.ViewModels.Organization;
 using Remotely.Server.Data;
 using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
-using Remotely.Server.Auth;
-using Microsoft.Extensions.Primitives;
 
 namespace Remotely.Server.Services
 {

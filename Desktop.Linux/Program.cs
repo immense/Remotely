@@ -1,9 +1,6 @@
-﻿using System;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Logging.Serilog;
 using Avalonia.ReactiveUI;
-using Remotely.Desktop.Linux.ViewModels;
-using Remotely.Desktop.Linux.Views;
 
 namespace Remotely.Desktop.Linux
 {

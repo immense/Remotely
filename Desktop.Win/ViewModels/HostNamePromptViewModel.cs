@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Remotely.Desktop.Win.ViewModels
+﻿namespace Remotely.Desktop.Win.ViewModels
 {
     public class HostNamePromptViewModel : ViewModelBase
     {

@@ -1,23 +1,17 @@
 ﻿using Remotely.Agent.Services;
-using Remotely.Shared.Services;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using System.Threading.Tasks;
-using System.Diagnostics;
 using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Remotely.Shared.Utilities;
 
 namespace Remotely.Agent
 {
     public class Program
     {
-        public static bool IsDebug { get; set; }
 
         public static IServiceProvider Services { get; set; }
 
@@ -65,7 +59,7 @@ namespace Remotely.Agent
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Logger.Write(e.ExceptionObject as Exception);
-            if (OSUtils.IsWindows)
+            if (EnvironmentHelper.IsWindows)
             {
                 // Remove Secure Attention Sequence policy to allow app to simulate Ctrl + Alt + Del.
                 var subkey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", true);
@@ -76,43 +70,16 @@ namespace Remotely.Agent
             }
         }
 
-        private static async Task HandleConnection()
-        {
-            while (true)
-            {
-                try
-                {
-                    if (!Services.GetRequiredService<DeviceSocket>().IsConnected)
-                    {
-                        var waitTime = new Random().Next(1000, 30000);
-                        Logger.Write($"Websocket closed.  Reconnecting in {waitTime / 1000} seconds...");
-                        await Task.Delay(waitTime);
-                        await Services.GetRequiredService<DeviceSocket>().Connect();
-                        await Services.GetRequiredService<Updater>().CheckForUpdates();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.Write(ex);
-                }
-                Thread.Sleep(1000);
-            }
-        }
-
         private static async Task Init()
         {
             try
             {
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-#if DEBUG
-                IsDebug = true;
-#endif
-
                 SetWorkingDirectory();
 
 
-                if (!IsDebug && OSUtils.IsWindows)
+                if (!EnvironmentHelper.IsDebug && EnvironmentHelper.IsWindows)
                 {
                     _ = Task.Run(() =>
                     {
@@ -120,7 +87,7 @@ namespace Remotely.Agent
                     });
                 }
 
-                if (!IsDebug)
+                if (!EnvironmentHelper.IsDebug)
                 {
                     await Services.GetRequiredService<Updater>().BeginChecking();
                 }
@@ -130,7 +97,7 @@ namespace Remotely.Agent
             }
             finally
             {
-                await HandleConnection();
+                await Services.GetRequiredService<DeviceSocket>().HandleConnection();
             }
         }
 

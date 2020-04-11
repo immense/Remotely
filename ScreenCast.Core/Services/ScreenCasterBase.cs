@@ -1,23 +1,15 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
-using Remotely.ScreenCast.Core.Models;
+﻿using Remotely.ScreenCast.Core.Models;
 using Remotely.ScreenCast.Core.Communication;
-using Remotely.ScreenCast.Core.Services;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
-using Remotely.Shared.Services;
-using Remotely.Shared.Win32;
 using Remotely.ScreenCast.Core.Interfaces;
 using System.Diagnostics;
-using System.Threading;
 using System.Drawing.Imaging;
 using Microsoft.Extensions.DependencyInjection;
 using Remotely.ScreenCast.Core.Utilities;
+using Remotely.Shared.Utilities;
 
 namespace Remotely.ScreenCast.Core.Services
 {
@@ -53,7 +45,7 @@ namespace Remotely.ScreenCast.Core.Services
                 conductor.InvokeViewerAdded(viewer);
             }
 
-            if (OSUtils.IsWindows)
+            if (EnvironmentHelper.IsWindows)
             {
                 await InitializeWebRtc(viewer, casterSocket);
             }
@@ -82,7 +74,7 @@ namespace Remotely.ScreenCast.Core.Services
                         break;
                     }
 
-                    if (conductor.IsDebug)
+                    if (EnvironmentHelper.IsDebug)
                     {
                         while (fpsQueue.Any() && DateTimeOffset.Now - fpsQueue.Peek() > TimeSpan.FromSeconds(1))
                         {

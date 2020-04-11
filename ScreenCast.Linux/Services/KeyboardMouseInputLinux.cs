@@ -1,11 +1,7 @@
 ﻿using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Services;
 using Remotely.ScreenCast.Linux.X11Interop;
-using Remotely.ScreenCast.Core;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
 using Remotely.ScreenCast.Core.Models;
 
 namespace Remotely.ScreenCast.Linux.Services

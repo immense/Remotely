@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Remotely.Shared.Services;
+using Remotely.Shared.Utilities;
 
 namespace Remotely.Server
 {
@@ -31,7 +26,7 @@ namespace Remotely.Server
 
                     if (bool.TryParse(hostingContext.Configuration["ApplicationOptions:EnableWindowsEventLog"], out var enableEventLog))
                     {
-                        if (OSUtils.IsWindows && enableEventLog)
+                        if (EnvironmentHelper.IsWindows && enableEventLog)
                         {
                             logging.AddEventLog();
                         }

@@ -2,11 +2,9 @@
 using Remotely.ScreenCast.Core.Utilities;
 using Remotely.ScreenCast.Win.Services;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Remotely.Tests

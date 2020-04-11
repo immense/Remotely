@@ -1,15 +1,12 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using Remotely.Server.Data;
 using Remotely.Server.Models;
-using Remotely.Shared.Services;
+using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Remotely.Server.Services
@@ -63,7 +60,7 @@ namespace Remotely.Server.Services
                             var ffmpegProc = new Process();
                             SessionStates[frame.ViewerID].FfmpegProcess = ffmpegProc;
 
-                            switch (OSUtils.Platform)
+                            switch (EnvironmentHelper.Platform)
                             {
                                 case Shared.Enums.Platform.Windows:
                                     ffmpegProc.StartInfo.FileName = "ffmpeg.exe";

@@ -1,5 +1,4 @@
 ﻿using Remotely.Shared.Models;
-using Remotely.Shared.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -188,12 +187,7 @@ namespace Remotely.Shared.Win32
                     return false;
                 }
 
-                if (!SetThreadDesktop(inputDesktop) || !SwitchDesktop(inputDesktop))
-                {
-                    return false;
-                }
-
-                return true;
+                return SetThreadDesktop(inputDesktop) && SwitchDesktop(inputDesktop);
             }
             catch
             {

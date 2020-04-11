@@ -1,5 +1,5 @@
 ﻿using Remotely.Shared.Models;
-using Remotely.Shared.Services;
+using Remotely.Shared.Utilities;
 using Remotely.Shared.Win32;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Remotely.Shared.Services
@@ -18,13 +17,13 @@ namespace Remotely.Shared.Services
         {
             DriveInfo systemDrive;
 
-            if (OSUtils.IsWindows)
+            if (EnvironmentHelper.IsWindows)
             {
                 systemDrive = DriveInfo.GetDrives().FirstOrDefault(x =>
                      x.IsReady &&
                      x.RootDirectory.FullName.Contains(Path.GetPathRoot(Environment.SystemDirectory ?? Environment.CurrentDirectory)));
             }
-            else if (OSUtils.IsLinux)
+            else if (EnvironmentHelper.IsLinux)
             {
                 systemDrive = new DriveInfo("/");
             }
@@ -38,7 +37,7 @@ namespace Remotely.Shared.Services
             {
                 ID = deviceID,
                 DeviceName = Environment.MachineName,
-                Platform = OSUtils.Platform.ToString(),
+                Platform = EnvironmentHelper.Platform.ToString(),
                 ProcessorCount = Environment.ProcessorCount,
                 OSArchitecture = RuntimeInformation.OSArchitecture,
                 OSDescription = RuntimeInformation.OSDescription,
@@ -128,13 +127,13 @@ namespace Remotely.Shared.Services
         {
             try
             {
-                if (OSUtils.IsWindows)
+                if (EnvironmentHelper.IsWindows)
                 {
                     return Win32Interop.GetActiveSessions().LastOrDefault()?.Username;
                 }
-                else if (OSUtils.IsLinux)
+                else if (EnvironmentHelper.IsLinux)
                 {
-                    var users = OSUtils.StartProcessWithResults("users", "");
+                    var users = EnvironmentHelper.StartProcessWithResults("users", "");
                     return users?.Split()?.FirstOrDefault()?.Trim();
                 }
                 throw new Exception("Unsupported operating system.");
@@ -147,11 +146,11 @@ namespace Remotely.Shared.Services
 
         public static (double, double) GetMemoryInGB()
         {
-            if (OSUtils.IsWindows)
+            if (EnvironmentHelper.IsWindows)
             {
                 return GetWinMemoryInGB();
             }
-            else if (OSUtils.IsLinux)
+            else if (EnvironmentHelper.IsLinux)
             {
                 return GetLinuxMemoryInGB();
             }
@@ -164,7 +163,7 @@ namespace Remotely.Shared.Services
         {
             try
             {
-                var results = OSUtils.StartProcessWithResults("cat", "/proc/meminfo");
+                var results = EnvironmentHelper.StartProcessWithResults("cat", "/proc/meminfo");
                 var resultsArr = results.Split("\n".ToCharArray());
                 var freeKB = resultsArr
                             .FirstOrDefault(x => x.Trim().StartsWith("MemAvailable"))

@@ -1,13 +1,8 @@
 ﻿using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Services;
-using Remotely.ScreenCast.Core.Communication;
 using Remotely.Shared.Win32;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Remotely.ScreenCast.Win.Services

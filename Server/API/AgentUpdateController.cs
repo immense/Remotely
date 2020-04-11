@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Remotely.Server.Services;
-using System;
-using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
 
 namespace Remotely.Server.API
 {

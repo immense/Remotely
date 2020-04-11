@@ -1,12 +1,7 @@
-﻿using Remotely.Shared.Services;
+﻿using Remotely.Shared.Utilities;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.ServiceProcess;
-using System.Text;
 
 namespace Remotely.Agent.Services
 {
@@ -46,12 +41,9 @@ namespace Remotely.Agent.Services
 
             try
             {
-                if (OSUtils.IsWindows)
-                {
-                    // Set Secure Attention Sequence policy to allow app to simulate Ctrl + Alt + Del.
-                    var subkey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", true);
-                    subkey.SetValue("SoftwareSASGeneration", "3", Microsoft.Win32.RegistryValueKind.DWord);
-                }
+                // Set Secure Attention Sequence policy to allow app to simulate Ctrl + Alt + Del.
+                var subkey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", true);
+                subkey.SetValue("SoftwareSASGeneration", "3", Microsoft.Win32.RegistryValueKind.DWord);
             }
             catch (Exception ex)
             {
@@ -63,14 +55,11 @@ namespace Remotely.Agent.Services
         {
             try
             {
-                if (OSUtils.IsWindows)
+                // Remove Secure Attention Sequence policy to allow app to simulate Ctrl + Alt + Del.
+                var subkey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", true);
+                if (subkey.GetValue("SoftwareSASGeneration") != null)
                 {
-                    // Remove Secure Attention Sequence policy to allow app to simulate Ctrl + Alt + Del.
-                    var subkey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", true);
-                    if (subkey.GetValue("SoftwareSASGeneration") != null)
-                    {
-                        subkey.DeleteValue("SoftwareSASGeneration");
-                    }
+                    subkey.DeleteValue("SoftwareSASGeneration");
                 }
             }
             catch (Exception ex)

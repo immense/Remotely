@@ -1,9 +1,9 @@
 ﻿using Remotely.Shared.Models;
+using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 
 namespace Remotely.Agent.Services
@@ -45,7 +45,7 @@ namespace Remotely.Agent.Services
         public ConnectionInfo GetConnectionInfo()
         {
 
-            if (Program.IsDebug && Debugger.IsAttached)
+            if (EnvironmentHelper.IsDebug && Debugger.IsAttached)
             {
                 return new ConnectionInfo()
                 {

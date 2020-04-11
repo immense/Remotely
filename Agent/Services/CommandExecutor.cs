@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
-using Remotely.Shared.Services;
+using Remotely.Shared.Utilities;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -41,7 +40,7 @@ namespace Remotely.Agent.Services
                             break;
                         }
                     case "winps":
-                        if (OSUtils.IsWindows)
+                        if (EnvironmentHelper.IsWindows)
                         {
                             var result = WindowsPS.GetCurrent(senderConnectionID).WriteInput(command, commandID);
                             var serializedResult = JsonSerializer.Serialize(result);
@@ -57,7 +56,7 @@ namespace Remotely.Agent.Services
                         }
                         break;
                     case "cmd":
-                        if (OSUtils.IsWindows)
+                        if (EnvironmentHelper.IsWindows)
                         {
                             var result = CMD.GetCurrent(senderConnectionID).WriteInput(command, commandID);
                             var serializedResult = JsonSerializer.Serialize(result);
@@ -73,7 +72,7 @@ namespace Remotely.Agent.Services
                         }
                         break;
                     case "bash":
-                        if (OSUtils.IsLinux)
+                        if (EnvironmentHelper.IsLinux)
                         {
                             var result = Bash.GetCurrent(senderConnectionID).WriteInput(command, commandID);
                             var serializedResult = JsonSerializer.Serialize(result);
@@ -111,21 +110,21 @@ namespace Remotely.Agent.Services
                         break;
 
                     case "winps":
-                        if (OSUtils.IsWindows)
+                        if (EnvironmentHelper.IsWindows)
                         {
                             var result = WindowsPS.GetCurrent(senderUserName).WriteInput(command, commandID);
                             await SendResultsViaAjax("WinPS", result);
                         }
                         break;
                     case "cmd":
-                        if (OSUtils.IsWindows)
+                        if (EnvironmentHelper.IsWindows)
                         {
                             var result = CMD.GetCurrent(senderUserName).WriteInput(command, commandID);
                             await SendResultsViaAjax("CMD", result);
                         }
                         break;
                     case "bash":
-                        if (OSUtils.IsLinux)
+                        if (EnvironmentHelper.IsLinux)
                         {
                             var result = Bash.GetCurrent(senderUserName).WriteInput(command, commandID);
                             await SendResultsViaAjax("Bash", result);

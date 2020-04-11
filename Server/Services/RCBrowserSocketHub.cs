@@ -1,14 +1,11 @@
 ﻿using Remotely.Shared.Models;
-using Remotely.Server.Data;
 using Microsoft.AspNetCore.SignalR;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Remotely.Shared.Enums;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 
 namespace Remotely.Server.Services
 {

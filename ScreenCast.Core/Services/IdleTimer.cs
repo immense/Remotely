@@ -1,8 +1,6 @@
 ﻿using Remotely.ScreenCast.Core.Models;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Text;
 using System.Timers;
 
 namespace Remotely.ScreenCast.Core.Services

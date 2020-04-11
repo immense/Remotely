@@ -1,17 +1,12 @@
 ﻿using Remotely.ScreenCast.Core.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Remotely.ScreenCast.Core.Enums;
 using Remotely.ScreenCast.Core.Services;
 using Remotely.ScreenCast.Core;
-using Remotely.ScreenCast.Core.Models;
 using Remotely.Shared.Models;
 using Remotely.Shared.Win32;
 using Microsoft.Extensions.DependencyInjection;
-using System.Threading;
 
 namespace Remotely.ScreenCast.Win.Services
 {

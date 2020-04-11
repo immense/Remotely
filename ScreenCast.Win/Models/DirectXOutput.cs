@@ -1,8 +1,6 @@
 ﻿using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Remotely.ScreenCast.Win.Models
 {
