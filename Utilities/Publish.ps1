@@ -5,7 +5,7 @@
    Publishes the Remotely clients.
    To deploy the server, supply the following arguments: -rid win10-x64 -outdir path\to\dir -hostname https://mysite.mydomain.com
 .COPYRIGHT
-   Copyright 2019 Translucency Software.  All rights reserved.
+   Copyright 2020 Translucency Software.  All rights reserved.
 .EXAMPLE
    Run it from the Utilities folder (located in the solution directory).
    Or run "powershell -f Publish.ps1 -rid win10-x64 -outdir path\to\dir -hostname https://mysite.mydomain.com
@@ -29,7 +29,9 @@ $Day = ([DateTime]::UtcNow).Day.ToString().PadLeft(2, "0")
 $Hour = ([DateTime]::UtcNow).Hour.ToString().PadLeft(2, "0")
 $Minute = ([DateTime]::UtcNow).Minute.ToString().PadLeft(2, "0")
 $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
-$MSBuildPath = (Get-ChildItem -Path "${env:ProgramFiles(x86)}\Microsoft Visual Studio\" -Recurse -Filter "MSBuild.exe" -File)[0].FullName
+$MSBuildPath = (Get-ChildItem -Path "${env:ProgramFiles(x86)}\Microsoft Visual Studio\" -Recurse -Filter "MSBuild.exe" -File | ForEach-Object {
+    [System.Diagnostics.FileVersionInfo]::GetVersionInfo($_.FullName)
+} | Sort-Object -Property FileVersion -Descending | Select-Object -First 1).FileName
 $Root = (Get-Item -Path $PSScriptRoot).Parent.FullName
 $SignAssemblies = $false
 
