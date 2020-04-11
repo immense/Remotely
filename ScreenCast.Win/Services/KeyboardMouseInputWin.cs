@@ -348,11 +348,21 @@ namespace Remotely.ScreenCast.Win.Services
             {
                 if (!Win32Interop.SwitchToInputDesktop())
                 {
+                    if (IsInputBlocked)
+                    {
+                        BlockInput(false);
+                    }
+
                     Task.Run(() =>
                     {
                         Win32Interop.SwitchToInputDesktop();
                         inputAction();
                     }).Wait();
+
+                    if (IsInputBlocked)
+                    {
+                        BlockInput(true);
+                    }
                 }
                 else
                 {
