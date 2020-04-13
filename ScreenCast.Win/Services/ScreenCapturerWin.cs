@@ -21,6 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using Microsoft.Win32;
 using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Services;
 using Remotely.ScreenCast.Win.Models;
@@ -41,8 +42,10 @@ namespace Remotely.ScreenCast.Win.Services
     {
         private readonly Dictionary<string, int> bitBltScreens = new Dictionary<string, int>();
         private readonly Dictionary<string, DirectXOutput> directxScreens = new Dictionary<string, DirectXOutput>();
+        private bool directXCapable = true;
         public ScreenCapturerWin()
         {
+            SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
             Init();
         }
 
@@ -58,6 +61,7 @@ namespace Remotely.ScreenCast.Win.Services
 
         public void Dispose()
         {
+            SystemEvents.DisplaySettingsChanged -= SystemEvents_DisplaySettingsChanged;
             ClearDirectXOutputs();
 
             CurrentFrame?.Dispose();
@@ -120,7 +124,12 @@ namespace Remotely.ScreenCast.Win.Services
             PreviousFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
 
             InitBitBlt();
-            InitDirectX();
+            if (directXCapable)
+            {
+                InitDirectX();
+            }
+
+            ScreenChanged?.Invoke(this, CurrentScreenBounds);
         }
 
         public void SetSelectedScreen(string displayName)
@@ -138,10 +147,7 @@ namespace Remotely.ScreenCast.Win.Services
             {
                 SelectedScreen = bitBltScreens.Keys.First();
             }
-            CurrentScreenBounds = Screen.AllScreens[bitBltScreens[SelectedScreen]].Bounds;
-            CaptureFullscreen = true;
-            NeedsInit = true;
-            ScreenChanged?.Invoke(this, CurrentScreenBounds);
+            RefreshCurrentScreenBounds();
         }
 
         private void ClearDirectXOutputs()
@@ -152,6 +158,7 @@ namespace Remotely.ScreenCast.Win.Services
             }
             directxScreens.Clear();
         }
+
         private void GetBitBltFrame()
         {
             try
@@ -178,16 +185,15 @@ namespace Remotely.ScreenCast.Win.Services
         {
             try
             {
-                SharpDX.DXGI.Resource screenResource;
-                OutputDuplicateFrameInformation duplicateFrameInformation;
-
                 var duplicatedOutput = directxScreens[SelectedScreen].OutputDuplication;
                 var device = directxScreens[SelectedScreen].Device;
                 var texture2D = directxScreens[SelectedScreen].Texture2D;
-                
+
 
                 // Try to get duplicated frame within given time is ms
-                var result = duplicatedOutput.TryAcquireNextFrame(100, out duplicateFrameInformation, out screenResource);
+                var result = duplicatedOutput.TryAcquireNextFrame(100,
+                    out var duplicateFrameInformation,
+                    out var screenResource);
 
                 if (result.Failure && result.Code != SharpDX.DXGI.ResultCode.WaitTimeout.Code)
                 {
@@ -210,7 +216,7 @@ namespace Remotely.ScreenCast.Win.Services
                 // TODO: Get dirty rects.
                 //RawRectangle[] dirtyRectsBuffer = new RawRectangle[duplicateFrameInformation.TotalMetadataBufferSize];
                 //duplicatedOutput.GetFrameDirtyRects(duplicateFrameInformation.TotalMetadataBufferSize, dirtyRectsBuffer, out var dirtyRectsSizeRequired);
-  
+
                 // copy resource into memory that can be accessed by the CPU
                 using (var screenTexture2D = screenResource.QueryInterface<Texture2D>())
                 {
@@ -262,57 +268,79 @@ namespace Remotely.ScreenCast.Win.Services
                 bitBltScreens.Add(Screen.AllScreens[i].DeviceName, i);
             }
         }
+
         private void InitDirectX()
         {
-            ClearDirectXOutputs();
-
-            using (var factory = new Factory1())
+            try
             {
-                foreach (var adapter in factory.Adapters1.Where(x => (x.Outputs?.Length ?? 0) > 0))
+                ClearDirectXOutputs();
+
+                using (var factory = new Factory1())
                 {
-                    try
+                    foreach (var adapter in factory.Adapters1.Where(x => (x.Outputs?.Length ?? 0) > 0))
                     {
-                        var device = new SharpDX.Direct3D11.Device(adapter);
-                        var output = adapter.Outputs.FirstOrDefault();
-                        var output1 = output.QueryInterface<Output1>();
-
-                        var bounds = output1.Description.DesktopBounds;
-                        var width = bounds.Right - bounds.Left;
-                        var height = bounds.Bottom - bounds.Top;
-
-                        // Create Staging texture CPU-accessible
-                        var textureDesc = new Texture2DDescription
+                        try
                         {
-                            CpuAccessFlags = CpuAccessFlags.Read,
-                            BindFlags = BindFlags.None,
-                            Format = Format.B8G8R8A8_UNorm,
-                            Width = width,
-                            Height = height,
-                            OptionFlags = ResourceOptionFlags.None,
-                            MipLevels = 1,
-                            ArraySize = 1,
-                            SampleDescription = { Count = 1, Quality = 0 },
-                            Usage = ResourceUsage.Staging
-                        };
+                            var device = new SharpDX.Direct3D11.Device(adapter);
+                            var output = adapter.Outputs.FirstOrDefault();
+                            var output1 = output.QueryInterface<Output1>();
 
-                        var texture2D = new Texture2D(device, textureDesc);
+                            var bounds = output1.Description.DesktopBounds;
+                            var width = bounds.Right - bounds.Left;
+                            var height = bounds.Bottom - bounds.Top;
 
-                        directxScreens.Add(
-                            output1.Description.DeviceName,
-                            new DirectXOutput(adapter,
-                                device,
-                                output1.DuplicateOutput(device),
-                                texture2D));
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Write(ex);
+                            // Create Staging texture CPU-accessible
+                            var textureDesc = new Texture2DDescription
+                            {
+                                CpuAccessFlags = CpuAccessFlags.Read,
+                                BindFlags = BindFlags.None,
+                                Format = Format.B8G8R8A8_UNorm,
+                                Width = width,
+                                Height = height,
+                                OptionFlags = ResourceOptionFlags.None,
+                                MipLevels = 1,
+                                ArraySize = 1,
+                                SampleDescription = { Count = 1, Quality = 0 },
+                                Usage = ResourceUsage.Staging
+                            };
+
+                            var texture2D = new Texture2D(device, textureDesc);
+
+                            directxScreens.Add(
+                                output1.Description.DeviceName,
+                                new DirectXOutput(adapter,
+                                    device,
+                                    output1.DuplicateOutput(device),
+                                    texture2D));
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Write(ex);
+                        }
                     }
                 }
+
+
+                NeedsInit = false;
             }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+                directXCapable = false;
+            }
+        }
 
+        private void RefreshCurrentScreenBounds()
+        {
+            CurrentScreenBounds = Screen.AllScreens[bitBltScreens[SelectedScreen]].Bounds;
+            CaptureFullscreen = true;
+            NeedsInit = true;
+            ScreenChanged?.Invoke(this, CurrentScreenBounds);
+        }
 
-            NeedsInit = false;
+        private void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
+        {
+            RefreshCurrentScreenBounds();
         }
     }
 }

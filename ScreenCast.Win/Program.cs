@@ -11,6 +11,7 @@ using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Communication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Remotely.ScreenCast.Core.Models;
 
 namespace Remotely.ScreenCast.Win
 {
@@ -76,11 +77,17 @@ namespace Remotely.ScreenCast.Win
             serviceCollection.AddSingleton<Conductor>();
             serviceCollection.AddSingleton<ChatHostService>();
             serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerWin>();
+            serviceCollection.AddTransient<Viewer>();
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
         }
 
-        private static async Task CheckForRelaunch()
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Logger.Write((Exception)e.ExceptionObject);
+        }
+
+        private static async Task SendReadyNotificationToViewers()
         {
 
             if (Conductor.ArgDict.ContainsKey("relaunch"))
@@ -95,12 +102,6 @@ namespace Remotely.ScreenCast.Win
                 await Conductor.CasterSocket.NotifyRequesterUnattendedReady(Conductor.RequesterID);
             }
         }
-
-        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            Logger.Write((Exception)e.ExceptionObject);
-        }
-
         private static void StartScreenCasting()
         {
             CursorIconWatcher = Services.GetRequiredService<CursorIconWatcher>();
@@ -124,7 +125,7 @@ namespace Remotely.ScreenCast.Win
                 {
                     Logger.Write("Failed to get initial desktop name.");
                 }
-                await CheckForRelaunch();
+                await SendReadyNotificationToViewers();
                 Services.GetRequiredService<IdleTimer>().Start();
                 CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
                 Services.GetRequiredService<IClipboardService>().BeginWatching();

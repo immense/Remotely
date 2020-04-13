@@ -17,17 +17,13 @@ namespace Remotely.ScreenCast.Win.Services
     {
         public KeyboardMouseInputWin()
         {
-            StartInputActionTask();
             Application.ApplicationExit += Application_ApplicationExit;
+            StartInputActionTask();
         }
-
-        public Conductor Conductor { get; }
 
         private ConcurrentQueue<Action> InputActions { get; } = new ConcurrentQueue<Action>();
 
         private Task InputActionsTask { get; set; }
-
-        private bool IsInputBlocked { get; set; }
 
         private bool ShutdownStarted { get; set; }
 
@@ -186,7 +182,6 @@ namespace Remotely.ScreenCast.Win.Services
         {
             InputActions.Enqueue(() =>
             {
-                IsInputBlocked = toggleOn;
                 var result = BlockInput(toggleOn);
                 Logger.Write($"Result of ToggleBlockInput set to {toggleOn}: {result}");
             });

@@ -259,6 +259,7 @@ namespace Remotely.Desktop.Win.ViewModels
             serviceCollection.AddSingleton<IdleTimer>();
             serviceCollection.AddSingleton<Conductor>();
             serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerWin>();
+            serviceCollection.AddTransient<Viewer>();
 
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();

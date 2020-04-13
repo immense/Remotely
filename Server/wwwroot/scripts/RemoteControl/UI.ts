@@ -448,6 +448,12 @@ export function Prompt(promptMessage: string): Promise<string> {
     });
 }
 
+export function SetScreenSize(width: number, height: number) {
+    ScreenViewer.width = width;
+    ScreenViewer.height = height;
+    Screen2DContext.clearRect(0, 0, width, height);
+}
+
 export function ShowMessage(message: string) {
     var messageDiv = document.createElement("div");
     messageDiv.classList.add("float-message");
@@ -456,6 +462,26 @@ export function ShowMessage(message: string) {
     window.setTimeout(() => {
         messageDiv.remove();
     }, 5000);
+}
+
+export function UpdateDisplays(selectedDisplay: string, displayNames: string[]) {
+    ScreenSelectBar.innerHTML = "";
+    for (let i = 0; i < displayNames.length; i++) {
+        var button = document.createElement("button");
+        button.innerHTML = `Monitor ${i}`;
+        button.classList.add("horizontal-bar-button");
+        if (displayNames[i] == selectedDisplay) {
+            button.classList.add("toggled");
+        }
+        ScreenSelectBar.appendChild(button);
+        button.onclick = (ev: MouseEvent) => {
+            this.SendSelectScreen(displayNames[i]);
+            document.querySelectorAll("#screenSelectBar .horizontal-bar-button").forEach(button => {
+                button.classList.remove("toggled");
+            });
+            (ev.currentTarget as HTMLButtonElement).classList.add("toggled");
+        };
+    }
 }
 
 function uploadFiles(fileList: FileList) {

@@ -35,17 +35,18 @@
     <Content Remove="wwwroot\scripts\Enums\RemoteControlMode.ts" />
     <Content Remove="wwwroot\scripts\InputEventHandlers.ts" />
     <Content Remove="wwwroot\scripts\Main.ts" />
+    <Content Remove="wwwroot\scripts\Models\CaptureFrame.ts" />
     <Content Remove="wwwroot\scripts\Models\CommandLineParameter.ts" />
     <Content Remove="wwwroot\scripts\Models\CommandResult.ts" />
     <Content Remove="wwwroot\scripts\Models\ConsoleCommand.ts" />
     <Content Remove="wwwroot\scripts\Models\CursorInfo.ts" />
     <Content Remove="wwwroot\scripts\Models\Device.ts" />
-    <Content Remove="wwwroot\scripts\Models\DynamicDto.ts" />
     <Content Remove="wwwroot\scripts\Models\DynamicDtoType.ts" />
-    <Content Remove="wwwroot\scripts\Models\FrameInfo.ts" />
     <Content Remove="wwwroot\scripts\Models\GenericCommandResult.ts" />
     <Content Remove="wwwroot\scripts\Models\Parameter.ts" />
     <Content Remove="wwwroot\scripts\Models\Point.ts" />
+    <Content Remove="wwwroot\scripts\RemoteControl\RtcDtos\MachineNameDto.ts" />
+    <Content Remove="wwwroot\scripts\RemoteControl\RtcDtos\ScreenDataDto.ts" />
     <Content Remove="wwwroot\scripts\Models\UserOptions.ts" />
     <Content Remove="wwwroot\scripts\Pages\ApiTokens.ts" />
     <Content Remove="wwwroot\scripts\Pages\IndexNotLoggedIn.ts" />
@@ -53,6 +54,8 @@
     <Content Remove="wwwroot\scripts\Pages\ServerConfig.ts" />
     <Content Remove="wwwroot\scripts\RemoteControl\ClipboardWatcher.ts" />
     <Content Remove="wwwroot\scripts\RemoteControl\Main.ts" />
+    <Content Remove="wwwroot\scripts\RemoteControl\RtcDtos\ScreenSizeDto.ts" />
+    <Content Remove="wwwroot\scripts\RemoteControl\RtcMessageHandler.ts" />
     <Content Remove="wwwroot\scripts\RemoteControl\RtcSession.ts" />
     <Content Remove="wwwroot\scripts\RemoteControl\UI.ts" />
     <Content Remove="wwwroot\scripts\ResultsParser.ts" />
@@ -152,10 +155,17 @@
     <TypeScriptCompile Include="wwwroot\scripts\CommandProcessor.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\CommandLineParameter.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\ConsoleCommand.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Models\DynamicDto.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Models\DynamicDtoType.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Models\FrameInfo.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\DynamicDto.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Enums\DynamicDtoType.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RtcDtos\CaptureFrameDto.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\Point.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RtcDtos\MachineNameDto.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RtcDtos\ScreenSizeDto.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RtcDtos\ScreenDataDto.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\UserOptions.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\Device.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\Parameter.ts" />
@@ -165,6 +175,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\Pages\ServerConfig.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\ClipboardWatcher.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\Main.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RtcMessageHandler.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RtcSession.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\UI.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\ResultsParser.ts" />

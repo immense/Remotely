@@ -231,6 +231,7 @@ namespace Remotely.Desktop.Linux.ViewModels
             serviceCollection.AddSingleton<IdleTimer>();
             serviceCollection.AddSingleton<Conductor>();
             serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerLinux>();
+            serviceCollection.AddTransient<Viewer>();
 
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();

@@ -8,6 +8,7 @@ using Remotely.ScreenCast.Core.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Linq;
+using Remotely.ScreenCast.Core.Models;
 
 namespace Remotely.ScreenCast.Linux
 {
@@ -68,6 +69,7 @@ namespace Remotely.ScreenCast.Linux
             serviceCollection.AddSingleton<Conductor>();
             serviceCollection.AddSingleton<ChatHostService>();
             serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerLinux>();
+            serviceCollection.AddTransient<Viewer>();
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
         }

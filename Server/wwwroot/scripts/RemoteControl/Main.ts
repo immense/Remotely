@@ -4,6 +4,7 @@ import { RtcSession } from "./RtcSession.js";
 import * as UI from "./UI.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 import { ClipboardWatcher } from "./ClipboardWatcher.js";
+import { RtcMessageHandler } from "./RtcMessageHandler.js";
 
 
 var queryString = Utilities.ParseSearchString();
@@ -12,6 +13,7 @@ export const Remotely = {
     ClipboardWatcher: new ClipboardWatcher(),
     Debug: false,
     RCBrowserSockets: new RCBrowserSockets(),
+    RtcMessageHandler: new RtcMessageHandler(),
     RtcSession: new RtcSession(),
     ClientID: queryString["clientID"] ? decodeURIComponent(queryString["clientID"]) : "",
     ServiceID: queryString["serviceID"] ? decodeURIComponent(queryString["serviceID"]) : "",
