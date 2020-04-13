@@ -135,28 +135,10 @@ export class RCBrowserSockets {
             PopupMessage("Clipboard updated.");
         });
         hubConnection.on("ScreenData", (selectedDisplay: string, displayNames: string[]) => {
-            UI.ScreenSelectBar.innerHTML = "";
-            for (let i = 0; i < displayNames.length; i++) {
-                var button = document.createElement("button");
-                button.innerHTML = `Monitor ${i}`;
-                button.classList.add("horizontal-bar-button");
-                if (displayNames[i] == selectedDisplay) {
-                    button.classList.add("toggled");
-                }
-                document.querySelector("#screenSelectBar").appendChild(button);
-                button.onclick = (ev: MouseEvent) => {
-                    this.SendSelectScreen(displayNames[i]);
-                    document.querySelectorAll("#screenSelectBar .horizontal-bar-button").forEach(button => {
-                        button.classList.remove("toggled");
-                    });
-                    (ev.currentTarget as HTMLButtonElement).classList.add("toggled");
-                };
-            }
+            UI.UpdateDisplays(selectedDisplay, displayNames);
         });
         hubConnection.on("ScreenSize", (width: number, height: number) => {
-            UI.ScreenViewer.width = width;
-            UI.ScreenViewer.height = height;
-            UI.Screen2DContext.clearRect(0, 0, width, height);
+            UI.SetScreenSize(width, height);
         });
         hubConnection.on("ScreenCapture", (buffer: Uint8Array, left:number, top:number, width:number, height:number, imageQuality: number) => {
             this.SendFrameReceived(buffer.byteLength);

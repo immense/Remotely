@@ -144,11 +144,12 @@ namespace Remotely.Server.Services
             await base.OnDisconnectedAsync(exception);
         }
 
-        public void ReceiveDeviceInfo(string serviceID, string machineName, string deviceID)
+        public Task ReceiveDeviceInfo(string serviceID, string machineName, string deviceID)
         {
             SessionInfo.ServiceID = serviceID;
             SessionInfo.MachineName = machineName;
             SessionInfo.DeviceID = deviceID;
+            return Task.CompletedTask;
         }
 
         public Task SendAudioSample(byte[] buffer, List<string> viewerIDs)
@@ -156,9 +157,9 @@ namespace Remotely.Server.Services
             return RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("AudioSample", buffer);
         }
 
-        public Task SendClipboardText(string clipboardText, List<string> viewerIDs)
+        public Task SendClipboardText(string clipboardText, string viewerID)
         {
-            return RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("ClipboardTextChanged", clipboardText);
+            return RCBrowserHub.Clients.Client(viewerID).SendAsync("ClipboardTextChanged", clipboardText);
         }
 
         public Task SendConnectionFailedToViewers(List<string> viewerIDs)

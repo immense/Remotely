@@ -5,7 +5,13 @@ namespace Remotely.Shared.Enums
     [DataContract]
     public enum DynamicDtoType
     {
-        [EnumMember(Value = "FrameInfo")]
-        FrameInfo = 0
+        [EnumMember(Value = "CaptureFrame")]
+        CaptureFrame = 0,
+        [EnumMember(Value = "ScreenData")]
+        ScreenData = 1,
+        [EnumMember(Value = "ScreenSize")]
+        ScreenSize = 2,
+        [EnumMember(Value = "MachineName")]
+        MachineName = 3
     }
 }

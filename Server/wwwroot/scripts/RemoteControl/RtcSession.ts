@@ -1,15 +1,10 @@
 ﻿import * as UI from "./UI.js";
 import * as Utilities from "../Utilities.js";
 import { Remotely } from "./Main.js";
-import { DynamicDto } from "../Models/DynamicDto.js";
-import { DynamicDtoType } from "../Models/DynamicDtoType.js";
 
 export class RtcSession {
     PeerConnection: RTCPeerConnection;
     DataChannel: RTCDataChannel;
-    FpsStack: Array<number> = [];
-    MessagePack: any = window['MessagePack'];
-    PartialFrames: Uint8Array[] = [];
     Init() {
         this.PeerConnection = new RTCPeerConnection({
             iceServers: [
@@ -37,8 +32,7 @@ export class RtcSession {
             };
             this.DataChannel.onmessage = async (ev) => {
                 var data = ev.data as ArrayBuffer;
-
-                this.ParseBinaryMessage(data);
+                Remotely.RtcMessageHandler.ParseBinaryMessage(data);
                
             };
             this.DataChannel.onopen = (ev) => {
@@ -58,43 +52,7 @@ export class RtcSession {
             await Remotely.RCBrowserSockets.SendIceCandidate(ev.candidate);
         };
     }
-    ParseBinaryMessage(data: ArrayBuffer) {
-        var model = this.MessagePack.decode(data) as DynamicDto;
-        switch (model.DtoType) {
-            case DynamicDtoType.FrameInfo:
-                this.ProcessFrameInfo(model as unknown as FrameInfo);
-                break;
-            default:
-        }
-    }
-    ProcessFrameInfo(frameInfo: FrameInfo) {
-        if (UI.AutoQualityAdjustCheckBox.checked &&
-            Number(UI.QualitySlider.value) != frameInfo.ImageQuality) {
-            UI.QualitySlider.value = String(frameInfo.ImageQuality);
-        }
 
-        if (frameInfo.EndOfFrame) {
-            var url = window.URL.createObjectURL(new Blob(this.PartialFrames));
-            var img = document.createElement("img");
-            img.onload = () => {
-                UI.Screen2DContext.drawImage(img, frameInfo.Left, frameInfo.Top, frameInfo.Width, frameInfo.Height);
-                window.URL.revokeObjectURL(url);
-            };
-            img.src = url;
-            this.PartialFrames = [];
-
-            if (Remotely.Debug) {
-                this.FpsStack.push(Date.now());
-                while (Date.now() - this.FpsStack[0] > 1000) {
-                    this.FpsStack.shift();
-                }
-                console.log("FPS: " + String(this.FpsStack.length));
-            }
-        }
-        else {
-            this.PartialFrames.push(frameInfo.ImageBytes);
-        }
-    }
     Disconnect() {
         this.PeerConnection.close();
     }

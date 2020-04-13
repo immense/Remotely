@@ -1,13 +1,13 @@
 ﻿using Remotely.Shared.Enums;
 using System.Runtime.Serialization;
 
-namespace Remotely.Shared.Models
+namespace Remotely.Shared.Models.RtcDtos
 {
     [DataContract]
-    public class FrameInfo : IDynamicDto
+    public class CaptureFrameDto : IDynamicDto
     {
         [DataMember(Name = "DtoType")]
-        public DynamicDtoType DtoType { get; set; }
+        public DynamicDtoType DtoType { get; } = DynamicDtoType.CaptureFrame;
 
         [DataMember(Name = "EndOfFrame")]
         public bool EndOfFrame { get; set; }

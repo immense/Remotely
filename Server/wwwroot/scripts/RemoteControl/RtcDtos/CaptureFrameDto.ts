@@ -1,4 +1,4 @@
-﻿declare interface FrameInfo {
+﻿declare interface CaptureFrameDto {
     EndOfFrame: boolean;
     Left: number;
     Top: number;

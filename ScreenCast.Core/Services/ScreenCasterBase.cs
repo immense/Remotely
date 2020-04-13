@@ -15,60 +15,61 @@ namespace Remotely.ScreenCast.Core.Services
 {
     public class ScreenCasterBase
     {
+        public ScreenCasterBase(Viewer viewer)
+        {
+            Viewer = viewer;
+        }
+
+        protected Viewer Viewer { get; }
+
         public async Task BeginScreenCasting(string viewerID,
-                                                   string requesterName,
-                                                   IScreenCapturer capturer)
+            string requesterName)
         {
             var conductor = ServiceContainer.Instance.GetRequiredService<Conductor>();
             var viewers = conductor.Viewers;
             var mode = conductor.Mode;
-            var casterSocket = ServiceContainer.Instance.GetRequiredService<CasterSocket>();
 
-            Logger.Write($"Starting screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}. Capturer: {capturer.GetType().ToString()}.  App Mode: {mode}");
+            Logger.Write($"Starting screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}.  App Mode: {mode}");
 
             byte[] encodedImageBytes;
             var fpsQueue = new Queue<DateTimeOffset>();
 
-            var viewer = new Viewer()
-            {
-                Capturer = capturer,
-                DisconnectRequested = false,
-                Name = requesterName,
-                ViewerConnectionID = viewerID,
-                HasControl = true
-            };
+            Viewer.Name = requesterName;
+            Viewer.ViewerConnectionID = viewerID;
 
-            viewers.AddOrUpdate(viewerID, viewer, (id, v) => viewer);
+            viewers.AddOrUpdate(viewerID, Viewer, (id, v) => Viewer);
 
             if (mode == Enums.AppMode.Normal)
             {
-                conductor.InvokeViewerAdded(viewer);
+                conductor.InvokeViewerAdded(Viewer);
             }
 
             if (EnvironmentHelper.IsWindows)
             {
-                await InitializeWebRtc(viewer, casterSocket);
+                await Viewer.InitializeWebRtc();
             }
 
-            await casterSocket.SendMachineName(Environment.MachineName, viewerID);
-
-            await casterSocket.SendScreenData(
-                   capturer.SelectedScreen,
-                   capturer.GetDisplayNames().ToArray(),
+            await Viewer.SendMachineName(Environment.MachineName, viewerID);
+            
+            await Viewer.SendScreenData(
+                   Viewer.Capturer.SelectedScreen,
+                   Viewer.Capturer.GetDisplayNames().ToArray(),
                    viewerID);
 
-            await casterSocket.SendScreenSize(capturer.CurrentScreenBounds.Width, capturer.CurrentScreenBounds.Height, viewerID);
+            await Viewer.SendScreenSize(Viewer.Capturer.CurrentScreenBounds.Width,
+                Viewer.Capturer.CurrentScreenBounds.Height, 
+                viewerID);
 
-            capturer.ScreenChanged += async (sender, bounds) =>
+            Viewer.Capturer.ScreenChanged += async (sender, bounds) =>
             {
-                await casterSocket.SendScreenSize(bounds.Width, bounds.Height, viewerID);
+                await Viewer.SendScreenSize(bounds.Width, bounds.Height, viewerID);
             };
 
-            while (!viewer.DisconnectRequested && casterSocket.IsConnected)
+            while (!Viewer.DisconnectRequested && Viewer.IsConnected)
             {
                 try
                 {
-                    if (viewer.IsStalled())
+                    if (Viewer.IsStalled())
                     {
                         // Viewer isn't responding.  Abort sending.
                         break;
@@ -84,38 +85,30 @@ namespace Remotely.ScreenCast.Core.Services
                         Debug.WriteLine($"Capture FPS: {fpsQueue.Count}");
                     }
 
-                    await viewer.ThrottleIfNeeded();
+                    await Viewer.ThrottleIfNeeded();
 
-                    capturer.GetNextFrame();
+                    Viewer.Capturer.GetNextFrame();
 
-                    var diffArea = ImageUtils.GetDiffArea(capturer.CurrentFrame, capturer.PreviousFrame, capturer.CaptureFullscreen);
+                    var diffArea = ImageUtils.GetDiffArea(Viewer.Capturer.CurrentFrame, Viewer.Capturer.PreviousFrame, Viewer.Capturer.CaptureFullscreen);
 
                     if (diffArea.IsEmpty)
                     {
                         continue;
                     }
 
-                    using (var newImage = capturer.CurrentFrame.Clone(diffArea, PixelFormat.Format32bppArgb))
+                    using (var newImage = Viewer.Capturer.CurrentFrame.Clone(diffArea, PixelFormat.Format32bppArgb))
                     {
-                        if (capturer.CaptureFullscreen)
+                        if (Viewer.Capturer.CaptureFullscreen)
                         {
-                            capturer.CaptureFullscreen = false;
+                            Viewer.Capturer.CaptureFullscreen = false;
                         }
                         
-                        encodedImageBytes = ImageUtils.EncodeBitmap(newImage, viewer.EncoderParams);
+                        encodedImageBytes = ImageUtils.EncodeBitmap(newImage, Viewer.EncoderParams);
 
                         if (encodedImageBytes?.Length > 0)
                         {
-                            if (viewer.IsUsingWebRtc())
-                            {
-                                viewer.RtcSession.SendCaptureFrame(diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, encodedImageBytes, viewer.ImageQuality);
-                                viewer.WebSocketBuffer = 0;
-                            }
-                            else
-                            {
-                                await casterSocket.SendScreenCapture(encodedImageBytes, viewerID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, viewer.ImageQuality);
-                                viewer.WebSocketBuffer += encodedImageBytes.Length;
-                            }
+                         
+                            await Viewer.SendScreenCapture(encodedImageBytes, viewerID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, Viewer.ImageQuality);
                         }
                     }
                 }
@@ -127,18 +120,14 @@ namespace Remotely.ScreenCast.Core.Services
 
             Logger.Write($"Ended screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}.");
             viewers.TryRemove(viewerID, out _);
-            var shouldExit = viewers.Count == 0 && mode == Enums.AppMode.Unattended;
 
             try
             {
-                viewer.Dispose();
+                Viewer.Dispose();
 
-                if (shouldExit)
-                {
-                    capturer.Dispose();
+                Viewer.Capturer.Dispose();
 
-                    await casterSocket.Disconnect();
-                }
+                Viewer.Disconnect();
 
             }
             catch (Exception ex)
@@ -148,7 +137,7 @@ namespace Remotely.ScreenCast.Core.Services
             finally
             {
                 // Close if no one is viewing.
-                if (shouldExit)
+                if (viewers.Count == 0 && mode == Enums.AppMode.Unattended)
                 {
                     Logger.Debug($"Exiting process ID {Process.GetCurrentProcess().Id}.");
                     Environment.Exit(0);
@@ -156,25 +145,6 @@ namespace Remotely.ScreenCast.Core.Services
             }
         }
 
-        private async Task InitializeWebRtc(Viewer viewer, CasterSocket casterSocket)
-        {
-            try
-            {
-                viewer.RtcSession = new WebRtcSession();
-                viewer.RtcSession.LocalSdpReady += async (sender, sdp) =>
-                {
-                    await casterSocket.SendRtcOfferToBrowser(sdp, viewer.ViewerConnectionID);
-                };
-                viewer.RtcSession.IceCandidateReady += async (sender, args) =>
-                {
-                    await casterSocket.SendIceCandidateToBrowser(args.candidate, args.sdpMlineIndex, args.sdpMid, viewer.ViewerConnectionID);
-                };
-                await viewer.RtcSession.Init();
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
-            }
-        }
+       
     }
 }

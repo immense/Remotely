@@ -2,6 +2,7 @@
 using Microsoft.MixedReality.WebRTC;
 using Remotely.ScreenCast.Core.Services;
 using Remotely.Shared.Models;
+using Remotely.Shared.Models.RtcDtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,7 +63,7 @@ namespace Remotely.ScreenCast.Core.Communication
         {
             for (var i = 0; i < imageBytes.Length; i += 50_000)
             {
-                CaptureChannel.SendMessage(MessagePackSerializer.Serialize(new FrameInfo()
+                SendDto(new CaptureFrameDto()
                 {
                     Left = left,
                     Top = top,
@@ -70,20 +71,38 @@ namespace Remotely.ScreenCast.Core.Communication
                     Height = height,
                     EndOfFrame = false,
                     ImageBytes = imageBytes.Skip(i).Take(50_000).ToArray(),
-                    ImageQuality = imageQuality,
-                    DtoType = Shared.Enums.DynamicDtoType.FrameInfo
-                }));
+                    ImageQuality = imageQuality
+                });
             }
-            CaptureChannel.SendMessage(MessagePackSerializer.Serialize(new FrameInfo()
+            SendDto(new CaptureFrameDto()
             {
                 Left = left,
                 Top = top,
                 Width = width,
                 Height = height,
                 EndOfFrame = true,
-                ImageQuality = imageQuality,
-                DtoType = Shared.Enums.DynamicDtoType.FrameInfo
-            }));
+                ImageQuality = imageQuality
+            });
+        }
+
+        public void SendClipboardText(string clipboardText)
+        {
+            SendDto(new ClipboardTextDto(clipboardText));
+        }
+
+        public void SendMachineName(string machineName)
+        {
+            SendDto(new MachineNameDto(machineName));
+        }
+
+        public void SendScreenData(string selectedScreen, string[] displayNames)
+        {
+            SendDto(new ScreenDataDto(selectedScreen, displayNames));
+        }
+
+        public void SendScreenSize(int width, int height)
+        {
+            SendDto(new ScreenSizeDto(width, height));
         }
 
         public void SetRemoteDescription(string type, string sdp)
@@ -94,7 +113,6 @@ namespace Remotely.ScreenCast.Core.Communication
                 PeerConnection.CreateAnswer();
             }
         }
-
         private void CaptureChannel_MessageReceived(byte[] obj)
         {
             Logger.Debug($"DataChannel message received.  Size: {obj.Length}");
@@ -108,7 +126,6 @@ namespace Remotely.ScreenCast.Core.Communication
                 await Init();
             }
         }
-
         private void DataChannel_BufferingChanged(ulong previous, ulong current, ulong limit)
         {
             Logger.Debug($"DataChannel buffering changed.  Previous: {previous}.  Current: {current}.  Limit: {limit}.");
@@ -135,6 +152,11 @@ namespace Remotely.ScreenCast.Core.Communication
         {
             Logger.Debug($"Local SDP ready.");
             LocalSdpReady?.Invoke(this, sdp);
+        }
+
+        private void SendDto<T>(T dto)
+        {
+            CaptureChannel.SendMessage(MessagePackSerializer.Serialize(dto));
         }
     }
 }

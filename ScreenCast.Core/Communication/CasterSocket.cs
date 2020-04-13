@@ -83,9 +83,9 @@ namespace Remotely.ScreenCast.Core.Communication
             await Connection.SendAsync("SendAudioSample", buffer, viewerIDs);
         }
 
-        public async Task SendClipboardText(string clipboardText, List<string> viewerIDs)
+        public async Task SendClipboardText(string clipboardText, string viewerID)
         {
-            await Connection.SendAsync("SendClipboardText", clipboardText, viewerIDs);
+            await Connection.SendAsync("SendClipboardText", clipboardText, viewerID);
         }
 
         public async Task SendConnectionFailedToViewers(List<string> viewerIDs)
@@ -118,7 +118,7 @@ namespace Remotely.ScreenCast.Core.Communication
             await Connection.SendAsync("SendRtcOfferToBrowser", sdp, viewerID);
         }
 
-        public async Task SendScreenCapture(byte[] captureBytes, string viewerID, int left, int top, int width, int height, long imageQuality)
+        public async Task SendScreenCapture(byte[] captureBytes, string viewerID, int left, int top, int width, int height, int imageQuality)
         {
             await Connection.SendAsync("SendScreenCapture", captureBytes, viewerID, left, top, width, height, imageQuality);
         }
@@ -405,35 +405,36 @@ namespace Remotely.ScreenCast.Core.Communication
                     KeyboardMouseInput.SendLeftMouseUp(percentX, percentY, viewer);
                 }
             });
-            Connection.On("SharedFileIDs", (List<string> fileIDs) =>
-            {
-                fileIDs.ForEach(id =>
-                {
-                    var url = $"{conductor.Host}/API/FileSharing/{id}";
-                    var webRequest = WebRequest.CreateHttp(url);
-                    var response = webRequest.GetResponse();
-                    var contentDisp = response.Headers["Content-Disposition"];
-                    var fileName = contentDisp
-                        .Split(";".ToCharArray())
-                        .FirstOrDefault(x => x.Trim().StartsWith("filename"))
-                        .Split("=".ToCharArray())[1];
 
-                    var legalChars = fileName.ToCharArray().Where(x => !Path.GetInvalidFileNameChars().Any(y => x == y));
+            //Connection.On("SharedFileIDs", (List<string> fileIDs) =>
+            //{
+            //    fileIDs.ForEach(id =>
+            //    {
+            //        var url = $"{conductor.Host}/API/FileSharing/{id}";
+            //        var webRequest = WebRequest.CreateHttp(url);
+            //        var response = webRequest.GetResponse();
+            //        var contentDisp = response.Headers["Content-Disposition"];
+            //        var fileName = contentDisp
+            //            .Split(";".ToCharArray())
+            //            .FirstOrDefault(x => x.Trim().StartsWith("filename"))
+            //            .Split("=".ToCharArray())[1];
 
-                    fileName = new string(legalChars.ToArray());
+            //        var legalChars = fileName.ToCharArray().Where(x => !Path.GetInvalidFileNameChars().Any(y => x == y));
 
-                    var dirPath = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "RemotelySharedFiles")).FullName;
-                    var filePath = Path.Combine(dirPath, fileName);
-                    using (var fs = new FileStream(filePath, FileMode.Create))
-                    {
-                        using (var rs = response.GetResponseStream())
-                        {
-                            rs.CopyTo(fs);
-                        }
-                    }
-                    Process.Start("explorer.exe", dirPath);
-                });
-            });
+            //        fileName = new string(legalChars.ToArray());
+
+            //        var dirPath = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "RemotelySharedFiles")).FullName;
+            //        var filePath = Path.Combine(dirPath, fileName);
+            //        using (var fs = new FileStream(filePath, FileMode.Create))
+            //        {
+            //            using (var rs = response.GetResponseStream())
+            //            {
+            //                rs.CopyTo(fs);
+            //            }
+            //        }
+            //        Process.Start("explorer.exe", dirPath);
+            //    });
+            //});
 
             Connection.On("SessionID", (string sessionID) =>
             {
@@ -444,10 +445,10 @@ namespace Remotely.ScreenCast.Core.Communication
         private async void ClipboardService_ClipboardTextChanged(object sender, string clipboardText)
         {
             var conductor = ServiceContainer.Instance.GetRequiredService<Conductor>();
-            var viewerIDs = conductor.Viewers.Keys.ToList();
-            if (viewerIDs.Any())
+            var viewerIDs = conductor.Viewers.Values.ToList();
+            foreach (var viewer in viewerIDs)
             {
-                await SendClipboardText(clipboardText, viewerIDs);
+                await viewer.SendClipboardText(clipboardText);
             }
         }
     }

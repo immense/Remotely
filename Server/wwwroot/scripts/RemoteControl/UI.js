@@ -405,6 +405,11 @@ export function Prompt(promptMessage) {
         };
     });
 }
+export function SetScreenSize(width, height) {
+    ScreenViewer.width = width;
+    ScreenViewer.height = height;
+    Screen2DContext.clearRect(0, 0, width, height);
+}
 export function ShowMessage(message) {
     var messageDiv = document.createElement("div");
     messageDiv.classList.add("float-message");
@@ -413,6 +418,25 @@ export function ShowMessage(message) {
     window.setTimeout(() => {
         messageDiv.remove();
     }, 5000);
+}
+export function UpdateDisplays(selectedDisplay, displayNames) {
+    ScreenSelectBar.innerHTML = "";
+    for (let i = 0; i < displayNames.length; i++) {
+        var button = document.createElement("button");
+        button.innerHTML = `Monitor ${i}`;
+        button.classList.add("horizontal-bar-button");
+        if (displayNames[i] == selectedDisplay) {
+            button.classList.add("toggled");
+        }
+        ScreenSelectBar.appendChild(button);
+        button.onclick = (ev) => {
+            this.SendSelectScreen(displayNames[i]);
+            document.querySelectorAll("#screenSelectBar .horizontal-bar-button").forEach(button => {
+                button.classList.remove("toggled");
+            });
+            ev.currentTarget.classList.add("toggled");
+        };
+    }
 }
 function uploadFiles(fileList) {
     ShowMessage("File upload started...");
