@@ -7,7 +7,7 @@ using System.Text;
 namespace Remotely.Shared.Models.RtcDtos
 {
     [DataContract]
-    public class MachineNameDto : IDynamicDto
+    public class MachineNameDto : IBinaryDto
     {
         public MachineNameDto(string machineName)
         {
@@ -15,7 +15,7 @@ namespace Remotely.Shared.Models.RtcDtos
         }
 
         [DataMember(Name = "DtoType")]
-        public DynamicDtoType DtoType { get; } = DynamicDtoType.MachineName;
+        public BinaryDtoType DtoType { get; } = BinaryDtoType.MachineName;
 
         [DataMember(Name = "MachineName")]
         public string MachineName { get; }

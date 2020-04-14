@@ -1,7 +1,10 @@
 import * as UI from "./UI.js";
 import * as Utilities from "../Utilities.js";
-import { Remotely } from "./Main.js";
+import { MainRc } from "./Main.js";
 export class RtcSession {
+    constructor() {
+        this.MessagePack = window['MessagePack'];
+    }
     Init() {
         this.PeerConnection = new RTCPeerConnection({
             iceServers: [
@@ -28,7 +31,7 @@ export class RtcSession {
             };
             this.DataChannel.onmessage = async (ev) => {
                 var data = ev.data;
-                Remotely.RtcMessageHandler.ParseBinaryMessage(data);
+                MainRc.RtcMessageHandler.ParseBinaryMessage(data);
             };
             this.DataChannel.onopen = (ev) => {
                 console.log("Data channel opened.");
@@ -43,7 +46,7 @@ export class RtcSession {
             console.log("ICE connection state changed to " + this.iceConnectionState);
         };
         this.PeerConnection.onicecandidate = async (ev) => {
-            await Remotely.RCBrowserSockets.SendIceCandidate(ev.candidate);
+            await MainRc.RCBrowserSockets.SendIceCandidate(ev.candidate);
         };
     }
     Disconnect() {
@@ -55,7 +58,7 @@ export class RtcSession {
             return this.PeerConnection.remoteDescription.sdp.length > 0;
         }).then(async () => {
             await this.PeerConnection.setLocalDescription(await this.PeerConnection.createAnswer());
-            await Remotely.RCBrowserSockets.SendRtcAnswer(this.PeerConnection.localDescription);
+            await MainRc.RCBrowserSockets.SendRtcAnswer(this.PeerConnection.localDescription);
         });
     }
     async ReceiveCandidate(candidate) {
@@ -65,6 +68,9 @@ export class RtcSession {
             await this.PeerConnection.addIceCandidate(candidate);
             console.log("Set ICE candidate.");
         });
+    }
+    SendDto(dto) {
+        this.DataChannel.send(this.MessagePack.encode(dto));
     }
 }
 //# sourceMappingURL=RtcSession.js.map

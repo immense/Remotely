@@ -4,10 +4,10 @@ using System.Runtime.Serialization;
 namespace Remotely.Shared.Models.RtcDtos
 {
     [DataContract]
-    public class CaptureFrameDto : IDynamicDto
+    public class CaptureFrameDto : IBinaryDto
     {
         [DataMember(Name = "DtoType")]
-        public DynamicDtoType DtoType { get; } = DynamicDtoType.CaptureFrame;
+        public BinaryDtoType DtoType { get; } = BinaryDtoType.CaptureFrame;
 
         [DataMember(Name = "EndOfFrame")]
         public bool EndOfFrame { get; set; }

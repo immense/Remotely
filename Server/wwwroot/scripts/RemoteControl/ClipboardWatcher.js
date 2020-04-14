@@ -1,5 +1,5 @@
 import { ClipboardTransferTextArea } from "./UI.js";
-import { Remotely } from "./Main.js";
+import { MainRc } from "./Main.js";
 export class ClipboardWatcher {
     WatchClipboard() {
         navigator.clipboard.readText().then(currentText => {
@@ -15,7 +15,7 @@ export class ClipboardWatcher {
                     if (this.LastClipboardText != newText) {
                         this.LastClipboardText = newText;
                         ClipboardTransferTextArea.value = newText;
-                        Remotely.RCBrowserSockets.SendClipboardTransfer(newText, false);
+                        MainRc.RCBrowserSockets.SendClipboardTransfer(newText, false);
                     }
                 });
             }, 100);

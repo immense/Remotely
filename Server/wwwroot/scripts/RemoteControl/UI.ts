@@ -1,9 +1,10 @@
 ﻿import { RCBrowserSockets } from "./RCBrowserSockets.js";
-import { Remotely } from "./Main.js";
+import { MainRc } from "./Main.js";
 import { PopupMessage } from "../UI.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 import { Point } from "../Models/Point.js";
-import { GetDistanceBetween } from "../Utilities.js";
+import { GetDistanceBetween, ConvertUInt8ArrayToBase64 } from "../Utilities.js";
+import { CursorInfo } from "../Models/CursorInfo.js";
 
 export var AudioButton = document.getElementById("audioButton") as HTMLButtonElement;
 export var MenuButton = document.getElementById("menuButton") as HTMLButtonElement;
@@ -78,19 +79,19 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
         PopupMessage("Clipboard sent!");
     });
     ConnectButton.addEventListener("click", (ev) => {
-        Remotely.ConnectToClient();
+        MainRc.ConnectToClient();
     });
     CtrlAltDelButton.addEventListener("click", (ev) => {
-        if (!Remotely.ServiceID) {
+        if (!MainRc.ServiceID) {
             ShowMessage("Not available for this session.");
             return;
         }
         closeAllHorizontalBars(null);
-        Remotely.RCBrowserSockets.SendCtrlAltDel();
+        MainRc.RCBrowserSockets.SendCtrlAltDel();
     });
     DisconnectButton.addEventListener("click", (ev) => {
         ConnectButton.removeAttribute("disabled");
-        Remotely.RCBrowserSockets.Connection.stop();
+        MainRc.RCBrowserSockets.Connection.stop();
         if (location.search.includes("fromApi=true")) {
             window.close();
         }
@@ -98,7 +99,7 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
     document.querySelectorAll("#sessionIDInput, #nameInput").forEach(x => {
         x.addEventListener("keypress", (ev: KeyboardEvent) => {
             if (ev.key.toLowerCase() == "enter") {
-                Remotely.ConnectToClient();
+                MainRc.ConnectToClient();
             }
         })
     });
@@ -123,21 +124,21 @@ export function ApplyInputHandlers(sockets: RCBrowserSockets) {
         var button = ev.currentTarget as HTMLButtonElement;
         button.classList.toggle("toggled");
         if (button.classList.contains("toggled")) {
-            Remotely.RCBrowserSockets.SendToggleBlockInput(true);
+            MainRc.RCBrowserSockets.SendToggleBlockInput(true);
         }
         else {
-            Remotely.RCBrowserSockets.SendToggleBlockInput(false);
+            MainRc.RCBrowserSockets.SendToggleBlockInput(false);
         }
     });
     InviteButton.addEventListener("click", (ev) => {
         var url = "";
-        if (Remotely.Mode == RemoteControlMode.Normal) {
-            url = `${location.origin}${location.pathname}?sessionID=${Remotely.ClientID}`;
+        if (MainRc.Mode == RemoteControlMode.Normal) {
+            url = `${location.origin}${location.pathname}?sessionID=${MainRc.ClientID}`;
         }
         else {
-            url = `${location.origin}${location.pathname}?clientID=${Remotely.ClientID}&serviceID=${Remotely.ServiceID}`;
+            url = `${location.origin}${location.pathname}?clientID=${MainRc.ClientID}&serviceID=${MainRc.ServiceID}`;
         }
-        Remotely.ClipboardWatcher.SetClipboardText(url);
+        MainRc.ClipboardWatcher.SetClipboardText(url);
         PopupMessage("Link copied to clipboard.");
     });
     KeyboardButton.addEventListener("click", (ev) => {
@@ -464,6 +465,19 @@ export function ShowMessage(message: string) {
     }, 5000);
 }
 
+export function UpdateCursor(cursor: CursorInfo) {
+    if (cursor.CssOverride) {
+        ScreenViewer.style.cursor = cursor.CssOverride;
+    }
+    else if (cursor.ImageBytes.byteLength == 0) {
+        ScreenViewer.style.cursor = "default";
+    }
+    else {
+        var base64 = ConvertUInt8ArrayToBase64(cursor.ImageBytes);
+        ScreenViewer.style.cursor = `url('data:image/png;base64,${base64}') ${cursor.HotSpot.X} ${cursor.HotSpot.Y}, default`;
+    }
+}
+
 export function UpdateDisplays(selectedDisplay: string, displayNames: string[]) {
     ScreenSelectBar.innerHTML = "";
     for (let i = 0; i < displayNames.length; i++) {
@@ -500,7 +514,7 @@ function uploadFiles(fileList: FileList) {
         FileTransferProgress.parentElement.setAttribute("hidden", "hidden");
         if (xhr.status === 200) {
             ShowMessage("File upload completed.");
-            Remotely.RCBrowserSockets.SendSharedFileIDs(xhr.responseText);
+            MainRc.RCBrowserSockets.SendSharedFileIDs(xhr.responseText);
         }
         else {
             ShowMessage("File upload failed.");
