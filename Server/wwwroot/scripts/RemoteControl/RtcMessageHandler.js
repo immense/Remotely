@@ -1,7 +1,8 @@
 import * as UI from "./UI.js";
-import { DynamicDtoType } from "../Enums/DynamicDtoType.js";
-import { Remotely } from "./Main.js";
+import { BinaryDtoType } from "../Enums/BinaryDtoType.js";
+import { MainRc } from "./Main.js";
 import { PopupMessage } from "../UI.js";
+import { Sound } from "../Sound.js";
 export class RtcMessageHandler {
     constructor() {
         this.FpsStack = [];
@@ -11,37 +12,35 @@ export class RtcMessageHandler {
     ParseBinaryMessage(data) {
         var model = this.MessagePack.decode(data);
         switch (model.DtoType) {
-            case DynamicDtoType.CaptureFrame:
-                this.ProcessCaptureFrame(model);
+            case BinaryDtoType.AudioSample:
+                this.HandleAudioSample(model);
                 break;
-            case DynamicDtoType.MachineName:
-                this.ProcessMachineName(model);
+            case BinaryDtoType.CaptureFrame:
+                this.HandleCaptureFrame(model);
                 break;
-            case DynamicDtoType.ScreenData:
-                this.ProcessScreenData(model);
+            case BinaryDtoType.ClipboardText:
+                this.HandleClipboardText(model);
                 break;
-            case DynamicDtoType.ScreenSize:
-                this.ProcessScreenSize(model);
+            case BinaryDtoType.CursorChange:
+                this.HandleCursorChange(model);
                 break;
-            case DynamicDtoType.ClipboardText:
-                this.ProcessClipboardText(model);
+            case BinaryDtoType.MachineName:
+                this.HandleMachineName(model);
+                break;
+            case BinaryDtoType.ScreenData:
+                this.HandleScreenData(model);
+                break;
+            case BinaryDtoType.ScreenSize:
+                this.HandleScreenSize(model);
+                break;
             default:
+                break;
         }
     }
-    ProcessClipboardText(clipboardText) {
-        Remotely.ClipboardWatcher.SetClipboardText(clipboardText.ClipboardText);
-        PopupMessage("Clipboard updated.");
+    HandleAudioSample(audioSample) {
+        Sound.Play(audioSample.Buffer);
     }
-    ProcessMachineName(machineNameDto) {
-        document.title = `${machineNameDto.MachineName} - Remotely Session`;
-    }
-    ProcessScreenData(screenDataDto) {
-        UI.UpdateDisplays(screenDataDto.SelectedScreen, screenDataDto.DisplayNames);
-    }
-    ProcessScreenSize(screenSizeDto) {
-        UI.SetScreenSize(screenSizeDto.Width, screenSizeDto.Height);
-    }
-    ProcessCaptureFrame(captureFrame) {
+    HandleCaptureFrame(captureFrame) {
         if (UI.AutoQualityAdjustCheckBox.checked &&
             Number(UI.QualitySlider.value) != captureFrame.ImageQuality) {
             UI.QualitySlider.value = String(captureFrame.ImageQuality);
@@ -55,7 +54,7 @@ export class RtcMessageHandler {
             };
             img.src = url;
             this.PartialCaptureFrames = [];
-            if (Remotely.Debug) {
+            if (MainRc.Debug) {
                 this.FpsStack.push(Date.now());
                 while (Date.now() - this.FpsStack[0] > 1000) {
                     this.FpsStack.shift();
@@ -66,6 +65,22 @@ export class RtcMessageHandler {
         else {
             this.PartialCaptureFrames.push(captureFrame.ImageBytes);
         }
+    }
+    HandleClipboardText(clipboardText) {
+        MainRc.ClipboardWatcher.SetClipboardText(clipboardText.ClipboardText);
+        PopupMessage("Clipboard updated.");
+    }
+    HandleCursorChange(cursorChange) {
+        UI.UpdateCursor(cursorChange.CursorInfo);
+    }
+    HandleMachineName(machineNameDto) {
+        document.title = `${machineNameDto.MachineName} - Remotely Session`;
+    }
+    HandleScreenData(screenDataDto) {
+        UI.UpdateDisplays(screenDataDto.SelectedScreen, screenDataDto.DisplayNames);
+    }
+    HandleScreenSize(screenSizeDto) {
+        UI.SetScreenSize(screenSizeDto.Width, screenSizeDto.Height);
     }
 }
 //# sourceMappingURL=RtcMessageHandler.js.map

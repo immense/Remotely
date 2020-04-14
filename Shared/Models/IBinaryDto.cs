@@ -2,8 +2,8 @@
 
 namespace Remotely.Shared.Models
 {
-    interface IDynamicDto
+    public interface IBinaryDto
     {
-        DynamicDtoType DtoType { get; }
+        BinaryDtoType DtoType { get; }
     }
 }

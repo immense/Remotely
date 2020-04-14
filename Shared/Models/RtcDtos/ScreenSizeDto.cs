@@ -7,7 +7,7 @@ using System.Text;
 namespace Remotely.Shared.Models.RtcDtos
 {
     [DataContract]
-    public class ScreenSizeDto : IDynamicDto
+    public class ScreenSizeDto : IBinaryDto
     {
         public ScreenSizeDto(int width, int height)
         {
@@ -22,6 +22,6 @@ namespace Remotely.Shared.Models.RtcDtos
         public int Height { get; }
 
         [DataMember(Name = "DtoType")]
-        public DynamicDtoType DtoType { get; } = DynamicDtoType.ScreenSize;
+        public BinaryDtoType DtoType { get; } = BinaryDtoType.ScreenSize;
     }
 }

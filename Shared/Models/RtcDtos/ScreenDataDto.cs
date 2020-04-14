@@ -7,7 +7,7 @@ using System.Text;
 namespace Remotely.Shared.Models.RtcDtos
 {
     [DataContract]
-    public class ScreenDataDto : IDynamicDto
+    public class ScreenDataDto : IBinaryDto
     {
         public ScreenDataDto(string selectedScreen, string[] displayNames)
         {
@@ -20,7 +20,7 @@ namespace Remotely.Shared.Models.RtcDtos
 
 
         [DataMember(Name = "DtoType")]
-        public DynamicDtoType DtoType { get; } = DynamicDtoType.ScreenData;
+        public BinaryDtoType DtoType { get; } = BinaryDtoType.ScreenData;
 
         [DataMember(Name = "SelectedScreen")]
         public string SelectedScreen { get; }

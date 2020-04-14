@@ -1,6 +1,6 @@
 ﻿import * as Utilities from "../Utilities.js";
 import * as UI from "./UI.js";
-import { Remotely } from "./Main.js";
+import { MainRc } from "./Main.js";
 import { CursorInfo } from "../Models/CursorInfo.js";
 import { Sound } from "../Sound.js";
 import { PopupMessage } from "../UI.js";
@@ -46,7 +46,7 @@ export class RCBrowserSockets {
             UI.ConnectBox.style.removeProperty("display");
         });
 
-        Remotely.ClipboardWatcher.WatchClipboard();
+        MainRc.ClipboardWatcher.WatchClipboard();
     };
 
     SendIceCandidate(candidate: RTCIceCandidate) {
@@ -63,7 +63,7 @@ export class RCBrowserSockets {
 
 
     SendScreenCastRequestToDevice() {
-        this.Connection.invoke("SendScreenCastRequestToDevice", Remotely.ClientID, Remotely.RequesterName, Remotely.Mode);
+        this.Connection.invoke("SendScreenCastRequestToDevice", MainRc.ClientID, MainRc.RequesterName, MainRc.Mode);
     }
     SendFrameReceived(bytesReceived: number) {
         this.Connection.invoke("SendFrameReceived", bytesReceived);
@@ -131,7 +131,7 @@ export class RCBrowserSockets {
     }
     private ApplyMessageHandlers(hubConnection) {
         hubConnection.on("ClipboardTextChanged", (clipboardText: string) => {
-            Remotely.ClipboardWatcher.SetClipboardText(clipboardText);
+            MainRc.ClipboardWatcher.SetClipboardText(clipboardText);
             PopupMessage("Clipboard updated.");
         });
         hubConnection.on("ScreenData", (selectedDisplay: string, displayNames: string[]) => {
@@ -156,7 +156,7 @@ export class RCBrowserSockets {
             };
             img.src = url;
 
-            if (Remotely.Debug) {
+            if (MainRc.Debug) {
                 this.FpsStack.push(Date.now());
                 while (Date.now() - this.FpsStack[0] > 1000) {
                     this.FpsStack.shift();
@@ -192,7 +192,7 @@ export class RCBrowserSockets {
             document.title = `${machineName} - Remotely Session`;
         });
         hubConnection.on("RelaunchedScreenCasterReady", (newClientID: string) => {
-            Remotely.ClientID = newClientID;
+            MainRc.ClientID = newClientID;
             this.Connection.stop();
             this.Connect();
         });
@@ -202,16 +202,7 @@ export class RCBrowserSockets {
         });
 
         hubConnection.on("CursorChange", (cursor: CursorInfo) => {
-            if (cursor.CssOverride) {
-                UI.ScreenViewer.style.cursor = cursor.CssOverride;
-            }
-            else if (cursor.ImageBytes.byteLength == 0) {
-                UI.ScreenViewer.style.cursor = "default";
-            }
-            else {
-                var base64 = Utilities.ConvertUInt8ArrayToBase64(cursor.ImageBytes);
-                UI.ScreenViewer.style.cursor = `url('data:image/png;base64,${base64}') ${cursor.HotSpot.X} ${cursor.HotSpot.Y}, default`;
-            }
+            UI.UpdateCursor(cursor);
         });
 
         hubConnection.on("RequestingScreenCast", () => {
@@ -221,13 +212,13 @@ export class RCBrowserSockets {
 
         hubConnection.on("ReceiveRtcOffer", async (sdp: string) => {
             console.log("Rtc offer SDP received.");
-            Remotely.RtcSession.Init();
-            await Remotely.RtcSession.ReceiveRtcOffer(sdp);
+            MainRc.RtcSession.Init();
+            await MainRc.RtcSession.ReceiveRtcOffer(sdp);
             
         });
         hubConnection.on("ReceiveIceCandidate", (candidate: string, sdpMlineIndex: number, sdpMid: string) => {
             console.log("Ice candidate received.");
-            Remotely.RtcSession.ReceiveCandidate({
+            MainRc.RtcSession.ReceiveCandidate({
                 candidate: candidate,
                 sdpMLineIndex: sdpMlineIndex,
                 sdpMid: sdpMid

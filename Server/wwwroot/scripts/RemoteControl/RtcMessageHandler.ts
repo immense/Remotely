@@ -1,54 +1,56 @@
 ﻿import * as UI from "./UI.js";
-import { DynamicDtoType } from "../Enums/DynamicDtoType.js";
-import { DynamicDto } from "./DynamicDto.js";
-import { Remotely } from "./Main.js";
-import { CaptureFrameDto } from "./RtcDtos/CaptureFrameDto.js";
-import { MachineNameDto } from "./RtcDtos/MachineNameDto.js";
-import { ScreenDataDto } from "./RtcDtos/ScreenDataDto.js";
-import { ScreenSizeDto } from "./RtcDtos/ScreenSizeDto.js";
-import { ClipboardTextDto } from "./RtcDtos/ClipboardTextDto.js";
+import { BinaryDtoType } from "../Enums/BinaryDtoType.js";
+import { BinaryDto } from "./BinaryDto.js";
+import { MainRc } from "./Main.js";
 import { PopupMessage } from "../UI.js";
+import { Sound } from "../Sound.js";
+import {
+    AudioSampleDto,
+    CaptureFrameDto,
+    ClipboardTextDto,
+    CursorChangeDto,
+    MachineNameDto,
+    ScreenDataDto,
+    ScreenSizeDto
+} from "./RtcDtos.js";
+
 
 export class RtcMessageHandler {
     FpsStack: Array<number> = [];
     MessagePack: any = window['MessagePack'];
     PartialCaptureFrames: Uint8Array[] = [];
     ParseBinaryMessage(data: ArrayBuffer) {
-        var model = this.MessagePack.decode(data) as DynamicDto;
+        var model = this.MessagePack.decode(data) as BinaryDto;
         switch (model.DtoType) {
-            case DynamicDtoType.CaptureFrame:
-                this.ProcessCaptureFrame(model as unknown as CaptureFrameDto);
+            case BinaryDtoType.AudioSample:
+                this.HandleAudioSample(model as unknown as AudioSampleDto);
                 break;
-            case DynamicDtoType.MachineName:
-                this.ProcessMachineName(model as unknown as MachineNameDto);
+            case BinaryDtoType.CaptureFrame:
+                this.HandleCaptureFrame(model as unknown as CaptureFrameDto);
                 break;
-            case DynamicDtoType.ScreenData:
-                this.ProcessScreenData(model as unknown as ScreenDataDto);
+            case BinaryDtoType.ClipboardText:
+                this.HandleClipboardText(model as unknown as ClipboardTextDto);
                 break;
-            case DynamicDtoType.ScreenSize:
-                this.ProcessScreenSize(model as unknown as ScreenSizeDto)
+            case BinaryDtoType.CursorChange:
+                this.HandleCursorChange(model as unknown as CursorChangeDto);
                 break;
-            case DynamicDtoType.ClipboardText:
-                this.ProcessClipboardText(model as unknown as ClipboardTextDto);
+            case BinaryDtoType.MachineName:
+                this.HandleMachineName(model as unknown as MachineNameDto);
+                break;
+            case BinaryDtoType.ScreenData:
+                this.HandleScreenData(model as unknown as ScreenDataDto);
+                break;
+            case BinaryDtoType.ScreenSize:
+                this.HandleScreenSize(model as unknown as ScreenSizeDto)
+                break;
             default:
+                break;
         }
     }
-    ProcessClipboardText(clipboardText: ClipboardTextDto) {
-        Remotely.ClipboardWatcher.SetClipboardText(clipboardText.ClipboardText);
-        PopupMessage("Clipboard updated.");
+    HandleAudioSample(audioSample: AudioSampleDto) {
+        Sound.Play(audioSample.Buffer);
     }
-    ProcessMachineName(machineNameDto: MachineNameDto) {
-        document.title = `${machineNameDto.MachineName} - Remotely Session`;
-    }
-    ProcessScreenData(screenDataDto: ScreenDataDto) {
-        UI.UpdateDisplays(screenDataDto.SelectedScreen, screenDataDto.DisplayNames);
-    }
-
-    ProcessScreenSize(screenSizeDto: ScreenSizeDto) {
-        UI.SetScreenSize(screenSizeDto.Width, screenSizeDto.Height);
-    }
-
-    ProcessCaptureFrame(captureFrame: CaptureFrameDto) {
+    HandleCaptureFrame(captureFrame: CaptureFrameDto) {
         if (UI.AutoQualityAdjustCheckBox.checked &&
             Number(UI.QualitySlider.value) != captureFrame.ImageQuality) {
             UI.QualitySlider.value = String(captureFrame.ImageQuality);
@@ -68,7 +70,7 @@ export class RtcMessageHandler {
             img.src = url;
             this.PartialCaptureFrames = [];
 
-            if (Remotely.Debug) {
+            if (MainRc.Debug) {
                 this.FpsStack.push(Date.now());
                 while (Date.now() - this.FpsStack[0] > 1000) {
                     this.FpsStack.shift();
@@ -79,5 +81,22 @@ export class RtcMessageHandler {
         else {
             this.PartialCaptureFrames.push(captureFrame.ImageBytes);
         }
+    }
+    HandleClipboardText(clipboardText: ClipboardTextDto) {
+        MainRc.ClipboardWatcher.SetClipboardText(clipboardText.ClipboardText);
+        PopupMessage("Clipboard updated.");
+    }
+    HandleCursorChange(cursorChange: CursorChangeDto) {
+        UI.UpdateCursor(cursorChange.CursorInfo);
+    }
+    HandleMachineName(machineNameDto: MachineNameDto) {
+        document.title = `${machineNameDto.MachineName} - Remotely Session`;
+    }
+    HandleScreenData(screenDataDto: ScreenDataDto) {
+        UI.UpdateDisplays(screenDataDto.SelectedScreen, screenDataDto.DisplayNames);
+    }
+
+    HandleScreenSize(screenSizeDto: ScreenSizeDto) {
+        UI.SetScreenSize(screenSizeDto.Width, screenSizeDto.Height);
     }
 }
