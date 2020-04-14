@@ -13,12 +13,6 @@ namespace Remotely.ScreenCast.Linux.Services
 {
     public class ScreenCasterLinux : ScreenCasterBase, IScreenCaster
     {
-        public ScreenCasterLinux(Viewer viewer)
-            : base(viewer)
-        {
-
-        }
-
         public async Task BeginScreenCasting(ScreenCastRequest screenCastRequest)
         {
             try

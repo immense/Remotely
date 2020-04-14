@@ -8,7 +8,9 @@ namespace Remotely.ScreenCast.Linux.Services
 {
     public class ClipboardServiceLinux : IClipboardService
     {
+#pragma warning disable
         public event EventHandler<string> ClipboardTextChanged;
+#pragma warning restore
 
         public void BeginWatching()
         {

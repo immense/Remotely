@@ -15,61 +15,53 @@ namespace Remotely.ScreenCast.Core.Services
 {
     public class ScreenCasterBase
     {
-        public ScreenCasterBase(Viewer viewer)
-        {
-            Viewer = viewer;
-        }
-
-        protected Viewer Viewer { get; }
-
         public async Task BeginScreenCasting(string viewerID,
             string requesterName)
         {
+            byte[] encodedImageBytes;
+            var fpsQueue = new Queue<DateTimeOffset>();
             var conductor = ServiceContainer.Instance.GetRequiredService<Conductor>();
-            var viewers = conductor.Viewers;
             var mode = conductor.Mode;
+            var viewer = ServiceContainer.Instance.GetRequiredService<Viewer>();
+            viewer.Name = requesterName;
+            viewer.ViewerConnectionID = viewerID;
+            var viewers = conductor.Viewers;
 
             Logger.Write($"Starting screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}.  App Mode: {mode}");
 
-            byte[] encodedImageBytes;
-            var fpsQueue = new Queue<DateTimeOffset>();
-
-            Viewer.Name = requesterName;
-            Viewer.ViewerConnectionID = viewerID;
-
-            viewers.AddOrUpdate(viewerID, Viewer, (id, v) => Viewer);
+            viewers.AddOrUpdate(viewerID, viewer, (id, v) => viewer);
 
             if (mode == Enums.AppMode.Normal)
             {
-                conductor.InvokeViewerAdded(Viewer);
+                conductor.InvokeViewerAdded(viewer);
             }
 
             if (EnvironmentHelper.IsWindows)
             {
-                await Viewer.InitializeWebRtc();
+                await viewer.InitializeWebRtc();
             }
 
-            await Viewer.SendMachineName(Environment.MachineName, viewerID);
+            await viewer.SendMachineName(Environment.MachineName, viewerID);
             
-            await Viewer.SendScreenData(
-                   Viewer.Capturer.SelectedScreen,
-                   Viewer.Capturer.GetDisplayNames().ToArray(),
+            await viewer.SendScreenData(
+                   viewer.Capturer.SelectedScreen,
+                   viewer.Capturer.GetDisplayNames().ToArray(),
                    viewerID);
 
-            await Viewer.SendScreenSize(Viewer.Capturer.CurrentScreenBounds.Width,
-                Viewer.Capturer.CurrentScreenBounds.Height, 
+            await viewer.SendScreenSize(viewer.Capturer.CurrentScreenBounds.Width,
+                viewer.Capturer.CurrentScreenBounds.Height, 
                 viewerID);
 
-            Viewer.Capturer.ScreenChanged += async (sender, bounds) =>
+            viewer.Capturer.ScreenChanged += async (sender, bounds) =>
             {
-                await Viewer.SendScreenSize(bounds.Width, bounds.Height, viewerID);
+                await viewer.SendScreenSize(bounds.Width, bounds.Height, viewerID);
             };
 
-            while (!Viewer.DisconnectRequested && Viewer.IsConnected)
+            while (!viewer.DisconnectRequested && viewer.IsConnected)
             {
                 try
                 {
-                    if (Viewer.IsStalled())
+                    if (viewer.IsStalled())
                     {
                         // Viewer isn't responding.  Abort sending.
                         break;
@@ -85,30 +77,30 @@ namespace Remotely.ScreenCast.Core.Services
                         Debug.WriteLine($"Capture FPS: {fpsQueue.Count}");
                     }
 
-                    await Viewer.ThrottleIfNeeded();
+                    await viewer.ThrottleIfNeeded();
 
-                    Viewer.Capturer.GetNextFrame();
+                    viewer.Capturer.GetNextFrame();
 
-                    var diffArea = ImageUtils.GetDiffArea(Viewer.Capturer.CurrentFrame, Viewer.Capturer.PreviousFrame, Viewer.Capturer.CaptureFullscreen);
+                    var diffArea = ImageUtils.GetDiffArea(viewer.Capturer.CurrentFrame, viewer.Capturer.PreviousFrame, viewer.Capturer.CaptureFullscreen);
 
                     if (diffArea.IsEmpty)
                     {
                         continue;
                     }
 
-                    using (var newImage = Viewer.Capturer.CurrentFrame.Clone(diffArea, PixelFormat.Format32bppArgb))
+                    using (var newImage = viewer.Capturer.CurrentFrame.Clone(diffArea, PixelFormat.Format32bppArgb))
                     {
-                        if (Viewer.Capturer.CaptureFullscreen)
+                        if (viewer.Capturer.CaptureFullscreen)
                         {
-                            Viewer.Capturer.CaptureFullscreen = false;
+                            viewer.Capturer.CaptureFullscreen = false;
                         }
                         
-                        encodedImageBytes = ImageUtils.EncodeBitmap(newImage, Viewer.EncoderParams);
+                        encodedImageBytes = ImageUtils.EncodeBitmap(newImage, viewer.EncoderParams);
 
                         if (encodedImageBytes?.Length > 0)
                         {
                          
-                            await Viewer.SendScreenCapture(encodedImageBytes, viewerID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, Viewer.ImageQuality);
+                            await viewer.SendScreenCapture(encodedImageBytes, viewerID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, viewer.ImageQuality);
                         }
                     }
                 }
@@ -123,11 +115,11 @@ namespace Remotely.ScreenCast.Core.Services
 
             try
             {
-                Viewer.Dispose();
+                viewer.Dispose();
 
-                Viewer.Capturer.Dispose();
+                viewer.Capturer.Dispose();
 
-                Viewer.Disconnect();
+                viewer.Disconnect();
 
             }
             catch (Exception ex)

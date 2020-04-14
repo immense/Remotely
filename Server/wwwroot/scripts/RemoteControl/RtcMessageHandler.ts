@@ -6,6 +6,8 @@ import { CaptureFrameDto } from "./RtcDtos/CaptureFrameDto.js";
 import { MachineNameDto } from "./RtcDtos/MachineNameDto.js";
 import { ScreenDataDto } from "./RtcDtos/ScreenDataDto.js";
 import { ScreenSizeDto } from "./RtcDtos/ScreenSizeDto.js";
+import { ClipboardTextDto } from "./RtcDtos/ClipboardTextDto.js";
+import { PopupMessage } from "../UI.js";
 
 export class RtcMessageHandler {
     FpsStack: Array<number> = [];
@@ -26,8 +28,14 @@ export class RtcMessageHandler {
             case DynamicDtoType.ScreenSize:
                 this.ProcessScreenSize(model as unknown as ScreenSizeDto)
                 break;
+            case DynamicDtoType.ClipboardText:
+                this.ProcessClipboardText(model as unknown as ClipboardTextDto);
             default:
         }
+    }
+    ProcessClipboardText(clipboardText: ClipboardTextDto) {
+        Remotely.ClipboardWatcher.SetClipboardText(clipboardText.ClipboardText);
+        PopupMessage("Clipboard updated.");
     }
     ProcessMachineName(machineNameDto: MachineNameDto) {
         document.title = `${machineNameDto.MachineName} - Remotely Session`;

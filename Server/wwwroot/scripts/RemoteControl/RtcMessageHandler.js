@@ -1,6 +1,7 @@
 import * as UI from "./UI.js";
 import { DynamicDtoType } from "../Enums/DynamicDtoType.js";
 import { Remotely } from "./Main.js";
+import { PopupMessage } from "../UI.js";
 export class RtcMessageHandler {
     constructor() {
         this.FpsStack = [];
@@ -22,8 +23,14 @@ export class RtcMessageHandler {
             case DynamicDtoType.ScreenSize:
                 this.ProcessScreenSize(model);
                 break;
+            case DynamicDtoType.ClipboardText:
+                this.ProcessClipboardText(model);
             default:
         }
+    }
+    ProcessClipboardText(clipboardText) {
+        Remotely.ClipboardWatcher.SetClipboardText(clipboardText.ClipboardText);
+        PopupMessage("Clipboard updated.");
     }
     ProcessMachineName(machineNameDto) {
         document.title = `${machineNameDto.MachineName} - Remotely Session`;

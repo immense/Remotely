@@ -45,6 +45,7 @@
     <Content Remove="wwwroot\scripts\Models\GenericCommandResult.ts" />
     <Content Remove="wwwroot\scripts\Models\Parameter.ts" />
     <Content Remove="wwwroot\scripts\Models\Point.ts" />
+    <Content Remove="wwwroot\scripts\RemoteControl\RtcDtos\ClipboardTextDto.ts" />
     <Content Remove="wwwroot\scripts\RemoteControl\RtcDtos\MachineNameDto.ts" />
     <Content Remove="wwwroot\scripts\RemoteControl\RtcDtos\ScreenDataDto.ts" />
     <Content Remove="wwwroot\scripts\Models\UserOptions.ts" />
@@ -159,6 +160,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\Enums\DynamicDtoType.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RtcDtos\CaptureFrameDto.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\Point.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RtcDtos\ClipboardTextDto.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RtcDtos\MachineNameDto.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>

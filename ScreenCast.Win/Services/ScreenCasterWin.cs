@@ -13,8 +13,7 @@ namespace Remotely.ScreenCast.Win.Services
 {
     public class ScreenCasterWin : ScreenCasterBase,  IScreenCaster
     {
-        public ScreenCasterWin(CursorIconWatcher cursorIconWatcher, Viewer viewer)
-            : base(viewer)
+        public ScreenCasterWin(CursorIconWatcher cursorIconWatcher)
         {
             CursorIconWatcher = cursorIconWatcher;
         }
