@@ -2,6 +2,10 @@
 import { DynamicDtoType } from "../Enums/DynamicDtoType.js";
 import { DynamicDto } from "./DynamicDto.js";
 import { Remotely } from "./Main.js";
+import { CaptureFrameDto } from "./RtcDtos/CaptureFrameDto.js";
+import { MachineNameDto } from "./RtcDtos/MachineNameDto.js";
+import { ScreenDataDto } from "./RtcDtos/ScreenDataDto.js";
+import { ScreenSizeDto } from "./RtcDtos/ScreenSizeDto.js";
 
 export class RtcMessageHandler {
     FpsStack: Array<number> = [];

@@ -12,6 +12,8 @@ namespace Remotely.Shared.Enums
         [EnumMember(Value = "ScreenSize")]
         ScreenSize = 2,
         [EnumMember(Value = "MachineName")]
-        MachineName = 3
+        MachineName = 3,
+        [EnumMember(Value = "ClipboardText")]
+        ClipboardText = 4
     }
 }
