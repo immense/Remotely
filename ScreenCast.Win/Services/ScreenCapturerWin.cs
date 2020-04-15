@@ -45,8 +45,8 @@ namespace Remotely.ScreenCast.Win.Services
         private bool directXCapable = true;
         public ScreenCapturerWin()
         {
-            SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
             Init();
+            SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
         }
 
         public event EventHandler<Rectangle> ScreenChanged;

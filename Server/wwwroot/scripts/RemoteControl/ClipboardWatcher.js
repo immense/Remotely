@@ -15,7 +15,7 @@ export class ClipboardWatcher {
                     if (this.LastClipboardText != newText) {
                         this.LastClipboardText = newText;
                         ClipboardTransferTextArea.value = newText;
-                        MainRc.RCBrowserSockets.SendClipboardTransfer(newText, false);
+                        MainRc.MessageSender.SendClipboardTransfer(newText, false);
                     }
                 });
             }, 100);

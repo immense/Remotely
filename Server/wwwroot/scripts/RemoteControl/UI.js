@@ -50,11 +50,11 @@ var lastPinchDistance;
 var isMenuButtonDragging;
 var startMenuDraggingY;
 var startLongPressTimeout;
-export function ApplyInputHandlers(sockets) {
+export function ApplyInputHandlers() {
     AudioButton.addEventListener("click", (ev) => {
         AudioButton.classList.toggle("toggled");
         var toggleOn = AudioButton.classList.contains("toggled");
-        sockets.SendToggleAudio(toggleOn);
+        MainRc.MessageSender.SendToggleAudio(toggleOn);
     });
     ChangeScreenButton.addEventListener("click", (ev) => {
         closeAllHorizontalBars("screenSelectBar");
@@ -68,7 +68,7 @@ export function ApplyInputHandlers(sockets) {
         if (ClipboardTransferTextArea.value.length == 0) {
             return;
         }
-        sockets.SendClipboardTransfer(ClipboardTransferTextArea.value, ClipboardTransferTypeCheckbox.checked);
+        MainRc.MessageSender.SendClipboardTransfer(ClipboardTransferTextArea.value, ClipboardTransferTypeCheckbox.checked);
         ClipboardTransferTextArea.blur();
         PopupMessage("Clipboard sent!");
     });
@@ -81,7 +81,7 @@ export function ApplyInputHandlers(sockets) {
             return;
         }
         closeAllHorizontalBars(null);
-        MainRc.RCBrowserSockets.SendCtrlAltDel();
+        MainRc.MessageSender.SendCtrlAltDel();
     });
     DisconnectButton.addEventListener("click", (ev) => {
         ConnectButton.removeAttribute("disabled");
@@ -118,10 +118,10 @@ export function ApplyInputHandlers(sockets) {
         var button = ev.currentTarget;
         button.classList.toggle("toggled");
         if (button.classList.contains("toggled")) {
-            MainRc.RCBrowserSockets.SendToggleBlockInput(true);
+            MainRc.MessageSender.SendToggleBlockInput(true);
         }
         else {
-            MainRc.RCBrowserSockets.SendToggleBlockInput(false);
+            MainRc.MessageSender.SendToggleBlockInput(false);
         }
     });
     InviteButton.addEventListener("click", (ev) => {
@@ -168,10 +168,10 @@ export function ApplyInputHandlers(sockets) {
         QualityBar.classList.toggle("open");
     });
     QualitySlider.addEventListener("change", (ev) => {
-        sockets.SendQualityChange(Number(QualitySlider.value));
+        MainRc.MessageSender.SendQualityChange(Number(QualitySlider.value));
     });
     AutoQualityAdjustCheckBox.addEventListener("change", ev => {
-        sockets.SendAutoQualityAdjust(AutoQualityAdjustCheckBox.checked);
+        MainRc.MessageSender.SendAutoQualityAdjust(AutoQualityAdjustCheckBox.checked);
     });
     ScreenViewer.addEventListener("pointermove", function (e) {
         currentPointerDevice = e.pointerType;
@@ -190,7 +190,7 @@ export function ApplyInputHandlers(sockets) {
         lastPointerMove = Date.now();
         var percentX = e.offsetX / ScreenViewer.clientWidth;
         var percentY = e.offsetY / ScreenViewer.clientHeight;
-        sockets.SendMouseMove(percentX, percentY);
+        MainRc.MessageSender.SendMouseMove(percentX, percentY);
     });
     ScreenViewer.addEventListener("mousedown", function (e) {
         if (currentPointerDevice == "touch") {
@@ -202,7 +202,7 @@ export function ApplyInputHandlers(sockets) {
         e.preventDefault();
         var percentX = e.offsetX / ScreenViewer.clientWidth;
         var percentY = e.offsetY / ScreenViewer.clientHeight;
-        sockets.SendMouseDown(e.button, percentX, percentY);
+        MainRc.MessageSender.SendMouseDown(e.button, percentX, percentY);
     });
     ScreenViewer.addEventListener("mouseup", function (e) {
         if (currentPointerDevice == "touch") {
@@ -214,7 +214,7 @@ export function ApplyInputHandlers(sockets) {
         e.preventDefault();
         var percentX = e.offsetX / ScreenViewer.clientWidth;
         var percentY = e.offsetY / ScreenViewer.clientHeight;
-        sockets.SendMouseUp(e.button, percentX, percentY);
+        MainRc.MessageSender.SendMouseUp(e.button, percentX, percentY);
     });
     ScreenViewer.addEventListener("click", function (e) {
         if (cancelNextViewerClick) {
@@ -228,7 +228,7 @@ export function ApplyInputHandlers(sockets) {
         else if (currentPointerDevice == "touch" && currentTouchCount == 0) {
             var percentX = e.offsetX / ScreenViewer.clientWidth;
             var percentY = e.offsetY / ScreenViewer.clientHeight;
-            sockets.SendTap(percentX, percentY);
+            MainRc.MessageSender.SendTap(percentX, percentY);
         }
     });
     ScreenViewer.addEventListener("touchstart", function (e) {
@@ -237,8 +237,8 @@ export function ApplyInputHandlers(sockets) {
             startLongPressTimeout = window.setTimeout(() => {
                 var percentX = e.touches[0].pageX / ScreenViewer.clientWidth;
                 var percentY = e.touches[0].pageY / ScreenViewer.clientHeight;
-                sockets.SendMouseDown(2, percentX, percentY);
-                sockets.SendMouseUp(2, percentX, percentY);
+                MainRc.MessageSender.SendMouseDown(2, percentX, percentY);
+                MainRc.MessageSender.SendMouseUp(2, percentX, percentY);
             }, 1000);
         }
         if (currentTouchCount > 1) {
@@ -287,7 +287,7 @@ export function ApplyInputHandlers(sockets) {
         else if (isDragging) {
             e.preventDefault();
             e.stopPropagation();
-            sockets.SendMouseMove(percentX, percentY);
+            MainRc.MessageSender.SendMouseMove(percentX, percentY);
         }
     });
     ScreenViewer.addEventListener("touchend", function (e) {
@@ -297,8 +297,8 @@ export function ApplyInputHandlers(sockets) {
             isDragging = true;
             var percentX = (e.touches[0].pageX - ScreenViewer.getBoundingClientRect().left) / ScreenViewer.clientWidth;
             var percentY = (e.touches[0].pageY - ScreenViewer.getBoundingClientRect().top) / ScreenViewer.clientHeight;
-            sockets.SendMouseMove(percentX, percentY);
-            sockets.SendMouseDown(0, percentX, percentY);
+            MainRc.MessageSender.SendMouseMove(percentX, percentY);
+            MainRc.MessageSender.SendMouseDown(0, percentX, percentY);
             return;
         }
         if (currentTouchCount == 0) {
@@ -310,7 +310,7 @@ export function ApplyInputHandlers(sockets) {
         if (isDragging) {
             var percentX = (e.changedTouches[0].pageX - ScreenViewer.getBoundingClientRect().left) / ScreenViewer.clientWidth;
             var percentY = (e.changedTouches[0].pageY - ScreenViewer.getBoundingClientRect().top) / ScreenViewer.clientHeight;
-            sockets.SendMouseUp(0, percentX, percentY);
+            MainRc.MessageSender.SendMouseUp(0, percentX, percentY);
         }
         isDragging = false;
     });
@@ -319,17 +319,17 @@ export function ApplyInputHandlers(sockets) {
     });
     ScreenViewer.addEventListener("wheel", function (e) {
         e.preventDefault();
-        sockets.SendMouseWheel(e.deltaX, e.deltaY);
+        MainRc.MessageSender.SendMouseWheel(e.deltaX, e.deltaY);
     });
     TouchKeyboardTextArea.addEventListener("input", (ev) => {
         if (TouchKeyboardTextArea.value.length == 1) {
-            sockets.SendKeyPress("Backspace");
+            MainRc.MessageSender.SendKeyPress("Backspace");
         }
         else if (TouchKeyboardTextArea.value.endsWith("\n")) {
-            sockets.SendKeyPress("Enter");
+            MainRc.MessageSender.SendKeyPress("Enter");
         }
         else if (TouchKeyboardTextArea.value.endsWith(" ")) {
-            sockets.SendKeyPress(" ");
+            MainRc.MessageSender.SendKeyPress(" ");
         }
         else {
             var input = TouchKeyboardTextArea.value.trim().substr(1);
@@ -337,11 +337,11 @@ export function ApplyInputHandlers(sockets) {
                 var character = input.charAt(i);
                 var sendShift = character.match(/[A-Z~!@#$%^&*()_+{}|<>?]/);
                 if (sendShift) {
-                    sockets.SendKeyDown("Shift");
+                    MainRc.MessageSender.SendKeyDown("Shift");
                 }
-                sockets.SendKeyPress(character);
+                MainRc.MessageSender.SendKeyPress(character);
                 if (sendShift) {
-                    sockets.SendKeyUp("Shift");
+                    MainRc.MessageSender.SendKeyUp("Shift");
                 }
             }
         }
@@ -355,14 +355,14 @@ export function ApplyInputHandlers(sockets) {
             return;
         }
         e.preventDefault();
-        sockets.SendKeyDown(e.key);
+        MainRc.MessageSender.SendKeyDown(e.key);
     });
     window.addEventListener("keyup", function (e) {
         if (document.querySelector("input:focus") || document.querySelector("textarea:focus")) {
             return;
         }
         e.preventDefault();
-        sockets.SendKeyUp(e.key);
+        MainRc.MessageSender.SendKeyUp(e.key);
     });
     window.ondragover = function (e) {
         e.preventDefault();
@@ -451,34 +451,34 @@ export function UpdateDisplays(selectedDisplay, displayNames) {
     }
 }
 function uploadFiles(fileList) {
-    ShowMessage("File upload started...");
-    FileTransferProgress.value = 0;
-    FileTransferProgress.parentElement.removeAttribute("hidden");
-    var strPath = "/API/FileSharing/";
-    var fd = new FormData();
-    for (var i = 0; i < fileList.length; i++) {
-        fd.append('fileUpload' + i, fileList[i]);
-    }
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', strPath, true);
-    xhr.addEventListener("load", function () {
-        FileTransferProgress.parentElement.setAttribute("hidden", "hidden");
-        if (xhr.status === 200) {
-            ShowMessage("File upload completed.");
-            MainRc.RCBrowserSockets.SendSharedFileIDs(xhr.responseText);
-        }
-        else {
-            ShowMessage("File upload failed.");
-        }
-    });
-    xhr.addEventListener("error", () => {
-        FileTransferProgress.parentElement.setAttribute("hidden", "hidden");
-        ShowMessage("File upload failed.");
-    });
-    xhr.addEventListener("progress", function (e) {
-        FileTransferProgress.value = isFinite(e.loaded / e.total) ? e.loaded / e.total : 0;
-    });
-    xhr.send(fd);
+    //ShowMessage("File upload started...");
+    //FileTransferProgress.value = 0;
+    //FileTransferProgress.parentElement.removeAttribute("hidden");
+    //var strPath = "/API/FileSharing/";
+    //var fd = new FormData();
+    //for (var i = 0; i < fileList.length; i++) {
+    //    fd.append('fileUpload' + i, fileList[i]);
+    //}
+    //var xhr = new XMLHttpRequest();
+    //xhr.open('POST', strPath, true);
+    //xhr.addEventListener("load", function () {
+    //    FileTransferProgress.parentElement.setAttribute("hidden", "hidden");
+    //    if (xhr.status === 200) {
+    //        ShowMessage("File upload completed.");
+    //        MainRc.RCBrowserSockets.SendSharedFileIDs(xhr.responseText);
+    //    }
+    //    else {
+    //        ShowMessage("File upload failed.");
+    //    }
+    //});
+    //xhr.addEventListener("error", () => {
+    //    FileTransferProgress.parentElement.setAttribute("hidden", "hidden");
+    //    ShowMessage("File upload failed.");
+    //});
+    //xhr.addEventListener("progress", function (e) {
+    //    FileTransferProgress.value = isFinite(e.loaded / e.total) ? e.loaded / e.total : 0;
+    //});
+    //xhr.send(fd);
 }
 function closeAllHorizontalBars(exceptBarId) {
     HorizontalBars.forEach(x => {

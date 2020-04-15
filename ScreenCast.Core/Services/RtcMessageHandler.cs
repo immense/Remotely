@@ -1,0 +1,216 @@
+﻿using MessagePack;
+using Remotely.ScreenCast.Core.Communication;
+using Remotely.ScreenCast.Core.Interfaces;
+using Remotely.ScreenCast.Core.Models;
+using Remotely.Shared.Enums;
+using Remotely.Shared.Models.RtcDtos;
+using System;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Remotely.ScreenCast.Core.Services
+{
+    public interface IRtcMessageHandler
+    {
+        Task ParseMessage(byte[] message);
+    }
+    public class RtcMessageHandler : IRtcMessageHandler
+    {
+        private Viewer Viewer { get; }
+
+        public RtcMessageHandler(Viewer viewer,
+            CasterSocket casterSocket,
+            IKeyboardMouseInput keyboardMouseInput,
+            IAudioCapturer audioCapturer,
+            IClipboardService clipboardService)
+        {
+            Viewer = viewer;
+            CasterSocket = casterSocket;
+            KeyboardMouseInput = keyboardMouseInput;
+            AudioCapturer = audioCapturer;
+            ClipboardService = clipboardService;
+        }
+
+        private CasterSocket CasterSocket { get; }
+        private IKeyboardMouseInput KeyboardMouseInput { get; }
+        private IAudioCapturer AudioCapturer { get; }
+        private IClipboardService ClipboardService { get; }
+
+        public async Task ParseMessage(byte[] message)
+        {
+            try
+            {
+                if (!Viewer.HasControl)
+                {
+                    return;
+                }
+
+                var baseDto = MessagePackSerializer.Deserialize<BinaryDtoBase>(message);
+                switch (baseDto.DtoType)
+                {
+                    case BinaryDtoType.SelectScreen:
+                        SelectScreen(message);
+                        break;
+                    case BinaryDtoType.MouseMove:
+                        MouseMove(message);
+                        break;
+                    case BinaryDtoType.MouseDown:
+                        MouseDown(message);
+                        break;
+                    case BinaryDtoType.MouseUp:
+                        MouseUp(message);
+                        break;
+                    case BinaryDtoType.Tap:
+                        Tap(message);
+                        break;
+                    case BinaryDtoType.MouseWheel:
+                        MouseWheel(message);
+                        break;
+                    case BinaryDtoType.KeyDown:
+                        KeyDown(message);
+                        break;
+                    case BinaryDtoType.KeyUp:
+                        KeyUp(message);
+                        break;
+                    case BinaryDtoType.CtrlAltDel:
+                        await CasterSocket.SendCtrlAltDel();
+                        break;
+                    case BinaryDtoType.AutoQualityAdjust:
+                        SetAutoQualityAdjust(message);
+                        break;
+                    case BinaryDtoType.ToggleAudio:
+                        ToggleAudio(message);
+                        break;
+                    case BinaryDtoType.ToggleBlockInput:
+                        ToggleBlockInput(message);
+                        break;
+                    case BinaryDtoType.ClipboardTransfer:
+                        ClipboardTransfer(message);
+                        break;
+                    case BinaryDtoType.KeyPress:
+                        await KeyPress(message);
+                        break;
+                    case BinaryDtoType.QualityChange:
+                        QualityChange(message);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+            }
+        }
+
+        private void QualityChange(byte[] message)
+        {
+            var dto = MessagePackSerializer.Deserialize<QualityChangeDto>(message);
+            Viewer.ImageQuality = dto.QualityLevel;
+        }
+
+        private async Task KeyPress(byte[] message)
+        {
+            var dto = MessagePackSerializer.Deserialize<KeyPressDto>(message);
+            KeyboardMouseInput.SendKeyDown(dto.Key, Viewer);
+            await Task.Delay(1);
+            KeyboardMouseInput.SendKeyUp(dto.Key, Viewer);
+        }
+
+        private void ClipboardTransfer(byte[] message)
+        {
+            var dto = MessagePackSerializer.Deserialize<ClipboardTransferDto>(message);
+            if (dto.TypeText)
+            {
+                KeyboardMouseInput.SendText(dto.Text, Viewer);
+            }
+            else
+            {
+                ClipboardService.SetText(dto.Text);
+            }
+        }
+
+        private void ToggleBlockInput(byte[] message)
+        {
+            var dto = MessagePackSerializer.Deserialize<ToggleBlockInputDto>(message);
+            KeyboardMouseInput.ToggleBlockInput(dto.ToggleOn);
+        }
+
+        private void ToggleAudio(byte[] message)
+        {
+            var dto = MessagePackSerializer.Deserialize<ToggleAudioDto>(message);
+            AudioCapturer.ToggleAudio(dto.ToggleOn);
+        }
+
+        private void SetAutoQualityAdjust(byte[] message)
+        {
+            var dto = MessagePackSerializer.Deserialize<AutoQualityAdjustDto>(message);
+            Viewer.AutoAdjustQuality = dto.IsOn;
+        }
+
+        private void KeyUp(byte[] message)
+        {
+            var dto = MessagePackSerializer.Deserialize<KeyUpDto>(message);
+            KeyboardMouseInput.SendKeyUp(dto.Key, Viewer);
+        }
+
+        private void KeyDown(byte[] message)
+        {
+            var dto = MessagePackSerializer.Deserialize<KeyDownDto>(message);
+            KeyboardMouseInput.SendKeyDown(dto.Key, Viewer);
+        }
+
+        private void MouseWheel(byte[] message)
+        {
+            var dto = MessagePackSerializer.Deserialize<MouseWheelDto>(message);
+            KeyboardMouseInput.SendMouseWheel(-(int)dto.DeltaY, Viewer);
+        }
+
+        private void Tap(byte[] message)
+        {
+            var dto = MessagePackSerializer.Deserialize<TapDto>(message);
+            KeyboardMouseInput.SendLeftMouseDown(dto.PercentX, dto.PercentY, Viewer);
+            KeyboardMouseInput.SendLeftMouseUp(dto.PercentX, dto.PercentY, Viewer);
+        }
+
+        private void MouseUp(byte[] message)
+        {
+            var dto = MessagePackSerializer.Deserialize<MouseUpDto>(message);
+            if (dto.Button == 0)
+            {
+                KeyboardMouseInput.SendLeftMouseUp(dto.PercentX, dto.PercentY, Viewer);
+            }
+            else if (dto.Button == 2)
+            {
+                KeyboardMouseInput.SendRightMouseUp(dto.PercentX, dto.PercentY, Viewer);
+            }
+        }
+
+        private void MouseDown(byte[] message)
+        {
+            var dto = MessagePackSerializer.Deserialize<MouseDownDto>(message);
+            if (dto.Button == 0)
+            {
+                KeyboardMouseInput.SendLeftMouseDown(dto.PercentX, dto.PercentY, Viewer);
+            }
+            else if (dto.Button == 2)
+            {
+                KeyboardMouseInput.SendRightMouseDown(dto.PercentX, dto.PercentY, Viewer);
+            }
+        }
+
+        private void MouseMove(byte[] message)
+        {
+            var dto = MessagePackSerializer.Deserialize<MouseMoveDto>(message);
+            KeyboardMouseInput.SendMouseMove(dto.PercentX, dto.PercentY, Viewer);
+        }
+
+        private void SelectScreen(byte[] message)
+        {
+            var dto = MessagePackSerializer.Deserialize<SelectScreenDto>(message);
+            Viewer.Capturer.SetSelectedScreen(dto.DisplayName);
+        }
+    }
+}
