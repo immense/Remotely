@@ -99,8 +99,8 @@ namespace Remotely.ScreenCast.Win.Services
         }
         private void Stop()
         {
-            Capturer.StopRecording();
-            SendTimer.Reset();
+            Capturer?.StopRecording();
+            SendTimer?.Reset();
         }
     }
 }
