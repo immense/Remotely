@@ -9,9 +9,9 @@ namespace Remotely.Shared.Models.RtcDtos
     [DataContract]
     public class AudioSampleDto : BinaryDtoBase
     {
-        public AudioSampleDto(byte[] audioSample)
+        public AudioSampleDto(byte[] buffer)
         {
-            Buffer = audioSample;
+            Buffer = buffer;
         }
 
         [DataMember(Name = "Buffer")]

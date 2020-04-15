@@ -62,7 +62,7 @@ export class MouseWheelDto {
     constructor(deltaX, deltaY) {
         this.DtoType = BinaryDtoType.MouseWheel;
         this.DeltaX = deltaX;
-        this.DetlaY = deltaY;
+        this.DeltaY = deltaY;
     }
 }
 export class QualityChangeDto {

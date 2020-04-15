@@ -122,11 +122,11 @@ export class MouseUpDto implements BinaryDto {
 export class MouseWheelDto implements BinaryDto {
     constructor(deltaX: number, deltaY: number) {
         this.DeltaX = deltaX;
-        this.DetlaY = deltaY;
+        this.DeltaY = deltaY;
     }
 
     DeltaX: number;
-    DetlaY: number;
+    DeltaY: number;
     DtoType: BinaryDtoType = BinaryDtoType.MouseWheel;
 }
 

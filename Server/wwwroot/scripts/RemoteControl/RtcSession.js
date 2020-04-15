@@ -16,9 +16,6 @@ export class RtcSession {
             console.log("Data channel received.");
             this.DataChannel = ev.channel;
             this.DataChannel.binaryType = "arraybuffer";
-            this.DataChannel.onbufferedamountlow = (ev) => {
-                console.log("Buffer amount low.");
-            };
             this.DataChannel.onclose = (ev) => {
                 console.log("Data channel closed.");
                 UI.ConnectionP2PIcon.style.display = "none";

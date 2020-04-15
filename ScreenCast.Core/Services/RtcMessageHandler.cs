@@ -42,12 +42,32 @@ namespace Remotely.ScreenCast.Core.Services
         {
             try
             {
-                if (!Viewer.HasControl)
+                var baseDto = MessagePackSerializer.Deserialize<BinaryDtoBase>(message);
+
+                switch (baseDto.DtoType)
                 {
-                    return;
+                    case BinaryDtoType.MouseMove:
+                    case BinaryDtoType.MouseDown:
+                    case BinaryDtoType.MouseUp:
+                    case BinaryDtoType.Tap:
+                    case BinaryDtoType.MouseWheel:
+                    case BinaryDtoType.KeyDown:
+                    case BinaryDtoType.KeyUp:
+                    case BinaryDtoType.CtrlAltDel:
+                    case BinaryDtoType.ToggleBlockInput:
+                    case BinaryDtoType.ClipboardTransfer:
+                    case BinaryDtoType.KeyPress:
+                        {
+                            if (!Viewer.HasControl)
+                            {
+                                return;
+                            }
+                        }
+                        break;
+                    default:
+                        break;
                 }
 
-                var baseDto = MessagePackSerializer.Deserialize<BinaryDtoBase>(message);
                 switch (baseDto.DtoType)
                 {
                     case BinaryDtoType.SelectScreen:
