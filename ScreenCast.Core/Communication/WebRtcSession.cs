@@ -12,16 +12,21 @@ namespace Remotely.ScreenCast.Core.Communication
 {
     public class WebRtcSession : IDisposable
     {
+        public WebRtcSession(IRtcMessageHandler rtcMessageHandler)
+        {
+            RtcMessageHandler = rtcMessageHandler;
+        }
+
         public event EventHandler<(string candidate, int sdpMlineIndex, string sdpMid)> IceCandidateReady;
 
         public event EventHandler<string> LocalSdpReady;
 
         public ulong CurrentBuffer { get; private set; }
-
         public bool IsDataChannelOpen => CaptureChannel?.State == DataChannel.ChannelState.Open;
         public bool IsPeerConnected => PeerConnection?.IsConnected == true;
         private DataChannel CaptureChannel { get; set; }
         private PeerConnection PeerConnection { get; set; }
+        private IRtcMessageHandler RtcMessageHandler { get; }
         public void AddIceCandidate(string sdpMid, int sdpMlineIndex, string candidate)
         {
             PeerConnection.AddIceCandidate(sdpMid, sdpMlineIndex, candidate);
@@ -95,6 +100,11 @@ namespace Remotely.ScreenCast.Core.Communication
             SendDto(new MachineNameDto(machineName));
         }
 
+        public void SendAudioSample(byte[] audioSample)
+        {
+            SendDto(new AudioSampleDto(audioSample));
+        }
+
         public void SendScreenData(string selectedScreen, string[] displayNames)
         {
             SendDto(new ScreenDataDto(selectedScreen, displayNames));
@@ -113,9 +123,10 @@ namespace Remotely.ScreenCast.Core.Communication
                 PeerConnection.CreateAnswer();
             }
         }
-        private void CaptureChannel_MessageReceived(byte[] obj)
+        private async void CaptureChannel_MessageReceived(byte[] obj)
         {
             Logger.Debug($"DataChannel message received.  Size: {obj.Length}");
+            await RtcMessageHandler.ParseMessage(obj);
         }
 
         private async void CaptureChannel_StateChanged()

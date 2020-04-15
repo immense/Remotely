@@ -7,7 +7,7 @@ using System.Text;
 namespace Remotely.Shared.Models.RtcDtos
 {
     [DataContract]
-    public class ClipboardTextDto : IBinaryDto
+    public class ClipboardTextDto : BinaryDtoBase
     {
         public ClipboardTextDto(string clipboardText)
         {
@@ -19,6 +19,6 @@ namespace Remotely.Shared.Models.RtcDtos
 
 
         [DataMember(Name = "DtoType")]
-        public BinaryDtoType DtoType { get; } = BinaryDtoType.ClipboardText;
+        public new BinaryDtoType DtoType { get; } = BinaryDtoType.ClipboardText;
     }
 }

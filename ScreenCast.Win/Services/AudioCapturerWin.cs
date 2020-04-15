@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace Remotely.ScreenCast.Win.Services
 {
     public class AudioCapturerWin : IAudioCapturer
     {
+        public event EventHandler<byte[]> AudioSampleReady;
         private WasapiLoopbackCapture Capturer { get; set; }
         private Stopwatch SendTimer { get; set; }
         private WaveFormat TargetFormat { get; set; }
@@ -27,7 +29,7 @@ namespace Remotely.ScreenCast.Win.Services
             }
         }
 
-        private async void SendTempBuffer()
+        private void SendTempBuffer()
         {
             if (TempBuffer.Count == 0)
             {
@@ -51,8 +53,7 @@ namespace Remotely.ScreenCast.Win.Services
                     {
                         WaveFileWriter.WriteWavFileToStream(ms3, resampler);
                     }
-                    var conductor = ServiceContainer.Instance.GetRequiredService<Conductor>();
-                    await conductor.CasterSocket.SendAudioSample(ms3.ToArray(), Program.Conductor.Viewers.Keys.ToList());
+                    AudioSampleReady?.Invoke(this, ms3.ToArray());
                 }
             }
         }
@@ -77,7 +78,7 @@ namespace Remotely.ScreenCast.Win.Services
                                     SendTimer.Restart();
                                 }
                                 TempBuffer.AddRange(args.Buffer.Take(args.BytesRecorded));
-                                if (TempBuffer.Count > 200000)
+                                if (TempBuffer.Count > 50000)
                                 {
                                     SendTimer.Reset();
                                     SendTempBuffer();

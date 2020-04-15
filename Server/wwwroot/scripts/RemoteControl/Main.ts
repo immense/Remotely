@@ -5,6 +5,7 @@ import * as UI from "./UI.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 import { ClipboardWatcher } from "./ClipboardWatcher.js";
 import { RtcMessageHandler } from "./RtcMessageHandler.js";
+import { MessageSender } from "./MessageSender.js";
 
 
 var queryString = Utilities.ParseSearchString();
@@ -12,6 +13,7 @@ var queryString = Utilities.ParseSearchString();
 export const MainRc = {
     ClipboardWatcher: new ClipboardWatcher(),
     Debug: false,
+    MessageSender: new MessageSender(),
     RCBrowserSockets: new RCBrowserSockets(),
     RtcMessageHandler: new RtcMessageHandler(),
     RtcSession: new RtcSession(),
@@ -21,7 +23,7 @@ export const MainRc = {
     Mode: RemoteControlMode.None,
 
     Init: () => {
-        UI.ApplyInputHandlers(MainRc.RCBrowserSockets);
+        UI.ApplyInputHandlers();
 
         if (queryString["clientID"]) {
             MainRc.Mode = RemoteControlMode.Unattended;

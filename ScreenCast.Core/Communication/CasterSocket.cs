@@ -18,26 +18,20 @@ namespace Remotely.ScreenCast.Core.Communication
         public CasterSocket(
             IKeyboardMouseInput keyboardMouseInput,
             IScreenCaster screenCastService,
-            IAudioCapturer audioCapturer,
-            IClipboardService clipboardService)
+            IAudioCapturer audioCapturer)
         {
             KeyboardMouseInput = keyboardMouseInput;
-            ClipboardService = clipboardService;
             AudioCapturer = audioCapturer;
             ScreenCaster = screenCastService;
-
-            ClipboardService.ClipboardTextChanged += ClipboardService_ClipboardTextChanged;
         }
 
+        public HubConnection Connection { get; private set; }
         public bool IsConnected => Connection?.State == HubConnectionState.Connected;
         public IScreenCaster ScreenCaster { get; }
 
         private IAudioCapturer AudioCapturer { get; }
 
         private IClipboardService ClipboardService { get; }
-
-        public HubConnection Connection { get; private set; }
-
         private IKeyboardMouseInput KeyboardMouseInput { get; }
         public async Task Connect(string host)
         {
@@ -78,9 +72,9 @@ namespace Remotely.ScreenCast.Core.Communication
             await Connection.SendAsync("NotifyViewersRelaunchedScreenCasterReady", viewerIDs);
         }
 
-        public async Task SendAudioSample(byte[] buffer, List<string> viewerIDs)
+        public async Task SendAudioSample(byte[] buffer, string viewerID)
         {
-            await Connection.SendAsync("SendAudioSample", buffer, viewerIDs);
+            await Connection.SendAsync("SendAudioSample", buffer, viewerID);
         }
 
         public async Task SendClipboardText(string clipboardText, string viewerID)
@@ -91,6 +85,11 @@ namespace Remotely.ScreenCast.Core.Communication
         public async Task SendConnectionFailedToViewers(List<string> viewerIDs)
         {
             await Connection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
+        }
+
+        public async Task SendCtrlAltDel()
+        {
+            await Connection.SendAsync("CtrlAltDel");
         }
 
         public async Task SendCursorChange(CursorInfo cursor, List<string> viewerIDs)
@@ -203,7 +202,7 @@ namespace Remotely.ScreenCast.Core.Communication
             {
                 if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
                 {
-                    await Connection.SendAsync("CtrlAltDel");
+                    await SendCtrlAltDel();
                 }
             });
 
@@ -440,16 +439,6 @@ namespace Remotely.ScreenCast.Core.Communication
             {
                 conductor.InvokeSessionIDChanged(sessionID);
             });
-        }
-
-        private async void ClipboardService_ClipboardTextChanged(object sender, string clipboardText)
-        {
-            var conductor = ServiceContainer.Instance.GetRequiredService<Conductor>();
-            var viewerIDs = conductor.Viewers.Values.ToList();
-            foreach (var viewer in viewerIDs)
-            {
-                await viewer.SendClipboardText(clipboardText);
-            }
         }
     }
 }

@@ -78,6 +78,7 @@ namespace Remotely.ScreenCast.Win
             serviceCollection.AddSingleton<ChatHostService>();
             serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerWin>();
             serviceCollection.AddTransient<Viewer>();
+            serviceCollection.AddScoped<IWebRtcSessionFactory, WebRtcSessionFactory>();
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
         }

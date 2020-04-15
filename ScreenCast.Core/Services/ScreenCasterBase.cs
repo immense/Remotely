@@ -100,7 +100,7 @@ namespace Remotely.ScreenCast.Core.Services
                         if (encodedImageBytes?.Length > 0)
                         {
                          
-                            await viewer.SendScreenCapture(encodedImageBytes, viewerID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height, viewer.ImageQuality);
+                            await viewer.SendScreenCapture(encodedImageBytes, viewerID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height);
                         }
                     }
                 }
@@ -116,10 +116,6 @@ namespace Remotely.ScreenCast.Core.Services
             try
             {
                 viewer.Dispose();
-
-                viewer.Capturer.Dispose();
-
-                viewer.Disconnect();
 
             }
             catch (Exception ex)

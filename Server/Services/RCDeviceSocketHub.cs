@@ -152,9 +152,9 @@ namespace Remotely.Server.Services
             return Task.CompletedTask;
         }
 
-        public Task SendAudioSample(byte[] buffer, List<string> viewerIDs)
+        public Task SendAudioSample(byte[] buffer, string viewerID)
         {
-            return RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("AudioSample", buffer);
+            return RCBrowserHub.Clients.Client(viewerID).SendAsync("AudioSample", buffer);
         }
 
         public Task SendClipboardText(string clipboardText, string viewerID)

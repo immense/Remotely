@@ -11,19 +11,33 @@ namespace Remotely.ScreenCast.Core.Models
     {
         private int imageQuality;
 
-        public Viewer(IScreenCapturer screenCapturer,
-            CasterSocket casterSocket)
+        public Viewer(CasterSocket casterSocket,
+            IScreenCapturer screenCapturer,
+            IClipboardService clipboardService,
+            IWebRtcSessionFactory webRtcSessionFactory,
+            IAudioCapturer audioCapturer)
         {
             Capturer = screenCapturer;
             CasterSocket = casterSocket;
+            WebRtcSessionFactory = webRtcSessionFactory;
             EncoderParams = new EncoderParameters();
             ImageQuality = 60;
+            ClipboardService = clipboardService;
+            ClipboardService.ClipboardTextChanged += ClipboardService_ClipboardTextChanged;
+            AudioCapturer = audioCapturer;
+            AudioCapturer.AudioSampleReady += AudioCapturer_AudioSampleReady;
         }
+
         public bool AutoAdjustQuality { get; set; } = true;
+
         public IScreenCapturer Capturer { get; }
+
         public bool DisconnectRequested { get; set; }
+
         public EncoderParameters EncoderParams { get; private set; }
+
         public bool HasControl { get; set; } = true;
+
         public int ImageQuality
         {
             get
@@ -47,26 +61,34 @@ namespace Remotely.ScreenCast.Core.Models
         }
 
         public bool IsConnected => CasterSocket.IsConnected;
+
         public string Name { get; set; }
+
         public WebRtcSession RtcSession { get; set; }
+
         public string ViewerConnectionID { get; set; }
+
         public int WebSocketBuffer { get; set; }
+
+        private IAudioCapturer AudioCapturer { get; }
+
         private CasterSocket CasterSocket { get; }
-        public void Disconnect()
-        {
-            RtcSession.Dispose();
-        }
+
+        private IClipboardService ClipboardService { get; }
+
+        private IWebRtcSessionFactory WebRtcSessionFactory { get; }
 
         public void Dispose()
         {
             RtcSession?.Dispose();
+            Capturer?.Dispose();
         }
 
         public async Task InitializeWebRtc()
         {
             try
             {
-                RtcSession = new WebRtcSession();
+                RtcSession = WebRtcSessionFactory.GetNewSession(this);
                 RtcSession.LocalSdpReady += async (sender, sdp) =>
                 {
                     await CasterSocket.SendRtcOfferToBrowser(sdp, ViewerConnectionID);
@@ -93,6 +115,12 @@ namespace Remotely.ScreenCast.Core.Models
             return RtcSession?.IsPeerConnected == true && RtcSession?.IsDataChannelOpen == true;
         }
 
+        public async Task SendAudioSample(byte[] audioSample)
+        {
+            await SendToViewer(() => RtcSession.SendAudioSample(audioSample),
+                () => CasterSocket.SendAudioSample(audioSample, ViewerConnectionID));
+        }
+
         public async Task SendClipboardText(string clipboardText)
         {
             await SendToViewer(() => RtcSession.SendClipboardText(clipboardText),
@@ -101,11 +129,11 @@ namespace Remotely.ScreenCast.Core.Models
 
         public async Task SendMachineName(string machineName, string viewerID)
         {
-            await SendToViewer(()=> RtcSession.SendMachineName(machineName),
+            await SendToViewer(() => RtcSession.SendMachineName(machineName),
                 () => CasterSocket.SendMachineName(machineName, viewerID));
         }
 
-        public async Task SendScreenCapture(byte[] encodedImageBytes, string viewerID, int left, int top, int width, int height, int imageQuality)
+        public async Task SendScreenCapture(byte[] encodedImageBytes, string viewerID, int left, int top, int width, int height)
         {
             await SendToViewer(() =>
             {
@@ -113,7 +141,7 @@ namespace Remotely.ScreenCast.Core.Models
                 WebSocketBuffer = 0;
             }, async () =>
             {
-                await CasterSocket.SendScreenCapture(encodedImageBytes, viewerID, left, top, width, height, imageQuality);
+                await CasterSocket.SendScreenCapture(encodedImageBytes, viewerID, left, top, width, height, ImageQuality);
                 WebSocketBuffer += encodedImageBytes.Length;
             });
         }
@@ -154,6 +182,14 @@ namespace Remotely.ScreenCast.Core.Models
             }
         }
 
+        private async void AudioCapturer_AudioSampleReady(object sender, byte[] sample)
+        {
+            await SendAudioSample(sample);
+        }
+        private async void ClipboardService_ClipboardTextChanged(object sender, string clipboardText)
+        {
+            await SendClipboardText(clipboardText);
+        }
         private Task SendToViewer(Action webRtcSend, Func<Task> websocketSend)
         {
             if (IsUsingWebRtc())

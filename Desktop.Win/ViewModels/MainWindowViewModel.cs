@@ -260,6 +260,7 @@ namespace Remotely.Desktop.Win.ViewModels
             serviceCollection.AddSingleton<Conductor>();
             serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerWin>();
             serviceCollection.AddTransient<Viewer>();
+            serviceCollection.AddScoped<IWebRtcSessionFactory, WebRtcSessionFactory>();
 
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
