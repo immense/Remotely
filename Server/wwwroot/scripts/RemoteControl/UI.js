@@ -451,34 +451,34 @@ export function UpdateDisplays(selectedDisplay, displayNames) {
     }
 }
 function uploadFiles(fileList) {
-    //ShowMessage("File upload started...");
-    //FileTransferProgress.value = 0;
-    //FileTransferProgress.parentElement.removeAttribute("hidden");
-    //var strPath = "/API/FileSharing/";
-    //var fd = new FormData();
-    //for (var i = 0; i < fileList.length; i++) {
-    //    fd.append('fileUpload' + i, fileList[i]);
-    //}
-    //var xhr = new XMLHttpRequest();
-    //xhr.open('POST', strPath, true);
-    //xhr.addEventListener("load", function () {
-    //    FileTransferProgress.parentElement.setAttribute("hidden", "hidden");
-    //    if (xhr.status === 200) {
-    //        ShowMessage("File upload completed.");
-    //        MainRc.RCBrowserSockets.SendSharedFileIDs(xhr.responseText);
-    //    }
-    //    else {
-    //        ShowMessage("File upload failed.");
-    //    }
-    //});
-    //xhr.addEventListener("error", () => {
-    //    FileTransferProgress.parentElement.setAttribute("hidden", "hidden");
-    //    ShowMessage("File upload failed.");
-    //});
-    //xhr.addEventListener("progress", function (e) {
-    //    FileTransferProgress.value = isFinite(e.loaded / e.total) ? e.loaded / e.total : 0;
-    //});
-    //xhr.send(fd);
+    ShowMessage("File upload started...");
+    FileTransferProgress.value = 0;
+    FileTransferProgress.parentElement.removeAttribute("hidden");
+    var strPath = "/API/FileSharing/";
+    var fd = new FormData();
+    for (var i = 0; i < fileList.length; i++) {
+        fd.append('fileUpload' + i, fileList[i]);
+    }
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', strPath, true);
+    xhr.addEventListener("load", function () {
+        FileTransferProgress.parentElement.setAttribute("hidden", "hidden");
+        if (xhr.status === 200) {
+            ShowMessage("File upload completed.");
+            MainRc.RCBrowserSockets.SendSharedFileIDs(xhr.responseText);
+        }
+        else {
+            ShowMessage("File upload failed.");
+        }
+    });
+    xhr.addEventListener("error", () => {
+        FileTransferProgress.parentElement.setAttribute("hidden", "hidden");
+        ShowMessage("File upload failed.");
+    });
+    xhr.addEventListener("progress", function (e) {
+        FileTransferProgress.value = isFinite(e.loaded / e.total) ? e.loaded / e.total : 0;
+    });
+    xhr.send(fd);
 }
 function closeAllHorizontalBars(exceptBarId) {
     HorizontalBars.forEach(x => {

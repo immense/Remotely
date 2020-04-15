@@ -405,35 +405,35 @@ namespace Remotely.ScreenCast.Core.Communication
                 }
             });
 
-            //Connection.On("SharedFileIDs", (List<string> fileIDs) =>
-            //{
-            //    fileIDs.ForEach(id =>
-            //    {
-            //        var url = $"{conductor.Host}/API/FileSharing/{id}";
-            //        var webRequest = WebRequest.CreateHttp(url);
-            //        var response = webRequest.GetResponse();
-            //        var contentDisp = response.Headers["Content-Disposition"];
-            //        var fileName = contentDisp
-            //            .Split(";".ToCharArray())
-            //            .FirstOrDefault(x => x.Trim().StartsWith("filename"))
-            //            .Split("=".ToCharArray())[1];
+            Connection.On("SharedFileIDs", (List<string> fileIDs) =>
+            {
+                fileIDs.ForEach(id =>
+                {
+                    var url = $"{conductor.Host}/API/FileSharing/{id}";
+                    var webRequest = WebRequest.CreateHttp(url);
+                    var response = webRequest.GetResponse();
+                    var contentDisp = response.Headers["Content-Disposition"];
+                    var fileName = contentDisp
+                        .Split(";".ToCharArray())
+                        .FirstOrDefault(x => x.Trim().StartsWith("filename"))
+                        .Split("=".ToCharArray())[1];
 
-            //        var legalChars = fileName.ToCharArray().Where(x => !Path.GetInvalidFileNameChars().Any(y => x == y));
+                    var legalChars = fileName.ToCharArray().Where(x => !Path.GetInvalidFileNameChars().Any(y => x == y));
 
-            //        fileName = new string(legalChars.ToArray());
+                    fileName = new string(legalChars.ToArray());
 
-            //        var dirPath = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "RemotelySharedFiles")).FullName;
-            //        var filePath = Path.Combine(dirPath, fileName);
-            //        using (var fs = new FileStream(filePath, FileMode.Create))
-            //        {
-            //            using (var rs = response.GetResponseStream())
-            //            {
-            //                rs.CopyTo(fs);
-            //            }
-            //        }
-            //        Process.Start("explorer.exe", dirPath);
-            //    });
-            //});
+                    var dirPath = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "RemotelySharedFiles")).FullName;
+                    var filePath = Path.Combine(dirPath, fileName);
+                    using (var fs = new FileStream(filePath, FileMode.Create))
+                    {
+                        using (var rs = response.GetResponseStream())
+                        {
+                            rs.CopyTo(fs);
+                        }
+                    }
+                    Process.Start("explorer.exe", dirPath);
+                });
+            });
 
             Connection.On("SessionID", (string sessionID) =>
             {
