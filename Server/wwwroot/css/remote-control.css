@@ -203,33 +203,30 @@ footer {
     font-size: .9em;
 }
 
-.float-message {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translate(-50%, 0);
+.toast-message {
+    transform: translate(0, 0);
     padding: 10px;
-    font-size: 1.25em;
-    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 10px;
     opacity: 1;
-    z-index: 4;
+    color: white;
     border-radius: 5px;
     user-select: none;
     pointer-events: none;
-    animation-name: float-message;
+    animation-name: toast-message;
     animation-delay: 2s;
     animation-duration: .5s;
     animation-fill-mode: forwards;
     animation-timing-function: ease-in;
 }
 
-@keyframes float-message {
+@keyframes toast-message {
     from {
-        transform: translate(-50%, 0);
+        transform: translate(0, 0);
     }
 
     to {
-        transform: translate(-50%, calc(-100% - 25px));
+        transform: translate(calc(100% + 50px), 0);
     }
 }
 
@@ -271,4 +268,11 @@ footer {
 
 .connection-icon {
     padding: 5px;
+}
+
+#toastsWrapper {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 4;
 }

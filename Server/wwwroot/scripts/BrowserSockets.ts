@@ -90,7 +90,7 @@ function applyMessageHandlers(hubConnection) {
             AddConsoleOutput(consoleMessage);
         }
         if (popupMessage) {
-            UI.PopupMessage(popupMessage);
+            UI.ShowMessage(popupMessage);
         }
     });
     hubConnection.on("DisplayConsoleHTML", (message: string) => {

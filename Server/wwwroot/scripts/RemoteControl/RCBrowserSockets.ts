@@ -3,7 +3,7 @@ import * as UI from "./UI.js";
 import { MainRc } from "./Main.js";
 import { CursorInfo } from "../Models/CursorInfo.js";
 import { Sound } from "../Sound.js";
-import { PopupMessage } from "../UI.js";
+import { ShowMessage } from "../UI.js";
 
 var signalR = window["signalR"];
 
@@ -132,7 +132,7 @@ export class RCBrowserSockets {
     private ApplyMessageHandlers(hubConnection) {
         hubConnection.on("ClipboardTextChanged", (clipboardText: string) => {
             MainRc.ClipboardWatcher.SetClipboardText(clipboardText);
-            PopupMessage("Clipboard updated.");
+            ShowMessage("Clipboard updated.");
         });
         hubConnection.on("ScreenData", (selectedDisplay: string, displayNames: string[]) => {
             UI.UpdateDisplays(selectedDisplay, displayNames);

@@ -1,6 +1,5 @@
 ﻿import { RCBrowserSockets } from "./RCBrowserSockets.js";
 import { MainRc } from "./Main.js";
-import { PopupMessage } from "../UI.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 import { Point } from "../Models/Point.js";
 import { GetDistanceBetween, ConvertUInt8ArrayToBase64 } from "../Utilities.js";
@@ -42,6 +41,7 @@ export var ClipboardTransferButton = document.getElementById("clipboardTransferB
 export var ClipboardTransferTypeCheckbox = document.getElementById("clipboardTransferTypeCheckbox") as HTMLInputElement;
 export var ConnectionP2PIcon = document.getElementById("connectionP2PIcon") as HTMLElement;
 export var ConnectionRelayedIcon = document.getElementById("connectionRelayedIcon") as HTMLElement;
+export var ToastsWrapper = document.getElementById("toastsWrapper") as HTMLDivElement;
 
 var lastPointerMove = Date.now();
 var isDragging: boolean;
@@ -76,7 +76,7 @@ export function ApplyInputHandlers() {
         }
         MainRc.MessageSender.SendClipboardTransfer(ClipboardTransferTextArea.value, ClipboardTransferTypeCheckbox.checked);
         ClipboardTransferTextArea.blur();
-        PopupMessage("Clipboard sent!");
+        ShowMessage("Clipboard sent!");
     });
     ConnectButton.addEventListener("click", (ev) => {
         MainRc.ConnectToClient();
@@ -139,7 +139,7 @@ export function ApplyInputHandlers() {
             url = `${location.origin}${location.pathname}?clientID=${MainRc.ClientID}&serviceID=${MainRc.ServiceID}`;
         }
         MainRc.ClipboardWatcher.SetClipboardText(url);
-        PopupMessage("Link copied to clipboard.");
+        ShowMessage("Link copied to clipboard.");
     });
     KeyboardButton.addEventListener("click", (ev) => {
         closeAllHorizontalBars(null);
@@ -457,9 +457,9 @@ export function SetScreenSize(width: number, height: number) {
 
 export function ShowMessage(message: string) {
     var messageDiv = document.createElement("div");
-    messageDiv.classList.add("float-message");
+    messageDiv.classList.add("toast-message");
     messageDiv.innerHTML = message;
-    document.body.appendChild(messageDiv);
+    ToastsWrapper.appendChild(messageDiv);
     window.setTimeout(() => {
         messageDiv.remove();
     }, 5000);

@@ -22,17 +22,19 @@ export var AlertsButton = document.getElementById("alertsButton") as HTMLButtonE
 export var CloseAlertsButton = document.getElementById("closeAlertsFrameButton") as HTMLButtonElement;
 export var AlertsFrame = document.getElementById("alertsFrame") as HTMLDivElement;
 export var AlertsCount = document.getElementById("alertsCount") as HTMLSpanElement;
+export var ToastsWrapper = document.getElementById("toastsWrapper") as HTMLDivElement;
 
 
-export function PopupMessage(message: string) {
+export function ShowMessage(message: string) {
     var messageDiv = document.createElement("div");
-    messageDiv.classList.add("float-message");
+    messageDiv.classList.add("toast-message");
     messageDiv.innerHTML = message;
-    document.body.appendChild(messageDiv);
+    ToastsWrapper.appendChild(messageDiv);
     window.setTimeout(() => {
         messageDiv.remove();
     }, 5000);
 }
+
 export function ShowModal(title: string, modalBodyHtml: string, buttonsHTML: string = "", onDismissCallback: VoidFunction = null) : HTMLDivElement {
     var modalID = Utilities.CreateGUID();
     var modalHTML = `<div id="${modalID}" class="modal fade in" tabindex="-1" role="dialog">

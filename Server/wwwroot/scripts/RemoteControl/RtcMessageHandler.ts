@@ -2,7 +2,7 @@
 import { BinaryDtoType } from "../Enums/BinaryDtoType.js";
 import { BinaryDto } from "./BinaryDto.js";
 import { MainRc } from "./Main.js";
-import { PopupMessage } from "../UI.js";
+import { ShowMessage } from "../UI.js";
 import { Sound } from "../Sound.js";
 import {
     AudioSampleDto,
@@ -84,7 +84,7 @@ export class RtcMessageHandler {
     }
     HandleClipboardText(clipboardText: ClipboardTextDto) {
         MainRc.ClipboardWatcher.SetClipboardText(clipboardText.ClipboardText);
-        PopupMessage("Clipboard updated.");
+        ShowMessage("Clipboard updated.");
     }
     HandleCursorChange(cursorChange: CursorChangeDto) {
         UI.UpdateCursor(cursorChange.CursorInfo);

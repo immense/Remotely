@@ -1,7 +1,7 @@
 import * as UI from "./UI.js";
 import { MainRc } from "./Main.js";
 import { Sound } from "../Sound.js";
-import { PopupMessage } from "../UI.js";
+import { ShowMessage } from "../UI.js";
 var signalR = window["signalR"];
 export class RCBrowserSockets {
     constructor() {
@@ -117,7 +117,7 @@ export class RCBrowserSockets {
     ApplyMessageHandlers(hubConnection) {
         hubConnection.on("ClipboardTextChanged", (clipboardText) => {
             MainRc.ClipboardWatcher.SetClipboardText(clipboardText);
-            PopupMessage("Clipboard updated.");
+            ShowMessage("Clipboard updated.");
         });
         hubConnection.on("ScreenData", (selectedDisplay, displayNames) => {
             UI.UpdateDisplays(selectedDisplay, displayNames);
