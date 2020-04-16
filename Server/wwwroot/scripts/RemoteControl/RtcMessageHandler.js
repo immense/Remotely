@@ -1,7 +1,7 @@
 import * as UI from "./UI.js";
 import { BinaryDtoType } from "../Enums/BinaryDtoType.js";
 import { MainRc } from "./Main.js";
-import { PopupMessage } from "../UI.js";
+import { ShowMessage } from "../UI.js";
 import { Sound } from "../Sound.js";
 export class RtcMessageHandler {
     constructor() {
@@ -68,7 +68,7 @@ export class RtcMessageHandler {
     }
     HandleClipboardText(clipboardText) {
         MainRc.ClipboardWatcher.SetClipboardText(clipboardText.ClipboardText);
-        PopupMessage("Clipboard updated.");
+        ShowMessage("Clipboard updated.");
     }
     HandleCursorChange(cursorChange) {
         UI.UpdateCursor(cursorChange.CursorInfo);

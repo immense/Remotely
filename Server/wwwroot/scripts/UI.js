@@ -20,11 +20,12 @@ export var AlertsButton = document.getElementById("alertsButton");
 export var CloseAlertsButton = document.getElementById("closeAlertsFrameButton");
 export var AlertsFrame = document.getElementById("alertsFrame");
 export var AlertsCount = document.getElementById("alertsCount");
-export function PopupMessage(message) {
+export var ToastsWrapper = document.getElementById("toastsWrapper");
+export function ShowMessage(message) {
     var messageDiv = document.createElement("div");
-    messageDiv.classList.add("float-message");
+    messageDiv.classList.add("toast-message");
     messageDiv.innerHTML = message;
-    document.body.appendChild(messageDiv);
+    ToastsWrapper.appendChild(messageDiv);
     window.setTimeout(() => {
         messageDiv.remove();
     }, 5000);

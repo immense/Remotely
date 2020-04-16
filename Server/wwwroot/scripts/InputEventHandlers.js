@@ -193,10 +193,10 @@ function clickStartRemoteControlButton() {
     document.getElementById("startRemoteControlButton").addEventListener("click", function (e) {
         var selectedDevices = DataGrid.GetSelectedDevices();
         if (selectedDevices.length == 0) {
-            UI.PopupMessage("You must select a device first.");
+            UI.ShowMessage("You must select a device first.");
         }
         else if (selectedDevices.length > 1) {
-            UI.PopupMessage("You must select only one device to control.");
+            UI.ShowMessage("You must select only one device to control.");
         }
         else {
             WebCommands.find(x => x.Name == "RemoteControl").Execute([]);

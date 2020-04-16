@@ -87,8 +87,8 @@ footer a {
     color: deepskyblue;
 }
 
-.float-message {
-    background-color: rgba(0, 0, 0, .75);
+.toast-message {
+    background-color: rgb(50, 50, 50);
     color: white;
 }
 
