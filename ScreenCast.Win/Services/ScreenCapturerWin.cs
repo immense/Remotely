@@ -42,7 +42,6 @@ namespace Remotely.ScreenCast.Win.Services
     {
         private readonly Dictionary<string, int> bitBltScreens = new Dictionary<string, int>();
         private readonly Dictionary<string, DirectXOutput> directxScreens = new Dictionary<string, DirectXOutput>();
-        private bool directXCapable = true;
         public ScreenCapturerWin()
         {
             Init();
@@ -124,10 +123,7 @@ namespace Remotely.ScreenCast.Win.Services
             PreviousFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
 
             InitBitBlt();
-            if (directXCapable)
-            {
-                InitDirectX();
-            }
+            InitDirectX();
 
             ScreenChanged?.Invoke(this, CurrentScreenBounds);
         }
@@ -326,7 +322,6 @@ namespace Remotely.ScreenCast.Win.Services
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                directXCapable = false;
             }
         }
 
