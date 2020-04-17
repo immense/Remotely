@@ -276,3 +276,14 @@ footer {
     right: 25px;
     z-index: 4;
 }
+
+#fileTransferDiv {
+    position: fixed;
+    right: 5px;
+    bottom: 5px;
+    background-color: rgb(50, 50, 50);
+    color: white;
+    z-index: 3;
+    padding: 10px;
+    border-radius: 5px;
+}

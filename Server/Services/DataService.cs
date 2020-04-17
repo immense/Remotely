@@ -175,7 +175,7 @@ namespace Remotely.Server.Services
             return true;
         }
 
-        public string AddSharedFile(IFormFile file, string organizationID)
+        public async Task<string> AddSharedFile(IFormFile file, string organizationID)
         {
             var expirationDate = DateTimeOffset.Now.AddDays(-AppConfig.DataRetentionInDays);
             var expiredFiles = RemotelyContext.SharedFiles.Where(x => x.Timestamp < expirationDate);
@@ -186,7 +186,7 @@ namespace Remotely.Server.Services
             {
                 using (var ms = new MemoryStream())
                 {
-                    stream.CopyTo(ms);
+                    await stream.CopyToAsync(ms);
                     fileContents = ms.ToArray();
                 }
             }
@@ -197,7 +197,7 @@ namespace Remotely.Server.Services
                 ContentType = file.ContentType,
                 OrganizationID = organizationID
             });
-            RemotelyContext.SaveChanges();
+            await RemotelyContext.SaveChangesAsync();
             return newEntity.Entity.ID;
         }
 
