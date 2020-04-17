@@ -185,19 +185,24 @@ namespace Remotely.ScreenCast.Win.Services
                 var device = directxScreens[SelectedScreen].Device;
                 var texture2D = directxScreens[SelectedScreen].Texture2D;
 
-
                 // Try to get duplicated frame within given time is ms
-                var result = duplicatedOutput.TryAcquireNextFrame(100,
+                var result = duplicatedOutput.TryAcquireNextFrame(20,
                     out var duplicateFrameInformation,
                     out var screenResource);
 
-                if (result.Failure && result.Code != SharpDX.DXGI.ResultCode.WaitTimeout.Code)
+                if (result.Failure)
                 {
-                    Logger.Write($"TryAcquireFrame error.  Code: {result.Code}");
-                    NeedsInit = true;
-                    return;
+                    if (result.Code == SharpDX.DXGI.ResultCode.WaitTimeout.Code)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        Logger.Write($"TryAcquireFrame error.  Code: {result.Code}");
+                        NeedsInit = true;
+                        return;
+                    }
                 }
-
 
                 if (duplicateFrameInformation.AccumulatedFrames == 0)
                 {

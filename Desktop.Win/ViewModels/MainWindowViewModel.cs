@@ -28,6 +28,7 @@ namespace Remotely.Desktop.Win.ViewModels
         private string sessionID;
         public MainWindowViewModel()
         {
+            Application.Current.Exit += Application_Exit;
             Current = this;
 
             BuildServices();
@@ -43,6 +44,7 @@ namespace Remotely.Desktop.Win.ViewModels
         }
 
         public static MainWindowViewModel Current { get; private set; }
+
         public static IServiceProvider Services => ServiceContainer.Instance;
 
         public ICommand ChangeServerCommand
@@ -58,6 +60,7 @@ namespace Remotely.Desktop.Win.ViewModels
         }
 
         public Conductor Conductor { get; }
+
         public CursorIconWatcher CursorIconWatcher { get; private set; }
 
         public ICommand ElevateToAdminCommand
@@ -146,6 +149,7 @@ namespace Remotely.Desktop.Win.ViewModels
             }
 
         }
+
         public string SessionID
         {
             get => sessionID;
@@ -157,9 +161,16 @@ namespace Remotely.Desktop.Win.ViewModels
         }
 
         public ObservableCollection<Viewer> Viewers { get; } = new ObservableCollection<Viewer>();
+
         public void CopyLink()
         {
             Clipboard.SetText($"{Host}/RemoteControl?sessionID={SessionID?.Replace(" ", "")}");
+        }
+
+        public async Task GetSessionID()
+        {
+            await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
+            await Conductor.CasterSocket.GetSessionID();
         }
 
         public async Task Init()
@@ -198,7 +209,7 @@ namespace Remotely.Desktop.Win.ViewModels
                     });
                 };
 
-                Conductor.CasterSocket.Connection.Reconnected += async (arg) => 
+                Conductor.CasterSocket.Connection.Reconnected += async (arg) =>
                 {
                     await GetSessionID();
                 };
@@ -211,12 +222,6 @@ namespace Remotely.Desktop.Win.ViewModels
                 MessageBox.Show(Application.Current.MainWindow, "Failed to connect to server.", "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-        }
-
-        public async Task GetSessionID()
-        {
-            await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
-            await Conductor.CasterSocket.GetSessionID();
         }
 
         public void PromptForHostName()
@@ -242,6 +247,17 @@ namespace Remotely.Desktop.Win.ViewModels
             }
         }
 
+        private void Application_Exit(object sender, ExitEventArgs e)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                foreach (var viewer in Viewers)
+                {
+                    viewer.DisconnectRequested = true;
+                }
+                Viewers.Clear();
+            });
+        }
         private void BuildServices()
         {
             var serviceCollection = new ServiceCollection();

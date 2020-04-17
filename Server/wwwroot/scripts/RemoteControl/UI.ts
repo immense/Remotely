@@ -489,7 +489,7 @@ export function UpdateDisplays(selectedDisplay: string, displayNames: string[]) 
         }
         ScreenSelectBar.appendChild(button);
         button.onclick = (ev: MouseEvent) => {
-            this.SendSelectScreen(displayNames[i]);
+            MainRc.MessageSender.SendSelectScreen(displayNames[i]);
             document.querySelectorAll("#screenSelectBar .horizontal-bar-button").forEach(button => {
                 button.classList.remove("toggled");
             });
