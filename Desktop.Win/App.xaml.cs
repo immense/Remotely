@@ -36,17 +36,5 @@ namespace Remotely.Desktop.Win
                 Environment.Exit(0);
             }
         }
-
-        private void Application_Exit(object sender, ExitEventArgs e)
-        {
-            var conductor = ServiceContainer.Instance.GetService<Conductor>();
-            foreach (var viewer in conductor.Viewers.Values)
-            {
-                viewer.DisconnectRequested = true;
-                conductor.InvokeViewerRemoved(viewer.ViewerConnectionID);
-            }
-            System.Windows.Forms.Application.Exit();
-            Environment.Exit(0);
-        }
     }
 }
