@@ -524,9 +524,10 @@ function uploadFiles(fileList: FileList) {
         FileTransferProgress.parentElement.setAttribute("hidden", "hidden");
         ShowMessage("File upload failed.");
     });
-    xhr.addEventListener("progress", function (e) {
+    
+    xhr.upload.onprogress = (e) => {
         FileTransferProgress.value = isFinite(e.loaded / e.total) ? e.loaded / e.total : 0;
-    });
+    }
     xhr.send(fd);
 }
 

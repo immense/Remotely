@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Remotely.Server.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -31,13 +32,13 @@ namespace Remotely.Server.API
 
         [HttpPost]
         [RequestSizeLimit(500_000_000)]
-        public List<string> Post()
+        public async Task<List<string>> Post()
         {
             var fileIDs = new List<string>();
             foreach (var file in Request.Form.Files)
             {
                 var orgID = User.Identity.IsAuthenticated ? DataService.GetUserByName(User.Identity.Name).OrganizationID : null;
-                var id = DataService.AddSharedFile(file, orgID);
+                var id = await DataService.AddSharedFile(file, orgID);
                 fileIDs.Add(id);
             }
             return fileIDs;
