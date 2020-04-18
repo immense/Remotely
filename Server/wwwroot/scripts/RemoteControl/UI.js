@@ -463,6 +463,7 @@ function uploadFiles(fileList) {
     xhr.open('POST', strPath, true);
     xhr.addEventListener("load", function () {
         FileTransferProgress.parentElement.setAttribute("hidden", "hidden");
+        FileTransferInput.value = null;
         if (xhr.status === 200) {
             ShowMessage("File upload completed.");
             MainRc.RCBrowserSockets.SendSharedFileIDs(xhr.responseText);
