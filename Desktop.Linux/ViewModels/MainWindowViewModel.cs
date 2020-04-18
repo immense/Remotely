@@ -142,9 +142,7 @@ namespace Remotely.Desktop.Linux.ViewModels
         {
             try
             {
-                SessionID = "Installing dependencies...";
-
-                await Task.Run(InstallDependencies);
+                await Task.Run(CheckDependencies);
 
                 SessionID = "Retrieving...";
 
@@ -236,20 +234,29 @@ namespace Remotely.Desktop.Linux.ViewModels
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
         }
-
-        private void InstallDependencies()
+        private async Task CheckDependencies()
         {
-            var psi = new ProcessStartInfo()
+            var result = EnvironmentHelper.StartProcessWithResults("bash", "-c \"dpkg -s libc6-dev ; " +
+                            "dpkg -s libgdiplus ; " +
+                            "dpkg -s libxtst-dev ; " +
+                            "dpkg -s xclip\"");
+
+            if (result?.Contains("is not installed", StringComparison.OrdinalIgnoreCase) == true)
             {
-                FileName = "bash",
-                Arguments = "-c \"apt-get -y install libc6-dev ; " +
-                            "apt-get -y install libgdiplus ; " +
-                            "apt-get -y install libxtst-dev ; " +
-                            "apt-get -y install xclip\"",
-                CreateNoWindow = true,
-                WindowStyle = ProcessWindowStyle.Hidden
-            };
-            Process.Start(psi);
+                var commands = "sudo apt-get -y install libc6-dev" + Environment.NewLine +
+                                "sudo apt-get -y install libgdiplus" + Environment.NewLine +
+                                "sudo apt-get -y install libxtst-dev" + Environment.NewLine +
+                                "sudo apt-get -y install xclip" + Environment.NewLine;
+
+                ServiceContainer.Instance.GetRequiredService<IClipboardService>().SetText(commands);
+
+                var message = "The following commands have been copied to your clipboard.  " +
+                    "Please run them to install missing dependencies." +
+                    Environment.NewLine + Environment.NewLine +
+                    commands;
+
+                await MessageBox.Show(message, "Dependencies Required", MessageBoxType.OK);
+            }
         }
         private void ScreenCastRequested(object sender, ScreenCastRequest screenCastRequest)
         {
