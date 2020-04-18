@@ -11,14 +11,12 @@ namespace Remotely.Server.Services
 {
     public class RCDeviceSocketHub : Hub
     {
-        public RCDeviceSocketHub(DataService dataService,
-            IHubContext<BrowserSocketHub> browserHub,
+        public RCDeviceSocketHub(IHubContext<BrowserSocketHub> browserHub,
             IHubContext<RCBrowserSocketHub> rcBrowserHub,
             IHubContext<DeviceSocketHub> deviceSocketHub,
             RemoteControlSessionRecorder rcSessionRecorder,
             ApplicationConfig appConfig)
         {
-            DataService = dataService;
             BrowserHub = browserHub;
             RCBrowserHub = rcBrowserHub;
             DeviceHub = deviceSocketHub;
@@ -48,8 +46,6 @@ namespace Remotely.Server.Services
                 Context.Items["CurrentScreenSize"] = value;
             }
         }
-        private DataService DataService { get; }
-
         private IHubContext<DeviceSocketHub> DeviceHub { get; }
 
         private IHubContext<RCBrowserSocketHub> RCBrowserHub { get; }
