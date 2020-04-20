@@ -132,6 +132,48 @@ namespace Remotely.Desktop.Linux.ViewModels
         }
 
         public ObservableCollection<Viewer> Viewers { get; } = new ObservableCollection<Viewer>();
+        private async Task CheckDependencies()
+        {
+            var dependencies = new string[]
+            {
+                "libx11-dev",
+                "libc6-dev",
+                "libgdiplus",
+                "libxtst-dev",
+                "xclip"
+            };
+
+            foreach (var dependency in dependencies)
+            {
+                var proc = Process.Start("dpkg", $"-s {dependency}");
+                proc.WaitForExit();
+                if (proc.ExitCode != 0)
+                {
+                    var commands = "sudo apt-get -y install libx11-dev ; " +
+                                "sudo apt-get -y install libc6-dev ; " +
+                                "sudo apt-get -y install libgdiplus ; " +
+                                "sudo apt-get -y install libxtst-dev ; " +
+                                "sudo apt-get -y install xclip";
+
+                    await App.Current.Clipboard.SetTextAsync(commands);
+
+                    var message = "The following dependencies are required.  Install commands have been copied to your clipboard." +
+                        Environment.NewLine + Environment.NewLine +
+                        "Please paste them into a terminal and run, then try opening Remotely again." +
+                        Environment.NewLine + Environment.NewLine +
+                        "libx11-dev" + Environment.NewLine +
+                        "libc6-dev" + Environment.NewLine +
+                        "libgdiplus" + Environment.NewLine + 
+                        "libxtst-dev" + Environment.NewLine + 
+                        "xclip";
+
+                    await MessageBox.Show(message, "Dependencies Required", MessageBoxType.OK);
+
+                    Environment.Exit(0);
+                }
+            }
+        }
+
         public async Task GetSessionID()
         {
             await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
@@ -142,7 +184,8 @@ namespace Remotely.Desktop.Linux.ViewModels
         {
             try
             {
-                await Task.Run(CheckDependencies);
+
+                await CheckDependencies();
 
                 SessionID = "Retrieving...";
 
@@ -233,30 +276,6 @@ namespace Remotely.Desktop.Linux.ViewModels
 
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
-        }
-        private async Task CheckDependencies()
-        {
-            var result = EnvironmentHelper.StartProcessWithResults("bash", "-c \"dpkg -s libc6-dev ; " +
-                            "dpkg -s libgdiplus ; " +
-                            "dpkg -s libxtst-dev ; " +
-                            "dpkg -s xclip\"");
-
-            if (result?.Contains("is not installed", StringComparison.OrdinalIgnoreCase) == true)
-            {
-                var commands = "sudo apt-get -y install libc6-dev" + Environment.NewLine +
-                                "sudo apt-get -y install libgdiplus" + Environment.NewLine +
-                                "sudo apt-get -y install libxtst-dev" + Environment.NewLine +
-                                "sudo apt-get -y install xclip" + Environment.NewLine;
-
-                ServiceContainer.Instance.GetRequiredService<IClipboardService>().SetText(commands);
-
-                var message = "The following commands have been copied to your clipboard.  " +
-                    "Please run them to install missing dependencies." +
-                    Environment.NewLine + Environment.NewLine +
-                    commands;
-
-                await MessageBox.Show(message, "Dependencies Required", MessageBoxType.OK);
-            }
         }
         private void ScreenCastRequested(object sender, ScreenCastRequest screenCastRequest)
         {

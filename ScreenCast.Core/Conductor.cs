@@ -62,7 +62,6 @@ namespace Remotely.ScreenCast.Core
         public void ProcessArgs(string[] args)
         {
             ArgDict = new Dictionary<string, string>();
-
             for (var i = 0; i < args.Length; i += 2)
             {
                 try
