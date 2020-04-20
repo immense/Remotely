@@ -37,7 +37,7 @@ namespace Remotely.Agent
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddLogging(builder =>
             {
-                builder.AddConsole().AddEventLog();
+                builder.AddConsole().AddDebug();
             });
             serviceCollection.AddSingleton<DeviceSocket>();
             serviceCollection.AddScoped<ChatClientService>();
