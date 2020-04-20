@@ -58,7 +58,7 @@ namespace Remotely.ScreenCast.Linux
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddLogging(builder =>
             {
-                builder.AddConsole().AddEventLog();
+                builder.AddConsole().AddDebug();
             });
 
             serviceCollection.AddSingleton<IScreenCaster, ScreenCasterLinux>();
