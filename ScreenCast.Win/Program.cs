@@ -40,7 +40,7 @@ namespace Remotely.ScreenCast.Win
                 BuildServices();
 
                 Conductor = Services.GetRequiredService<Conductor>();
-                Conductor.ProcessArgs(Environment.GetCommandLineArgs().Skip(1).ToArray());
+                Conductor.ProcessArgs(Environment.GetCommandLineArgs().SkipWhile(x => !x.StartsWith("-")).ToArray());
 
                 if (Conductor.Mode == Core.Enums.AppMode.Chat)
                 {

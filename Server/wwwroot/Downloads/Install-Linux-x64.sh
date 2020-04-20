@@ -21,6 +21,7 @@ apt-get update
 apt-get install dotnet-runtime-3.1
 rm packages-microsoft-prod.deb
 
+apt-get -y install libx11-dev
 apt-get -y install unzip
 apt-get -y install libc6-dev
 apt-get -y install libgdiplus
