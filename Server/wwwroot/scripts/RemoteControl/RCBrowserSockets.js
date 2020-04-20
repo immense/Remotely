@@ -50,6 +50,9 @@ export class RCBrowserSockets {
     SendScreenCastRequestToDevice() {
         this.Connection.invoke("SendScreenCastRequestToDevice", MainRc.ClientID, MainRc.RequesterName, MainRc.Mode);
     }
+    async SendFile(buffer, fileName, messageId, endOfFile, startOfFile) {
+        await this.Connection.invoke("SendFile", buffer, fileName, messageId, endOfFile, startOfFile);
+    }
     SendFrameReceived(bytesReceived) {
         this.Connection.invoke("SendFrameReceived", bytesReceived);
     }

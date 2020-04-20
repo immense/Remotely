@@ -24,19 +24,22 @@ namespace Remotely.ScreenCast.Core.Services
             CasterSocket casterSocket,
             IKeyboardMouseInput keyboardMouseInput,
             IAudioCapturer audioCapturer,
-            IClipboardService clipboardService)
+            IClipboardService clipboardService,
+            IFileDownloadService fileDownloadService)
         {
             Viewer = viewer;
             CasterSocket = casterSocket;
             KeyboardMouseInput = keyboardMouseInput;
             AudioCapturer = audioCapturer;
             ClipboardService = clipboardService;
+            FileDownloadService = fileDownloadService;
         }
 
         private CasterSocket CasterSocket { get; }
         private IKeyboardMouseInput KeyboardMouseInput { get; }
         private IAudioCapturer AudioCapturer { get; }
         private IClipboardService ClipboardService { get; }
+        private IFileDownloadService FileDownloadService { get; }
 
         public async Task ParseMessage(byte[] message)
         {
@@ -115,6 +118,9 @@ namespace Remotely.ScreenCast.Core.Services
                     case BinaryDtoType.QualityChange:
                         QualityChange(message);
                         break;
+                    case BinaryDtoType.File:
+                        await DownloadFile(message);
+                        break;
                     default:
                         break;
                 }
@@ -150,6 +156,15 @@ namespace Remotely.ScreenCast.Core.Services
             {
                 ClipboardService.SetText(dto.Text);
             }
+        }
+        private async Task DownloadFile(byte[] message)
+        {
+            var dto = MessagePackSerializer.Deserialize<FileDto>(message);
+            await FileDownloadService.ReceiveFile(dto.Buffer,
+                dto.FileName,
+                dto.MessageId,
+                dto.EndOfFile,
+                dto.StartOfFile);
         }
 
         private void ToggleBlockInput(byte[] message)

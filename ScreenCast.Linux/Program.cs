@@ -71,6 +71,7 @@ namespace Remotely.ScreenCast.Linux
             serviceCollection.AddSingleton<ChatHostService>();
             serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerLinux>();
             serviceCollection.AddTransient<Viewer>();
+            serviceCollection.AddScoped<IFileDownloadService, FileDownloadService>();
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
         }

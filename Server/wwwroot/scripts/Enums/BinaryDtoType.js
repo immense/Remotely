@@ -22,5 +22,6 @@ export var BinaryDtoType;
     BinaryDtoType[BinaryDtoType["ClipboardTransfer"] = 19] = "ClipboardTransfer";
     BinaryDtoType[BinaryDtoType["KeyPress"] = 20] = "KeyPress";
     BinaryDtoType[BinaryDtoType["QualityChange"] = 21] = "QualityChange";
+    BinaryDtoType[BinaryDtoType["File"] = 22] = "File";
 })(BinaryDtoType || (BinaryDtoType = {}));
 //# sourceMappingURL=BinaryDtoType.js.map

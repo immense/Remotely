@@ -17,6 +17,16 @@ export class CtrlAltDelDto {
         this.DtoType = BinaryDtoType.CtrlAltDel;
     }
 }
+export class FileDto {
+    constructor(buffer, fileName, messageId, endOfFile, startOfFile) {
+        this.DtoType = BinaryDtoType.File;
+        this.Buffer = buffer;
+        this.FileName = fileName;
+        this.MessageId = messageId;
+        this.EndOfFile = endOfFile;
+        this.StartOfFile = startOfFile;
+    }
+}
 export class KeyDownDto {
     constructor(key) {
         this.DtoType = BinaryDtoType.KeyDown;

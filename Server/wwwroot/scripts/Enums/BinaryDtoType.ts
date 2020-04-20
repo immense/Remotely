@@ -20,5 +20,6 @@
     ToggleBlockInput = 18,
     ClipboardTransfer = 19,
     KeyPress = 20,
-    QualityChange = 21
+    QualityChange = 21,
+    File = 22
 }

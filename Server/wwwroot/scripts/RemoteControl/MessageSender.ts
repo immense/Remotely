@@ -14,8 +14,11 @@ import {
     AutoQualityAdjustDto,
     ToggleAudioDto,
     ToggleBlockInputDto,
-    ClipboardTransferDto
+    ClipboardTransferDto,
+    FileDto
 } from "./RtcDtos.js";
+import { CreateGUID, When } from "../Utilities.js";
+import { FileTransferProgress } from "./UI.js";
 
 export class MessageSender {
     SendSelectScreen(displayName: string) {
@@ -60,6 +63,30 @@ export class MessageSender {
             () => MainRc.RCBrowserSockets.SendCtrlAltDel());
     }
 
+    async SendFile(buffer: Uint8Array, fileName: string) {
+        var messageId = CreateGUID();
+
+        this.SendToAgent(() => MainRc.RtcSession.SendDto(new FileDto(null, fileName, messageId, false, true)),
+            () => MainRc.RCBrowserSockets.SendFile(null, fileName, messageId, false, true));
+
+        for (var i = 0; i < buffer.byteLength; i += 50_000) {
+
+            await this.SendToAgentAsync(async () => {
+                MainRc.RtcSession.SendDto(new FileDto(buffer.slice(i, i + 50_000), fileName, messageId, false, false));
+                await When(() => MainRc.RtcSession.DataChannel.bufferedAmount == 0, 10);
+            }, async () => {
+                    await MainRc.RCBrowserSockets.SendFile(buffer.slice(i, i + 50_000), fileName, messageId, false, false);
+            });
+
+            if (i > 0) {
+                FileTransferProgress.value = i / buffer.byteLength;
+            }
+        }
+
+        this.SendToAgent(() => MainRc.RtcSession.SendDto(new FileDto(null, fileName, messageId, true, false)),
+            () => MainRc.RCBrowserSockets.SendFile(null, fileName, messageId, true, false));
+    }
+
     SendQualityChange(qualityLevel: number) {
         this.SendToAgent(() => MainRc.RtcSession.SendDto(new QualityChangeDto(qualityLevel)),
             () => MainRc.RCBrowserSockets.SendQualityChange(qualityLevel));
@@ -81,6 +108,10 @@ export class MessageSender {
             () => MainRc.RCBrowserSockets.SendClipboardTransfer(text, typeText));
     }
 
+    private IsWebRtcAvailable() {
+        return MainRc.RtcSession.DataChannel && MainRc.RtcSession.DataChannel.readyState == "open";
+    }
+
     private SendToAgent(rtcSend: () => void, websocketSend: () => void) {
         if (MainRc.RtcSession.DataChannel && MainRc.RtcSession.DataChannel.readyState == "open") {
             rtcSend();
@@ -89,4 +120,15 @@ export class MessageSender {
             websocketSend();
         }
     }
+
+    private async SendToAgentAsync(rtcSend: () => Promise<any>, websocketSend: () => Promise<any>) {
+        if (this.IsWebRtcAvailable()) {
+            await rtcSend();
+        }
+        else {
+            await websocketSend();
+        }
+    }
+
+  
 }

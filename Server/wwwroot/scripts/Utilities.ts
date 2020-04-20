@@ -46,7 +46,7 @@ export function GetDistanceBetween(fromX: number, fromY: number, toX: number, to
         Math.pow(fromY - toY, 2));
 }
 
-export async function When(predicate: () => boolean) {
+export async function When(predicate: () => boolean, pollingTimeMs: number = 100) {
     return new Promise((resolve, reject) => {
         function checkCondition() {
             if (predicate()) {
@@ -55,7 +55,7 @@ export async function When(predicate: () => boolean) {
             else {
                 window.setTimeout(() => {
                     checkCondition();
-                }, 500);
+                }, pollingTimeMs);
             }
         }
         checkCondition();

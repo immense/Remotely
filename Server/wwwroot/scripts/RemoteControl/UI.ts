@@ -4,6 +4,7 @@ import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 import { Point } from "../Models/Point.js";
 import { GetDistanceBetween, ConvertUInt8ArrayToBase64 } from "../Utilities.js";
 import { CursorInfo } from "../Models/CursorInfo.js";
+import { UploadFiles } from "./FileUploader.js";
 
 export var AudioButton = document.getElementById("audioButton") as HTMLButtonElement;
 export var MenuButton = document.getElementById("menuButton") as HTMLButtonElement;
@@ -30,6 +31,7 @@ export var BlockInputButton = document.getElementById("blockInputButton") as HTM
 export var DisconnectButton = document.getElementById("disconnectButton") as HTMLButtonElement;
 export var FileTransferInput = document.getElementById("fileTransferInput") as HTMLInputElement;
 export var FileTransferProgress = document.getElementById("fileTransferProgress") as HTMLProgressElement;
+export var FileTransferNameSpan = document.getElementById("fileTransferNameSpan") as HTMLSpanElement;
 export var KeyboardButton = document.getElementById("keyboardButton") as HTMLButtonElement;
 export var InviteButton = document.getElementById("inviteButton") as HTMLButtonElement;
 export var FileTransferButton = document.getElementById("fileTransferButton") as HTMLButtonElement;
@@ -107,7 +109,7 @@ export function ApplyInputHandlers() {
         FileTransferInput.click();
     });
     FileTransferInput.addEventListener("change", (ev) => {
-        uploadFiles(FileTransferInput.files);
+        UploadFiles(FileTransferInput.files);
     });
     FitToScreenButton.addEventListener("click", (ev) => {
         FitToScreenButton.classList.toggle("toggled");
@@ -406,7 +408,7 @@ export function ApplyInputHandlers() {
         if (e.dataTransfer.files.length < 1) {
             return;
         }
-        uploadFiles(e.dataTransfer.files);
+        UploadFiles(e.dataTransfer.files);
     };
 }
 
@@ -498,39 +500,6 @@ export function UpdateDisplays(selectedDisplay: string, displayNames: string[]) 
     }
 }
 
-function uploadFiles(fileList: FileList) {
-    ShowMessage("File upload started...");
-    FileTransferProgress.value = 0;
-    FileTransferProgress.parentElement.removeAttribute("hidden");
-    
-    var strPath = "/API/FileSharing/";
-    var fd = new FormData();
-    for (var i = 0; i < fileList.length; i++) {
-        fd.append('fileUpload' + i, fileList[i]);
-    }
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', strPath, true);
-    xhr.addEventListener("load", function () {
-        FileTransferProgress.parentElement.setAttribute("hidden", "hidden");
-        FileTransferInput.value = null;
-        if (xhr.status === 200) {
-            ShowMessage("File upload completed.");
-            MainRc.RCBrowserSockets.SendSharedFileIDs(xhr.responseText);
-        }
-        else {
-            ShowMessage("File upload failed.");
-        }
-    });
-    xhr.addEventListener("error", () => {
-        FileTransferProgress.parentElement.setAttribute("hidden", "hidden");
-        ShowMessage("File upload failed.");
-    });
-    
-    xhr.upload.onprogress = (e) => {
-        FileTransferProgress.value = isFinite(e.loaded / e.total) ? e.loaded / e.total : 0;
-    }
-    xhr.send(fd);
-}
 
 function closeAllHorizontalBars(exceptBarId: string) {
     HorizontalBars.forEach(x => {
