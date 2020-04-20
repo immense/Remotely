@@ -27,6 +27,7 @@ namespace Remotely.ScreenCast.Linux
 
                 Conductor = Services.GetRequiredService<Conductor>();
 
+                Logger.Write("Processing Args: " + string.Join(", ", Environment.GetCommandLineArgs()));
                 Conductor.ProcessArgs(Environment.GetCommandLineArgs().SkipWhile(x => !x.StartsWith("-")).ToArray());
 
                 if (Conductor.Mode == Core.Enums.AppMode.Chat)
