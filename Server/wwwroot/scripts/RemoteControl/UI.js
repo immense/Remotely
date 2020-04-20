@@ -34,9 +34,8 @@ export var FileTransferButton = document.getElementById("fileTransferButton");
 export var CtrlAltDelButton = document.getElementById("ctrlAltDelButton");
 export var TouchKeyboardTextArea = document.getElementById("touchKeyboardTextArea");
 export var ClipboardTransferBar = document.getElementById("clipboardTransferBar");
-export var ClipboardTransferTextArea = document.getElementById("clipboardTransferTextArea");
 export var ClipboardTransferButton = document.getElementById("clipboardTransferButton");
-export var ClipboardTransferTypeCheckbox = document.getElementById("clipboardTransferTypeCheckbox");
+export var TypeClipboardButton = document.getElementById("typeClipboardButton");
 export var ConnectionP2PIcon = document.getElementById("connectionP2PIcon");
 export var ConnectionRelayedIcon = document.getElementById("connectionRelayedIcon");
 export var ToastsWrapper = document.getElementById("toastsWrapper");
@@ -66,13 +65,14 @@ export function ApplyInputHandlers() {
         closeAllHorizontalBars("clipboardTransferBar");
         ClipboardTransferBar.classList.toggle("open");
     });
-    ClipboardTransferTextArea.addEventListener("input", (ev) => {
-        if (ClipboardTransferTextArea.value.length == 0) {
-            return;
-        }
-        MainRc.MessageSender.SendClipboardTransfer(ClipboardTransferTextArea.value, ClipboardTransferTypeCheckbox.checked);
-        ClipboardTransferTextArea.blur();
-        ShowMessage("Clipboard sent!");
+    TypeClipboardButton.addEventListener("click", (ev) => {
+        navigator.clipboard.readText().then(text => {
+            MainRc.MessageSender.SendClipboardTransfer(text, true);
+            ShowMessage("Clipboard sent!");
+        }, reason => {
+            alert("Unable to read clipboard.  Please check your permissions.");
+            console.log("Unable to read clipboard.  Reason: " + reason);
+        });
     });
     ConnectButton.addEventListener("click", (ev) => {
         MainRc.ConnectToClient();

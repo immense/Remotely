@@ -38,9 +38,8 @@ export var FileTransferButton = document.getElementById("fileTransferButton") as
 export var CtrlAltDelButton = document.getElementById("ctrlAltDelButton") as HTMLButtonElement;
 export var TouchKeyboardTextArea = document.getElementById("touchKeyboardTextArea") as HTMLTextAreaElement;
 export var ClipboardTransferBar = document.getElementById("clipboardTransferBar") as HTMLDivElement;
-export var ClipboardTransferTextArea = document.getElementById("clipboardTransferTextArea") as HTMLTextAreaElement;
 export var ClipboardTransferButton = document.getElementById("clipboardTransferButton") as HTMLButtonElement;
-export var ClipboardTransferTypeCheckbox = document.getElementById("clipboardTransferTypeCheckbox") as HTMLInputElement;
+export var TypeClipboardButton = document.getElementById("typeClipboardButton") as HTMLButtonElement;
 export var ConnectionP2PIcon = document.getElementById("connectionP2PIcon") as HTMLElement;
 export var ConnectionRelayedIcon = document.getElementById("connectionRelayedIcon") as HTMLElement;
 export var ToastsWrapper = document.getElementById("toastsWrapper") as HTMLDivElement;
@@ -72,13 +71,14 @@ export function ApplyInputHandlers() {
         closeAllHorizontalBars("clipboardTransferBar");
         ClipboardTransferBar.classList.toggle("open");
     });
-    ClipboardTransferTextArea.addEventListener("input", (ev) => {
-        if (ClipboardTransferTextArea.value.length == 0) {
-            return;
-        }
-        MainRc.MessageSender.SendClipboardTransfer(ClipboardTransferTextArea.value, ClipboardTransferTypeCheckbox.checked);
-        ClipboardTransferTextArea.blur();
-        ShowMessage("Clipboard sent!");
+    TypeClipboardButton.addEventListener("click", (ev) => {
+        navigator.clipboard.readText().then(text => {
+            MainRc.MessageSender.SendClipboardTransfer(text, true);
+            ShowMessage("Clipboard sent!");
+        }, reason => {
+            alert("Unable to read clipboard.  Please check your permissions.");
+            console.log("Unable to read clipboard.  Reason: " + reason);
+        });
     });
     ConnectButton.addEventListener("click", (ev) => {
         MainRc.ConnectToClient();

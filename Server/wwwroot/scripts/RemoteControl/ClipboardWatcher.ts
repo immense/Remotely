@@ -1,5 +1,4 @@
-﻿import { ClipboardTransferTextArea } from "./UI.js";
-import { MainRc } from "./Main.js";
+﻿import { MainRc } from "./Main.js";
 
 export class ClipboardWatcher {
     ClipboardTimer: number;
@@ -21,7 +20,6 @@ export class ClipboardWatcher {
                 navigator.clipboard.readText().then(newText => {
                     if (this.LastClipboardText != newText) {
                         this.LastClipboardText = newText;
-                        ClipboardTransferTextArea.value = newText;
                         MainRc.MessageSender.SendClipboardTransfer(newText, false);
                     }
                 })
@@ -33,7 +31,6 @@ export class ClipboardWatcher {
         this.PauseMonitoring = true;
         this.LastClipboardText = text;
         navigator.clipboard.writeText(text);
-        ClipboardTransferTextArea.value = text;
         this.PauseMonitoring = false;
     }
 }
