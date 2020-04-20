@@ -17,26 +17,35 @@ namespace Remotely.ScreenCast.Core.Services
         public WebRtcSessionFactory(CasterSocket casterSocket,
          IKeyboardMouseInput keyboardMouseInput,
          IAudioCapturer audioCapturer,
-         IClipboardService clipboardService)
+         IClipboardService clipboardService,
+         IFileDownloadService fileDownloadService)
         {
             CasterSocket = casterSocket;
             KeyboardMouseInput = keyboardMouseInput;
             AudioCapturer = audioCapturer;
             ClipboardService = clipboardService;
+            FileDownloadService = fileDownloadService;
         }
+        private IAudioCapturer AudioCapturer { get; }
+
+        private CasterSocket CasterSocket { get; }
+
+        private IClipboardService ClipboardService { get; }
+
+        private IFileDownloadService FileDownloadService { get; }
+
+        private IKeyboardMouseInput KeyboardMouseInput { get; }
+
         public WebRtcSession GetNewSession(Viewer viewer)
         {
             var messageHandler = new RtcMessageHandler(viewer,
                 CasterSocket,
                 KeyboardMouseInput,
                 AudioCapturer,
-                ClipboardService);
+                ClipboardService,
+                FileDownloadService);
 
             return new WebRtcSession(messageHandler);
         }
-        private CasterSocket CasterSocket { get; }
-        private IKeyboardMouseInput KeyboardMouseInput { get; }
-        private IAudioCapturer AudioCapturer { get; }
-        private IClipboardService ClipboardService { get; }
     }
 }

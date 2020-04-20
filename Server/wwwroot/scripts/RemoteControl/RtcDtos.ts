@@ -51,6 +51,30 @@ export interface CursorChangeDto extends BinaryDto {
     CursorInfo: CursorInfo;
 }
 
+export class FileDto implements BinaryDto {
+    constructor(buffer: Uint8Array,
+        fileName: string,
+        messageId: string,
+        endOfFile: boolean,
+        startOfFile: boolean) {
+
+        this.Buffer = buffer;
+        this.FileName = fileName;
+        this.MessageId = messageId;
+        this.EndOfFile = endOfFile
+        this.StartOfFile = startOfFile;
+    }
+
+    Buffer: Uint8Array;
+    FileName: string;
+    MessageId: string;
+    EndOfFile: boolean;
+    StartOfFile: boolean;
+
+    DtoType: BinaryDtoType = BinaryDtoType.File;
+}
+
+
 export class KeyDownDto implements BinaryDto {
     constructor(key: string) {
         this.Key = key;

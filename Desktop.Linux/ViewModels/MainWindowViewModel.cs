@@ -273,6 +273,7 @@ namespace Remotely.Desktop.Linux.ViewModels
             serviceCollection.AddSingleton<Conductor>();
             serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerLinux>();
             serviceCollection.AddTransient<Viewer>();
+            serviceCollection.AddScoped<IFileDownloadService, FileDownloadService>();
 
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();

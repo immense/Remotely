@@ -18,17 +18,19 @@ namespace Remotely.ScreenCast.Core.Communication
         public CasterSocket(
             IKeyboardMouseInput keyboardMouseInput,
             IScreenCaster screenCastService,
-            IAudioCapturer audioCapturer)
+            IAudioCapturer audioCapturer,
+            IFileDownloadService fileDownloadService)
         {
             KeyboardMouseInput = keyboardMouseInput;
             AudioCapturer = audioCapturer;
             ScreenCaster = screenCastService;
+            FileDownloadService = fileDownloadService;
         }
 
         public HubConnection Connection { get; private set; }
         public bool IsConnected => Connection?.State == HubConnectionState.Connected;
-        public IScreenCaster ScreenCaster { get; }
-
+        private IScreenCaster ScreenCaster { get; }
+        private IFileDownloadService FileDownloadService { get; }
         private IAudioCapturer AudioCapturer { get; }
 
         private IClipboardService ClipboardService { get; }
@@ -149,7 +151,7 @@ namespace Remotely.ScreenCast.Core.Communication
             {
                 try
                 {
-                    if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                    if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
                     {
                         viewer.RtcSession.AddIceCandidate(sdpMid, sdpMlineIndex, candidate);
                     }
@@ -165,7 +167,7 @@ namespace Remotely.ScreenCast.Core.Communication
             {
                 try
                 {
-                    if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                    if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
                     {
                         viewer.RtcSession.SetRemoteDescription("answer", sdp);
                     }
@@ -347,6 +349,11 @@ namespace Remotely.ScreenCast.Core.Communication
                 }
             });
 
+            Connection.On("ReceiveFile", async (byte[] buffer, string fileName, string messageId, bool endOfFile, bool startOfFile) =>
+            {
+                await FileDownloadService.ReceiveFile(buffer, fileName, messageId, endOfFile, startOfFile);
+            });
+
             Connection.On("ToggleAudio", (bool toggleOn, string viewerID) =>
             {
                 if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
@@ -361,7 +368,6 @@ namespace Remotely.ScreenCast.Core.Communication
                     KeyboardMouseInput.ToggleBlockInput(toggleOn);
                 }
             });
-
 
             Connection.On("TouchDown", (string viewerID) =>
             {

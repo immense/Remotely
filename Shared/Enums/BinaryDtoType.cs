@@ -48,6 +48,8 @@ namespace Remotely.Shared.Enums
         [EnumMember(Value = "KeyPress")]
         KeyPress = 20,
         [EnumMember(Value = "QualityChange")]
-        QualityChange = 21
+        QualityChange = 21,
+        [EnumMember(Value = "File")]
+        File = 22
     }
 }
