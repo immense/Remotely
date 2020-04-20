@@ -84,15 +84,7 @@ namespace Remotely.ScreenCast.Core
                         var value = args?[i + 1];
                         if (value != null)
                         {
-                            if (value.StartsWith("-"))
-                            {
-                                ArgDict.Add(key, "true");
-                                i -= 1;
-                            }
-                            else
-                            {
-                                ArgDict.Add(key, args[i + 1].Trim());
-                            }
+                            ArgDict.Add(key, args[i + 1].Trim());
                         }
                     }
                 }
