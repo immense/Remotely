@@ -75,6 +75,7 @@ namespace Remotely.Desktop.Win.ViewModels
                         var commandLine = Win32Interop.GetCommandLine().Replace(" -elevate", "").Replace("\"", "");
                         var psi = new ProcessStartInfo(commandLine);
                         psi.Verb = "RunAs";
+                        psi.UseShellExecute = true;
                         Process.Start(psi);
                         Environment.Exit(0);
                     }
