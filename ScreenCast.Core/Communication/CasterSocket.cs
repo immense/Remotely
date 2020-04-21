@@ -94,9 +94,9 @@ namespace Remotely.ScreenCast.Core.Communication
             await Connection.SendAsync("CtrlAltDel");
         }
 
-        public async Task SendCursorChange(CursorInfo cursor, List<string> viewerIDs)
+        public async Task SendCursorChange(CursorInfo cursor, string viewerID)
         {
-            await Connection.SendAsync("SendCursorChange", cursor, viewerIDs);
+            await Connection.SendAsync("SendCursorChange", cursor, viewerID);
         }
 
         public async Task SendDeviceInfo(string serviceID, string machineName, string deviceID)

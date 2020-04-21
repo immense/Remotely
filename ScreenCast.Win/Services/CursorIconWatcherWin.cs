@@ -7,15 +7,16 @@ using System.Timers;
 using System.Windows.Forms;
 using Remotely.Shared.Win32;
 using Remotely.Shared.Models;
+using Remotely.ScreenCast.Core.Interfaces;
 
 namespace Remotely.ScreenCast.Win.Services
 {
     /// <summary>
     /// A class that can be used to watch for cursor icon changes.
     /// </summary>
-    public class CursorIconWatcher
+    public class CursorIconWatcherWin : ICursorIconWatcher
     {
-        public CursorIconWatcher()
+        public CursorIconWatcherWin()
         {
             ChangeTimer = new System.Timers.Timer(25);
             ChangeTimer.Elapsed += ChangeTimer_Elapsed;

@@ -87,7 +87,7 @@ export class RtcMessageHandler {
         ShowMessage("Clipboard updated.");
     }
     HandleCursorChange(cursorChange: CursorChangeDto) {
-        UI.UpdateCursor(cursorChange.CursorInfo);
+        UI.UpdateCursor(cursorChange.ImageBytes, cursorChange.HotSpotX, cursorChange.HotSpotY, cursorChange.CssOverride);
     }
     HandleMachineName(machineNameDto: MachineNameDto) {
         document.title = `${machineNameDto.MachineName} - Remotely Session`;

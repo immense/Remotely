@@ -36,10 +36,11 @@ namespace Remotely.ScreenCast.Linux
                 }
                 else
                 {
-                    Conductor.Connect().ContinueWith(async (task) =>
+                    var casterSocket = Services.GetRequiredService<CasterSocket>();
+                    casterSocket.Connect(Conductor.Host).ContinueWith(async (task) =>
                     {
-                        await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
-                        await Conductor.CasterSocket.NotifyRequesterUnattendedReady(Conductor.RequesterID);
+                        await casterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
+                        await casterSocket.NotifyRequesterUnattendedReady(Conductor.RequesterID);
                         Services.GetRequiredService<IdleTimer>().Start();
                     });
                 }
@@ -61,7 +62,7 @@ namespace Remotely.ScreenCast.Linux
                 builder.AddConsole().AddDebug();
             });
 
-            serviceCollection.AddSingleton<IScreenCaster, ScreenCasterLinux>();
+            serviceCollection.AddSingleton<IScreenCaster, ScreenCaster>();
             serviceCollection.AddSingleton<IKeyboardMouseInput, KeyboardMouseInputLinux>();
             serviceCollection.AddSingleton<IClipboardService, ClipboardServiceLinux>();
             serviceCollection.AddSingleton<IAudioCapturer, AudioCapturerLinux>();
@@ -73,6 +74,7 @@ namespace Remotely.ScreenCast.Linux
             serviceCollection.AddTransient<Viewer>();
             serviceCollection.AddScoped<IFileTransferService, FileTransferService>();
             serviceCollection.AddScoped<IWebRtcSessionFactory, WebRtcSessionFactory>();
+            serviceCollection.AddSingleton<ICursorIconWatcher, CursorIconWatcherLinux>();
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
         }

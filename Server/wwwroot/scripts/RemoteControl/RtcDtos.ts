@@ -1,6 +1,7 @@
 import { BinaryDto } from "./BinaryDto.js";
 import { BinaryDtoType } from "../Enums/BinaryDtoType.js";
 import { CursorInfo } from "../Models/CursorInfo.js";
+import { Point } from "../Models/Point.js";
 
 export class AutoQualityAdjustDto implements BinaryDto {
     constructor(isOn: boolean) {
@@ -48,7 +49,10 @@ export class CtrlAltDelDto implements BinaryDto {
 }
 
 export interface CursorChangeDto extends BinaryDto {
-    CursorInfo: CursorInfo;
+    ImageBytes: Uint8Array;
+    HotSpotX: number;
+    HotSpotY: number;
+    CssOverride: string;
 }
 
 export class FileDto implements BinaryDto {

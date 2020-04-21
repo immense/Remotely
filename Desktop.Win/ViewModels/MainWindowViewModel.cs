@@ -33,10 +33,11 @@ namespace Remotely.Desktop.Win.ViewModels
 
             BuildServices();
 
-            CursorIconWatcher = Services.GetRequiredService<CursorIconWatcher>();
+            CursorIconWatcher = Services.GetRequiredService<ICursorIconWatcher>();
             CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
             Services.GetRequiredService<IClipboardService>().BeginWatching();
             Conductor = Services.GetRequiredService<Conductor>();
+            CasterSocket = Services.GetRequiredService<CasterSocket>();
             Conductor.SessionIDChanged += SessionIDChanged;
             Conductor.ViewerRemoved += ViewerRemoved;
             Conductor.ViewerAdded += ViewerAdded;
@@ -59,9 +60,9 @@ namespace Remotely.Desktop.Win.ViewModels
             }
         }
 
-        public Conductor Conductor { get; }
-
-        public CursorIconWatcher CursorIconWatcher { get; private set; }
+        private Conductor Conductor { get; }
+        private CasterSocket CasterSocket { get; }
+        private ICursorIconWatcher CursorIconWatcher { get; set; }
 
         public ICommand ElevateToAdminCommand
         {
@@ -139,7 +140,7 @@ namespace Remotely.Desktop.Win.ViewModels
                     {
                         viewer.DisconnectRequested = true;
                         ViewerRemoved(this, viewer.ViewerConnectionID);
-                        await Conductor.CasterSocket.SendViewerRemoved(viewer.ViewerConnectionID);
+                        await CasterSocket.SendViewerRemoved(viewer.ViewerConnectionID);
                     }
                 },
                 (param) =>
@@ -169,8 +170,8 @@ namespace Remotely.Desktop.Win.ViewModels
 
         public async Task GetSessionID()
         {
-            await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
-            await Conductor.CasterSocket.GetSessionID();
+            await CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
+            await CasterSocket.GetSessionID();
         }
 
         public async Task Init()
@@ -188,10 +189,10 @@ namespace Remotely.Desktop.Win.ViewModels
             Conductor.ProcessArgs(new string[] { "-mode", "Normal", "-host", Host });
             try
             {
-                await Conductor.Connect();
+                await CasterSocket.Connect(Conductor.Host);
 
 
-                Conductor.CasterSocket.Connection.Closed += async (ex) =>
+                CasterSocket.Connection.Closed += async (ex) =>
                 {
                     await App.Current.Dispatcher.InvokeAsync(() =>
                     {
@@ -200,7 +201,7 @@ namespace Remotely.Desktop.Win.ViewModels
                     });
                 };
 
-                Conductor.CasterSocket.Connection.Reconnecting += async (ex) =>
+                CasterSocket.Connection.Reconnecting += async (ex) =>
                 {
                     await App.Current.Dispatcher.InvokeAsync(() =>
                     {
@@ -209,7 +210,7 @@ namespace Remotely.Desktop.Win.ViewModels
                     });
                 };
 
-                Conductor.CasterSocket.Connection.Reconnected += async (arg) =>
+                CasterSocket.Connection.Reconnected += async (arg) =>
                 {
                     await GetSessionID();
                 };
@@ -266,8 +267,8 @@ namespace Remotely.Desktop.Win.ViewModels
                 builder.AddConsole().AddDebug().AddEventLog();
             });
 
-            serviceCollection.AddSingleton<CursorIconWatcher>();
-            serviceCollection.AddSingleton<IScreenCaster, ScreenCasterWin>();
+            serviceCollection.AddSingleton<ICursorIconWatcher, CursorIconWatcherWin>();
+            serviceCollection.AddSingleton<IScreenCaster, ScreenCaster>();
             serviceCollection.AddSingleton<IKeyboardMouseInput, KeyboardMouseInputWin>();
             serviceCollection.AddSingleton<IClipboardService, ClipboardServiceWin>();
             serviceCollection.AddSingleton<IAudioCapturer, AudioCapturerWin>();
@@ -285,9 +286,12 @@ namespace Remotely.Desktop.Win.ViewModels
 
         private async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)
         {
-            if (Conductor?.CasterSocket?.IsConnected == true && Conductor?.Viewers?.Count > 0)
+            if (Conductor?.Viewers?.Count > 0)
             {
-                await Conductor?.CasterSocket?.SendCursorChange(cursor, Conductor.Viewers.Keys.ToList());
+                foreach (var viewer in Conductor.Viewers.Values)
+                {
+                    await viewer.SendCursorChange(cursor);
+                }
             }
         }
 
@@ -299,10 +303,9 @@ namespace Remotely.Desktop.Win.ViewModels
                 var result = MessageBox.Show(Application.Current.MainWindow, $"You've received a connection request from {screenCastRequest.RequesterName}.  Accept?", "Connection Request", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
-                    Task.Run(async () =>
+                    Task.Run(() =>
                     {
-                        await Conductor.CasterSocket.SendCursorChange(CursorIconWatcher.GetCurrentCursor(), new List<string>() { screenCastRequest.ViewerID });
-                        _ = Services.GetRequiredService<IScreenCaster>().BeginScreenCasting(screenCastRequest);
+                        Services.GetRequiredService<IScreenCaster>().BeginScreenCasting(screenCastRequest);
                     });
                 }
             });
