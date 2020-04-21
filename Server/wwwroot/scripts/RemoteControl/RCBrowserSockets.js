@@ -185,7 +185,7 @@ export class RCBrowserSockets {
             UI.ShowMessage("Reconnecting...");
         });
         hubConnection.on("CursorChange", (cursor) => {
-            UI.UpdateCursor(cursor);
+            UI.UpdateCursor(cursor.ImageBytes, cursor.HotSpot.X, cursor.HotSpot.Y, cursor.CssOverride);
         });
         hubConnection.on("RequestingScreenCast", () => {
             UI.ShowMessage("Requesting remote control...");

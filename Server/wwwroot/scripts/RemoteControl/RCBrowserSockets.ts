@@ -205,7 +205,7 @@ export class RCBrowserSockets {
         });
 
         hubConnection.on("CursorChange", (cursor: CursorInfo) => {
-            UI.UpdateCursor(cursor);
+            UI.UpdateCursor(cursor.ImageBytes, cursor.HotSpot.X, cursor.HotSpot.Y, cursor.CssOverride);
         });
 
         hubConnection.on("RequestingScreenCast", () => {

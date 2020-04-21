@@ -17,17 +17,18 @@ namespace Remotely.ScreenCast.Win
 {
     public class Program
 	{
-        public static Conductor Conductor { get; private set; }
-        public static CursorIconWatcher CursorIconWatcher { get; private set; }
-        public static IServiceProvider Services => ServiceContainer.Instance;
-
-        private static string CurrentDesktopName { get; set;
-        }
+        private static Conductor Conductor { get; set; }
+        private static CasterSocket CasterSocket { get; set; }
+        private static ICursorIconWatcher CursorIconWatcher { get; set; }
+        private static IServiceProvider Services => ServiceContainer.Instance;
         public static async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)
         {
-            if (Conductor?.CasterSocket?.IsConnected == true)
+            if (Conductor?.Viewers?.Count > 0)
             {
-                await Conductor.CasterSocket.SendCursorChange(cursor, Conductor.Viewers.Keys.ToList());
+                foreach (var viewer in Conductor.Viewers.Values)
+                {
+                    await viewer.SendCursorChange(cursor);
+                }
             }
         }
 
@@ -40,6 +41,7 @@ namespace Remotely.ScreenCast.Win
                 BuildServices();
 
                 Conductor = Services.GetRequiredService<Conductor>();
+                CasterSocket = Services.GetRequiredService<CasterSocket>();
                 Conductor.ProcessArgs(Environment.GetCommandLineArgs().SkipWhile(x => !x.StartsWith("-")).ToArray());
 
                 if (Conductor.Mode == Core.Enums.AppMode.Chat)
@@ -67,8 +69,8 @@ namespace Remotely.ScreenCast.Win
                 builder.AddConsole().AddDebug().AddEventLog();
             });
 
-            serviceCollection.AddSingleton<CursorIconWatcher>();
-            serviceCollection.AddSingleton<IScreenCaster, ScreenCasterWin>();
+            serviceCollection.AddSingleton<ICursorIconWatcher, CursorIconWatcherWin>();
+            serviceCollection.AddSingleton<IScreenCaster, ScreenCaster>();
             serviceCollection.AddSingleton<IKeyboardMouseInput, KeyboardMouseInputWin>();
             serviceCollection.AddSingleton<IClipboardService, ClipboardServiceWin>();
             serviceCollection.AddSingleton<IAudioCapturer, AudioCapturerWin>();
@@ -94,31 +96,27 @@ namespace Remotely.ScreenCast.Win
 
             if (Conductor.ArgDict.ContainsKey("relaunch"))
             {
-                Logger.Write($"Resuming after relaunch in desktop {CurrentDesktopName}.");
+                Logger.Write($"Resuming after relaunch.");
                 var viewersString = Conductor.ArgDict["viewers"];
                 var viewerIDs = viewersString.Split(",".ToCharArray());
-                await Conductor.CasterSocket.NotifyViewersRelaunchedScreenCasterReady(viewerIDs);
+                await CasterSocket.NotifyViewersRelaunchedScreenCasterReady(viewerIDs);
             }
             else
             {
-                await Conductor.CasterSocket.NotifyRequesterUnattendedReady(Conductor.RequesterID);
+                await CasterSocket.NotifyRequesterUnattendedReady(Conductor.RequesterID);
             }
         }
         private static void StartScreenCasting()
         {
-            CursorIconWatcher = Services.GetRequiredService<CursorIconWatcher>();
+            CursorIconWatcher = Services.GetRequiredService<ICursorIconWatcher>();
 
-            Conductor.Connect().ContinueWith(async (task) =>
+            CasterSocket.Connect(Conductor.Host).ContinueWith(async (task) =>
             {
-                await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
+                await CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
                 if (Win32Interop.GetCurrentDesktop(out var currentDesktopName))
                 {
                     Logger.Write($"Setting initial desktop to {currentDesktopName}.");
-                    if (Win32Interop.SwitchToInputDesktop())
-                    {
-                        CurrentDesktopName = currentDesktopName;
-                    }
-                    else
+                    if (!Win32Interop.SwitchToInputDesktop())
                     {
                         Logger.Write("Failed to set initial desktop.");
                     }

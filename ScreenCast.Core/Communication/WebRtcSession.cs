@@ -115,6 +115,11 @@ namespace Remotely.ScreenCast.Core.Communication
             SendDto(new ScreenSizeDto(width, height));
         }
 
+        public void SendCursorChange(CursorInfo cursorInfo)
+        {
+            SendDto(new CursorChangeDto(cursorInfo.ImageBytes, cursorInfo.HotSpot.X, cursorInfo.HotSpot.Y, cursorInfo.CssOverride));
+        }
+
         public void SetRemoteDescription(string type, string sdp)
         {
             PeerConnection.SetRemoteDescription(type, sdp);

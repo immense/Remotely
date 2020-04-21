@@ -44,6 +44,7 @@ namespace Remotely.Desktop.Linux.ViewModels
             BuildServices();
 
             Conductor = Services.GetRequiredService<Conductor>();
+            CasterSocket = Services.GetRequiredService<CasterSocket>();
 
             Conductor.SessionIDChanged += SessionIDChanged;
             Conductor.ViewerRemoved += ViewerRemoved;
@@ -53,8 +54,6 @@ namespace Remotely.Desktop.Linux.ViewModels
 
 
         public static MainWindowViewModel Current { get; private set; }
-
-        public static IServiceProvider Services => ServiceContainer.Instance;
 
         public ICommand ChangeServerCommand => new Executor(async (param) =>
         {
@@ -66,8 +65,6 @@ namespace Remotely.Desktop.Linux.ViewModels
         {
             (param as Window)?.Close();
         });
-
-        public Conductor Conductor { get; }
 
         public ICommand CopyLinkCommand => new Executor(async (param) =>
         {
@@ -121,7 +118,7 @@ namespace Remotely.Desktop.Linux.ViewModels
             foreach (Viewer viewer in viewerList)
             {
                 viewer.DisconnectRequested = true;
-                await Conductor.CasterSocket.SendViewerRemoved(viewer.ViewerConnectionID);
+                await CasterSocket.SendViewerRemoved(viewer.ViewerConnectionID);
             }
         });
 
@@ -132,6 +129,116 @@ namespace Remotely.Desktop.Linux.ViewModels
         }
 
         public ObservableCollection<Viewer> Viewers { get; } = new ObservableCollection<Viewer>();
+        private static IServiceProvider Services => ServiceContainer.Instance;
+        private CasterSocket CasterSocket { get; }
+        private Conductor Conductor { get; }
+        public async Task GetSessionID()
+        {
+            await CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
+            await CasterSocket.GetSessionID();
+        }
+
+        public async Task Init()
+        {
+            try
+            {
+
+                await CheckDependencies();
+
+                SessionID = "Retrieving...";
+
+                Host = Config.GetConfig().Host;
+
+                while (string.IsNullOrWhiteSpace(Host))
+                {
+                    Host = "https://";
+                    await PromptForHostName();
+                }
+                Conductor.ProcessArgs(new string[] { "-mode", "Normal", "-host", Host });
+
+                await CasterSocket.Connect(Conductor.Host);
+
+                CasterSocket.Connection.Closed += async (ex) =>
+                {
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        SessionID = "Disconnected";
+                    });
+                };
+
+                CasterSocket.Connection.Reconnecting += async (ex) =>
+                {
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        SessionID = "Reconnecting";
+                    });
+                };
+
+                CasterSocket.Connection.Reconnected += async (arg) =>
+                {
+                    await GetSessionID();
+                };
+
+
+                await CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
+                await CasterSocket.GetSessionID();
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+                await MessageBox.Show("Failed to connect to server.", "Connection Failed", MessageBoxType.OK);
+                return;
+            }
+        }
+
+        public async Task PromptForHostName()
+        {
+            var prompt = new HostNamePrompt();
+            if (!string.IsNullOrWhiteSpace(Host))
+            {
+                HostNamePromptViewModel.Current.Host = Host;
+            }
+            prompt.Owner = MainWindow.Current;
+            await prompt.ShowDialog(MainWindow.Current);
+            var result = HostNamePromptViewModel.Current.Host;
+            if (!result.StartsWith("https://") && !result.StartsWith("http://"))
+            {
+                result = $"https://{result}";
+            }
+            if (result != Host)
+            {
+                Host = result.TrimEnd('/');
+                var config = Config.GetConfig();
+                config.Host = Host;
+                config.Save();
+            }
+        }
+
+        private void BuildServices()
+        {
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddLogging(builder =>
+            {
+                builder.AddConsole().AddDebug();
+            });
+
+            serviceCollection.AddSingleton<IScreenCaster, ScreenCaster>();
+            serviceCollection.AddSingleton<IKeyboardMouseInput, KeyboardMouseInputLinux>();
+            serviceCollection.AddSingleton<IClipboardService, ClipboardServiceLinux>();
+            serviceCollection.AddSingleton<IAudioCapturer, AudioCapturerLinux>();
+            serviceCollection.AddSingleton<CasterSocket>();
+            serviceCollection.AddSingleton<IdleTimer>();
+            serviceCollection.AddSingleton<Conductor>();
+            serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerLinux>();
+            serviceCollection.AddTransient<Viewer>();
+            serviceCollection.AddScoped<IFileTransferService, FileTransferService>();
+            serviceCollection.AddScoped<IWebRtcSessionFactory, WebRtcSessionFactory>();
+            serviceCollection.AddSingleton<ICursorIconWatcher, CursorIconWatcherLinux>();
+
+
+            ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
+        }
+
         private async Task CheckDependencies()
         {
             var dependencies = new string[]
@@ -173,112 +280,6 @@ namespace Remotely.Desktop.Linux.ViewModels
                 }
             }
         }
-
-        public async Task GetSessionID()
-        {
-            await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
-            await Conductor.CasterSocket.GetSessionID();
-        }
-
-        public async Task Init()
-        {
-            try
-            {
-
-                await CheckDependencies();
-
-                SessionID = "Retrieving...";
-
-                Host = Config.GetConfig().Host;
-
-                while (string.IsNullOrWhiteSpace(Host))
-                {
-                    Host = "https://";
-                    await PromptForHostName();
-                }
-                Conductor.ProcessArgs(new string[] { "-mode", "Normal", "-host", Host });
-
-                await Conductor.Connect();
-
-                Conductor.CasterSocket.Connection.Closed += async (ex) =>
-                {
-                    await Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        SessionID = "Disconnected";
-                    });
-                };
-
-                Conductor.CasterSocket.Connection.Reconnecting += async (ex) =>
-                {
-                    await Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        SessionID = "Reconnecting";
-                    });
-                };
-
-                Conductor.CasterSocket.Connection.Reconnected += async (arg) =>
-                {
-                    await GetSessionID();
-                };
-
-
-                await Conductor.CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
-                await Conductor.CasterSocket.GetSessionID();
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
-                await MessageBox.Show("Failed to connect to server.", "Connection Failed", MessageBoxType.OK);
-                return;
-            }
-        }
-
-        public async Task PromptForHostName()
-        {
-            var prompt = new HostNamePrompt();
-            if (!string.IsNullOrWhiteSpace(Host))
-            {
-                HostNamePromptViewModel.Current.Host = Host;
-            }
-            prompt.Owner = MainWindow.Current;
-            await prompt.ShowDialog(MainWindow.Current);
-            var result = HostNamePromptViewModel.Current.Host;
-            if (!result.StartsWith("https://") && !result.StartsWith("http://"))
-            {
-                result = $"https://{result}";
-            }
-            if (result != Host)
-            {
-                Host = result.TrimEnd('/');
-                var config = Config.GetConfig();
-                config.Host = Host;
-                config.Save();
-            }
-        }
-
-        private void BuildServices()
-        {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddLogging(builder =>
-            {
-                builder.AddConsole().AddDebug();
-            });
-
-            serviceCollection.AddSingleton<IScreenCaster, ScreenCasterLinux>();
-            serviceCollection.AddSingleton<IKeyboardMouseInput, KeyboardMouseInputLinux>();
-            serviceCollection.AddSingleton<IClipboardService, ClipboardServiceLinux>();
-            serviceCollection.AddSingleton<IAudioCapturer, AudioCapturerLinux>();
-            serviceCollection.AddSingleton<CasterSocket>();
-            serviceCollection.AddSingleton<IdleTimer>();
-            serviceCollection.AddSingleton<Conductor>();
-            serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerLinux>();
-            serviceCollection.AddTransient<Viewer>();
-            serviceCollection.AddScoped<IFileTransferService, FileTransferService>();
-            serviceCollection.AddScoped<IWebRtcSessionFactory, WebRtcSessionFactory>();
-
-
-            ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
-        }
         private void ScreenCastRequested(object sender, ScreenCastRequest screenCastRequest)
         {
             Dispatcher.UIThread.InvokeAsync(async () =>
@@ -286,10 +287,9 @@ namespace Remotely.Desktop.Linux.ViewModels
                 var result = await MessageBox.Show($"You've received a connection request from {screenCastRequest.RequesterName}.  Accept?", "Connection Request", MessageBoxType.YesNo);
                 if (result == MessageBoxResult.Yes)
                 {
-                    _ = Task.Run(async () =>
+                    _ = Task.Run(() =>
                     {
-                        await Conductor.CasterSocket.SendCursorChange(new CursorInfo(null, Point.Empty, "default"), new List<string>() { screenCastRequest.ViewerID });
-                            _ = Services.GetRequiredService<IScreenCaster>().BeginScreenCasting(screenCastRequest);
+                            Services.GetRequiredService<IScreenCaster>().BeginScreenCasting(screenCastRequest);
                     });
                 }
             });

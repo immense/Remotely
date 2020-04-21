@@ -12,13 +12,23 @@ using Remotely.ScreenCast.Core.Utilities;
 using Remotely.Shared.Utilities;
 using System.Collections.Concurrent;
 using Remotely.ScreenCast.Core.Enums;
+using Remotely.Shared.Models;
+using Remotely.Shared.Win32;
 
 namespace Remotely.ScreenCast.Core.Services
 {
-    public class ScreenCasterBase
+    public class ScreenCaster : IScreenCaster
     {
-        public async Task BeginScreenCasting(string viewerID,
-            string requesterName)
+        public ScreenCaster(Conductor conductor, ICursorIconWatcher cursorIconWatcher)
+        {
+            Conductor = conductor;
+            CursorIconWatcher = cursorIconWatcher;
+        }
+
+        private Conductor Conductor { get; }
+        private ICursorIconWatcher CursorIconWatcher { get; }
+
+        public async Task BeginScreenCasting(ScreenCastRequest screenCastRequest)
         {
             var viewers = new ConcurrentDictionary<string, Viewer>();
             var mode = AppMode.Unattended;
@@ -27,41 +37,43 @@ namespace Remotely.ScreenCast.Core.Services
             {
                 byte[] encodedImageBytes;
                 var fpsQueue = new Queue<DateTimeOffset>();
-                var conductor = ServiceContainer.Instance.GetRequiredService<Conductor>();
-                mode = conductor.Mode;
+                mode = Conductor.Mode;
                 var viewer = ServiceContainer.Instance.GetRequiredService<Viewer>();
-                viewer.Name = requesterName;
-                viewer.ViewerConnectionID = viewerID;
-                viewers = conductor.Viewers;
+                viewer.Name = screenCastRequest.RequesterName;
+                viewer.ViewerConnectionID = screenCastRequest.ViewerID;
+                viewers = Conductor.Viewers;
 
-                Logger.Write($"Starting screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}.  App Mode: {mode}");
+                Logger.Write($"Starting screen cast.  Requester: {viewer.Name}. Viewer ID: {viewer.ViewerConnectionID}.  App Mode: {mode}");
 
-                viewers.AddOrUpdate(viewerID, viewer, (id, v) => viewer);
+                viewers.AddOrUpdate(viewer.ViewerConnectionID, viewer, (id, v) => viewer);
 
-                if (mode == Enums.AppMode.Normal)
+                if (mode == AppMode.Normal)
                 {
-                    conductor.InvokeViewerAdded(viewer);
+                    Conductor.InvokeViewerAdded(viewer);
                 }
 
                 if (EnvironmentHelper.IsWindows)
                 {
+                    Win32Interop.SwitchToInputDesktop();
                     await viewer.InitializeWebRtc();
                 }
 
-                await viewer.SendMachineName(Environment.MachineName, viewerID);
+                await viewer.SendMachineName(Environment.MachineName, viewer.ViewerConnectionID);
 
                 await viewer.SendScreenData(
                        viewer.Capturer.SelectedScreen,
                        viewer.Capturer.GetDisplayNames().ToArray(),
-                       viewerID);
+                       viewer.ViewerConnectionID);
 
                 await viewer.SendScreenSize(viewer.Capturer.CurrentScreenBounds.Width,
                     viewer.Capturer.CurrentScreenBounds.Height,
-                    viewerID);
+                    viewer.ViewerConnectionID);
+
+                await viewer.SendCursorChange(CursorIconWatcher.GetCurrentCursor());
 
                 viewer.Capturer.ScreenChanged += async (sender, bounds) =>
                 {
-                    await viewer.SendScreenSize(bounds.Width, bounds.Height, viewerID);
+                    await viewer.SendScreenSize(bounds.Width, bounds.Height, viewer.ViewerConnectionID);
                 };
 
                 while (!viewer.DisconnectRequested && viewer.IsConnected)
@@ -107,7 +119,7 @@ namespace Remotely.ScreenCast.Core.Services
                             if (encodedImageBytes?.Length > 0)
                             {
 
-                                await viewer.SendScreenCapture(encodedImageBytes, viewerID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height);
+                                await viewer.SendScreenCapture(encodedImageBytes, viewer.ViewerConnectionID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height);
                             }
                         }
                     }
@@ -117,8 +129,8 @@ namespace Remotely.ScreenCast.Core.Services
                     }
                 }
 
-                Logger.Write($"Ended screen cast.  Requester: {requesterName}. Viewer ID: {viewerID}.");
-                viewers.TryRemove(viewerID, out _);
+                Logger.Write($"Ended screen cast.  Requester: {viewer.Name}. Viewer ID: {viewer.ViewerConnectionID}.");
+                viewers.TryRemove(viewer.ViewerConnectionID, out _);
                 viewer.Dispose();
             }
             catch (Exception ex)

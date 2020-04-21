@@ -467,16 +467,16 @@ export function ShowMessage(message: string) {
     }, 5000);
 }
 
-export function UpdateCursor(cursor: CursorInfo) {
-    if (cursor.CssOverride) {
-        ScreenViewer.style.cursor = cursor.CssOverride;
+export function UpdateCursor(imageBytes: Uint8Array, hotSpotX: number, hotSpotY: number, cssOverride: string) {
+    if (cssOverride) {
+        ScreenViewer.style.cursor = cssOverride;
     }
-    else if (cursor.ImageBytes.byteLength == 0) {
+    else if (imageBytes.byteLength == 0) {
         ScreenViewer.style.cursor = "default";
     }
     else {
-        var base64 = ConvertUInt8ArrayToBase64(cursor.ImageBytes);
-        ScreenViewer.style.cursor = `url('data:image/png;base64,${base64}') ${cursor.HotSpot.X} ${cursor.HotSpot.Y}, default`;
+        var base64 = ConvertUInt8ArrayToBase64(imageBytes);
+        ScreenViewer.style.cursor = `url('data:image/png;base64,${base64}') ${hotSpotX} ${hotSpotY}, default`;
     }
 }
 

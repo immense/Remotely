@@ -1,6 +1,7 @@
 ﻿using Remotely.ScreenCast.Core.Communication;
 using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Services;
+using Remotely.Shared.Models;
 using System;
 using System.Drawing.Imaging;
 using System.Threading.Tasks;
@@ -61,21 +62,13 @@ namespace Remotely.ScreenCast.Core.Models
         }
 
         public bool IsConnected => CasterSocket.IsConnected;
-
         public string Name { get; set; }
-
         public WebRtcSession RtcSession { get; set; }
-
         public string ViewerConnectionID { get; set; }
-
         public int WebSocketBuffer { get; set; }
-
         private IAudioCapturer AudioCapturer { get; }
-
         private CasterSocket CasterSocket { get; }
-
         private IClipboardService ClipboardService { get; }
-
         private IWebRtcSessionFactory WebRtcSessionFactory { get; }
 
         public void Dispose()
@@ -125,6 +118,11 @@ namespace Remotely.ScreenCast.Core.Models
         {
             await SendToViewer(() => RtcSession.SendClipboardText(clipboardText),
                 () => CasterSocket.SendClipboardText(clipboardText, ViewerConnectionID));
+        }
+        public async Task SendCursorChange(CursorInfo cursorInfo)
+        {
+            await SendToViewer(() => RtcSession.SendCursorChange(cursorInfo),
+                () => CasterSocket.SendCursorChange(cursorInfo, ViewerConnectionID));
         }
 
         public async Task SendMachineName(string machineName, string viewerID)

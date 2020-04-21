@@ -12,11 +12,6 @@ namespace Remotely.ScreenCast.Core
 {
     public class Conductor
     {
-        public Conductor(CasterSocket casterSocket)
-        {
-            CasterSocket = casterSocket;
-        }
-
         public event EventHandler<ScreenCastRequest> ScreenCastRequested;
 
         public event EventHandler<string> SessionIDChanged;
@@ -26,7 +21,6 @@ namespace Remotely.ScreenCast.Core
         public event EventHandler<string> ViewerRemoved;
 
         public Dictionary<string, string> ArgDict { get; set; }
-        public CasterSocket CasterSocket { get; private set; }
         public string DeviceID { get; private set; }
         public string Host { get; private set; }
         public AppMode Mode { get; private set; }
@@ -34,10 +28,6 @@ namespace Remotely.ScreenCast.Core
         public string RequesterID { get; private set; }
         public string ServiceID { get; private set; }
         public ConcurrentDictionary<string, Viewer> Viewers { get; } = new ConcurrentDictionary<string, Viewer>();
-        public async Task Connect()
-        {
-            await CasterSocket.Connect(Host);
-        }
 
         public void InvokeScreenCastRequested(ScreenCastRequest viewerIdAndRequesterName)
         {
