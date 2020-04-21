@@ -3,6 +3,7 @@ using Remotely.ScreenCast.Core;
 using Remotely.ScreenCast.Core.Services;
 using Remotely.Shared.Win32;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 
@@ -24,11 +25,11 @@ namespace Remotely.Desktop.Win
         {
             if (Environment.GetCommandLineArgs().Contains("-elevate"))
             {
-                var commandLine = Win32Interop.GetCommandLine().Replace(" -elevate", "").Replace("\"", "");
+                var filePath = Process.GetCurrentProcess().MainModule.FileName;
 
-                Logger.Write($"Elevating process {commandLine}.");
+                Logger.Write($"Elevating process {filePath}.");
                 var result = Win32Interop.OpenInteractiveProcess(
-                    commandLine,
+                    filePath,
                     "default",
                     false,
                     out var procInfo);
