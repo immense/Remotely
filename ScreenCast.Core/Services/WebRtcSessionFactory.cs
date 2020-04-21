@@ -18,7 +18,7 @@ namespace Remotely.ScreenCast.Core.Services
          IKeyboardMouseInput keyboardMouseInput,
          IAudioCapturer audioCapturer,
          IClipboardService clipboardService,
-         IFileDownloadService fileDownloadService)
+         IFileTransferService fileDownloadService)
         {
             CasterSocket = casterSocket;
             KeyboardMouseInput = keyboardMouseInput;
@@ -32,7 +32,7 @@ namespace Remotely.ScreenCast.Core.Services
 
         private IClipboardService ClipboardService { get; }
 
-        private IFileDownloadService FileDownloadService { get; }
+        private IFileTransferService FileDownloadService { get; }
 
         private IKeyboardMouseInput KeyboardMouseInput { get; }
 

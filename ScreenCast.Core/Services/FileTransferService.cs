@@ -14,25 +14,18 @@ using System.Collections.Concurrent;
 
 namespace Remotely.ScreenCast.Core.Services
 {
-    public interface IFileDownloadService
+    public interface IFileTransferService
     {
         string GetBaseDirectory();
 
         Task ReceiveFile(byte[] buffer, string fileName, string messageId, bool endOfFile, bool startOfFile);
     }
 
-    public class FileDownloadService : IFileDownloadService
+    public class FileTransferService : IFileTransferService
     {
-        private static readonly ConcurrentDictionary<string, FileStream> _partialDownloads = new ConcurrentDictionary<string, FileStream>();
+        private static readonly ConcurrentDictionary<string, FileStream> _partialTransfers = new ConcurrentDictionary<string, FileStream>();
 
         private static readonly SemaphoreSlim _writeLock = new SemaphoreSlim(1);
-
-        private ILogger<FileDownloadService> _logger;
-
-        public FileDownloadService(ILogger<FileDownloadService> logger)
-        {
-            _logger = logger;
-        }
 
         public string GetBaseDirectory()
         {
@@ -41,7 +34,7 @@ namespace Remotely.ScreenCast.Core.Services
             if (Directory.Exists(programDataPath))
             {
                 baseDir = Directory.CreateDirectory(Path.Combine(programDataPath, "Remotely", "Shared")).FullName;
-                SetFolderPermissions(baseDir);
+                SetFileOrFolderPermissions(baseDir);
             }
             else
             {
@@ -75,11 +68,13 @@ namespace Remotely.ScreenCast.Core.Services
                         }
                     }
 
+                    File.Create(filePath).Close();
+                    SetFileOrFolderPermissions(filePath);
                     var fs = new FileStream(filePath, FileMode.OpenOrCreate);
-                    _partialDownloads.AddOrUpdate(messageId, fs, (k,v) => fs);
+                    _partialTransfers.AddOrUpdate(messageId, fs, (k,v) => fs);
                 }
 
-                var fileStream = _partialDownloads[messageId];
+                var fileStream = _partialTransfers[messageId];
 
                 if (buffer?.Length > 0)
                 {
@@ -90,7 +85,7 @@ namespace Remotely.ScreenCast.Core.Services
                 if (endOfFile)
                 {
                     fileStream.Close();
-                    _partialDownloads.Remove(messageId, out _);
+                    _partialTransfers.Remove(messageId, out _);
                     if (EnvironmentHelper.IsWindows)
                     {
                         Process.Start("explorer.exe", baseDir);
@@ -99,7 +94,7 @@ namespace Remotely.ScreenCast.Core.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error receiving file.");
+                Logger.Write(ex);
             }
             finally
             {
@@ -107,12 +102,26 @@ namespace Remotely.ScreenCast.Core.Services
             }
         }
 
-        private void SetFolderPermissions(string baseDir)
+        private void SetFileOrFolderPermissions(string path)
         {
+            FileSystemSecurity ds;
+
+            var aclSections = AccessControlSections.Access | AccessControlSections.Group | AccessControlSections.Owner;
+            if (File.Exists(path))
+            {
+                ds = new FileSecurity(path, aclSections);
+            }
+            else if (Directory.Exists(path))
+            {
+                ds = new DirectorySecurity(path, aclSections);
+            }
+            else
+            {
+                return;
+            }
+
             var sid = new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null);
             var account = (NTAccount)sid.Translate(typeof(NTAccount));
-            var aclSections = AccessControlSections.Access | AccessControlSections.Group | AccessControlSections.Owner;
-            var ds = new DirectorySecurity(baseDir, aclSections);
 
             var accessAlreadySet = false;
 
@@ -130,7 +139,14 @@ namespace Remotely.ScreenCast.Core.Services
             if (!accessAlreadySet)
             {
                 ds.AddAccessRule(new FileSystemAccessRule(account, FileSystemRights.Modify, AccessControlType.Allow));
-                new DirectoryInfo(baseDir).SetAccessControl(ds);
+                if (File.Exists(path))
+                {
+                    new FileInfo(path).SetAccessControl((FileSecurity)ds);
+                }
+                else if (Directory.Exists(path))
+                {
+                    new DirectoryInfo(path).SetAccessControl((DirectorySecurity)ds);
+                }
             }
         }
     }

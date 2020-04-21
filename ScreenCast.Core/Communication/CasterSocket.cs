@@ -19,7 +19,7 @@ namespace Remotely.ScreenCast.Core.Communication
             IKeyboardMouseInput keyboardMouseInput,
             IScreenCaster screenCastService,
             IAudioCapturer audioCapturer,
-            IFileDownloadService fileDownloadService)
+            IFileTransferService fileDownloadService)
         {
             KeyboardMouseInput = keyboardMouseInput;
             AudioCapturer = audioCapturer;
@@ -30,7 +30,7 @@ namespace Remotely.ScreenCast.Core.Communication
         public HubConnection Connection { get; private set; }
         public bool IsConnected => Connection?.State == HubConnectionState.Connected;
         private IScreenCaster ScreenCaster { get; }
-        private IFileDownloadService FileDownloadService { get; }
+        private IFileTransferService FileDownloadService { get; }
         private IAudioCapturer AudioCapturer { get; }
 
         private IClipboardService ClipboardService { get; }
