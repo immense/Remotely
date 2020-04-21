@@ -19,7 +19,10 @@ namespace Remotely.Server.API
     [ApiController]
     public class RemoteControlController : ControllerBase
     {
-        public RemoteControlController(DataService dataService, IHubContext<DeviceSocketHub> deviceHub, ApplicationConfig appConfig, SignInManager<RemotelyUser> signInManager)
+        public RemoteControlController(DataService dataService, 
+            IHubContext<DeviceSocketHub> deviceHub, 
+            ApplicationConfig appConfig, 
+            SignInManager<RemotelyUser> signInManager)
         {
             DataService = dataService;
             DeviceHub = deviceHub;

@@ -35,18 +35,10 @@ namespace Remotely.Agent.Installer.Win.Services
                                     commandLineArgs.Add(key, "true");
                                     continue;
                                 }
-                                var value = args?[i + 1];
+                                var value = args[i + 1];
                                 if (value != null)
                                 {
-                                    if (value.StartsWith("-"))
-                                    {
-                                        commandLineArgs.Add(key, "true");
-                                        i -= 1;
-                                    }
-                                    else
-                                    {
-                                        commandLineArgs.Add(key, args[i + 1].Trim());
-                                    }
+                                    commandLineArgs.Add(key, args[i + 1].Trim());
                                 }
                             }
                         }

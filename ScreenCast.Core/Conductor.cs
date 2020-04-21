@@ -81,7 +81,7 @@ namespace Remotely.ScreenCast.Core
                             ArgDict.Add(key, "true");
                             continue;
                         }
-                        var value = args?[i + 1];
+                        var value = args[i + 1];
                         if (value != null)
                         {
                             ArgDict.Add(key, args[i + 1].Trim());
