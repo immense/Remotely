@@ -166,7 +166,10 @@ namespace Remotely.Server.Services
                 screenCasterID = RCDeviceSocketHub.SessionInfoList.First(x => x.Value.AttendedSessionID == screenCasterID).Value.RCDeviceSocketID;
             }
 
-            RCDeviceSocketHub.SessionInfoList.TryGetValue(screenCasterID, out var sessionInfo);
+            if (!RCDeviceSocketHub.SessionInfoList.TryGetValue(screenCasterID, out var sessionInfo))
+            {
+                return Clients.Caller.SendAsync("SessionIDNotFound");
+            }
 
             ScreenCasterID = screenCasterID;
             RequesterName = requesterName;
