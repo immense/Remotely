@@ -72,10 +72,12 @@ namespace Remotely.Desktop.Win.ViewModels
                 {
                     try
                     {
-                        var commandLine = Win32Interop.GetCommandLine().Replace(" -elevate", "").Replace("\"", "");
-                        var psi = new ProcessStartInfo(commandLine);
-                        psi.Verb = "RunAs";
-                        psi.UseShellExecute = true;
+                        var filePath = Process.GetCurrentProcess().MainModule.FileName;
+                        var psi = new ProcessStartInfo(filePath)
+                        {
+                            Verb = "RunAs",
+                            UseShellExecute = true
+                        };
                         Process.Start(psi);
                         Environment.Exit(0);
                     }
@@ -101,9 +103,9 @@ namespace Remotely.Desktop.Win.ViewModels
                             WindowStyle = ProcessWindowStyle.Hidden,
                             CreateNoWindow = true
                         };
-                        var commandLine = Win32Interop.GetCommandLine().Replace(" -elevate", "").Replace("\"", "");
-                        Logger.Write($"Creating temporary service with command line {commandLine}.");
-                        psi.Arguments = $"/c sc create Remotely_Temp binPath=\"{commandLine} -elevate\"";
+                        var filePath = Process.GetCurrentProcess().MainModule.FileName;
+                        Logger.Write($"Creating temporary service with command line {filePath}.");
+                        psi.Arguments = $"/c sc create Remotely_Temp binPath=\"{filePath} -elevate\"";
                         Process.Start(psi).WaitForExit();
                         psi.Arguments = "/c sc start Remotely_Temp";
                         Process.Start(psi).WaitForExit();
