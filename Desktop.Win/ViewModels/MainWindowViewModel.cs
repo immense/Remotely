@@ -277,7 +277,7 @@ namespace Remotely.Desktop.Win.ViewModels
             serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerWin>();
             serviceCollection.AddTransient<Viewer>();
             serviceCollection.AddScoped<IWebRtcSessionFactory, WebRtcSessionFactory>();
-            serviceCollection.AddScoped<IFileDownloadService, FileDownloadService>();
+            serviceCollection.AddScoped<IFileTransferService, FileTransferService>();
 
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
