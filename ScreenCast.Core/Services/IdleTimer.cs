@@ -30,9 +30,9 @@ namespace Remotely.ScreenCast.Core.Services
             {
                 ViewersLastSeen = DateTimeOffset.Now;
             }
-            else if (DateTimeOffset.Now - ViewersLastSeen > TimeSpan.FromSeconds(10))
+            else if (DateTimeOffset.Now - ViewersLastSeen > TimeSpan.FromSeconds(30))
             {
-                Logger.Write("No viewers connected after 10 seconds.  Shutting down.");
+                Logger.Write("No viewers connected after 30 seconds.  Shutting down.");
                 Environment.Exit(0);
             }
         }
