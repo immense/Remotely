@@ -176,6 +176,11 @@ export class RCBrowserSockets {
             UI.ShowMessage("Connection failed.  Please reconnect.");
             this.Connection.stop();
         });
+        hubConnection.on("ConnectionRequestDenied", () => {
+            this.Connection.stop();
+            UI.StatusMessage.innerHTML = "Connection request denied.";
+            UI.ShowMessage("Connection request denied.");
+        });
         hubConnection.on("Unauthorized", () => {
             UI.ConnectButton.removeAttribute("disabled");
             UI.StatusMessage.innerHTML = "Authorization failed.";
