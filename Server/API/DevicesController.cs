@@ -46,7 +46,7 @@ namespace Remotely.Server.API
             var device = DataService.GetDevice(orgID, id);
 
             if (User.Identity.IsAuthenticated &&
-                !DataService.DoesUserHaveAccessToDevice(id, User.Identity.Name))
+                !DataService.DoesUserHaveAccessToDevice(id, DataService.GetUserByName(User.Identity.Name)))
             {
                 return null;
             }
