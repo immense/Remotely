@@ -217,6 +217,10 @@ namespace Remotely.Server.Services
                 {
                     return RCDeviceHub.Clients.Client(screenCasterID).SendAsync("GetScreenCast", Context.ConnectionId, requesterName);
                 }
+                else
+                {
+                    return Clients.Caller.SendAsync("Unauthorized");
+                }
             }
             else
             {
