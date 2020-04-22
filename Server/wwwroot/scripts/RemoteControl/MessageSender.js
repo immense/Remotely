@@ -72,7 +72,7 @@ export class MessageSender {
         if (MainRc.RtcSession.DataChannel && MainRc.RtcSession.DataChannel.readyState == "open") {
             rtcSend();
         }
-        else {
+        else if (MainRc.RCBrowserSockets.Connection.connectionStarted) {
             websocketSend();
         }
     }

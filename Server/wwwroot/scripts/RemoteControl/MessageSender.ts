@@ -14,7 +14,7 @@ import {
     AutoQualityAdjustDto,
     ToggleAudioDto,
     ToggleBlockInputDto,
-    ClipboardTransferDto,
+    ClipboardTransferDto,
     FileDto
 } from "./RtcDtos.js";
 import { CreateGUID, When } from "../Utilities.js";
@@ -116,7 +116,7 @@ export class MessageSender {
         if (MainRc.RtcSession.DataChannel && MainRc.RtcSession.DataChannel.readyState == "open") {
             rtcSend();
         }
-        else {
+        else if (MainRc.RCBrowserSockets.Connection.connectionStarted) {
             websocketSend();
         }
     }
