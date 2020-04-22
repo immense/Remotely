@@ -134,6 +134,11 @@ namespace Remotely.Server.Services
             return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("SelectScreen", displayName, Context.ConnectionId);
         }
 
+        public Task SendAutoQualityAdjust(bool isOn)
+        {
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("AutoQualityAdjust", isOn, Context.ConnectionId);
+        }
+
         public Task SendClipboardTransfer(string transferText, bool typeText)
         {
             return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ClipboardTransfer", transferText, typeText, Context.ConnectionId);
@@ -143,15 +148,18 @@ namespace Remotely.Server.Services
         {
             return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("FrameReceived", bytesReceived, Context.ConnectionId);
         }
+        public Task SendIceCandidateToAgent(string candidate, int sdpMlineIndex, string sdpMid)
+        {
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ReceiveIceCandidate", candidate, sdpMlineIndex, sdpMid, Context.ConnectionId);
+        }
 
         public Task SendQualityChange(int qualityLevel)
         {
             return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("QualityChange", qualityLevel, Context.ConnectionId);
         }
-
-        public Task SendAutoQualityAdjust(bool isOn)
+        public Task SendRtcAnswerToAgent(string sdp)
         {
-            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("AutoQualityAdjust", isOn, Context.ConnectionId);
+            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ReceiveRtcAnswer", sdp, Context.ConnectionId);
         }
 
         public async Task<Task> SendScreenCastRequestToDevice(string screenCasterID, string requesterName, int remoteControlMode)
@@ -259,16 +267,6 @@ namespace Remotely.Server.Services
         public Task TouchUp()
         {
             return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("TouchUp", Context.ConnectionId);
-        }
-
-        public Task SendIceCandidateToAgent(string candidate, int sdpMlineIndex, string sdpMid)
-        {
-            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ReceiveIceCandidate", candidate, sdpMlineIndex, sdpMid, Context.ConnectionId);
-        }
-
-        public Task SendRtcAnswerToAgent(string sdp)
-        {
-            return RCDeviceHub.Clients.Client(ScreenCasterID).SendAsync("ReceiveRtcAnswer", sdp, Context.ConnectionId);
         }
     }
 }

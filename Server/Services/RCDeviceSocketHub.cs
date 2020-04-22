@@ -162,10 +162,23 @@ namespace Remotely.Server.Services
         {
             return RCBrowserHub.Clients.Clients(viewerIDs).SendAsync("ConnectionFailed");
         }
-
+        public Task SendConnectionRequestDenied(string viewerID)
+        {
+            return RCBrowserHub.Clients.Client(viewerID).SendAsync("ConnectionRequestDenied");
+        }
         public Task SendCursorChange(CursorInfo cursor, string viewerID)
         {
             return RCBrowserHub.Clients.Client(viewerID).SendAsync("CursorChange", cursor);
+        }
+
+        public Task SendIceCandidateToBrowser(string candidate, int sdpMlineIndex, string sdpMid, string viewerID)
+        {
+            if (AppConfig.UseWebRtc)
+            {
+                return RCBrowserHub.Clients.Client(viewerID).SendAsync("ReceiveIceCandidate", candidate, sdpMlineIndex, sdpMid);
+            }
+
+            return Task.CompletedTask;
         }
 
         public Task SendMachineName(string machineName, string viewerID)
@@ -182,16 +195,6 @@ namespace Remotely.Server.Services
 
             return Task.CompletedTask;
         }
-        public Task SendIceCandidateToBrowser(string candidate, int sdpMlineIndex, string sdpMid, string viewerID)
-        {
-            if (AppConfig.UseWebRtc)
-            {
-                return RCBrowserHub.Clients.Client(viewerID).SendAsync("ReceiveIceCandidate", candidate, sdpMlineIndex, sdpMid);
-            }
-
-            return Task.CompletedTask;
-        }
-
         public Task SendScreenCapture(byte[] captureBytes, string rcBrowserHubConnectionID, int left, int top, int width, int height, long imageQuality)
         {
             if (AppConfig.RecordRemoteControlSessions)

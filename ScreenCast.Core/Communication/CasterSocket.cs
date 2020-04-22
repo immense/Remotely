@@ -29,12 +29,11 @@ namespace Remotely.ScreenCast.Core.Communication
 
         public HubConnection Connection { get; private set; }
         public bool IsConnected => Connection?.State == HubConnectionState.Connected;
-        private IScreenCaster ScreenCaster { get; }
-        private IFileTransferService FileDownloadService { get; }
         private IAudioCapturer AudioCapturer { get; }
-
         private IClipboardService ClipboardService { get; }
+        private IFileTransferService FileDownloadService { get; }
         private IKeyboardMouseInput KeyboardMouseInput { get; }
+        private IScreenCaster ScreenCaster { get; }
         public async Task Connect(string host)
         {
             if (Connection != null)
@@ -87,6 +86,11 @@ namespace Remotely.ScreenCast.Core.Communication
         public async Task SendConnectionFailedToViewers(List<string> viewerIDs)
         {
             await Connection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
+        }
+
+        public async Task SendConnectionRequestDenied(string viewerID)
+        {
+            await Connection.SendAsync("SendConnectionRequestDenied", viewerID);
         }
 
         public async Task SendCtrlAltDel()
