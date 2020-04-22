@@ -11,6 +11,7 @@ using Microsoft.Extensions.Caching.Memory;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
+using Remotely.Shared.Win32;
 
 namespace Remotely.ScreenCast.Core.Services
 {
@@ -23,9 +24,10 @@ namespace Remotely.ScreenCast.Core.Services
 
     public class FileTransferService : IFileTransferService
     {
-        private static readonly ConcurrentDictionary<string, FileStream> _partialTransfers = new ConcurrentDictionary<string, FileStream>();
+        private static readonly ConcurrentDictionary<string, FileStream> partialTransfers = new ConcurrentDictionary<string, FileStream>();
 
-        private static readonly SemaphoreSlim _writeLock = new SemaphoreSlim(1);
+        private static readonly SemaphoreSlim writeLock = new SemaphoreSlim(1);
+        private static volatile bool messageBoxPending;
 
         public string GetBaseDirectory()
         {
@@ -48,7 +50,7 @@ namespace Remotely.ScreenCast.Core.Services
         {
             try
             {
-                await _writeLock.WaitAsync();
+                await writeLock.WaitAsync();
 
                 var baseDir = GetBaseDirectory();
 
@@ -71,10 +73,10 @@ namespace Remotely.ScreenCast.Core.Services
                     File.Create(filePath).Close();
                     SetFileOrFolderPermissions(filePath);
                     var fs = new FileStream(filePath, FileMode.OpenOrCreate);
-                    _partialTransfers.AddOrUpdate(messageId, fs, (k,v) => fs);
+                    partialTransfers.AddOrUpdate(messageId, fs, (k,v) => fs);
                 }
 
-                var fileStream = _partialTransfers[messageId];
+                var fileStream = partialTransfers[messageId];
 
                 if (buffer?.Length > 0)
                 {
@@ -85,7 +87,7 @@ namespace Remotely.ScreenCast.Core.Services
                 if (endOfFile)
                 {
                     fileStream.Close();
-                    _partialTransfers.Remove(messageId, out _);
+                    partialTransfers.Remove(messageId, out _);
                     if (EnvironmentHelper.IsWindows)
                     {
                         Process.Start("explorer.exe", baseDir);
@@ -98,7 +100,12 @@ namespace Remotely.ScreenCast.Core.Services
             }
             finally
             {
-                _writeLock.Release();
+                writeLock.Release();
+
+                if (endOfFile)
+                {
+                    await Task.Run(ShowTransferComplete);
+                }
             }
         }
 
@@ -146,6 +153,30 @@ namespace Remotely.ScreenCast.Core.Services
                 else if (Directory.Exists(path))
                 {
                     new DirectoryInfo(path).SetAccessControl((DirectorySecurity)ds);
+                }
+            }
+        }
+
+        private void ShowTransferComplete()
+        {
+            // Prevent multiple dialogs from popping up.
+            if (!messageBoxPending)
+            {
+                if (EnvironmentHelper.IsWindows)
+                {
+                    messageBoxPending = true;
+                    var result = Win32Interop.ShowMessageBox(IntPtr.Zero,
+                                    "File transfer complete.  Show folder?",
+                                    "Transfer Complete",
+                                    User32.MessageBoxType.MB_YESNO | 
+                                    User32.MessageBoxType.MB_ICONINFORMATION |
+                                    User32.MessageBoxType.MB_TOPMOST);
+
+                    if (result == User32.MessageBoxResult.IDYES)
+                    {
+                        Process.Start("explorer.exe", GetBaseDirectory());
+                    }
+                    messageBoxPending = false;
                 }
             }
         }
