@@ -478,6 +478,7 @@ export function UpdateCursor(imageBytes: Uint8Array, hotSpotX: number, hotSpotY:
         var base64 = ConvertUInt8ArrayToBase64(imageBytes);
         ScreenViewer.style.cursor = `url('data:image/png;base64,${base64}') ${hotSpotX} ${hotSpotY}, default`;
     }
+    console.log("Cursor updated: " + ScreenViewer.style.cursor);
 }
 
 export function UpdateDisplays(selectedDisplay: string, displayNames: string[]) {

@@ -176,6 +176,12 @@ export class RCBrowserSockets {
             UI.ShowMessage("Connection failed.  Please reconnect.");
             this.Connection.stop();
         });
+        hubConnection.on("Unauthorized", () => {
+            UI.ConnectButton.removeAttribute("disabled");
+            UI.StatusMessage.innerHTML = "Authorization failed.";
+            UI.ShowMessage("Authorization failed.");
+            this.Connection.stop();
+        });
         hubConnection.on("ViewerRemoved", () => {
             UI.ConnectButton.removeAttribute("disabled");
             UI.StatusMessage.innerHTML = "The session was stopped by your partner.";
