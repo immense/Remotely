@@ -1,4 +1,4 @@
-using Remotely.Agent.Installer.Win.Services;
+﻿using Remotely.Agent.Installer.Win.Services;
 using Remotely.Shared.Models;
 using System;
 using System.Diagnostics;
@@ -25,7 +25,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
 
         private int progress;
 
-        private string serverUrl;
+        private string serverUrl = "";
 
         private string statusMessage;
 

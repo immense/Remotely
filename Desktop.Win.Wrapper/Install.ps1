@@ -1,0 +1,1 @@
+Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "$env:AppData\Remotely\dotnet-install.ps1"
