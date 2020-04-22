@@ -163,6 +163,50 @@ Below is an example API request:
 
 	Get-Location
 
+Below are examples of using the cookie-based login API (JavaScript):
+
+	// Log in with one request, then launch remote control with another.
+	fetch("https://localhost:5001/api/Login/", {
+		method: "post",
+		credentials: "include",
+		mode: "cors",
+		body: '{"Email":"email@example.com", "Password":"P@ssword1"}',
+		headers: {
+			"Content-Type": "application/json",
+		}
+	}).then(response=>{
+		if (response.ok) {
+			fetch("https://localhost:44351/api/RemoteControl/b68c24b0-2c67-4524-ad28-dadea7a576a4", {
+				method: "get",
+				credentials: "include",
+				mode: "cors"
+			}).then(response=>{
+				if (response.ok) {
+					response.text().then(url=>{
+						window.open(url);
+					})
+				}
+			})
+		}
+	})
+
+	// Log in and launch remote control in the same request.
+	fetch("https://localhost:5001/api/RemoteControl/", {
+		method: "post",
+		credentials: "include",
+		mode: "cors",
+		body: '{"Email":"email@example.com", "Password":"P@ssword1", "DeviceID":"b68c24b0-2c67-4524-ad28-dadea7a576a4"}',
+		headers: {
+			"Content-Type": "application/json",
+		}
+	}).then(response=>{
+		if (response.ok) {
+			response.text().then(url=>{
+				window.open(url);
+			})
+		}
+	})
+
 ## Alerts
 The Alerts API gives you the ability to add monitoring and alerting functionality to your device endpoints.  This feature is intended to add basic RMM-type functionality without diverging too far from Remotely's primary purpose.
 

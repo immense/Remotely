@@ -54,10 +54,11 @@ namespace Remotely.Server.API
             var orgId = DataService.GetUserByName(rcRequest.Email)?.OrganizationID;
 
             var result = await SignInManager.PasswordSignInAsync(rcRequest.Email, rcRequest.Password, false, true);
-            if (result.Succeeded)
+            if (result.Succeeded &&
+                DataService.DoesUserHaveAccessToDevice(rcRequest.DeviceID, DataService.GetUserByName(rcRequest.Email)))
             {
                 DataService.WriteEvent($"API login successful for {rcRequest.Email}.", orgId);
-                return await InitiateRemoteControl(rcRequest.DeviceID, rcRequest.Email);
+                return await InitiateRemoteControl(rcRequest.DeviceID, orgId);
             }
             else if (result.IsLockedOut)
             {
@@ -82,7 +83,7 @@ namespace Remotely.Server.API
             if (targetDevice.Value != null)
             {
                 if (User.Identity.IsAuthenticated &&
-                   !DataService.DoesUserHaveAccessToDevice(targetDevice.Value.ID, User.Identity.Name))
+                   !DataService.DoesUserHaveAccessToDevice(targetDevice.Value.ID, DataService.GetUserByName(User.Identity.Name)))
                 {
                     return Unauthorized();
                 }
