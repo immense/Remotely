@@ -177,6 +177,13 @@ namespace Remotely.Shared.Win32
             SendMessage(0xFFFF, 0x112, 0xF170, (int)state);
         }
 
+        public static MessageBoxResult ShowMessageBox(IntPtr owner, 
+            string message, 
+            string caption,
+            MessageBoxType messageBoxType)
+        {
+            return (MessageBoxResult)MessageBox(owner, message, caption, (long)messageBoxType);
+        }
         public static bool SwitchToInputDesktop()
         {
             var inputDesktop = OpenInputDesktop();

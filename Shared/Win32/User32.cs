@@ -1000,6 +1000,51 @@ namespace Remotely.Shared.Win32
             KEYBOARD = 1,
             HARDWARE = 2
         }
+        public enum MessageBoxType : long
+        {
+            MB_ABORTRETRYIGNORE = 0x00000002L,
+            MB_CANCELTRYCONTINUE = 0x00000006L,
+            MB_HELP = 0x00004000L,
+            MB_OK = 0x00000000L,
+            MB_OKCANCEL = 0x00000001L,
+            MB_RETRYCANCEL = 0x00000005L,
+            MB_YESNO = 0x00000004L,
+            MB_YESNOCANCEL = 0x00000003L,
+            MB_ICONEXCLAMATION = 0x00000030L,
+            MB_ICONWARNING = 0x00000030L,
+            MB_ICONINFORMATION = 0x00000040L,
+            MB_ICONASTERISK = 0x00000040L,
+            MB_ICONQUESTION = 0x00000020L,
+            MB_ICONSTOP = 0x00000010L,
+            MB_ICONERROR = 0x00000010L,
+            MB_ICONHAND = 0x00000010L,
+            MB_DEFBUTTON1 = 0x00000000L,
+            MB_DEFBUTTON2 = 0x00000100L,
+            MB_DEFBUTTON3 = 0x00000200L,
+            MB_DEFBUTTON4 = 0x00000300L,
+            MB_APPLMODAL = 0x00000000L,
+            MB_SYSTEMMODAL = 0x00001000L,
+            MB_TASKMODAL = 0x00002000L,
+            MB_DEFAULT_DESKTOP_ONLY = 0x00020000L,
+            MB_RIGHT = 0x00080000L,
+            MB_RTLREADING = 0x00100000L,
+            MB_SETFOREGROUND = 0x00010000L,
+            MB_TOPMOST = 0x00040000L,
+            MB_SERVICE_NOTIFICATION = 0x00200000L
+        }
+
+        public enum MessageBoxResult : int
+        {
+            IDABORT = 3,
+            IDCANCEL = 2,
+            IDCONTINUE = 11,
+            IDIGNORE = 5,
+            IDNO = 7,
+            IDOK = 1,
+            IDRETRY = 4,
+            IDTRYAGAIN = 10,
+            IDYES = 6,
+        }
         #endregion
 
         #region Structs
@@ -1249,6 +1294,8 @@ namespace Remotely.Shared.Win32
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool BlockInput([MarshalAs(UnmanagedType.Bool)] bool fBlockIt);
 
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern int MessageBox(IntPtr hWnd, string text, string caption, long type);
 
         #endregion
     }
