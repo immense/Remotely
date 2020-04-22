@@ -311,6 +311,14 @@ namespace Remotely.Desktop.Win.ViewModels
                         Services.GetRequiredService<IScreenCaster>().BeginScreenCasting(screenCastRequest);
                     });
                 }
+                else
+                {
+                    // Run on another thread so it doesn't tie up the UI thread.
+                    Task.Run(async () =>
+                    {
+                        await CasterSocket.SendConnectionRequestDenied(screenCastRequest.ViewerID);
+                    });
+                }
             });
         }
         private void SessionIDChanged(object sender, string sessionID)
