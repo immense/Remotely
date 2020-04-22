@@ -50,22 +50,22 @@ namespace Remotely.Desktop.Win.Wrapper
 
         private void RunRemotely()
         {
-            throw new NotImplementedException();
+            StatusText.Text = "Starting up...";
         }
 
         private void ExtractRemotely()
         {
-            throw new NotImplementedException();
+            StatusText.Text = "Extracting files...";
         }
 
         private void RunInstallScript()
         {
-            throw new NotImplementedException();
+            StatusText.Text = "Updating .NET Core runtime...";
         }
 
         private void ExtractInstallScript()
         {
-            throw new NotImplementedException();
+            
         }
     }
 }
