@@ -7,9 +7,9 @@
     }
     public class WindowsSession
     {
-        public uint ID { get; internal set; }
-        public string Name { get; internal set; }
-        public SessionType Type { get; internal set; }
-        public string Username { get; internal set; }
+        public uint ID { get; set; }
+        public string Name { get; set; }
+        public SessionType Type { get; set; }
+        public string Username { get; set; }
     }
 }
