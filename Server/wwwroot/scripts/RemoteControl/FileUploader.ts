@@ -2,6 +2,11 @@
 import { MainRc } from "./Main.js";
 
 export async function UploadFiles(fileList: FileList) {
+    if (!FileTransferProgress.parentElement.hasAttribute("hidden")) {
+        FileTransferInput.value = null;
+        ShowMessage("File transfer already in progress.");
+        return;
+    }
     ShowMessage("File upload started...");
     FileTransferProgress.value = 0;
     FileTransferProgress.parentElement.removeAttribute("hidden");
