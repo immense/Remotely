@@ -123,18 +123,25 @@ dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:Publ
 dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=win-x64 --configuration Release "$Root\ScreenCast.Win"
 
 # Publish Windows GUI App (64-bit)
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=win-x64 --configuration Release "$Root\Desktop.Win"
+#dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=win-x64 --configuration Release "$Root\Desktop.Win"
 
-if ($SignAssemblies) {
-    &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Downloads\Win-x64\Remotely_Desktop.exe"
-}
+#if ($SignAssemblies) {
+#    &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Downloads\Win-x64\Remotely_Desktop.exe"
+#}
 
 # Publish Windows GUI App (32-bit)
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=win-x86 "$Root\Desktop.Win"
-
-if ($SignAssemblies) {
-    &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Downloads\Win-x86\Remotely_Desktop.exe"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=Wrapper "$Root\Desktop.Win"
+if (Test-Path -Path "$Root\Desktop.Win.Wrapper\Remotely_Desktop.zip"){
+    Remove-Item -Path "$Root\Desktop.Win.Wrapper\Remotely_Desktop.zip" -Force
 }
+Get-ChildItem -Path "$Root\Desktop.Win\bin\x64\Release\publish\" | ForEach-Object {
+    Compress-Archive -Path $_.FullName -DestinationPath "$Root\Desktop.Win.Wrapper\Remotely_Desktop.zip" -Update
+}
+&"$MSBuildPath" "$Root\Desktop.Win.Wrapper" /t:Build /p:Configuration=Release /p:Platform=AnyCPU /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion
+if ($SignAssemblies) {
+    &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Desktop.Win.Wrapper\bin\Release\Remotely_Desktop.exe"
+}
+Copy-Item -Path "$Root\Desktop.Win.Wrapper\bin\Release\Remotely_Desktop.exe" -Destination "$Root\Server\wwwroot\Downloads\Remotely_Desktop.exe" -Force
 
 # Build installer.
 &"$MSBuildPath" "$Root\Agent.Installer.Win" /t:Restore 
