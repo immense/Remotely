@@ -72,11 +72,8 @@ namespace Remotely.Desktop.Win.ViewModels
                 {
                     try
                     {
-                        var commandLine = Win32Interop.GetCommandLine().Replace(" -elevate", "");
-                        var commandLineSections = commandLine.Split('"', StringSplitOptions.RemoveEmptyEntries);
-                        var filePath = commandLineSections.First();
-                        var arguments = string.Join('"', commandLineSections.Skip(1));
-                        var psi = new ProcessStartInfo(filePath, arguments)
+                        var filePath = Process.GetCurrentProcess().MainModule.FileName;
+                        var psi = new ProcessStartInfo(filePath)
                         {
                             Verb = "RunAs",
                             UseShellExecute = true
@@ -106,12 +103,9 @@ namespace Remotely.Desktop.Win.ViewModels
                             WindowStyle = ProcessWindowStyle.Hidden,
                             CreateNoWindow = true
                         };
-                        var commandLine = Win32Interop.GetCommandLine().Replace(" -elevate", "");
-                        var commandLineSections = commandLine.Split('"', StringSplitOptions.RemoveEmptyEntries);
-                        var filePath = commandLineSections.First();
-                        var arguments = string.Join('"', commandLineSections.Skip(1));
-                        Logger.Write($"Creating temporary service with command line {filePath} with arguments {arguments}.");
-                        psi.Arguments = $"/c sc create Remotely_Temp binPath=\"{filePath} {arguments} -elevate\"";
+                        var filePath = Process.GetCurrentProcess().MainModule.FileName;
+                        Logger.Write($"Creating temporary service with file path {filePath}.");
+                        psi.Arguments = $"/c sc create Remotely_Temp binPath=\"{filePath} -elevate\"";
                         Process.Start(psi).WaitForExit();
                         psi.Arguments = "/c sc start Remotely_Temp";
                         Process.Start(psi).WaitForExit();
