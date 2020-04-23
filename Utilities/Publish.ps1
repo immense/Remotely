@@ -136,6 +136,7 @@ Get-ChildItem -Path "$Root\Desktop.Win\bin\Release\win-x64\publish\" | ForEach-O
 if ($SignAssemblies) {
     &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Desktop.Win.Wrapper\bin\x64\Release\Remotely_Desktop.exe"
 }
+[System.IO.Directory]::CreateDirectory("$Root\Server\wwwroot\Downloads\Win-x64")
 Copy-Item -Path "$Root\Desktop.Win.Wrapper\bin\x64\Release\Remotely_Desktop.exe" -Destination "$Root\Server\wwwroot\Downloads\Win-x64\Remotely_Desktop.exe" -Force
 
 
@@ -152,6 +153,7 @@ Get-ChildItem -Path "$Root\Desktop.Win\bin\Release\win-x86\publish\" | ForEach-O
 if ($SignAssemblies) {
     &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Desktop.Win.Wrapper\bin\x86\Release\Remotely_Desktop.exe"
 }
+[System.IO.Directory]::CreateDirectory("$Root\Server\wwwroot\Downloads\Win-x86")
 Copy-Item -Path "$Root\Desktop.Win.Wrapper\bin\x86\Release\Remotely_Desktop.exe" -Destination "$Root\Server\wwwroot\Downloads\Win-x86\Remotely_Desktop.exe" -Force
 
 
