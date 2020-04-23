@@ -45,6 +45,7 @@ namespace Remotely.ScreenCast.Win.Services
         public ScreenCapturerWin()
         {
             Init();
+            GetBitBltFrame();
             SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
         }
 
@@ -119,8 +120,6 @@ namespace Remotely.ScreenCast.Win.Services
             InitDirectX();
 
             ScreenChanged?.Invoke(this, CurrentScreenBounds);
-
-            GetBitBltFrame();
         }
 
         public void SetSelectedScreen(string displayName)
