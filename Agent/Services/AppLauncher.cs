@@ -42,7 +42,12 @@ namespace Remotely.Agent.Services
                     }
                     else
                     {
-                        var result = Win32Interop.OpenInteractiveProcess($"{rcBinaryPath} -mode Chat -requester {requesterID} -organization \"{orgName}\"", "default", false, out var procInfo);
+                        var result = Win32Interop.OpenInteractiveProcess($"{rcBinaryPath} -mode Chat -requester {requesterID} -organization \"{orgName}\"", 
+                            targetSessionId: -1,
+                            forceConsoleSession: false,
+                            desktopName: "default", 
+                            hiddenWindow: false, 
+                            out var procInfo);
                         if (!result)
                         {
                             await hubConnection.SendAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
@@ -67,7 +72,7 @@ namespace Remotely.Agent.Services
             return -1;
         }
 
-        public async Task LaunchRemoteControl(string requesterID, string serviceID, HubConnection hubConnection)
+        public async Task LaunchRemoteControl(int targetSessionId, string requesterID, string serviceID, HubConnection hubConnection)
         {
             try
             {
@@ -90,7 +95,12 @@ namespace Remotely.Agent.Services
                     }
                     else
                     {
-                        var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host}", "default", true, out _);
+                        var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host}",
+                            targetSessionId: targetSessionId,
+                            forceConsoleSession: false,
+                            desktopName: "default",
+                            hiddenWindow: true,
+                            out _);
                         if (!result)
                         {
                             await hubConnection.SendAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
@@ -128,13 +138,23 @@ namespace Remotely.Agent.Services
                         // Give a little time for session changing, etc.
                         await Task.Delay(1000);
 
-                        var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} -relaunch true -viewers {String.Join(",", viewerIDs)}", "default", true, out _);
+                        var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} -relaunch true -viewers {String.Join(",", viewerIDs)}",
+                            targetSessionId: -1,
+                            forceConsoleSession: Shlwapi.IsOS(OsType.OS_ANYSERVER) ? true : false,
+                            desktopName: "default",
+                            hiddenWindow: true,
+                            out _);
 
                         if (!result)
                         {
                             await Task.Delay(1000);
                             // Try one more time.
-                            result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} -relaunch true -viewers {String.Join(",", viewerIDs)}", "default", true, out _);
+                            result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} -relaunch true -viewers {String.Join(",", viewerIDs)}",
+                                targetSessionId: -1,
+                                forceConsoleSession: Shlwapi.IsOS(OsType.OS_ANYSERVER) ? true : false,
+                                desktopName: "default",
+                                hiddenWindow: true,
+                                out _);
 
                             if (!result)
                             {

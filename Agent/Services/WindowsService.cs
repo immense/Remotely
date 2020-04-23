@@ -24,8 +24,11 @@ namespace Remotely.Agent.Services
 
                     foreach (var screenCaster in Process.GetProcessesByName("Remotely_ScreenCast"))
                     {
-                        Logger.Write($"Session changed.  Kill process ID {screenCaster.Id}.");
-                        screenCaster.Kill();
+                        if (screenCaster.SessionId == changeDescription.SessionId)
+                        {
+                            Logger.Write($"Session changed.  Kill process ID {screenCaster.Id}.");
+                            screenCaster.Kill();
+                        }
                     }
                 }
                 base.OnSessionChange(changeDescription);

@@ -30,6 +30,8 @@ namespace Remotely.Desktop.Win
                 Logger.Write($"Elevating process {filePath}.");
                 var result = Win32Interop.OpenInteractiveProcess(
                     filePath,
+                    -1,
+                    false,
                     "default",
                     false,
                     out var procInfo);

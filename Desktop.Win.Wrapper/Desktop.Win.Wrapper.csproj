@@ -152,4 +152,9 @@
     <Resource Include="Remotely_Icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>if $(ConfigurationName) == Debug (
+   echo &gt; $(ProjectDir)Remotely_Desktop.zip
+)</PreBuildEvent>
+  </PropertyGroup>
 </Project>
