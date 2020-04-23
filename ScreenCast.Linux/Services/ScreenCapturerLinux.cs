@@ -29,7 +29,6 @@ namespace Remotely.ScreenCast.Linux.Services
         public string SelectedScreen { get; private set; }
         public void Dispose()
         {
-            //Graphic.Dispose();
             CurrentFrame.Dispose();
             PreviousFrame.Dispose();
         }
