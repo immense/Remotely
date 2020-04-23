@@ -44,7 +44,6 @@ namespace Remotely.ScreenCast.Win.Services
         private readonly Dictionary<string, DirectXOutput> directxScreens = new Dictionary<string, DirectXOutput>();
         public ScreenCapturerWin()
         {
-            Init();
             SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
         }
 

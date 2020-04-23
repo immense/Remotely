@@ -16,7 +16,6 @@ namespace Remotely.ScreenCast.Linux.Services
         public ScreenCapturerLinux()
         {
             Display = LibX11.XOpenDisplay(null);
-            Init();
         }
 
         public event EventHandler<Rectangle> ScreenChanged;
