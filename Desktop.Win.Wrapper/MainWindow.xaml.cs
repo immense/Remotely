@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using PathIO = System.IO.Path;
 
 namespace Remotely.Desktop.Win.Wrapper
 {
@@ -20,6 +25,7 @@ namespace Remotely.Desktop.Win.Wrapper
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly string tempDir = Directory.CreateDirectory(PathIO.Combine(PathIO.GetTempPath(), "Remotely_Desktop")).FullName;
         public MainWindow()
         {
             InitializeComponent();
@@ -45,27 +51,59 @@ namespace Remotely.Desktop.Win.Wrapper
             ExtractRemotely();
             ExtractInstallScript();
             RunInstallScript();
-            RunRemotely();
-        }
-
-        private void RunRemotely()
-        {
-            StatusText.Text = "Starting up...";
+            Close();
         }
 
         private void ExtractRemotely()
         {
-            StatusText.Text = "Extracting files...";
+            try
+            {
+                StatusText.Text = "Extracting files...";
+                var zipPath = PathIO.Combine(tempDir, "Remotely_Desktop.zip");
+                using (var mrs = Assembly.GetExecutingAssembly()
+                    .GetManifestResourceStream("Remotely.Desktop.Win.Wrapper.Remotely_Desktop.zip"))
+                {
+                    using (var fs = new FileStream(zipPath, FileMode.Create))
+                    {
+                        mrs.CopyTo(fs);
+                    }
+                }
+                ZipFile.ExtractToDirectory(zipPath, tempDir);
+            }
+            catch { }
         }
 
         private void RunInstallScript()
         {
-            StatusText.Text = "Updating .NET Core runtime...";
+            try
+            {
+                StatusText.Text = "Updating .NET Core runtime...";
+                var installPath = PathIO.Combine(tempDir, "Install.ps1");
+                Process.Start(new ProcessStartInfo()
+                {
+                    FileName = "powershell.exe",
+                    Arguments = $"-executionpolicy bypass -f \"{installPath}\"",
+                    WindowStyle = ProcessWindowStyle.Hidden
+                });
+            }
+            catch { }
         }
 
         private void ExtractInstallScript()
         {
-            
+            try
+            {
+                var installPath = PathIO.Combine(tempDir, "Install.ps1");
+                using (var mrs = Assembly.GetExecutingAssembly()
+                    .GetManifestResourceStream("Remotely.Desktop.Win.Wrapper.Install.ps1"))
+                {
+                    using (var fs = new FileStream(installPath, FileMode.Create))
+                    {
+                        mrs.CopyTo(fs);
+                    }
+                }
+            }
+            catch { }
         }
     }
 }
