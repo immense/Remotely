@@ -130,7 +130,7 @@ dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:Publ
 #}
 
 # Publish Windows GUI App (32-bit)
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=Wrapper "$Root\Desktop.Win"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=Wrapper --configuration Release "$Root\Desktop.Win"
 if (Test-Path -Path "$Root\Desktop.Win.Wrapper\Remotely_Desktop.zip"){
     Remove-Item -Path "$Root\Desktop.Win.Wrapper\Remotely_Desktop.zip" -Force
 }
