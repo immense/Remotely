@@ -17,6 +17,7 @@ namespace Remotely.ScreenCast.Linux.Services
         {
             Display = LibX11.XOpenDisplay(null);
             Init();
+            GetNextFrame();
         }
 
         public event EventHandler<Rectangle> ScreenChanged;
@@ -84,8 +85,6 @@ namespace Remotely.ScreenCast.Linux.Services
                 SetSelectedScreen(x11Screens.Keys.First());
                 CurrentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
                 PreviousFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
-
-                GetNextFrame();
             }
             catch (Exception ex)
             {
