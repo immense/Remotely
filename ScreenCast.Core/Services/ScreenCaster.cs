@@ -76,6 +76,14 @@ namespace Remotely.ScreenCast.Core.Services
                     await viewer.SendScreenSize(bounds.Width, bounds.Height, viewer.ViewerConnectionID);
                 };
 
+                await viewer.SendScreenCapture(
+                    ImageUtils.EncodeBitmap(viewer.Capturer.CurrentFrame, viewer.EncoderParams), 
+                    viewer.ViewerConnectionID,
+                    viewer.Capturer.CurrentScreenBounds.Left,
+                    viewer.Capturer.CurrentScreenBounds.Top,
+                    viewer.Capturer.CurrentScreenBounds.Width,
+                    viewer.Capturer.CurrentScreenBounds.Height);
+
                 while (!viewer.DisconnectRequested && viewer.IsConnected)
                 {
                     try
