@@ -39,7 +39,6 @@ namespace Remotely.ScreenCast.Core.Services
                 var fpsQueue = new Queue<DateTimeOffset>();
                 mode = Conductor.Mode;
                 var viewer = ServiceContainer.Instance.GetRequiredService<Viewer>();
-                viewer.Capturer.Init();
                 viewer.Name = screenCastRequest.RequesterName;
                 viewer.ViewerConnectionID = screenCastRequest.ViewerID;
                 viewers = Conductor.Viewers;
