@@ -85,19 +85,12 @@ namespace Remotely.ScreenCast.Win.Services
 
                 Win32Interop.SwitchToInputDesktop();
 
-                PreviousFrame.Dispose();
+                PreviousFrame?.Dispose();
                 PreviousFrame = (Bitmap)CurrentFrame.Clone();
 
                 if (directxScreens.ContainsKey(SelectedScreen))
                 {
-                    try
-                    {
-                        GetDirectXFrame();
-                    }
-                    catch
-                    {
-                        GetBitBltFrame();
-                    }
+                    GetDirectXFrame();
                 }
                 else
                 {
@@ -126,6 +119,8 @@ namespace Remotely.ScreenCast.Win.Services
             InitDirectX();
 
             ScreenChanged?.Invoke(this, CurrentScreenBounds);
+
+            GetBitBltFrame();
         }
 
         public void SetSelectedScreen(string displayName)
