@@ -223,7 +223,7 @@ namespace Remotely.Agent.Services
                     Uninstaller.UninstallAgent();
                     return;
                 }
-                await AppLauncher.LaunchRemoteControl(requesterID, serviceID, HubConnection);
+                await AppLauncher.LaunchRemoteControl(-1, requesterID, serviceID, HubConnection);
             });
             HubConnection.On("RestartScreenCaster", async (List<string> viewerIDs, string serviceID, string requesterID) =>
             {

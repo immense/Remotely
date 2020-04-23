@@ -98,15 +98,33 @@ namespace Remotely.Shared.Win32
         {
             return User32.OpenInputDesktop(0, true, ACCESS_MASK.GENERIC_ALL);
         }
-        public static bool OpenInteractiveProcess(string applicationName, string desktopName, bool hiddenWindow, out PROCESS_INFORMATION procInfo)
+
+        public static bool OpenInteractiveProcess(string applicationName,
+             int targetSessionId,
+             bool forceConsoleSession,
+             string desktopName,
+             bool hiddenWindow,
+             out PROCESS_INFORMATION procInfo)
         {
             uint winlogonPid = 0;
             IntPtr hUserTokenDup = IntPtr.Zero, hPToken = IntPtr.Zero, hProcess = IntPtr.Zero;
             procInfo = new PROCESS_INFORMATION();
 
-            // Check for RDP session.  If active, use that session ID instead.
-            var activeSessions = GetActiveSessions();
-            var dwSessionId = activeSessions.Last().ID;
+            // If not force console, find target session.  If not present,
+            // use last active session.
+            var dwSessionId = Kernel32.WTSGetActiveConsoleSessionId();
+            if (!forceConsoleSession)
+            {
+                var activeSessions = GetActiveSessions();
+                if (activeSessions.Any(x => x.ID == targetSessionId))
+                {
+                    dwSessionId = (uint)targetSessionId;
+                }
+                else
+                {
+                    dwSessionId = activeSessions.Last().ID;
+                }
+            }
 
             // Obtain the process ID of the winlogon process that is running within the currently active session.
             Process[] processes = Process.GetProcessesByName("winlogon");
