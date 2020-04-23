@@ -25,7 +25,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
 
         private int progress;
 
-        private string serverUrl = "";
+        private string serverUrl;
 
         private string statusMessage;
 

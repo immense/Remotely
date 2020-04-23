@@ -25,7 +25,9 @@ namespace Remotely.Desktop.Win.Wrapper
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly string tempDir = Directory.CreateDirectory(PathIO.Combine(PathIO.GetTempPath(), "Remotely_Desktop")).FullName;
+        private static readonly string baseDir = Directory.CreateDirectory(PathIO.Combine(PathIO.GetTempPath(), "Remotely_Desktop")).FullName;
+        private string tempDir;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -46,19 +48,42 @@ namespace Remotely.Desktop.Win.Wrapper
             DragMove();
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            ExtractRemotely();
-            ExtractInstallScript();
-            RunInstallScript();
+            StatusText.Text = "Extracting files...";
+            await Task.Run(CleanupOldFiles);
+            tempDir = Directory.CreateDirectory(PathIO.Combine(baseDir, Guid.NewGuid().ToString())).FullName;
+            await Task.Run(ExtractRemotely);
+            await Task.Run(ExtractInstallScript);
+            StatusText.Text = "Updating .NET Core runtime...";
+            await Task.Run(RunInstallScript);
             Close();
+        }
+
+        private void CleanupOldFiles()
+        {
+            foreach (var fse in Directory.GetFileSystemEntries(baseDir))
+            {
+                try
+                {
+                    if (Directory.Exists(fse))
+                    {
+                        Directory.Delete(fse, true);
+                    }
+                    else if (File.Exists(fse))
+                    {
+                        File.Delete(fse);
+                    }
+                }
+                catch { }
+               
+            }
         }
 
         private void ExtractRemotely()
         {
             try
             {
-                StatusText.Text = "Extracting files...";
                 var zipPath = PathIO.Combine(tempDir, "Remotely_Desktop.zip");
                 using (var mrs = Assembly.GetExecutingAssembly()
                     .GetManifestResourceStream("Remotely.Desktop.Win.Wrapper.Remotely_Desktop.zip"))
@@ -70,23 +95,34 @@ namespace Remotely.Desktop.Win.Wrapper
                 }
                 ZipFile.ExtractToDirectory(zipPath, tempDir);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occured while extracting files.  Error: " +
+                    Environment.NewLine + Environment.NewLine + ex.Message, "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
 
         private void RunInstallScript()
         {
             try
             {
-                StatusText.Text = "Updating .NET Core runtime...";
                 var installPath = PathIO.Combine(tempDir, "Install.ps1");
                 Process.Start(new ProcessStartInfo()
                 {
                     FileName = "powershell.exe",
                     Arguments = $"-executionpolicy bypass -f \"{installPath}\"",
                     WindowStyle = ProcessWindowStyle.Hidden
-                });
+                }).WaitForExit();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occured while updating .NET Core.  Error: " +
+                    Environment.NewLine + Environment.NewLine + ex.Message, "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
 
         private void ExtractInstallScript()
@@ -103,7 +139,11 @@ namespace Remotely.Desktop.Win.Wrapper
                     }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occured while extracting files.  Error: " +
+                    Environment.NewLine + Environment.NewLine + ex.Message);
+            }
         }
     }
 }
