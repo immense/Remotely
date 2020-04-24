@@ -61,6 +61,9 @@ export function ApplyInputHandlers() {
     AudioButton.addEventListener("click", (ev) => {
         AudioButton.classList.toggle("toggled");
         var toggleOn = AudioButton.classList.contains("toggled");
+        if (toggleOn) {
+            Sound.Init();
+        }
         MainRc.MessageSender.SendToggleAudio(toggleOn);
     });
     ChangeScreenButton.addEventListener("click", (ev) => {

@@ -147,21 +147,9 @@ namespace Remotely.Agent.Services
 
                         if (!result)
                         {
-                            await Task.Delay(1000);
-                            // Try one more time.
-                            result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} -relaunch true -viewers {String.Join(",", viewerIDs)}",
-                                targetSessionId: -1,
-                                forceConsoleSession: Shlwapi.IsOS(OsType.OS_ANYSERVER) ? true : false,
-                                desktopName: "default",
-                                hiddenWindow: true,
-                                out _);
-
-                            if (!result)
-                            {
-                                Logger.Write("Failed to relaunch screen caster.");
-                                await hubConnection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
-                                await hubConnection.SendAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
-                            }
+                            Logger.Write("Failed to relaunch screen caster.");
+                            await hubConnection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
+                            await hubConnection.SendAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
                         }
                     }
                 }
