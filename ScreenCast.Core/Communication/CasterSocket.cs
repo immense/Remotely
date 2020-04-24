@@ -34,22 +34,31 @@ namespace Remotely.ScreenCast.Core.Communication
         private IFileTransferService FileDownloadService { get; }
         private IKeyboardMouseInput KeyboardMouseInput { get; }
         private IScreenCaster ScreenCaster { get; }
-        public async Task Connect(string host)
+        public async Task<bool> Connect(string host)
         {
-            if (Connection != null)
+            try
             {
-                await Connection.StopAsync();
-                await Connection.DisposeAsync();
-            }
-            Connection = new HubConnectionBuilder()
-                .WithUrl($"{host}/RCDeviceHub")
-                .AddMessagePackProtocol()
-                .WithAutomaticReconnect()
-                .Build();
+                if (Connection != null)
+                {
+                    await Connection.StopAsync();
+                    await Connection.DisposeAsync();
+                }
+                Connection = new HubConnectionBuilder()
+                    .WithUrl($"{host}/RCDeviceHub")
+                    .AddMessagePackProtocol()
+                    .WithAutomaticReconnect()
+                    .Build();
 
-            ApplyConnectionHandlers();
-            
-            await Connection.StartAsync();
+                ApplyConnectionHandlers();
+
+                await Connection.StartAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+                return false;
+            }
         }
 
         public async Task Disconnect()

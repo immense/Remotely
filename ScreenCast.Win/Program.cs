@@ -50,9 +50,10 @@ namespace Remotely.ScreenCast.Win
                 }
                 else
                 {
-                    StartScreenCasting();
+                    Task.Run(StartScreenCasting);
                 }
 
+                Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception ex)
             {
@@ -106,30 +107,29 @@ namespace Remotely.ScreenCast.Win
                 await CasterSocket.NotifyRequesterUnattendedReady(Conductor.RequesterID);
             }
         }
-        private static void StartScreenCasting()
+        private static async Task StartScreenCasting()
         {
             CursorIconWatcher = Services.GetRequiredService<ICursorIconWatcher>();
 
-            CasterSocket.Connect(Conductor.Host).ContinueWith(async (task) =>
+            await CasterSocket.Connect(Conductor.Host);
+            await CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
+
+            if (Win32Interop.GetCurrentDesktop(out var currentDesktopName))
             {
-                await CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
-                if (Win32Interop.GetCurrentDesktop(out var currentDesktopName))
+                Logger.Write($"Setting initial desktop to {currentDesktopName}.");
+                if (!Win32Interop.SwitchToInputDesktop())
                 {
-                    Logger.Write($"Setting initial desktop to {currentDesktopName}.");
-                    if (!Win32Interop.SwitchToInputDesktop())
-                    {
-                        Logger.Write("Failed to set initial desktop.");
-                    }
+                    Logger.Write("Failed to set initial desktop.");
                 }
-                else
-                {
-                    Logger.Write("Failed to get initial desktop name.");
-                }
-                await SendReadyNotificationToViewers();
-                Services.GetRequiredService<IdleTimer>().Start();
-                CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
-                Services.GetRequiredService<IClipboardService>().BeginWatching();
-            });
+            }
+            else
+            {
+                Logger.Write("Failed to get initial desktop name.");
+            }
+            await SendReadyNotificationToViewers();
+            Services.GetRequiredService<IdleTimer>().Start();
+            CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
+            Services.GetRequiredService<IClipboardService>().BeginWatching();
 
             Thread.Sleep(Timeout.Infinite);
         }
