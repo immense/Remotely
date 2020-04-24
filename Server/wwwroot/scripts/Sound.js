@@ -1,7 +1,12 @@
 export const Sound = new class {
     constructor() {
-        this.AudioElements = new Array();
         this.SourceNodes = new Array();
+    }
+    Init() {
+        if (this.Context) {
+            // Already initialized.
+            return;
+        }
         if (AudioContext) {
             this.Context = new AudioContext();
         }

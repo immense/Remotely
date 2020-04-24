@@ -18,19 +18,13 @@ namespace Remotely.Server.API
     public class ClientDownloadsController : ControllerBase
     {
         public ClientDownloadsController(IWebHostEnvironment hostEnv,
-            IConfiguration configuration,
-            ApplicationConfig appConfig,
-            DataService dataService)
+            ApplicationConfig appConfig)
         {
             HostEnv = hostEnv;
             AppConfig = appConfig;
-            DataService = dataService;
-            Configuration = configuration;
         }
 
         private ApplicationConfig AppConfig { get; }
-        private IConfiguration Configuration { get; }
-        private DataService DataService { get; }
         private SemaphoreSlim FileLock { get; } = new SemaphoreSlim(1);
         private IWebHostEnvironment HostEnv { get; set; }
 
@@ -115,7 +109,6 @@ namespace Remotely.Server.API
                     FileLock.Release();
                 }
             }
-          
         }
     }
 }

@@ -1,6 +1,16 @@
-﻿
-export const Sound = new class {
-    constructor() {
+﻿export const Sound = new class {
+    Context: AudioContext;
+    SourceNodes: Array<MediaElementAudioSourceNode> = new Array<MediaElementAudioSourceNode>();
+
+    BackgroundAudio: HTMLAudioElement;
+    BackgroundNode: MediaElementAudioSourceNode;
+
+    Init() {
+        if (this.Context) {
+            // Already initialized.
+            return;
+        }
+
         if (AudioContext) {
             this.Context = new AudioContext();
         }
@@ -14,12 +24,6 @@ export const Sound = new class {
         this.BackgroundNode = this.Context.createMediaElementSource(this.BackgroundAudio);
         this.BackgroundNode.connect(this.Context.destination);
     }
-    Context: AudioContext;
-    AudioElements: Array<HTMLAudioElement> = new Array<HTMLAudioElement>();
-    SourceNodes: Array<MediaElementAudioSourceNode> = new Array<MediaElementAudioSourceNode>();
-
-    BackgroundAudio: HTMLAudioElement;
-    BackgroundNode: MediaElementAudioSourceNode;
 
     Play(buffer: Uint8Array) {
         if (!this.Context) {

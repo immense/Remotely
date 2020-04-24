@@ -39,51 +39,54 @@ namespace Remotely.Agent.Services
             {
                 await UpdateLock.WaitAsync();
 
-                var hc = new HttpClient();
-                var wc = new WebClient();
+                var wc = new WebClientEx((int)UpdateTimer.Interval);
                 var connectionInfo = ConfigService.GetConnectionInfo();
+                var serverUrl = ConfigService.GetConnectionInfo().Host;
 
-                var response = await hc.GetAsync(connectionInfo.Host + $"/API/AgentUpdate/CurrentVersion");
-                var latestVersion = response.Content.ReadAsStringAsync().Result;
-                var thisVersion = FileVersionInfo.GetVersionInfo("Remotely_Agent.dll").FileVersion.ToString().Trim();
-                if (thisVersion != latestVersion)
+                var lastEtag = string.Empty;
+
+                if (File.Exists("etag.txt"))
                 {
-                    Logger.Write($"Service Updater: Update found.  Current Version: {thisVersion}.  Latest Version: {latestVersion}.");
+                    lastEtag = await File.ReadAllTextAsync("etag.txt");
+                }
 
-                    var updateWindow = int.Parse(wc.DownloadString(connectionInfo.Host + $"/API/AgentUpdate/UpdateWindow"));
-                    var waitTime = new Random().Next(1, updateWindow);
-                    Logger.Write($"Waiting {waitTime} seconds before updating.");
-                    await Task.Delay(TimeSpan.FromSeconds(waitTime));
-
-                    Logger.Write($"Service Updater: Downloading installer.");
+                try
+                {
+                    string fileUrl;
                     if (EnvironmentHelper.IsWindows)
                     {
-                        var filePath = Path.Combine(Path.GetTempPath(), "Remotely_Installer.exe");
-
-                        wc.DownloadFile(
-                            ConfigService.GetConnectionInfo().Host + $"/Downloads/Remotely_Installer.exe",
-                            filePath);
-
-                        foreach (var proc in Process.GetProcessesByName("Remotely_Installer"))
-                        {
-                            proc.Kill();
-                        }
-
-                        Process.Start(filePath, $"-install -quiet -serverurl {connectionInfo.Host} -organizationid {connectionInfo.OrganizationID}");
+                        var platform = Environment.Is64BitOperatingSystem ? "x64" : "x86";
+                        fileUrl = serverUrl + $"/Downloads/Remotely-Win10-{platform}.zip";
                     }
                     else if (EnvironmentHelper.IsLinux)
                     {
-                        var filePath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.sh");
+                        fileUrl = serverUrl + $"/Downloads/Remotely-Linux.zip";
+                    }
+                    else
+                    {
+                        throw new PlatformNotSupportedException();
+                    }
 
-                        wc.DownloadFile(
-                            ConfigService.GetConnectionInfo().Host + $"/API/ClientDownloads/{connectionInfo.OrganizationID}/Linux-x64",
-                            filePath);
-
-                        Process.Start("sudo", $"chmod +x {filePath}").WaitForExit();
-
-                        Process.Start("sudo", $"{filePath} & disown");
+                    var wr = WebRequest.CreateHttp(fileUrl);
+                    wr.Method = "Head";
+                    wr.Headers.Add("If-None-Match", lastEtag);
+                    var response = (HttpWebResponse)await wr.GetResponseAsync();
+                    if (response.StatusCode == HttpStatusCode.NotModified)
+                    {
+                        Logger.Write("Service Updater: Version is current.");
+                        return;
                     }
                 }
+                catch (WebException ex) when ((ex.Response as HttpWebResponse).StatusCode == HttpStatusCode.NotModified)
+                {
+                    Logger.Write("Service Updater: Version is current.");
+                    return;
+                }
+
+                Logger.Write("Service Updater: Update found.");
+
+                await InstallLatestVersion();
+
             }
             catch (Exception ex)
             {
@@ -92,6 +95,85 @@ namespace Remotely.Agent.Services
             finally
             {
                 UpdateLock.Release();
+            }
+        }
+
+
+        public async Task InstallLatestVersion()
+        {
+            try
+            {
+                var connectionInfo = ConfigService.GetConnectionInfo();
+                var serverUrl = connectionInfo.Host;
+
+                Logger.Write("Service Updater: Downloading install package.");
+
+                var wc = new WebClientEx((int)UpdateTimer.Interval);
+                var downloadId = Guid.NewGuid().ToString();
+                var zipPath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.zip");
+
+                if (EnvironmentHelper.IsWindows)
+                {
+                    var installerPath = Path.Combine(Path.GetTempPath(), "Remotely_Installer.exe");
+                    var platform = Environment.Is64BitOperatingSystem ? "x64" : "x86";
+
+                    await wc.DownloadFileTaskAsync(
+                         serverUrl + $"/Downloads/Remotely_Installer.exe",
+                         installerPath);
+
+                    await wc.DownloadFileTaskAsync(
+                       serverUrl + $"/api/AgentUpdate/DownloadPackage/win-{platform}/{downloadId}",
+                       zipPath);
+
+                    WebRequest.CreateHttp(serverUrl + $"/api/AgentUpdate/ClearDownload/{downloadId}").GetResponse();
+
+
+                    foreach (var proc in Process.GetProcessesByName("Remotely_Installer"))
+                    {
+                        proc.Kill();
+                    }
+
+                    Process.Start(installerPath, $"-install -quiet -path {installerPath} -serverurl {serverUrl} -organizationid {connectionInfo.OrganizationID}");
+                }
+                else if (EnvironmentHelper.IsLinux)
+                {
+                    var installerPath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.sh");
+
+                    await wc.DownloadFileTaskAsync(
+                      serverUrl + $"/Downloads/Install-Linux-x64.sh",
+                      installerPath);
+
+                    await wc.DownloadFileTaskAsync(
+                       serverUrl + $"/api/AgentUpdate/DownloadPackage/linux/{downloadId}",
+                       zipPath);
+
+                    WebRequest.CreateHttp(serverUrl + $"/api/AgentUpdate/ClearDownload/{downloadId}").GetResponse();
+
+                    Process.Start("sudo", $"chmod +x {installerPath}").WaitForExit();
+
+                    Process.Start("sudo", $"{installerPath} --path {zipPath} & disown");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+            }
+        }
+
+
+        private class WebClientEx : WebClient
+        {
+            private int _requestTimeout;
+
+            public WebClientEx(int requestTimeout)
+            {
+                _requestTimeout = requestTimeout;
+            }
+            protected override WebRequest GetWebRequest(Uri uri)
+            {
+                WebRequest webRequest = base.GetWebRequest(uri);
+                webRequest.Timeout = _requestTimeout;
+                return webRequest;
             }
         }
     }
