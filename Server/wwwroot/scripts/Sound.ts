@@ -1,8 +1,15 @@
-﻿import { RemoveFromArray } from "./Utilities.js";
-
+﻿
 export const Sound = new class {
     constructor() {
-        this.Context = new AudioContext();
+        if (AudioContext) {
+            this.Context = new AudioContext();
+        }
+        else if (window["webkitAudioContext"]) {
+            this.Context = new window["webkitAudioContext"];
+        }
+        else {
+            return;
+        }
         this.BackgroundAudio = new Audio();
         this.BackgroundNode = this.Context.createMediaElementSource(this.BackgroundAudio);
         this.BackgroundNode.connect(this.Context.destination);
@@ -15,6 +22,9 @@ export const Sound = new class {
     BackgroundNode: MediaElementAudioSourceNode;
 
     Play(buffer: Uint8Array) {
+        if (!this.Context) {
+            return;
+        }
 
         var fr = new FileReader();
         fr.onload = async (ev) => {

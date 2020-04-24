@@ -154,7 +154,9 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>if $(ConfigurationName) == Debug (
-   echo &gt; $(ProjectDir)Remotely_Desktop.zip
+   if not exist "$(ProjectDir)Remotely_Desktop.zip" (
+       echo &gt; $(ProjectDir)Remotely_Desktop.zip
+   )
 )</PreBuildEvent>
   </PropertyGroup>
 </Project>
