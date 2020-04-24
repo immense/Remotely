@@ -72,11 +72,16 @@ namespace Remotely.Desktop.Win.ViewModels
                 {
                     try
                     {
-                        var filePath = Process.GetCurrentProcess().MainModule.FileName;
-                        var psi = new ProcessStartInfo(filePath)
+                        //var filePath = Process.GetCurrentProcess().MainModule.FileName;
+                        var commandLine = Win32Interop.GetCommandLine().Replace(" -elevate", "");
+                        var sections = commandLine.Split('"', StringSplitOptions.RemoveEmptyEntries);
+                        var filePath = sections.First();
+                        var arguments = string.Join('"', sections.Skip(1));
+                        var psi = new ProcessStartInfo(filePath, arguments)
                         {
                             Verb = "RunAs",
-                            UseShellExecute = true
+                            UseShellExecute = true,
+                            WindowStyle = ProcessWindowStyle.Hidden
                         };
                         Process.Start(psi);
                         Environment.Exit(0);
@@ -103,9 +108,13 @@ namespace Remotely.Desktop.Win.ViewModels
                             WindowStyle = ProcessWindowStyle.Hidden,
                             CreateNoWindow = true
                         };
-                        var filePath = Process.GetCurrentProcess().MainModule.FileName;
-                        Logger.Write($"Creating temporary service with file path {filePath}.");
-                        psi.Arguments = $"/c sc create Remotely_Temp binPath=\"{filePath} -elevate\"";
+                        //var filePath = Process.GetCurrentProcess().MainModule.FileName;
+                        var commandLine = Win32Interop.GetCommandLine().Replace(" -elevate", "");
+                        var sections = commandLine.Split('"', StringSplitOptions.RemoveEmptyEntries);
+                        var filePath = sections.First();
+                        var arguments = string.Join('"', sections.Skip(1));
+                        Logger.Write($"Creating temporary service with file path {filePath} and arguments {arguments}.");
+                        psi.Arguments = $"/c sc create Remotely_Temp binPath=\"{filePath} {arguments} -elevate\"";
                         Process.Start(psi).WaitForExit();
                         psi.Arguments = "/c sc start Remotely_Temp";
                         Process.Start(psi).WaitForExit();

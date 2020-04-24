@@ -25,15 +25,15 @@ namespace Remotely.Desktop.Win
         {
             if (Environment.GetCommandLineArgs().Contains("-elevate"))
             {
-                var filePath = Process.GetCurrentProcess().MainModule.FileName;
+                var commandLine = Win32Interop.GetCommandLine().Replace(" -elevate", "");
 
-                Logger.Write($"Elevating process {filePath}.");
+                Logger.Write($"Elevating process {commandLine}.");
                 var result = Win32Interop.OpenInteractiveProcess(
-                    filePath,
+                    commandLine,
                     -1,
                     false,
                     "default",
-                    false,
+                    true,
                     out var procInfo);
                 Logger.Write($"Elevate result: {result}. Process ID: {procInfo.dwProcessId}.");
                 Environment.Exit(0);
