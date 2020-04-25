@@ -222,11 +222,6 @@ namespace Remotely.Agent.Installer.Win.Services
                 await client.DownloadFileTaskAsync($"{serverUrl}/Downloads/Remotely-Win10-{Platform}.zip", targetFile);
             }
 
-            var wr = WebRequest.CreateHttp($"{serverUrl}/Downloads/Remotely-Win10-{Platform}.zip");
-            wr.Method = "Head";
-            var response = (HttpWebResponse)await wr.GetResponseAsync();
-            File.WriteAllText(Path.Combine(InstallPath, "etag.txt"), response.Headers["ETag"]);
-
             ProgressMessageChanged.Invoke(this, "Extracting Remotely files.");
             ProgressValueChanged?.Invoke(this, 0);
 
@@ -241,6 +236,11 @@ namespace Remotely.Agent.Installer.Win.Services
             {
                 await Task.Delay(10);
             }
+
+            var wr = WebRequest.CreateHttp($"{serverUrl}/Downloads/Remotely-Win10-{Platform}.zip");
+            wr.Method = "Head";
+            var response = (HttpWebResponse)await wr.GetResponseAsync();
+            File.WriteAllText(Path.Combine(InstallPath, "etag.txt"), response.Headers["ETag"]);
 
             ZipFile.ExtractToDirectory(targetFile, tempDir);
             var fileSystemEntries = Directory.GetFileSystemEntries(tempDir);
