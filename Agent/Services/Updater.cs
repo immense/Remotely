@@ -69,7 +69,7 @@ namespace Remotely.Agent.Services
                 }
 
                 var lastEtag = string.Empty;
-                
+   
                 if (File.Exists("etag.txt"))
                 {
                     lastEtag = await File.ReadAllTextAsync("etag.txt");
