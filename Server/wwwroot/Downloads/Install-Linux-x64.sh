@@ -52,21 +52,21 @@ unzip ./Remotely-Linux.zip
 chmod +x ./Remotely_Agent
 chmod +x ./ScreenCast/Remotely_ScreenCast.Linux
 
-cat > ./ConnectionInfo.json << EOL
-{
-	"DeviceID":"$GUID", 
-	"Host":"$HostName",
-	"OrganizationID": "$Organization",
-	"ServerVerificationToken":""
-}
-EOL
+
+connectionInfo="{
+	\"DeviceID\":\"$GUID\", 
+	\"Host\":\"$HostName\",
+	\"OrganizationID\": \"$Organization\",
+	\"ServerVerificationToken\":\"\"
+}"
+
+echo "$connectionInfo" > ./ConnectionInfo.json
 
 curl --head $HostName/Downloads/Remotely-Linux.zip | grep etag | cut -d' ' -f 2 > etag.txt
 
 echo Creating service...
 
-cat > /etc/systemd/system/remotely-agent.service << EOL
-[Unit]
+serviceConfig="[Unit]
 Description=The Remotely agent used for remote access.
 
 [Service]
@@ -74,11 +74,12 @@ WorkingDirectory=/usr/local/bin/Remotely/
 ExecStart=/usr/local/bin/Remotely/Remotely_Agent
 Restart=always
 StartLimitIntervalSec=0
-RestartSec=10"
+RestartSec=10
 
 [Install]
-WantedBy=graphical.target
-EOL
+WantedBy=graphical.target"
+
+echo "$serviceConfig" > /etc/systemd/system/remotely-agent.service
 
 systemctl enable remotely-agent
 systemctl restart remotely-agent
