@@ -52,6 +52,7 @@ namespace Remotely.Agent.Services
                             return;
                         }
                         chatSession = new ChatSession() { PipeStream = clientPipe, ProcessID = procID };
+                        _ = Task.Run(async () => { await ReadFromStream(chatSession.PipeStream, senderConnectionID, hubConnection); });
                         ChatClients.Add(senderConnectionID, chatSession, CacheItemPolicy);
                     }
 
@@ -69,8 +70,6 @@ namespace Remotely.Agent.Services
                         await sw.WriteLineAsync(message);
                         await sw.FlushAsync();
                     }
-
-                    _ = Task.Run(async () => { await ReadFromStream(chatSession.PipeStream, senderConnectionID, hubConnection); });
                 }
             }
             catch (Exception ex)
