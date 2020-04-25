@@ -16,6 +16,7 @@
     OSDescription: string;
     Platform: string;
     ProcessorCount: number;
+    PublicIP: string;
     TotalMemory: number;
     TotalStorage: number;
     Tags: string;
