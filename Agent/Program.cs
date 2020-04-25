@@ -59,15 +59,6 @@ namespace Remotely.Agent
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Logger.Write(e.ExceptionObject as Exception);
-            if (EnvironmentHelper.IsWindows)
-            {
-                // Remove Secure Attention Sequence policy to allow app to simulate Ctrl + Alt + Del.
-                var subkey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", true);
-                if (subkey.GetValue("SoftwareSASGeneration") != null)
-                {
-                    subkey.DeleteValue("SoftwareSASGeneration");
-                }
-            }
         }
 
         private static async Task Init()
@@ -87,11 +78,7 @@ namespace Remotely.Agent
                     });
                 }
 
-                if (!EnvironmentHelper.IsDebug)
-                {
-                    await Services.GetRequiredService<Updater>().BeginChecking();
-                }
-
+                await Services.GetRequiredService<Updater>().BeginChecking();
 
                 await Services.GetRequiredService<DeviceSocket>().Connect();
             }
