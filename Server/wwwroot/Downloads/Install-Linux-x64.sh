@@ -2,6 +2,7 @@
 HostName=
 Organization=
 GUID=$(cat /proc/sys/kernel/random/uuid)
+ETag=
 
 if [ "$1" = "--uninstall" ]; then
 	systemctl stop remotely-agent
@@ -29,6 +30,7 @@ apt-get -y install libxtst-dev
 apt-get -y install xclip
 apt-get -y install jq
 apt-get -y install xterm
+apt-get -y install curl
 
 if [ -f "/usr/local/bin/Remotely/ConnectionInfo.json" ]; then
 	GUID=`cat "/usr/local/bin/Remotely/ConnectionInfo.json" | jq -r '.DeviceID'`
@@ -62,7 +64,7 @@ connectionInfo="{
 
 echo "$connectionInfo" > ./ConnectionInfo.json
 
-curl --head $HostName/Downloads/Remotely-Linux.zip | grep etag | cut -d' ' -f 2 > etag.txt
+curl --head $HostName/Downloads/Remotely-Linux.zip | grep etag | cut -d' ' -f 2 > ./etag.txt
 
 echo Creating service...
 
