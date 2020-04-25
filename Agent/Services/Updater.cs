@@ -152,8 +152,8 @@ namespace Remotely.Agent.Services
                     var installerPath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.sh");
 
                     await wc.DownloadFileTaskAsync(
-                      serverUrl + $"/Downloads/Install-Linux-x64.sh",
-                      installerPath);
+                           serverUrl + $"/API/ClientDownloads/{connectionInfo.OrganizationID}/Linux-x64",
+                           installerPath);
 
                     await wc.DownloadFileTaskAsync(
                        serverUrl + $"/api/AgentUpdate/DownloadPackage/linux/{downloadId}",
