@@ -52,7 +52,7 @@ namespace Remotely.Server.API
             {
                 while (downloadingAgents.Count > 10)
                 {
-                    await Task.Delay(1000);
+                    await Task.Delay(new Random().Next(100, 10000));
                 }
 
                 downloadingAgents.Set(downloadId, string.Empty, TimeSpan.FromMinutes(10));

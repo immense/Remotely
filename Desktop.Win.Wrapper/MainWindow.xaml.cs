@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -50,12 +51,20 @@ namespace Remotely.Desktop.Win.Wrapper
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            StatusText.Text = "Extracting files...";
+            var sha1 = SHA1.Create().ComputeHash(File.ReadAllBytes(Assembly.GetExecutingAssembly().Location));
+            var sha1Base64 = Convert.ToBase64String(sha1);
+            tempDir = Directory.CreateDirectory(PathIO.Combine(baseDir, sha1Base64)).FullName;
+
             await Task.Run(CleanupOldFiles);
-            tempDir = Directory.CreateDirectory(PathIO.Combine(baseDir, Guid.NewGuid().ToString())).FullName;
-            await Task.Run(ExtractRemotely);
-            await Task.Run(ExtractInstallScript);
-            StatusText.Text = "Updating .NET Core runtime...";
+
+            if (!File.Exists(PathIO.Combine(tempDir, $"{Assembly.GetExecutingAssembly().GetName().Name}.exe")))
+            {
+                StatusText.Text = "Extracting files...";
+                await Task.Run(ExtractRemotely);
+                await Task.Run(ExtractInstallScript);
+                StatusText.Text = "Updating .NET Core runtime...";
+            }
+
             await Task.Run(RunInstallScript);
             Close();
         }
@@ -66,7 +75,7 @@ namespace Remotely.Desktop.Win.Wrapper
             {
                 try
                 {
-                    if (Directory.Exists(fse))
+                    if (Directory.Exists(fse) && fse != tempDir)
                     {
                         Directory.Delete(fse, true);
                     }
