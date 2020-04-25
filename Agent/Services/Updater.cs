@@ -23,6 +23,11 @@ namespace Remotely.Agent.Services
 
         public async Task BeginChecking()
         {
+            if (EnvironmentHelper.IsDebug)
+            {
+                return;
+            }
+
             await CheckForUpdates();
             UpdateTimer.Elapsed += UpdateTimer_Elapsed;
             UpdateTimer.Start();
@@ -37,14 +42,34 @@ namespace Remotely.Agent.Services
         {
             try
             {
+                if (EnvironmentHelper.IsDebug)
+                {
+                    return;
+                }
+
                 await UpdateLock.WaitAsync();
 
-                var wc = new WebClientEx((int)UpdateTimer.Interval);
                 var connectionInfo = ConfigService.GetConnectionInfo();
                 var serverUrl = ConfigService.GetConnectionInfo().Host;
 
-                var lastEtag = string.Empty;
+                string fileUrl;
 
+                if (EnvironmentHelper.IsWindows)
+                {
+                    var platform = Environment.Is64BitOperatingSystem ? "x64" : "x86";
+                    fileUrl = serverUrl + $"/Downloads/Remotely-Win10-{platform}.zip";
+                }
+                else if (EnvironmentHelper.IsLinux)
+                {
+                    fileUrl = serverUrl + $"/Downloads/Remotely-Linux.zip";
+                }
+                else
+                {
+                    throw new PlatformNotSupportedException();
+                }
+
+                var lastEtag = string.Empty;
+                
                 if (File.Exists("etag.txt"))
                 {
                     lastEtag = await File.ReadAllTextAsync("etag.txt");
@@ -52,21 +77,6 @@ namespace Remotely.Agent.Services
 
                 try
                 {
-                    string fileUrl;
-                    if (EnvironmentHelper.IsWindows)
-                    {
-                        var platform = Environment.Is64BitOperatingSystem ? "x64" : "x86";
-                        fileUrl = serverUrl + $"/Downloads/Remotely-Win10-{platform}.zip";
-                    }
-                    else if (EnvironmentHelper.IsLinux)
-                    {
-                        fileUrl = serverUrl + $"/Downloads/Remotely-Linux.zip";
-                    }
-                    else
-                    {
-                        throw new PlatformNotSupportedException();
-                    }
-
                     var wr = WebRequest.CreateHttp(fileUrl);
                     wr.Method = "Head";
                     wr.Headers.Add("If-None-Match", lastEtag);
@@ -76,6 +86,8 @@ namespace Remotely.Agent.Services
                         Logger.Write("Service Updater: Version is current.");
                         return;
                     }
+
+                    File.WriteAllText("etag.txt", response.Headers["ETag"]);
                 }
                 catch (WebException ex) when ((ex.Response as HttpWebResponse).StatusCode == HttpStatusCode.NotModified)
                 {
@@ -133,7 +145,7 @@ namespace Remotely.Agent.Services
                         proc.Kill();
                     }
 
-                    Process.Start(installerPath, $"-install -quiet -path {installerPath} -serverurl {serverUrl} -organizationid {connectionInfo.OrganizationID}");
+                    Process.Start(installerPath, $"-install -quiet -path {zipPath} -serverurl {serverUrl} -organizationid {connectionInfo.OrganizationID}");
                 }
                 else if (EnvironmentHelper.IsLinux)
                 {

@@ -2,6 +2,7 @@ import { MainRc } from "./Main.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 import { GetDistanceBetween, ConvertUInt8ArrayToBase64 } from "../Utilities.js";
 import { UploadFiles } from "./FileUploader.js";
+import { Sound } from "../Sound.js";
 export var AudioButton = document.getElementById("audioButton");
 export var MenuButton = document.getElementById("menuButton");
 export var MenuFrame = document.getElementById("menuFrame");
@@ -55,6 +56,9 @@ export function ApplyInputHandlers() {
     AudioButton.addEventListener("click", (ev) => {
         AudioButton.classList.toggle("toggled");
         var toggleOn = AudioButton.classList.contains("toggled");
+        if (toggleOn) {
+            Sound.Init();
+        }
         MainRc.MessageSender.SendToggleAudio(toggleOn);
     });
     ChangeScreenButton.addEventListener("click", (ev) => {
