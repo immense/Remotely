@@ -58,6 +58,7 @@ export function AddOrUpdateDevice(device) {
                     <td>${device.Alias || ""}</td>
                     <td>${device.CurrentUser}</td>
                     <td>${new Date(device.LastOnline).toLocaleString()}</td>
+                    <td>${device.PublicIP}</td>
                     <td>${device.Platform}</td>
                     <td>${device.OSDescription}</td>
                     <td>${Math.round(device.CpuUtilization * 100)}%</td>

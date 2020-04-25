@@ -82,7 +82,9 @@ namespace Remotely.Server.Services
                     });
                     return Task.FromResult(false);
                 }
-                
+
+                device.PublicIP = Context.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString();
+
                 if (DataService.AddOrUpdateDevice(device, out var updatedDevice))
                 {
                     Device = updatedDevice;

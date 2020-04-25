@@ -141,6 +141,7 @@ namespace Remotely.Server.Services
                 existingDevice.OSDescription = device.OSDescription;
                 existingDevice.Platform = device.Platform;
                 existingDevice.ProcessorCount = device.ProcessorCount;
+                existingDevice.PublicIP = device.PublicIP;
                 existingDevice.TotalMemory = device.TotalMemory;
                 existingDevice.TotalStorage = device.TotalStorage;
                 existingDevice.AgentVersion = device.AgentVersion;

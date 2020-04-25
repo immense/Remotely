@@ -34,6 +34,7 @@ namespace Remotely.Shared.Models
         public string OSDescription { get; set; }
         public string Platform { get; set; }
         public int ProcessorCount { get; set; }
+        public string PublicIP { get; set; }
         public string ServerVerificationToken { get; set; }
         [StringLength(200)]
         public string Tags { get; set; } = "";
