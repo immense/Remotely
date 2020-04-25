@@ -120,6 +120,7 @@ namespace Remotely.Server.Services
 
         public Task DeviceHeartbeat(Device device)
         {
+            device.PublicIP = Context.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString();
             DataService.AddOrUpdateDevice(device, out var updatedDevice);
             Device = updatedDevice;
 
