@@ -5,7 +5,6 @@ import { ShowMessage } from "../UI.js";
 import { Sound } from "../Sound.js";
 export class RtcMessageHandler {
     constructor() {
-        this.FpsStack = [];
         this.MessagePack = window['MessagePack'];
         this.PartialCaptureFrames = [];
     }
@@ -54,13 +53,6 @@ export class RtcMessageHandler {
             };
             img.src = url;
             this.PartialCaptureFrames = [];
-            if (MainRc.Debug) {
-                this.FpsStack.push(Date.now());
-                while (Date.now() - this.FpsStack[0] > 1000) {
-                    this.FpsStack.shift();
-                }
-                console.log("FPS: " + String(this.FpsStack.length));
-            }
         }
         else {
             this.PartialCaptureFrames.push(captureFrame.ImageBytes);

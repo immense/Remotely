@@ -21,7 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="wwwroot\scripts\BrowserSockets.ts" />
     <Content Remove="wwwroot\scripts\Chat.ts" />
     <Content Remove="wwwroot\scripts\CommandCompletion.ts" />
     <Content Remove="wwwroot\scripts\CommandProcessor.ts" />
@@ -33,6 +32,7 @@
     <Content Remove="wwwroot\scripts\Console.ts" />
     <Content Remove="wwwroot\scripts\DataGrid.ts" />
     <Content Remove="wwwroot\scripts\Enums\RemoteControlMode.ts" />
+    <Content Remove="wwwroot\scripts\HubConnection.ts" />
     <Content Remove="wwwroot\scripts\InputEventHandlers.ts" />
     <Content Remove="wwwroot\scripts\Main.ts" />
     <Content Remove="wwwroot\scripts\Models\CaptureFrame.ts" />
@@ -169,13 +169,13 @@
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RtcSession.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\UI.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\ResultsParser.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RCBrowserSockets.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RCHubConnection.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Sound.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Store.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\UI.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\UserSettings.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Utilities.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\BrowserSockets.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\HubConnection.ts" />
   </ItemGroup>
 
 

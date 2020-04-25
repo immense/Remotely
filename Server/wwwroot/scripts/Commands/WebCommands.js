@@ -1,7 +1,7 @@
 import { ConsoleCommand } from "../Models/ConsoleCommand.js";
 import { Parameter } from "../Models/Parameter.js";
 import * as UI from "../UI.js";
-import * as BrowserSockets from "../BrowserSockets.js";
+import * as HubConnection from "../HubConnection.js";
 import { Main } from "../Main.js";
 import * as DataGrid from "../DataGrid.js";
 import { AddConsoleHTML, AddConsoleOutput, AddTransferHarness } from "../Console.js";
@@ -15,7 +15,7 @@ var commands = [
             AddConsoleOutput("You must select a device first.");
             return;
         }
-        BrowserSockets.Connection.invoke("Chat", paramaterDict["message"], selectedDevices.map(x => x.ID));
+        HubConnection.Connection.invoke("Chat", paramaterDict["message"], selectedDevices.map(x => x.ID));
     }),
     new ConsoleCommand("DeployScript", [
         new Parameter("pscore", "Indicates that script should be run with PowerShell Core.", "Switch"),
@@ -38,7 +38,7 @@ var commands = [
         document.body.appendChild(fileInput);
         fileInput.onchange = () => {
             uploadFiles(fileInput.files).then(value => {
-                BrowserSockets.Connection.invoke("DeployScript", value[0], parameters[0].Name, selectedDevices.map(x => x.ID));
+                HubConnection.Connection.invoke("DeployScript", value[0], parameters[0].Name, selectedDevices.map(x => x.ID));
                 fileInput.remove();
             });
         };
@@ -53,7 +53,7 @@ var commands = [
             return;
         }
         ;
-        BrowserSockets.Connection.invoke("DownloadFile", paramDictionary["path"], selectedDevices[0].ID);
+        HubConnection.Connection.invoke("DownloadFile", paramDictionary["path"], selectedDevices[0].ID);
     }),
     new ConsoleCommand("GetLogs", [], "Retrieve the logs from the remote agent.", "GetLogs", "", (parameters, paramDictionary) => {
         var selectedDevices = Main.DataGrid.GetSelectedDevices();
@@ -62,7 +62,7 @@ var commands = [
             return;
         }
         ;
-        BrowserSockets.Connection.invoke("ExecuteCommandOnClient", "PSCore", 'Get-Content -Path "$([System.IO.Path]::GetTempPath())\\Remotely_Logs.log"', selectedDevices.map(x => x.ID));
+        HubConnection.Connection.invoke("ExecuteCommandOnClient", "PSCore", 'Get-Content -Path "$([System.IO.Path]::GetTempPath())\\Remotely_Logs.log"', selectedDevices.map(x => x.ID));
     }),
     new ConsoleCommand("GetVersion", [], "Display the remote agent's version.", "GetVersion", "", (parameters, paramDictionary) => {
         var selectedDevices = Main.DataGrid.GetSelectedDevices();
@@ -89,7 +89,7 @@ var commands = [
         AddConsoleOutput(output);
     }),
     new ConsoleCommand("Clear", [], "Clears the output window of text.", "clear", "", (parameters, paramDictionary) => { UI.ConsoleOutputDiv.innerHTML = ""; }),
-    new ConsoleCommand("Connect", [], "Connect or reconnect to the server.", "connect", "", (parameters, paramDictionary) => { BrowserSockets.Connect(); }),
+    new ConsoleCommand("Connect", [], "Connect or reconnect to the server.", "connect", "", (parameters, paramDictionary) => { HubConnection.Connect(); }),
     new ConsoleCommand("Echo", [
         new Parameter("message", "The text to display in the console.", "String")
     ], "Writes a message to the console window.", "echo -message This will appear in the console.", "", (parameters, paramDictionary) => {
@@ -170,7 +170,7 @@ var commands = [
             AddConsoleOutput("No devices are selected.");
         }
         else {
-            BrowserSockets.Connection.invoke("RemoveDevices", devices.map(x => x.ID));
+            HubConnection.Connection.invoke("RemoveDevices", devices.map(x => x.ID));
         }
     }),
     new ConsoleCommand("Select", [
@@ -319,11 +319,11 @@ var commands = [
             return;
         }
         AddConsoleOutput("Launching remote control on client device...");
-        BrowserSockets.Connection.invoke("RemoteControl", selectedDevices[0].ID);
+        HubConnection.Connection.invoke("RemoteControl", selectedDevices[0].ID);
     }),
     new ConsoleCommand("Uninstall", [], "Uninstalls the Remotely client from the selected devices.  Warning: This can't be undone from the web portal.  You would need to redeploy the client.", "uninstall", "", (parameters, parameterDict) => {
         var selectedDevices = DataGrid.GetSelectedDevices();
-        BrowserSockets.Connection.invoke("UninstallClients", selectedDevices.map(x => x.ID));
+        HubConnection.Connection.invoke("UninstallClients", selectedDevices.map(x => x.ID));
     }),
     new ConsoleCommand("SetTags", [
         new Parameter("Tags", "The tags to set for the device. Max length is 200 characters.", "String"),
@@ -340,7 +340,7 @@ var commands = [
                 parameterDict["tags"] = x.Tags.trim() + separator + parameterDict["tags"];
             }
             DataGrid.DataSource.find(y => y.ID == x.ID).Tags = parameterDict["tags"];
-            BrowserSockets.Connection.invoke("UpdateTags", x.ID, parameterDict["tags"]);
+            HubConnection.Connection.invoke("UpdateTags", x.ID, parameterDict["tags"]);
         });
     }),
     new ConsoleCommand("UploadFiles", [], "Upload file(s) to the selected devices.  The files get saved in C:\\Windows\\Temp on the remote computer.", "uploadfiles", "", (parameters, parameterDict) => {
@@ -358,7 +358,7 @@ var commands = [
         document.body.appendChild(fileInput);
         fileInput.onchange = () => {
             uploadFiles(fileInput.files).then(value => {
-                BrowserSockets.Connection.invoke("UploadFiles", value, transferID, selectedDevices.map(x => x.ID));
+                HubConnection.Connection.invoke("UploadFiles", value, transferID, selectedDevices.map(x => x.ID));
                 fileInput.remove();
             });
         };

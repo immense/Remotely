@@ -5,7 +5,7 @@ import { CommandLineParameter } from "./Models/CommandLineParameter.js";
 import * as UI from "./UI.js";
 import { Store } from "./Store.js";
 import { DisplayCommandShortcuts, DisplayCommandCompletions, DisplayParameterCompletions, GetCommandCompletions } from "./CommandCompletion.js";
-import { Connection } from "./BrowserSockets.js";
+import { Connection } from "./HubConnection.js";
 import { AutoSizeTextArea, AddConsoleOutput } from "./Console.js";
 
 export function EvaluateCurrentCommandText() {

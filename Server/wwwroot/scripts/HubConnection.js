@@ -147,4 +147,4 @@ function applyMessageHandlers(hubConnection) {
         window.open(`/RemoteControl?clientID=${rcConnectionID}&serviceID=${ServiceID}`, "_blank");
     });
 }
-//# sourceMappingURL=BrowserSockets.js.map
+//# sourceMappingURL=HubConnection.js.map

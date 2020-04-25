@@ -3,7 +3,7 @@ import * as UI from "./UI.js";
 import * as CommandProcessor from "./CommandProcessor.js";
 import { Store } from "./Store.js";
 import * as DataGrid from "./DataGrid.js";
-import * as BrowserSockets from "./BrowserSockets.js";
+import * as HubConnection from "./HubConnection.js";
 import { WebCommands } from "./Commands/WebCommands.js";
 import { AddConsoleOutput } from "./Console.js";
 
@@ -79,9 +79,9 @@ function keyDownOnInputTextArea() {
                     UI.CommandCompletionDiv.classList.add("hidden");
                     UI.CommandInfoDiv.classList.add("hidden");
                     AddConsoleOutput(`<span class="echo-input">${UI.ConsoleTextArea.value}</span>`);
-                    if (!BrowserSockets.Connected) {
+                    if (!HubConnection.Connected) {
                         AddConsoleOutput("Not connected.  Reconnecting...");
-                        BrowserSockets.Connect();
+                        HubConnection.Connect();
                         return;
                     }
                     CommandProcessor.ProcessCommand();

@@ -16,7 +16,6 @@ import {
 
 
 export class RtcMessageHandler {
-    FpsStack: Array<number> = [];
     MessagePack: any = window['MessagePack'];
     PartialCaptureFrames: Uint8Array[] = [];
     ParseBinaryMessage(data: ArrayBuffer) {
@@ -69,14 +68,6 @@ export class RtcMessageHandler {
             };
             img.src = url;
             this.PartialCaptureFrames = [];
-
-            if (MainRc.Debug) {
-                this.FpsStack.push(Date.now());
-                while (Date.now() - this.FpsStack[0] > 1000) {
-                    this.FpsStack.shift();
-                }
-                console.log("FPS: " + String(this.FpsStack.length));
-            }
         }
         else {
             this.PartialCaptureFrames.push(captureFrame.ImageBytes);

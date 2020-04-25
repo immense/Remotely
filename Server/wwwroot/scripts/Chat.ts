@@ -1,4 +1,4 @@
-﻿import * as BrowserSockets from "./BrowserSockets.js";
+﻿import * as HubConnection from "./HubConnection.js";
 
 export function CreateChatWindow(deviceID: string, deviceName: string) {
     var chatWindow = document.getElementById("chat-" + deviceID);
@@ -57,7 +57,7 @@ export function CreateChatWindow(deviceID: string, deviceName: string) {
                     </div>
                 `;
                 (ev.currentTarget as HTMLTextAreaElement).value = "";
-                BrowserSockets.Connection.invoke("Chat", inputText, [deviceID]);
+                HubConnection.Connection.invoke("Chat", inputText, [deviceID]);
                 var chatMessages = chatWindow.querySelector(".chat-messages") as HTMLDivElement;
                 chatMessages.scrollTo({ top: chatMessages.scrollHeight });
             }
