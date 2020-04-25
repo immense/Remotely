@@ -43,7 +43,7 @@ export class RtcSession {
             console.log("ICE connection state changed to " + this.iceConnectionState);
         };
         this.PeerConnection.onicecandidate = async (ev) => {
-            await MainRc.RCBrowserSockets.SendIceCandidate(ev.candidate);
+            await MainRc.RCHubConnection.SendIceCandidate(ev.candidate);
         };
     }
     Disconnect() {
@@ -55,7 +55,7 @@ export class RtcSession {
             return this.PeerConnection.remoteDescription.sdp.length > 0;
         }).then(async () => {
             await this.PeerConnection.setLocalDescription(await this.PeerConnection.createAnswer());
-            await MainRc.RCBrowserSockets.SendRtcAnswer(this.PeerConnection.localDescription);
+            await MainRc.RCHubConnection.SendRtcAnswer(this.PeerConnection.localDescription);
         });
     }
     async ReceiveCandidate(candidate) {

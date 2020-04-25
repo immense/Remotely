@@ -74,6 +74,7 @@ if ($CertificatePath.Length -gt 0 -and
 
 
 # Add Current Version file to root content folder for client update checks.
+# TODO: Remove after a few releases.
 Set-Content -Path "$Root\Server\CurrentVersion.txt" -Value $CurrentVersion.Trim() -Encoding UTF8 -Force
 
 # Update hostname.

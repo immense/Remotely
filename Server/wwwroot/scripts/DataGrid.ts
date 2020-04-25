@@ -4,7 +4,7 @@ import { Main } from "./Main.js";
 import { DeviceGrid } from "./UI.js";
 import { AddConsoleOutput } from "./Console.js";
 import { CreateChatWindow } from "./Chat.js";
-import * as BrowserSockets from "./BrowserSockets.js"
+import * as HubConnection from "./HubConnection.js"
 
 
 export const DataSource: Array<Device> = new Array<Device>();
@@ -94,7 +94,7 @@ export function AddOrUpdateDevice(device: Device) {
         ev.preventDefault();
         ev.stopPropagation();
         AddConsoleOutput("Launching remote control on client device...");
-        BrowserSockets.Connection.invoke("RemoteControl", device.ID);
+        HubConnection.Connection.invoke("RemoteControl", device.ID);
     };
     UpdateDeviceCounts();
 }

@@ -18,8 +18,8 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
         private readonly SignInManager<RemotelyUser> _signInManager;
         public LogoutModel(SignInManager<RemotelyUser> signInManager,
             ILogger<LogoutModel> logger,
-            IHubContext<RCDeviceSocketHub> rcDeviceHub,
-            IHubContext<RCBrowserSocketHub> rcBrowserHub)
+            IHubContext<RCDeviceHub> rcDeviceHub,
+            IHubContext<RCBrowserHub> rcBrowserHub)
         {
             _signInManager = signInManager;
             _logger = logger;
@@ -27,8 +27,8 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
             RCBrowserHub = rcBrowserHub;
         }
 
-        private IHubContext<RCDeviceSocketHub> RCDeviceHub { get; }
-        private IHubContext<RCBrowserSocketHub> RCBrowserHub { get; }
+        private IHubContext<RCDeviceHub> RCDeviceHub { get; }
+        private IHubContext<RCBrowserHub> RCBrowserHub { get; }
 
         public void OnGet()
         {
@@ -38,7 +38,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
         {
             if (HttpContext.User.Identity.IsAuthenticated)
             {
-                var activeSessions = RCDeviceSocketHub.SessionInfoList.Where(x => x.Value.RequesterUserName == HttpContext.User.Identity.Name);
+                var activeSessions = Services.RCDeviceHub.SessionInfoList.Where(x => x.Value.RequesterUserName == HttpContext.User.Identity.Name);
                 foreach (var session in activeSessions.ToList())
                 {
                     await RCDeviceHub.Clients.Client(session.Value.RCDeviceSocketID).SendAsync("Disconnect", "User logged out.");

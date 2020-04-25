@@ -18,8 +18,8 @@ namespace Remotely.Server.API
         public LoginController(SignInManager<RemotelyUser> signInManager, 
             DataService dataService, 
             ApplicationConfig appConfig,
-            IHubContext<RCDeviceSocketHub> rcDeviceHub,
-            IHubContext<RCBrowserSocketHub> rcBrowserHub)
+            IHubContext<RCDeviceHub> rcDeviceHub,
+            IHubContext<RCBrowserHub> rcBrowserHub)
         {
             SignInManager = signInManager;
             DataService = dataService;
@@ -31,8 +31,8 @@ namespace Remotely.Server.API
         private SignInManager<RemotelyUser> SignInManager { get; }
         private DataService DataService { get; }
         public ApplicationConfig AppConfig { get; }
-        private IHubContext<RCDeviceSocketHub> RCDeviceHub { get; }
-        private IHubContext<RCBrowserSocketHub> RCBrowserHub { get; }
+        private IHubContext<RCDeviceHub> RCDeviceHub { get; }
+        private IHubContext<RCBrowserHub> RCBrowserHub { get; }
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]ApiLogin login)
@@ -72,7 +72,7 @@ namespace Remotely.Server.API
             if (HttpContext?.User?.Identity?.IsAuthenticated == true)
             {
                 orgId = DataService.GetUserByName(HttpContext.User.Identity.Name)?.OrganizationID;
-                var activeSessions = RCDeviceSocketHub.SessionInfoList.Where(x => x.Value.RequesterUserName == HttpContext.User.Identity.Name);
+                var activeSessions = Services.RCDeviceHub.SessionInfoList.Where(x => x.Value.RequesterUserName == HttpContext.User.Identity.Name);
                 foreach (var session in activeSessions.ToList())
                 {
                     await RCDeviceHub.Clients.Client(session.Value.RCDeviceSocketID).SendAsync("Disconnect", "User logged out.");

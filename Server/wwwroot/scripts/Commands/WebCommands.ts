@@ -1,7 +1,7 @@
 ﻿import { ConsoleCommand } from "../Models/ConsoleCommand.js"
 import { Parameter } from "../Models/Parameter.js";
 import * as UI from "../UI.js";
-import * as BrowserSockets from "../BrowserSockets.js";
+import * as HubConnection from "../HubConnection.js";
 import { CommandLineParameter } from "../Models/CommandLineParameter.js";
 import { Main } from "../Main.js";
 import * as DataGrid from "../DataGrid.js";
@@ -25,7 +25,7 @@ var commands: Array<ConsoleCommand> = [
                 return;
             }
 
-            BrowserSockets.Connection.invoke("Chat", paramaterDict["message"], selectedDevices.map(x => x.ID));
+            HubConnection.Connection.invoke("Chat", paramaterDict["message"], selectedDevices.map(x => x.ID));
         }
     ),
     new ConsoleCommand(
@@ -55,7 +55,7 @@ var commands: Array<ConsoleCommand> = [
             document.body.appendChild(fileInput);
             fileInput.onchange = () => {
                 uploadFiles(fileInput.files).then(value => {
-                    BrowserSockets.Connection.invoke("DeployScript", value[0], parameters[0].Name, selectedDevices.map(x => x.ID));
+                    HubConnection.Connection.invoke("DeployScript", value[0], parameters[0].Name, selectedDevices.map(x => x.ID));
                     fileInput.remove();
                 });
             }
@@ -76,7 +76,7 @@ var commands: Array<ConsoleCommand> = [
                 AddConsoleOutput("No devices are selected.");
                 return;
             };
-            BrowserSockets.Connection.invoke("DownloadFile", paramDictionary["path"], selectedDevices[0].ID);
+            HubConnection.Connection.invoke("DownloadFile", paramDictionary["path"], selectedDevices[0].ID);
         }
     ),
     new ConsoleCommand(
@@ -92,7 +92,7 @@ var commands: Array<ConsoleCommand> = [
                 AddConsoleOutput("No devices are selected.");
                 return;
             };
-            BrowserSockets.Connection.invoke("ExecuteCommandOnClient", "PSCore", 'Get-Content -Path "$([System.IO.Path]::GetTempPath())\\Remotely_Logs.log"', selectedDevices.map(x => x.ID));
+            HubConnection.Connection.invoke("ExecuteCommandOnClient", "PSCore", 'Get-Content -Path "$([System.IO.Path]::GetTempPath())\\Remotely_Logs.log"', selectedDevices.map(x => x.ID));
         }
     ),
     new ConsoleCommand(
@@ -143,7 +143,7 @@ var commands: Array<ConsoleCommand> = [
         "Connect or reconnect to the server.",
         "connect",
         "",
-        (parameters, paramDictionary) => { BrowserSockets.Connect(); }
+        (parameters, paramDictionary) => { HubConnection.Connect(); }
     ),
     new ConsoleCommand(
         "Echo",
@@ -274,7 +274,7 @@ var commands: Array<ConsoleCommand> = [
                 AddConsoleOutput("No devices are selected.");
             }
             else {
-                BrowserSockets.Connection.invoke("RemoveDevices", devices.map(x=>x.ID));
+                HubConnection.Connection.invoke("RemoveDevices", devices.map(x=>x.ID));
             }
         }
     ),
@@ -441,7 +441,7 @@ var commands: Array<ConsoleCommand> = [
                 return;
             }
             AddConsoleOutput("Launching remote control on client device...");
-            BrowserSockets.Connection.invoke("RemoteControl", selectedDevices[0].ID);
+            HubConnection.Connection.invoke("RemoteControl", selectedDevices[0].ID);
         }
     ),
     new ConsoleCommand("Uninstall",
@@ -451,7 +451,7 @@ var commands: Array<ConsoleCommand> = [
         "",
         (parameters, parameterDict) => {
             var selectedDevices = DataGrid.GetSelectedDevices();
-            BrowserSockets.Connection.invoke("UninstallClients", selectedDevices.map(x=>x.ID));
+            HubConnection.Connection.invoke("UninstallClients", selectedDevices.map(x=>x.ID));
         }
     ),
     new ConsoleCommand(
@@ -475,7 +475,7 @@ var commands: Array<ConsoleCommand> = [
                     parameterDict["tags"] = x.Tags.trim() + separator + parameterDict["tags"]
                 }
                 DataGrid.DataSource.find(y => y.ID == x.ID).Tags = parameterDict["tags"];
-                BrowserSockets.Connection.invoke("UpdateTags", x.ID, parameterDict["tags"]);
+                HubConnection.Connection.invoke("UpdateTags", x.ID, parameterDict["tags"]);
             });
         }
     ),
@@ -501,7 +501,7 @@ var commands: Array<ConsoleCommand> = [
             document.body.appendChild(fileInput);
             fileInput.onchange = () => {
                 uploadFiles(fileInput.files).then(value => {
-                    BrowserSockets.Connection.invoke("UploadFiles", value, transferID, selectedDevices.map(x => x.ID));
+                    HubConnection.Connection.invoke("UploadFiles", value, transferID, selectedDevices.map(x => x.ID));
                     fileInput.remove();
                 });
             }

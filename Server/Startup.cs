@@ -210,22 +210,22 @@ namespace Remotely.Server
 
             app.UseEndpoints(routeBuilder =>
             {
-                routeBuilder.MapHub<BrowserSocketHub>("/BrowserHub", options =>
+                routeBuilder.MapHub<BrowserHub>("/BrowserHub", options =>
                 {
                     options.ApplicationMaxBufferSize = 500000;
                     options.TransportMaxBufferSize = 500000;
                 });
-                routeBuilder.MapHub<DeviceSocketHub>("/DeviceHub", options =>
+                routeBuilder.MapHub<DeviceHub>("/DeviceHub", options =>
                 {
                     options.ApplicationMaxBufferSize = 500000;
                     options.TransportMaxBufferSize = 500000;
                 });
-                routeBuilder.MapHub<RCDeviceSocketHub>("/RCDeviceHub", options =>
+                routeBuilder.MapHub<RCDeviceHub>("/RCDeviceHub", options =>
                 {
                     options.ApplicationMaxBufferSize = 2000000;
                     options.TransportMaxBufferSize = 2000000;
                 });
-                routeBuilder.MapHub<RCBrowserSocketHub>("/RCBrowserHub", options =>
+                routeBuilder.MapHub<RCBrowserHub>("/RCBrowserHub", options =>
                 {
                     options.ApplicationMaxBufferSize = 2000000;
                     options.TransportMaxBufferSize = 2000000;

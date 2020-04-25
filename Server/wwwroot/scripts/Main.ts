@@ -1,4 +1,4 @@
-﻿import * as BrowserSockets from "./BrowserSockets.js";
+﻿import * as HubConnection from "./HubConnection.js";
 import * as UI from "./UI.js";
 import * as CommandProcessor from "./CommandProcessor.js";
 import { WebCommands } from "./Commands/WebCommands.js";
@@ -25,14 +25,14 @@ var remotely = {
     DataGrid: DataGrid,
     UI: UI,
     Utilities: Utilities,
-    Sockets: BrowserSockets,
+    HubConnection: HubConnection,
     UserSettings: UserSettings,
     Sound: Sound,
     Store: Store,
     Init() {
         UI.ConsoleTextArea.focus();
         ApplyInputEventHandlers();
-        BrowserSockets.Connect();
+        HubConnection.Connect();
     }
 }
 

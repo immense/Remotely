@@ -1,5 +1,5 @@
 import * as Utilities from "../Utilities.js";
-import { RCBrowserSockets } from "./RCBrowserSockets.js";
+import { RCHubConnection } from "./RCHubConnection.js";
 import { RtcSession } from "./RtcSession.js";
 import * as UI from "./UI.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
@@ -9,9 +9,8 @@ import { MessageSender } from "./MessageSender.js";
 var queryString = Utilities.ParseSearchString();
 export const MainRc = {
     ClipboardWatcher: new ClipboardWatcher(),
-    Debug: false,
     MessageSender: new MessageSender(),
-    RCBrowserSockets: new RCBrowserSockets(),
+    RCHubConnection: new RCHubConnection(),
     RtcMessageHandler: new RtcMessageHandler(),
     RtcSession: new RtcSession(),
     ClientID: queryString["clientID"] ? decodeURIComponent(queryString["clientID"]) : "",
@@ -23,7 +22,7 @@ export const MainRc = {
         if (queryString["clientID"]) {
             MainRc.Mode = RemoteControlMode.Unattended;
             UI.ConnectBox.style.display = "none";
-            MainRc.RCBrowserSockets.Connect();
+            MainRc.RCHubConnection.Connect();
         }
         else if (queryString["sessionID"]) {
             UI.SessionIDInput.value = decodeURIComponent(queryString["sessionID"]);
@@ -38,7 +37,7 @@ export const MainRc = {
         MainRc.ClientID = UI.SessionIDInput.value.split(" ").join("");
         MainRc.RequesterName = UI.RequesterNameInput.value;
         MainRc.Mode = RemoteControlMode.Normal;
-        MainRc.RCBrowserSockets.Connect();
+        MainRc.RCHubConnection.Connect();
         UI.StatusMessage.innerHTML = "Sending connection request...";
     }
 };

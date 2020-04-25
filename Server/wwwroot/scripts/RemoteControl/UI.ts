@@ -95,7 +95,7 @@ export function ApplyInputHandlers() {
     });
     DisconnectButton.addEventListener("click", (ev) => {
         ConnectButton.removeAttribute("disabled");
-        MainRc.RCBrowserSockets.Connection.stop();
+        MainRc.RCHubConnection.Connection.stop();
         if (location.search.includes("fromApi=true")) {
             window.close();
         }
