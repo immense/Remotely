@@ -66,9 +66,8 @@ namespace Remotely.ScreenCast.Core.Services
 
             while (NamedPipeStream.IsConnected)
             {
-                Console.SetCursorPosition(0, Math.Max(MaxCursorTop, Console.CursorTop));
-                Console.WriteLine();
-                Console.WriteLine();
+                Console.SetCursorPosition(0, Math.Max(MaxCursorTop, Console.CursorTop) + 1);
+                MaxCursorTop = Console.CursorTop + 1;
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.Write("You: ");
                 Console.ForegroundColor = ConsoleColor.White;
@@ -94,9 +93,7 @@ namespace Remotely.ScreenCast.Core.Services
                 var message = await Reader.ReadLineAsync();
                 var left = Console.CursorLeft;
                 var top = Console.CursorTop;
-                Console.SetCursorPosition(0, Math.Max(MaxCursorTop, Console.CursorTop));
-                Console.WriteLine();
-                Console.WriteLine();
+                Console.SetCursorPosition(0, Math.Max(MaxCursorTop, Console.CursorTop) + 1);
                 var split = message.Split(":", 2);
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.Write($"{split[0]}: ");
