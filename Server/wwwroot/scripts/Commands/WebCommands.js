@@ -239,6 +239,7 @@ var commands = [
                     var key = filter.slice(0, operatorIndex).trim().toLowerCase();
                     var operator = filter.slice(operatorIndex, valueIndex).trim().toLowerCase();
                     var value = filter.slice(valueIndex).trim().toLowerCase();
+                    console.log(`Searching by key ${key}, operator ${operator}, value ${value}`);
                     if (key == "lastonline") {
                         var parsedDate = Date.parse(value);
                         switch (operator) {
@@ -261,16 +262,16 @@ var commands = [
                     else {
                         switch (operator) {
                             case "=":
-                                lambda += `(x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)] || "").toString().toLowerCase() === "${value}".toString().toLowerCase() && `;
+                                lambda += `(String(x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)])).toLowerCase() === "${value}".toString().toLowerCase() && `;
                                 break;
                             case "*":
-                                lambda += `(x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)] || "").toString().toLowerCase().search("${value}".toString().toLowerCase()) > -1 && `;
+                                lambda += `(String(x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)])).toLowerCase().search("${value}".toString().toLowerCase()) > -1 && `;
                                 break;
                             case "!=":
-                                lambda += `(x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)] || "").toString().toLowerCase() !== "${value}".toString().toLowerCase() && `;
+                                lambda += `(String(x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)])).toLowerCase() !== "${value}".toString().toLowerCase() && `;
                                 break;
                             case "!*":
-                                lambda += `(x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)] || "").toString().toLowerCase().search("${value}".toString().toLowerCase()) === -1 && `;
+                                lambda += `(String(x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)])).toLowerCase().search("${value}".toString().toLowerCase()) === -1 && `;
                                 break;
                             case ">":
                                 lambda += `parseFloat(x[Object.keys(x).find(y=>y.toString().toLowerCase().indexOf("${key}") > -1)]) > parseFloat("${value}") && `;
@@ -286,6 +287,7 @@ var commands = [
             }
             catch (ex) {
                 AddConsoleOutput("Unable to parse filter.  Please check your syntax.");
+                console.error(ex);
                 return;
             }
             lambda = lambda.slice(0, lambda.lastIndexOf(" &&"));
