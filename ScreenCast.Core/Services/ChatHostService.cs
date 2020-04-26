@@ -20,6 +20,7 @@ namespace Remotely.ScreenCast.Core.Services
                                        |___/ 
 ";
 
+        private int MaxCursorTop { get; set; }
         private NamedPipeServerStream NamedPipeStream { get; set; }
         private StreamReader Reader { get; set; }
         private StreamWriter Writer { get; set; }
@@ -65,7 +66,12 @@ namespace Remotely.ScreenCast.Core.Services
 
             while (NamedPipeStream.IsConnected)
             {
-                SetPrompt();
+                Console.SetCursorPosition(0, Math.Max(MaxCursorTop, Console.CursorTop));
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.Write("You: ");
+                Console.ForegroundColor = ConsoleColor.White;
                 var message = Console.ReadLine();
                 await Writer.WriteLineAsync(message);
                 await Writer.FlushAsync();
@@ -86,6 +92,9 @@ namespace Remotely.ScreenCast.Core.Services
             while (NamedPipeStream.IsConnected)
             {
                 var message = await Reader.ReadLineAsync();
+                var left = Console.CursorLeft;
+                var top = Console.CursorTop;
+                Console.SetCursorPosition(0, Math.Max(MaxCursorTop, Console.CursorTop));
                 Console.WriteLine();
                 Console.WriteLine();
                 var split = message.Split(":", 2);
@@ -93,16 +102,9 @@ namespace Remotely.ScreenCast.Core.Services
                 Console.Write($"{split[0]}: ");
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine(split[1]);
-                SetPrompt();
+                MaxCursorTop = Console.CursorTop;
+                Console.SetCursorPosition(left, top);
             }
-        }
-
-        private void SetPrompt()
-        {
-            Console.WriteLine();
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write("You: ");
-            Console.ForegroundColor = ConsoleColor.White;
         }
 
         private void WriteOrgnanizationName(string organizationName)
