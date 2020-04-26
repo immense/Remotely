@@ -120,7 +120,7 @@ namespace Remotely.Agent.Services
 
                 Logger.Write("Service Updater: Downloading install package.");
 
-                var wc = new WebClientEx((int)UpdateTimer.Interval);
+                using var wc = new WebClientEx((int)UpdateTimer.Interval);
                 var downloadId = Guid.NewGuid().ToString();
                 var zipPath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.zip");
 
