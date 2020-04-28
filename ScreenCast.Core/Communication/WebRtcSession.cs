@@ -144,7 +144,6 @@ namespace Remotely.ScreenCast.Core.Communication
         }
         private void DataChannel_BufferingChanged(ulong previous, ulong current, ulong limit)
         {
-            Logger.Debug($"DataChannel buffering changed.  Previous: {previous}.  Current: {current}.  Limit: {limit}.");
             CurrentBuffer = current;
         }
 
