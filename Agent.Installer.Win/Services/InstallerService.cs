@@ -102,7 +102,6 @@ namespace Remotely.Agent.Installer.Win.Services
                 GetRegistryBaseKey().DeleteSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Remotely", false);
 
                 return true;
-
             }
             catch (Exception ex)
             {
@@ -198,7 +197,7 @@ namespace Remotely.Agent.Installer.Win.Services
             remotelyKey.SetValue("Publisher", "Translucency Software");
             remotelyKey.SetValue("VersionMajor", version.FileMajorPart.ToString(), RegistryValueKind.DWord);
             remotelyKey.SetValue("VersionMinor", version.FileMinorPart.ToString(), RegistryValueKind.DWord);
-            remotelyKey.SetValue("UninstallString", Path.Combine(InstallPath, "Remotely_Installer.exe -uninstall"));
+            remotelyKey.SetValue("UninstallString", Path.Combine(InstallPath, "Remotely_Installer.exe -uninstall -quiet"));
             remotelyKey.SetValue("QuietUninstallString", Path.Combine(InstallPath, "Remotely_Installer.exe -uninstall -quiet"));
         }
 

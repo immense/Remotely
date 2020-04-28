@@ -180,7 +180,7 @@ namespace Remotely.ScreenCast.Win.Services
                 var texture2D = directxScreens[SelectedScreen].Texture2D;
 
                 // Try to get duplicated frame within given time is ms
-                var result = duplicatedOutput.TryAcquireNextFrame(20,
+                var result = duplicatedOutput.TryAcquireNextFrame(100,
                     out var duplicateFrameInformation,
                     out var screenResource);
 
