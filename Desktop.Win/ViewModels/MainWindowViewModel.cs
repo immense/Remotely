@@ -19,6 +19,7 @@ using Remotely.ScreenCast.Core.Communication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Win32;
+using Remotely.Shared.Utilities;
 
 namespace Remotely.Desktop.Win.ViewModels
 {

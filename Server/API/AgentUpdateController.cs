@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Remotely.Server.Services;
+using Remotely.Shared.Enums;
 using System;
 using System.IO;
 using System.Net;
@@ -13,7 +14,8 @@ namespace Remotely.Server.API
     [ApiController]
     public class AgentUpdateController : ControllerBase
     {
-        private static readonly MemoryCache downloadingAgents = new MemoryCache(new MemoryCacheOptions());
+        private static readonly MemoryCache downloadingAgents = new MemoryCache(new MemoryCacheOptions()
+            { ExpirationScanFrequency = TimeSpan.FromSeconds(10) });
 
 
         public AgentUpdateController(IWebHostEnvironment hostingEnv, 
@@ -33,6 +35,7 @@ namespace Remotely.Server.API
         [HttpGet("[action]/{downloadId}")]
         public ActionResult ClearDownload(string downloadId)
         {
+            DataService.WriteEvent($"Clearing download ID {downloadId}.", EventType.Debug, null);
             downloadingAgents.Remove(downloadId);
             return Ok();
         }
@@ -60,9 +63,11 @@ namespace Remotely.Server.API
                     await Task.Delay(new Random().Next(100, 10000));
                 }
                 var waitTime = DateTimeOffset.Now - startWait;
-                DataService.WriteEvent($"Download started after wait time of {waitTime}.", Shared.Models.EventType.Debug, string.Empty);
 
                 downloadingAgents.Set(downloadId, string.Empty, TimeSpan.FromMinutes(10));
+
+                DataService.WriteEvent($"Download started after wait time of {waitTime}.  " + "" +
+                    $"Current Downloads: {downloadingAgents.Count}.  Max Allowed: {AppConfig.MaxConcurrentUpdates}", EventType.Debug, null);
 
                 byte[] fileBytes;
                 string filePath;
@@ -89,6 +94,7 @@ namespace Remotely.Server.API
             }
             catch (Exception ex)
             {
+                downloadingAgents.Remove(downloadId);
                 DataService.WriteEvent(ex, null);
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }

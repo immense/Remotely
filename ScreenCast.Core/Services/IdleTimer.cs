@@ -1,4 +1,5 @@
 ﻿using Remotely.ScreenCast.Core.Models;
+using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Timers;

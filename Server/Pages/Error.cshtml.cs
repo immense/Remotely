@@ -3,6 +3,7 @@ using Remotely.Server.Services;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Remotely.Shared.Enums;
 
 namespace Remotely.Server.Pages
 {
@@ -33,7 +34,7 @@ namespace Remotely.Server.Pages
                     {
                         var logEntry = new Remotely.Shared.Models.EventLog()
                         {
-                            EventType = Remotely.Shared.Models.EventType.Error,
+                            EventType = EventType.Error,
                             Message = error.Message,
                             Source = error.Source,
                             StackTrace = error.StackTrace,

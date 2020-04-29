@@ -10,6 +10,7 @@ using System.Net;
 using Remotely.ScreenCast.Core.Services;
 using Remotely.ScreenCast.Core.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Remotely.Shared.Utilities;
 
 namespace Remotely.ScreenCast.Core.Communication
 {

@@ -2,6 +2,7 @@
 using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Services;
 using Remotely.Shared.Models;
+using Remotely.Shared.Utilities;
 using System;
 using System.Drawing.Imaging;
 using System.Threading.Tasks;

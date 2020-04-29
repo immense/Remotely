@@ -15,7 +15,7 @@ namespace Remotely.Agent.Installer.Win.Services
 #if DEBUG
                 CheckLogFileExists();
 
-                File.AppendAllText(LogPath, $"{DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}\t[DEBUG]\t{message}{Environment.NewLine}");
+                File.AppendAllText(LogPath, $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}\t[Debug]\t{message}{Environment.NewLine}");
 
 #endif
                 System.Diagnostics.Debug.WriteLine(message);
@@ -30,7 +30,7 @@ namespace Remotely.Agent.Installer.Win.Services
                 lock (WriteLock)
                 {
                     CheckLogFileExists();
-                    File.AppendAllText(LogPath, $"{DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}\t[INFO]\t{message}{Environment.NewLine}");
+                    File.AppendAllText(LogPath, $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}\t[Info]\t{message}{Environment.NewLine}");
                     Console.WriteLine(message);
                 }
             }
@@ -49,7 +49,7 @@ namespace Remotely.Agent.Installer.Win.Services
 
                     while (exception != null)
                     {
-                        File.AppendAllText(LogPath, $"{DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}\t[ERROR]\t{exception?.Message}\t{exception?.StackTrace}\t{exception?.Source}{Environment.NewLine}");
+                        File.AppendAllText(LogPath, $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}\t[Error]\t{exception?.Message}\t{exception?.StackTrace}\t{exception?.Source}{Environment.NewLine}");
                         Console.WriteLine(exception.Message);
                         exception = exception.InnerException;
                     }

@@ -3,6 +3,7 @@ using Remotely.ScreenCast.Core.Services;
 using Remotely.ScreenCast.Linux.X11Interop;
 using System;
 using Remotely.ScreenCast.Core.Models;
+using Remotely.Shared.Utilities;
 
 namespace Remotely.ScreenCast.Linux.Services
 {

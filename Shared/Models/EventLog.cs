@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Remotely.Shared.Enums;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -16,12 +17,5 @@ namespace Remotely.Shared.Models
         public DateTimeOffset TimeStamp { get; set; } = DateTimeOffset.Now;
         [JsonIgnore]
         public Organization Organization { get; set; }
-    }
-    public enum EventType
-    {
-        Info = 0,
-        Error = 1,
-        Debug = 2,
-        Warning = 3
     }
 }

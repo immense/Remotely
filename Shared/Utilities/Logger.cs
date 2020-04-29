@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Remotely.Shared.Enums;
+using Remotely.Shared.Utilities;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace Remotely.ScreenCast.Core.Services
+namespace Remotely.Shared.Utilities
 {
     public static class Logger
     {
@@ -14,32 +16,33 @@ namespace Remotely.ScreenCast.Core.Services
         {
             lock (WriteLock)
             {
-#if DEBUG
-                CheckLogFileExists();
+                if (EnvironmentHelper.IsDebug)
+                {
+                    CheckLogFileExists();
 
-                File.AppendAllText(LogPath, $"{DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}\t[DEBUG]\t{message}{Environment.NewLine}");
-
-#endif
+                    File.AppendAllText(LogPath, $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}\t[Debug]\t{message}{Environment.NewLine}");
+                }
+                
                 System.Diagnostics.Debug.WriteLine(message);
             }
 
         }
 
-        public static void Write(string message)
+        public static void Write(string message, EventType eventType = EventType.Info)
         {
             try
             {
                 lock (WriteLock)
                 {
                     CheckLogFileExists();
-                    File.AppendAllText(LogPath, $"{DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}\t[INFO]\t{message}{Environment.NewLine}");
+                    File.AppendAllText(LogPath, $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}\t[{eventType}]\t{message}{Environment.NewLine}");
                     Console.WriteLine(message);
                 }
             }
             catch { }
         }
 
-        public static void Write(Exception ex)
+        public static void Write(Exception ex, EventType eventType = EventType.Error)
         {
             lock (WriteLock)
             {
@@ -51,13 +54,19 @@ namespace Remotely.ScreenCast.Core.Services
 
                     while (exception != null)
                     {
-                        File.AppendAllText(LogPath, $"{DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}\t[ERROR]\t{exception?.Message}\t{exception?.StackTrace}\t{exception?.Source}{Environment.NewLine}");
+                        File.AppendAllText(LogPath, $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}\t[{eventType}]\t{exception?.Message}\t{exception?.StackTrace}\t{exception?.Source}{Environment.NewLine}");
                         Console.WriteLine(exception.Message);
                         exception = exception.InnerException;
                     }
                 }
                 catch { }
             }
+        }
+
+        public static void Write(Exception ex, string message, EventType eventType = EventType.Error)
+        {
+            Write(message, eventType);
+            Write(ex, eventType);
         }
 
         private static void CheckLogFileExists()

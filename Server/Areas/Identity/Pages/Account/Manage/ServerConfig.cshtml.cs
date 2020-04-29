@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Remotely.Server.Services;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
@@ -41,6 +42,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         public ConnectionStringsModel ConnectionStrings { get; set; } = new ConnectionStringsModel();
 
         public bool IsServerAdmin { get; set; }
+        public string Environment { get; set; }
 
         [BindProperty]
         [Display(Name = "Server Admins")]
@@ -57,6 +59,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         public async Task<IActionResult> OnGet()
         {
             IsServerAdmin = (await UserManager.GetUserAsync(User)).IsServerAdmin;
+            Environment = HostEnv.EnvironmentName;
             if (!IsServerAdmin)
             {
                 return Unauthorized();
@@ -104,10 +107,15 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         {
             string savePath;
             var prodSettings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.Production.json");
+            var stagingSettings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.Staging.json");
             var settings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.json");
-            if (prodSettings.Exists)
+            if (HostEnv.IsProduction() && prodSettings.Exists)
             {
                 savePath = prodSettings.PhysicalPath;
+            }
+            else if (HostEnv.IsStaging() && stagingSettings.Exists)
+            {
+                savePath = stagingSettings.PhysicalPath;
             }
             else if (settings.Exists)
             {

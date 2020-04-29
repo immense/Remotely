@@ -12,6 +12,9 @@
     <div class="row">
         <div class="col-md-6">
             <form id="serverConfigForm" method="post" autocomplete="off">
+                <div class="text-right">
+                    <span class="badge badge-info p-2">Environment: @Model.Environment</span>
+                </div>
                 <div asp-validation-summary="All" class="text-danger"></div>
 
                 <h4>Application Settings</h4>
