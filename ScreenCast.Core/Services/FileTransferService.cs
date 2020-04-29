@@ -165,12 +165,13 @@ namespace Remotely.ScreenCast.Core.Services
                 if (EnvironmentHelper.IsWindows)
                 {
                     messageBoxPending = true;
-                    var result = Win32Interop.ShowMessageBox(IntPtr.Zero,
+                    var result = Win32Interop.ShowMessageBox(User32.GetDesktopWindow(),
                                     "File transfer complete.  Show folder?",
                                     "Transfer Complete",
                                     User32.MessageBoxType.MB_YESNO | 
                                     User32.MessageBoxType.MB_ICONINFORMATION |
-                                    User32.MessageBoxType.MB_TOPMOST);
+                                    User32.MessageBoxType.MB_TOPMOST |
+                                    User32.MessageBoxType.MB_SYSTEMMODAL);
 
                     if (result == User32.MessageBoxResult.IDYES)
                     {

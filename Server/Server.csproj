@@ -15,9 +15,13 @@
 
   <ItemGroup>
     <Compile Remove="Areas\Identity\Services\**" />
+    <Compile Remove="wwwroot\lib\%40types\popper\**" />
     <Content Remove="Areas\Identity\Services\**" />
+    <Content Remove="wwwroot\lib\%40types\popper\**" />
     <EmbeddedResource Remove="Areas\Identity\Services\**" />
+    <EmbeddedResource Remove="wwwroot\lib\%40types\popper\**" />
     <None Remove="Areas\Identity\Services\**" />
+    <None Remove="wwwroot\lib\%40types\popper\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -137,7 +141,6 @@
     <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\legacy.d.ts" />
     <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\misc.d.ts" />
     <TypeScriptCompile Include="wwwroot\lib\%40types\sizzle\index.d.ts" />
-    <TypeScriptCompile Include="wwwroot\lib\%40types\popper\index.d.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Chat.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\CommandCompletion.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Commands\BashCommands.ts" />
