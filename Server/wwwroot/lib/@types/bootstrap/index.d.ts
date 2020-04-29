@@ -6,7 +6,7 @@
 
 /// <reference types="jquery"/>
 
-import * as Popper from "popper.js";
+import * as Popper from "../popper.js/index";
 
 export as namespace Bootstrap;
 
