@@ -58,16 +58,16 @@ namespace Remotely.Server.API
             try
             {
                 var startWait = DateTimeOffset.Now;
-                while (downloadingAgents.Count > AppConfig.MaxConcurrentUpdates)
+                while (downloadingAgents.Count >= AppConfig.MaxConcurrentUpdates)
                 {
                     await Task.Delay(new Random().Next(100, 10000));
                 }
                 var waitTime = DateTimeOffset.Now - startWait;
 
-                downloadingAgents.Set(downloadId, string.Empty, TimeSpan.FromMinutes(10));
-
                 DataService.WriteEvent($"Download started after wait time of {waitTime}.  " + "" +
                     $"Current Downloads: {downloadingAgents.Count}.  Max Allowed: {AppConfig.MaxConcurrentUpdates}", EventType.Debug, null);
+
+                downloadingAgents.Set(downloadId, string.Empty, TimeSpan.FromMinutes(10));
 
                 byte[] fileBytes;
                 string filePath;
