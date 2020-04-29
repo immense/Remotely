@@ -25,6 +25,7 @@ using Microsoft.Win32;
 using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Services;
 using Remotely.ScreenCast.Win.Models;
+using Remotely.Shared.Utilities;
 using Remotely.Shared.Win32;
 using SharpDX;
 using SharpDX.Direct3D11;

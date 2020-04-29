@@ -1,5 +1,6 @@
 ﻿using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Services;
+using Remotely.Shared.Utilities;
 using System;
 using System.Diagnostics;
 using System.IO;

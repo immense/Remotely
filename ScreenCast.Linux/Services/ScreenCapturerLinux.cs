@@ -1,6 +1,7 @@
 ﻿using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Services;
 using Remotely.ScreenCast.Linux.X11Interop;
+using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

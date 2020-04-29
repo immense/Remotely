@@ -1,5 +1,6 @@
 ﻿using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Services;
+using Remotely.Shared.Utilities;
 using Remotely.Shared.Win32;
 using System;
 using System.Threading;

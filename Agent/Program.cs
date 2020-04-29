@@ -46,7 +46,6 @@ namespace Remotely.Agent
             serviceCollection.AddTransient<PSCore>();
             serviceCollection.AddTransient<WindowsPS>();
             serviceCollection.AddScoped<ConfigService>();
-            serviceCollection.AddScoped<Logger>();
             serviceCollection.AddSingleton<Updater>();
             serviceCollection.AddScoped<Uninstaller>();
             serviceCollection.AddScoped<ScriptRunner>();

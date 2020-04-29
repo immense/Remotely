@@ -4,6 +4,7 @@ using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Models;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models.RtcDtos;
+using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;

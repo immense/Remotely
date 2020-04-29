@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Remotely.Server.Services;
+using Remotely.Shared.Enums;
 
 namespace Remotely.Server.Pages
 {
@@ -41,7 +42,7 @@ namespace Remotely.Server.Pages
             else if (!DataService.DoesUserHaveAccessToDevice(deviceID, user))
             {
                 DataService.WriteEvent($"Edit device attempted by unauthorized user.  Device ID: {deviceID}.  User Name: {user.UserName}.",
-                    Remotely.Shared.Models.EventType.Warning,
+                    EventType.Warning,
                     targetDevice.OrganizationID);
                 return Unauthorized();
             }

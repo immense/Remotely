@@ -10,6 +10,7 @@ using Remotely.Shared.ViewModels.Organization;
 using Remotely.Server.Data;
 using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
+using Remotely.Shared.Enums;
 
 namespace Remotely.Server.Services
 {
@@ -633,16 +634,25 @@ namespace Remotely.Server.Services
 
         public IEnumerable<EventLog> GetEventLogs(string userName, DateTimeOffset from, DateTimeOffset to)
         {
-            var orgID = RemotelyContext.Users
-                        .FirstOrDefault(x => x.UserName == userName)
-                        ?.OrganizationID;
+            var user = RemotelyContext.Users
+                        .FirstOrDefault(x => x.UserName == userName);
 
             var fromDate = from.Date;
             var toDate = to.Date.AddDays(1);
 
-            return RemotelyContext.EventLogs
-                .Where(x => x.OrganizationID == orgID && x.TimeStamp >= fromDate && x.TimeStamp <= toDate)
-                .OrderByDescending(x => x.TimeStamp);
+            if (user.IsServerAdmin)
+            {
+                return RemotelyContext.EventLogs
+                    .Where(x => x.TimeStamp >= fromDate && x.TimeStamp <= toDate)
+                    .OrderByDescending(x => x.TimeStamp);
+            }
+            else
+            {
+                var orgID = user.OrganizationID;
+                return RemotelyContext.EventLogs
+                    .Where(x => x.OrganizationID == orgID && x.TimeStamp >= fromDate && x.TimeStamp <= toDate)
+                    .OrderByDescending(x => x.TimeStamp);
+            }
         }
 
         public int GetOrganizationCount()

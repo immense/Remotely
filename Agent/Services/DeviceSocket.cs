@@ -13,6 +13,8 @@ using Remotely.Shared.Win32;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 using System.Threading;
+using Remotely.Shared.Utilities;
+using Remotely.Shared.Enums;
 
 namespace Remotely.Agent.Services
 {
@@ -45,52 +47,67 @@ namespace Remotely.Agent.Services
         private Uninstaller Uninstaller { get; }
         public async Task Connect()
         {
-            ConnectionInfo = ConfigService.GetConnectionInfo();
-
-            HubConnection = new HubConnectionBuilder()
-                .WithUrl(ConnectionInfo.Host + "/DeviceHub")
-                .Build();
-
-            RegisterMessageHandlers();
-
-            await HubConnection.StartAsync();
-
-            var device = await DeviceInformation.Create(ConnectionInfo.DeviceID, ConnectionInfo.OrganizationID);
-
-            var result = await HubConnection.InvokeAsync<bool>("DeviceCameOnline", device);
-
-            if (!result)
+            try
             {
-                // Orgnanization ID wasn't found, or this device is already connected.
-                // The above can be caused by temporary issues on the server.  So we'll do
-                // nothing here and wait for it to get resolved.
-                Logger.Write("There was an issue registering with the server.  The server might be undergoing maintenance, or the supplied organization ID might be incorrect.");
-                await Task.Delay(TimeSpan.FromMinutes(1));
-                await HubConnection.StopAsync();
+                ConnectionInfo = ConfigService.GetConnectionInfo();
+
+                HubConnection = new HubConnectionBuilder()
+                    .WithUrl(ConnectionInfo.Host + "/DeviceHub")
+                    .Build();
+
+                RegisterMessageHandlers();
+
+                await HubConnection.StartAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex, "Failed to connect to server.  Internet connection may be unavailable.", EventType.Warning);
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(ConnectionInfo.ServerVerificationToken))
+            try
             {
-                IsServerVerified = true;
-                ConnectionInfo.ServerVerificationToken = Guid.NewGuid().ToString();
-                await HubConnection.SendAsync("SetServerVerificationToken", ConnectionInfo.ServerVerificationToken);
-                ConfigService.SaveConnectionInfo(ConnectionInfo);
-            }
-            else
-            {
-                await HubConnection.SendAsync("SendServerVerificationToken");
-            }
+                var device = await DeviceInformation.Create(ConnectionInfo.DeviceID, ConnectionInfo.OrganizationID);
 
-            if (ConfigService.TryGetDeviceSetupOptions(out DeviceSetupOptions options))
-            {
-                await HubConnection.SendAsync("DeviceSetupOptions", options, ConnectionInfo.DeviceID);
-            }
+                var result = await HubConnection.InvokeAsync<bool>("DeviceCameOnline", device);
 
-            HeartbeatTimer?.Dispose();
-            HeartbeatTimer = new System.Timers.Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
-            HeartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
-            HeartbeatTimer.Start();
+                if (!result)
+                {
+                    // Orgnanization ID wasn't found, or this device is already connected.
+                    // The above can be caused by temporary issues on the server.  So we'll do
+                    // nothing here and wait for it to get resolved.
+                    Logger.Write("There was an issue registering with the server.  The server might be undergoing maintenance, or the supplied organization ID might be incorrect.");
+                    await Task.Delay(TimeSpan.FromMinutes(1));
+                    await HubConnection.StopAsync();
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(ConnectionInfo.ServerVerificationToken))
+                {
+                    IsServerVerified = true;
+                    ConnectionInfo.ServerVerificationToken = Guid.NewGuid().ToString();
+                    await HubConnection.SendAsync("SetServerVerificationToken", ConnectionInfo.ServerVerificationToken);
+                    ConfigService.SaveConnectionInfo(ConnectionInfo);
+                }
+                else
+                {
+                    await HubConnection.SendAsync("SendServerVerificationToken");
+                }
+
+                if (ConfigService.TryGetDeviceSetupOptions(out DeviceSetupOptions options))
+                {
+                    await HubConnection.SendAsync("DeviceSetupOptions", options, ConnectionInfo.DeviceID);
+                }
+
+                HeartbeatTimer?.Dispose();
+                HeartbeatTimer = new System.Timers.Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
+                HeartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
+                HeartbeatTimer.Start();
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex, "Error starting websocket connection.", EventType.Error);
+            }
         }
 
         public async Task HandleConnection()

@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using Remotely.ScreenCast.Core.Models;
+using Remotely.Shared.Utilities;
 
 namespace Remotely.ScreenCast.Linux
 {

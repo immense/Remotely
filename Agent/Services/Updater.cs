@@ -86,8 +86,6 @@ namespace Remotely.Agent.Services
                         Logger.Write("Service Updater: Version is current.");
                         return;
                     }
-
-                    File.WriteAllText("etag.txt", response.Headers["ETag"]);
                 }
                 catch (WebException ex) when ((ex.Response as HttpWebResponse).StatusCode == HttpStatusCode.NotModified)
                 {
@@ -137,13 +135,15 @@ namespace Remotely.Agent.Services
                        serverUrl + $"/api/AgentUpdate/DownloadPackage/win-{platform}/{downloadId}",
                        zipPath);
 
-                    WebRequest.CreateHttp(serverUrl + $"/api/AgentUpdate/ClearDownload/{downloadId}").GetResponse();
+                    await WebRequest.CreateHttp(serverUrl + $"/api/AgentUpdate/ClearDownload/{downloadId}").GetResponseAsync();
 
 
                     foreach (var proc in Process.GetProcessesByName("Remotely_Installer"))
                     {
                         proc.Kill();
                     }
+
+                    Logger.Write("Launching installer to perform update.");
 
                     Process.Start(installerPath, $"-install -quiet -path {zipPath} -serverurl {serverUrl} -organizationid {connectionInfo.OrganizationID}");
                 }
@@ -159,12 +159,18 @@ namespace Remotely.Agent.Services
                        serverUrl + $"/api/AgentUpdate/DownloadPackage/linux/{downloadId}",
                        zipPath);
 
-                    WebRequest.CreateHttp(serverUrl + $"/api/AgentUpdate/ClearDownload/{downloadId}").GetResponse();
+                    await WebRequest.CreateHttp(serverUrl + $"/api/AgentUpdate/ClearDownload/{downloadId}").GetResponseAsync();
+
+                    Logger.Write("Launching installer to perform update.");
 
                     Process.Start("sudo", $"chmod +x {installerPath}").WaitForExit();
 
                     Process.Start("sudo", $"{installerPath} --path {zipPath} & disown");
                 }
+            }
+            catch (WebException ex) when (ex.Status == WebExceptionStatus.Timeout)
+            {
+                Logger.Write("Timed out while waiting to downloaod update.", Shared.Enums.EventType.Warning);
             }
             catch (Exception ex)
             {

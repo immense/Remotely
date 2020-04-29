@@ -3,6 +3,7 @@ using Microsoft.MixedReality.WebRTC;
 using Remotely.ScreenCast.Core.Services;
 using Remotely.Shared.Models;
 using Remotely.Shared.Models.RtcDtos;
+using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

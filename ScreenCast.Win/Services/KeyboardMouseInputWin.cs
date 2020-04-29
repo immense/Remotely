@@ -10,6 +10,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Remotely.ScreenCast.Core;
 using System.Runtime.InteropServices;
+using Remotely.Shared.Utilities;
 
 namespace Remotely.ScreenCast.Win.Services
 {
