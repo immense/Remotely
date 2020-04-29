@@ -34,11 +34,8 @@ namespace Remotely.ScreenCast.Core.Models
         public IScreenCapturer Capturer { get; }
 
         public bool DisconnectRequested { get; set; }
-
         public EncoderParameters EncoderParams { get; private set; }
-
         public bool HasControl { get; set; } = true;
-
         public int ImageQuality
         {
             get
@@ -81,16 +78,19 @@ namespace Remotely.ScreenCast.Core.Models
         {
             try
             {
+                var iceServers = await CasterSocket.GetIceServers();
+
                 RtcSession = WebRtcSessionFactory.GetNewSession(this);
                 RtcSession.LocalSdpReady += async (sender, sdp) =>
                 {
-                    await CasterSocket.SendRtcOfferToBrowser(sdp, ViewerConnectionID);
+                    await CasterSocket.SendRtcOfferToBrowser(sdp, ViewerConnectionID, iceServers);
                 };
                 RtcSession.IceCandidateReady += async (sender, args) =>
                 {
                     await CasterSocket.SendIceCandidateToBrowser(args.candidate, args.sdpMlineIndex, args.sdpMid, ViewerConnectionID);
                 };
-                await RtcSession.Init();
+
+                await RtcSession.Init(iceServers);
             }
             catch (Exception ex)
             {

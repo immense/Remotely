@@ -16,13 +16,17 @@ namespace Remotely.Server.API
         private static readonly MemoryCache downloadingAgents = new MemoryCache(new MemoryCacheOptions());
 
 
-        public AgentUpdateController(IWebHostEnvironment hostingEnv, DataService dataService)
+        public AgentUpdateController(IWebHostEnvironment hostingEnv, 
+            DataService dataService,
+            ApplicationConfig appConfig)
         {
-            this.HostEnv = hostingEnv;
+            HostEnv = hostingEnv;
             DataService = dataService;
+            AppConfig = appConfig;
         }
 
         private DataService DataService { get; }
+        public ApplicationConfig AppConfig { get; }
         private IWebHostEnvironment HostEnv { get; }
 
 
@@ -50,10 +54,13 @@ namespace Remotely.Server.API
         {
             try
             {
-                while (downloadingAgents.Count > 10)
+                var startWait = DateTimeOffset.Now;
+                while (downloadingAgents.Count > AppConfig.MaxConcurrentUpdates)
                 {
                     await Task.Delay(new Random().Next(100, 10000));
                 }
+                var waitTime = DateTimeOffset.Now - startWait;
+                DataService.WriteEvent($"Download started after wait time of {waitTime}.", Shared.Models.EventType.Debug, string.Empty);
 
                 downloadingAgents.Set(downloadId, string.Empty, TimeSpan.FromMinutes(10));
 

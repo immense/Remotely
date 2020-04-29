@@ -26,6 +26,7 @@ namespace Remotely.ScreenCast.Core.Communication
         public bool IsPeerConnected => PeerConnection?.IsConnected == true;
         private DataChannel CaptureChannel { get; set; }
         private PeerConnection PeerConnection { get; set; }
+        private IceServerModel[] IceServers { get; set; }
         private IRtcMessageHandler RtcMessageHandler { get; }
         public void AddIceCandidate(string sdpMid, int sdpMlineIndex, string candidate)
         {
@@ -38,18 +39,24 @@ namespace Remotely.ScreenCast.Core.Communication
             PeerConnection?.Dispose();
         }
 
-        public async Task Init()
+        public async Task Init(IceServerModel[] iceServers)
         {
             Logger.Debug("Starting WebRTC connection.");
+
+            IceServers = iceServers;
+
             PeerConnection = new PeerConnection();
+
+            var iceList = IceServers.Select(x => new IceServer()
+            {
+                Urls = { x.Url },
+                TurnPassword = x.TurnPassword ?? string.Empty,
+                TurnUserName = x.TurnUsername ?? string.Empty
+            }).ToList();
 
             var config = new PeerConnectionConfiguration()
             {
-                IceServers = new List<IceServer>
-                {
-                    new IceServer{ Urls = { "stun:stun.l.google.com:19302" } },
-                    new IceServer{ Urls = { "stun:stun4.l.google.com:19302" } }
-                }
+                IceServers = iceList
             };
 
             await PeerConnection.InitializeAsync(config);
@@ -139,7 +146,7 @@ namespace Remotely.ScreenCast.Core.Communication
             Logger.Debug($"DataChannel state changed.  New State: {CaptureChannel.State}");
             if (CaptureChannel.State == DataChannel.ChannelState.Closed)
             {
-                await Init();
+                await Init(IceServers);
             }
         }
         private void DataChannel_BufferingChanged(ulong previous, ulong current, ulong limit)

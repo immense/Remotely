@@ -19,7 +19,8 @@ namespace Remotely.ScreenCast.Core.Services
 {
     public class ScreenCaster : IScreenCaster
     {
-        public ScreenCaster(Conductor conductor, ICursorIconWatcher cursorIconWatcher)
+        public ScreenCaster(Conductor conductor, 
+            ICursorIconWatcher cursorIconWatcher)
         {
             Conductor = conductor;
             CursorIconWatcher = cursorIconWatcher;

@@ -67,11 +67,15 @@ namespace Remotely.ScreenCast.Core.Communication
             await Connection.DisposeAsync();
         }
 
+        public async Task<IceServerModel[]> GetIceServers()
+        {
+            return await Connection.InvokeAsync<IceServerModel[]>("GetIceServers");
+        }
+
         public async Task GetSessionID()
         {
             await Connection.SendAsync("GetSessionID");
         }
-
         public async Task NotifyRequesterUnattendedReady(string requesterID)
         {
             await Connection.SendAsync("NotifyRequesterUnattendedReady", requesterID);
@@ -127,9 +131,9 @@ namespace Remotely.ScreenCast.Core.Communication
             await Connection.SendAsync("SendMachineName", machineName, viewerID);
         }
 
-        public async Task SendRtcOfferToBrowser(string sdp, string viewerID)
+        public async Task SendRtcOfferToBrowser(string sdp, string viewerID, IceServerModel[] iceServers)
         {
-            await Connection.SendAsync("SendRtcOfferToBrowser", sdp, viewerID);
+            await Connection.SendAsync("SendRtcOfferToBrowser", sdp, viewerID, iceServers);
         }
 
         public async Task SendScreenCapture(byte[] captureBytes, string viewerID, int left, int top, int width, int height, int imageQuality)

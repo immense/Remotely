@@ -1,17 +1,23 @@
 ﻿import * as UI from "./UI.js";
 import * as Utilities from "../Utilities.js";
 import { MainRc } from "./Main.js";
+import { IceServerModel } from "../Models/IceServerModel.js";
 
 export class RtcSession {
     PeerConnection: RTCPeerConnection;
     DataChannel: RTCDataChannel;
     MessagePack: any = window['MessagePack'];
-    Init() {
+    Init(iceServers: IceServerModel[]) {
+
         this.PeerConnection = new RTCPeerConnection({
-            iceServers: [
-                { urls: "stun: stun.l.google.com:19302" },
-                { urls: "stun:stun4.l.google.com:19302" }
-            ]
+            iceServers: iceServers.map(x => {
+                return {
+                    urls: x.Url,
+                    username: x.TurnUsername,
+                    credential: x.TurnPassword,
+                    credentialType: "password"
+                }
+            })
         });
         
         this.PeerConnection.ondatachannel = (ev) => {

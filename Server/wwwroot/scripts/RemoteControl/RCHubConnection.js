@@ -191,9 +191,9 @@ export class RCHubConnection {
         hubConnection.on("RequestingScreenCast", () => {
             UI.ShowMessage("Requesting remote control...");
         });
-        hubConnection.on("ReceiveRtcOffer", async (sdp) => {
+        hubConnection.on("ReceiveRtcOffer", async (sdp, iceServers) => {
             console.log("Rtc offer SDP received.");
-            MainRc.RtcSession.Init();
+            MainRc.RtcSession.Init(iceServers);
             await MainRc.RtcSession.ReceiveRtcOffer(sdp);
         });
         hubConnection.on("ReceiveIceCandidate", (candidate, sdpMlineIndex, sdpMid) => {
