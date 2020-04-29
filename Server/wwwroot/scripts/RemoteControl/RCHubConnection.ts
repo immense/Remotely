@@ -3,6 +3,7 @@ import { MainRc } from "./Main.js";
 import { CursorInfo } from "../Models/CursorInfo.js";
 import { Sound } from "../Sound.js";
 import { ShowMessage } from "../UI.js";
+import { IceServerModel } from "../Models/IceServerModel.js";
 
 var signalR = window["signalR"];
 
@@ -215,9 +216,9 @@ export class RCHubConnection {
         });
 
 
-        hubConnection.on("ReceiveRtcOffer", async (sdp: string) => {
+        hubConnection.on("ReceiveRtcOffer", async (sdp: string, iceServers: IceServerModel[]) => {
             console.log("Rtc offer SDP received.");
-            MainRc.RtcSession.Init();
+            MainRc.RtcSession.Init(iceServers);
             await MainRc.RtcSession.ReceiveRtcOffer(sdp);
             
         });

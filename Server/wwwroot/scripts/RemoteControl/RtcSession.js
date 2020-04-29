@@ -5,12 +5,16 @@ export class RtcSession {
     constructor() {
         this.MessagePack = window['MessagePack'];
     }
-    Init() {
+    Init(iceServers) {
         this.PeerConnection = new RTCPeerConnection({
-            iceServers: [
-                { urls: "stun: stun.l.google.com:19302" },
-                { urls: "stun:stun4.l.google.com:19302" }
-            ]
+            iceServers: iceServers.map(x => {
+                return {
+                    urls: x.Url,
+                    username: x.TurnUsername,
+                    credential: x.TurnPassword,
+                    credentialType: "password"
+                };
+            })
         });
         this.PeerConnection.ondatachannel = (ev) => {
             console.log("Data channel received.");

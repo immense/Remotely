@@ -47,6 +47,7 @@
     <Content Remove="wwwroot\scripts\Models\Device.ts" />
     <Content Remove="wwwroot\scripts\Models\DynamicDtoType.ts" />
     <Content Remove="wwwroot\scripts\Models\GenericCommandResult.ts" />
+    <Content Remove="wwwroot\scripts\Models\IceServerModel.ts" />
     <Content Remove="wwwroot\scripts\Models\Parameter.ts" />
     <Content Remove="wwwroot\scripts\Models\Point.ts" />
     <Content Remove="wwwroot\scripts\RemoteControl\MessageSender.ts" />
@@ -157,6 +158,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\Models\CommandLineParameter.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\ConsoleCommand.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Enums\DynamicDtoType.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Models\IceServerModel.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\MessageSender.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\Point.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\UserOptions.ts" />

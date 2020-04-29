@@ -84,6 +84,11 @@ namespace Remotely.Server.Services
         {
             return DeviceHubContext.Clients.Client(SessionInfo.ServiceID).SendAsync("CtrlAltDel");
         }
+        public IceServerModel[] GetIceServers()
+        {
+            return AppConfig.IceServers;
+        }
+
         public Task GetSessionID()
         {
             var random = new Random();
@@ -186,11 +191,11 @@ namespace Remotely.Server.Services
             return RCBrowserHubContext.Clients.Client(viewerID).SendAsync("ReceiveMachineName", machineName);
         }
 
-        public Task SendRtcOfferToBrowser(string sdp, string viewerID)
+        public Task SendRtcOfferToBrowser(string sdp, string viewerID, IceServerModel[] iceServers)
         {
             if (AppConfig.UseWebRtc)
             {
-                return RCBrowserHubContext.Clients.Client(viewerID).SendAsync("ReceiveRtcOffer", sdp);
+                return RCBrowserHubContext.Clients.Client(viewerID).SendAsync("ReceiveRtcOffer", sdp, iceServers);
             }
 
             return Task.CompletedTask;
