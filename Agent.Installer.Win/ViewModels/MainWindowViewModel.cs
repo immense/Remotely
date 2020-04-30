@@ -49,7 +49,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
 
         public string InstallButtonText => IsServiceMissing ? "Install" : "Reinstall";
 
-        public ICommand InstallCommand => new Executor(async (param) => { await Install(param); });
+        public ICommand InstallCommand => new Executor(async (param) => { await Install(); });
 
         public bool IsProgressVisible => Progress > 0;
 
@@ -155,7 +155,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             }
         }
 
-        public ICommand UninstallCommand => new Executor(async (param) => { await Uninstall(param); });
+        public ICommand UninstallCommand => new Executor(async (param) => { await Uninstall(); });
 
         private string DeviceAlias { get; set; }
         private string DeviceGroup { get; set; }
@@ -204,11 +204,11 @@ namespace Remotely.Agent.Installer.Win.ViewModels
            
             if (CommandLineParser.CommandLineArgs.ContainsKey("install"))
             {
-                await Install(null);
+                await Install();
             }
             else if (CommandLineParser.CommandLineArgs.ContainsKey("uninstall"))
             {
-                await Uninstall(null);
+                await Uninstall();
             }
 
             if (CommandLineParser.CommandLineArgs.ContainsKey("quiet"))
@@ -305,7 +305,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             }
 
         }
-        private async Task Install(object param)
+        private async Task Install()
         {
             try
             {
@@ -345,7 +345,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             }
         }
 
-        private async Task Uninstall(object param)
+        private async Task Uninstall()
         {
             try
             {

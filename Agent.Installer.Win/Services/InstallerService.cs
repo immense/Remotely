@@ -69,7 +69,7 @@ namespace Remotely.Agent.Installer.Win.Services
 
                 CreateUninstallKey();
 
-                CreateSupportShortcut(serverUrl, deviceUuid);
+                CreateSupportShortcut(serverUrl, connectionInfo.DeviceID);
                
                 return true;
             }
