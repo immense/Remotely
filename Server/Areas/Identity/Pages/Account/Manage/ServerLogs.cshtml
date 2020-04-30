@@ -1,6 +1,7 @@
 ﻿@page
 @model Remotely.Server.Areas.Identity.Pages.Account.Manage.ServerLogsModel
 @inject DataService  DataService
+@using Remotely.Shared.Enums
 @{
     ViewData["Title"] = "Server Logs";
 }
@@ -25,6 +26,13 @@
     </div>
     <form method="post">
         <div style="display:inline-block" class="mr-1">
+            <strong>Type:</strong>
+            <br />
+            <select asp-for="Input.Type" asp-items="@Html.GetEnumSelectList<EventType>()">
+                <option></option>
+            </select>
+        </div>
+        <div style="display:inline-block" class="mr-1">
             <strong>From:</strong>
             <br />
             <input type="date" asp-for="Input.FromDate" />
@@ -33,6 +41,11 @@
             <strong>To:</strong>
             <br />
             <input type="date" asp-for="Input.ToDate" />
+        </div>
+        <div style="display:inline-block" class="mr-1">
+            <strong>Message:</strong>
+            <br />
+            <input type="text" asp-for="Input.Message" />
         </div>
         <button class="btn btn-primary" type="submit">Update</button>
     </form>
