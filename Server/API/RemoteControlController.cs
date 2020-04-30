@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.SignalR;
 using Remotely.Shared.Models;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
-using Remotely.Server.Auth;
+using Remotely.Server.Attributes;
 using Remotely.Shared.Helpers;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860

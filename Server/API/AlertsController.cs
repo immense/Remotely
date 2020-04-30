@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Remotely.Server.Auth;
+using Remotely.Server.Attributes;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
 using System;

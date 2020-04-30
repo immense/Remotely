@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Remotely.Server.Services;
 
-namespace Remotely.Server.Auth
+namespace Remotely.Server.Attributes
 {
     public class ApiAuthorizationFilter : ActionFilterAttribute, IAuthorizationFilter
     {
