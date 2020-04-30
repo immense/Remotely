@@ -632,27 +632,36 @@ namespace Remotely.Server.Services
                     )));
         }
 
-        public IEnumerable<EventLog> GetEventLogs(string userName, DateTimeOffset from, DateTimeOffset to)
+        public IEnumerable<EventLog> GetEventLogs(string userName, DateTimeOffset from, DateTimeOffset to, EventType? type, string message)
         {
             var user = RemotelyContext.Users
                         .FirstOrDefault(x => x.UserName == userName);
 
+            var query = RemotelyContext.EventLogs.AsQueryable();
             var fromDate = from.Date;
             var toDate = to.Date.AddDays(1);
 
             if (user.IsServerAdmin)
             {
-                return RemotelyContext.EventLogs
-                    .Where(x => x.TimeStamp >= fromDate && x.TimeStamp <= toDate)
-                    .OrderByDescending(x => x.TimeStamp);
+                query = query.Where(x => x.TimeStamp >= fromDate && x.TimeStamp <= toDate)
+                            .OrderByDescending(x => x.TimeStamp);
             }
             else
             {
                 var orgID = user.OrganizationID;
-                return RemotelyContext.EventLogs
-                    .Where(x => x.OrganizationID == orgID && x.TimeStamp >= fromDate && x.TimeStamp <= toDate)
-                    .OrderByDescending(x => x.TimeStamp);
+                query = query.Where(x => x.OrganizationID == orgID && x.TimeStamp >= fromDate && x.TimeStamp <= toDate)
+                        .OrderByDescending(x => x.TimeStamp);
             }
+            if (type != null)
+            {
+                query = query.Where(x => x.EventType == type);
+            }
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                message = message.ToLower();
+                query = query.Where(x => x.Message.ToLower().Contains(message));
+            }
+            return query;
         }
 
         public int GetOrganizationCount()
