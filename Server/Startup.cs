@@ -162,6 +162,7 @@ namespace Remotely.Server
             services.AddSingleton<ApplicationConfig>();
             services.AddSingleton<RandomGenerator>();
             services.AddScoped<ApiAuthorizationFilter>();
+            services.AddHostedService<CleanupService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
