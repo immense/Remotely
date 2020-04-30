@@ -45,14 +45,16 @@ namespace Remotely.ScreenCast.Core.Models
             }
             set
             {
-                if (imageQuality > 100 || imageQuality < 0)
-                {
-                    return;
-                }
                 if (imageQuality == value)
                 {
                     return;
                 }
+
+                if (imageQuality > 100 || imageQuality < 0)
+                {
+                    return;
+                }
+               
                 imageQuality = value;
 
                 EncoderParams.Param[0] = new EncoderParameter(Encoder.Quality, value);
