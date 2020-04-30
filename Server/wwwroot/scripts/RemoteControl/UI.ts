@@ -279,12 +279,17 @@ export function ApplyInputHandlers() {
 
         clearTimeout(startLongPressTimeout);
         
-        var percentX = (e.touches[0].pageX - ScreenViewer.getBoundingClientRect().left) / ScreenViewer.clientWidth;
-        var percentY = (e.touches[0].pageY - ScreenViewer.getBoundingClientRect().top) / ScreenViewer.clientHeight;
-
         if (e.touches.length == 2) {
-            var pinchPoint1 = { X: e.touches[0].pageX, Y: e.touches[0].pageY, IsEmpty: false };
-            var pinchPoint2 = { X: e.touches[1].pageX, Y: e.touches[1].pageY, IsEmpty: false };
+            var pinchPoint1 = {
+                X: e.touches[0].pageX,
+                Y: e.touches[0].pageY,
+                IsEmpty: false
+            };
+            var pinchPoint2 = {
+                X: e.touches[1].pageX,
+                Y: e.touches[1].pageY,
+                IsEmpty: false
+            };
             var pinchDistance = GetDistanceBetween(pinchPoint1.X,
                 pinchPoint1.Y,
                 pinchPoint2.X,
@@ -295,18 +300,26 @@ export function ApplyInputHandlers() {
                 if (FitToScreenButton.classList.contains("toggled")) {
                     FitToScreenButton.click();
                 }
+
                 var currentWidth = ScreenViewer.clientWidth;
                 var currentHeight = ScreenViewer.clientHeight;
 
                 var currentWidthPercent = Number(ScreenViewer.style.width.slice(0, -1));
                 var newWidthPercent = Math.max(100, currentWidthPercent + (pinchDistance - lastPinchDistance));
                 ScreenViewer.style.width = String(newWidthPercent) + "%";
-
+                
                 var heightChange = ScreenViewer.clientHeight - currentHeight;
                 var widthChange = ScreenViewer.clientWidth - currentWidth;
-                var scrollPercentX = ScreenViewerWrapper.scrollLeft  / (ScreenViewerWrapper.scrollWidth - ScreenViewerWrapper.clientWidth);
+                var scrollPercentX = ScreenViewerWrapper.scrollLeft / (ScreenViewerWrapper.scrollWidth - ScreenViewerWrapper.clientWidth);
                 var scrollPercentY = ScreenViewerWrapper.scrollTop / (ScreenViewerWrapper.scrollHeight - ScreenViewerWrapper.clientHeight);
-                ScreenViewerWrapper.scrollBy(widthChange * scrollPercentX, heightChange * scrollPercentY);
+
+                var centerX = (pinchPoint1.X + pinchPoint2.X) / 2;
+                var centerY = (pinchPoint1.Y + pinchPoint2.Y) / 2;
+                
+                var pinchAdjustX = (centerX / window.innerWidth - .5) * 25;
+                var pinchAdjustY = (centerY / window.innerHeight - .5) * 25;
+
+                ScreenViewerWrapper.scrollBy(widthChange * scrollPercentX + pinchAdjustX, heightChange * scrollPercentY + pinchAdjustY);
 
                 lastPinchDistance = pinchDistance;
             }
@@ -315,7 +328,11 @@ export function ApplyInputHandlers() {
         else if (isDragging) {
             e.preventDefault();
             e.stopPropagation();
-            MainRc.MessageSender.SendMouseMove(percentX, percentY);
+            var screenViewerLeft = ScreenViewer.getBoundingClientRect().left;
+            var screenViewerTop = ScreenViewer.getBoundingClientRect().top;
+            var pagePercentX = (e.touches[0].pageX - screenViewerLeft) / ScreenViewer.clientWidth;
+            var pagePercentY = (e.touches[0].pageY - screenViewerTop) / ScreenViewer.clientHeight;
+            MainRc.MessageSender.SendMouseMove(pagePercentX, pagePercentY);
         }
     });
     ScreenViewer.addEventListener("touchend", function (e) {
