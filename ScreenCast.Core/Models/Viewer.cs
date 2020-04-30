@@ -167,7 +167,7 @@ namespace Remotely.ScreenCast.Core.Models
             {
                 if (AutoAdjustQuality)
                 {
-                    ImageQuality = Math.Max(ImageQuality - (150_000 / currentBuffer), 0);
+                    ImageQuality = Math.Max(ImageQuality - (currentBuffer / 150_000), 0);
                     Logger.Debug($"Auto-adjusting image quality.  Quality: {ImageQuality}");
                 }
 
