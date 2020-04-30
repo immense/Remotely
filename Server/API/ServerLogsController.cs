@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
-using Remotely.Server.Auth;
+using Remotely.Server.Attributes;
 using Remotely.Server.Services;
 
 namespace Remotely.Server.API

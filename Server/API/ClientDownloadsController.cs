@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
 using Remotely.Server.Services;
-using Remotely.Server.Auth;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using System.Threading;
+using Remotely.Server.Attributes;
 
 namespace Remotely.Server.API
 {

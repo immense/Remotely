@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Remotely.Shared.Helpers;
 using System.IO;
-using Remotely.Server.Auth;
+using Remotely.Server.Attributes;
 
 namespace Remotely.Server.API
 {

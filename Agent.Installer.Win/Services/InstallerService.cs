@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualBasic.FileIO;
+﻿using IWshRuntimeLibrary;
+using Microsoft.VisualBasic.FileIO;
 using Microsoft.Win32;
 using Remotely.Shared.Models;
 using System;
@@ -15,6 +16,7 @@ using System.ServiceProcess;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows;
+using FileIO = System.IO.File;
 
 namespace Remotely.Agent.Installer.Win.Services
 {
@@ -55,9 +57,9 @@ namespace Remotely.Agent.Installer.Win.Services
 
                 await DownloadRemotelyAgent(serverUrl);
 
-                File.WriteAllText(Path.Combine(InstallPath, "ConnectionInfo.json"), Serializer.Serialize(connectionInfo));
+                FileIO.WriteAllText(Path.Combine(InstallPath, "ConnectionInfo.json"), Serializer.Serialize(connectionInfo));
 
-                File.Copy(Assembly.GetExecutingAssembly().Location, Path.Combine(InstallPath, "Remotely_Installer.exe"));
+                FileIO.Copy(Assembly.GetExecutingAssembly().Location, Path.Combine(InstallPath, "Remotely_Installer.exe"));
 
                 CreateDeviceSetupOptions(deviceGroup, deviceAlias);
 
@@ -66,6 +68,8 @@ namespace Remotely.Agent.Installer.Win.Services
                 InstallService();
 
                 CreateUninstallKey();
+
+                CreateSupportShortcut(serverUrl, deviceUuid);
                
                 return true;
             }
@@ -76,6 +80,26 @@ namespace Remotely.Agent.Installer.Win.Services
                 return false;
             }
 
+        }
+
+        private void CreateSupportShortcut(string serverUrl, string deviceUuid)
+        {
+            var systemRoot = Path.GetPathRoot(Environment.SystemDirectory);
+            var shortcutLocation = Path.Combine(systemRoot, "Users", "Public", "Desktop", "Get Support.lnk");
+            var shell = new WshShell();
+            var shortcut = (IWshShortcut)shell.CreateShortcut(shortcutLocation);
+            shortcut.Description = "Get IT support";
+            shortcut.IconLocation = Path.Combine(InstallPath, "Remotely_Agent.exe");
+            shortcut.TargetPath = serverUrl.TrimEnd('/') + $"/GetSupport?deviceID={deviceUuid}";
+            shortcut.Save();
+
+
+            shortcutLocation = Path.Combine(InstallPath, "Get Support.lnk");
+            shortcut = (IWshShortcut)shell.CreateShortcut(shortcutLocation);
+            shortcut.Description = "Get IT support";
+            shortcut.IconLocation = Path.Combine(InstallPath, "Remotely_Agent.exe");
+            shortcut.TargetPath = serverUrl.TrimEnd('/') + $"/GetSupport?deviceID={deviceUuid}";
+            shortcut.Save();
         }
 
         public async Task<bool> Uninstall()
@@ -124,9 +148,9 @@ namespace Remotely.Agent.Installer.Win.Services
                 Logger.Write("Backing up current installation.");
                 ProgressMessageChanged?.Invoke(this, "Backing up current installation.");
                 var backupPath = Path.Combine(Path.GetTempPath(), "Remotely_Backup.zip");
-                if (File.Exists(backupPath))
+                if (FileIO.Exists(backupPath))
                 {
-                    File.Delete(backupPath);
+                    FileIO.Delete(backupPath);
                 }
                 ZipFile.CreateFromDirectory(InstallPath, backupPath, CompressionLevel.Fastest, false);
             }
@@ -152,9 +176,9 @@ namespace Remotely.Agent.Installer.Win.Services
                 {
                     try
                     {
-                        if (File.Exists(entry))
+                        if (FileIO.Exists(entry))
                         {
-                            File.Delete(entry);
+                            FileIO.Delete(entry);
                         }
                         else if (Directory.Exists(entry))
                         {
@@ -180,7 +204,7 @@ namespace Remotely.Agent.Installer.Win.Services
                     DeviceAlias = deviceAlias
                 };
 
-                File.WriteAllText(Path.Combine(InstallPath, "DeviceSetupOptions.json"), Serializer.Serialize(setupOptions));
+                FileIO.WriteAllText(Path.Combine(InstallPath, "DeviceSetupOptions.json"), Serializer.Serialize(setupOptions));
             }
         }
 
@@ -207,7 +231,7 @@ namespace Remotely.Agent.Installer.Win.Services
 
             if (CommandLineParser.CommandLineArgs.TryGetValue("path", out var result))
             {
-                File.Copy(result, targetFile, true);
+                FileIO.Copy(result, targetFile, true);
             }
             else
             {
@@ -239,7 +263,7 @@ namespace Remotely.Agent.Installer.Win.Services
             var wr = WebRequest.CreateHttp($"{serverUrl}/Downloads/Remotely-Win10-{Platform}.zip");
             wr.Method = "Head";
             var response = (HttpWebResponse)await wr.GetResponseAsync();
-            File.WriteAllText(Path.Combine(InstallPath, "etag.txt"), response.Headers["ETag"]);
+            FileIO.WriteAllText(Path.Combine(InstallPath, "etag.txt"), response.Headers["ETag"]);
 
             ZipFile.ExtractToDirectory(targetFile, tempDir);
             var fileSystemEntries = Directory.GetFileSystemEntries(tempDir);
@@ -249,9 +273,9 @@ namespace Remotely.Agent.Installer.Win.Services
                 {
                     ProgressValueChanged?.Invoke(this, (int)((double)i / (double)fileSystemEntries.Length * 100d));
                     var entry = fileSystemEntries[i];
-                    if (File.Exists(entry))
+                    if (FileIO.Exists(entry))
                     {
-                        File.Copy(entry, Path.Combine(InstallPath, Path.GetFileName(entry)), true);
+                        FileIO.Copy(entry, Path.Combine(InstallPath, Path.GetFileName(entry)), true);
                     }
                     else if (Directory.Exists(entry))
                     {
@@ -271,9 +295,9 @@ namespace Remotely.Agent.Installer.Win.Services
         {
             ConnectionInfo connectionInfo;
             var connectionInfoPath = Path.Combine(InstallPath, "ConnectionInfo.json");
-            if (File.Exists(connectionInfoPath))
+            if (FileIO.Exists(connectionInfoPath))
             {
-                connectionInfo = Serializer.Deserialize<ConnectionInfo>(File.ReadAllText(connectionInfoPath));
+                connectionInfo = Serializer.Deserialize<ConnectionInfo>(FileIO.ReadAllText(connectionInfoPath));
                 connectionInfo.ServerVerificationToken = null;
             }
             else
@@ -393,7 +417,7 @@ namespace Remotely.Agent.Installer.Win.Services
             try
             {
                 var backupPath = Path.Combine(Path.GetTempPath(), "Remotely_Backup.zip");
-                if (File.Exists(backupPath))
+                if (FileIO.Exists(backupPath))
                 {
                     Logger.Write("Restoring backup.");
                     ClearInstallDirectory();

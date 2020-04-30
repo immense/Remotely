@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using System.Net;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Remotely.Server.Auth;
+using Remotely.Server.Attributes;
 using Npgsql;
 
 namespace Remotely.Server

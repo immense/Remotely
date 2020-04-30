@@ -3,7 +3,7 @@ using Remotely.Shared.Models;
 using Remotely.Server.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Remotely.Server.Auth;
+using Remotely.Server.Attributes;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
