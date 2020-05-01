@@ -125,6 +125,13 @@ namespace Remotely.Server.Services
             RemotelyContext.SaveChanges();
         }
 
+        public async Task SetDisplayName(RemotelyUser user, string displayName)
+        {
+            RemotelyContext.Attach(user);
+            user.DisplayName = displayName;
+            await RemotelyContext.SaveChangesAsync();
+        }
+
         public bool AddOrUpdateDevice(Device device, out Device updatedDevice)
         {
             var existingDevice = RemotelyContext.Devices.Find(device.ID);
