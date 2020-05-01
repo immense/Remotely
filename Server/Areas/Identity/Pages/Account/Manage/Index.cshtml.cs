@@ -17,18 +17,19 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<RemotelyUser> _userManager;
         private readonly SignInManager<RemotelyUser> _signInManager;
         private readonly IEmailSenderEx _emailSender;
+        private readonly DataService _dataService;
 
         public IndexModel(
             UserManager<RemotelyUser> userManager,
             SignInManager<RemotelyUser> signInManager,
+            DataService dataService,
             IEmailSenderEx emailSender)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
+            _dataService = dataService;
         }
-
-        public string Username { get; set; }
 
         public bool IsEmailConfirmed { get; set; }
 
@@ -40,8 +41,13 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
+            [Display(Name = "Display Name")]
+            [StringLength(100)]
+            public string DisplayName { get; set; }
+
             [Required]
             [EmailAddress]
+            [Display(Name = "Email/Username")]
             public string Email { get; set; }
 
             [Phone]
@@ -57,16 +63,11 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            var userName = await _userManager.GetUserNameAsync(user);
-            var email = await _userManager.GetEmailAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-
-            Username = userName;
-
             Input = new InputModel
             {
-                Email = email,
-                PhoneNumber = phoneNumber
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                DisplayName = user.DisplayName
             };
 
             IsEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
@@ -90,6 +91,19 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             var email = await _userManager.GetEmailAsync(user);
             if (Input.Email != email)
             {
+                if (_dataService.DoesUserExist(Input.Email))
+                {
+                    ModelState.AddModelError("Input.UserName", "Email/Username already exists.");
+                    return Page();
+                }
+
+                var setUsernameResult = await _userManager.SetUserNameAsync(user, Input.Email);
+                if (!setUsernameResult.Succeeded)
+                {
+                    var userId = await _userManager.GetUserIdAsync(user);
+                    throw new InvalidOperationException($"Unexpected error occurred setting user name for user with ID '{userId}'.");
+                }
+
                 var setEmailResult = await _userManager.SetEmailAsync(user, Input.Email);
                 if (!setEmailResult.Succeeded)
                 {
@@ -107,6 +121,13 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
                     var userId = await _userManager.GetUserIdAsync(user);
                     throw new InvalidOperationException($"Unexpected error occurred setting phone number for user with ID '{userId}'.");
                 }
+            }
+
+           
+
+            if (Input.DisplayName != user.DisplayName)
+            {
+                await _dataService.SetDisplayName(user, Input.DisplayName);
             }
 
             await _signInManager.RefreshSignInAsync(user);
