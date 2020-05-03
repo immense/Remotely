@@ -20,12 +20,14 @@ namespace Remotely.ScreenCast.Core.Communication
             IKeyboardMouseInput keyboardMouseInput,
             IScreenCaster screenCastService,
             IAudioCapturer audioCapturer,
-            IFileTransferService fileDownloadService)
+            IFileTransferService fileDownloadService,
+            IClipboardService clipboardService)
         {
             KeyboardMouseInput = keyboardMouseInput;
             AudioCapturer = audioCapturer;
             ScreenCaster = screenCastService;
             FileDownloadService = fileDownloadService;
+            ClipboardService = clipboardService;
         }
 
         public HubConnection Connection { get; private set; }
