@@ -193,6 +193,7 @@
                     <br />
                     <span asp-validation-for="AppSettingsInput.UseHsts" class="text-danger"></span>
                 </div>
+
                 <div class="form-group">
                     <label asp-for="AppSettingsInput.UseWebRtc"></label>
                     <br />
@@ -201,6 +202,11 @@
                     <span asp-validation-for="AppSettingsInput.UseWebRtc" class="text-danger"></span>
                 </div>
 
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.IceServers"></label>
+                    <br />
+                    <span class="text-muted">Must be edited in appsettings.json.</span>
+                </div>
 
                 <h4>Connection Strings</h4>
 
