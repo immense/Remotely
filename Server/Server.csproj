@@ -11,6 +11,7 @@
     <RootNamespace>Remotely.Server</RootNamespace>
     <AssemblyName>Remotely_Server</AssemblyName>
     <UserSecretsId>36e32491-91a5-42e6-a466-819233f0c593</UserSecretsId>
+    <ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
