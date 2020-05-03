@@ -33,7 +33,8 @@ namespace Remotely.Agent.Installer.Win.Services
             string organizationId,
             string deviceGroup,
             string deviceAlias,
-            string deviceUuid)
+            string deviceUuid,
+            bool createSupportShortcut)
         {
             try
             {
@@ -69,7 +70,7 @@ namespace Remotely.Agent.Installer.Win.Services
 
                 CreateUninstallKey();
 
-                CreateSupportShortcut(serverUrl, connectionInfo.DeviceID);
+                CreateSupportShortcut(serverUrl, connectionInfo.DeviceID, createSupportShortcut);
                
                 return true;
             }
@@ -82,24 +83,22 @@ namespace Remotely.Agent.Installer.Win.Services
 
         }
 
-        private void CreateSupportShortcut(string serverUrl, string deviceUuid)
+        private void CreateSupportShortcut(string serverUrl, string deviceUuid, bool createSupportShortcut)
         {
-            var systemRoot = Path.GetPathRoot(Environment.SystemDirectory);
-            var shortcutLocation = Path.Combine(systemRoot, "Users", "Public", "Desktop", "Get Support.lnk");
             var shell = new WshShell();
+            var shortcutLocation = Path.Combine(InstallPath, "Get Support.lnk");
             var shortcut = (IWshShortcut)shell.CreateShortcut(shortcutLocation);
             shortcut.Description = "Get IT support";
             shortcut.IconLocation = Path.Combine(InstallPath, "Remotely_Agent.exe");
             shortcut.TargetPath = serverUrl.TrimEnd('/') + $"/GetSupport?deviceID={deviceUuid}";
             shortcut.Save();
 
-
-            shortcutLocation = Path.Combine(InstallPath, "Get Support.lnk");
-            shortcut = (IWshShortcut)shell.CreateShortcut(shortcutLocation);
-            shortcut.Description = "Get IT support";
-            shortcut.IconLocation = Path.Combine(InstallPath, "Remotely_Agent.exe");
-            shortcut.TargetPath = serverUrl.TrimEnd('/') + $"/GetSupport?deviceID={deviceUuid}";
-            shortcut.Save();
+            if (createSupportShortcut)
+            {
+                var systemRoot = Path.GetPathRoot(Environment.SystemDirectory);
+                var publicDesktop = Path.Combine(systemRoot, "Users", "Public", "Desktop", "Get Support.lnk");
+                FileIO.Copy(shortcutLocation, publicDesktop, true);
+            }
         }
 
         public async Task<bool> Uninstall()

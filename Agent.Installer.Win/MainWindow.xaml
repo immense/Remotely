@@ -47,6 +47,8 @@
                         <RowDefinition/>
                         <RowDefinition Height="20" />
                         <RowDefinition/>
+                        <RowDefinition Height="20" />
+                        <RowDefinition/>
                     </Grid.RowDefinitions>
 
                     <TextBlock Grid.Column="0" Grid.Row="0" Margin="0,0,15,0" FontSize="14">
@@ -68,6 +70,16 @@
                              ToolTip="Enter the organization ID that will have access to this device."></Run>
                     </TextBlock>
                     <TextBox  Grid.Column="1" Grid.Row="2" TextWrapping="Wrap" Text="{Binding OrganizationID}" FontSize="14" />
+
+                    <TextBlock Grid.Column="0" Grid.Row="4" Margin="0,0,15,0" FontSize="14">
+                        <Run>Support Shortcut:</Run>
+                        <Run Text="&#xE897;" 
+                             FontWeight="Bold"
+                             FontFamily="Segoe MDL2 Assets" 
+                             Cursor="Hand" 
+                             ToolTip="Create a desktop shortcut to the Get Support page for this device."></Run>
+                    </TextBlock>
+                    <CheckBox  Grid.Column="1" Grid.Row="4" IsChecked="{Binding CreateSupportShortcut}" />
 
                 </Grid>
 

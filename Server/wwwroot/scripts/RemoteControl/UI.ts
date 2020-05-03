@@ -316,10 +316,10 @@ export function ApplyInputHandlers() {
                 var centerX = (pinchPoint1.X + pinchPoint2.X) / 2;
                 var centerY = (pinchPoint1.Y + pinchPoint2.Y) / 2;
                 
-                var pinchAdjustX = (centerX / window.innerWidth - .5) * 25;
-                var pinchAdjustY = (centerY / window.innerHeight - .5) * 25;
+                var pinchAdjustX = centerX / window.innerWidth - .5;
+                var pinchAdjustY = centerY / window.innerHeight - .5;
 
-                ScreenViewerWrapper.scrollBy(widthChange * scrollPercentX + pinchAdjustX, heightChange * scrollPercentY + pinchAdjustY);
+                ScreenViewerWrapper.scrollBy(widthChange * (scrollPercentX + pinchAdjustX), heightChange * (scrollPercentY + pinchAdjustY));
 
                 lastPinchDistance = pinchDistance;
             }
