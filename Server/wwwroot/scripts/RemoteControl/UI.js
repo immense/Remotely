@@ -450,7 +450,6 @@ export function UpdateCursor(imageBytes, hotSpotX, hotSpotY, cssOverride) {
         var base64 = ConvertUInt8ArrayToBase64(imageBytes);
         ScreenViewer.style.cursor = `url('data:image/png;base64,${base64}') ${hotSpotX} ${hotSpotY}, default`;
     }
-    console.log("Cursor updated: " + ScreenViewer.style.cursor);
 }
 export function UpdateDisplays(selectedDisplay, displayNames) {
     ScreenSelectBar.innerHTML = "";

@@ -127,7 +127,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             }
 
             var settingsJson = JsonSerializer.Deserialize<IDictionary<string, object>>(await System.IO.File.ReadAllTextAsync(savePath));
-
+            AppSettingsInput.IceServers = Configuration.GetSection("ApplicationOptions:IceServers").Get<IceServerModel[]>();
             settingsJson["ApplicationOptions"] = AppSettingsInput;
             settingsJson["ConnectionStrings"] = ConnectionStrings;
 
@@ -153,6 +153,9 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
             [Display(Name = "Enable Windows Event Log")]
             public bool EnableWindowsEventLog { get; set; }
+
+            [Display(Name = "Ice Servers")]
+            public IceServerModel[] IceServers { get; set; }
 
             [Display(Name = "Known Proxies")]
             public string[] KnownProxies { get; set; }
