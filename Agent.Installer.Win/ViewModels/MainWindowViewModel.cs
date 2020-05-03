@@ -16,6 +16,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
+        private bool createSupportShortcut;
         private string headerMessage;
 
         private bool isReadyState = true;
@@ -28,10 +29,22 @@ namespace Remotely.Agent.Installer.Win.ViewModels
         private string serverUrl;
 
         private string statusMessage;
-
         public MainWindowViewModel()
         {
             Installer = new InstallerService();
+        }
+
+        public bool CreateSupportShortcut
+        {
+            get
+            {
+                return createSupportShortcut;
+            }
+            set
+            {
+                createSupportShortcut = value;
+                FirePropertyChanged(nameof(CreateSupportShortcut));
+            }
         }
 
         public string HeaderMessage
@@ -156,7 +169,6 @@ namespace Remotely.Agent.Installer.Win.ViewModels
         }
 
         public ICommand UninstallCommand => new Executor(async (param) => { await Uninstall(); });
-
         private string DeviceAlias { get; set; }
         private string DeviceGroup { get; set; }
         private string DeviceUuid { get; set; }
@@ -217,6 +229,39 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             }
         }
 
+        private void AddExistingConnectionInfo()
+        {
+            try
+            {
+                var connectionInfoPath = Path.Combine(
+               Path.GetPathRoot(Environment.SystemDirectory),
+                   "Program Files",
+                   "Remotely",
+                   "ConnectionInfo.json");
+
+                if (File.Exists(connectionInfoPath))
+                {
+                    var serializer = new JavaScriptSerializer();
+                    var connectionInfo = serializer.Deserialize<ConnectionInfo>(File.ReadAllText(connectionInfoPath));
+
+                    if (string.IsNullOrWhiteSpace(OrganizationID))
+                    {
+                        OrganizationID = connectionInfo.OrganizationID;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(ServerUrl))
+                    {
+                        ServerUrl = connectionInfo.Host;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+            }
+
+        }
+
         private bool CheckIsAdministrator()
         {
             var identity = WindowsIdentity.GetCurrent();
@@ -267,43 +312,15 @@ namespace Remotely.Agent.Installer.Win.ViewModels
                 DeviceUuid = deviceUuid;
             }
 
+            if (CommandLineParser.CommandLineArgs.ContainsKey("supportshortcut"))
+            {
+                CreateSupportShortcut = true;
+            }
+
             if (ServerUrl?.EndsWith("/") == true)
             {
                 ServerUrl = ServerUrl.Substring(0, ServerUrl.LastIndexOf("/"));
             }
-        }
-
-        private void AddExistingConnectionInfo()
-        {
-            try
-            {
-                var connectionInfoPath = Path.Combine(
-               Path.GetPathRoot(Environment.SystemDirectory),
-                   "Program Files",
-                   "Remotely",
-                   "ConnectionInfo.json");
-
-                if (File.Exists(connectionInfoPath))
-                {
-                    var serializer = new JavaScriptSerializer();
-                    var connectionInfo = serializer.Deserialize<ConnectionInfo>(File.ReadAllText(connectionInfoPath));
-
-                    if (string.IsNullOrWhiteSpace(OrganizationID))
-                    {
-                        OrganizationID = connectionInfo.OrganizationID;
-                    }
-
-                    if (string.IsNullOrWhiteSpace(ServerUrl))
-                    {
-                        ServerUrl = connectionInfo.Host;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
-            }
-
         }
         private async Task Install()
         {
@@ -317,7 +334,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
 
                 HeaderMessage = "Installing Remotely...";
                 
-                if (await Installer.Install(ServerUrl, OrganizationID, DeviceGroup, DeviceAlias, DeviceUuid))
+                if (await Installer.Install(ServerUrl, OrganizationID, DeviceGroup, DeviceAlias, DeviceUuid, CreateSupportShortcut))
                 {
                     IsServiceInstalled = true;
                     Progress = 0;
