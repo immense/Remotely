@@ -22,6 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="favicon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.MixedReality.WebRTC" Version="1.0.3" />
     <PackageReference Include="Microsoft.Win32.SystemEvents" Version="4.7.0" />
     <PackageReference Include="NAudio" Version="1.10.0" />

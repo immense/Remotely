@@ -8,6 +8,7 @@
     <AssemblyName>Remotely_ScreenCast.Linux</AssemblyName>
     <Platforms>AnyCPU;x64;x86</Platforms>
     <RootNamespace>Remotely.ScreenCast.Linux</RootNamespace>
+    <ApplicationIcon>favicon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -38,6 +39,14 @@
     <Compile Remove="Input\**" />
     <EmbeddedResource Remove="Input\**" />
     <None Remove="Input\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="favicon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="favicon.ico" />
   </ItemGroup>
 
   <ItemGroup>
