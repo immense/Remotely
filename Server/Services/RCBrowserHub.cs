@@ -6,10 +6,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Remotely.Shared.Enums;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Remotely.Server.Attributes;
 
 namespace Remotely.Server.Services
 {
-    [Authorize("RemoteControlPolicy")]
+    [ServiceFilter(typeof(RemoteControlFilterAttribute))]
     public class RCBrowserHub : Hub
     {
         public RCBrowserHub(DataService dataService,
@@ -162,7 +164,7 @@ namespace Remotely.Server.Services
             return RCDeviceHubContext.Clients.Client(ScreenCasterID).SendAsync("ReceiveRtcAnswer", sdp, Context.ConnectionId);
         }
 
-        public async Task<Task> SendScreenCastRequestToDevice(string screenCasterID, string requesterName, int remoteControlMode)
+        public async Task<Task> SendScreenCastRequestToDevice(string screenCasterID, string requesterName, int remoteControlMode, string otp)
         {
             if ((RemoteControlMode)remoteControlMode == RemoteControlMode.Normal)
             {
@@ -221,7 +223,12 @@ namespace Remotely.Server.Services
             {
                 sessionInfo.Mode = RemoteControlMode.Unattended;
                 var deviceID = DeviceHub.ServiceConnections[sessionInfo.ServiceID].ID;
-                if (Context.User.Identity.IsAuthenticated && DataService.DoesUserHaveAccessToDevice(deviceID, Context.UserIdentifier))
+
+                if ((!string.IsNullOrWhiteSpace(otp) &&
+                        RemoteControlFilterAttribute.OtpMatchesDevice(otp, deviceID)) 
+                    ||
+                    (Context.User.Identity.IsAuthenticated &&
+                        DataService.DoesUserHaveAccessToDevice(deviceID, Context.UserIdentifier)))
                 {
                     return RCDeviceHubContext.Clients.Client(screenCasterID).SendAsync("GetScreenCast", Context.ConnectionId, requesterName);
                 }

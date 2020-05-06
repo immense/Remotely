@@ -110,7 +110,8 @@ namespace Remotely.Server.API
                 else
                 {
                     var rcSession = RCDeviceHub.SessionInfoList.Values.FirstOrDefault(x => x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y => y.Key != x.RCDeviceSocketID));
-                    return Ok($"{HttpContext.Request.Scheme}://{Request.Host}/RemoteControl?clientID={rcSession.RCDeviceSocketID}&serviceID={targetDevice.Key}&fromApi=true");
+                    var otp = RemoteControlFilterAttribute.GetOtp(targetDevice.Value.ID);
+                    return Ok($"{HttpContext.Request.Scheme}://{Request.Host}/RemoteControl?clientID={rcSession.RCDeviceSocketID}&serviceID={targetDevice.Key}&fromApi=true&otp={Uri.EscapeDataString(otp)}");
                 }
             }
             else
