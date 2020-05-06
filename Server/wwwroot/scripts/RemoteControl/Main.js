@@ -14,6 +14,7 @@ export const MainRc = {
     RtcMessageHandler: new RtcMessageHandler(),
     RtcSession: new RtcSession(),
     ClientID: queryString["clientID"] ? decodeURIComponent(queryString["clientID"]) : "",
+    Otp: queryString["otp"] ? decodeURIComponent(queryString["otp"]) : "",
     ServiceID: queryString["serviceID"] ? decodeURIComponent(queryString["serviceID"]) : "",
     RequesterName: queryString["requesterName"] ? decodeURIComponent(queryString["requesterName"]) : "",
     Mode: RemoteControlMode.None,

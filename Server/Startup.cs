@@ -40,8 +40,6 @@ namespace Remotely.Server
         {
             services.Configure<CookiePolicyOptions>(options =>
             {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
@@ -81,22 +79,7 @@ namespace Remotely.Server
                 .AddDefaultUI()
                 .AddDefaultTokenProviders();
 
-            var remoteControlAuthentication = Configuration.GetSection("ApplicationOptions:RemoteControlRequiresAuthentication").Get<bool>();
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("RemoteControlPolicy", policy =>
-                {
-                    if (remoteControlAuthentication)
-                    {
-                        policy.RequireAuthenticatedUser();
-                    }
-                    else
-                    {
-                        policy.RequireAssertion((context) => true);
-                    }
-                    policy.Build();
-                });
-            });       
+            var remoteControlAuthentication = Configuration.GetSection("ApplicationOptions:RemoteControlRequiresAuthentication").Get<bool>();   
 
             services.ConfigureApplicationCookie(cookieOptions =>
             {
@@ -160,9 +143,9 @@ namespace Remotely.Server
             services.AddScoped<DataService>();
             services.AddScoped<RemoteControlSessionRecorder>();
             services.AddSingleton<ApplicationConfig>();
-            services.AddSingleton<RandomGenerator>();
             services.AddScoped<ApiAuthorizationFilter>();
             services.AddHostedService<CleanupService>();
+            services.AddScoped<RemoteControlFilterAttribute>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -186,8 +169,6 @@ namespace Remotely.Server
             }
 
             ConfigureStaticFiles(app);
-
-            app.UseCookiePolicy();
 
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {

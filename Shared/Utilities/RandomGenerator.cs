@@ -1,13 +1,13 @@
 ﻿using System.Security.Cryptography;
 using System.Linq;
 
-namespace Remotely.Shared.Services
+namespace Remotely.Shared.Utilities
 {
     public class RandomGenerator
     {
-        private const string allowableCharacters = "abcdefghijklmnopqrstuvwxyz0123456789";
+        private const string allowableCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ0123456789";
 
-        public string GenerateString(int length)
+        public static string GenerateString(int length)
         {
             var bytes = new byte[length];
 

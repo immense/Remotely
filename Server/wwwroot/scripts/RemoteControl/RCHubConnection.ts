@@ -63,7 +63,7 @@ export class RCHubConnection {
 
 
     SendScreenCastRequestToDevice() {
-        this.Connection.invoke("SendScreenCastRequestToDevice", MainRc.ClientID, MainRc.RequesterName, MainRc.Mode);
+        this.Connection.invoke("SendScreenCastRequestToDevice", MainRc.ClientID, MainRc.RequesterName, MainRc.Mode, MainRc.Otp);
     }
     async SendFile(buffer: Uint8Array, fileName: string, messageId: string, endOfFile: boolean, startOfFile: boolean) {
         await this.Connection.invoke("SendFile", buffer, fileName, messageId, endOfFile, startOfFile);
