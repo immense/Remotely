@@ -99,8 +99,9 @@ namespace Remotely.ScreenCast.Core.Services
                 Console.Write($"{split[0]}: ");
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine(split[1]);
+                Console.MoveBufferArea(0, top, Console.BufferWidth, Console.CursorTop - top - 1, 0, Console.CursorTop + 1);
+                Console.SetCursorPosition(left, Console.CursorTop + 1);
                 MaxCursorTop = Console.CursorTop;
-                Console.SetCursorPosition(left, top);
             }
         }
 
