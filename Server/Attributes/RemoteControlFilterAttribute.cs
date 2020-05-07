@@ -57,7 +57,7 @@ namespace Remotely.Server.Attributes
                 return;
             }
 
-            context.Result = new UnauthorizedResult();
+            context.Result = new RedirectToPageResult("/Account/Login", new { area = "Identity" });
         }
     }
 }
