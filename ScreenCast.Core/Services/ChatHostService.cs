@@ -66,11 +66,7 @@ namespace Remotely.ScreenCast.Core.Services
 
             while (NamedPipeStream.IsConnected)
             {
-                Console.SetCursorPosition(0, Math.Max(MaxCursorTop, Console.CursorTop) + 1);
-                MaxCursorTop = Console.CursorTop + 1;
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.Write("You: ");
-                Console.ForegroundColor = ConsoleColor.White;
+                SetPrompt();
                 var message = Console.ReadLine();
                 await Writer.WriteLineAsync(message);
                 await Writer.FlushAsync();
@@ -91,20 +87,23 @@ namespace Remotely.ScreenCast.Core.Services
             while (NamedPipeStream.IsConnected)
             {
                 var message = await Reader.ReadLineAsync();
-                var left = Console.CursorLeft;
-                var top = Console.CursorTop;
-                Console.SetCursorPosition(0, Math.Max(MaxCursorTop, Console.CursorTop) + 1);
+                Console.WriteLine();
+                Console.WriteLine();
                 var split = message.Split(":", 2);
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.Write($"{split[0]}: ");
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine(split[1]);
-                Console.MoveBufferArea(0, top, Console.BufferWidth, Console.CursorTop - top - 1, 0, Console.CursorTop + 1);
-                Console.SetCursorPosition(left, Console.CursorTop + 1);
-                MaxCursorTop = Console.CursorTop;
+                SetPrompt();
             }
         }
-
+        private void SetPrompt()
+        {
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write("You: ");
+            Console.ForegroundColor = ConsoleColor.White;
+        }
         private void WriteOrgnanizationName(string organizationName)
         {
             Console.WriteLine();
