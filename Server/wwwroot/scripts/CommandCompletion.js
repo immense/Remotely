@@ -3,8 +3,7 @@ import { Store } from "./Store.js";
 import { WebCommands } from "./Commands/WebCommands.js";
 import * as UI from "./UI.js";
 import { CMDCommands } from "./Commands/CMDCommands.js";
-import { PSCoreCommands } from "./Commands/PSCoreCommands.js";
-import { WinPSCommands } from "./Commands/WinPSCommands.js";
+import { PSCommands } from "./Commands/PSCommands.js";
 import { BashCommands } from "./Commands/BashCommands.js";
 export function DisplayCommandCompletions(commands, relevantText) {
     Store.CommandCompletionTimeout = window.setTimeout(() => {
@@ -98,10 +97,8 @@ export function GetCommandCompletions(commandText) {
             commandList = CMDCommands;
             break;
         case "PSCore":
-            commandList = PSCoreCommands;
-            break;
         case "WinPS":
-            commandList = WinPSCommands;
+            commandList = PSCommands;
             break;
         case "Bash":
             commandList = BashCommands;

@@ -27086,4 +27086,4 @@ new Parameter(`Status`, `Specifies the second line of text in the heading above 
         }
     )
 ];
-export const PSCoreCommands = commands;
+export const PSCommands = commands;
