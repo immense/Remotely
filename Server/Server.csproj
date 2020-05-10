@@ -31,9 +31,8 @@
     <Content Remove="wwwroot\scripts\CommandProcessor.ts" />
     <Content Remove="wwwroot\scripts\Commands\BashCommands.ts" />
     <Content Remove="wwwroot\scripts\Commands\CMDCommands.ts" />
-    <Content Remove="wwwroot\scripts\Commands\PSCoreCommands.ts" />
+    <Content Remove="wwwroot\scripts\Commands\PSCommands.ts" />
     <Content Remove="wwwroot\scripts\Commands\WebCommands.ts" />
-    <Content Remove="wwwroot\scripts\Commands\WinPSCommands.ts" />
     <Content Remove="wwwroot\scripts\Console.ts" />
     <Content Remove="wwwroot\scripts\DataGrid.ts" />
     <Content Remove="wwwroot\scripts\Enums\RemoteControlMode.ts" />
@@ -146,10 +145,9 @@
     <TypeScriptCompile Include="wwwroot\scripts\Chat.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\CommandCompletion.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Commands\BashCommands.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Commands\WinPSCommands.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Commands\CMDCommands.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Commands\WebCommands.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Commands\PSCoreCommands.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Commands\PSCommands.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Console.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\DataGrid.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Enums\RemoteControlMode.ts" />
@@ -192,9 +190,6 @@
     </Content>
     <Content Update="wwwroot\images\Remotely_Logo.png">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="wwwroot\scripts\Commands\WinPSCommands.js">
-      <DependentUpon>WinPSCommands.ts</DependentUpon>
     </Content>
   </ItemGroup>
 

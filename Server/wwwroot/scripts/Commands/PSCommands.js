@@ -12797,5 +12797,5 @@ Write-Error [-CategoryActivity <String>] [-CategoryReason <String>] [-CategoryTa
     ], `Writes a warning message.`, `Write-Warning [-Message] <String> [<CommonParameters>]`, "", (parameters, paramDictionary) => {
     })
 ];
-export const PSCoreCommands = commands;
-//# sourceMappingURL=PSCoreCommands.js.map
+export const PSCommands = commands;
+//# sourceMappingURL=PSCommands.js.map
