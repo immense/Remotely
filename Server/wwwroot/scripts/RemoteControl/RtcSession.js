@@ -1,5 +1,4 @@
 import * as UI from "./UI.js";
-import * as Utilities from "../Utilities.js";
 import { MainRc } from "./Main.js";
 export class RtcSession {
     constructor() {
@@ -55,20 +54,12 @@ export class RtcSession {
     }
     async ReceiveRtcOffer(sdp) {
         await this.PeerConnection.setRemoteDescription({ type: "offer", sdp: sdp });
-        Utilities.When(() => {
-            return this.PeerConnection.remoteDescription.sdp.length > 0;
-        }).then(async () => {
-            await this.PeerConnection.setLocalDescription(await this.PeerConnection.createAnswer());
-            await MainRc.RCHubConnection.SendRtcAnswer(this.PeerConnection.localDescription);
-        });
+        await this.PeerConnection.setLocalDescription(await this.PeerConnection.createAnswer());
+        await MainRc.RCHubConnection.SendRtcAnswer(this.PeerConnection.localDescription);
     }
     async ReceiveCandidate(candidate) {
-        Utilities.When(() => {
-            return this.PeerConnection.remoteDescription.sdp.length > 0;
-        }).then(async () => {
-            await this.PeerConnection.addIceCandidate(candidate);
-            console.log("Set ICE candidate.");
-        });
+        await this.PeerConnection.addIceCandidate(candidate);
+        console.log("Set ICE candidate.");
     }
     SendDto(dto) {
         this.DataChannel.send(this.MessagePack.encode(dto));
