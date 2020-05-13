@@ -1,6 +1,8 @@
 # Remotely
 A remote control and remote scripting solution, built with .NET Core, SignalR Core, and WebRTC.
 
+> **From the Developer**: Remotely has become a second full-time job, one for which I don't get paid.  Every time I try to get back into it, I burn out quickly.  I will no longer be responding to emails, offering free support, or accepting feature requests.  Development will be indefinitely suspended, for the most part.
+
 [![Build Status](https://dev.azure.com/translucency/Remotely/_apis/build/status/Remotely-ReleaseBuild?branchName=master)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=17&branchName=master)
 [![Donate](https://www.paypalobjects.com/webstatic/en_US/i/buttons/pp-acceptance-small.png)](https://paypal.me/translucency)
 
@@ -97,6 +99,11 @@ Ideally, you'd be doing remote control from an actual computer or laptop.  Howev
 * Right-click: Tap and hold
 * Click-and-drag: Tap and hold with one finger, tap and release a second finger (without pinch-zooming)
 	* The click-and-drag operation will begin where finger one is held.
+
+## End User Support Page
+There's a page at `/GetSupport` where end users can request support.  When the form is submitted, an alert appears on the main page, above the grid.
+
+A shortcut to this page is placed in the `\Program Files\Remotely\` folder.  You can copy it anywhere you like.  You can also have it copied to the desktop automatically by using the `-supportshortcut` switch on the installer.
 
 ## Configuration
 The following settings are available in appsettings.json.
