@@ -1,13 +1,27 @@
 # Remotely
 A remote control and remote scripting solution, built with .NET Core, SignalR Core, and WebRTC.
 
-> **From the Developer**: Remotely has become a second full-time job, one for which I don't get paid.  Every time I try to get back into it, I burn out quickly.  I will no longer be responding to emails, offering free support, or accepting feature requests.  Development will be indefinitely suspended, for the most part.
-
 [![Build Status](https://dev.azure.com/translucency/Remotely/_apis/build/status/Remotely-ReleaseBuild?branchName=master)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=17&branchName=master)
 [![Donate](https://www.paypalobjects.com/webstatic/en_US/i/buttons/pp-acceptance-small.png)](https://paypal.me/translucency)
 
 Website: https://remotely.one  
 Multi-Tenant Demo Server: https://app.remotely.one
+
+> **From the Developer**: 
+>
+>Remotely has become a second full-time job, one for which I don't get paid.  The total donations I've received over the last 3 years, while greatly appreciated, only amount to what I earn in 3 days at a regular job.
+>
+>Every time I try to get back into it developing this project, or try to keep up with support questions and feature requests, I burn out quickly.
+>
+>I've accomplished everything I personally set out to achieve with Remotely, plus a huge amount of features requested by others.  There's not enough incentive to continue working on it.  I feel like the project is done, and I can set it down.
+>
+>For that reason, I will no longer be responding to emails, offering free support, or accepting feature requests.  Development will be, for the most part, indefinitely suspended.
+>
+>Of course, anyone is free to fork the repo and continue development, so long as the original license is respected.  I won't, however, be taking any pull requests, as I wish to maintain full ownership of the codebase.
+>
+> Thank you for understanding, and best wishes to everyone.
+>
+> \- Jared
 
 
 ## Client Prerequisites:
