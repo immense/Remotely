@@ -409,6 +409,7 @@ export function ApplyInputHandlers() {
         MainRc.MessageSender.GetWindowsSessions();
     });
     WindowsSessionSelect.addEventListener("change", () => {
+        ShowMessage("Switching sessions...");
         MainRc.MessageSender.ChangeWindowsSession(Number(WindowsSessionSelect.selectedOptions[0].value));
     });
 
@@ -536,7 +537,15 @@ export function UpdateWindowsSessions(windowsSessions: Array<WindowsSession>) {
     WindowsSessionSelect.options.add(document.createElement("option"));
 
     windowsSessions.forEach(x => {
-        var sessionType = x.Type == SessionType.Console ? "Console" : "RDP";
+        var sessionType = "";
+
+        if (typeof x.Type == "number") {
+            sessionType = x.Type == SessionType.Console ? "Console" : "RDP";
+        }
+        else {
+            sessionType = x.Type;
+        }
+
         var option = document.createElement("option");
         option.value = String(x.ID);
         option.text = `${sessionType} (ID: ${x.ID} | User: ${x.Username})`;
