@@ -29,8 +29,8 @@
     <PackageReference Include="Microsoft.MixedReality.WebRTC" Version="1.0.3" />
     <PackageReference Include="Microsoft.Win32.SystemEvents" Version="4.7.0" />
     <PackageReference Include="NAudio" Version="1.10.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.3" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="3.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.4" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="3.1.4" />
     <PackageReference Include="SharpDX" Version="4.2.0" />
     <PackageReference Include="SharpDX.Direct3D11" Version="4.2.0" />
     <PackageReference Include="SharpDX.DXGI" Version="4.2.0" />

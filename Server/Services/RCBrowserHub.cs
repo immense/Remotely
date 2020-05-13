@@ -8,6 +8,7 @@ using Remotely.Shared.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Remotely.Server.Attributes;
+using Remotely.Server.Models;
 
 namespace Remotely.Server.Services
 {
@@ -16,11 +17,13 @@ namespace Remotely.Server.Services
     {
         public RCBrowserHub(DataService dataService,
             IHubContext<RCDeviceHub> rcDeviceHub,
+            IHubContext<DeviceHub> deviceHub,
             ApplicationConfig appConfig,
             RemoteControlSessionRecorder rcSessionRecorder)
         {
             DataService = dataService;
             RCDeviceHubContext = rcDeviceHub;
+            DeviceHubContext = deviceHub;
             AppConfig = appConfig;
             RCSessionRecorder = rcSessionRecorder;
         }
@@ -40,9 +43,26 @@ namespace Remotely.Server.Services
         }
 
         private IHubContext<RCDeviceHub> RCDeviceHubContext { get; }
-
+        private IHubContext<DeviceHub> DeviceHubContext { get; }
         private RemoteControlSessionRecorder RCSessionRecorder { get; }
-
+        private RCSessionInfo SessionInfo
+        {
+            get
+            {
+                if (Context.Items.ContainsKey("SessionInfo"))
+                {
+                    return (RCSessionInfo)Context.Items["SessionInfo"];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                Context.Items["SessionInfo"] = value;
+            }
+        }
         private string RequesterName
         {
             get
@@ -70,7 +90,23 @@ namespace Remotely.Server.Services
         {
             return RCDeviceHubContext.Clients.Client(ScreenCasterID).SendAsync("CtrlAltDel", Context.ConnectionId);
         }
-
+        public Task GetWindowsSessions()
+        {
+            return RCDeviceHubContext.Clients.Client(ScreenCasterID).SendAsync("GetWindowsSessions", Context.ConnectionId);
+        }
+        public Task ChangeWindowsSession(int sessionID)
+        {
+            if (SessionInfo?.Mode == RemoteControlMode.Unattended)
+            {
+                return DeviceHubContext.Clients
+                    .Client(SessionInfo.ServiceID)
+                    .SendAsync("ChangeWindowsSession", 
+                        SessionInfo.ServiceID, 
+                        Context.ConnectionId,
+                        sessionID);
+            }
+            return Task.CompletedTask;
+        }
         public Task KeyDown(string key)
         {
             return RCDeviceHubContext.Clients.Client(ScreenCasterID).SendAsync("KeyDown", key, Context.ConnectionId);
@@ -128,6 +164,8 @@ namespace Remotely.Server.Services
                 RCSessionRecorder.StopProcessing(Context.ConnectionId);
             }
 
+            SessionInfo?.ViewerConnections?.Remove(Context.ConnectionId, out _);
+
             return base.OnDisconnectedAsync(exception);
         }
 
@@ -168,19 +206,21 @@ namespace Remotely.Server.Services
         {
             if ((RemoteControlMode)remoteControlMode == RemoteControlMode.Normal)
             {
-                if (!Services.RCDeviceHub.SessionInfoList.Any(x => x.Value.AttendedSessionID == screenCasterID))
+                if (!RCDeviceHub.SessionInfoList.Any(x => x.Value.AttendedSessionID == screenCasterID))
                 {
                     return Clients.Caller.SendAsync("SessionIDNotFound");
                 }
 
-                screenCasterID = Services.RCDeviceHub.SessionInfoList.First(x => x.Value.AttendedSessionID == screenCasterID).Value.RCDeviceSocketID;
+                screenCasterID = RCDeviceHub.SessionInfoList.First(x => x.Value.AttendedSessionID == screenCasterID).Value.RCDeviceSocketID;
             }
 
-            if (!Services.RCDeviceHub.SessionInfoList.TryGetValue(screenCasterID, out var sessionInfo))
+            if (!RCDeviceHub.SessionInfoList.TryGetValue(screenCasterID, out var sessionInfo))
             {
                 return Clients.Caller.SendAsync("SessionIDNotFound");
             }
 
+            SessionInfo = sessionInfo;
+            SessionInfo.ViewerConnections.AddOrUpdate(Context.ConnectionId, requesterName, (k, v) => requesterName);
             ScreenCasterID = screenCasterID;
             RequesterName = requesterName;
             Mode = (RemoteControlMode)remoteControlMode;
@@ -190,7 +230,7 @@ namespace Remotely.Server.Services
             if (Context?.User?.Identity?.IsAuthenticated == true)
             {
                 orgId = DataService.GetUserByID(Context.UserIdentifier).OrganizationID;
-                var currentUsers = Services.RCDeviceHub.SessionInfoList.Count(x => 
+                var currentUsers = RCDeviceHub.SessionInfoList.Count(x => 
                     x.Key != screenCasterID &&
                     x.Value.OrganizationID == orgId);
                 if (currentUsers >= AppConfig.RemoteControlSessionLimit)
@@ -199,9 +239,9 @@ namespace Remotely.Server.Services
                     Context.Abort();
                     return Task.CompletedTask;
                 }
-                sessionInfo.OrganizationID = orgId;
-                sessionInfo.RequesterUserName = Context.User.Identity.Name;
-                sessionInfo.RequesterSocketID = Context.ConnectionId;
+                SessionInfo.OrganizationID = orgId;
+                SessionInfo.RequesterUserName = Context.User.Identity.Name;
+                SessionInfo.RequesterSocketID = Context.ConnectionId;
             }
 
             DataService.WriteEvent(new EventLog()
@@ -210,7 +250,7 @@ namespace Remotely.Server.Services
                 TimeStamp = DateTimeOffset.Now,
                 Message = $"Remote control session requested.  " +
                                 $"Login ID (if logged in): {Context?.User?.Identity?.Name}.  " +
-                                $"Machine Name: {sessionInfo.MachineName}.  " +
+                                $"Machine Name: {SessionInfo.MachineName}.  " +
                                 $"Requester Name (if specified): {requesterName}.  " +
                                 $"Connection ID: {Context.ConnectionId}. User ID: {Context.UserIdentifier}.  " +
                                 $"Screen Caster ID: {screenCasterID}.  " + 
@@ -221,8 +261,8 @@ namespace Remotely.Server.Services
 
             if (Mode == RemoteControlMode.Unattended)
             {
-                sessionInfo.Mode = RemoteControlMode.Unattended;
-                var deviceID = DeviceHub.ServiceConnections[sessionInfo.ServiceID].ID;
+                SessionInfo.Mode = RemoteControlMode.Unattended;
+                var deviceID = DeviceHub.ServiceConnections[SessionInfo.ServiceID].ID;
 
                 if ((!string.IsNullOrWhiteSpace(otp) &&
                         RemoteControlFilterAttribute.OtpMatchesDevice(otp, deviceID)) 
@@ -239,7 +279,7 @@ namespace Remotely.Server.Services
             }
             else
             {
-                sessionInfo.Mode = RemoteControlMode.Normal;
+                SessionInfo.Mode = RemoteControlMode.Normal;
                 _ = Clients.Caller.SendAsync("RequestingScreenCast");
                 return RCDeviceHubContext.Clients.Client(screenCasterID).SendAsync("RequestScreenCast", Context.ConnectionId, requesterName);
             }

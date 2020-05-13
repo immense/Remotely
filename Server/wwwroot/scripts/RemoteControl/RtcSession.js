@@ -56,6 +56,7 @@ export class RtcSession {
         await this.PeerConnection.setRemoteDescription({ type: "offer", sdp: sdp });
         await this.PeerConnection.setLocalDescription(await this.PeerConnection.createAnswer());
         await MainRc.RCHubConnection.SendRtcAnswer(this.PeerConnection.localDescription);
+        console.log("Set RTC offer.");
     }
     async ReceiveCandidate(candidate) {
         await this.PeerConnection.addIceCandidate(candidate);

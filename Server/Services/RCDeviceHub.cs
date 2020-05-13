@@ -113,7 +113,10 @@ namespace Remotely.Server.Services
         {
             return RCBrowserHubContext.Clients.Clients(viewerIDs).SendAsync("RelaunchedScreenCasterReady", Context.ConnectionId);
         }
-
+        public Task SendWindowsSessions(List<WindowsSession> windowsSessions, string viewerID)
+        {
+            return RCBrowserHubContext.Clients.Client(viewerID).SendAsync("WindowsSessions", windowsSessions);
+        }
         public override async Task OnConnectedAsync()
         {
             SessionInfo = new RCSessionInfo()

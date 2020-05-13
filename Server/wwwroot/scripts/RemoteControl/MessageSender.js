@@ -1,8 +1,14 @@
 import { MainRc } from "./Main.js";
-import { CtrlAltDelDto, KeyDownDto, KeyPressDto, KeyUpDto, MouseDownDto, MouseMoveDto, MouseUpDto, MouseWheelDto, QualityChangeDto, SelectScreenDto, TapDto, AutoQualityAdjustDto, ToggleAudioDto, ToggleBlockInputDto, ClipboardTransferDto, FileDto } from "./RtcDtos.js";
+import { CtrlAltDelDto, KeyDownDto, KeyPressDto, KeyUpDto, MouseDownDto, MouseMoveDto, MouseUpDto, MouseWheelDto, QualityChangeDto, SelectScreenDto, TapDto, AutoQualityAdjustDto, ToggleAudioDto, ToggleBlockInputDto, ClipboardTransferDto, FileDto, WindowsSessionsDto } from "./RtcDtos.js";
 import { CreateGUID, When } from "../Utilities.js";
 import { FileTransferProgress } from "./UI.js";
 export class MessageSender {
+    GetWindowsSessions() {
+        this.SendToAgent(() => MainRc.RtcSession.SendDto(new WindowsSessionsDto()), () => MainRc.RCHubConnection.GetWindowsSessions());
+    }
+    ChangeWindowsSession(sessionId) {
+        MainRc.RCHubConnection.ChangeWindowsSession(sessionId);
+    }
     SendSelectScreen(displayName) {
         this.SendToAgent(() => MainRc.RtcSession.SendDto(new SelectScreenDto(displayName)), () => MainRc.RCHubConnection.SendSelectScreen(displayName));
     }

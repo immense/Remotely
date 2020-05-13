@@ -4,6 +4,7 @@ import { Point } from "../Models/Point.js";
 import { GetDistanceBetween, ConvertUInt8ArrayToBase64 } from "../Utilities.js";
 import { UploadFiles } from "./FileUploader.js";
 import { Sound } from "../Sound.js";
+import { WindowsSession, SessionType } from "./RtcDtos.js";
 
 export var AudioButton = document.getElementById("audioButton") as HTMLButtonElement;
 export var MenuButton = document.getElementById("menuButton") as HTMLButtonElement;
@@ -42,6 +43,7 @@ export var TypeClipboardButton = document.getElementById("typeClipboardButton") 
 export var ConnectionP2PIcon = document.getElementById("connectionP2PIcon") as HTMLElement;
 export var ConnectionRelayedIcon = document.getElementById("connectionRelayedIcon") as HTMLElement;
 export var ToastsWrapper = document.getElementById("toastsWrapper") as HTMLDivElement;
+export var WindowsSessionSelect = document.getElementById("windowsSessionSelect") as HTMLSelectElement;
 
 var lastPointerMove = Date.now();
 var isDragging: boolean;
@@ -403,6 +405,13 @@ export function ApplyInputHandlers() {
             TouchKeyboardTextArea.setSelectionRange(TouchKeyboardTextArea.value.length, TouchKeyboardTextArea.value.length);
         });
     });
+    WindowsSessionSelect.addEventListener("focus", () => {
+        MainRc.MessageSender.GetWindowsSessions();
+    });
+    WindowsSessionSelect.addEventListener("change", () => {
+        MainRc.MessageSender.ChangeWindowsSession(Number(WindowsSessionSelect.selectedOptions[0].value));
+    });
+
     window.addEventListener("keydown", function (e) {
         if (document.querySelector("input:focus") || document.querySelector("textarea:focus")) {
             return;
@@ -517,6 +526,23 @@ export function UpdateDisplays(selectedDisplay: string, displayNames: string[]) 
             (ev.currentTarget as HTMLButtonElement).classList.add("toggled");
         };
     }
+}
+
+export function UpdateWindowsSessions(windowsSessions: Array<WindowsSession>) {
+    while (WindowsSessionSelect.options.length > 0) {
+        WindowsSessionSelect.options.remove(0);
+    }
+
+    WindowsSessionSelect.options.add(document.createElement("option"));
+
+    windowsSessions.forEach(x => {
+        var sessionType = x.Type == SessionType.Console ? "Console" : "RDP";
+        var option = document.createElement("option");
+        option.value = String(x.ID);
+        option.innerHTML = `${sessionType} (ID: ${x.ID} | User: ${x.Username})`;
+        option.title = `${sessionType} Session (ID: ${x.ID} | User: ${x.Username})`;
+        WindowsSessionSelect.options.add(option);
+    });
 }
 
 

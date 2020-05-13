@@ -15,12 +15,20 @@ import {
     ToggleAudioDto,
     ToggleBlockInputDto,
     ClipboardTransferDto,
-    FileDto
+    FileDto,
+    WindowsSessionsDto
 } from "./RtcDtos.js";
 import { CreateGUID, When } from "../Utilities.js";
 import { FileTransferProgress } from "./UI.js";
 
 export class MessageSender {
+    GetWindowsSessions() {
+        this.SendToAgent(() => MainRc.RtcSession.SendDto(new WindowsSessionsDto()),
+            () => MainRc.RCHubConnection.GetWindowsSessions());
+    }
+    ChangeWindowsSession(sessionId: number) {
+        MainRc.RCHubConnection.ChangeWindowsSession(sessionId);
+    }
     SendSelectScreen(displayName: string) {
         this.SendToAgent(() => MainRc.RtcSession.SendDto(new SelectScreenDto(displayName)),
             () => MainRc.RCHubConnection.SendSelectScreen(displayName));

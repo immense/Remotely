@@ -59,27 +59,26 @@ namespace Remotely.ScreenCast.Core.Services
                     await viewer.InitializeWebRtc();
                 }
 
-                await viewer.SendMachineName(Environment.MachineName, viewer.ViewerConnectionID);
+                await viewer.SendMachineName(Environment.MachineName);
 
                 await viewer.SendScreenData(
                        viewer.Capturer.SelectedScreen,
-                       viewer.Capturer.GetDisplayNames().ToArray(),
-                       viewer.ViewerConnectionID);
+                       viewer.Capturer.GetDisplayNames().ToArray());
 
                 await viewer.SendScreenSize(viewer.Capturer.CurrentScreenBounds.Width,
-                    viewer.Capturer.CurrentScreenBounds.Height,
-                    viewer.ViewerConnectionID);
+                    viewer.Capturer.CurrentScreenBounds.Height);
 
                 await viewer.SendCursorChange(CursorIconWatcher.GetCurrentCursor());
 
+                await viewer.SendWindowsSessions();
+
                 viewer.Capturer.ScreenChanged += async (sender, bounds) =>
                 {
-                    await viewer.SendScreenSize(bounds.Width, bounds.Height, viewer.ViewerConnectionID);
+                    await viewer.SendScreenSize(bounds.Width, bounds.Height);
                 };
 
                 await viewer.SendScreenCapture(
-                    ImageUtils.EncodeBitmap(viewer.Capturer.CurrentFrame, viewer.EncoderParams), 
-                    viewer.ViewerConnectionID,
+                    ImageUtils.EncodeBitmap(viewer.Capturer.CurrentFrame, viewer.EncoderParams),
                     viewer.Capturer.CurrentScreenBounds.Left,
                     viewer.Capturer.CurrentScreenBounds.Top,
                     viewer.Capturer.CurrentScreenBounds.Width,
@@ -128,7 +127,7 @@ namespace Remotely.ScreenCast.Core.Services
                             if (encodedImageBytes?.Length > 0)
                             {
 
-                                await viewer.SendScreenCapture(encodedImageBytes, viewer.ViewerConnectionID, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height);
+                                await viewer.SendScreenCapture(encodedImageBytes, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height);
                             }
                         }
                     }

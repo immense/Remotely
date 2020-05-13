@@ -2,6 +2,7 @@ import * as UI from "./UI.js";
 import { MainRc } from "./Main.js";
 import { Sound } from "../Sound.js";
 import { ShowMessage } from "../UI.js";
+import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 var signalR = window["signalR"];
 export class RCHubConnection {
     Connect() {
@@ -32,7 +33,16 @@ export class RCHubConnection {
         });
         MainRc.ClipboardWatcher.WatchClipboard();
     }
-    ;
+    GetWindowsSessions() {
+        if (MainRc.Mode == RemoteControlMode.Unattended) {
+            this.Connection.invoke("GetWindowsSessions");
+        }
+    }
+    ChangeWindowsSession(sessionID) {
+        if (MainRc.Mode == RemoteControlMode.Unattended) {
+            this.Connection.invoke("ChangeWindowsSession", sessionID);
+        }
+    }
     SendIceCandidate(candidate) {
         if (candidate) {
             this.Connection.invoke("SendIceCandidateToAgent", candidate.candidate, candidate.sdpMLineIndex, candidate.sdpMid);
@@ -206,6 +216,9 @@ export class RCHubConnection {
         });
         hubConnection.on("ShowMessage", (message) => {
             UI.ShowMessage(message);
+        });
+        hubConnection.on("WindowsSessions", (windowsSessions) => {
+            UI.UpdateWindowsSessions(windowsSessions);
         });
     }
 }

@@ -11,7 +11,8 @@ import {
     CursorChangeDto,
     MachineNameDto,
     ScreenDataDto,
-    ScreenSizeDto
+    ScreenSizeDto,
+    WindowsSessionsDto
 } from "./RtcDtos.js";
 
 
@@ -41,6 +42,9 @@ export class RtcMessageHandler {
                 break;
             case BinaryDtoType.ScreenSize:
                 this.HandleScreenSize(model as unknown as ScreenSizeDto)
+                break;
+            case BinaryDtoType.WindowsSessions:
+                this.HandleWindowsSessions(model as unknown as WindowsSessionsDto)
                 break;
             default:
                 break;
@@ -89,5 +93,9 @@ export class RtcMessageHandler {
 
     HandleScreenSize(screenSizeDto: ScreenSizeDto) {
         UI.SetScreenSize(screenSizeDto.Width, screenSizeDto.Height);
+    }
+
+    HandleWindowsSessions(windowsSessionsDto: WindowsSessionsDto) {
+        UI.UpdateWindowsSessions(windowsSessionsDto.WindowsSessions);
     }
 }

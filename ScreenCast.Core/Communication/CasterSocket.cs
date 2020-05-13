@@ -158,6 +158,11 @@ namespace Remotely.ScreenCast.Core.Communication
         {
             await Connection.SendAsync("SendViewerRemoved", viewerID);
         }
+        public async Task SendWindowsSessions(List<WindowsSession> windowsSessions, string viewerID)
+        {
+            await Connection.SendAsync("SendWindowsSessions", windowsSessions, viewerID);
+        }
+
         private void ApplyConnectionHandlers()
         {
             var conductor = ServiceContainer.Instance.GetRequiredService<Conductor>();
@@ -247,6 +252,14 @@ namespace Remotely.ScreenCast.Core.Communication
                 catch (Exception ex)
                 {
                     Logger.Write(ex);
+                }
+            });
+
+            Connection.On("GetWindowsSessions", async (string viewerID) =>
+            {
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
+                {
+                    await viewer.SendWindowsSessions();
                 }
             });
 
