@@ -1,6 +1,7 @@
 ﻿using Remotely.ScreenCast.Core.Communication;
 using Remotely.ScreenCast.Core.Interfaces;
 using Remotely.ScreenCast.Core.Services;
+using Remotely.Shared.Helpers;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
@@ -54,7 +55,7 @@ namespace Remotely.ScreenCast.Core.Models
                 {
                     return;
                 }
-               
+
                 imageQuality = value;
 
                 EncoderParams.Param[0] = new EncoderParameter(Encoder.Quality, value);
@@ -69,8 +70,16 @@ namespace Remotely.ScreenCast.Core.Models
         private IAudioCapturer AudioCapturer { get; }
         private CasterSocket CasterSocket { get; }
         private IClipboardService ClipboardService { get; }
+        private int CurrentBuffer
+        {
+            get
+            {
+                return IsUsingWebRtc() ?
+                    (int)RtcSession.CurrentBuffer :
+                    WebSocketBuffer;
+            }
+        }
         private IWebRtcSessionFactory WebRtcSessionFactory { get; }
-
         public void Dispose()
         {
             RtcSession?.Dispose();
@@ -161,21 +170,17 @@ namespace Remotely.ScreenCast.Core.Models
 
         public async Task ThrottleIfNeeded()
         {
-            var currentBuffer = IsUsingWebRtc() ?
-                (int)RtcSession.CurrentBuffer :
-                WebSocketBuffer;
-
-            if (currentBuffer > 150_000)
+            if (CurrentBuffer > 200_000)
             {
                 if (AutoAdjustQuality)
                 {
-                    ImageQuality = Math.Max(ImageQuality - (currentBuffer / 150_000), 0);
-                    Logger.Debug($"Auto-adjusting image quality.  Quality: {ImageQuality}");
+                    var imageAdjust = (double)CurrentBuffer / 200_000 * 5;
+                    ImageQuality = (int)Math.Max(ImageQuality - imageAdjust, 0);
+                    Logger.Write($"Auto-adjusting image quality.  Quality: {ImageQuality}");
                 }
 
-                var delay = (int)Math.Ceiling((currentBuffer - 150_000) * .0025);
-                Logger.Debug($"Throttling output due to buffer size.  Size: {currentBuffer}.  Delay: {delay}");
-                await Task.Delay(delay);
+                Logger.Write($"Throttling output due to buffer size.  Size: {CurrentBuffer}.");
+                await TaskHelper.DelayUntil(() => CurrentBuffer < 200_000, TimeSpan.FromSeconds(1));
             }
             else if (AutoAdjustQuality)
             {
