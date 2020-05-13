@@ -536,10 +536,10 @@ export function UpdateWindowsSessions(windowsSessions: Array<WindowsSession>) {
     WindowsSessionSelect.options.add(document.createElement("option"));
 
     windowsSessions.forEach(x => {
-        var sessionType = Number(x.Type) == Number(SessionType.Console) ? "Console" : "RDP";
+        var sessionType = x.Type == SessionType.Console ? "Console" : "RDP";
         var option = document.createElement("option");
         option.value = String(x.ID);
-        option.innerHTML = `${sessionType} (ID: ${x.ID} | User: ${x.Username})`;
+        option.text = `${sessionType} (ID: ${x.ID} | User: ${x.Username})`;
         option.title = `${sessionType} Session (ID: ${x.ID} | User: ${x.Username})`;
         WindowsSessionSelect.options.add(option);
     });

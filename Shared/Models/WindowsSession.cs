@@ -5,9 +5,7 @@ namespace Remotely.Shared.Models
     [DataContract]
     public enum SessionType
     {
-        [EnumMember(Value = "Console")]
         Console = 0,
-        [EnumMember(Value = "RDP")]
         RDP = 1
     }
 
