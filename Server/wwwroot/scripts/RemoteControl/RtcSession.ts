@@ -62,21 +62,13 @@ export class RtcSession {
     }
     async ReceiveRtcOffer(sdp: string) {
         await this.PeerConnection.setRemoteDescription({ type: "offer", sdp: sdp });
-
-        Utilities.When(() => {
-            return this.PeerConnection.remoteDescription.sdp.length > 0;
-        }).then(async () => {
-            await this.PeerConnection.setLocalDescription(await this.PeerConnection.createAnswer());
-            await MainRc.RCHubConnection.SendRtcAnswer(this.PeerConnection.localDescription);
-        })
+        await this.PeerConnection.setLocalDescription(await this.PeerConnection.createAnswer());
+        await MainRc.RCHubConnection.SendRtcAnswer(this.PeerConnection.localDescription);
+        console.log("Set RTC offer.");
     }
     async ReceiveCandidate(candidate: RTCIceCandidate) {
-        Utilities.When(() => {
-            return this.PeerConnection.remoteDescription.sdp.length > 0;
-        }).then(async () => {
-            await this.PeerConnection.addIceCandidate(candidate);
-            console.log("Set ICE candidate.");
-        })
+        await this.PeerConnection.addIceCandidate(candidate);
+        console.log("Set ICE candidate.");
     }
 
     SendDto(dto: any) {
