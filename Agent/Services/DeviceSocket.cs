@@ -163,7 +163,10 @@ namespace Remotely.Agent.Services
                 var fileIDs = JsonSerializer.Deserialize<string[]>(Encoding.UTF8.GetString(response));
                 await HubConnection.SendAsync("DownloadFile", fileIDs[0], senderConnectionID);
             });
-
+            HubConnection.On("ChangeWindowsSession", async (string serviceID, string requesterID, int sessionID) =>
+            {
+                await AppLauncher.LaunchRemoteControl(sessionID, requesterID, serviceID, HubConnection);
+            });
             HubConnection.On("ExecuteCommand", (async (string mode, string command, string commandID, string senderConnectionID) =>
             {
                 if (!IsServerVerified)

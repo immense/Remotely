@@ -78,7 +78,6 @@ export class FileDto implements BinaryDto {
     DtoType: BinaryDtoType = BinaryDtoType.File;
 }
 
-
 export class KeyDownDto implements BinaryDto {
     constructor(key: string) {
         this.Key = key;
@@ -213,4 +212,22 @@ export class ToggleBlockInputDto implements BinaryDto {
 
     ToggleOn: boolean;
     DtoType: BinaryDtoType = BinaryDtoType.ToggleBlockInput;
+}
+
+export class WindowsSessionsDto implements BinaryDto {
+    
+    WindowsSessions: Array<WindowsSession>;
+    DtoType: BinaryDtoType = BinaryDtoType.WindowsSessions;
+}
+
+export enum SessionType {
+    Console = 0,
+    RDP = 1
+}
+
+export class WindowsSession {
+    ID: number;
+    Type: SessionType;
+    Name: string;
+    Username: string;
 }

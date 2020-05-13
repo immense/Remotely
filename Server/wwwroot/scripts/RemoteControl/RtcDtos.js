@@ -106,4 +106,16 @@ export class ToggleBlockInputDto {
         this.ToggleOn = toggleOn;
     }
 }
+export class WindowsSessionsDto {
+    constructor() {
+        this.DtoType = BinaryDtoType.WindowsSessions;
+    }
+}
+export var SessionType;
+(function (SessionType) {
+    SessionType[SessionType["Console"] = 0] = "Console";
+    SessionType[SessionType["RDP"] = 1] = "RDP";
+})(SessionType || (SessionType = {}));
+export class WindowsSession {
+}
 //# sourceMappingURL=RtcDtos.js.map

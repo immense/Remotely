@@ -26,8 +26,8 @@ namespace Remotely.ScreenCast.Core.Communication
         public bool IsDataChannelOpen => CaptureChannel?.State == DataChannel.ChannelState.Open;
         public bool IsPeerConnected => PeerConnection?.IsConnected == true;
         private DataChannel CaptureChannel { get; set; }
-        private PeerConnection PeerConnection { get; set; }
         private IceServerModel[] IceServers { get; set; }
+        private PeerConnection PeerConnection { get; set; }
         private IRtcMessageHandler RtcMessageHandler { get; }
         public void AddIceCandidate(string sdpMid, int sdpMlineIndex, string candidate)
         {
@@ -72,6 +72,11 @@ namespace Remotely.ScreenCast.Core.Communication
             CaptureChannel.StateChanged += CaptureChannel_StateChanged;
             PeerConnection.CreateOffer();
         }
+        public void SendAudioSample(byte[] audioSample)
+        {
+            SendDto(new AudioSampleDto(audioSample));
+        }
+
         public void SendCaptureFrame(int left, int top, int width, int height, byte[] imageBytes, long imageQuality)
         {
             for (var i = 0; i < imageBytes.Length; i += 50_000)
@@ -103,16 +108,15 @@ namespace Remotely.ScreenCast.Core.Communication
             SendDto(new ClipboardTextDto(clipboardText));
         }
 
+        public void SendCursorChange(CursorInfo cursorInfo)
+        {
+            SendDto(new CursorChangeDto(cursorInfo.ImageBytes, cursorInfo.HotSpot.X, cursorInfo.HotSpot.Y, cursorInfo.CssOverride));
+        }
+
         public void SendMachineName(string machineName)
         {
             SendDto(new MachineNameDto(machineName));
         }
-
-        public void SendAudioSample(byte[] audioSample)
-        {
-            SendDto(new AudioSampleDto(audioSample));
-        }
-
         public void SendScreenData(string selectedScreen, string[] displayNames)
         {
             SendDto(new ScreenDataDto(selectedScreen, displayNames));
@@ -122,10 +126,9 @@ namespace Remotely.ScreenCast.Core.Communication
         {
             SendDto(new ScreenSizeDto(width, height));
         }
-
-        public void SendCursorChange(CursorInfo cursorInfo)
+        public void SendWindowsSessions(List<WindowsSession> windowsSessions)
         {
-            SendDto(new CursorChangeDto(cursorInfo.ImageBytes, cursorInfo.HotSpot.X, cursorInfo.HotSpot.Y, cursorInfo.CssOverride));
+            SendDto(new WindowsSessionsDto(windowsSessions));
         }
 
         public void SetRemoteDescription(string type, string sdp)
@@ -176,7 +179,6 @@ namespace Remotely.ScreenCast.Core.Communication
             Logger.Debug($"Local SDP ready.");
             LocalSdpReady?.Invoke(this, sdp);
         }
-
         private void SendDto<T>(T dto)
         {
             CaptureChannel.SendMessage(MessagePackSerializer.Serialize(dto));

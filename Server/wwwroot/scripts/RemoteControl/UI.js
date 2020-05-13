@@ -3,6 +3,7 @@ import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 import { GetDistanceBetween, ConvertUInt8ArrayToBase64 } from "../Utilities.js";
 import { UploadFiles } from "./FileUploader.js";
 import { Sound } from "../Sound.js";
+import { SessionType } from "./RtcDtos.js";
 export var AudioButton = document.getElementById("audioButton");
 export var MenuButton = document.getElementById("menuButton");
 export var MenuFrame = document.getElementById("menuFrame");
@@ -40,6 +41,7 @@ export var TypeClipboardButton = document.getElementById("typeClipboardButton");
 export var ConnectionP2PIcon = document.getElementById("connectionP2PIcon");
 export var ConnectionRelayedIcon = document.getElementById("connectionRelayedIcon");
 export var ToastsWrapper = document.getElementById("toastsWrapper");
+export var WindowsSessionSelect = document.getElementById("windowsSessionSelect");
 var lastPointerMove = Date.now();
 var isDragging;
 var currentPointerDevice;
@@ -370,6 +372,12 @@ export function ApplyInputHandlers() {
             TouchKeyboardTextArea.setSelectionRange(TouchKeyboardTextArea.value.length, TouchKeyboardTextArea.value.length);
         });
     });
+    WindowsSessionSelect.addEventListener("focus", () => {
+        MainRc.MessageSender.GetWindowsSessions();
+    });
+    WindowsSessionSelect.addEventListener("change", () => {
+        MainRc.MessageSender.ChangeWindowsSession(Number(WindowsSessionSelect.selectedOptions[0].value));
+    });
     window.addEventListener("keydown", function (e) {
         if (document.querySelector("input:focus") || document.querySelector("textarea:focus")) {
             return;
@@ -469,6 +477,20 @@ export function UpdateDisplays(selectedDisplay, displayNames) {
             ev.currentTarget.classList.add("toggled");
         };
     }
+}
+export function UpdateWindowsSessions(windowsSessions) {
+    while (WindowsSessionSelect.options.length > 0) {
+        WindowsSessionSelect.options.remove(0);
+    }
+    WindowsSessionSelect.options.add(document.createElement("option"));
+    windowsSessions.forEach(x => {
+        var sessionType = x.Type == SessionType.Console ? "Console" : "RDP";
+        var option = document.createElement("option");
+        option.value = String(x.ID);
+        option.innerHTML = `${sessionType} (ID: ${x.ID} | User: ${x.Username})`;
+        option.title = `${sessionType} Session (ID: ${x.ID} | User: ${x.Username})`;
+        WindowsSessionSelect.options.add(option);
+    });
 }
 function closeAllHorizontalBars(exceptBarId) {
     HorizontalBars.forEach(x => {

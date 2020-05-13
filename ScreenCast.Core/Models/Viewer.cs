@@ -4,7 +4,9 @@ using Remotely.ScreenCast.Core.Services;
 using Remotely.Shared.Helpers;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
+using Remotely.Shared.Win32;
 using System;
+using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.Threading.Tasks;
 
@@ -137,13 +139,13 @@ namespace Remotely.ScreenCast.Core.Models
                 () => CasterSocket.SendCursorChange(cursorInfo, ViewerConnectionID));
         }
 
-        public async Task SendMachineName(string machineName, string viewerID)
+        public async Task SendMachineName(string machineName)
         {
             await SendToViewer(() => RtcSession.SendMachineName(machineName),
-                () => CasterSocket.SendMachineName(machineName, viewerID));
+                () => CasterSocket.SendMachineName(machineName, ViewerConnectionID));
         }
 
-        public async Task SendScreenCapture(byte[] encodedImageBytes, string viewerID, int left, int top, int width, int height)
+        public async Task SendScreenCapture(byte[] encodedImageBytes, int left, int top, int width, int height)
         {
             await SendToViewer(() =>
             {
@@ -151,21 +153,30 @@ namespace Remotely.ScreenCast.Core.Models
                 WebSocketBuffer = 0;
             }, async () =>
             {
-                await CasterSocket.SendScreenCapture(encodedImageBytes, viewerID, left, top, width, height, ImageQuality);
+                await CasterSocket.SendScreenCapture(encodedImageBytes, ViewerConnectionID, left, top, width, height, ImageQuality);
                 WebSocketBuffer += encodedImageBytes.Length;
             });
         }
 
-        public async Task SendScreenData(string selectedScreen, string[] displayNames, string viewerID)
+        public async Task SendScreenData(string selectedScreen, string[] displayNames)
         {
             await SendToViewer(() => RtcSession.SendScreenData(selectedScreen, displayNames),
-                () => CasterSocket.SendScreenData(selectedScreen, displayNames, viewerID));
+                () => CasterSocket.SendScreenData(selectedScreen, displayNames, ViewerConnectionID));
         }
 
-        public async Task SendScreenSize(int width, int height, string viewerID)
+        public async Task SendScreenSize(int width, int height)
         {
             await SendToViewer(() => RtcSession.SendScreenSize(width, height),
-                 () => CasterSocket.SendScreenSize(width, height, viewerID));
+                 () => CasterSocket.SendScreenSize(width, height, ViewerConnectionID));
+        }
+
+        public async Task SendWindowsSessions()
+        {
+            if (EnvironmentHelper.IsWindows)
+            {
+                await SendToViewer(() => RtcSession.SendWindowsSessions(Win32Interop.GetActiveSessions()),
+                    () => CasterSocket.SendWindowsSessions(Win32Interop.GetActiveSessions(), ViewerConnectionID));
+            }
         }
 
         public async Task ThrottleIfNeeded()

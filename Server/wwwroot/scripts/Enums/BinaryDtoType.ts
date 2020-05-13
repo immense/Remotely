@@ -21,5 +21,6 @@
     ClipboardTransfer = 19,
     KeyPress = 20,
     QualityChange = 21,
-    File = 22
+    File = 22,
+    WindowsSessions = 23
 }

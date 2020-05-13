@@ -32,6 +32,9 @@ export class RtcMessageHandler {
             case BinaryDtoType.ScreenSize:
                 this.HandleScreenSize(model);
                 break;
+            case BinaryDtoType.WindowsSessions:
+                this.HandleWindowsSessions(model);
+                break;
             default:
                 break;
         }
@@ -73,6 +76,9 @@ export class RtcMessageHandler {
     }
     HandleScreenSize(screenSizeDto) {
         UI.SetScreenSize(screenSizeDto.Width, screenSizeDto.Height);
+    }
+    HandleWindowsSessions(windowsSessionsDto) {
+        UI.UpdateWindowsSessions(windowsSessionsDto.WindowsSessions);
     }
 }
 //# sourceMappingURL=RtcMessageHandler.js.map

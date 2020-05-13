@@ -50,6 +50,8 @@ namespace Remotely.Shared.Enums
         [EnumMember(Value = "QualityChange")]
         QualityChange = 21,
         [EnumMember(Value = "File")]
-        File = 22
+        File = 22,
+        [EnumMember(Value = "WindowsSessions")]
+        WindowsSessions = 23
     }
 }
