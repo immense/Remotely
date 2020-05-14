@@ -5,7 +5,7 @@ namespace Remotely.Server.Services
 {
     public class ApplicationConfig
     {
-        private IceServerModel[] fallbackIceServers = new IceServerModel[]
+        private readonly IceServerModel[] fallbackIceServers = new IceServerModel[]
         {
             new IceServerModel() { Url = "stun: stun.l.google.com:19302"},
             new IceServerModel() { Url = "stun: stun4.l.google.com:19302"}
@@ -35,7 +35,7 @@ namespace Remotely.Server.Services
         public bool SmtpEnableSsl => bool.Parse(Config["ApplicationOptions:SmtpEnableSsl"] ?? "true");
         public string SmtpHost => Config["ApplicationOptions:SmtpHost"];
         public string SmtpPassword => Config["ApplicationOptions:SmtpPassword"];
-        public int SmtpPort => int.Parse(Config["ApplicationOptions:SmtpPort"]);
+        public int SmtpPort => int.Parse(Config["ApplicationOptions:SmtpPort"] ?? "25");
         public string SmtpUserName => Config["ApplicationOptions:SmtpUserName"];
         public string Theme => Config["ApplicationOptions:Theme"];
         public string[] TrustedCorsOrigins => Config.GetSection("ApplicationOptions:TrustedCorsOrigins").Get<string[]>();
