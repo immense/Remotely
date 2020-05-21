@@ -22,6 +22,8 @@ namespace Remotely.ScreenCast.Win.Services
             StartInputActionTask();
         }
 
+        private CancellationTokenSource CancelTokenSource { get; set; }
+        private CancellationToken CancelToken { get; set; }
         private ConcurrentQueue<Action> InputActions { get; } = new ConcurrentQueue<Action>();
 
         private Task InputActionsTask { get; set; }
@@ -179,6 +181,42 @@ namespace Remotely.ScreenCast.Win.Services
             });
         }
 
+        public void SetKeyStatesUp()
+        {
+            TryOnInputDesktop(() =>
+            {
+                var thread = new Thread(() =>
+                {
+                    foreach (VirtualKey key in Enum.GetValues(typeof(VirtualKey)))
+                    {
+                        try
+                        {
+                            var state = GetKeyState(key);
+                            if (state == 1)
+                            {
+                                var union = new InputUnion()
+                                {
+                                    ki = new KEYBDINPUT()
+                                    {
+                                        wVk = key,
+                                        wScan = 0,
+                                        time = 0,
+                                        dwFlags = KEYEVENTF.KEYUP,
+                                        dwExtraInfo = GetMessageExtraInfo()
+                                    }
+                                };
+                                var input = new INPUT() { type = InputType.KEYBOARD, U = union };
+                                SendInput(1, new INPUT[] { input }, INPUT.Size);
+                            }
+                        }
+                        catch { }
+                    }
+                });
+                thread.SetApartmentState(ApartmentState.STA);
+                thread.Start();
+            });
+        }
+
         public void ToggleBlockInput(bool toggleOn)
         {
             InputActions.Enqueue(() =>
@@ -192,6 +230,20 @@ namespace Remotely.ScreenCast.Win.Services
         {
             ShutdownStarted = true;
         }
+        private void CheckQueue()
+        {
+            while (!ShutdownStarted && 
+                    !Environment.HasShutdownStarted &&
+                    !CancelToken.IsCancellationRequested)
+            {
+                if (InputActions.TryDequeue(out var action))
+                {
+                    action();
+                }
+                Thread.Sleep(1);
+            }
+        }
+
         private VirtualKey ConvertJavaScriptKeyToVirtualKey(string key)
         {
             VirtualKey keyCode;
@@ -316,22 +368,12 @@ namespace Remotely.ScreenCast.Win.Services
             }
             return keyCode;
         }
-
         private void StartInputActionTask()
         {
-            InputActionsTask?.Dispose();
-            InputActionsTask = Task.Run(CheckQueue);
-        }
-        private void CheckQueue()
-        {
-            while (!ShutdownStarted && !Environment.HasShutdownStarted)
-            {
-                if (InputActions.TryDequeue(out var action))
-                {
-                    action();
-                }
-                Thread.Sleep(1);
-            }
+            CancelTokenSource?.Cancel();
+            CancelTokenSource = new CancellationTokenSource();
+            CancelToken = CancelTokenSource.Token;
+            InputActionsTask = Task.Run(CheckQueue, CancelTokenSource.Token);
         }
         private void TryOnInputDesktop(Action inputAction)
         {

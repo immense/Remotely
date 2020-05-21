@@ -78,6 +78,13 @@ export class FileDto implements BinaryDto {
     DtoType: BinaryDtoType = BinaryDtoType.File;
 }
 
+export class GenericDto implements BinaryDto {
+    constructor(type: BinaryDtoType) {
+        this.DtoType = type;
+    }
+    DtoType: BinaryDtoType;;
+}
+
 export class KeyDownDto implements BinaryDto {
     constructor(key: string) {
         this.Key = key;

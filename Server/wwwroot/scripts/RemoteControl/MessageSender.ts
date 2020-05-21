@@ -16,10 +16,12 @@ import {
     ToggleBlockInputDto,
     ClipboardTransferDto,
     FileDto,
-    WindowsSessionsDto
+    WindowsSessionsDto,
+    GenericDto
 } from "./RtcDtos.js";
 import { CreateGUID, When } from "../Utilities.js";
 import { FileTransferProgress } from "./UI.js";
+import { BinaryDtoType } from "../Enums/BinaryDtoType.js";
 
 export class MessageSender {
     GetWindowsSessions() {
@@ -65,7 +67,10 @@ export class MessageSender {
         this.SendToAgent(() => MainRc.RtcSession.SendDto(new KeyPressDto(key)),
             () => MainRc.RCHubConnection.SendKeyPress(key));
     }
-
+    SendSetKeyStatesUp() {
+        this.SendToAgent(() => MainRc.RtcSession.SendDto(new GenericDto(BinaryDtoType.SetKeyStatesUp)),
+            () => MainRc.RCHubConnection.SendSetKeyStatesUp());
+    }
     SendCtrlAltDel() {
         this.SendToAgent(() => MainRc.RtcSession.SendDto(new CtrlAltDelDto()),
             () => MainRc.RCHubConnection.SendCtrlAltDel());

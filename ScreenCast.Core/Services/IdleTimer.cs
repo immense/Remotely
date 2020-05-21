@@ -11,17 +11,19 @@ namespace Remotely.ScreenCast.Core.Services
         public IdleTimer(Conductor conductor)
         {
             ViewerList = conductor.Viewers;
-            Timer.Elapsed += Timer_Elapsed;
         }
 
         public ConcurrentDictionary<string, Viewer> ViewerList { get; }
 
         public DateTimeOffset ViewersLastSeen { get; private set; } = DateTimeOffset.Now;
 
-        private Timer Timer { get; } = new Timer(100);
+        private Timer Timer { get; set; }
 
         public void Start()
         {
+            Timer?.Dispose();
+            Timer = new Timer(100);
+            Timer.Elapsed += Timer_Elapsed;
             Timer.Start();
         }
 

@@ -1,7 +1,8 @@
 import { MainRc } from "./Main.js";
-import { CtrlAltDelDto, KeyDownDto, KeyPressDto, KeyUpDto, MouseDownDto, MouseMoveDto, MouseUpDto, MouseWheelDto, QualityChangeDto, SelectScreenDto, TapDto, AutoQualityAdjustDto, ToggleAudioDto, ToggleBlockInputDto, ClipboardTransferDto, FileDto, WindowsSessionsDto } from "./RtcDtos.js";
+import { CtrlAltDelDto, KeyDownDto, KeyPressDto, KeyUpDto, MouseDownDto, MouseMoveDto, MouseUpDto, MouseWheelDto, QualityChangeDto, SelectScreenDto, TapDto, AutoQualityAdjustDto, ToggleAudioDto, ToggleBlockInputDto, ClipboardTransferDto, FileDto, WindowsSessionsDto, GenericDto } from "./RtcDtos.js";
 import { CreateGUID, When } from "../Utilities.js";
 import { FileTransferProgress } from "./UI.js";
+import { BinaryDtoType } from "../Enums/BinaryDtoType.js";
 export class MessageSender {
     GetWindowsSessions() {
         this.SendToAgent(() => MainRc.RtcSession.SendDto(new WindowsSessionsDto()), () => MainRc.RCHubConnection.GetWindowsSessions());
@@ -35,6 +36,9 @@ export class MessageSender {
     }
     SendKeyPress(key) {
         this.SendToAgent(() => MainRc.RtcSession.SendDto(new KeyPressDto(key)), () => MainRc.RCHubConnection.SendKeyPress(key));
+    }
+    SendSetKeyStatesUp() {
+        this.SendToAgent(() => MainRc.RtcSession.SendDto(new GenericDto(BinaryDtoType.SetKeyStatesUp)), () => MainRc.RCHubConnection.SendSetKeyStatesUp());
     }
     SendCtrlAltDel() {
         this.SendToAgent(() => MainRc.RtcSession.SendDto(new CtrlAltDelDto()), () => MainRc.RCHubConnection.SendCtrlAltDel());

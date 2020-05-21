@@ -165,6 +165,11 @@ namespace Remotely.ScreenCast.Linux.Services
             }
         }
 
+        public void SetKeyStatesUp()
+        {
+            // Not implemented.
+        }
+
         public void ToggleBlockInput(bool toggleOn)
         {
             // Not implemented.

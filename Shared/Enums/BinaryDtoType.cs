@@ -52,6 +52,8 @@ namespace Remotely.Shared.Enums
         [EnumMember(Value = "File")]
         File = 22,
         [EnumMember(Value = "WindowsSessions")]
-        WindowsSessions = 23
+        WindowsSessions = 23,
+        [EnumMember(Value = "SetKeyStatesUp")]
+        SetKeyStatesUp = 24
     }
 }
