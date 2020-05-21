@@ -59,11 +59,6 @@ namespace Remotely.ScreenCast.Win.Services
 
         private void ClipboardWatcher_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            GetText();
-        }
-
-        private void GetText()
-        {
             var thread = new Thread(() =>
             {
                 try
