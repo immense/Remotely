@@ -192,7 +192,7 @@ namespace Remotely.ScreenCast.Win.Services
                         try
                         {
                             var state = GetKeyState(key);
-                            if (state == 1)
+                            if (state == -127)
                             {
                                 var union = new InputUnion()
                                 {
