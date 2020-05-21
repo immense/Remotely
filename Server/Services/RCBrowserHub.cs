@@ -284,6 +284,11 @@ namespace Remotely.Server.Services
                 return RCDeviceHubContext.Clients.Client(screenCasterID).SendAsync("RequestScreenCast", Context.ConnectionId, requesterName);
             }
         }
+        public Task SendSetKeyStatesUp()
+        {
+            return RCDeviceHubContext.Clients.Client(ScreenCasterID).SendAsync("SetKeyStatesUp", Context.ConnectionId);
+        }
+
         public Task SendSharedFileIDs(List<string> fileIDs)
         {
             return RCDeviceHubContext.Clients.Client(ScreenCasterID).SendAsync("SharedFileIDs", fileIDs);

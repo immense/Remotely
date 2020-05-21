@@ -14,5 +14,6 @@ namespace Remotely.ScreenCast.Core.Interfaces
         void SendMouseWheel(int deltaY, Viewer viewer);
         void SendText(string transferText, Viewer viewer);
         void ToggleBlockInput(bool toggleOn);
+        void SetKeyStatesUp();
     }
 }

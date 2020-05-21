@@ -61,6 +61,7 @@ namespace Remotely.ScreenCast.Core.Services
                     case BinaryDtoType.ToggleBlockInput:
                     case BinaryDtoType.ClipboardTransfer:
                     case BinaryDtoType.KeyPress:
+                    case BinaryDtoType.SetKeyStatesUp:
                         {
                             if (!Viewer.HasControl)
                             {
@@ -124,6 +125,9 @@ namespace Remotely.ScreenCast.Core.Services
                         break;
                     case BinaryDtoType.WindowsSessions:
                         await GetWindowsSessions();
+                        break;
+                    case BinaryDtoType.SetKeyStatesUp:
+                        SetKeyStatesUp();
                         break;
                     default:
                         break;
@@ -226,6 +230,7 @@ namespace Remotely.ScreenCast.Core.Services
             var dto = MessagePackSerializer.Deserialize<QualityChangeDto>(message);
             Viewer.ImageQuality = dto.QualityLevel;
         }
+
         private void SelectScreen(byte[] message)
         {
             var dto = MessagePackSerializer.Deserialize<SelectScreenDto>(message);
@@ -238,6 +243,10 @@ namespace Remotely.ScreenCast.Core.Services
             Viewer.AutoAdjustQuality = dto.IsOn;
         }
 
+        private void SetKeyStatesUp()
+        {
+            KeyboardMouseInput.SetKeyStatesUp();
+        }
         private void Tap(byte[] message)
         {
             var dto = MessagePackSerializer.Deserialize<TapDto>(message);

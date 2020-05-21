@@ -1297,6 +1297,9 @@ namespace Remotely.Shared.Win32
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int MessageBox(IntPtr hWnd, string text, string caption, long type);
 
+        [DllImport("USER32.dll")]
+        public static extern short GetKeyState(VirtualKey nVirtKey);
+
         #endregion
     }
 }

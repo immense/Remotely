@@ -22,5 +22,6 @@
     KeyPress = 20,
     QualityChange = 21,
     File = 22,
-    WindowsSessions = 23
+    WindowsSessions = 23,
+    SetKeyStatesUp = 24
 }

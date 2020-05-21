@@ -339,7 +339,13 @@ namespace Remotely.ScreenCast.Core.Communication
                     KeyboardMouseInput.SendMouseWheel(-(int)deltaY, viewer);
                 }
             });
-
+            Connection.On("SetKeyStatesUp", (string viewerID) =>
+            {
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                {
+                    KeyboardMouseInput.SetKeyStatesUp();
+                }
+            });
             Connection.On("ViewerDisconnected", async (string viewerID) =>
             {
                 await Connection.SendAsync("ViewerDisconnected", viewerID);

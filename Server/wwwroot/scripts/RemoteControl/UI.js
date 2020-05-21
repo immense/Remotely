@@ -393,6 +393,9 @@ export function ApplyInputHandlers() {
         e.preventDefault();
         MainRc.MessageSender.SendKeyUp(e.key);
     });
+    window.addEventListener("blur", () => {
+        MainRc.MessageSender.SendSetKeyStatesUp();
+    });
     window.ondragover = function (e) {
         e.preventDefault();
         e.dataTransfer.dropEffect = "copy";

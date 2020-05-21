@@ -102,6 +102,9 @@ export class RCHubConnection {
     SendKeyPress(key) {
         this.Connection.invoke("KeyPress", key);
     }
+    SendSetKeyStatesUp() {
+        this.Connection.invoke("SendSetKeyStatesUp");
+    }
     SendCtrlAltDel() {
         this.Connection.invoke("CtrlAltDel");
     }

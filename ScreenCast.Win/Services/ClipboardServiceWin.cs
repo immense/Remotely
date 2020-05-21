@@ -18,47 +18,12 @@ namespace Remotely.ScreenCast.Win.Services
 
         public void BeginWatching()
         {
-            try
-            {
-                if (ClipboardWatcher?.Enabled == true)
-                {
-                    ClipboardWatcher.Stop();
-                }
-
-                if (Clipboard.ContainsText())
-                {
-                    ClipboardText = Clipboard.GetText();
-                    ClipboardTextChanged?.Invoke(this, ClipboardText);
-                }
-                ClipboardWatcher = new System.Timers.Timer(500);
-            }
-            catch
-            {
-                return;
-            }
+            ClipboardWatcher?.Dispose();
+            ClipboardWatcher = new System.Timers.Timer(500);
             ClipboardWatcher.Elapsed += ClipboardWatcher_Elapsed;
             ClipboardWatcher.Start();
-        }
 
-        private void ClipboardWatcher_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            var thread = new Thread(() =>
-            {
-                try
-                {
-                    Win32Interop.SwitchToInputDesktop();
-
-
-                    if (Clipboard.ContainsText() && Clipboard.GetText() != ClipboardText)
-                    {
-                        ClipboardText = Clipboard.GetText();
-                        ClipboardTextChanged?.Invoke(this, ClipboardText);
-                    }
-                }
-                catch { }
-            });
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Start();
+            GetText();
         }
 
         public void SetText(string clipboardText)
@@ -88,9 +53,36 @@ namespace Remotely.ScreenCast.Win.Services
                 Logger.Write(ex);
             }
         }
+
         public void StopWatching()
         {
             ClipboardWatcher?.Stop();
+        }
+
+        private void ClipboardWatcher_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            GetText();
+        }
+
+        private void GetText()
+        {
+            var thread = new Thread(() =>
+            {
+                try
+                {
+                    Win32Interop.SwitchToInputDesktop();
+
+
+                    if (Clipboard.ContainsText() && Clipboard.GetText() != ClipboardText)
+                    {
+                        ClipboardText = Clipboard.GetText();
+                        ClipboardTextChanged?.Invoke(this, ClipboardText);
+                    }
+                }
+                catch { }
+            });
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
         }
     }
 }

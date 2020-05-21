@@ -27,6 +27,12 @@ export class FileDto {
         this.StartOfFile = startOfFile;
     }
 }
+export class GenericDto {
+    constructor(type) {
+        this.DtoType = type;
+    }
+    ;
+}
 export class KeyDownDto {
     constructor(key) {
         this.DtoType = BinaryDtoType.KeyDown;
