@@ -22,8 +22,6 @@ namespace Remotely.ScreenCast.Win.Services
             ClipboardWatcher = new System.Timers.Timer(500);
             ClipboardWatcher.Elapsed += ClipboardWatcher_Elapsed;
             ClipboardWatcher.Start();
-
-            GetText();
         }
 
         public void SetText(string clipboardText)
