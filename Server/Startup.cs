@@ -124,7 +124,7 @@ namespace Remotely.Server
             services.AddSignalR(options =>
                 {
                     options.EnableDetailedErrors = IsDev;
-                    options.MaximumReceiveMessageSize = 20000000;
+                    options.MaximumReceiveMessageSize = 500_000;
                 })
                 .AddJsonProtocol(options =>
                 {
@@ -194,23 +194,23 @@ namespace Remotely.Server
             {
                 routeBuilder.MapHub<BrowserHub>("/BrowserHub", options =>
                 {
-                    options.ApplicationMaxBufferSize = 500000;
-                    options.TransportMaxBufferSize = 500000;
+                    options.ApplicationMaxBufferSize = 500_000;
+                    options.TransportMaxBufferSize = 500_000;
                 });
                 routeBuilder.MapHub<DeviceHub>("/DeviceHub", options =>
                 {
-                    options.ApplicationMaxBufferSize = 500000;
-                    options.TransportMaxBufferSize = 500000;
+                    options.ApplicationMaxBufferSize = 500_000;
+                    options.TransportMaxBufferSize = 500_000;
                 });
                 routeBuilder.MapHub<RCDeviceHub>("/RCDeviceHub", options =>
                 {
-                    options.ApplicationMaxBufferSize = 2000000;
-                    options.TransportMaxBufferSize = 2000000;
+                    options.ApplicationMaxBufferSize = 100_000;
+                    options.TransportMaxBufferSize = 100_000;
                 });
                 routeBuilder.MapHub<RCBrowserHub>("/RCBrowserHub", options =>
                 {
-                    options.ApplicationMaxBufferSize = 2000000;
-                    options.TransportMaxBufferSize = 2000000;
+                    options.ApplicationMaxBufferSize = 100_000;
+                    options.TransportMaxBufferSize = 100_000;
                 });
 
                 routeBuilder.MapRazorPages();

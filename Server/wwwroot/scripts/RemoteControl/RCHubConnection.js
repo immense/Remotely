@@ -5,6 +5,9 @@ import { ShowMessage } from "../UI.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 var signalR = window["signalR"];
 export class RCHubConnection {
+    constructor() {
+        this.PartialCaptureFrames = [];
+    }
     Connect() {
         this.Connection = new signalR.HubConnectionBuilder()
             .withUrl("/RCBrowserHub")
@@ -138,19 +141,24 @@ export class RCHubConnection {
         hubConnection.on("ScreenSize", (width, height) => {
             UI.SetScreenSize(width, height);
         });
-        hubConnection.on("ScreenCapture", (buffer, left, top, width, height, imageQuality) => {
+        hubConnection.on("ScreenCapture", (buffer, left, top, width, height, imageQuality, endOfFrame) => {
             this.SendFrameReceived(buffer.byteLength);
-            if (UI.AutoQualityAdjustCheckBox.checked &&
-                Number(UI.QualitySlider.value) != imageQuality) {
+            if (UI.AutoQualityAdjustCheckBox.checked && Number(UI.QualitySlider.value) != imageQuality) {
                 UI.QualitySlider.value = String(imageQuality);
             }
-            var url = window.URL.createObjectURL(new Blob([buffer]));
-            var img = document.createElement("img");
-            img.onload = () => {
-                UI.Screen2DContext.drawImage(img, left, top, width, height);
-                window.URL.revokeObjectURL(url);
-            };
-            img.src = url;
+            if (endOfFrame) {
+                var url = window.URL.createObjectURL(new Blob(this.PartialCaptureFrames));
+                var img = document.createElement("img");
+                img.onload = () => {
+                    UI.Screen2DContext.drawImage(img, left, top, width, height);
+                    window.URL.revokeObjectURL(url);
+                };
+                img.src = url;
+                this.PartialCaptureFrames = [];
+            }
+            else {
+                this.PartialCaptureFrames.push(buffer);
+            }
         });
         hubConnection.on("AudioSample", (buffer) => {
             Sound.Play(buffer);

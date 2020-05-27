@@ -19,6 +19,7 @@ type HubConnection = {
 
 export class RCHubConnection {
     Connection: HubConnection;
+    PartialCaptureFrames: Uint8Array[] = [];
     Connect() {
         this.Connection = new signalR.HubConnectionBuilder()
             .withUrl("/RCBrowserHub")
@@ -157,21 +158,33 @@ export class RCHubConnection {
         hubConnection.on("ScreenSize", (width: number, height: number) => {
             UI.SetScreenSize(width, height);
         });
-        hubConnection.on("ScreenCapture", (buffer: Uint8Array, left:number, top:number, width:number, height:number, imageQuality: number) => {
+        hubConnection.on("ScreenCapture", (buffer: Uint8Array,
+            left: number,
+            top: number,
+            width: number,
+            height: number,
+            imageQuality: number,
+            endOfFrame: boolean) => {
+
             this.SendFrameReceived(buffer.byteLength);
 
-            if (UI.AutoQualityAdjustCheckBox.checked &&
-                Number(UI.QualitySlider.value) != imageQuality) {
+            if (UI.AutoQualityAdjustCheckBox.checked && Number(UI.QualitySlider.value) != imageQuality) {
                 UI.QualitySlider.value = String(imageQuality);
             }
 
-            var url = window.URL.createObjectURL(new Blob([buffer]));
-            var img = document.createElement("img");
-            img.onload = () => {
-                UI.Screen2DContext.drawImage(img, left, top, width, height);
-                window.URL.revokeObjectURL(url);
-            };
-            img.src = url;
+            if (endOfFrame) {
+                var url = window.URL.createObjectURL(new Blob(this.PartialCaptureFrames));
+                var img = document.createElement("img");
+                img.onload = () => {
+                    UI.Screen2DContext.drawImage(img, left, top, width, height);
+                    window.URL.revokeObjectURL(url);
+                };
+                img.src = url;
+                this.PartialCaptureFrames = [];
+            }
+            else {
+                this.PartialCaptureFrames.push(buffer);
+            }
         });
         hubConnection.on("AudioSample", (buffer: Uint8Array) => {
             Sound.Play(buffer);

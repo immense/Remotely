@@ -139,9 +139,28 @@ namespace Remotely.ScreenCast.Core.Communication
             await Connection.SendAsync("SendRtcOfferToBrowser", sdp, viewerID, iceServers);
         }
 
-        public async Task SendScreenCapture(byte[] captureBytes, string viewerID, int left, int top, int width, int height, int imageQuality)
+        public async Task SendScreenCapture(byte[] imageBytes, string viewerID, int left, int top, int width, int height, int imageQuality)
         {
-            await Connection.SendAsync("SendScreenCapture", captureBytes, viewerID, left, top, width, height, imageQuality);
+            for (var i = 0; i < imageBytes.Length; i += 50_000)
+            {
+                await Connection.SendAsync("SendScreenCapture",
+                    imageBytes.Skip(i).Take(50_000).ToArray(),
+                    viewerID,
+                    left,
+                    top,
+                    width,
+                    height,
+                    imageQuality,
+                    false);
+            }
+            await Connection.SendAsync("SendScreenCapture", Array.Empty<byte>(),
+                viewerID,
+                left,
+                top,
+                width,
+                height,
+                imageQuality,
+                true);
         }
 
         public async Task SendScreenData(string selectedScreen, string[] displayNames, string viewerID)
