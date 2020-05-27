@@ -38,11 +38,11 @@ namespace Remotely.Agent.Services
 
                     if (EnvironmentHelper.IsDebug)
                     {
-                        return Process.Start(rcBinaryPath, $"-mode Chat -requester {requesterID} -organization \"{orgName}\"").Id;
+                        return Process.Start(rcBinaryPath, $"-mode Chat -requester \"{requesterID}\" -organization \"{orgName}\"").Id;
                     }
                     else
                     {
-                        var result = Win32Interop.OpenInteractiveProcess($"{rcBinaryPath} -mode Chat -requester {requesterID} -organization \"{orgName}\"", 
+                        var result = Win32Interop.OpenInteractiveProcess($"{rcBinaryPath} -mode Chat -requester \"{requesterID}\" -organization \"{orgName}\"", 
                             targetSessionId: -1,
                             forceConsoleSession: false,
                             desktopName: "default", 
@@ -60,7 +60,7 @@ namespace Remotely.Agent.Services
                 }
                 else if (EnvironmentHelper.IsLinux)
                 {
-                    var args = $"xterm -e {rcBinaryPath} -mode Chat -requester {requesterID} -organization \"{orgName}\" & disown";
+                    var args = $"xterm -e {rcBinaryPath} -mode Chat -requester \"{requesterID}\" -organization \"{orgName}\" & disown";
                     return StartLinuxScreenCaster(args);
                 }
             }
@@ -91,11 +91,11 @@ namespace Remotely.Agent.Services
 
                     if (EnvironmentHelper.IsDebug)
                     {
-                        Process.Start(rcBinaryPath, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host}");
+                        Process.Start(rcBinaryPath, $"-mode Unattended -requester \"{requesterID}\" -serviceid \"{serviceID}\" -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host}");
                     }
                     else
                     {
-                        var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host}",
+                        var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester \"{requesterID}\" -serviceid \"{serviceID}\" -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host}",
                             targetSessionId: targetSessionId,
                             forceConsoleSession: false,
                             desktopName: "default",
@@ -109,7 +109,7 @@ namespace Remotely.Agent.Services
                 }
                 else if (EnvironmentHelper.IsLinux)
                 {
-                    var args = $"{rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} & disown";
+                    var args = $"{rcBinaryPath} -mode Unattended -requester \"{requesterID}\" -serviceid \"{serviceID}\" -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} & disown";
                     StartLinuxScreenCaster(args);
                 }
             }
@@ -130,7 +130,7 @@ namespace Remotely.Agent.Services
                     Logger.Write("Restarting screen caster.");
                     if (EnvironmentHelper.IsDebug)
                     {
-                        Process.Start(rcBinaryPath, $"-mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} -relaunch true -viewers {String.Join(",", viewerIDs)}");
+                        Process.Start(rcBinaryPath, $"-mode Unattended -requester \"{requesterID}\" -serviceid \"{serviceID}\" -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} -relaunch true -viewers {String.Join(",", viewerIDs)}");
                     }
                     else
                     {
@@ -138,7 +138,7 @@ namespace Remotely.Agent.Services
                         // Give a little time for session changing, etc.
                         await Task.Delay(1000);
 
-                        var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} -relaunch true -viewers {String.Join(",", viewerIDs)}",
+                        var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester \"{requesterID}\" -serviceid \"{serviceID}\" -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} -relaunch true -viewers {String.Join(",", viewerIDs)}",
                             targetSessionId: targetSessionID,
                             forceConsoleSession: Shlwapi.IsOS(OsType.OS_ANYSERVER) && targetSessionID == -1 ? true : false,
                             desktopName: "default",
@@ -155,7 +155,7 @@ namespace Remotely.Agent.Services
                 }
                 else if (EnvironmentHelper.IsLinux)
                 {
-                    var args = $"{rcBinaryPath} -mode Unattended -requester {requesterID} -serviceid {serviceID} -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} -relaunch true -viewers {string.Join(",", viewerIDs)} & disown";
+                    var args = $"{rcBinaryPath} -mode Unattended -requester \"{requesterID}\" -serviceid \"{serviceID}\" -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} -relaunch true -viewers {string.Join(",", viewerIDs)} & disown";
                     StartLinuxScreenCaster(args);
                 }
             }

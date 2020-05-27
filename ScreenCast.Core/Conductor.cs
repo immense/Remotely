@@ -102,11 +102,11 @@ namespace Remotely.ScreenCast.Core
             }
             if (ArgDict.TryGetValue("requester", out var requester))
             {
-                RequesterID = requester;
+                RequesterID = requester.Trim('"');
             }
             if (ArgDict.TryGetValue("serviceid", out var serviceID))
             {
-                ServiceID = serviceID;
+                ServiceID = serviceID.Trim('"');
             }
             if (ArgDict.TryGetValue("deviceid", out var deviceID))
             {
