@@ -146,6 +146,9 @@ namespace Remotely.Agent.Services
 
         private void RegisterMessageHandlers()
         {
+            // TODO: Remove possibility for circular dependencies in the future
+            // by emitting these events so other services can listen for them.
+
             HubConnection.On("Chat", async (string message, string orgName, string senderConnectionID) => {
                 await ChatService.SendMessage(message, orgName, senderConnectionID, HubConnection);
             });
