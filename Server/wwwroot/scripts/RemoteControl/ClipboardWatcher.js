@@ -20,6 +20,9 @@ export class ClipboardWatcher {
         });
     }
     SetClipboardText(text) {
+        if (text == this.LastClipboardText) {
+            return;
+        }
         this.PauseMonitoring = true;
         this.LastClipboardText = text;
         navigator.clipboard.writeText(text);
