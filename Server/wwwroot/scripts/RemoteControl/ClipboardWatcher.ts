@@ -28,6 +28,10 @@ export class ClipboardWatcher {
     }
     
     SetClipboardText(text: string) {
+        if (text == this.LastClipboardText) {
+            return;
+        }
+
         this.PauseMonitoring = true;
         this.LastClipboardText = text;
         navigator.clipboard.writeText(text);
