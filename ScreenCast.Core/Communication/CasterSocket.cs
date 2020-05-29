@@ -184,6 +184,8 @@ namespace Remotely.ScreenCast.Core.Communication
 
         private void ApplyConnectionHandlers()
         {
+            // TODO: Remove circular dependencies and the need for static IServiceProvider instance
+            // by emitting these events so other services can listen for them.
             var conductor = ServiceContainer.Instance.GetRequiredService<Conductor>();
             Connection.Closed += (ex) =>
             {
