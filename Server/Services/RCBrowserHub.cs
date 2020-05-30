@@ -183,7 +183,15 @@ namespace Remotely.Server.Services
         {
             return RCDeviceHubContext.Clients.Client(ScreenCasterID).SendAsync("ClipboardTransfer", transferText, typeText, Context.ConnectionId);
         }
-
+        public async Task SendFile(byte[] buffer, string fileName, string messageId, bool endOfFile, bool startOfFile)
+        {
+            await RCDeviceHubContext.Clients.Client(ScreenCasterID).SendAsync("ReceiveFile",
+                buffer,
+                fileName,
+                messageId,
+                endOfFile,
+                startOfFile);
+        }
         public Task SendFrameReceived(int bytesReceived)
         {
             return RCDeviceHubContext.Clients.Client(ScreenCasterID).SendAsync("FrameReceived", bytesReceived, Context.ConnectionId);
