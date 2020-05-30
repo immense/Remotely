@@ -88,10 +88,6 @@ namespace Remotely.ScreenCast.Core.Services
                 {
                     fileStream.Close();
                     partialTransfers.Remove(messageId, out _);
-                    if (EnvironmentHelper.IsWindows)
-                    {
-                        Process.Start("explorer.exe", baseDir);
-                    }
                 }
             }
             catch (Exception ex)
@@ -101,7 +97,6 @@ namespace Remotely.ScreenCast.Core.Services
             finally
             {
                 writeLock.Release();
-
                 if (endOfFile)
                 {
                     await Task.Run(ShowTransferComplete);

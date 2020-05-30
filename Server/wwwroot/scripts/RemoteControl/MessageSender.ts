@@ -16,7 +16,7 @@ import {
     ToggleBlockInputDto,
     ClipboardTransferDto,
     FileDto,
-    WindowsSessionsDto,
+    WindowsSessionsDto,
     GenericDto
 } from "./RtcDtos.js";
 import { CreateGUID, When } from "../Utilities.js";
