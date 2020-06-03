@@ -11,6 +11,8 @@ using Remotely.Server.Data;
 using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
 using Remotely.Shared.Enums;
+using Microsoft.Extensions.Logging;
+using System.Threading;
 
 namespace Remotely.Server.Services
 {
@@ -123,13 +125,6 @@ namespace Remotely.Server.Services
                 RemotelyContext.CommandResults.Add(commandResult);
             }
             RemotelyContext.SaveChanges();
-        }
-
-        public async Task SetDisplayName(RemotelyUser user, string displayName)
-        {
-            RemotelyContext.Attach(user);
-            user.DisplayName = displayName;
-            await RemotelyContext.SaveChangesAsync();
         }
 
         public bool AddOrUpdateDevice(Device device, out Device updatedDevice)
@@ -509,6 +504,7 @@ namespace Remotely.Server.Services
                 .Where(x => x.UserID == userID)
                 .OrderByDescending(x => x.CreatedOn);
         }
+
         public IEnumerable<ApiToken> GetAllApiTokens(string userID)
         {
             var user = RemotelyContext.Users.FirstOrDefault(x => x.Id == userID);
@@ -619,7 +615,7 @@ namespace Remotely.Server.Services
                         x.PermissionLinks.Any(x => x.UserID == user.Id)
                     )
                 )
-                .OrderBy(x=>x.Name) ?? Enumerable.Empty<DeviceGroup>();
+                .OrderBy(x => x.Name) ?? Enumerable.Empty<DeviceGroup>();
         }
 
         public IEnumerable<Device> GetDevicesForUser(string userName)
@@ -697,6 +693,7 @@ namespace Remotely.Server.Services
                 .Select(x => x.UserName)
                 .ToList();
         }
+
         public SharedFile GetSharedFiled(string fileID)
         {
             return RemotelyContext.SharedFiles.Find(fileID);
@@ -857,6 +854,13 @@ namespace Remotely.Server.Services
             }
         }
 
+        public async Task SetDisplayName(RemotelyUser user, string displayName)
+        {
+            RemotelyContext.Attach(user);
+            user.DisplayName = displayName;
+            await RemotelyContext.SaveChangesAsync();
+        }
+
         public void SetServerVerificationToken(string deviceID, string verificationToken)
         {
             var device = RemotelyContext.Devices.Find(deviceID);
@@ -904,7 +908,7 @@ namespace Remotely.Server.Services
             }
 
             var newAdmins = RemotelyContext.Users.Where(user =>
-                serverAdmins.Contains(user.UserName.Trim().ToLower()) && 
+                serverAdmins.Contains(user.UserName.Trim().ToLower()) &&
                 !user.IsServerAdmin);
 
             foreach (var newAdmin in newAdmins)
@@ -914,6 +918,7 @@ namespace Remotely.Server.Services
 
             await RemotelyContext.SaveChangesAsync();
         }
+
         public void UpdateTags(string deviceID, string tags)
         {
             var device = RemotelyContext.Devices.Find(deviceID);
@@ -948,6 +953,7 @@ namespace Remotely.Server.Services
 
             return isValid;
         }
+
         public void WriteEvent(EventLog eventLog)
         {
             try
@@ -1006,6 +1012,54 @@ namespace Remotely.Server.Services
                 RemotelyContext.SaveChanges();
             }
             catch { }
+        }
+
+        public void WriteLog(LogLevel logLevel, string category, EventId eventId, string state, Exception exception, List<string> scopeStack)
+        {
+            // Prevent re-entrancy.
+            if (eventId.Name?.Contains("EntityFrameworkCore") == true)
+            {
+                return;
+            }
+
+            try
+            {
+                // TODO: Refactor EventLog to resemble these params.  Replace WriteEvent with ILogger<T>.
+
+                EventType eventType = EventType.Debug;
+                switch (logLevel)
+                {
+                    case LogLevel.None:
+                    case LogLevel.Trace:
+                    case LogLevel.Debug:
+                        eventType = EventType.Debug;
+                        break;
+                    case LogLevel.Information:
+                        eventType = EventType.Debug;
+                        break;
+                    case LogLevel.Warning:
+                        eventType = EventType.Warning;
+                        break;
+                    case LogLevel.Error:
+                    case LogLevel.Critical:
+                        eventType = EventType.Error;
+                        break;
+                    default:
+                        break;
+                }
+
+                RemotelyContext.EventLogs.Add(new EventLog()
+                {
+                    StackTrace = exception?.StackTrace,
+                    EventType = eventType,
+                    Message = $"[{logLevel}] [{string.Join(" - ", scopeStack)} - {category}] | Message: {state} | Exception: {exception?.Message}",
+                    TimeStamp = DateTimeOffset.Now
+                });
+
+                RemotelyContext.SaveChanges();
+            }
+            catch { }
+           
         }
     }
 }

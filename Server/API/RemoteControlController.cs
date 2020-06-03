@@ -99,11 +99,9 @@ namespace Remotely.Server.API
 
                 await DeviceHub.Clients.Client(targetDevice.Key).SendAsync("RemoteControl", Request.HttpContext.Connection.Id, targetDevice.Key);
 
-                var stopWatch = Stopwatch.StartNew();
-
                 bool remoteControlStarted() => RCDeviceHub.SessionInfoList.Values.Any(x => x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y => y.Key != x.RCDeviceSocketID));
 
-                if (!await TaskHelper.DelayUntil(remoteControlStarted, TimeSpan.FromSeconds(15)))
+                if (!await TaskHelper.DelayUntil(remoteControlStarted, TimeSpan.FromSeconds(30)))
                 {
                     return StatusCode(408, "The remote control process failed to start in time on the remote device.");
                 }
