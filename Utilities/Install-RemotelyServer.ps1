@@ -194,8 +194,6 @@ Wrap-Host "Hello, and thank you for trying out Remotely!" -ForegroundColor Green
 Wrap-Host
 Wrap-Host "This setup script will create an IIS site and install Remotely on this machine." -ForegroundColor Green
 Wrap-Host
-Wrap-Host "If you encounter any problems or have any questions, please contact Translucency_Software@outlook.com." -ForegroundColor Green
-Wrap-Host
 Do-Pause
 Clear-Host
 

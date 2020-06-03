@@ -21,6 +21,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Remotely.Server.Attributes;
 using Npgsql;
+using Microsoft.Extensions.Logging;
 
 namespace Remotely.Server
 {
@@ -149,7 +150,11 @@ namespace Remotely.Server
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext context, DataService dataService)
+        public void Configure(IApplicationBuilder app, 
+            IWebHostEnvironment env, 
+            ApplicationDbContext context, 
+            DataService dataService,
+            ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -226,6 +231,8 @@ namespace Remotely.Server
             {
                 dataService.WriteEvent(ex, null);
             }
+
+            loggerFactory.AddProvider(new DbLoggerProvider(env, app.ApplicationServices));
             dataService.SetAllDevicesNotOnline();
             dataService.CleanupOldRecords();
         }
