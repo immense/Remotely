@@ -95,11 +95,19 @@ namespace Remotely.Server.API
                     return BadRequest("There are already the maximum amount of active remote control sessions for your organization.");
                 }
 
-                var existingSessions = RCDeviceHub.SessionInfoList.Where(x => x.Value.DeviceID == targetDevice.Value.ID);
+                var existingSessions = RCDeviceHub.SessionInfoList
+                    .Where(x => x.Value.DeviceID == targetDevice.Value.ID)
+                    .Select(x => x.Key)
+                    .ToList();
 
                 await DeviceHub.Clients.Client(targetDevice.Key).SendAsync("RemoteControl", Request.HttpContext.Connection.Id, targetDevice.Key);
 
-                bool remoteControlStarted() => RCDeviceHub.SessionInfoList.Values.Any(x => x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y => y.Key != x.RCDeviceSocketID));
+                bool remoteControlStarted()
+                {
+                    return !RCDeviceHub.SessionInfoList.Values
+                        .Where(x => x.DeviceID == targetDevice.Value.ID)
+                        .All(x => existingSessions.Contains(x.RCDeviceSocketID));
+                };
 
                 if (!await TaskHelper.DelayUntil(remoteControlStarted, TimeSpan.FromSeconds(30)))
                 {
@@ -107,7 +115,7 @@ namespace Remotely.Server.API
                 }
                 else
                 {
-                    var rcSession = RCDeviceHub.SessionInfoList.Values.FirstOrDefault(x => x.DeviceID == targetDevice.Value.ID && !existingSessions.Any(y => y.Key != x.RCDeviceSocketID));
+                    var rcSession = RCDeviceHub.SessionInfoList.Values.LastOrDefault(x => x.DeviceID == targetDevice.Value.ID && !existingSessions.Contains(x.RCDeviceSocketID));
                     var otp = RemoteControlFilterAttribute.GetOtp(targetDevice.Value.ID);
                     return Ok($"{HttpContext.Request.Scheme}://{Request.Host}/RemoteControl?clientID={rcSession.RCDeviceSocketID}&serviceID={targetDevice.Key}&fromApi=true&otp={Uri.EscapeDataString(otp)}");
                 }
