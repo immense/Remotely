@@ -20,15 +20,23 @@ namespace Remotely.Server.Services
         }
 
         private static ConcurrentQueue<RemoteControlFrame> FrameQueue { get; } = new ConcurrentQueue<RemoteControlFrame>();
+        private static MemoryStream FrameBytes = new MemoryStream();
         private static object LockObject { get; } = new object();
         private static Task ProcessingTask { get; set; }
         private static ConcurrentDictionary<string, RecordingSessionState> SessionStates { get; } = new ConcurrentDictionary<string, RecordingSessionState>();
         private DataService DataService { get; }
         private IWebHostEnvironment HostingEnv { get; }
-        internal void SaveFrame(byte[] frameBytes, int left, int top, int width, int height, string viewerID, string machineName, DateTimeOffset startTime)
+        internal void SaveFrame(byte[] frameBytes, int left, int top, int width, int height, bool endOfFrame, int screenWidth, int screenHeight, string viewerID, string machineName, DateTimeOffset startTime)
         {
-            var rcFrame = new RemoteControlFrame(frameBytes, left, top, width, height, viewerID, machineName, startTime);
+            FrameBytes.Write(frameBytes);
+            if (!endOfFrame)
+            {
+                return;
+            }
+
+            var rcFrame = new RemoteControlFrame(FrameBytes, left, top, width, height, screenWidth, screenHeight, viewerID, machineName, startTime);
             FrameQueue.Enqueue(rcFrame);
+            FrameBytes = new MemoryStream(FrameBytes.Capacity);
 
             lock (LockObject)
             {
@@ -55,7 +63,7 @@ namespace Remotely.Server.Services
                         {
                             SessionStates[frame.ViewerID] = new RecordingSessionState()
                             {
-                                CumulativeFrame = new Bitmap(frame.Width, frame.Height)
+                                CumulativeFrame = new Bitmap(frame.ScreenWidth, frame.ScreenHeight)
                             };
                             var ffmpegProc = new Process();
                             SessionStates[frame.ViewerID].FfmpegProcess = ffmpegProc;
@@ -84,12 +92,9 @@ namespace Remotely.Server.Services
                         var bitmap = SessionStates[frame.ViewerID].CumulativeFrame;
                         using (var graphics = Graphics.FromImage(bitmap))
                         {
-                            using (var ms = new MemoryStream(frame.FrameBytes))
+                            using (var saveImage = Image.FromStream(frame.FrameBytes))
                             {
-                                using (var saveImage = Image.FromStream(ms))
-                                {
-                                    graphics.DrawImage(saveImage, frame.Left, frame.Top);
-                                }
+                                graphics.DrawImage(saveImage, frame.Left, frame.Top, frame.Width, frame.Height);
                             }
                         }
                         using (var ms = new MemoryStream())
@@ -113,6 +118,9 @@ namespace Remotely.Server.Services
             SessionStates[viewerID].FfmpegProcess.StandardInput.Close();
             SessionStates[viewerID].FfmpegProcess.Close();
             SessionStates.TryRemove(viewerID, out _);
+
+            FrameBytes = new MemoryStream();
+            FrameQueue.Clear();
         }
 
         private string GetSaveFolder(RemoteControlFrame frame)
