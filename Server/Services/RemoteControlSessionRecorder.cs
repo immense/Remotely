@@ -25,9 +25,9 @@ namespace Remotely.Server.Services
         private static ConcurrentDictionary<string, RecordingSessionState> SessionStates { get; } = new ConcurrentDictionary<string, RecordingSessionState>();
         private DataService DataService { get; }
         private IWebHostEnvironment HostingEnv { get; }
-        internal void SaveFrame(byte[] frameBytes, int left, int top, int width, int height, string viewerID, string machineName, DateTimeOffset startTime)
+        internal void SaveFrame(byte[] frameBytes, int left, int top, int width, int height, bool endOfFrame, int screenWidth, int screenHeight, string viewerID, string machineName, DateTimeOffset startTime)
         {
-            var rcFrame = new RemoteControlFrame(frameBytes, left, top, width, height, viewerID, machineName, startTime);
+            var rcFrame = new RemoteControlFrame(frameBytes, left, top, width, height, endOfFrame, screenWidth, screenHeight, viewerID, machineName, startTime);
             FrameQueue.Enqueue(rcFrame);
 
             lock (LockObject)
@@ -51,14 +51,18 @@ namespace Remotely.Server.Services
 
                         var saveFile = Path.Combine(saveDir.FullName, $"Recording.mp4");
 
+                        RecordingSessionState session;
+
                         if (!SessionStates.ContainsKey(frame.ViewerID))
                         {
-                            SessionStates[frame.ViewerID] = new RecordingSessionState()
+                            session = new RecordingSessionState()
                             {
-                                CumulativeFrame = new Bitmap(frame.Width, frame.Height)
+                                FrameBytes = new MemoryStream(),
+                                CumulativeFrame = new Bitmap(frame.ScreenWidth, frame.ScreenHeight)
                             };
                             var ffmpegProc = new Process();
-                            SessionStates[frame.ViewerID].FfmpegProcess = ffmpegProc;
+                            session.FfmpegProcess = ffmpegProc;
+                            SessionStates[frame.ViewerID] = session;
 
                             switch (EnvironmentHelper.Platform)
                             {
@@ -79,18 +83,26 @@ namespace Remotely.Server.Services
                             ffmpegProc.StartInfo.RedirectStandardInput = true;
 
                             ffmpegProc.Start();
+                        } 
+                        else
+                        {
+                            session = SessionStates[frame.ViewerID];
                         }
 
-                        var bitmap = SessionStates[frame.ViewerID].CumulativeFrame;
+                        session.FrameBytes.Write(frame.FrameBytes);
+                        if (!frame.EndOfFrame)
+                        {
+                            continue;
+                        }
+
+                        var bitmap = session.CumulativeFrame;
                         using (var graphics = Graphics.FromImage(bitmap))
                         {
-                            using (var ms = new MemoryStream(frame.FrameBytes))
+                            using (var saveImage = Image.FromStream(session.FrameBytes))
                             {
-                                using (var saveImage = Image.FromStream(ms))
-                                {
-                                    graphics.DrawImage(saveImage, frame.Left, frame.Top);
-                                }
+                                graphics.DrawImage(saveImage, frame.Left, frame.Top, frame.Width, frame.Height);
                             }
+                            session.FrameBytes.SetLength(0);
                         }
                         using (var ms = new MemoryStream())
                         {

@@ -207,7 +207,8 @@ namespace Remotely.Server.Services
         {
             if (AppConfig.RecordRemoteControlSessions)
             {
-                RCSessionRecorder.SaveFrame(captureBytes, left, top, CurrentScreenSize.Width, CurrentScreenSize.Height, 
+                RCSessionRecorder.SaveFrame(captureBytes, left, top, width, height, endOfFrame, 
+                                                CurrentScreenSize.Width, CurrentScreenSize.Height, 
                                                 rcBrowserHubConnectionID, SessionInfo.MachineName, SessionInfo.StartTime);
             }
 
