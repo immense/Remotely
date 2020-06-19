@@ -107,8 +107,7 @@ namespace Remotely.Server.Services
                         using (var ms = new MemoryStream())
                         {
                             bitmap.Save(ms, ImageFormat.Jpeg);
-                            ms.Seek(0, SeekOrigin.Begin);
-                            ms.CopyTo(SessionStates[frame.ViewerID].FfmpegProcess.StandardInput.BaseStream);
+                            ms.WriteTo(session.FfmpegProcess.StandardInput.BaseStream);
                         }
                     }
                 }
