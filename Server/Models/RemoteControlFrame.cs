@@ -18,6 +18,7 @@ namespace Remotely.Server.Models
             this.ViewerID = viewerID;
             this.MachineName = machineName;
             this.StartTime = startTime;
+            this.Ticks = DateTimeOffset.Now.Subtract(startTime).Ticks;
         }
         public byte[] FrameBytes { get; private set; }
         public int Left { get; private set; }
@@ -30,5 +31,6 @@ namespace Remotely.Server.Models
         public string ViewerID { get; private set; }
         public string MachineName { get; private set; }
         public DateTimeOffset StartTime { get; private set; }
+        public long Ticks { get; private set; }
     }
 }

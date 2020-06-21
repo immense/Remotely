@@ -9,5 +9,6 @@ namespace Remotely.Server.Models
         public MemoryStream FrameBytes { get; set; }
         public Bitmap CumulativeFrame { get; set; }
         public Process FfmpegProcess { get; set; }
+        public long LastFrameNumber { get; set; }
     }
 }

@@ -47,18 +47,29 @@ namespace Remotely.Server.Services
                 {
                     if (FrameQueue.TryDequeue(out var frame))
                     {
-                        var saveDir = Directory.CreateDirectory(GetSaveFolder(frame));
-
-                        var saveFile = Path.Combine(saveDir.FullName, $"Recording.mp4");
-
+                        long currentFrameNumber = frame.Ticks / 2000000;
                         RecordingSessionState session;
 
                         if (!SessionStates.ContainsKey(frame.ViewerID))
                         {
+                            var saveDir = Directory.CreateDirectory(GetSaveFolder(frame));
+                            var saveFile = Path.Combine(saveDir.FullName, $"Recording.mp4");
+                            if (File.Exists(saveFile))
+                            {
+                                for (int i = 1; ; i++)
+                                {
+                                    saveFile = Path.Combine(saveDir.FullName, $"Recording-{i}.mp4");
+                                    if (!File.Exists(saveFile)) 
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
                             session = new RecordingSessionState()
                             {
                                 FrameBytes = new MemoryStream(),
-                                CumulativeFrame = new Bitmap(frame.ScreenWidth, frame.ScreenHeight)
+                                CumulativeFrame = new Bitmap(frame.ScreenWidth, frame.ScreenHeight),
+                                LastFrameNumber = currentFrameNumber
                             };
                             var ffmpegProc = new Process();
                             session.FfmpegProcess = ffmpegProc;
@@ -78,7 +89,7 @@ namespace Remotely.Server.Services
                                     return;
                             }
 
-                            ffmpegProc.StartInfo.Arguments = $"-y -f image2pipe -i pipe:.jpg -r 5 \"{saveFile}\"";
+                            ffmpegProc.StartInfo.Arguments = $"-y -f image2pipe -framerate 5 -i pipe:.jpg -r 5 \"{saveFile}\"";
                             ffmpegProc.StartInfo.UseShellExecute = false;
                             ffmpegProc.StartInfo.RedirectStandardInput = true;
 
@@ -96,6 +107,21 @@ namespace Remotely.Server.Services
                         }
 
                         var bitmap = session.CumulativeFrame;
+
+                        long frameDiff = currentFrameNumber - session.LastFrameNumber;
+                        if (frameDiff > 0)
+                        {
+                            using (var ms = new MemoryStream())
+                            {
+                                bitmap.Save(ms, ImageFormat.Jpeg);
+                                for (int i = 0; i < frameDiff; i++)
+                                {
+                                    ms.WriteTo(session.FfmpegProcess.StandardInput.BaseStream);
+                                }
+                            }
+                            session.LastFrameNumber = currentFrameNumber;
+                        }
+
                         using (var graphics = Graphics.FromImage(bitmap))
                         {
                             using (var saveImage = Image.FromStream(session.FrameBytes))
@@ -103,11 +129,6 @@ namespace Remotely.Server.Services
                                 graphics.DrawImage(saveImage, frame.Left, frame.Top, frame.Width, frame.Height);
                             }
                             session.FrameBytes.SetLength(0);
-                        }
-                        using (var ms = new MemoryStream())
-                        {
-                            bitmap.Save(ms, ImageFormat.Jpeg);
-                            ms.WriteTo(session.FfmpegProcess.StandardInput.BaseStream);
                         }
                     }
                 }
