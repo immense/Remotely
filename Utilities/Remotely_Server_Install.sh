@@ -139,6 +139,6 @@ systemctl restart remotely.service
 
 
 # Install Certbot and get SSL cert.
-apt-get -y install certbot python-certbot-nginx
+apt -y install certbot python3-certbot-nginx
 
 certbot --nginx
