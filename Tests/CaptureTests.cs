@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Remotely.ScreenCast.Core.Utilities;
-using Remotely.ScreenCast.Win.Services;
+using Remotely.Desktop.Core.Utilities;
+using Remotely.Desktop.Win.Services;
 using System;
 using System.Diagnostics;
 using System.Drawing.Imaging;

@@ -6,8 +6,7 @@ export class ClipboardWatcher {
     PauseMonitoring: boolean;
 
     WatchClipboard() {
-        navigator.clipboard.readText().then(currentText => {
-            this.LastClipboardText = currentText;
+        if (navigator.clipboard.readText) {
 
             this.ClipboardTimer = setInterval(() => {
                 if (this.PauseMonitoring) {
@@ -24,7 +23,7 @@ export class ClipboardWatcher {
                     }
                 })
             }, 100);
-        });
+        }
     }
     
     SetClipboardText(text: string) {
@@ -32,9 +31,11 @@ export class ClipboardWatcher {
             return;
         }
 
-        this.PauseMonitoring = true;
-        this.LastClipboardText = text;
-        navigator.clipboard.writeText(text);
-        this.PauseMonitoring = false;
+        if (navigator.clipboard.writeText) {
+            this.PauseMonitoring = true;
+            this.LastClipboardText = text;
+            navigator.clipboard.writeText(text);
+            this.PauseMonitoring = false;
+        }
     }
 }

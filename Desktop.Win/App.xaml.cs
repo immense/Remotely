@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Remotely.ScreenCast.Core;
-using Remotely.ScreenCast.Core.Services;
+using Remotely.Desktop.Core;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.Win32;
 using System;
@@ -38,6 +37,22 @@ namespace Remotely.Desktop.Win
                     out var procInfo);
                 Logger.Write($"Elevate result: {result}. Process ID: {procInfo.dwProcessId}.");
                 Environment.Exit(0);
+            }
+        }
+
+        private void Application_Exit(object sender, ExitEventArgs e)
+        {
+            System.Windows.Forms.Application.Exit();
+
+            var conductor = ServiceContainer.Instance.GetRequiredService<Conductor>();
+
+            foreach (var viewer in conductor.Viewers.Values)
+            {
+                try
+                {
+                    viewer.Dispose();
+                }
+                catch { }
             }
         }
     }

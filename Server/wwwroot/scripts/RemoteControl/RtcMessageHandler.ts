@@ -60,6 +60,7 @@ export class RtcMessageHandler {
         }
 
         if (captureFrame.EndOfFrame) {
+            MainRc.MessageSender.SendFrameReceived();
             var url = window.URL.createObjectURL(new Blob(this.PartialCaptureFrames));
             var img = document.createElement("img");
             img.onload = () => {

@@ -1,9 +1,9 @@
 ﻿using Remotely.Desktop.Win.Controls;
 using Remotely.Desktop.Win.Services;
 using Remotely.Shared.Models;
-using Remotely.ScreenCast.Core;
-using Remotely.ScreenCast.Core.Models;
-using Remotely.ScreenCast.Core.Services;
+using Remotely.Desktop.Core;
+using Remotely.Desktop.Core.Models;
+using Remotely.Desktop.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,9 +13,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Security.Principal;
 using System.Windows.Input;
-using Remotely.ScreenCast.Win.Services;
-using Remotely.ScreenCast.Core.Interfaces;
-using Remotely.ScreenCast.Core.Communication;
+using Remotely.Desktop.Core.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Win32;
@@ -27,25 +25,13 @@ namespace Remotely.Desktop.Win.ViewModels
     {
         private string host;
         private string sessionID;
+ 
+        public static MainWindowViewModel Current { get; private set; }
+
         public MainWindowViewModel()
         {
-            Application.Current.Exit += Application_Exit;
             Current = this;
-
-            BuildServices();
-
-            CursorIconWatcher = Services.GetRequiredService<ICursorIconWatcher>();
-            CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
-            Services.GetRequiredService<IClipboardService>().BeginWatching();
-            Conductor = Services.GetRequiredService<Conductor>();
-            CasterSocket = Services.GetRequiredService<CasterSocket>();
-            Conductor.SessionIDChanged += SessionIDChanged;
-            Conductor.ViewerRemoved += ViewerRemoved;
-            Conductor.ViewerAdded += ViewerAdded;
-            Conductor.ScreenCastRequested += ScreenCastRequested;
         }
-
-        public static MainWindowViewModel Current { get; private set; }
 
         public static IServiceProvider Services => ServiceContainer.Instance;
 
@@ -61,8 +47,8 @@ namespace Remotely.Desktop.Win.ViewModels
             }
         }
 
-        private Conductor Conductor { get; }
-        private CasterSocket CasterSocket { get; }
+        private Conductor Conductor { get; set; }
+        private CasterSocket CasterSocket { get; set; }
         private ICursorIconWatcher CursorIconWatcher { get; set; }
 
         public ICommand ElevateToAdminCommand
@@ -189,6 +175,18 @@ namespace Remotely.Desktop.Win.ViewModels
 
         public async Task Init()
         {
+            Application.Current.Exit += Application_Exit;
+
+            CursorIconWatcher = Services?.GetRequiredService<ICursorIconWatcher>();
+            CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
+            Services?.GetRequiredService<IClipboardService>().BeginWatching();
+            Conductor = Services?.GetRequiredService<Conductor>();
+            CasterSocket = Services?.GetRequiredService<CasterSocket>();
+            Conductor.SessionIDChanged += SessionIDChanged;
+            Conductor.ViewerRemoved += ViewerRemoved;
+            Conductor.ViewerAdded += ViewerAdded;
+            Conductor.ScreenCastRequested += ScreenCastRequested;
+
             SessionID = "Retrieving...";
 
             Host = Config.GetConfig().Host;
@@ -233,6 +231,7 @@ namespace Remotely.Desktop.Win.ViewModels
             catch (Exception ex)
             {
                 Logger.Write(ex);
+                SessionID = "Failed";
                 MessageBox.Show(Application.Current.MainWindow, "Failed to connect to server.", "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -271,30 +270,6 @@ namespace Remotely.Desktop.Win.ViewModels
                 }
                 Viewers.Clear();
             });
-        }
-        private void BuildServices()
-        {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddLogging(builder =>
-            {
-                builder.AddConsole().AddDebug().AddEventLog();
-            });
-
-            serviceCollection.AddSingleton<ICursorIconWatcher, CursorIconWatcherWin>();
-            serviceCollection.AddSingleton<IScreenCaster, ScreenCaster>();
-            serviceCollection.AddSingleton<IKeyboardMouseInput, KeyboardMouseInputWin>();
-            serviceCollection.AddSingleton<IClipboardService, ClipboardServiceWin>();
-            serviceCollection.AddSingleton<IAudioCapturer, AudioCapturerWin>();
-            serviceCollection.AddSingleton<CasterSocket>();
-            serviceCollection.AddSingleton<IdleTimer>();
-            serviceCollection.AddSingleton<Conductor>();
-            serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerWin>();
-            serviceCollection.AddTransient<Viewer>();
-            serviceCollection.AddScoped<IWebRtcSessionFactory, WebRtcSessionFactory>();
-            serviceCollection.AddScoped<IFileTransferService, FileTransferService>();
-
-
-            ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
         }
 
         private async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)

@@ -54,6 +54,8 @@ namespace Remotely.Shared.Enums
         [EnumMember(Value = "WindowsSessions")]
         WindowsSessions = 23,
         [EnumMember(Value = "SetKeyStatesUp")]
-        SetKeyStatesUp = 24
+        SetKeyStatesUp = 24,
+        [EnumMember(Value = "FrameReceived")]
+        FrameReceived = 25
     }
 }

@@ -6,6 +6,8 @@ import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
 import { ClipboardWatcher } from "./ClipboardWatcher.js";
 import { RtcMessageHandler } from "./RtcMessageHandler.js";
 import { MessageSender } from "./MessageSender.js";
+import { SessionRecorder } from "./SessionRecorder.js";
+import { ApplyInputHandlers } from "./InputEventHandlers.js";
 
 
 var queryString = Utilities.ParseSearchString();
@@ -16,6 +18,7 @@ export const MainRc = {
     RCHubConnection: new RCHubConnection(),
     RtcMessageHandler: new RtcMessageHandler(),
     RtcSession: new RtcSession(),
+    SessionRecorder: new SessionRecorder(),
     ClientID: queryString["clientID"] ? decodeURIComponent(queryString["clientID"]) : "",
     Otp: queryString["otp"] ? decodeURIComponent(queryString["otp"]) : "",
     ServiceID: queryString["serviceID"] ? decodeURIComponent(queryString["serviceID"]) : "",
@@ -23,7 +26,7 @@ export const MainRc = {
     Mode: RemoteControlMode.None,
 
     Init: () => {
-        UI.ApplyInputHandlers();
+        ApplyInputHandlers();
 
         if (queryString["clientID"]) {
             MainRc.Mode = RemoteControlMode.Unattended;

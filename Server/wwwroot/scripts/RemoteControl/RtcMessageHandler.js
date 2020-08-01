@@ -48,6 +48,7 @@ export class RtcMessageHandler {
             UI.QualitySlider.value = String(captureFrame.ImageQuality);
         }
         if (captureFrame.EndOfFrame) {
+            MainRc.MessageSender.SendFrameReceived();
             var url = window.URL.createObjectURL(new Blob(this.PartialCaptureFrames));
             var img = document.createElement("img");
             img.onload = () => {

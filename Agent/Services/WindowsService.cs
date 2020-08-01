@@ -22,7 +22,7 @@ namespace Remotely.Agent.Services
                    changeDescription.Reason == SessionChangeReason.RemoteDisconnect)
                 {
 
-                    foreach (var screenCaster in Process.GetProcessesByName("Remotely_ScreenCast"))
+                    foreach (var screenCaster in Process.GetProcessesByName("Remotely_Desktop"))
                     {
                         if (screenCaster.SessionId == changeDescription.SessionId)
                         {

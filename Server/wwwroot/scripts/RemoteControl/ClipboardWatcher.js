@@ -1,8 +1,7 @@
 import { MainRc } from "./Main.js";
 export class ClipboardWatcher {
     WatchClipboard() {
-        navigator.clipboard.readText().then(currentText => {
-            this.LastClipboardText = currentText;
+        if (navigator.clipboard.readText) {
             this.ClipboardTimer = setInterval(() => {
                 if (this.PauseMonitoring) {
                     return;
@@ -17,16 +16,18 @@ export class ClipboardWatcher {
                     }
                 });
             }, 100);
-        });
+        }
     }
     SetClipboardText(text) {
         if (text == this.LastClipboardText) {
             return;
         }
-        this.PauseMonitoring = true;
-        this.LastClipboardText = text;
-        navigator.clipboard.writeText(text);
-        this.PauseMonitoring = false;
+        if (navigator.clipboard.writeText) {
+            this.PauseMonitoring = true;
+            this.LastClipboardText = text;
+            navigator.clipboard.writeText(text);
+            this.PauseMonitoring = false;
+        }
     }
 }
 //# sourceMappingURL=ClipboardWatcher.js.map

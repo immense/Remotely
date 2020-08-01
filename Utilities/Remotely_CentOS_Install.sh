@@ -25,7 +25,6 @@ yum -y install yum-utils
 yum-config-manager --enable rhui-REGION-rhel-server-extras rhui-REGION-rhel-server-optional
 yum -y install unzip
 yum -y install acl
-yum -y install ffmpeg
 yum -y install libc6-dev
 yum -y install libgdiplus
 
@@ -68,7 +67,7 @@ nginxConfig="server {
 		proxy_set_header Host \$host;
 		proxy_cache_bypass \$http_upgrade;
 	}
-	location /DeviceHub {
+	location /AgentHub {
 		proxy_pass http://localhost:5000;
 		proxy_http_version 1.1;
 		proxy_set_header Upgrade \$http_upgrade;
@@ -85,7 +84,7 @@ nginxConfig="server {
 		proxy_set_header Host \$host;
 		proxy_cache_bypass \$http_upgrade;
 	}
-	location /RCDeviceHub {
+	location /CasterHub {
 		proxy_pass http://localhost:5000;
 		proxy_http_version 1.1;
 		proxy_set_header Upgrade \$http_upgrade;

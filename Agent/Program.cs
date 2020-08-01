@@ -39,7 +39,7 @@ namespace Remotely.Agent
             {
                 builder.AddConsole().AddDebug();
             });
-            serviceCollection.AddSingleton<DeviceSocket>();
+            serviceCollection.AddSingleton<AgentSocket>();
             serviceCollection.AddScoped<ChatClientService>();
             serviceCollection.AddTransient<Bash>();
             serviceCollection.AddTransient<CMD>();
@@ -79,11 +79,11 @@ namespace Remotely.Agent
 
                 await Services.GetRequiredService<Updater>().BeginChecking();
 
-                await Services.GetRequiredService<DeviceSocket>().Connect();
+                await Services.GetRequiredService<AgentSocket>().Connect();
             }
             finally
             {
-                await Services.GetRequiredService<DeviceSocket>().HandleConnection();
+                await Services.GetRequiredService<AgentSocket>().HandleConnection();
             }
         }
 

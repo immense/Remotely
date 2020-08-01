@@ -4,6 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>Remotely_Desktop</AssemblyName>
     <RootNamespace>Remotely.Desktop.Win</RootNamespace>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
@@ -16,23 +17,41 @@
     <Product>Remotely Desktop</Product>
     <PackageProjectUrl>https://remotely.one</PackageProjectUrl>
     <Platforms>AnyCPU;x86;x64</Platforms>
+    <StartupObject>Remotely.Desktop.Win.Program</StartupObject>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\favicon.ico" />
+    <None Remove="Assets\Remotely_Icon.png" />
     <None Remove="favicon.ico" />
     <None Remove="Remotely_Icon.png" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.MixedReality.WebRTC" Version="1.0.3" />
+    <PackageReference Include="NAudio" Version="1.10.0" />
+    <PackageReference Include="SharpDX" Version="4.2.0" />
+    <PackageReference Include="SharpDX.Direct3D11" Version="4.2.0" />
+    <PackageReference Include="SharpDX.DXGI" Version="4.2.0" />
+    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ScreenCast.Win\ScreenCast.Win.csproj" />
+    <ProjectReference Include="..\Desktop.Core\Desktop.Core.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\favicon.ico" />
+    <Resource Include="Assets\Remotely_Icon.png" />
     <Resource Include="favicon.ico" />
     <Resource Include="Remotely_Icon.png" />
   </ItemGroup>
@@ -52,7 +71,7 @@
     <Compile Update="Controls\HostNamePrompt.xaml.cs">
       <DependentUpon>HostNamePrompt.xaml</DependentUpon>
     </Compile>
-    <Compile Update="MainWindow.xaml.cs">
+    <Compile Update="Views\MainWindow.xaml.cs">
       <SubType>Code</SubType>
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -62,10 +81,13 @@
     <Page Update="Controls\HostNamePrompt.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="MainWindow.xaml">
+    <Page Update="Views\MainWindow.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if $(ConfigurationName) == Debug (&#xD;&#xA;  if $(PlatformName) == Any CPU (&#xD;&#xA;      md &quot;$(SolutionDir)Agent\bin\Debug\netcoreapp3.1\Desktop\&quot;&#xD;&#xA;      xcopy &quot;$(TargetDir)*&quot; &quot;$(SolutionDir)Agent\bin\Debug\netcoreapp3.1\Desktop\&quot; /y /e /i&#xD;&#xA;  )&#xD;&#xA;  if $(PlatformName) == x64 (&#xD;&#xA;      md &quot;$(SolutionDir)Agent\bin\x64\Debug\netcoreapp3.1\Desktop\&quot;&#xD;&#xA;      xcopy &quot;$(TargetDir)*&quot; &quot;$(SolutionDir)Agent\bin\x64\Debug\netcoreapp3.1\Desktop\&quot; /y /e /i&#xD;&#xA;  )&#xD;&#xA;  if $(PlatformName) == x86 (&#xD;&#xA;      md &quot;$(SolutionDir)Agent\bin\x86\Debug\netcoreapp3.1\Desktop\&quot;&#xD;&#xA;      xcopy &quot;$(TargetDir)*&quot; &quot;$(SolutionDir)Agent\bin\x86\Debug\netcoreapp3.1\Desktop\&quot; /y /e /i&#xD;&#xA;  )&#xD;&#xA;)" />
+  </Target>
 
 </Project>

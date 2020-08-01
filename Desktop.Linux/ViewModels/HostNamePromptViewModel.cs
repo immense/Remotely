@@ -7,13 +7,15 @@ namespace Remotely.Desktop.Linux.ViewModels
 {
     public class HostNamePromptViewModel : ViewModelBase
     {
-        public static HostNamePromptViewModel Current { get; private set; }
+        public string host;
+
         public HostNamePromptViewModel()
         {
             Current = this;
         }
 
-        public string host;
+        public static HostNamePromptViewModel Current { get; private set; }
+
         public string Host
         {
             get => host;

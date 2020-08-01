@@ -26,7 +26,6 @@ rm packages-microsoft-prod.deb
  # Install other prerequisites.
 apt-get -y install unzip
 apt-get -y install acl
-apt-get -y install ffmpeg
 apt-get -y install libc6-dev
 apt-get -y install libgdiplus
 
@@ -70,7 +69,7 @@ nginxConfig="server {
 		proxy_set_header Host \$host;
 		proxy_cache_bypass \$http_upgrade;
 	}
-	location /DeviceHub {
+	location /AgentHub {
 		proxy_pass http://localhost:5000;
 		proxy_http_version 1.1;
 		proxy_set_header Upgrade \$http_upgrade;
@@ -87,7 +86,7 @@ nginxConfig="server {
 		proxy_set_header Host \$host;
 		proxy_cache_bypass \$http_upgrade;
 	}
-	location /RCDeviceHub {
+	location /CasterHub {
 		proxy_pass http://localhost:5000;
 		proxy_http_version 1.1;
 		proxy_set_header Upgrade \$http_upgrade;

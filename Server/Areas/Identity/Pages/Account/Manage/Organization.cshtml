@@ -150,10 +150,11 @@
     <div class="row">
         <div class="col-sm-8">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <form method="post" asp-page-handler="SendInvite">
+            <form method="post" asp-page-handler="AddUser">
                 <div class="form-group">
+                    <label class="control-label">Add User</label>
                     <div class="input-group">
-                        <input asp-for="Input.UserEmail" placeholder="Username/email to invite" type="email" required class="form-control" />
+                        <input asp-for="Input.UserEmail" placeholder="Email of user to add" type="email" required class="form-control" />
                         <div class="input-group-append">
                             <span class="input-group-text pr-1">Admin?</span>
                         </div>
@@ -163,7 +164,7 @@
                             </div>
                         </div>
                         <div class="input-group-append">
-                            <button type="submit" class="btn btn-secondary">Invite</button>
+                            <button type="submit" class="btn btn-secondary">Add</button>
                         </div>
                     </div>
                 </div>

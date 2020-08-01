@@ -5,12 +5,10 @@ using ReactiveUI;
 using Remotely.Desktop.Linux.Controls;
 using Remotely.Desktop.Linux.Services;
 using Remotely.Desktop.Linux.Views;
-using Remotely.ScreenCast.Core;
-using Remotely.ScreenCast.Core.Interfaces;
-using Remotely.ScreenCast.Core.Models;
-using Remotely.ScreenCast.Core.Services;
-using Remotely.ScreenCast.Core.Communication;
-using Remotely.ScreenCast.Linux.Services;
+using Remotely.Desktop.Core;
+using Remotely.Desktop.Core.Interfaces;
+using Remotely.Desktop.Core.Models;
+using Remotely.Desktop.Core.Services;
 using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;
@@ -41,8 +39,6 @@ namespace Remotely.Desktop.Linux.ViewModels
                 return;
             }
 
-            BuildServices();
-
             Conductor = Services.GetRequiredService<Conductor>();
             CasterSocket = Services.GetRequiredService<CasterSocket>();
 
@@ -64,6 +60,7 @@ namespace Remotely.Desktop.Linux.ViewModels
         public ICommand CloseCommand => new Executor((param) =>
         {
             (param as Window)?.Close();
+            Environment.Exit(0);
         });
 
         public ICommand CopyLinkCommand => new Executor(async (param) =>
@@ -143,9 +140,10 @@ namespace Remotely.Desktop.Linux.ViewModels
             try
             {
 
+                SessionID = "Retrieving...";
+
                 await CheckDependencies();
 
-                SessionID = "Retrieving...";
 
                 Host = Config.GetConfig().Host;
 
@@ -186,6 +184,7 @@ namespace Remotely.Desktop.Linux.ViewModels
             catch (Exception ex)
             {
                 Logger.Write(ex);
+                sessionID = "Failed";
                 await MessageBox.Show("Failed to connect to server.", "Connection Failed", MessageBoxType.OK);
                 return;
             }
@@ -201,6 +200,12 @@ namespace Remotely.Desktop.Linux.ViewModels
             prompt.Owner = MainWindow.Current;
             await prompt.ShowDialog(MainWindow.Current);
             var result = HostNamePromptViewModel.Current.Host;
+
+            if (result is null)
+            {
+                return;
+            }
+
             if (!result.StartsWith("https://") && !result.StartsWith("http://"))
             {
                 result = $"https://{result}";
@@ -214,30 +219,6 @@ namespace Remotely.Desktop.Linux.ViewModels
             }
         }
 
-        private void BuildServices()
-        {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddLogging(builder =>
-            {
-                builder.AddConsole().AddDebug();
-            });
-
-            serviceCollection.AddSingleton<IScreenCaster, ScreenCaster>();
-            serviceCollection.AddSingleton<IKeyboardMouseInput, KeyboardMouseInputLinux>();
-            serviceCollection.AddSingleton<IClipboardService, ClipboardServiceLinux>();
-            serviceCollection.AddSingleton<IAudioCapturer, AudioCapturerLinux>();
-            serviceCollection.AddSingleton<CasterSocket>();
-            serviceCollection.AddSingleton<IdleTimer>();
-            serviceCollection.AddSingleton<Conductor>();
-            serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerLinux>();
-            serviceCollection.AddTransient<Viewer>();
-            serviceCollection.AddScoped<IFileTransferService, FileTransferService>();
-            serviceCollection.AddScoped<IWebRtcSessionFactory, WebRtcSessionFactory>();
-            serviceCollection.AddSingleton<ICursorIconWatcher, CursorIconWatcherLinux>();
-
-
-            ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
-        }
 
         private async Task CheckDependencies()
         {

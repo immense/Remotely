@@ -32,11 +32,14 @@ export function Connect() {
 }
 ;
 function applyMessageHandlers(hubConnection) {
-    hubConnection.on("Chat", (deviceID, deviceName, message) => {
-        if (message) {
-            AddConsoleHTML(`<strong class="text-info">Chat from ${deviceName}</strong>: ${message}`);
-            ReceiveChatText(deviceID, deviceName, message);
+    hubConnection.on("Chat", (deviceID, deviceName, message, disconnected) => {
+        if (disconnected) {
+            AddConsoleHTML(`<span class="text-info font-italic">${deviceName} disconnected from chat.</span>`);
         }
+        else if (message) {
+            AddConsoleHTML(`<span class="text-info font-weight-bold">Chat from ${deviceName}</span>: ${message}`);
+        }
+        ReceiveChatText(deviceID, deviceName, message, disconnected);
     });
     hubConnection.on("UserOptions", (options) => {
         Main.UserSettings.CommandModeShortcuts.Web = options.CommandModeShortcutWeb;
@@ -51,13 +54,13 @@ function applyMessageHandlers(hubConnection) {
         location.assign("/Identity/Account/Lockout");
     });
     hubConnection.on("DeviceCameOnline", (device) => {
-        DataGrid.AddOrUpdateDevice(device);
+        DataGrid.AddOrUpdateDevice(device, true);
     });
     hubConnection.on("DeviceWentOffline", (device) => {
-        DataGrid.AddOrUpdateDevice(device);
+        DataGrid.AddOrUpdateDevice(device, true);
     });
     hubConnection.on("DeviceHeartbeat", (device) => {
-        DataGrid.AddOrUpdateDevice(device);
+        DataGrid.AddOrUpdateDevice(device, false);
     });
     hubConnection.on("RefreshDeviceList", () => {
         DataGrid.RefreshGrid();

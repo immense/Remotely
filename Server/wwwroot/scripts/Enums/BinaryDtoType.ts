@@ -23,5 +23,6 @@
     QualityChange = 21,
     File = 22,
     WindowsSessions = 23,
-    SetKeyStatesUp = 24
+    SetKeyStatesUp = 24,
+    FrameReceived = 25
 }

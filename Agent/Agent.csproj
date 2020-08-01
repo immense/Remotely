@@ -23,22 +23,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="3.1.4" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.4" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.4" />
-    <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="3.1.4" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="3.1.6" />
     <PackageReference Include="Microsoft.Management.Infrastructure" Version="2.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.4" />
-    <PackageReference Include="Microsoft.PowerShell.Commands.Diagnostics" Version="7.0.1" />
-    <PackageReference Include="Microsoft.PowerShell.Commands.Management" Version="7.0.1" />
-    <PackageReference Include="Microsoft.PowerShell.Commands.Utility" Version="7.0.1" />
-    <PackageReference Include="Microsoft.PowerShell.CoreCLR.Eventing" Version="7.0.1" />
-    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.0.1" />
-    <PackageReference Include="Microsoft.PowerShell.Security" Version="7.0.1" />
-    <PackageReference Include="Microsoft.WSMan.Management" Version="7.0.1" />
-    <PackageReference Include="Microsoft.WSMan.Runtime" Version="7.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.6" />
+    <PackageReference Include="Microsoft.PowerShell.Commands.Diagnostics" Version="7.0.3" />
+    <PackageReference Include="Microsoft.PowerShell.Commands.Management" Version="7.0.3" />
+    <PackageReference Include="Microsoft.PowerShell.Commands.Utility" Version="7.0.3" />
+    <PackageReference Include="Microsoft.PowerShell.CoreCLR.Eventing" Version="7.0.3" />
+    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.0.3" />
+    <PackageReference Include="Microsoft.PowerShell.Security" Version="7.0.3" />
+    <PackageReference Include="Microsoft.WSMan.Management" Version="7.0.3" />
+    <PackageReference Include="Microsoft.WSMan.Runtime" Version="7.0.3" />
     <PackageReference Include="NETStandard.Library" Version="2.0.3" />
-    <PackageReference Include="System.Management.Automation" Version="7.0.1" />
+    <PackageReference Include="System.Management.Automation" Version="7.0.3" />
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="4.7.0" />
   </ItemGroup>
 
@@ -52,9 +52,7 @@
 
 
   <ItemGroup>
-    <Compile Update="Services\WindowsService.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Update="Services\WindowsService.cs" />
   </ItemGroup>
 
   <ItemGroup>

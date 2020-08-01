@@ -80,17 +80,17 @@ namespace Remotely.Tests
 
             organizationModel.Input.UserEmail = Admin2.UserName;
             organizationModel.Input.IsAdmin = true;
-            await organizationModel.SendInvite(Admin1);
+            await organizationModel.AddUser(Admin1);
             Admin2 = await userManager.FindByNameAsync(Admin2.UserName);
 
             organizationModel.Input.UserEmail = User1.UserName;
             organizationModel.Input.IsAdmin = false;
-            await organizationModel.SendInvite(Admin1);
+            await organizationModel.AddUser(Admin1);
             User1 = await userManager.FindByNameAsync(User1.UserName);
 
             organizationModel.Input.UserEmail = User2.UserName;
             organizationModel.Input.IsAdmin = false;
-            await organizationModel.SendInvite(Admin1);
+            await organizationModel.AddUser(Admin1);
             User2 = await userManager.FindByNameAsync(User2.UserName);
 
             Device1.OrganizationID = Admin1.OrganizationID;
