@@ -24,12 +24,17 @@ import { FileTransferProgress } from "./UI.js";
 import { BinaryDtoType } from "../Enums/BinaryDtoType.js";
 
 export class MessageSender {
+
     GetWindowsSessions() {
         this.SendToAgent(() => MainRc.RtcSession.SendDto(new WindowsSessionsDto()),
             () => MainRc.RCHubConnection.GetWindowsSessions());
     }
     ChangeWindowsSession(sessionId: number) {
         MainRc.RCHubConnection.ChangeWindowsSession(sessionId);
+    }
+    SendFrameReceived() {
+        this.SendToAgent(() => MainRc.RtcSession.SendDto(new GenericDto(BinaryDtoType.FrameReceived)),
+            () => MainRc.RCHubConnection.SendFrameReceived());
     }
     SendSelectScreen(displayName: string) {
         this.SendToAgent(() => MainRc.RtcSession.SendDto(new SelectScreenDto(displayName)),

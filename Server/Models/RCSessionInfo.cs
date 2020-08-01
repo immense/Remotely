@@ -11,7 +11,7 @@ namespace Remotely.Server.Models
         public string MachineName { get; set; }
         public RemoteControlMode Mode { get; set; }
         public string OrganizationID { get; set; }
-        public string RCDeviceSocketID { get; set; }
+        public string CasterSocketID { get; set; }
         public string RequesterName { get; set; }
         public string RequesterSocketID { get; set; }
         public string RequesterUserName { get; set; }

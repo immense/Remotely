@@ -1445,7 +1445,7 @@ __webpack_require__.r(__webpack_exports__);
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 // Version token that will be replaced by the prepack command
 /** The version of the SignalR client. */
-var VERSION = "3.1.2";
+var VERSION = "3.1.5";
 
 
 
@@ -3548,7 +3548,7 @@ var HttpConnection = /** @class */ (function () {
     };
     HttpConnection.prototype.stopInternal = function (error) {
         return __awaiter(this, void 0, void 0, function () {
-            var e_1, e_2, e_3;
+            var e_1, e_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -3567,50 +3567,34 @@ var HttpConnection = /** @class */ (function () {
                         e_1 = _a.sent();
                         return [3 /*break*/, 4];
                     case 4:
-                        if (!this.sendQueue) return [3 /*break*/, 9];
+                        if (!this.transport) return [3 /*break*/, 9];
                         _a.label = 5;
                     case 5:
                         _a.trys.push([5, 7, , 8]);
-                        return [4 /*yield*/, this.sendQueue.stop()];
+                        return [4 /*yield*/, this.transport.stop()];
                     case 6:
                         _a.sent();
                         return [3 /*break*/, 8];
                     case 7:
                         e_2 = _a.sent();
-                        this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Error, "TransportSendQueue.stop() threw error '" + e_2 + "'.");
+                        this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Error, "HttpConnection.transport.stop() threw error '" + e_2 + "'.");
+                        this.stopConnection();
                         return [3 /*break*/, 8];
                     case 8:
-                        this.sendQueue = undefined;
-                        _a.label = 9;
-                    case 9:
-                        if (!this.transport) return [3 /*break*/, 14];
-                        _a.label = 10;
-                    case 10:
-                        _a.trys.push([10, 12, , 13]);
-                        return [4 /*yield*/, this.transport.stop()];
-                    case 11:
-                        _a.sent();
-                        return [3 /*break*/, 13];
-                    case 12:
-                        e_3 = _a.sent();
-                        this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Error, "HttpConnection.transport.stop() threw error '" + e_3 + "'.");
-                        this.stopConnection();
-                        return [3 /*break*/, 13];
-                    case 13:
                         this.transport = undefined;
-                        return [3 /*break*/, 15];
-                    case 14:
+                        return [3 /*break*/, 10];
+                    case 9:
                         this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Debug, "HttpConnection.transport is undefined in HttpConnection.stop() because start() failed.");
                         this.stopConnection();
-                        _a.label = 15;
-                    case 15: return [2 /*return*/];
+                        _a.label = 10;
+                    case 10: return [2 /*return*/];
                 }
             });
         });
     };
     HttpConnection.prototype.startInternal = function (transferFormat) {
         return __awaiter(this, void 0, void 0, function () {
-            var url, negotiateResponse, redirects, _loop_1, this_1, e_4;
+            var url, negotiateResponse, redirects, _loop_1, this_1, e_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -3694,11 +3678,11 @@ var HttpConnection = /** @class */ (function () {
                         }
                         return [3 /*break*/, 13];
                     case 12:
-                        e_4 = _a.sent();
-                        this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Error, "Failed to start the connection: " + e_4);
+                        e_3 = _a.sent();
+                        this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Error, "Failed to start the connection: " + e_3);
                         this.connectionState = "Disconnected" /* Disconnected */;
                         this.transport = undefined;
-                        return [2 /*return*/, Promise.reject(e_4)];
+                        return [2 /*return*/, Promise.reject(e_3)];
                     case 13: return [2 /*return*/];
                 }
             });
@@ -3706,7 +3690,7 @@ var HttpConnection = /** @class */ (function () {
     };
     HttpConnection.prototype.getNegotiationResponse = function (url) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, headers, token, negotiateUrl, response, negotiateResponse, e_5;
+            var _a, headers, token, negotiateUrl, response, negotiateResponse, e_4;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -3743,9 +3727,9 @@ var HttpConnection = /** @class */ (function () {
                         }
                         return [2 /*return*/, negotiateResponse];
                     case 5:
-                        e_5 = _b.sent();
-                        this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Error, "Failed to complete negotiation with the server: " + e_5);
-                        return [2 /*return*/, Promise.reject(e_5)];
+                        e_4 = _b.sent();
+                        this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Error, "Failed to complete negotiation with the server: " + e_4);
+                        return [2 /*return*/, Promise.reject(e_4)];
                     case 6: return [2 /*return*/];
                 }
             });
@@ -3897,6 +3881,7 @@ var HttpConnection = /** @class */ (function () {
         return transport && typeof (transport) === "object" && "connect" in transport;
     };
     HttpConnection.prototype.stopConnection = function (error) {
+        var _this = this;
         this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Debug, "HttpConnection.stopConnection(" + error + ") called while in state " + this.connectionState + ".");
         this.transport = undefined;
         // If we have a stopError, it takes precedence over the error from the transport
@@ -3921,12 +3906,20 @@ var HttpConnection = /** @class */ (function () {
         else {
             this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Information, "Connection disconnected.");
         }
+        if (this.sendQueue) {
+            this.sendQueue.stop().catch(function (e) {
+                _this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Error, "TransportSendQueue.stop() threw error '" + e + "'.");
+            });
+            this.sendQueue = undefined;
+        }
         this.connectionId = undefined;
         this.connectionState = "Disconnected" /* Disconnected */;
-        if (this.onclose && this.connectionStarted) {
+        if (this.connectionStarted) {
             this.connectionStarted = false;
             try {
-                this.onclose(error);
+                if (this.onclose) {
+                    this.onclose(error);
+                }
             }
             catch (e) {
                 this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Error, "HttpConnection.onclose(" + error + ") threw error '" + e + "'.");
@@ -4768,12 +4761,6 @@ var WebSocketTransport = /** @class */ (function () {
     };
     WebSocketTransport.prototype.stop = function () {
         if (this.webSocket) {
-            // Clear websocket handlers because we are considering the socket closed now
-            this.webSocket.onclose = function () { };
-            this.webSocket.onmessage = function () { };
-            this.webSocket.onerror = function () { };
-            this.webSocket.close();
-            this.webSocket = undefined;
             // Manually invoke onclose callback inline so we know the HttpConnection was closed properly before returning
             // This also solves an issue where websocket.onclose could take 18+ seconds to trigger during network disconnects
             this.close(undefined);
@@ -4782,6 +4769,14 @@ var WebSocketTransport = /** @class */ (function () {
     };
     WebSocketTransport.prototype.close = function (event) {
         // webSocket will be null if the transport did not start successfully
+        if (this.webSocket) {
+            // Clear websocket handlers because we are considering the socket closed now
+            this.webSocket.onclose = function () { };
+            this.webSocket.onmessage = function () { };
+            this.webSocket.onerror = function () { };
+            this.webSocket.close();
+            this.webSocket = undefined;
+        }
         this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"].Trace, "(WebSockets transport) socket closed.");
         if (this.onclose) {
             if (event && (event.wasClean === false || event.code !== 1000)) {

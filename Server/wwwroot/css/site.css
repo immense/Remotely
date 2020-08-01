@@ -219,6 +219,8 @@ span.label.code {
 }
 
 .chat-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
     user-select: none;
     cursor: move;
     padding: 5px 10px;

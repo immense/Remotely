@@ -7,23 +7,6 @@ A remote control and remote scripting solution, built with .NET Core, SignalR Co
 Website: https://remotely.one  
 Multi-Tenant Demo Server: https://app.remotely.one
 
-> **From the Developer**: 
->
->Remotely has become a second full-time job, one for which I don't get paid.  The total donations I've received over the last 3 years, while greatly appreciated, only amount to what I earn in 3 days at a regular job.
->
->Every time I try to get back into it developing this project, or try to keep up with support questions and feature requests, I burn out quickly.
->
->I've accomplished everything I personally set out to achieve with Remotely, plus a huge amount of features requested by others.  There's not enough incentive to continue working on it.  I feel like the project is done, and I can set it down.
->
->For that reason, I will no longer be responding to emails, offering free support, or accepting feature requests.  Development will be, for the most part, indefinitely suspended.
->
->Of course, anyone is free to fork the repo and continue development, so long as the original license is respected.  I won't, however, be taking any pull requests, as I wish to maintain full ownership of the codebase.
->
-> Thank you for understanding, and best wishes to everyone.
->
-> \- Jared
-
-
 ## Client Prerequisites:
 * Endpoint devices require the .NET Core runtime to be installed.
 	* For Windows, the Desktop Runtime is required.
@@ -99,14 +82,6 @@ The following steps will configure your Windows 10 machine for building the Remo
 	* Windows 2016/2019 should work as well, but isn't tested regularly.
 * Linux: Only Ubuntu 18.04+ is tested.
 
-## Session Recording
-* You can turn on session recording in appsettings.json.
-* The following requirements must be met for it to work:
-	* On Linux, libgdiplus and libc6-dev must be installed (sudo apt-get install libgdiplus libc6-dev).
-	* The process running the app must have access to create and modify a folder name "Recordings" in the site's root content folder.
-	* FFmpeg must be executable from the process running the Remotely server.
-		* Link: https://www.ffmpeg.org/download.html
-
 ## Remote Control on Mobile
 Ideally, you'd be doing remote control from an actual computer or laptop.  However, I've tried to make the remote control at least somewhat usable from a mobile device.  Here are the controls:
 * Left-click: Single tap
@@ -128,7 +103,6 @@ Note: To retain your settings between upgrades, copy your settings to appsetting
 * DBProvider: Determines which of the three connection strings (at the top) will be used.  The appropriate DB provider for the database type is automatically loaded in code.
 * MaxOrganizationCount: By default, one organization can exist on the server, which is created automatically when the first account is registered.  Afterward, self-registration will be disabled.
     * Set this to -1 or increase it to a specific number to allow multi-tenancy.
-* RecordRemoteControlSessions: Whether or not to record remote control sessions.
 * RedirectToHttps: Whether ASP.NET Core will redirect all traffic from HTTP to HTTPS.  This is independent of Nginx and IIS configurations that do the same.
 * UseHsts: Whether ASP.NET Core will use HTTP Strict Transport Security.
 * DataRetentionInDays: How long event logs and remote command logs will be kept.
@@ -142,7 +116,6 @@ Note: To retain your settings between upgrades, copy your settings to appsetting
 * Theme: The color theme to use for the site.  Values are "Light" or "Dark".  This can also be configured per-user in Account - Options.
 * UseWebRtc: Attempt to create a peer-to-peer connection via WebRTC for screen sharing.
     * Only works on Windows agents.
-    * Session recording will not work if a WebRTC connection is made.
 
 	
 ## .NET Core Deployments

@@ -10,6 +10,9 @@ export class MessageSender {
     ChangeWindowsSession(sessionId) {
         MainRc.RCHubConnection.ChangeWindowsSession(sessionId);
     }
+    SendFrameReceived() {
+        this.SendToAgent(() => MainRc.RtcSession.SendDto(new GenericDto(BinaryDtoType.FrameReceived)), () => MainRc.RCHubConnection.SendFrameReceived());
+    }
     SendSelectScreen(displayName) {
         this.SendToAgent(() => MainRc.RtcSession.SendDto(new SelectScreenDto(displayName)), () => MainRc.RCHubConnection.SendSelectScreen(displayName));
     }

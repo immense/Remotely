@@ -43,6 +43,11 @@ button.navbar-toggler:hover {
     font-size: .7em;
 }
 
+.sk-chase-dot:before {
+    background-color: rgb(20,20,20);
+}
+
+
 .table-hover > tbody > .record-row.row-selected {
     color: #008cba;
 }

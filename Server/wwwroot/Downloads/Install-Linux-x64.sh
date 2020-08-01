@@ -29,7 +29,6 @@ apt-get -y install libgdiplus
 apt-get -y install libxtst-dev
 apt-get -y install xclip
 apt-get -y install jq
-apt-get -y install xterm
 apt-get -y install curl
 
 if [ -f "/usr/local/bin/Remotely/ConnectionInfo.json" ]; then
@@ -52,7 +51,7 @@ fi
 
 unzip ./Remotely-Linux.zip
 chmod +x ./Remotely_Agent
-chmod +x ./ScreenCast/Remotely_ScreenCast.Linux
+chmod +x ./Desktop/Remotely_Desktop
 
 
 connectionInfo="{

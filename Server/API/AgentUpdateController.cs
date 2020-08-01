@@ -64,10 +64,11 @@ namespace Remotely.Server.API
                 }
                 var waitTime = DateTimeOffset.Now - startWait;
 
+                downloadingAgents.Set(downloadId, string.Empty, TimeSpan.FromMinutes(10));
+
                 DataService.WriteEvent($"Download started after wait time of {waitTime}.  " + "" +
                     $"Current Downloads: {downloadingAgents.Count}.  Max Allowed: {AppConfig.MaxConcurrentUpdates}", EventType.Debug, null);
 
-                downloadingAgents.Set(downloadId, string.Empty, TimeSpan.FromMinutes(10));
 
                 byte[] fileBytes;
                 string filePath;

@@ -27,17 +27,26 @@ export function AddOrUpdateDevices(devices: Array<Device>) {
     });
 
     devices.forEach(x => {
-        AddOrUpdateDevice(x);
+        AddOrUpdateDevice(x, false);
     });
+    ApplyFilter();
 }
 
-export function AddOrUpdateDevice(device: Device) {
+export function AddOrUpdateDevice(device: Device, sortDevices: boolean) {
     var existingIndex = DataSource.findIndex(x => x.ID == device.ID);
     if (existingIndex > -1) {
         DataSource[existingIndex] = device;
     }
     else {
         DataSource.push(device);
+    }
+
+    if (sortDevices) {
+        UI.DeviceGrid.querySelectorAll(".record-row").forEach(row => {
+            row.remove();
+        });
+        AddOrUpdateDevices(DataSource);
+        return;
     }
 
     var tableBody = document.querySelector("#" + Main.UI.DeviceGrid.id + " tbody");
@@ -58,6 +67,7 @@ export function AddOrUpdateDevice(device: Device) {
             UpdateDeviceCounts();
         });
     }
+
     recordRow.innerHTML = `
                     <td>${String(device.IsOnline)
                             .replace("true", "<span class='fa fa-check-circle'></span>")
@@ -175,8 +185,9 @@ export function UpdateDeviceCounts() {
     UI.TotalDevicesCount.innerText = DataSource.length.toString();
     if (
         DataSource.some(x =>
-        x.IsOnline == false &&
-        document.getElementById(x.ID).classList.contains("row-selected"))
+            !x.IsOnline &&
+            document.getElementById(x.ID) &&
+            document.getElementById(x.ID).classList.contains("row-selected"))
     ) {
         AddConsoleOutput(`Your selection contains offline computers.  Your commands will only be sent to those that are online.`);
     }

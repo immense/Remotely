@@ -25,7 +25,6 @@ namespace Remotely.Agent.Installer.Win.Services
         public event EventHandler<string> ProgressMessageChanged;
         public event EventHandler<int> ProgressValueChanged;
 
-        public static string CoreRuntimeVersion => "3.1.3";
         private string InstallPath => Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), "Program Files", "Remotely");
         private string Platform => Environment.Is64BitOperatingSystem ? "x64" : "x86";
         private JavaScriptSerializer Serializer { get; } = new JavaScriptSerializer();
@@ -43,8 +42,6 @@ namespace Remotely.Agent.Installer.Win.Services
                 {
                     return false;
                 }
-
-                //await InstallDesktpRuntimeIfNeeded();
 
                 StopService();
 
@@ -120,7 +117,7 @@ namespace Remotely.Agent.Installer.Win.Services
                 ClearInstallDirectory();
                 ProcessEx.StartHidden("cmd.exe", $"/c timeout 5 & rd /s /q \"{InstallPath}\"");
 
-                ProcessEx.StartHidden("netsh", "advfirewall firewall delete rule name=\"Remotely ScreenCast\"").WaitForExit();
+                ProcessEx.StartHidden("netsh", "advfirewall firewall delete rule name=\"Remotely Desktop\"").WaitForExit();
 
                 GetRegistryBaseKey().DeleteSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Remotely", false);
 
@@ -135,9 +132,9 @@ namespace Remotely.Agent.Installer.Win.Services
 
         private void AddFirewallRule()
         {
-            var screenCastPath = Path.Combine(InstallPath, "ScreenCast", "Remotely_ScreenCast.exe");
-            ProcessEx.StartHidden("netsh", "advfirewall firewall delete rule name=\"Remotely ScreenCast\"").WaitForExit();
-            ProcessEx.StartHidden("netsh", $"advfirewall firewall add rule name=\"Remotely ScreenCast\" program=\"{screenCastPath}\" protocol=any dir=in enable=yes action=allow profile=Private,Domain description=\"The agent that allows screen sharing and remote control for Remotely.\"").WaitForExit();
+            var screenCastPath = Path.Combine(InstallPath, "Desktop", "Remotely_Desktop.exe");
+            ProcessEx.StartHidden("netsh", "advfirewall firewall delete rule name=\"Remotely Desktop\"").WaitForExit();
+            ProcessEx.StartHidden("netsh", $"advfirewall firewall add rule name=\"Remotely Desktop\" program=\"{screenCastPath}\" protocol=any dir=in enable=yes action=allow profile=Private,Domain description=\"The agent that allows screen sharing and remote control for Remotely.\"").WaitForExit();
         }
 
         private void BackupDirectory()
@@ -328,55 +325,6 @@ namespace Remotely.Agent.Installer.Win.Services
             }
         }
 
-        private async Task InstallDesktpRuntimeIfNeeded()
-        {
-            Logger.Write("Checking for .NET Core runtime.");
-            var uninstallKeys = new List<RegistryKey>();
-            var runtimeInstalled = false;
-
-            foreach (var subkeyName in GetRegistryBaseKey().OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\", false).GetSubKeyNames())
-            {
-                var subkey = GetRegistryBaseKey().OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + subkeyName, false);
-                if (subkey?.GetValue("DisplayName")?.ToString()?.Contains($"Microsoft Windows Desktop Runtime - {CoreRuntimeVersion}") == true)
-                {
-                    runtimeInstalled = true;
-                    break;
-                }
-            }
-
-            if (!runtimeInstalled)
-            {
-                Logger.Write("Downloading .NET Core runtime.");
-                ProgressMessageChanged.Invoke(this, "Downloading the .NET Core runtime.");
-                var client = new WebClient();
-                client.DownloadProgressChanged += (sender, args) =>
-                {
-                    ProgressValueChanged?.Invoke(this, args.ProgressPercentage);
-                };
-                var downloadUrl = string.Empty;
-                if (Environment.Is64BitOperatingSystem)
-                {
-                    downloadUrl = "https://download.visualstudio.microsoft.com/download/pr/5954c748-86a1-4823-9e7d-d35f6039317a/169e82cbf6fdeb678c5558c5d0a83834/windowsdesktop-runtime-3.1.3-win-x64.exe";
-                }
-                else
-                {
-                    downloadUrl = "https://download.visualstudio.microsoft.com/download/pr/7cd5c874-5d11-4e72-81f0-4a005d956708/0eb310169770c893407169fc3abaac4f/windowsdesktop-runtime-3.1.3-win-x86.exe";
-                }
-                var targetFile = Path.Combine(Path.GetTempPath(), "windowsdesktop-runtime.exe");
-                await client.DownloadFileTaskAsync(downloadUrl, targetFile);
-
-                Logger.Write("Installing .NET Core runtime.");
-                ProgressMessageChanged?.Invoke(this, "Installing the .NET Core runtime.");
-                ProgressValueChanged?.Invoke(this, 0);
-
-                await Task.Run(() => { ProcessEx.StartHidden(targetFile, "/install /quiet /norestart").WaitForExit(); });
-            }
-            else
-            {
-                Logger.Write(".NET Core runtime already installed.");
-            }
-        }
-
         private void InstallService()
         {
             Logger.Write("Installing service.");
@@ -437,7 +385,7 @@ namespace Remotely.Agent.Installer.Win.Services
         private async Task StopProcesses()
         {
             ProgressMessageChanged?.Invoke(this, "Stopping Remotely processes.");
-            var procs = Process.GetProcessesByName("Remotely_Agent").Concat(Process.GetProcessesByName("Remotely_ScreenCast"));
+            var procs = Process.GetProcessesByName("Remotely_Agent").Concat(Process.GetProcessesByName("Remotely_Desktop"));
 
             foreach (var proc in procs)
             {

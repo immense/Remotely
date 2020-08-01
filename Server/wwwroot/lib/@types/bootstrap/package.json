@@ -1,28 +1,29 @@
 {
-  "_from": "@types/bootstrap@^4.3.1",
-  "_id": "@types/bootstrap@4.3.1",
+  "_from": "@types/bootstrap@4.5.0",
+  "_id": "@types/bootstrap@4.5.0",
   "_inBundle": false,
-  "_integrity": "sha512-n7Zv7Y+C98Yv4oqbyqGn3alCvNRCya2xMYzOdVEnmnFlu04MXQk1ntVrBhXzDkiwhZZYNkNfBZn2yhTnEh/mHQ==",
+  "_integrity": "sha512-AWu7D+Cduyic75YptSRiXuCIy1c3SsmYk/9ixS68Ft2eAgg2wRj5U2M+7PK5zpakk4gTgfrWHeGxJqkSjttwyQ==",
   "_location": "/@types/bootstrap",
   "_phantomChildren": {},
   "_requested": {
-    "type": "range",
+    "type": "version",
     "registry": true,
-    "raw": "@types/bootstrap@^4.3.1",
+    "raw": "@types/bootstrap@4.5.0",
     "name": "@types/bootstrap",
     "escapedName": "@types%2fbootstrap",
     "scope": "@types",
-    "rawSpec": "^4.3.1",
+    "rawSpec": "4.5.0",
     "saveSpec": null,
-    "fetchSpec": "^4.3.1"
+    "fetchSpec": "4.5.0"
   },
   "_requiredBy": [
-    "#DEV:/"
+    "#USER",
+    "/"
   ],
-  "_resolved": "https://registry.npmjs.org/@types/bootstrap/-/bootstrap-4.3.1.tgz",
-  "_shasum": "15fa89a4d275b114a4eceb90909d4eb8b90d43f5",
-  "_spec": "@types/bootstrap@^4.3.1",
-  "_where": "D:\\source\\repos\\Remotely\\Server",
+  "_resolved": "https://registry.npmjs.org/@types/bootstrap/-/bootstrap-4.5.0.tgz",
+  "_shasum": "07a079d3ee2b1646491082d6162048d7bf4610b5",
+  "_spec": "@types/bootstrap@4.5.0",
+  "_where": "D:\\GitHub\\SyncroRemoteControl\\Syncro.SignalingServer",
   "bugs": {
     "url": "https://github.com/DefinitelyTyped/DefinitelyTyped/issues"
   },
@@ -31,6 +32,10 @@
     {
       "name": "denisname",
       "url": "https://github.com/denisname"
+    },
+    {
+      "name": "Piotr Błażejewicz",
+      "url": "https://github.com/peterblazejewicz"
     }
   ],
   "dependencies": {
@@ -49,8 +54,8 @@
     "directory": "types/bootstrap"
   },
   "scripts": {},
-  "typeScriptVersion": "2.3",
-  "types": "index",
-  "typesPublisherContentHash": "4b0565169fc0c6fe3bf8da50a5d342621d05acc98962d4add778a13182bde0dc",
-  "version": "4.3.1"
+  "typeScriptVersion": "3.0",
+  "types": "index.d.ts",
+  "typesPublisherContentHash": "b94003b804ea5a2a8f894dabfb522ffedb1ef42d829649b72972a852a93008ad",
+  "version": "4.5.0"
 }

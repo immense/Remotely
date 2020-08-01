@@ -50,6 +50,7 @@
     <Content Remove="wwwroot\scripts\Models\IceServerModel.ts" />
     <Content Remove="wwwroot\scripts\Models\Parameter.ts" />
     <Content Remove="wwwroot\scripts\Models\Point.ts" />
+    <Content Remove="wwwroot\scripts\RemoteControl\InputEventHandlers.ts" />
     <Content Remove="wwwroot\scripts\RemoteControl\MessageSender.ts" />
     <Content Remove="wwwroot\scripts\Models\UserOptions.ts" />
     <Content Remove="wwwroot\scripts\Pages\ApiTokens.ts" />
@@ -60,6 +61,7 @@
     <Content Remove="wwwroot\scripts\RemoteControl\Main.ts" />
     <Content Remove="wwwroot\scripts\RemoteControl\RtcMessageHandler.ts" />
     <Content Remove="wwwroot\scripts\RemoteControl\RtcSession.ts" />
+    <Content Remove="wwwroot\scripts\RemoteControl\SessionRecorder.ts" />
     <Content Remove="wwwroot\scripts\RemoteControl\UI.ts" />
     <Content Remove="wwwroot\scripts\ResultsParser.ts" />
     <Content Remove="wwwroot\scripts\RTC.ts" />
@@ -73,21 +75,21 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.4" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="3.1.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.4">
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.6" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="3.1.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.6">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.4" />
-    <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="3.1.6" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.3" PrivateAssets="All" />
     <PackageReference Include="NETStandard.Library" Version="2.0.3" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.3" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.4" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
 
@@ -156,8 +158,8 @@
     <TypeScriptCompile Include="wwwroot\scripts\CommandProcessor.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\CommandLineParameter.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\ConsoleCommand.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Enums\DynamicDtoType.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\IceServerModel.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\InputEventHandlers.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\MessageSender.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\Point.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Models\UserOptions.ts" />
@@ -171,6 +173,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\Main.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RtcMessageHandler.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RtcSession.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\SessionRecorder.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\UI.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\ResultsParser.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RCHubConnection.ts" />
@@ -196,9 +199,6 @@
   <ItemGroup>
     <None Update="CurrentVersion.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="ffmpeg.exe">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Remotely.Shared.Helpers;
 using System.IO;
 using Remotely.Server.Attributes;
+using Remotely.Server.Hubs;
 
 namespace Remotely.Server.API
 {
@@ -19,15 +20,15 @@ namespace Remotely.Server.API
     {
         public ScriptingController(DataService dataService, 
             UserManager<RemotelyUser> userManager,
-            IHubContext<DeviceHub> deviceHub)
+            IHubContext<AgentHub> agentHub)
         {
             DataService = dataService;
             UserManager = userManager;
-            DeviceHub = deviceHub;
+            AgentHubContext = agentHub;
         }
 
         private DataService DataService { get; }
-        private IHubContext<DeviceHub> DeviceHub { get; }
+        private IHubContext<AgentHub> AgentHubContext { get; }
         private UserManager<RemotelyUser> UserManager { get; }
 
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
@@ -55,7 +56,7 @@ namespace Remotely.Server.API
 
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
 
-            KeyValuePair<string, Device> connection = Services.DeviceHub.ServiceConnections.FirstOrDefault(x =>
+            KeyValuePair<string, Device> connection = AgentHub.ServiceConnections.FirstOrDefault(x =>
                 x.Value.OrganizationID == orgID &&
                 x.Value.ID == deviceID);
 
@@ -75,14 +76,14 @@ namespace Remotely.Server.API
             };
             DataService.AddOrUpdateCommandResult(commandResult);
             var requestID = Guid.NewGuid().ToString();
-            await DeviceHub.Clients.Client(connection.Key).SendAsync("ExecuteCommandFromApi", mode, requestID, command, commandResult.ID, Guid.NewGuid().ToString());
-            var success = await TaskHelper.DelayUntil(() => Services.DeviceHub.ApiScriptResults.TryGetValue(requestID, out _), TimeSpan.FromSeconds(30));
+            await AgentHubContext.Clients.Client(connection.Key).SendAsync("ExecuteCommandFromApi", mode, requestID, command, commandResult.ID, Guid.NewGuid().ToString());
+            var success = await TaskHelper.DelayUntil(() => AgentHub.ApiScriptResults.TryGetValue(requestID, out _), TimeSpan.FromSeconds(30));
             if (!success)
             {
                 return commandResult;
             }
-            Services.DeviceHub.ApiScriptResults.TryGetValue(requestID, out var commandID);
-            Services.DeviceHub.ApiScriptResults.Remove(requestID);
+            AgentHub.ApiScriptResults.TryGetValue(requestID, out var commandID);
+            AgentHub.ApiScriptResults.Remove(requestID);
             DataService.DetachEntity(commandResult);
             var result = DataService.GetCommandResult(commandID.ToString(), orgID);
             return result;

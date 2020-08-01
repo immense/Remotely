@@ -1,17 +1,19 @@
 import * as HubConnection from "./HubConnection.js";
+import { DataSource } from "./DataGrid.js";
+import { ShowMessage } from "./UI.js";
 export function CreateChatWindow(deviceID, deviceName) {
     var chatWindow = document.getElementById("chat-" + deviceID);
     if (!chatWindow) {
         var windowHtml = `
             <div class="chat-header">
+                <h6 class="mt-3">Chat with ${deviceName}</h6>
                 <div class="text-right">
                     <i class="fas fa-window-close close-button pointer"></i>
                 </div>
-                <h6>Chat with ${deviceName}</h6>
             </div>
             <div class="chat-messages">
             </div>
-            <textarea class="chat-input" value=""></textarea>
+            <textarea class="chat-input" value="" style="border: 1px solid gray"></textarea>
         `;
         chatWindow = document.createElement("div");
         chatWindow.classList.add("chat-window");
@@ -44,10 +46,17 @@ export function CreateChatWindow(deviceID, deviceName) {
             if (ev.key.toLowerCase() == "enter") {
                 ev.preventDefault();
                 ev.stopPropagation();
+                if (!DataSource.find(x => x.ID == deviceID).IsOnline) {
+                    ShowMessage("Device is offline.");
+                    return;
+                }
                 var inputText = ev.currentTarget.value;
+                if (!inputText) {
+                    return;
+                }
                 chatWindow.querySelector(".chat-messages").innerHTML += `
                     <div>
-                        <span class="text-primary">You: </span>
+                        <span class="text-secondary font-weight-bold">You: </span>
                         <span>${inputText}</span>
                     </div>
                 `;
@@ -59,16 +68,26 @@ export function CreateChatWindow(deviceID, deviceName) {
         };
     }
 }
-export function ReceiveChatText(deviceID, deviceName, message) {
+export function ReceiveChatText(deviceID, deviceName, message, disconnected) {
     CreateChatWindow(deviceID, deviceName);
     var chatWindow = document.getElementById("chat-" + deviceID);
     var chatMessages = chatWindow.querySelector(".chat-messages");
-    chatMessages.innerHTML += `
-        <div>
-            <span class="text-primary">${deviceName}: </span>
-            <span>${message}</span>
-        </div>
-    `;
+    if (disconnected) {
+        chatMessages.innerHTML += `
+            <div>
+                <span class="font-italic">${deviceName} disconnected from chat.</span>
+                <span>${message}</span>
+            </div>
+        `;
+    }
+    else {
+        chatMessages.innerHTML += `
+            <div>
+                <span class="text-primary font-weight-bold">${deviceName}: </span>
+                <span>${message}</span>
+            </div>
+        `;
+    }
     chatMessages.scrollTo({ top: chatMessages.scrollHeight });
 }
 function moveChatWindow(ev) {

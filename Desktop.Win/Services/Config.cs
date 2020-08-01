@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Remotely.Shared.Utilities;
+using System;
 using System.IO;
 using System.Text.Json;
 
@@ -37,8 +38,9 @@ namespace Remotely.Desktop.Win.Services
                 Directory.CreateDirectory(ConfigFolder);
                 File.WriteAllText(ConfigFile, JsonSerializer.Serialize(this));
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.Write(ex);
             }
         }
     }

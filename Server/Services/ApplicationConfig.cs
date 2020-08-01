@@ -25,7 +25,6 @@ namespace Remotely.Server.Services
         public string[] KnownProxies => Config.GetSection("ApplicationOptions:KnownProxies").Get<string[]>();
         public int MaxConcurrentUpdates => int.Parse(Config["ApplicationOptions:MaxConcurrentUpdates"] ?? "10");
         public int MaxOrganizationCount => int.Parse(Config["ApplicationOptions:MaxOrganizationCount"] ?? "1");
-        public bool RecordRemoteControlSessions => bool.Parse(Config["ApplicationOptions:RecordRemoteControlSessions"] ?? "false");
         public bool RedirectToHttps => bool.Parse(Config["ApplicationOptions:RedirectToHttps"] ?? "false");
         public bool RemoteControlRequiresAuthentication => bool.Parse(Config["ApplicationOptions:RemoteControlRequiresAuthentication"] ?? "true");
         public double RemoteControlSessionLimit => double.Parse(Config["ApplicationOptions:RemoteControlSessionLimit"] ?? "3");

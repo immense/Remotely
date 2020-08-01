@@ -51,10 +51,10 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             PopulateViewModel();
         }
 
-        public async Task<IActionResult> OnPostSendInviteAsync()
+        public async Task<IActionResult> OnPostAddUserAsync()
         {
             var currentUser = await UserManager.FindByEmailAsync(User.Identity.Name);
-            return await SendInvite(currentUser);
+            return await AddUser(currentUser);
         }
 
         public async Task<IActionResult> OnPostCreateDeviceGroupAsync()
@@ -86,7 +86,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             return Page();
         }
 
-        public async Task<IActionResult> SendInvite(RemotelyUser currentUser)
+        public async Task<IActionResult> AddUser(RemotelyUser currentUser)
         {
             if (!currentUser.IsAdministrator)
             {

@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Remotely.Shared.Enums;
 using Microsoft.Extensions.Logging;
 using System.Threading;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Remotely.Server.Services
 {
@@ -109,6 +110,30 @@ namespace Remotely.Server.Services
             organization.InviteLinks.Add(newInvite);
             RemotelyContext.SaveChanges();
             return newInvite;
+        }
+
+        public async Task<bool> TempPasswordSignIn(string email, string password)
+        {
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                return false;
+            }
+
+            var user = GetUserByName(email);
+
+            if (user is null)
+            {
+                return false;
+            }
+
+            if (user.TempPassword == password)
+            {
+                user.TempPassword = string.Empty;
+                await RemotelyContext.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
         }
 
         public void AddOrUpdateCommandResult(CommandResult commandResult)
@@ -792,6 +817,8 @@ namespace Remotely.Server.Services
             var target = RemotelyContext.Users
                 .Include(x => x.PermissionLinks)
                 .ThenInclude(x => x.DeviceGroup)
+                .Include(x => x.Organization)
+                .Include(x => x.Alerts)
                 .FirstOrDefault(x =>
                     x.Id == targetUserID &&
                     x.OrganizationID == orgID);
@@ -807,9 +834,27 @@ namespace Remotely.Server.Services
                 }
             }
 
-            await RemotelyContext.SaveChangesAsync();
+            foreach (var alert in target.Alerts)
+            {
+                RemotelyContext.Alerts.Remove(alert);
+            }
+
+            target.OrganizationID = null;
+            target.Organization = null;
+
+            RemotelyContext
+                .Organizations
+                .Include(x => x.RemotelyUsers)
+                .FirstOrDefault(x => x.ID == orgID)
+                .RemotelyUsers.Remove(target);
+
+           
+            RemotelyContext.Users.Remove(target);
 
             await UserManager.DeleteAsync(target);
+
+            await RemotelyContext.SaveChangesAsync();
+
         }
 
         public async Task RenameApiToken(string userName, string tokenId, string tokenName)
