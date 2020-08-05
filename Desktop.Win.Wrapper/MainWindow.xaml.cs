@@ -79,7 +79,10 @@ namespace Remotely.Desktop.Win.Wrapper
                     try
                     {
                         var currentVersionDir = Path.GetDirectoryName(targetExePath);
-                        Directory.Delete(currentVersionDir, true);
+                        if (Directory.Exists(currentVersionDir))
+                        {
+                            Directory.Delete(currentVersionDir, true);
+                        }
                         Directory.CreateDirectory(currentVersionDir);
                         ZipFile.ExtractToDirectory(zipPath, currentVersionDir);
                     }
