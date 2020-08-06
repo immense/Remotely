@@ -103,7 +103,7 @@ namespace Remotely.Desktop.Core.Services
                             Debug.WriteLine($"Capture FPS: {fpsQueue.Count}");
                         }
 
-                        await viewer.ThrottleIfNeeded();
+                        viewer.ThrottleIfNeeded();
 
                         viewer.Capturer.GetNextFrame();
 

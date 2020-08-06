@@ -77,7 +77,7 @@ namespace Remotely.Server.API
             DataService.AddOrUpdateCommandResult(commandResult);
             var requestID = Guid.NewGuid().ToString();
             await AgentHubContext.Clients.Client(connection.Key).SendAsync("ExecuteCommandFromApi", mode, requestID, command, commandResult.ID, Guid.NewGuid().ToString());
-            var success = await TaskHelper.DelayUntil(() => AgentHub.ApiScriptResults.TryGetValue(requestID, out _), TimeSpan.FromSeconds(30));
+            var success = await TaskHelper.DelayUntilAsync(() => AgentHub.ApiScriptResults.TryGetValue(requestID, out _), TimeSpan.FromSeconds(30));
             if (!success)
             {
                 return commandResult;

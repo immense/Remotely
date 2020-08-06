@@ -134,6 +134,6 @@ firewall-cmd --permanent --zone=public --add-service=https
 firewall-cmd --reload
 
 # Install Certbot and get SSL cert.
-yum -y install certbot python2-certbot-nginx
+yum -y install certbot python3-certbot-nginx
 
 certbot --nginx

@@ -90,14 +90,16 @@ namespace Remotely.Desktop.Win.Services
                 PreviousFrame?.Dispose();
                 PreviousFrame = (Bitmap)CurrentFrame.Clone();
 
-                if (directxScreens.ContainsKey(SelectedScreen))
-                {
-                    GetDirectXFrame();
-                }
-                else
+                // Sometimes DX will result in a timeout, even when there are changes
+                // on the screen.  I've observed this when a laptop lid is closed, or
+                // on some machines that aren't connected to a monitor.  This will
+                // have it fall back to BitBlt in those cases.
+                if (!directxScreens.ContainsKey(SelectedScreen) ||
+                    GetDirectXFrame() == GetDirectXFrameResult.Timeout)
                 {
                     GetBitBltFrame();
                 }
+
             }
             catch (Exception e)
             {
@@ -172,7 +174,14 @@ namespace Remotely.Desktop.Win.Services
             }
         }
 
-        private void GetDirectXFrame()
+        private enum GetDirectXFrameResult
+        {
+            Success,
+            Failure,
+            Timeout,
+        }
+
+        private GetDirectXFrameResult GetDirectXFrame()
         {
             try
             {
@@ -189,13 +198,13 @@ namespace Remotely.Desktop.Win.Services
                 {
                     if (result.Code == SharpDX.DXGI.ResultCode.WaitTimeout.Code)
                     {
-                        return;
+                        return GetDirectXFrameResult.Timeout;
                     }
                     else
                     {
                         Logger.Write($"TryAcquireFrame error.  Code: {result.Code}");
                         NeedsInit = true;
-                        return;
+                        return GetDirectXFrameResult.Failure;
                     }
                 }
 
@@ -206,7 +215,7 @@ namespace Remotely.Desktop.Win.Services
                         duplicatedOutput.ReleaseFrame();
                     }
                     catch { }
-                    return;
+                    return GetDirectXFrameResult.Failure;
                 }
           
                 // Copy resource into memory that can be accessed by the CPU
@@ -240,6 +249,8 @@ namespace Remotely.Desktop.Win.Services
 
                 screenResource.Dispose();
                 duplicatedOutput.ReleaseFrame();
+
+                return GetDirectXFrameResult.Success;
             }
             catch (SharpDXException e)
             {
@@ -247,7 +258,9 @@ namespace Remotely.Desktop.Win.Services
                 {
                     Logger.Write(e);
                     NeedsInit = true;
+                    return GetDirectXFrameResult.Failure;
                 }
+                return GetDirectXFrameResult.Timeout;
             }
         }
 

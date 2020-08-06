@@ -174,7 +174,7 @@ namespace Remotely.Desktop.Core.Models
             }
         }
 
-        public async Task ThrottleIfNeeded()
+        public void ThrottleIfNeeded()
         {
             if (AutoAdjustQuality && DateTimeOffset.Now - lastQualityAdjustment > TimeSpan.FromSeconds(2))
             {
@@ -189,8 +189,8 @@ namespace Remotely.Desktop.Core.Models
                     ImageQuality = defaultImageQuality;
                 }
             }
-
-            await TaskHelper.DelayUntil(() => PendingSentFrames.Count < 5 &&
+            
+            TaskHelper.DelayUntil(() => PendingSentFrames.Count < 5 &&
                 (
                     !PendingSentFrames.TryPeek(out var result) || DateTimeOffset.Now - result < TimeSpan.FromSeconds(1)
                 ),
