@@ -17,23 +17,36 @@ param (
 	[string]$RID = "",
 	[string]$Hostname = "",
 	[string]$CertificatePath = "",
-    [string]$CertificatePassword = ""
+    [string]$CertificatePassword = "",
+    [string]$CurrentVersion = ""
 )
 
 
 
 $ErrorActionPreference = "Stop"
-$Year = ([DateTime]::UtcNow).Year.ToString()
-$Month = ([DateTime]::UtcNow).Month.ToString().PadLeft(2, "0")
-$Day = ([DateTime]::UtcNow).Day.ToString().PadLeft(2, "0")
-$Hour = ([DateTime]::UtcNow).Hour.ToString().PadLeft(2, "0")
-$Minute = ([DateTime]::UtcNow).Minute.ToString().PadLeft(2, "0")
-$CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
 $MSBuildPath = (Get-ChildItem -Path "${env:ProgramFiles(x86)}\Microsoft Visual Studio\" -Recurse -Filter "MSBuild.exe" -File | ForEach-Object {
     [System.Diagnostics.FileVersionInfo]::GetVersionInfo($_.FullName)
 } | Sort-Object -Property FileVersion -Descending | Select-Object -First 1).FileName
 $Root = (Get-Item -Path $PSScriptRoot).Parent.FullName
 $SignAssemblies = $false
+
+if (!$CurrentVersion) {
+    $Year = ([DateTime]::UtcNow).Year.ToString()
+    $Month = ([DateTime]::UtcNow).Month.ToString().PadLeft(2, "0")
+    $Day = ([DateTime]::UtcNow).Day.ToString().PadLeft(2, "0")
+    $Hour = ([DateTime]::UtcNow).Hour.ToString().PadLeft(2, "0")
+    $Minute = ([DateTime]::UtcNow).Minute.ToString().PadLeft(2, "0")
+    $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
+}
+
+if ($CertificatePath.Length -gt 0 -and 
+    (Test-Path -Path $CertificatePath) -eq $true -and 
+    $CertificatePassword.Length -gt 0) 
+{
+    $SignAssemblies = $true
+}
+
+
 
 Set-Location -Path $Root
 
@@ -64,14 +77,6 @@ if ([string]::IsNullOrWhiteSpace($MSBuildPath) -or !(Test-Path -Path $MSBuildPat
     pause
     return
 }
-
-if ($CertificatePath.Length -gt 0 -and 
-    (Test-Path -Path $CertificatePath) -eq $true -and 
-    $CertificatePassword.Length -gt 0) 
-{
-    $SignAssemblies = $true
-}
-
 
 # Add Current Version file to root content folder for client update checks.
 # TODO: Remove after a few releases.

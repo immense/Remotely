@@ -146,7 +146,7 @@ namespace Remotely.Desktop.Win.Wrapper
 
             Process.Start(psi).WaitForExit();
 
-            psi.Arguments = $"advfirewall firewall add rule name=\"Remotely Desktop\" program=\"{Path.Combine(currentVersionDir, remotelyDesktopFilename)}\" protocol=any dir=in enable=yes action=allow profile=Private,Domain description=\"The agent that allows screen sharing and remote control for Remotely.\"";
+            psi.Arguments = $"advfirewall firewall add rule name=\"Remotely Desktop\" program=\"{Path.Combine(currentVersionDir, remotelyDesktopFilename)}\" protocol=any dir=in enable=yes action=allow description=\"The agent that allows screen sharing and remote control for Remotely.\"";
 
             Process.Start(psi).WaitForExit();
         }

@@ -80,24 +80,6 @@ namespace Remotely.Agent.Installer.Win.Services
 
         }
 
-        private void CreateSupportShortcut(string serverUrl, string deviceUuid, bool createSupportShortcut)
-        {
-            var shell = new WshShell();
-            var shortcutLocation = Path.Combine(InstallPath, "Get Support.lnk");
-            var shortcut = (IWshShortcut)shell.CreateShortcut(shortcutLocation);
-            shortcut.Description = "Get IT support";
-            shortcut.IconLocation = Path.Combine(InstallPath, "Remotely_Agent.exe");
-            shortcut.TargetPath = serverUrl.TrimEnd('/') + $"/GetSupport?deviceID={deviceUuid}";
-            shortcut.Save();
-
-            if (createSupportShortcut)
-            {
-                var systemRoot = Path.GetPathRoot(Environment.SystemDirectory);
-                var publicDesktop = Path.Combine(systemRoot, "Users", "Public", "Desktop", "Get Support.lnk");
-                FileIO.Copy(shortcutLocation, publicDesktop, true);
-            }
-        }
-
         public async Task<bool> Uninstall()
         {
             try
@@ -117,7 +99,7 @@ namespace Remotely.Agent.Installer.Win.Services
                 ClearInstallDirectory();
                 ProcessEx.StartHidden("cmd.exe", $"/c timeout 5 & rd /s /q \"{InstallPath}\"");
 
-                ProcessEx.StartHidden("netsh", "advfirewall firewall delete rule name=\"Remotely Desktop\"").WaitForExit();
+                ProcessEx.StartHidden("netsh", "advfirewall firewall delete rule name=\"Remotely Desktop Unattended\"").WaitForExit();
 
                 GetRegistryBaseKey().DeleteSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Remotely", false);
 
@@ -132,9 +114,9 @@ namespace Remotely.Agent.Installer.Win.Services
 
         private void AddFirewallRule()
         {
-            var screenCastPath = Path.Combine(InstallPath, "Desktop", "Remotely_Desktop.exe");
-            ProcessEx.StartHidden("netsh", "advfirewall firewall delete rule name=\"Remotely Desktop\"").WaitForExit();
-            ProcessEx.StartHidden("netsh", $"advfirewall firewall add rule name=\"Remotely Desktop\" program=\"{screenCastPath}\" protocol=any dir=in enable=yes action=allow profile=Private,Domain description=\"The agent that allows screen sharing and remote control for Remotely.\"").WaitForExit();
+            var desktopExePath = Path.Combine(InstallPath, "Desktop", "Remotely_Desktop.exe");
+            ProcessEx.StartHidden("netsh", "advfirewall firewall delete rule name=\"Remotely Desktop Unattended\"").WaitForExit();
+            ProcessEx.StartHidden("netsh", $"advfirewall firewall add rule name=\"Remotely Desktop Unattended\" program=\"{desktopExePath}\" protocol=any dir=in enable=yes action=allow description=\"The agent that allows screen sharing and remote control for Remotely.\"").WaitForExit();
         }
 
         private void BackupDirectory()
@@ -204,6 +186,23 @@ namespace Remotely.Agent.Installer.Win.Services
             }
         }
 
+        private void CreateSupportShortcut(string serverUrl, string deviceUuid, bool createSupportShortcut)
+        {
+            var shell = new WshShell();
+            var shortcutLocation = Path.Combine(InstallPath, "Get Support.lnk");
+            var shortcut = (IWshShortcut)shell.CreateShortcut(shortcutLocation);
+            shortcut.Description = "Get IT support";
+            shortcut.IconLocation = Path.Combine(InstallPath, "Remotely_Agent.exe");
+            shortcut.TargetPath = serverUrl.TrimEnd('/') + $"/GetSupport?deviceID={deviceUuid}";
+            shortcut.Save();
+
+            if (createSupportShortcut)
+            {
+                var systemRoot = Path.GetPathRoot(Environment.SystemDirectory);
+                var publicDesktop = Path.Combine(systemRoot, "Users", "Public", "Desktop", "Get Support.lnk");
+                FileIO.Copy(shortcutLocation, publicDesktop, true);
+            }
+        }
         private void CreateUninstallKey()
         {
             var version = FileVersionInfo.GetVersionInfo(Path.Combine(InstallPath, "Remotely_Agent.exe"));
@@ -350,7 +349,7 @@ namespace Remotely.Agent.Installer.Win.Services
                 Logger.Write("Service installed.");
                 serv = ServiceController.GetServices().FirstOrDefault(ser => ser.ServiceName == "Remotely_Service");
 
-                ProcessEx.StartHidden("cmd.exe", "/c sc.exe failure \"Remotely_Service\" reset=5 actions=restart/5000");
+                ProcessEx.StartHidden("cmd.exe", "/c sc.exe failure \"Remotely_Service\" reset= 5 actions= restart/5000");
             }
             if (serv.Status != ServiceControllerStatus.Running)
             {

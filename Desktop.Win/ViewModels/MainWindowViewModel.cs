@@ -31,6 +31,18 @@ namespace Remotely.Desktop.Win.ViewModels
         public MainWindowViewModel()
         {
             Current = this;
+
+            Application.Current.Exit += Application_Exit;
+
+            CursorIconWatcher = Services?.GetRequiredService<ICursorIconWatcher>();
+            CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
+            Services?.GetRequiredService<IClipboardService>().BeginWatching();
+            Conductor = Services?.GetRequiredService<Conductor>();
+            CasterSocket = Services?.GetRequiredService<CasterSocket>();
+            Conductor.SessionIDChanged += SessionIDChanged;
+            Conductor.ViewerRemoved += ViewerRemoved;
+            Conductor.ViewerAdded += ViewerAdded;
+            Conductor.ScreenCastRequested += ScreenCastRequested;
         }
 
         public static IServiceProvider Services => ServiceContainer.Instance;
@@ -175,18 +187,7 @@ namespace Remotely.Desktop.Win.ViewModels
 
         public async Task Init()
         {
-            Application.Current.Exit += Application_Exit;
-
-            CursorIconWatcher = Services?.GetRequiredService<ICursorIconWatcher>();
-            CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
-            Services?.GetRequiredService<IClipboardService>().BeginWatching();
-            Conductor = Services?.GetRequiredService<Conductor>();
-            CasterSocket = Services?.GetRequiredService<CasterSocket>();
-            Conductor.SessionIDChanged += SessionIDChanged;
-            Conductor.ViewerRemoved += ViewerRemoved;
-            Conductor.ViewerAdded += ViewerAdded;
-            Conductor.ScreenCastRequested += ScreenCastRequested;
-
+          
             SessionID = "Retrieving...";
 
             Host = Config.GetConfig().Host;

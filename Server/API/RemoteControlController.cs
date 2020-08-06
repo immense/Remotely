@@ -110,7 +110,7 @@ namespace Remotely.Server.API
                         .All(x => existingSessions.Contains(x.CasterSocketID));
                 };
 
-                if (!await TaskHelper.DelayUntil(remoteControlStarted, TimeSpan.FromSeconds(30)))
+                if (!await TaskHelper.DelayUntilAsync(remoteControlStarted, TimeSpan.FromSeconds(30)))
                 {
                     return StatusCode(408, "The remote control process failed to start in time on the remote device.");
                 }
