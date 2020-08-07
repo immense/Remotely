@@ -207,29 +207,41 @@ namespace Remotely.Desktop.Core.Services
 
         private void GetCaptureFrame(in FrameRequest request)
         {
-            using (var currentFrame = Viewer.Capturer.GetNextFrame())
+            try
             {
-                var bitmapData = currentFrame.LockBits(
-                       Viewer.Capturer.CurrentScreenBounds,
-                       System.Drawing.Imaging.ImageLockMode.ReadOnly,
-                       System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-                try
+                using (var currentFrame = Viewer.Capturer.GetNextFrame())
                 {
-                    var frame = new Argb32VideoFrame()
+                    if (currentFrame == null)
                     {
-                        data = bitmapData.Scan0,
-                        height = (uint)currentFrame.Height,
-                        width = (uint)currentFrame.Width,
-                        stride = bitmapData.Stride
-                    };
-                    request.CompleteRequest(in frame);
-                }
-                finally
-                {
-                    currentFrame.UnlockBits(bitmapData);
-                }
+                        return;
+                    }
 
+                    var bitmapData = currentFrame.LockBits(
+                           Viewer.Capturer.CurrentScreenBounds,
+                           System.Drawing.Imaging.ImageLockMode.ReadOnly,
+                           System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+                    try
+                    {
+                        var frame = new Argb32VideoFrame()
+                        {
+                            data = bitmapData.Scan0,
+                            height = (uint)currentFrame.Height,
+                            width = (uint)currentFrame.Width,
+                            stride = bitmapData.Stride
+                        };
+                        request.CompleteRequest(in frame);
+                    }
+                    finally
+                    {
+                        currentFrame.UnlockBits(bitmapData);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
             }
 
         }

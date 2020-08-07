@@ -24,6 +24,7 @@ export function AddOrUpdateDevices(devices) {
         AddOrUpdateDevice(x, false);
     });
     ApplyFilter();
+    UpdateDeviceCounts();
 }
 export function AddOrUpdateDevice(device, sortDevices) {
     var existingIndex = DataSource.findIndex(x => x.ID == device.ID);
@@ -34,10 +35,14 @@ export function AddOrUpdateDevice(device, sortDevices) {
         DataSource.push(device);
     }
     if (sortDevices) {
+        var selectedDevices = GetSelectedDevices();
         UI.DeviceGrid.querySelectorAll(".record-row").forEach(row => {
             row.remove();
         });
         AddOrUpdateDevices(DataSource);
+        selectedDevices.forEach(x => {
+            document.getElementById(x.ID).classList.add("row-selected");
+        });
         return;
     }
     var tableBody = document.querySelector("#" + Main.UI.DeviceGrid.id + " tbody");
