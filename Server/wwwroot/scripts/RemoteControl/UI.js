@@ -22,6 +22,7 @@ export var ActionsBar = document.getElementById("actionsBar");
 export var ViewBar = document.getElementById("viewBar");
 export var ChangeScreenButton = document.getElementById("changeScreenButton");
 export var QualityButton = document.getElementById("qualityButton");
+export var StreamVideoButton = document.getElementById("streamVideoButton");
 export var FitToScreenButton = document.getElementById("fitToScreenButton");
 export var BlockInputButton = document.getElementById("blockInputButton");
 export var DisconnectButton = document.getElementById("disconnectButton");

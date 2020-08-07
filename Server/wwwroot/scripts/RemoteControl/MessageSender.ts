@@ -17,7 +17,8 @@ import {
     ClipboardTransferDto,
     FileDto,
     WindowsSessionsDto,
-    GenericDto
+    GenericDto,
+    ToggleWebRtcVideoDto
 } from "./RtcDtos.js";
 import { CreateGUID, When } from "../Utilities.js";
 import { FileTransferProgress } from "./UI.js";
@@ -119,6 +120,10 @@ export class MessageSender {
     SendToggleBlockInput(toggleOn: boolean) {
         this.SendToAgent(() => MainRc.RtcSession.SendDto(new ToggleBlockInputDto(toggleOn)),
             () => MainRc.RCHubConnection.SendToggleBlockInput(toggleOn));
+    }
+    SendToggleWebRtcVideo(toggleOn: boolean) {
+        this.SendToAgent(() => MainRc.RtcSession.SendDto(new ToggleWebRtcVideoDto(toggleOn)),
+            () => MainRc.RCHubConnection.SendToggleWebRtcVideo(toggleOn));
     }
     SendClipboardTransfer(text: string, typeText: boolean) {
         this.SendToAgent(() => MainRc.RtcSession.SendDto(new ClipboardTransferDto(text, typeText)),

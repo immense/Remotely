@@ -129,6 +129,9 @@ export class RCHubConnection {
     SendToggleBlockInput(toggleOn) {
         this.Connection.invoke("SendToggleBlockInput", toggleOn);
     }
+    SendToggleWebRtcVideo(toggleOn) {
+        this.Connection.invoke("SendToggleWebRtcVideo", toggleOn);
+    }
     SendClipboardTransfer(text, typeText) {
         this.Connection.invoke("SendClipboardTransfer", text, typeText);
     }

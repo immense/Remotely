@@ -56,6 +56,8 @@ namespace Remotely.Shared.Enums
         [EnumMember(Value = "SetKeyStatesUp")]
         SetKeyStatesUp = 24,
         [EnumMember(Value = "FrameReceived")]
-        FrameReceived = 25
+        FrameReceived = 25,
+        [EnumMember(Value = "ToggleWebRtcVideo")]
+        ToggleWebRtcVideo = 26
     }
 }

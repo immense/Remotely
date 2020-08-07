@@ -28,7 +28,8 @@
     WindowsSessionSelect,
     RecordSessionButton,
     DownloadRecordingButton,
-    VideoScreenViewer
+    VideoScreenViewer,
+    StreamVideoButton
 } from "./UI.js";
 import { Sound } from "../Sound.js";
 import { MainRc } from "./Main.js";
@@ -130,9 +131,8 @@ export function ApplyInputHandlers() {
         }
     });
     BlockInputButton.addEventListener("click", (ev) => {
-        var button = ev.currentTarget as HTMLButtonElement;
-        button.classList.toggle("toggled");
-        if (button.classList.contains("toggled")) {
+        BlockInputButton.classList.toggle("toggled");
+        if (BlockInputButton.classList.contains("toggled")) {
             MainRc.MessageSender.SendToggleBlockInput(true);
         }
         else {
@@ -184,6 +184,21 @@ export function ApplyInputHandlers() {
     })
     QualitySlider.addEventListener("change", (ev) => {
         MainRc.MessageSender.SendQualityChange(Number(QualitySlider.value));
+    });
+    StreamVideoButton.addEventListener("click", (ev) => {
+        StreamVideoButton.classList.toggle("toggled");
+        if (StreamVideoButton.classList.contains("toggled")) {
+            MainRc.MessageSender.SendToggleWebRtcVideo(true);
+            VideoScreenViewer.removeAttribute("hidden");
+            ScreenViewer.setAttribute("hidden", "hidden");
+            QualityButton.setAttribute("hidden", "hidden");
+        }
+        else {
+            MainRc.MessageSender.SendToggleWebRtcVideo(false);
+            ScreenViewer.removeAttribute("hidden");
+            QualityButton.removeAttribute("hidden");
+            VideoScreenViewer.setAttribute("hidden", "hidden");
+        }
     });
     AutoQualityAdjustCheckBox.addEventListener("change", ev => {
         MainRc.MessageSender.SendAutoQualityAdjust(AutoQualityAdjustCheckBox.checked);

@@ -112,6 +112,12 @@ export class ToggleBlockInputDto {
         this.ToggleOn = toggleOn;
     }
 }
+export class ToggleWebRtcVideoDto {
+    constructor(toggleOn) {
+        this.DtoType = BinaryDtoType.ToggleWebRtcVideo;
+        this.ToggleOn = toggleOn;
+    }
+}
 export class WindowsSessionsDto {
     constructor() {
         this.DtoType = BinaryDtoType.WindowsSessions;
