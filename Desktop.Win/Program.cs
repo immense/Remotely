@@ -64,10 +64,8 @@ namespace Remotely.Desktop.Win
                 {
                     StartUiThread(() => new MainWindow());
                 }
-                
-                System.Windows.Forms.Application.Run();
 
-                Environment.Exit(0);
+                System.Windows.Forms.Application.Run();
 
             }
             catch (Exception ex)

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Remotely.Desktop.Core.Services
@@ -56,7 +57,13 @@ namespace Remotely.Desktop.Core.Services
         {
             try
             {
-                PeerSession?.Close();
+                Transceiver?.LocalVideoTrack?.Dispose();
+                VideoSource?.Dispose();
+                try
+                {
+                    PeerSession?.RemoveDataChannel(CaptureChannel);
+                }
+                catch { }
                 PeerSession?.Dispose();
             }
             catch { }

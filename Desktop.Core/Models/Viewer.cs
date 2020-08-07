@@ -107,19 +107,28 @@ namespace Remotely.Desktop.Core.Models
             }
         }
 
-        public bool IsUsingWebRtcVideo()
+        public bool IsUsingWebRtcVideo
         {
-            return RtcSession?.IsVideoTrackConnected == true;
+            get
+            {
+                return RtcSession?.IsPeerConnected == true && RtcSession?.IsVideoTrackConnected == true;
+            }
         }
 
-        public bool IsStalled()
+        public bool IsStalled
         {
-            return PendingSentFrames.TryPeek(out var result) && DateTimeOffset.Now - result > TimeSpan.FromSeconds(15);
+            get
+            {
+                return PendingSentFrames.TryPeek(out var result) && DateTimeOffset.Now - result > TimeSpan.FromSeconds(15);
+            }
         }
 
-        public bool IsUsingWebRtc()
+        public bool IsUsingWebRtc
         {
-            return RtcSession?.IsPeerConnected == true && RtcSession?.IsDataChannelOpen == true;
+            get
+            {
+                return RtcSession?.IsPeerConnected == true && RtcSession?.IsDataChannelOpen == true;
+            }
         }
 
         public async Task SendAudioSample(byte[] audioSample)
@@ -212,7 +221,7 @@ namespace Remotely.Desktop.Core.Models
         }
         private Task SendToViewer(Action webRtcSend, Func<Task> websocketSend)
         {
-            if (IsUsingWebRtc())
+            if (IsUsingWebRtc)
             {
                 webRtcSend();
                 return Task.CompletedTask;

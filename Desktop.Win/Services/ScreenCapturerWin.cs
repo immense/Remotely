@@ -164,12 +164,7 @@ namespace Remotely.Desktop.Win.Services
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                Logger.Write("Capturer error.  Trying to switch desktops in BitBltCapture.");
-                if (Win32Interop.SwitchToInputDesktop())
-                {
-                    Win32Interop.GetCurrentDesktop(out var desktopName);
-                    Logger.Write($"Switch to desktop {desktopName} after capture error in BitBltCapture.");
-                }
+                Logger.Write("Capturer error in BitBltCapture.");
                 NeedsInit = true;
             }
 
