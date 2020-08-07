@@ -92,11 +92,11 @@ namespace Remotely.Desktop.Core.Models
                 RtcSession = WebRtcSessionFactory.GetNewSession(this);
                 RtcSession.LocalSdpReady += async (sender, sdp) =>
                 {
-                    await CasterSocket.SendRtcOfferToBrowser(sdp, ViewerConnectionID, iceServers);
+                    await CasterSocket.SendRtcOfferToBrowser(sdp.Content, ViewerConnectionID, iceServers);
                 };
-                RtcSession.IceCandidateReady += async (sender, args) =>
+                RtcSession.IceCandidateReady += async (sender, candidate) =>
                 {
-                    await CasterSocket.SendIceCandidateToBrowser(args.candidate, args.sdpMlineIndex, args.sdpMid, ViewerConnectionID);
+                    await CasterSocket.SendIceCandidateToBrowser(candidate.Content, candidate.SdpMlineIndex, candidate.SdpMid, ViewerConnectionID);
                 };
 
                 await RtcSession.Init(iceServers);

@@ -44,7 +44,7 @@ namespace Remotely.Desktop.Core.Services
                 ClipboardService,
                 FileDownloadService);
 
-            return new WebRtcSession(messageHandler);
+            return new WebRtcSession(viewer, messageHandler);
         }
     }
 }
