@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Remotely.Desktop.Core</RootNamespace>
     <AssemblyName>Remotely_Desktop.Core</AssemblyName>
     <Platforms>AnyCPU;x64;x86</Platforms>
