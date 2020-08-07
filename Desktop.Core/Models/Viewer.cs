@@ -107,6 +107,11 @@ namespace Remotely.Desktop.Core.Models
             }
         }
 
+        public bool IsUsingWebRtcVideo()
+        {
+            return RtcSession?.IsVideoTrackConnected == true;
+        }
+
         public bool IsStalled()
         {
             return PendingSentFrames.TryPeek(out var result) && DateTimeOffset.Now - result > TimeSpan.FromSeconds(15);
