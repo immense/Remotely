@@ -24,7 +24,6 @@ import { FileTransferProgress } from "./UI.js";
 import { BinaryDtoType } from "../Enums/BinaryDtoType.js";
 
 export class MessageSender {
-
     GetWindowsSessions() {
         this.SendToAgent(() => MainRc.RtcSession.SendDto(new WindowsSessionsDto()),
             () => MainRc.RCHubConnection.GetWindowsSessions());

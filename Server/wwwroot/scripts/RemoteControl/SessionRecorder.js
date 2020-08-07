@@ -1,10 +1,10 @@
-import { ScreenViewer } from "./UI.js";
+import { GetCurrentViewer } from "./UI.js";
 export class SessionRecorder {
     constructor() {
         this.RecordedData = [];
     }
     Start() {
-        if (!window["MediaRecorder"] || !ScreenViewer.captureStream) {
+        if (!window["MediaRecorder"] || !GetCurrentViewer().captureStream) {
             alert("Session recording isn't supported on this browser.");
             return;
         }
@@ -12,7 +12,7 @@ export class SessionRecorder {
             this.Recorder.stop();
         }
         this.RecordedData = [];
-        this.Stream = ScreenViewer.captureStream(10);
+        this.Stream = GetCurrentViewer().captureStream(10);
         var options = { mimeType: 'video/webm' };
         this.Recorder = new window["MediaRecorder"](this.Stream, options);
         this.Recorder.ondataavailable = (event) => {

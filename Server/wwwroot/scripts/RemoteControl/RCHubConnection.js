@@ -27,11 +27,13 @@ export class RCHubConnection {
             UI.StatusMessage.innerHTML = `Connection error: ${err.message}`;
             UI.Screen2DContext.clearRect(0, 0, UI.ScreenViewer.width, UI.ScreenViewer.height);
             UI.ScreenViewer.setAttribute("hidden", "hidden");
+            UI.VideoScreenViewer.setAttribute("hidden", "hidden");
             UI.ConnectBox.style.removeProperty("display");
         });
         this.Connection.closedCallbacks.push((ev) => {
             UI.Screen2DContext.clearRect(0, 0, UI.ScreenViewer.width, UI.ScreenViewer.height);
             UI.ScreenViewer.setAttribute("hidden", "hidden");
+            UI.VideoScreenViewer.setAttribute("hidden", "hidden");
             UI.ConnectBox.style.removeProperty("display");
         });
         MainRc.ClipboardWatcher.WatchClipboard();

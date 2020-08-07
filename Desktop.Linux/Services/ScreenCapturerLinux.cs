@@ -8,47 +8,51 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace Remotely.Desktop.Linux.Services
 {
     public class ScreenCapturerLinux : IScreenCapturer
     {
+        private readonly SemaphoreSlim screenCaptureLock = new SemaphoreSlim(1);
         private readonly Dictionary<string, int> x11Screens = new Dictionary<string, int>();
         public ScreenCapturerLinux()
         {
             Display = LibX11.XOpenDisplay(null);
             Init();
-            GetNextFrame();
         }
 
         public event EventHandler<Rectangle> ScreenChanged;
 
         public bool CaptureFullscreen { get; set; }
-        public Bitmap CurrentFrame { get; set; }
         public Rectangle CurrentScreenBounds { get; private set; }
         public IntPtr Display { get; private set; }
-        public Bitmap PreviousFrame { get; set; }
         public string SelectedScreen { get; private set; }
+
         public void Dispose()
         {
-            CurrentFrame.Dispose();
-            PreviousFrame.Dispose();
+            LibX11.XCloseDisplay(Display);
         }
 
         public IEnumerable<string> GetDisplayNames() => x11Screens.Keys;
 
-        public void GetNextFrame()
+        public Bitmap GetNextFrame()
         {
             try
             {
-                PreviousFrame?.Dispose();
-                PreviousFrame = (Bitmap)CurrentFrame.Clone();
-                RefreshCurrentFrame();
+                screenCaptureLock.Wait();
+
+                return GetX11Screen();
             }
             catch (Exception ex)
             {
                 Logger.Write(ex);
                 Init();
+                return null;
+            }
+            finally
+            {
+                screenCaptureLock.Release();
             }
         }
         public int GetScreenCount()
@@ -84,8 +88,6 @@ namespace Remotely.Desktop.Linux.Services
                     x11Screens.Add(i.ToString(), i);
                 }
                 SetSelectedScreen(x11Screens.Keys.First());
-                CurrentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
-                PreviousFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
             }
             catch (Exception ex)
             {
@@ -121,19 +123,21 @@ namespace Remotely.Desktop.Linux.Services
             }
         }
 
-        private void RefreshCurrentFrame()
+        private Bitmap GetX11Screen()
         {
+            var currentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
+
             var window = LibX11.XRootWindow(Display, x11Screens[SelectedScreen]);
 
             var imagePointer = LibX11.XGetImage(Display, window, 0, 0, CurrentScreenBounds.Width, CurrentScreenBounds.Height, ~0, 2);
             var image = Marshal.PtrToStructure<LibX11.XImage>(imagePointer);
 
-            var bd = CurrentFrame.LockBits(new Rectangle(0, 0, CurrentFrame.Width, CurrentFrame.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+            var bd = currentFrame.LockBits(new Rectangle(0, 0, CurrentScreenBounds.Width, CurrentScreenBounds.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
             unsafe
             {
                 byte* scan1 = (byte*)bd.Scan0.ToPointer();
                 byte* scan2 = (byte*)image.data.ToPointer();
-                var bytesPerPixel = Bitmap.GetPixelFormatSize(CurrentFrame.PixelFormat) / 8;
+                var bytesPerPixel = Bitmap.GetPixelFormatSize(currentFrame.PixelFormat) / 8;
                 var totalSize = bd.Height * bd.Width * bytesPerPixel;
                 for (int counter = 0; counter < totalSize - bytesPerPixel; counter++)
                 {
@@ -141,8 +145,10 @@ namespace Remotely.Desktop.Linux.Services
                 }
             }
 
-            CurrentFrame.UnlockBits(bd);
+            currentFrame.UnlockBits(bd);
             LibX11.XDestroyImage(imagePointer);
+
+            return currentFrame;
         }
     }
 }
