@@ -111,6 +111,9 @@ namespace Remotely.Desktop.Core.Services
                     case BinaryDtoType.ToggleBlockInput:
                         ToggleBlockInput(message);
                         break;
+                    case BinaryDtoType.ToggleWebRtcVideo:
+                        ToggleWebRtcVideo(message);
+                        break;
                     case BinaryDtoType.ClipboardTransfer:
                         ClipboardTransfer(message);
                         break;
@@ -180,6 +183,7 @@ namespace Remotely.Desktop.Core.Services
                 }
             }
         }
+
         private void KeyDown(byte[] message)
         {
             var dto = MessagePackSerializer.Deserialize<KeyDownDto>(message);
@@ -260,6 +264,7 @@ namespace Remotely.Desktop.Core.Services
         {
             KeyboardMouseInput.SetKeyStatesUp();
         }
+
         private void Tap(byte[] message)
         {
             var dto = MessagePackSerializer.Deserialize<TapDto>(message);
@@ -277,6 +282,12 @@ namespace Remotely.Desktop.Core.Services
         {
             var dto = MessagePackSerializer.Deserialize<ToggleBlockInputDto>(message);
             KeyboardMouseInput.ToggleBlockInput(dto.ToggleOn);
+        }
+
+        private void ToggleWebRtcVideo(byte[] message)
+        {
+            var dto = MessagePackSerializer.Deserialize<ToggleWebRtcVideoDto>(message);
+            Viewer.ToggleWebRtcVideo(dto.ToggleOn);
         }
     }
 }

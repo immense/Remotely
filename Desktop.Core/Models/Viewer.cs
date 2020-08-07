@@ -15,10 +15,9 @@ namespace Remotely.Desktop.Core.Models
 {
     public class Viewer : IDisposable
     {
+        private readonly int defaultImageQuality = 60;
         private int imageQuality;
         private DateTimeOffset lastQualityAdjustment;
-        private readonly int defaultImageQuality = 60;
-
         public Viewer(CasterSocket casterSocket,
             IScreenCapturer screenCapturer,
             IClipboardService clipboardService,
@@ -68,6 +67,30 @@ namespace Remotely.Desktop.Core.Models
         }
 
         public bool IsConnected => CasterSocket.IsConnected;
+        public bool IsStalled
+        {
+            get
+            {
+                return PendingSentFrames.TryPeek(out var result) && DateTimeOffset.Now - result > TimeSpan.FromSeconds(15);
+            }
+        }
+
+        public bool IsUsingWebRtc
+        {
+            get
+            {
+                return RtcSession?.IsPeerConnected == true && RtcSession?.IsDataChannelOpen == true;
+            }
+        }
+
+        public bool IsUsingWebRtcVideo
+        {
+            get
+            {
+                return RtcSession?.IsPeerConnected == true && RtcSession?.IsVideoTrackConnected == true;
+            }
+        }
+
         public string Name { get; set; }
         public ConcurrentQueue<DateTimeOffset> PendingSentFrames { get; } = new ConcurrentQueue<DateTimeOffset>();
         public WebRtcSession RtcSession { get; set; }
@@ -106,31 +129,6 @@ namespace Remotely.Desktop.Core.Models
                 Logger.Write(ex);
             }
         }
-
-        public bool IsUsingWebRtcVideo
-        {
-            get
-            {
-                return RtcSession?.IsPeerConnected == true && RtcSession?.IsVideoTrackConnected == true;
-            }
-        }
-
-        public bool IsStalled
-        {
-            get
-            {
-                return PendingSentFrames.TryPeek(out var result) && DateTimeOffset.Now - result > TimeSpan.FromSeconds(15);
-            }
-        }
-
-        public bool IsUsingWebRtc
-        {
-            get
-            {
-                return RtcSession?.IsPeerConnected == true && RtcSession?.IsDataChannelOpen == true;
-            }
-        }
-
         public async Task SendAudioSample(byte[] audioSample)
         {
             await SendToViewer(() => RtcSession.SendAudioSample(audioSample),
@@ -203,7 +201,7 @@ namespace Remotely.Desktop.Core.Models
                     ImageQuality = defaultImageQuality;
                 }
             }
-            
+
             TaskHelper.DelayUntil(() => PendingSentFrames.Count < 5 &&
                 (
                     !PendingSentFrames.TryPeek(out var result) || DateTimeOffset.Now - result < TimeSpan.FromSeconds(1)
@@ -211,6 +209,10 @@ namespace Remotely.Desktop.Core.Models
                 TimeSpan.MaxValue);
         }
 
+        public void ToggleWebRtcVideo(bool toggleOn)
+        {
+            RtcSession.ToggleWebRtcVideo(toggleOn);
+        }
         private async void AudioCapturer_AudioSampleReady(object sender, byte[] sample)
         {
             await SendAudioSample(sample);

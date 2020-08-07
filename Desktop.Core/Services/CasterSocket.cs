@@ -435,6 +435,14 @@ namespace Remotely.Desktop.Core.Services
                 }
             });
 
+            Connection.On("ToggleWebRtcVideo", (bool toggleOn, string viewerID) =>
+            {
+                if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
+                {
+                    viewer.ToggleWebRtcVideo(toggleOn);
+                }
+            });
+
             Connection.On("TouchDown", (string viewerID) =>
             {
                 if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)

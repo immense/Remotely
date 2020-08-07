@@ -302,6 +302,11 @@ namespace Remotely.Server.Hubs
         {
             return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("ToggleBlockInput", toggleOn, Context.ConnectionId);
         }
+        public Task SendToggleWebRtcVideo(bool toggleOn)
+        {
+            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("ToggleWebRtcVideo", toggleOn, Context.ConnectionId);
+        }
+
         public Task Tap(double percentX, double percentY)
         {
             return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("Tap", percentX, percentY, Context.ConnectionId);

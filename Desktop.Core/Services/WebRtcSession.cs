@@ -28,14 +28,6 @@ namespace Remotely.Desktop.Core.Services
         public ulong CurrentBuffer { get; private set; }
         public bool IsDataChannelOpen => CaptureChannel?.State == DataChannel.ChannelState.Open;
         public bool IsPeerConnected => PeerSession?.IsConnected == true;
-        private DataChannel CaptureChannel { get; set; }
-        private IceServerModel[] IceServers { get; set; }
-        private PeerConnection PeerSession { get; set; }
-        private IRtcMessageHandler RtcMessageHandler { get; }
-        private Transceiver Transceiver { get; set; }
-        private ExternalVideoTrackSource VideoSource { get; set; }
-        private Viewer Viewer { get; }
-
         public bool IsVideoTrackConnected
         {
             get
@@ -44,6 +36,13 @@ namespace Remotely.Desktop.Core.Services
             }
         }
 
+        private DataChannel CaptureChannel { get; set; }
+        private IceServerModel[] IceServers { get; set; }
+        private PeerConnection PeerSession { get; set; }
+        private IRtcMessageHandler RtcMessageHandler { get; }
+        private Transceiver Transceiver { get; set; }
+        private ExternalVideoTrackSource VideoSource { get; set; }
+        private Viewer Viewer { get; }
         public void AddIceCandidate(string sdpMid, int sdpMlineIndex, string candidate)
         {
             PeerSession.AddIceCandidate(new IceCandidate()
@@ -106,10 +105,6 @@ namespace Remotely.Desktop.Core.Services
 
             VideoSource = ExternalVideoTrackSource.CreateFromArgb32Callback(GetCaptureFrame);
             Transceiver = PeerSession.AddTransceiver(MediaKind.Video);
-            Transceiver.LocalVideoTrack = LocalVideoTrack.CreateFromSource(VideoSource, new LocalVideoTrackInitConfig()
-            {
-                trackName = "ScreenCapture"
-            });
 
             PeerSession.CreateOffer();
         }
@@ -195,12 +190,28 @@ namespace Remotely.Desktop.Core.Services
             }
         }
 
+        public void ToggleWebRtcVideo(bool toggleOn)
+        {
+            if (Transceiver?.LocalVideoTrack != null)
+            {
+                Transceiver.LocalVideoTrack.Dispose();
+                Transceiver.LocalVideoTrack = null;
+            }
+
+            if (toggleOn)
+            {
+                Transceiver.LocalVideoTrack = LocalVideoTrack.CreateFromSource(VideoSource, new LocalVideoTrackInitConfig()
+                {
+                    trackName = "ScreenCapture"
+                });
+            }
+        }
+
         private async void CaptureChannel_MessageReceived(byte[] obj)
         {
             Logger.Debug($"DataChannel message received.  Size: {obj.Length}");
             await RtcMessageHandler.ParseMessage(obj);
         }
-
         private async void CaptureChannel_StateChanged()
         {
             Logger.Debug($"DataChannel state changed.  New State: {CaptureChannel.State}");
