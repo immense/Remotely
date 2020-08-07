@@ -74,18 +74,13 @@ namespace Remotely.Desktop.Win.Services
         {
             try
             {
+                Win32Interop.SwitchToInputDesktop();
+
                 if (NeedsInit)
                 {
-                    Logger.Write("Init needed in DXCapture.  Switching desktops.");
-                    if (Win32Interop.SwitchToInputDesktop())
-                    {
-                        Win32Interop.GetCurrentDesktop(out var desktopName);
-                        Logger.Write($"Switch to desktop {desktopName} after capture error in DXCapture.");
-                    }
+                    Logger.Write("Init needed in GetNextFrame.");
                     Init();
                 }
-
-                Win32Interop.SwitchToInputDesktop();
 
                 PreviousFrame?.Dispose();
                 PreviousFrame = (Bitmap)CurrentFrame.Clone();
