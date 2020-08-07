@@ -96,12 +96,12 @@ namespace Remotely.Desktop.Core.Services
                 {
                     try
                     {
-                        if (viewer.IsUsingWebRtcVideo())
+                        if (viewer.IsUsingWebRtcVideo)
                         {
-                            Thread.Sleep(10);
+                            Thread.Sleep(100);
                             continue;
                         }
-                        if (viewer.IsStalled())
+                        if (viewer.IsStalled)
                         {
                             // Viewer isn't responding.  Abort sending.
                             break;
