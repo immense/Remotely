@@ -93,8 +93,8 @@ export function Prompt(promptMessage: string): Promise<string> {
 export function SetScreenSize(width: number, height: number) {
     ScreenViewer.width = width;
     ScreenViewer.height = height;
-    VideoScreenViewer.width = width;
-    VideoScreenViewer.height = height;
+    //VideoScreenViewer.width = width;
+    //VideoScreenViewer.height = height;
     Screen2DContext.clearRect(0, 0, width, height);
 }
 

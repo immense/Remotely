@@ -34,6 +34,13 @@ namespace Remotely.Desktop.Core.Services
         private Transceiver Transceiver { get; set; }
         private ExternalVideoTrackSource VideoSource { get; set; }
         private Viewer Viewer { get; }
+        public bool IsVideoTrackConnected
+        {
+            get
+            {
+                return PeerSession?.LocalVideoTracks?.FirstOrDefault()?.Source?.Enabled == true;
+            }
+        }
 
         public void AddIceCandidate(string sdpMid, int sdpMlineIndex, string candidate)
         {
@@ -47,7 +54,12 @@ namespace Remotely.Desktop.Core.Services
 
         public void Dispose()
         {
-            PeerSession?.Dispose();
+            try
+            {
+                PeerSession?.Close();
+                PeerSession?.Dispose();
+            }
+            catch { }
         }
 
         public async Task Init(IceServerModel[] iceServers)
@@ -82,12 +94,12 @@ namespace Remotely.Desktop.Core.Services
             CaptureChannel.MessageReceived += CaptureChannel_MessageReceived;
             CaptureChannel.StateChanged += CaptureChannel_StateChanged;
 
-            //VideoSource = ExternalVideoTrackSource.CreateFromArgb32Callback(GetCaptureFrame);
-            //Transceiver = PeerSession.AddTransceiver(MediaKind.Video);
-            //Transceiver.LocalVideoTrack = LocalVideoTrack.CreateFromSource(VideoSource, new LocalVideoTrackInitConfig()
-            //{
-            //    trackName = "ScreenCapture"
-            //});
+            VideoSource = ExternalVideoTrackSource.CreateFromArgb32Callback(GetCaptureFrame);
+            Transceiver = PeerSession.AddTransceiver(MediaKind.Video);
+            Transceiver.LocalVideoTrack = LocalVideoTrack.CreateFromSource(VideoSource, new LocalVideoTrackInitConfig()
+            {
+                trackName = "ScreenCapture"
+            });
 
             PeerSession.CreateOffer();
         }
@@ -193,35 +205,34 @@ namespace Remotely.Desktop.Core.Services
             CurrentBuffer = current;
         }
 
-        //private void GetCaptureFrame(in FrameRequest request)
-        //{
-        //    Viewer.Capturer.GetNextFrame();
-        //    using (var bitmapCopy = (Bitmap)Viewer.Capturer.CurrentFrame.Clone())
-        //    {
-        //        var bitmapData = bitmapCopy.LockBits(
-        //               Viewer.Capturer.CurrentScreenBounds,
-        //               System.Drawing.Imaging.ImageLockMode.ReadOnly,
-        //               System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+        private void GetCaptureFrame(in FrameRequest request)
+        {
+            using (var currentFrame = Viewer.Capturer.GetNextFrame())
+            {
+                var bitmapData = currentFrame.LockBits(
+                       Viewer.Capturer.CurrentScreenBounds,
+                       System.Drawing.Imaging.ImageLockMode.ReadOnly,
+                       System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-        //        try
-        //        {
-        //            var frame = new Argb32VideoFrame()
-        //            {
-        //                data = bitmapData.Scan0,
-        //                height = (uint)bitmapCopy.Height,
-        //                width = (uint)bitmapCopy.Width,
-        //                stride = bitmapData.Stride
-        //            };
-        //            request.CompleteRequest(in frame);
-        //        }
-        //        finally
-        //        {
-        //            bitmapCopy.UnlockBits(bitmapData);
-        //        }
+                try
+                {
+                    var frame = new Argb32VideoFrame()
+                    {
+                        data = bitmapData.Scan0,
+                        height = (uint)currentFrame.Height,
+                        width = (uint)currentFrame.Width,
+                        stride = bitmapData.Stride
+                    };
+                    request.CompleteRequest(in frame);
+                }
+                finally
+                {
+                    currentFrame.UnlockBits(bitmapData);
+                }
 
-        //    }
+            }
 
-        //}
+        }
 
         private void PeerConnection_Connected()
         {

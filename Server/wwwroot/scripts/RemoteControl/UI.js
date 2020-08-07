@@ -80,8 +80,8 @@ export function Prompt(promptMessage) {
 export function SetScreenSize(width, height) {
     ScreenViewer.width = width;
     ScreenViewer.height = height;
-    VideoScreenViewer.width = width;
-    VideoScreenViewer.height = height;
+    //VideoScreenViewer.width = width;
+    //VideoScreenViewer.height = height;
     Screen2DContext.clearRect(0, 0, width, height);
 }
 export function ShowMessage(message) {

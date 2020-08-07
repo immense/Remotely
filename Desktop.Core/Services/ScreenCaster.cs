@@ -14,6 +14,7 @@ using Remotely.Desktop.Core.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Win32;
 using System.Drawing;
+using System.Threading;
 
 namespace Remotely.Desktop.Core.Services
 {
@@ -95,6 +96,11 @@ namespace Remotely.Desktop.Core.Services
                 {
                     try
                     {
+                        if (viewer.IsUsingWebRtcVideo())
+                        {
+                            Thread.Sleep(10);
+                            continue;
+                        }
                         if (viewer.IsStalled())
                         {
                             // Viewer isn't responding.  Abort sending.
