@@ -13,6 +13,7 @@ using System.Collections.Concurrent;
 using Remotely.Desktop.Core.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Win32;
+using System.Drawing;
 
 namespace Remotely.Desktop.Core.Services
 {
@@ -35,6 +36,8 @@ namespace Remotely.Desktop.Core.Services
 
             try
             {
+                Bitmap currentFrame = null;
+                Bitmap previousFrame = null;
                 byte[] encodedImageBytes;
                 var fpsQueue = new Queue<DateTimeOffset>();
                 mode = Conductor.Mode;
@@ -76,12 +79,17 @@ namespace Remotely.Desktop.Core.Services
                     await viewer.SendScreenSize(bounds.Width, bounds.Height);
                 };
 
-                await viewer.SendScreenCapture(
-                    ImageUtils.EncodeBitmap(viewer.Capturer.CurrentFrame, viewer.EncoderParams),
-                    viewer.Capturer.CurrentScreenBounds.Left,
-                    viewer.Capturer.CurrentScreenBounds.Top,
-                    viewer.Capturer.CurrentScreenBounds.Width,
-                    viewer.Capturer.CurrentScreenBounds.Height);
+                using (var initialFrame = viewer.Capturer.GetNextFrame())
+                {
+                    await viewer.SendScreenCapture(
+                         ImageUtils.EncodeBitmap(initialFrame, viewer.EncoderParams),
+                         viewer.Capturer.CurrentScreenBounds.Left,
+                         viewer.Capturer.CurrentScreenBounds.Top,
+                         viewer.Capturer.CurrentScreenBounds.Width,
+                         viewer.Capturer.CurrentScreenBounds.Height);
+                }
+
+ 
 
                 while (!viewer.DisconnectRequested && viewer.IsConnected)
                 {
@@ -105,16 +113,19 @@ namespace Remotely.Desktop.Core.Services
 
                         viewer.ThrottleIfNeeded();
 
-                        viewer.Capturer.GetNextFrame();
+                        previousFrame?.Dispose();
+                        previousFrame = (Bitmap)currentFrame?.Clone();
+                        currentFrame?.Dispose();
+                        currentFrame = viewer.Capturer.GetNextFrame();
 
-                        var diffArea = ImageUtils.GetDiffArea(viewer.Capturer.CurrentFrame, viewer.Capturer.PreviousFrame, viewer.Capturer.CaptureFullscreen);
+                        var diffArea = ImageUtils.GetDiffArea(currentFrame, previousFrame, viewer.Capturer.CaptureFullscreen);
 
                         if (diffArea.IsEmpty)
                         {
                             continue;
                         }
 
-                        using (var newImage = viewer.Capturer.CurrentFrame.Clone(diffArea, PixelFormat.Format32bppArgb))
+                        using (var newImage = currentFrame.Clone(diffArea, PixelFormat.Format32bppArgb))
                         {
                             if (viewer.Capturer.CaptureFullscreen)
                             {

@@ -209,13 +209,13 @@ namespace Remotely.Desktop.Core.Services
 
             });
 
-            Connection.On("ReceiveRtcAnswer", (string sdp, string viewerID) =>
+            Connection.On("ReceiveRtcAnswer", async (string sdp, string viewerID) =>
             {
                 try
                 {
                     if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
                     {
-                        viewer.RtcSession.SetRemoteDescription("answer", sdp);
+                        await viewer.RtcSession.SetRemoteDescription("answer", sdp);
                     }
                 }
                 catch (Exception ex)

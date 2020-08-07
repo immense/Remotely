@@ -9,14 +9,12 @@ namespace Remotely.Desktop.Core.Interfaces
         event EventHandler<Rectangle> ScreenChanged;
 
         bool CaptureFullscreen { get; set; }
-        Bitmap CurrentFrame { get; set; }
         Rectangle CurrentScreenBounds { get; }
-        Bitmap PreviousFrame { get; set; }
         string SelectedScreen { get; }
 
         IEnumerable<string> GetDisplayNames();
 
-        void GetNextFrame();
+        Bitmap GetNextFrame();
 
         int GetScreenCount();
 

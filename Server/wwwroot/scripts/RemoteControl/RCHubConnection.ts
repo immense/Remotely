@@ -5,7 +5,7 @@ import { Sound } from "../Sound.js";
 import { ShowMessage } from "../UI.js";
 import { IceServerModel } from "../Models/IceServerModel.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
-import { WindowsSessionsDto, WindowsSession } from "./RtcDtos.js";
+import {  WindowsSession } from "./RtcDtos.js";
 
 var signalR = window["signalR"];
 
@@ -41,11 +41,13 @@ export class RCHubConnection {
             UI.StatusMessage.innerHTML = `Connection error: ${err.message}`;
             UI.Screen2DContext.clearRect(0, 0, UI.ScreenViewer.width, UI.ScreenViewer.height);
             UI.ScreenViewer.setAttribute("hidden", "hidden");
+            UI.VideoScreenViewer.setAttribute("hidden", "hidden");
             UI.ConnectBox.style.removeProperty("display");
         });
         this.Connection.closedCallbacks.push((ev) => {
             UI.Screen2DContext.clearRect(0, 0, UI.ScreenViewer.width, UI.ScreenViewer.height);
             UI.ScreenViewer.setAttribute("hidden", "hidden");
+            UI.VideoScreenViewer.setAttribute("hidden", "hidden");
             UI.ConnectBox.style.removeProperty("display");
         });
 

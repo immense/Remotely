@@ -8,7 +8,7 @@ export class RtcSession {
     DataChannel: RTCDataChannel;
     MessagePack: any = window['MessagePack'];
     Init(iceServers: IceServerModel[]) {
-
+       
         this.PeerConnection = new RTCPeerConnection({
             iceServers: iceServers.map(x => {
                 return {
@@ -54,6 +54,15 @@ export class RtcSession {
         }
         this.PeerConnection.onicecandidate = async (ev) => {
             await MainRc.RCHubConnection.SendIceCandidate(ev.candidate);
+        };
+
+        UI.VideoScreenViewer.onloadedmetadata = (ev) => {
+            UI.VideoScreenViewer.play();
+        }
+        this.PeerConnection.ontrack = (event) => {
+            UI.VideoScreenViewer.srcObject = new MediaStream([event.track]);
+            UI.VideoScreenViewer.removeAttribute("hidden");
+            UI.ScreenViewer.setAttribute("hidden", "hidden");
         };
     }
 

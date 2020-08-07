@@ -9,6 +9,7 @@ export var ConnectButton = document.getElementById("connectButton");
 export var RequesterNameInput = document.getElementById("nameInput");
 export var StatusMessage = document.getElementById("statusMessage");
 export var ScreenViewer = document.getElementById("screenViewer");
+export var VideoScreenViewer = document.getElementById("videoScreenViewer");
 export var ScreenViewerWrapper = document.getElementById("screenViewerWrapper");
 export var Screen2DContext = ScreenViewer.getContext("2d");
 export var HorizontalBars = document.querySelectorAll(".horizontal-button-bar");
@@ -41,6 +42,12 @@ export var ToastsWrapper = document.getElementById("toastsWrapper");
 export var WindowsSessionSelect = document.getElementById("windowsSessionSelect");
 export var RecordSessionButton = document.getElementById("recordSessionButton");
 export var DownloadRecordingButton = document.getElementById("downloadRecordingButton");
+export function GetCurrentViewer() {
+    if (ScreenViewer.hasAttribute("hidden")) {
+        return VideoScreenViewer;
+    }
+    return ScreenViewer;
+}
 export function Prompt(promptMessage) {
     return new Promise((resolve, reject) => {
         var modalDiv = document.createElement("div");
@@ -73,6 +80,8 @@ export function Prompt(promptMessage) {
 export function SetScreenSize(width, height) {
     ScreenViewer.width = width;
     ScreenViewer.height = height;
+    VideoScreenViewer.width = width;
+    VideoScreenViewer.height = height;
     Screen2DContext.clearRect(0, 0, width, height);
 }
 export function ShowMessage(message) {
@@ -85,15 +94,16 @@ export function ShowMessage(message) {
     }, 5000);
 }
 export function UpdateCursor(imageBytes, hotSpotX, hotSpotY, cssOverride) {
+    var targetElement = GetCurrentViewer();
     if (cssOverride) {
-        ScreenViewer.style.cursor = cssOverride;
+        targetElement.style.cursor = cssOverride;
     }
     else if (imageBytes.byteLength == 0) {
-        ScreenViewer.style.cursor = "default";
+        targetElement.style.cursor = "default";
     }
     else {
         var base64 = ConvertUInt8ArrayToBase64(imageBytes);
-        ScreenViewer.style.cursor = `url('data:image/png;base64,${base64}') ${hotSpotX} ${hotSpotY}, default`;
+        targetElement.style.cursor = `url('data:image/png;base64,${base64}') ${hotSpotX} ${hotSpotY}, default`;
     }
 }
 export function UpdateDisplays(selectedDisplay, displayNames) {

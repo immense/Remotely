@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Remotely.Desktop.Win.Services
@@ -43,37 +44,33 @@ namespace Remotely.Desktop.Win.Services
     {
         private readonly Dictionary<string, int> bitBltScreens = new Dictionary<string, int>();
         private readonly Dictionary<string, DirectXOutput> directxScreens = new Dictionary<string, DirectXOutput>();
+        private readonly SemaphoreSlim screenCaptureLock = new SemaphoreSlim(1);
 
         public ScreenCapturerWin()
         {
             Init();
-            GetBitBltFrame();
             SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
         }
 
         public event EventHandler<Rectangle> ScreenChanged;
 
         public bool CaptureFullscreen { get; set; } = true;
-        public Bitmap CurrentFrame { get; set; }
         public Rectangle CurrentScreenBounds { get; private set; } = Screen.PrimaryScreen.Bounds;
         public bool NeedsInit { get; set; } = true;
-        public Bitmap PreviousFrame { get; set; }
         public string SelectedScreen { get; private set; } = Screen.PrimaryScreen.DeviceName;
-        private Graphics Graphic { get; set; }
         public void Dispose()
         {
             SystemEvents.DisplaySettingsChanged -= SystemEvents_DisplaySettingsChanged;
             ClearDirectXOutputs();
-
-            CurrentFrame?.Dispose();
-            PreviousFrame?.Dispose();
         }
         public IEnumerable<string> GetDisplayNames() => Screen.AllScreens.Select(x => x.DeviceName);
 
-        public void GetNextFrame()
+        public Bitmap GetNextFrame()
         {
             try
             {
+                screenCaptureLock.Wait();
+
                 Win32Interop.SwitchToInputDesktop();
 
                 if (NeedsInit)
@@ -82,18 +79,21 @@ namespace Remotely.Desktop.Win.Services
                     Init();
                 }
 
-                PreviousFrame?.Dispose();
-                PreviousFrame = (Bitmap)CurrentFrame.Clone();
-
                 // Sometimes DX will result in a timeout, even when there are changes
                 // on the screen.  I've observed this when a laptop lid is closed, or
                 // on some machines that aren't connected to a monitor.  This will
                 // have it fall back to BitBlt in those cases.
-                if (!directxScreens.ContainsKey(SelectedScreen) ||
-                    GetDirectXFrame() == GetDirectXFrameResult.Timeout)
+                if (directxScreens.ContainsKey(SelectedScreen))
                 {
-                    GetBitBltFrame();
+                    var directXResult = GetDirectXFrame();
+
+                    if (directXResult.result == GetDirectXFrameResult.Success)
+                    {
+                        return directXResult.frame;
+                    }
                 }
+
+                return GetBitBltFrame();
 
             }
             catch (Exception e)
@@ -101,6 +101,11 @@ namespace Remotely.Desktop.Win.Services
                 Logger.Write(e);
                 NeedsInit = true;
             }
+            finally
+            {
+                screenCaptureLock.Release();
+            }
+            return null;
         }
 
         public int GetScreenCount() => Screen.AllScreens.Length;
@@ -111,9 +116,6 @@ namespace Remotely.Desktop.Win.Services
 
         public void Init()
         {
-            CurrentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
-            PreviousFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
-
             InitBitBlt();
             InitDirectX();
 
@@ -147,14 +149,17 @@ namespace Remotely.Desktop.Win.Services
             directxScreens.Clear();
         }
 
-        private void GetBitBltFrame()
+        private Bitmap GetBitBltFrame()
         {
             try
             {
                 Win32Interop.SwitchToInputDesktop();
-                PreviousFrame.Dispose();
-                PreviousFrame = (Bitmap)CurrentFrame.Clone();
-                Graphic.CopyFromScreen(CurrentScreenBounds.Left, CurrentScreenBounds.Top, 0, 0, new Size(CurrentScreenBounds.Width, CurrentScreenBounds.Height));
+                var currentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
+                using (var graphic = Graphics.FromImage(currentFrame))
+                {
+                    graphic.CopyFromScreen(CurrentScreenBounds.Left, CurrentScreenBounds.Top, 0, 0, new Size(CurrentScreenBounds.Width, CurrentScreenBounds.Height));
+                }
+                return currentFrame;
             }
             catch (Exception ex)
             {
@@ -167,6 +172,8 @@ namespace Remotely.Desktop.Win.Services
                 }
                 NeedsInit = true;
             }
+
+            return null;
         }
 
         private enum GetDirectXFrameResult
@@ -176,7 +183,7 @@ namespace Remotely.Desktop.Win.Services
             Timeout,
         }
 
-        private GetDirectXFrameResult GetDirectXFrame()
+        private (GetDirectXFrameResult result, Bitmap frame) GetDirectXFrame()
         {
             try
             {
@@ -193,13 +200,13 @@ namespace Remotely.Desktop.Win.Services
                 {
                     if (result.Code == SharpDX.DXGI.ResultCode.WaitTimeout.Code)
                     {
-                        return GetDirectXFrameResult.Timeout;
+                        return (GetDirectXFrameResult.Timeout, null);
                     }
                     else
                     {
                         Logger.Write($"TryAcquireFrame error.  Code: {result.Code}");
                         NeedsInit = true;
-                        return GetDirectXFrameResult.Failure;
+                        return (GetDirectXFrameResult.Failure, null);
                     }
                 }
 
@@ -210,9 +217,11 @@ namespace Remotely.Desktop.Win.Services
                         duplicatedOutput.ReleaseFrame();
                     }
                     catch { }
-                    return GetDirectXFrameResult.Failure;
+                    return (GetDirectXFrameResult.Failure, null);
                 }
-          
+
+                var currentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
+
                 // Copy resource into memory that can be accessed by the CPU
                 using (var screenTexture2D = screenResource.QueryInterface<Texture2D>())
                 {
@@ -225,7 +234,7 @@ namespace Remotely.Desktop.Win.Services
                 var boundsRect = new Rectangle(0, 0, texture2D.Description.Width, texture2D.Description.Height);
 
                 // Copy pixels from screen capture Texture to GDI bitmap
-                var mapDest = CurrentFrame.LockBits(boundsRect, ImageLockMode.WriteOnly, CurrentFrame.PixelFormat);
+                var mapDest = currentFrame.LockBits(boundsRect, ImageLockMode.WriteOnly, currentFrame.PixelFormat);
                 var sourcePtr = mapSource.DataPointer;
                 var destPtr = mapDest.Scan0;
                 for (int y = 0; y < texture2D.Description.Height; y++)
@@ -239,13 +248,13 @@ namespace Remotely.Desktop.Win.Services
                 }
 
                 // Release source and dest locks
-                CurrentFrame.UnlockBits(mapDest);
+                currentFrame.UnlockBits(mapDest);
                 device.ImmediateContext.UnmapSubresource(texture2D, 0);
 
                 screenResource.Dispose();
                 duplicatedOutput.ReleaseFrame();
 
-                return GetDirectXFrameResult.Success;
+                return (GetDirectXFrameResult.Success, currentFrame);
             }
             catch (SharpDXException e)
             {
@@ -253,16 +262,15 @@ namespace Remotely.Desktop.Win.Services
                 {
                     Logger.Write(e);
                     NeedsInit = true;
-                    return GetDirectXFrameResult.Failure;
+                    return (GetDirectXFrameResult.Failure, null);
                 }
-                return GetDirectXFrameResult.Timeout;
+                return (GetDirectXFrameResult.Timeout, null);
             }
         }
 
         private void InitBitBlt()
         {
             bitBltScreens.Clear();
-            Graphic = Graphics.FromImage(CurrentFrame);
             for (var i = 0; i < Screen.AllScreens.Length; i++)
             {
                 bitBltScreens.Add(Screen.AllScreens[i].DeviceName, i);

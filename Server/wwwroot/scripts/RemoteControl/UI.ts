@@ -1,9 +1,5 @@
 ﻿import { MainRc } from "./Main.js";
-import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
-import { Point } from "../Models/Point.js";
-import { GetDistanceBetween, ConvertUInt8ArrayToBase64 } from "../Utilities.js";
-import { UploadFiles } from "./FileUploader.js";
-import { Sound } from "../Sound.js";
+import { ConvertUInt8ArrayToBase64 } from "../Utilities.js";
 import { WindowsSession, SessionType } from "./RtcDtos.js";
 
 export var AudioButton = document.getElementById("audioButton") as HTMLButtonElement;
@@ -14,6 +10,7 @@ export var ConnectButton = document.getElementById("connectButton") as HTMLButto
 export var RequesterNameInput = document.getElementById("nameInput") as HTMLInputElement;
 export var StatusMessage = document.getElementById("statusMessage") as HTMLDivElement;
 export var ScreenViewer = document.getElementById("screenViewer") as HTMLCanvasElement;
+export var VideoScreenViewer = document.getElementById("videoScreenViewer") as HTMLVideoElement;
 export var ScreenViewerWrapper = document.getElementById("screenViewerWrapper") as HTMLDivElement;
 export var Screen2DContext = ScreenViewer.getContext("2d");
 export var HorizontalBars = document.querySelectorAll(".horizontal-button-bar");
@@ -46,6 +43,13 @@ export var ToastsWrapper = document.getElementById("toastsWrapper") as HTMLDivEl
 export var WindowsSessionSelect = document.getElementById("windowsSessionSelect") as HTMLSelectElement;
 export var RecordSessionButton = document.getElementById("recordSessionButton") as HTMLButtonElement;
 export var DownloadRecordingButton = document.getElementById("downloadRecordingButton") as HTMLButtonElement;
+
+export function GetCurrentViewer(): HTMLElement {
+    if (ScreenViewer.hasAttribute("hidden")) {
+        return VideoScreenViewer;
+    }
+    return ScreenViewer;
+}
 
 export function Prompt(promptMessage: string): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -89,6 +93,8 @@ export function Prompt(promptMessage: string): Promise<string> {
 export function SetScreenSize(width: number, height: number) {
     ScreenViewer.width = width;
     ScreenViewer.height = height;
+    VideoScreenViewer.width = width;
+    VideoScreenViewer.height = height;
     Screen2DContext.clearRect(0, 0, width, height);
 }
 
@@ -103,15 +109,17 @@ export function ShowMessage(message: string) {
 }
 
 export function UpdateCursor(imageBytes: Uint8Array, hotSpotX: number, hotSpotY: number, cssOverride: string) {
+    var targetElement = GetCurrentViewer();
+
     if (cssOverride) {
-        ScreenViewer.style.cursor = cssOverride;
+        targetElement.style.cursor = cssOverride;
     }
     else if (imageBytes.byteLength == 0) {
-        ScreenViewer.style.cursor = "default";
+        targetElement.style.cursor = "default";
     }
     else {
         var base64 = ConvertUInt8ArrayToBase64(imageBytes);
-        ScreenViewer.style.cursor = `url('data:image/png;base64,${base64}') ${hotSpotX} ${hotSpotY}, default`;
+        targetElement.style.cursor = `url('data:image/png;base64,${base64}') ${hotSpotX} ${hotSpotY}, default`;
     }
 }
 
