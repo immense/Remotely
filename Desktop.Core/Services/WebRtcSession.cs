@@ -35,11 +35,12 @@ namespace Remotely.Desktop.Core.Services
         private Transceiver Transceiver { get; set; }
         private ExternalVideoTrackSource VideoSource { get; set; }
         private Viewer Viewer { get; }
+
         public bool IsVideoTrackConnected
         {
             get
             {
-                return PeerSession?.LocalVideoTracks?.FirstOrDefault()?.Source?.Enabled == true;
+                return Transceiver?.LocalVideoTrack?.Enabled == true;
             }
         }
 
