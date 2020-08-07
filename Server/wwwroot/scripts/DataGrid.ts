@@ -30,6 +30,7 @@ export function AddOrUpdateDevices(devices: Array<Device>) {
         AddOrUpdateDevice(x, false);
     });
     ApplyFilter();
+    UpdateDeviceCounts();
 }
 
 export function AddOrUpdateDevice(device: Device, sortDevices: boolean) {
@@ -42,10 +43,17 @@ export function AddOrUpdateDevice(device: Device, sortDevices: boolean) {
     }
 
     if (sortDevices) {
+        var selectedDevices = GetSelectedDevices();
+
         UI.DeviceGrid.querySelectorAll(".record-row").forEach(row => {
             row.remove();
         });
         AddOrUpdateDevices(DataSource);
+
+        selectedDevices.forEach(x => {
+            document.getElementById(x.ID).classList.add("row-selected");
+        });
+
         return;
     }
 
