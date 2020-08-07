@@ -61,6 +61,8 @@ namespace Remotely.Desktop.Core.Services
                 VideoSource?.Dispose();
                 try
                 {
+                    // Unable to exit process until DataChannel is removed/disposed,
+                    // and this throws internally (at least in 2.0 version).
                     PeerSession?.RemoveDataChannel(CaptureChannel);
                 }
                 catch { }
