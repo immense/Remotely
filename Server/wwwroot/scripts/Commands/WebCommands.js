@@ -392,9 +392,13 @@ function uploadFiles(fileList) {
             AddConsoleOutput("File upload failed.");
             reject();
         });
-        xhr.addEventListener("progress", function (e) {
-            AddConsoleOutput("File upload progress: " + String(isFinite(e.loaded / e.total) ? e.loaded / e.total : 0) + "%");
-        });
+        xhr.upload.onprogress = (e) => {
+            var currentPercent = isFinite(e.loaded / e.total) ? Math.round(e.loaded / e.total * 100) : 0;
+            if (currentPercent != uploadPercent) {
+                var uploadPercent = currentPercent;
+                AddConsoleOutput("File upload progress: " + String(currentPercent) + "%");
+            }
+        };
         xhr.send(fd);
     });
 }
