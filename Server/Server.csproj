@@ -196,12 +196,6 @@
     </Content>
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="CurrentVersion.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 
   <ItemGroup>
     <Folder Include="Properties\" />
