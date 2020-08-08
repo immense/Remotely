@@ -174,6 +174,15 @@ namespace Remotely.Agent.Services
                 }
 
                 using var wc = new WebClient();
+                var lastProgressPercent = 0;
+                wc.UploadProgressChanged += async (sender, args) =>
+                {
+                    if (args.ProgressPercentage > lastProgressPercent)
+                    {
+                        lastProgressPercent = args.ProgressPercentage;
+                        await HubConnection.SendAsync("DownloadFileProgress", lastProgressPercent, senderConnectionID);
+                    }
+                };
                 var response = await wc.UploadFileTaskAsync($"{ConnectionInfo.Host}/API/FileSharing/", filePath);
                 var fileIDs = JsonSerializer.Deserialize<string[]>(Encoding.UTF8.GetString(response));
                 await HubConnection.SendAsync("DownloadFile", fileIDs[0], senderConnectionID);

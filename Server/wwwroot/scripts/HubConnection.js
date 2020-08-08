@@ -87,6 +87,9 @@ function applyMessageHandlers(hubConnection) {
     hubConnection.on("DownloadFile", (fileID) => {
         location.assign(`/API/FileSharing/${fileID}`);
     });
+    hubConnection.on("DownloadFileProgress", (progressPercent) => {
+        AddConsoleOutput(`Remote computer upload progress: ${progressPercent}%`);
+    });
     hubConnection.on("TransferCompleted", (transferID) => {
         var completedWrapper = document.getElementById(transferID + "-completed");
         var count = parseInt(completedWrapper.innerHTML);

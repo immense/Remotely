@@ -160,6 +160,11 @@ namespace Remotely.Server.Hubs
         {
             return BrowserHubContext.Clients.Client(requesterID).SendAsync("DownloadFile", fileID);
         }
+        public Task DownloadFileProgress(int progressPercent, string requesterID)
+        {
+            return BrowserHubContext.Clients.Client(requesterID).SendAsync("DownloadFileProgress", progressPercent);
+        }
+
         public override Task OnConnectedAsync()
 		{
             return base.OnConnectedAsync();
