@@ -183,9 +183,18 @@ namespace Remotely.Agent.Services
                         await HubConnection.SendAsync("DownloadFileProgress", lastProgressPercent, senderConnectionID);
                     }
                 };
-                var response = await wc.UploadFileTaskAsync($"{ConnectionInfo.Host}/API/FileSharing/", filePath);
-                var fileIDs = JsonSerializer.Deserialize<string[]>(Encoding.UTF8.GetString(response));
-                await HubConnection.SendAsync("DownloadFile", fileIDs[0], senderConnectionID);
+
+                try
+                {
+                    var response = await wc.UploadFileTaskAsync($"{ConnectionInfo.Host}/API/FileSharing/", filePath);
+                    var fileIDs = JsonSerializer.Deserialize<string[]>(Encoding.UTF8.GetString(response));
+                    await HubConnection.SendAsync("DownloadFile", fileIDs[0], senderConnectionID);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                    await HubConnection.SendAsync("DisplayMessage", "Error occurred while uploading file from remote computer.", "Upload error.", senderConnectionID);
+                }
             });
             HubConnection.On("ChangeWindowsSession", async (string serviceID, string viewerID, int targetSessionID) =>
             {

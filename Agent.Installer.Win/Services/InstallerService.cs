@@ -224,9 +224,10 @@ namespace Remotely.Agent.Installer.Win.Services
         {
             var targetFile = Path.Combine(Path.GetTempPath(), $"Remotely-Agent.zip");
 
-            if (CommandLineParser.CommandLineArgs.TryGetValue("path", out var result))
+            if (CommandLineParser.CommandLineArgs.TryGetValue("path", out var result) &&
+                FileIO.Exists(result))
             {
-                FileIO.Copy(result, targetFile, true);
+                targetFile = result;
             }
             else
             {
