@@ -172,8 +172,8 @@ namespace Remotely.Agent.Services
                     await HubConnection.SendAsync("DisplayMessage", "File not found on remote device.", "File not found.", senderConnectionID);
                     return;
                 }
-                var wr = WebRequest.CreateHttp($"{ConnectionInfo.Host}/API/FileSharing/");
-                var wc = new WebClient();
+
+                using var wc = new WebClient();
                 var response = await wc.UploadFileTaskAsync($"{ConnectionInfo.Host}/API/FileSharing/", filePath);
                 var fileIDs = JsonSerializer.Deserialize<string[]>(Encoding.UTF8.GetString(response));
                 await HubConnection.SendAsync("DownloadFile", fileIDs[0], senderConnectionID);
@@ -235,15 +235,11 @@ namespace Remotely.Agent.Services
 
                     filename = new string(legalChars.ToArray());
 
-                    using (var rs = response.GetResponseStream())
-                    {
-                        using (var fs = new FileStream(Path.Combine(sharedFilePath, filename), FileMode.Create))
-                        {
-                            rs.CopyTo(fs);
-                        }
-                    }
+                    using var rs = response.GetResponseStream();
+                    using var fs = new FileStream(Path.Combine(sharedFilePath, filename), FileMode.Create);
+                    rs.CopyTo(fs);
                 }
-                await this.HubConnection.SendAsync("TransferCompleted", transferID, requesterID);
+                await HubConnection.SendAsync("TransferCompleted", transferID, requesterID);
             });
             HubConnection.On("DeployScript", async (string mode, string fileID, string commandResultID, string requesterID) => {
                 if (!IsServerVerified)
