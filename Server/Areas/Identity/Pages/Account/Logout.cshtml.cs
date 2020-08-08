@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using Remotely.Server.Hubs;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
 
@@ -18,17 +19,17 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
         private readonly SignInManager<RemotelyUser> _signInManager;
         public LogoutModel(SignInManager<RemotelyUser> signInManager,
             ILogger<LogoutModel> logger,
-            IHubContext<RCDeviceHub> rcDeviceHub,
-            IHubContext<RCBrowserHub> rcBrowserHub)
+            IHubContext<CasterHub> casterHubContext,
+            IHubContext<RCBrowserHub> rcBrowserHubContext)
         {
             _signInManager = signInManager;
             _logger = logger;
-            RCDeviceHub = rcDeviceHub;
-            RCBrowserHub = rcBrowserHub;
+            CasterHubContext = casterHubContext;
+            RCBrowserHubContext = rcBrowserHubContext;
         }
 
-        private IHubContext<RCDeviceHub> RCDeviceHub { get; }
-        private IHubContext<RCBrowserHub> RCBrowserHub { get; }
+        private IHubContext<CasterHub> CasterHubContext { get; }
+        private IHubContext<RCBrowserHub> RCBrowserHubContext { get; }
 
         public void OnGet()
         {
@@ -38,11 +39,11 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
         {
             if (HttpContext.User.Identity.IsAuthenticated)
             {
-                var activeSessions = Services.RCDeviceHub.SessionInfoList.Where(x => x.Value.RequesterUserName == HttpContext.User.Identity.Name);
+                var activeSessions = CasterHub.SessionInfoList.Where(x => x.Value.RequesterUserName == HttpContext.User.Identity.Name);
                 foreach (var session in activeSessions.ToList())
                 {
-                    await RCDeviceHub.Clients.Client(session.Value.RCDeviceSocketID).SendAsync("Disconnect", "User logged out.");
-                    await RCBrowserHub.Clients.Client(session.Value.RequesterSocketID).SendAsync("ConnectionFailed");
+                    await CasterHubContext.Clients.Client(session.Value.CasterSocketID).SendAsync("Disconnect", "User logged out.");
+                    await RCBrowserHubContext.Clients.Client(session.Value.RequesterSocketID).SendAsync("ConnectionFailed");
                 }
             }
         

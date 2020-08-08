@@ -1,5 +1,5 @@
 import { MainRc } from "./Main.js";
-import { CtrlAltDelDto, KeyDownDto, KeyPressDto, KeyUpDto, MouseDownDto, MouseMoveDto, MouseUpDto, MouseWheelDto, QualityChangeDto, SelectScreenDto, TapDto, AutoQualityAdjustDto, ToggleAudioDto, ToggleBlockInputDto, ClipboardTransferDto, FileDto, WindowsSessionsDto, GenericDto } from "./RtcDtos.js";
+import { CtrlAltDelDto, KeyDownDto, KeyPressDto, KeyUpDto, MouseDownDto, MouseMoveDto, MouseUpDto, MouseWheelDto, QualityChangeDto, SelectScreenDto, TapDto, AutoQualityAdjustDto, ToggleAudioDto, ToggleBlockInputDto, ClipboardTransferDto, FileDto, WindowsSessionsDto, GenericDto, ToggleWebRtcVideoDto } from "./RtcDtos.js";
 import { CreateGUID, When } from "../Utilities.js";
 import { FileTransferProgress } from "./UI.js";
 import { BinaryDtoType } from "../Enums/BinaryDtoType.js";
@@ -9,6 +9,9 @@ export class MessageSender {
     }
     ChangeWindowsSession(sessionId) {
         MainRc.RCHubConnection.ChangeWindowsSession(sessionId);
+    }
+    SendFrameReceived() {
+        this.SendToAgent(() => MainRc.RtcSession.SendDto(new GenericDto(BinaryDtoType.FrameReceived)), () => MainRc.RCHubConnection.SendFrameReceived());
     }
     SendSelectScreen(displayName) {
         this.SendToAgent(() => MainRc.RtcSession.SendDto(new SelectScreenDto(displayName)), () => MainRc.RCHubConnection.SendSelectScreen(displayName));
@@ -71,6 +74,9 @@ export class MessageSender {
     ;
     SendToggleBlockInput(toggleOn) {
         this.SendToAgent(() => MainRc.RtcSession.SendDto(new ToggleBlockInputDto(toggleOn)), () => MainRc.RCHubConnection.SendToggleBlockInput(toggleOn));
+    }
+    SendToggleWebRtcVideo(toggleOn) {
+        this.SendToAgent(() => MainRc.RtcSession.SendDto(new ToggleWebRtcVideoDto(toggleOn)), () => MainRc.RCHubConnection.SendToggleWebRtcVideo(toggleOn));
     }
     SendClipboardTransfer(text, typeText) {
         this.SendToAgent(() => MainRc.RtcSession.SendDto(new ClipboardTransferDto(text, typeText)), () => MainRc.RCHubConnection.SendClipboardTransfer(text, typeText));

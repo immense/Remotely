@@ -22,6 +22,7 @@ using Microsoft.OpenApi.Models;
 using Remotely.Server.Attributes;
 using Npgsql;
 using Microsoft.Extensions.Logging;
+using Remotely.Server.Hubs;
 
 namespace Remotely.Server
 {
@@ -142,7 +143,6 @@ namespace Remotely.Server
             services.AddScoped<IEmailSenderEx, EmailSenderEx>();
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<DataService>();
-            services.AddScoped<RemoteControlSessionRecorder>();
             services.AddSingleton<ApplicationConfig>();
             services.AddScoped<ApiAuthorizationFilter>();
             services.AddHostedService<CleanupService>();
@@ -202,12 +202,12 @@ namespace Remotely.Server
                     options.ApplicationMaxBufferSize = 500_000;
                     options.TransportMaxBufferSize = 500_000;
                 });
-                routeBuilder.MapHub<DeviceHub>("/DeviceHub", options =>
+                routeBuilder.MapHub<AgentHub>("/AgentHub", options =>
                 {
                     options.ApplicationMaxBufferSize = 500_000;
                     options.TransportMaxBufferSize = 500_000;
                 });
-                routeBuilder.MapHub<RCDeviceHub>("/RCDeviceHub", options =>
+                routeBuilder.MapHub<CasterHub>("/CasterHub", options =>
                 {
                     options.ApplicationMaxBufferSize = 100_000;
                     options.TransportMaxBufferSize = 100_000;

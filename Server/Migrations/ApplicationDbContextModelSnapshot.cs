@@ -14,7 +14,7 @@ namespace Remotely.Server.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.3");
+                .HasAnnotation("ProductVersion", "3.1.5");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -563,6 +563,9 @@ namespace Remotely.Server.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("OrganizationID")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TempPassword")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("UserOptions")

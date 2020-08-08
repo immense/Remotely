@@ -23,11 +23,19 @@ export class RtcSession {
                 console.log("Data channel closed.");
                 UI.ConnectionP2PIcon.style.display = "none";
                 UI.ConnectionRelayedIcon.style.display = "unset";
+                UI.StreamVideoButton.setAttribute("hidden", "hidden");
+                UI.ScreenViewer.removeAttribute("hidden");
+                UI.QualityButton.removeAttribute("hidden");
+                UI.VideoScreenViewer.setAttribute("hidden", "hidden");
             };
             this.DataChannel.onerror = (ev) => {
                 console.log("Data channel error.", ev.error);
                 UI.ConnectionP2PIcon.style.display = "none";
                 UI.ConnectionRelayedIcon.style.display = "unset";
+                UI.StreamVideoButton.setAttribute("hidden", "hidden");
+                UI.ScreenViewer.removeAttribute("hidden");
+                UI.QualityButton.removeAttribute("hidden");
+                UI.VideoScreenViewer.setAttribute("hidden", "hidden");
             };
             this.DataChannel.onmessage = async (ev) => {
                 var data = ev.data;
@@ -37,6 +45,7 @@ export class RtcSession {
                 console.log("Data channel opened.");
                 UI.ConnectionP2PIcon.style.display = "unset";
                 UI.ConnectionRelayedIcon.style.display = "none";
+                UI.StreamVideoButton.removeAttribute("hidden");
             };
         };
         this.PeerConnection.onconnectionstatechange = function (ev) {
@@ -47,6 +56,14 @@ export class RtcSession {
         };
         this.PeerConnection.onicecandidate = async (ev) => {
             await MainRc.RCHubConnection.SendIceCandidate(ev.candidate);
+        };
+        UI.VideoScreenViewer.onloadedmetadata = (ev) => {
+            UI.VideoScreenViewer.play();
+        };
+        this.PeerConnection.ontrack = (event) => {
+            if (event.track) {
+                UI.VideoScreenViewer.srcObject = new MediaStream([event.track]);
+            }
         };
     }
     Disconnect() {

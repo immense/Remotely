@@ -6,6 +6,7 @@ using Remotely.Shared.Models;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
 using Microsoft.AspNetCore.SignalR;
+using Remotely.Server.Hubs;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,21 +19,21 @@ namespace Remotely.Server.API
         public LoginController(SignInManager<RemotelyUser> signInManager, 
             DataService dataService, 
             ApplicationConfig appConfig,
-            IHubContext<RCDeviceHub> rcDeviceHub,
+            IHubContext<CasterHub> casterHub,
             IHubContext<RCBrowserHub> rcBrowserHub)
         {
             SignInManager = signInManager;
             DataService = dataService;
             AppConfig = appConfig;
-            RCDeviceHub = rcDeviceHub;
-            RCBrowserHub = rcBrowserHub;
+            CasterHubContext = casterHub;
+            RCBrowserHubContext = rcBrowserHub;
         }
 
         private SignInManager<RemotelyUser> SignInManager { get; }
         private DataService DataService { get; }
         public ApplicationConfig AppConfig { get; }
-        private IHubContext<RCDeviceHub> RCDeviceHub { get; }
-        private IHubContext<RCBrowserHub> RCBrowserHub { get; }
+        private IHubContext<CasterHub> CasterHubContext { get; }
+        private IHubContext<RCBrowserHub> RCBrowserHubContext { get; }
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]ApiLogin login)
@@ -72,11 +73,11 @@ namespace Remotely.Server.API
             if (HttpContext?.User?.Identity?.IsAuthenticated == true)
             {
                 orgId = DataService.GetUserByName(HttpContext.User.Identity.Name)?.OrganizationID;
-                var activeSessions = Services.RCDeviceHub.SessionInfoList.Where(x => x.Value.RequesterUserName == HttpContext.User.Identity.Name);
+                var activeSessions = CasterHub.SessionInfoList.Where(x => x.Value.RequesterUserName == HttpContext.User.Identity.Name);
                 foreach (var session in activeSessions.ToList())
                 {
-                    await RCDeviceHub.Clients.Client(session.Value.RCDeviceSocketID).SendAsync("Disconnect", "User logged out.");
-                    await RCBrowserHub.Clients.Client(session.Value.RequesterSocketID).SendAsync("ConnectionFailed");
+                    await CasterHubContext.Clients.Client(session.Value.CasterSocketID).SendAsync("Disconnect", "User logged out.");
+                    await RCBrowserHubContext.Clients.Client(session.Value.RequesterSocketID).SendAsync("ConnectionFailed");
                 }
             }
             await SignInManager.SignOutAsync();

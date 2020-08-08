@@ -43,6 +43,10 @@ button.navbar-toggler:hover {
     transition: .2s background-color ease;
 }
 
+.sk-chase-dot:before {
+    background-color: rgb(200,200,200);
+}
+
 .logo-subtitle {
     color: deepskyblue;
 }

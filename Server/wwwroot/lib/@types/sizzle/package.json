@@ -1,32 +1,36 @@
 {
-  "_from": "@types/sizzle@*",
+  "_args": [
+    [
+      "@types/sizzle@2.3.2",
+      "D:\\GitHub\\SyncroRemoteControl\\Syncro.SignalingServer"
+    ]
+  ],
+  "_from": "@types/sizzle@2.3.2",
   "_id": "@types/sizzle@2.3.2",
   "_inBundle": false,
   "_integrity": "sha512-7EJYyKTL7tFR8+gDbB6Wwz/arpGa0Mywk1TJbNzKzHtzbwVmY4HR9WqS5VV7dsBUKQmPNr192jHr/VpBluj/hg==",
   "_location": "/@types/sizzle",
   "_phantomChildren": {},
   "_requested": {
-    "type": "range",
+    "type": "version",
     "registry": true,
-    "raw": "@types/sizzle@*",
+    "raw": "@types/sizzle@2.3.2",
     "name": "@types/sizzle",
     "escapedName": "@types%2fsizzle",
     "scope": "@types",
-    "rawSpec": "*",
+    "rawSpec": "2.3.2",
     "saveSpec": null,
-    "fetchSpec": "*"
+    "fetchSpec": "2.3.2"
   },
   "_requiredBy": [
     "/@types/jquery"
   ],
   "_resolved": "https://registry.npmjs.org/@types/sizzle/-/sizzle-2.3.2.tgz",
-  "_shasum": "a811b8c18e2babab7d542b3365887ae2e4d9de47",
-  "_spec": "@types/sizzle@*",
-  "_where": "D:\\source\\repos\\Remotely\\Server\\node_modules\\@types\\jquery",
+  "_spec": "2.3.2",
+  "_where": "D:\\GitHub\\SyncroRemoteControl\\Syncro.SignalingServer",
   "bugs": {
     "url": "https://github.com/DefinitelyTyped/DefinitelyTyped/issues"
   },
-  "bundleDependencies": false,
   "contributors": [
     {
       "name": "Leonard Thieu",
@@ -34,7 +38,6 @@
     }
   ],
   "dependencies": {},
-  "deprecated": false,
   "description": "TypeScript definitions for sizzle",
   "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped#readme",
   "license": "MIT",

@@ -221,6 +221,16 @@ export class ToggleBlockInputDto implements BinaryDto {
     DtoType: BinaryDtoType = BinaryDtoType.ToggleBlockInput;
 }
 
+export class ToggleWebRtcVideoDto implements BinaryDto {
+    constructor(toggleOn: boolean) {
+        this.ToggleOn = toggleOn;
+    }
+
+    ToggleOn: boolean;
+    DtoType: BinaryDtoType = BinaryDtoType.ToggleWebRtcVideo;
+}
+
+
 export class WindowsSessionsDto implements BinaryDto {
     
     WindowsSessions: Array<WindowsSession>;

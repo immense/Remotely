@@ -9,18 +9,28 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Models;
+using Remotely.Server.Services;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
+        private readonly DataService _dataService;
         private readonly SignInManager<RemotelyUser> _signInManager;
+        private readonly UserManager<RemotelyUser> _userManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<RemotelyUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<RemotelyUser> signInManager, 
+            UserManager<RemotelyUser> userManager,
+            DataService dataService, 
+            ILogger<LoginModel> logger)
         {
+            _dataService = dataService;
             _signInManager = signInManager;
+            _userManager = userManager;
             _logger = logger;
         }
 
@@ -90,6 +100,19 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
                 }
                 else
                 {
+                    if (await _dataService.TempPasswordSignIn(Input.Email, Input.Password))
+                    {
+                        var user = await _userManager.FindByNameAsync(Input.Email);
+                        var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                        var callbackUrl = Url.Page(
+                            "/Account/ResetPassword",
+                            pageHandler: null,
+                            values: new { area = "Identity", code },
+                            protocol: Request.Scheme);
+
+                        return Redirect(callbackUrl);
+                    }
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                     return Page();
                 }

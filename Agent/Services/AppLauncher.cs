@@ -24,14 +24,14 @@ namespace Remotely.Agent.Services
         {
             try
             {
-                var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", EnvironmentHelper.ScreenCastExecutableFileName);
+                var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Desktop", EnvironmentHelper.DesktopExecutableFileName);
                 if (!File.Exists(rcBinaryPath))
                 {
                     await hubConnection.SendAsync("DisplayMessage", "Chat executable not found on target device.", "Executable not found on device.", requesterID);
                 }
 
 
-                // Start ScreenCast.
+                // Start Desktop app.
                 await hubConnection.SendAsync("DisplayMessage", $"Starting chat service...", "Starting chat service.", requesterID);
                 if (EnvironmentHelper.IsWindows)
                 {
@@ -50,7 +50,7 @@ namespace Remotely.Agent.Services
                             out var procInfo);
                         if (!result)
                         {
-                            await hubConnection.SendAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
+                            await hubConnection.SendAsync("DisplayMessage", "Chat service failed to start on target device.", "Failed to start chat service.", requesterID);
                         }
                         else
                         {
@@ -60,14 +60,14 @@ namespace Remotely.Agent.Services
                 }
                 else if (EnvironmentHelper.IsLinux)
                 {
-                    var args = $"xterm -e {rcBinaryPath} -mode Chat -requester \"{requesterID}\" -organization \"{orgName}\" & disown";
-                    return StartLinuxScreenCaster(args);
+                    var args = $"{rcBinaryPath} -mode Chat -requester \"{requesterID}\" -organization \"{orgName}\" & disown";
+                    return StartLinuxDesktopApp(args);
                 }
             }
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                await hubConnection.SendAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
+                await hubConnection.SendAsync("DisplayMessage", "Chat service failed to start on target device.", "Failed to start chat service.", requesterID);
             }
             return -1;
         }
@@ -76,7 +76,7 @@ namespace Remotely.Agent.Services
         {
             try
             {
-                var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", EnvironmentHelper.ScreenCastExecutableFileName);
+                var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Desktop", EnvironmentHelper.DesktopExecutableFileName);
                 if (!File.Exists(rcBinaryPath))
                 {
                     await hubConnection.SendAsync("DisplayMessage", "Remote control executable not found on target device.", "Executable not found on device.", requesterID);
@@ -84,13 +84,15 @@ namespace Remotely.Agent.Services
                 }
 
 
-                // Start ScreenCast.
+                // Start Desktop app.
                 await hubConnection.SendAsync("DisplayMessage", $"Starting remote control...", "Starting remote control.", requesterID);
                 if (EnvironmentHelper.IsWindows)
                 {
 
                     if (EnvironmentHelper.IsDebug)
                     {
+                        // SignalR Connection IDs might start with a hyphen.  We surround them
+                        // with quotes so the command line will be parsed correctly.
                         Process.Start(rcBinaryPath, $"-mode Unattended -requester \"{requesterID}\" -serviceid \"{serviceID}\" -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host}");
                     }
                     else
@@ -110,7 +112,7 @@ namespace Remotely.Agent.Services
                 else if (EnvironmentHelper.IsLinux)
                 {
                     var args = $"{rcBinaryPath} -mode Unattended -requester \"{requesterID}\" -serviceid \"{serviceID}\" -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} & disown";
-                    StartLinuxScreenCaster(args);
+                    StartLinuxDesktopApp(args);
                 }
             }
             catch (Exception ex)
@@ -123,13 +125,15 @@ namespace Remotely.Agent.Services
         {
             try
             {
-                var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", EnvironmentHelper.ScreenCastExecutableFileName);
-                // Start ScreenCast.                 
+                var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Desktop", EnvironmentHelper.DesktopExecutableFileName);
+                // Start Desktop app.                 
                 if (EnvironmentHelper.IsWindows)
                 {
                     Logger.Write("Restarting screen caster.");
                     if (EnvironmentHelper.IsDebug)
                     {
+                        // SignalR Connection IDs might start with a hyphen.  We surround them
+                        // with quotes so the command line will be parsed correctly.
                         Process.Start(rcBinaryPath, $"-mode Unattended -requester \"{requesterID}\" -serviceid \"{serviceID}\" -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} -relaunch true -viewers {String.Join(",", viewerIDs)}");
                     }
                     else
@@ -156,7 +160,7 @@ namespace Remotely.Agent.Services
                 else if (EnvironmentHelper.IsLinux)
                 {
                     var args = $"{rcBinaryPath} -mode Unattended -requester \"{requesterID}\" -serviceid \"{serviceID}\" -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} -relaunch true -viewers {string.Join(",", viewerIDs)} & disown";
-                    StartLinuxScreenCaster(args);
+                    StartLinuxDesktopApp(args);
                 }
             }
             catch (Exception ex)
@@ -167,7 +171,7 @@ namespace Remotely.Agent.Services
             }
         }
 
-        private int StartLinuxScreenCaster(string args)
+        private int StartLinuxDesktopApp(string args)
         {
             var xauthority = string.Empty;
 

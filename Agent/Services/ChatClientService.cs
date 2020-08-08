@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Remotely.Agent.Models;
+using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Runtime.Caching;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,44 +34,58 @@ namespace Remotely.Agent.Services
         };
 
         private MemoryCache ChatClients { get; } = new MemoryCache("ChatClients");
-        public async Task SendMessage(string message, string orgName, string senderConnectionID, HubConnection hubConnection)
+        public async Task SendMessage(string senderName, 
+            string message, 
+            string orgName, 
+            bool disconnected,
+            string senderConnectionID, 
+            HubConnection hubConnection)
         {
+            if (!await MessageLock.WaitAsync(30000))
+            {
+                Logger.Write("Timed out waiting for chat message lock.", Shared.Enums.EventType.Warning);
+                return;
+            }
+
             try
             {
-                if (await MessageLock.WaitAsync(30000))
+                ChatSession chatSession;
+                if (!ChatClients.Contains(senderConnectionID))
                 {
-                    ChatSession chatSession;
-                    if (!ChatClients.Contains(senderConnectionID))
+                    if (disconnected)
                     {
-                        var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ScreenCast", EnvironmentHelper.ScreenCastExecutableFileName);
-                        var procID = await AppLauncher.LaunchChatService(orgName, senderConnectionID, hubConnection);
-
-                        var clientPipe = new NamedPipeClientStream(".", "Remotely_Chat" + senderConnectionID, PipeDirection.InOut, PipeOptions.Asynchronous);
-                        clientPipe.Connect(15000);
-                        if (!clientPipe.IsConnected)
-                        {
-                            Logger.Write("Failed to connect to chat host.");
-                            return;
-                        }
-                        chatSession = new ChatSession() { PipeStream = clientPipe, ProcessID = procID };
-                        _ = Task.Run(async () => { await ReadFromStream(chatSession.PipeStream, senderConnectionID, hubConnection); });
-                        ChatClients.Add(senderConnectionID, chatSession, CacheItemPolicy);
-                    }
-
-                    chatSession = (ChatSession)ChatClients.Get(senderConnectionID);
-
-                    if (!chatSession.PipeStream.IsConnected)
-                    {
-                        ChatClients.Remove(senderConnectionID);
-                        await hubConnection.SendAsync("DisplayMessage", "Chat disconnected.  Please try again.", "Chat disconnected.");
+                        // Don't start a new session just to show a disconnected message.
                         return;
                     }
 
-                    using (var sw = new StreamWriter(chatSession.PipeStream, leaveOpen: true))
+                    var procID = await AppLauncher.LaunchChatService(orgName, senderConnectionID, hubConnection);
+
+                    var clientPipe = new NamedPipeClientStream(".", "Remotely_Chat" + senderConnectionID, PipeDirection.InOut, PipeOptions.Asynchronous);
+                    clientPipe.Connect(15000);
+                    if (!clientPipe.IsConnected)
                     {
-                        await sw.WriteLineAsync(message);
-                        await sw.FlushAsync();
+                        Logger.Write("Failed to connect to chat host.");
+                        return;
                     }
+                    chatSession = new ChatSession() { PipeStream = clientPipe, ProcessID = procID };
+                    _ = Task.Run(async () => { await ReadFromStream(chatSession.PipeStream, senderConnectionID, hubConnection); });
+                    ChatClients.Add(senderConnectionID, chatSession, CacheItemPolicy);
+                }
+
+                chatSession = (ChatSession)ChatClients.Get(senderConnectionID);
+
+                if (!chatSession.PipeStream.IsConnected)
+                {
+                    ChatClients.Remove(senderConnectionID);
+                    await hubConnection.SendAsync("DisplayMessage", "Chat disconnected.  Please try again.", "Chat disconnected.", senderConnectionID);
+                    return;
+                }
+
+                using (var sw = new StreamWriter(chatSession.PipeStream, leaveOpen: true))
+                {
+                    var chatMessage = new ChatMessage(senderName, message, disconnected);
+                    await sw.WriteLineAsync(JsonSerializer.Serialize(chatMessage));
+                    await sw.FlushAsync();
                 }
             }
             catch (Exception ex)
@@ -88,10 +104,15 @@ namespace Remotely.Agent.Services
             {
                 using (var sr = new StreamReader(clientPipe, leaveOpen: true))
                 {
-                    var message = await sr.ReadLineAsync();
-                    await hubConnection.SendAsync("Chat", message, senderConnectionID);
+                    var messageJson = await sr.ReadLineAsync();
+                    if (!string.IsNullOrWhiteSpace(messageJson))
+                    {
+                        var chatMessage = JsonSerializer.Deserialize<ChatMessage>(messageJson);
+                        await hubConnection.SendAsync("Chat", chatMessage.Message, false, senderConnectionID);
+                    }
                 }               
             }
+            await hubConnection.SendAsync("Chat", string.Empty, true, senderConnectionID);
             ChatClients.Remove(senderConnectionID);
         }
     }

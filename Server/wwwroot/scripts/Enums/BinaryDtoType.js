@@ -25,5 +25,7 @@ export var BinaryDtoType;
     BinaryDtoType[BinaryDtoType["File"] = 22] = "File";
     BinaryDtoType[BinaryDtoType["WindowsSessions"] = 23] = "WindowsSessions";
     BinaryDtoType[BinaryDtoType["SetKeyStatesUp"] = 24] = "SetKeyStatesUp";
+    BinaryDtoType[BinaryDtoType["FrameReceived"] = 25] = "FrameReceived";
+    BinaryDtoType[BinaryDtoType["ToggleWebRtcVideo"] = 26] = "ToggleWebRtcVideo";
 })(BinaryDtoType || (BinaryDtoType = {}));
 //# sourceMappingURL=BinaryDtoType.js.map

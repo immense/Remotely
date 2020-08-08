@@ -73,17 +73,17 @@ namespace Remotely.Shared.Utilities
             }
         }
 
-        public static string ScreenCastExecutableFileName
+        public static string DesktopExecutableFileName
         {
             get
             {
                 if (IsWindows)
                 {
-                    return "Remotely_ScreenCast.exe";
+                    return "Remotely_Desktop.exe";
                 }
                 else if (IsLinux)
                 {
-                    return "Remotely_ScreenCast.Linux";
+                    return "Remotely_Desktop";
                 }
                 else
                 {

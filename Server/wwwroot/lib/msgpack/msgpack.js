@@ -99,7 +99,25 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+// ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, "encode", function() { return /* reexport */ encode; });
+__webpack_require__.d(__webpack_exports__, "decode", function() { return /* reexport */ decode; });
+__webpack_require__.d(__webpack_exports__, "decodeAsync", function() { return /* reexport */ decodeAsync; });
+__webpack_require__.d(__webpack_exports__, "decodeArrayStream", function() { return /* reexport */ decodeArrayStream; });
+__webpack_require__.d(__webpack_exports__, "decodeStream", function() { return /* reexport */ decodeStream; });
+__webpack_require__.d(__webpack_exports__, "Decoder", function() { return /* reexport */ Decoder_Decoder; });
+__webpack_require__.d(__webpack_exports__, "Encoder", function() { return /* reexport */ Encoder_Encoder; });
+__webpack_require__.d(__webpack_exports__, "ExtensionCodec", function() { return /* reexport */ ExtensionCodec_ExtensionCodec; });
+__webpack_require__.d(__webpack_exports__, "ExtData", function() { return /* reexport */ ExtData; });
+__webpack_require__.d(__webpack_exports__, "EXT_TIMESTAMP", function() { return /* reexport */ EXT_TIMESTAMP; });
+__webpack_require__.d(__webpack_exports__, "encodeDateToTimeSpec", function() { return /* reexport */ encodeDateToTimeSpec; });
+__webpack_require__.d(__webpack_exports__, "encodeTimeSpecToTimestamp", function() { return /* reexport */ encodeTimeSpecToTimestamp; });
+__webpack_require__.d(__webpack_exports__, "decodeTimestampToTimeSpec", function() { return /* reexport */ decodeTimestampToTimeSpec; });
+__webpack_require__.d(__webpack_exports__, "encodeTimestampExtension", function() { return /* reexport */ encodeTimestampExtension; });
+__webpack_require__.d(__webpack_exports__, "decodeTimestampExtension", function() { return /* reexport */ decodeTimestampExtension; });
 
 // CONCATENATED MODULE: ./src/utils/utf8.ts
 var __read = (undefined && undefined.__read) || function (o, n) {
@@ -122,7 +140,6 @@ var __spread = (undefined && undefined.__spread) || function () {
     for (var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
     return ar;
 };
-var utf8_a;
 var TEXT_ENCODING_AVAILABLE = typeof process !== "undefined" &&
     undefined !== "never" &&
     typeof TextEncoder !== "undefined" &&
@@ -218,7 +235,7 @@ function utf8EncodeTEencodeInto(str, output, outputOffset) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     sharedTextEncoder.encodeInto(str, output.subarray(outputOffset));
 }
-var utf8EncodeTE = ((utf8_a = sharedTextEncoder) === null || utf8_a === void 0 ? void 0 : utf8_a.encodeInto) ? utf8EncodeTEencodeInto : utf8EncodeTEencode;
+var utf8EncodeTE = (sharedTextEncoder === null || sharedTextEncoder === void 0 ? void 0 : sharedTextEncoder.encodeInto) ? utf8EncodeTEencodeInto : utf8EncodeTEencode;
 var CHUNK_SIZE = 4096;
 function utf8DecodeJs(bytes, inputOffset, byteLength) {
     var offset = inputOffset;
@@ -964,9 +981,7 @@ function encode(value, options) {
 
 // CONCATENATED MODULE: ./src/utils/prettyByte.ts
 function prettyByte(byte) {
-    return (byte < 0 ? "-" : "") + "0x" + Math.abs(byte)
-        .toString(16)
-        .padStart(2, "0");
+    return (byte < 0 ? "-" : "") + "0x" + Math.abs(byte).toString(16).padStart(2, "0");
 }
 
 // CONCATENATED MODULE: ./src/CachedKeyDecoder.ts
@@ -1793,6 +1808,11 @@ var stream_asyncGenerator = (undefined && undefined.__asyncGenerator) || functio
 function isAsyncIterable(object) {
     return object[Symbol.asyncIterator] != null;
 }
+function assertNonNull(value) {
+    if (value == null) {
+        throw new Error("Assertion Failure: value must not be null nor undefined");
+    }
+}
 function asyncIterableFromStream(stream) {
     return stream_asyncGenerator(this, arguments, function asyncIterableFromStream_1() {
         var reader, _a, done, value;
@@ -1812,7 +1832,9 @@ function asyncIterableFromStream(stream) {
                     if (!done) return [3 /*break*/, 5];
                     return [4 /*yield*/, stream_await(void 0)];
                 case 4: return [2 /*return*/, _b.sent()];
-                case 5: return [4 /*yield*/, stream_await(value)];
+                case 5:
+                    assertNonNull(value);
+                    return [4 /*yield*/, stream_await(value)];
                 case 6: return [4 /*yield*/, _b.sent()];
                 case 7:
                     _b.sent();
@@ -1900,21 +1922,6 @@ function decodeStream(streamLike, options) {
 }
 
 // CONCATENATED MODULE: ./src/index.ts
-/* concated harmony reexport encode */__webpack_require__.d(__webpack_exports__, "encode", function() { return encode; });
-/* concated harmony reexport decode */__webpack_require__.d(__webpack_exports__, "decode", function() { return decode; });
-/* concated harmony reexport decodeAsync */__webpack_require__.d(__webpack_exports__, "decodeAsync", function() { return decodeAsync; });
-/* concated harmony reexport decodeArrayStream */__webpack_require__.d(__webpack_exports__, "decodeArrayStream", function() { return decodeArrayStream; });
-/* concated harmony reexport decodeStream */__webpack_require__.d(__webpack_exports__, "decodeStream", function() { return decodeStream; });
-/* concated harmony reexport Decoder */__webpack_require__.d(__webpack_exports__, "Decoder", function() { return Decoder_Decoder; });
-/* concated harmony reexport Encoder */__webpack_require__.d(__webpack_exports__, "Encoder", function() { return Encoder_Encoder; });
-/* concated harmony reexport ExtensionCodec */__webpack_require__.d(__webpack_exports__, "ExtensionCodec", function() { return ExtensionCodec_ExtensionCodec; });
-/* concated harmony reexport ExtData */__webpack_require__.d(__webpack_exports__, "ExtData", function() { return ExtData; });
-/* concated harmony reexport EXT_TIMESTAMP */__webpack_require__.d(__webpack_exports__, "EXT_TIMESTAMP", function() { return EXT_TIMESTAMP; });
-/* concated harmony reexport encodeDateToTimeSpec */__webpack_require__.d(__webpack_exports__, "encodeDateToTimeSpec", function() { return encodeDateToTimeSpec; });
-/* concated harmony reexport encodeTimeSpecToTimestamp */__webpack_require__.d(__webpack_exports__, "encodeTimeSpecToTimestamp", function() { return encodeTimeSpecToTimestamp; });
-/* concated harmony reexport decodeTimestampToTimeSpec */__webpack_require__.d(__webpack_exports__, "decodeTimestampToTimeSpec", function() { return decodeTimestampToTimeSpec; });
-/* concated harmony reexport encodeTimestampExtension */__webpack_require__.d(__webpack_exports__, "encodeTimestampExtension", function() { return encodeTimestampExtension; });
-/* concated harmony reexport decodeTimestampExtension */__webpack_require__.d(__webpack_exports__, "decodeTimestampExtension", function() { return decodeTimestampExtension; });
 // Main Functions:
 
 

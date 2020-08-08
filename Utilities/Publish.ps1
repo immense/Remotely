@@ -17,23 +17,36 @@ param (
 	[string]$RID = "",
 	[string]$Hostname = "",
 	[string]$CertificatePath = "",
-    [string]$CertificatePassword = ""
+    [string]$CertificatePassword = "",
+    [string]$CurrentVersion = ""
 )
 
 
 
 $ErrorActionPreference = "Stop"
-$Year = ([DateTime]::UtcNow).Year.ToString()
-$Month = ([DateTime]::UtcNow).Month.ToString().PadLeft(2, "0")
-$Day = ([DateTime]::UtcNow).Day.ToString().PadLeft(2, "0")
-$Hour = ([DateTime]::UtcNow).Hour.ToString().PadLeft(2, "0")
-$Minute = ([DateTime]::UtcNow).Minute.ToString().PadLeft(2, "0")
-$CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
 $MSBuildPath = (Get-ChildItem -Path "${env:ProgramFiles(x86)}\Microsoft Visual Studio\" -Recurse -Filter "MSBuild.exe" -File | ForEach-Object {
     [System.Diagnostics.FileVersionInfo]::GetVersionInfo($_.FullName)
 } | Sort-Object -Property FileVersion -Descending | Select-Object -First 1).FileName
 $Root = (Get-Item -Path $PSScriptRoot).Parent.FullName
 $SignAssemblies = $false
+
+if (!$CurrentVersion) {
+    $Year = ([DateTime]::UtcNow).Year.ToString()
+    $Month = ([DateTime]::UtcNow).Month.ToString().PadLeft(2, "0")
+    $Day = ([DateTime]::UtcNow).Day.ToString().PadLeft(2, "0")
+    $Hour = ([DateTime]::UtcNow).Hour.ToString().PadLeft(2, "0")
+    $Minute = ([DateTime]::UtcNow).Minute.ToString().PadLeft(2, "0")
+    $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
+}
+
+if ($CertificatePath.Length -gt 0 -and 
+    (Test-Path -Path $CertificatePath) -eq $true -and 
+    $CertificatePassword.Length -gt 0) 
+{
+    $SignAssemblies = $true
+}
+
+
 
 Set-Location -Path $Root
 
@@ -64,14 +77,6 @@ if ([string]::IsNullOrWhiteSpace($MSBuildPath) -or !(Test-Path -Path $MSBuildPat
     pause
     return
 }
-
-if ($CertificatePath.Length -gt 0 -and 
-    (Test-Path -Path $CertificatePath) -eq $true -and 
-    $CertificatePassword.Length -gt 0) 
-{
-    $SignAssemblies = $true
-}
-
 
 # Add Current Version file to root content folder for client update checks.
 # TODO: Remove after a few releases.
@@ -105,23 +110,23 @@ dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runti
 dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64 --configuration Release --output "$Root\Agent\bin\Release\netcoreapp3.1\linux-x64\publish" "$Root\Agent"
 dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win10-x86 --configuration Release --output "$Root\Agent\bin\Release\netcoreapp3.1\win10-x86\publish" "$Root\Agent"
 
-New-Item -Path "$Root\Agent\bin\Release\netcoreapp3.1\win10-x64\publish\ScreenCast\" -ItemType Directory -Force
-New-Item -Path "$Root\Agent\bin\Release\netcoreapp3.1\win10-x86\publish\ScreenCast\" -ItemType Directory -Force
-New-Item -Path "$Root\Agent\bin\Release\netcoreapp3.1\linux-x64\publish\ScreenCast\" -ItemType Directory -Force
+New-Item -Path "$Root\Agent\bin\Release\netcoreapp3.1\win10-x64\publish\Desktop\" -ItemType Directory -Force
+New-Item -Path "$Root\Agent\bin\Release\netcoreapp3.1\win10-x86\publish\Desktop\" -ItemType Directory -Force
+New-Item -Path "$Root\Agent\bin\Release\netcoreapp3.1\linux-x64\publish\Desktop\" -ItemType Directory -Force
 
 
 # Publish Linux ScreenCaster
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=linux-x64 --configuration Release "$Root\ScreenCast.Linux\"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=packaged-linux-x64 --configuration Release "$Root\Desktop.Linux\"
 
 # Publish Linux GUI App
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=linux-x64 --configuration Release "$Root\Desktop.Linux\"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=desktop-linux-x64 --configuration Release "$Root\Desktop.Linux\"
 
 
 # Publish Windows ScreenCaster (32-bit)
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=win-x86 --configuration Release "$Root\ScreenCast.Win"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=packaged-win-x86 --configuration Release "$Root\Desktop.Win"
 
 # Publish Windows ScreenCaster (64-bit)
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=win-x64 --configuration Release "$Root\ScreenCast.Win"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=packaged-win-x64 --configuration Release "$Root\Desktop.Win"
 
 
 # Publish Windows GUI App (64-bit)

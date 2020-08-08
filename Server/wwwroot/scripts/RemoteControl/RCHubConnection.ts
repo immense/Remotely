@@ -5,7 +5,7 @@ import { Sound } from "../Sound.js";
 import { ShowMessage } from "../UI.js";
 import { IceServerModel } from "../Models/IceServerModel.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
-import { WindowsSessionsDto, WindowsSession } from "./RtcDtos.js";
+import {  WindowsSession } from "./RtcDtos.js";
 
 var signalR = window["signalR"];
 
@@ -41,11 +41,13 @@ export class RCHubConnection {
             UI.StatusMessage.innerHTML = `Connection error: ${err.message}`;
             UI.Screen2DContext.clearRect(0, 0, UI.ScreenViewer.width, UI.ScreenViewer.height);
             UI.ScreenViewer.setAttribute("hidden", "hidden");
+            UI.VideoScreenViewer.setAttribute("hidden", "hidden");
             UI.ConnectBox.style.removeProperty("display");
         });
         this.Connection.closedCallbacks.push((ev) => {
             UI.Screen2DContext.clearRect(0, 0, UI.ScreenViewer.width, UI.ScreenViewer.height);
             UI.ScreenViewer.setAttribute("hidden", "hidden");
+            UI.VideoScreenViewer.setAttribute("hidden", "hidden");
             UI.ConnectBox.style.removeProperty("display");
         });
 
@@ -81,8 +83,8 @@ export class RCHubConnection {
     async SendFile(buffer: Uint8Array, fileName: string, messageId: string, endOfFile: boolean, startOfFile: boolean) {
         await this.Connection.invoke("SendFile", buffer, fileName, messageId, endOfFile, startOfFile);
     }
-    SendFrameReceived(bytesReceived: number) {
-        this.Connection.invoke("SendFrameReceived", bytesReceived);
+    SendFrameReceived() {
+        this.Connection.invoke("SendFrameReceived",);
     }
     SendSelectScreen(displayName: string) {
         this.Connection.invoke("SelectScreen", displayName);
@@ -144,6 +146,9 @@ export class RCHubConnection {
     SendToggleBlockInput(toggleOn: boolean) {
         this.Connection.invoke("SendToggleBlockInput", toggleOn);
     }
+    SendToggleWebRtcVideo(toggleOn: boolean) {
+        this.Connection.invoke("SendToggleWebRtcVideo", toggleOn);
+    }
     SendClipboardTransfer(text: string, typeText: boolean) {
         this.Connection.invoke("SendClipboardTransfer", text, typeText);
     }
@@ -166,13 +171,12 @@ export class RCHubConnection {
             imageQuality: number,
             endOfFrame: boolean) => {
 
-            this.SendFrameReceived(buffer.byteLength);
-
             if (UI.AutoQualityAdjustCheckBox.checked && Number(UI.QualitySlider.value) != imageQuality) {
                 UI.QualitySlider.value = String(imageQuality);
             }
 
             if (endOfFrame) {
+                this.SendFrameReceived();
                 var url = window.URL.createObjectURL(new Blob(this.PartialCaptureFrames));
                 var img = document.createElement("img");
                 img.onload = () => {

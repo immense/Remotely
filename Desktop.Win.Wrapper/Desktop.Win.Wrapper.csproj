@@ -143,7 +143,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <EmbeddedResource Include="Install.ps1" />
     <EmbeddedResource Include="Remotely_Desktop.zip" />
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Remotely.Shared.Services;
-using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -49,7 +48,7 @@ namespace Remotely.Tests.LoadTester
                         var deviceId = Guid.NewGuid().ToString();
 
                         var hubConnection = new HubConnectionBuilder()
-                            .WithUrl(serverurl + "/DeviceHub")
+                            .WithUrl(serverurl + "/AgentHub")
                             .Build();
 
                         Console.WriteLine("Connecting device number " + i.ToString());

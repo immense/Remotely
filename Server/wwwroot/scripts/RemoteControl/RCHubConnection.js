@@ -27,11 +27,13 @@ export class RCHubConnection {
             UI.StatusMessage.innerHTML = `Connection error: ${err.message}`;
             UI.Screen2DContext.clearRect(0, 0, UI.ScreenViewer.width, UI.ScreenViewer.height);
             UI.ScreenViewer.setAttribute("hidden", "hidden");
+            UI.VideoScreenViewer.setAttribute("hidden", "hidden");
             UI.ConnectBox.style.removeProperty("display");
         });
         this.Connection.closedCallbacks.push((ev) => {
             UI.Screen2DContext.clearRect(0, 0, UI.ScreenViewer.width, UI.ScreenViewer.height);
             UI.ScreenViewer.setAttribute("hidden", "hidden");
+            UI.VideoScreenViewer.setAttribute("hidden", "hidden");
             UI.ConnectBox.style.removeProperty("display");
         });
         MainRc.ClipboardWatcher.WatchClipboard();
@@ -63,8 +65,8 @@ export class RCHubConnection {
     async SendFile(buffer, fileName, messageId, endOfFile, startOfFile) {
         await this.Connection.invoke("SendFile", buffer, fileName, messageId, endOfFile, startOfFile);
     }
-    SendFrameReceived(bytesReceived) {
-        this.Connection.invoke("SendFrameReceived", bytesReceived);
+    SendFrameReceived() {
+        this.Connection.invoke("SendFrameReceived");
     }
     SendSelectScreen(displayName) {
         this.Connection.invoke("SelectScreen", displayName);
@@ -127,6 +129,9 @@ export class RCHubConnection {
     SendToggleBlockInput(toggleOn) {
         this.Connection.invoke("SendToggleBlockInput", toggleOn);
     }
+    SendToggleWebRtcVideo(toggleOn) {
+        this.Connection.invoke("SendToggleWebRtcVideo", toggleOn);
+    }
     SendClipboardTransfer(text, typeText) {
         this.Connection.invoke("SendClipboardTransfer", text, typeText);
     }
@@ -142,11 +147,11 @@ export class RCHubConnection {
             UI.SetScreenSize(width, height);
         });
         hubConnection.on("ScreenCapture", (buffer, left, top, width, height, imageQuality, endOfFrame) => {
-            this.SendFrameReceived(buffer.byteLength);
             if (UI.AutoQualityAdjustCheckBox.checked && Number(UI.QualitySlider.value) != imageQuality) {
                 UI.QualitySlider.value = String(imageQuality);
             }
             if (endOfFrame) {
+                this.SendFrameReceived();
                 var url = window.URL.createObjectURL(new Blob(this.PartialCaptureFrames));
                 var img = document.createElement("img");
                 img.onload = () => {
