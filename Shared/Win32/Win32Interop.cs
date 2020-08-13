@@ -65,8 +65,7 @@ namespace Remotely.Shared.Win32
             try
             {
                 byte[] deskBytes = new byte[256];
-                uint lenNeeded;
-                if (!GetUserObjectInformationW(inputDesktop, UOI_NAME, deskBytes, 256, out lenNeeded))
+                if (!GetUserObjectInformationW(inputDesktop, UOI_NAME, deskBytes, 256, out uint lenNeeded))
                 {
                     desktopName = string.Empty;
                     return false;
