@@ -180,8 +180,7 @@ namespace Remotely.Agent.Services
 
 
         private class WebClientEx : WebClient
-        {
-            private int _requestTimeout;
+        {            private readonly int _requestTimeout;
 
             public WebClientEx(int requestTimeout)
             {
