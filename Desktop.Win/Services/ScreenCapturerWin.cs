@@ -116,6 +116,7 @@ namespace Remotely.Desktop.Win.Services
 
         public void Init()
         {
+            CaptureFullscreen = true;
             InitBitBlt();
             InitDirectX();
 

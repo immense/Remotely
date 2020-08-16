@@ -119,8 +119,12 @@ namespace Remotely.Desktop.Core.Services
 
                         viewer.ThrottleIfNeeded();
 
-                        previousFrame?.Dispose();
-                        previousFrame = (Bitmap)currentFrame?.Clone();
+                        if (currentFrame != null)
+                        {
+                            previousFrame?.Dispose();
+                            previousFrame = (Bitmap)currentFrame.Clone();
+                        }
+
                         currentFrame?.Dispose();
                         currentFrame = viewer.Capturer.GetNextFrame();
 

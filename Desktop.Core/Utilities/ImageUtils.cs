@@ -21,6 +21,11 @@ namespace Remotely.Desktop.Core.Utilities
 
         public static Rectangle GetDiffArea(Bitmap currentFrame, Bitmap previousFrame, bool captureFullscreen)
         {
+            if (currentFrame == null || previousFrame == null)
+            {
+                return Rectangle.Empty;
+            }
+
             if (captureFullscreen)
             {
                 return new Rectangle(new Point(0, 0), currentFrame.Size);
