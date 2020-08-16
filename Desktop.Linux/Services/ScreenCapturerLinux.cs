@@ -24,7 +24,7 @@ namespace Remotely.Desktop.Linux.Services
 
         public event EventHandler<Rectangle> ScreenChanged;
 
-        public bool CaptureFullscreen { get; set; }
+        public bool CaptureFullscreen { get; set; } = true;
         public Rectangle CurrentScreenBounds { get; private set; }
         public IntPtr Display { get; private set; }
         public string SelectedScreen { get; private set; }
@@ -81,6 +81,7 @@ namespace Remotely.Desktop.Linux.Services
         {
             try
             {
+                CaptureFullscreen = true;
                 x11Screens.Clear();
 
                 for (var i = 0; i < GetScreenCount(); i++)
