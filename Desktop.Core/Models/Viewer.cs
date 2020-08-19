@@ -102,6 +102,7 @@ namespace Remotely.Desktop.Core.Models
         private IWebRtcSessionFactory WebRtcSessionFactory { get; }
         public void Dispose()
         {
+            DisconnectRequested = true;
             RtcSession?.Dispose();
             Capturer?.Dispose();
         }

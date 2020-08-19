@@ -17,6 +17,5 @@ namespace Remotely.Server.Models
         public string RequesterUserName { get; set; }
         public string ServiceID { get; set; }
         public DateTimeOffset StartTime { get; set; }
-        public ConcurrentDictionary<string, string> ViewerConnections { get; } = new ConcurrentDictionary<string, string>();
     }
 }

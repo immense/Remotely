@@ -114,8 +114,7 @@ namespace Remotely.Desktop.Linux.ViewModels
             var viewerList = param as AvaloniaList<object> ?? new AvaloniaList<object>();
             foreach (Viewer viewer in viewerList)
             {
-                viewer.DisconnectRequested = true;
-                await CasterSocket.SendViewerRemoved(viewer.ViewerConnectionID);
+                await CasterSocket.DisconnectViewer(viewer, true);
             }
         });
 

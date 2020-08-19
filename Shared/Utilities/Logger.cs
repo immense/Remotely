@@ -14,18 +14,21 @@ namespace Remotely.Shared.Utilities
         private static object WriteLock { get; } = new object();
         public static void Debug(string message)
         {
-            lock (WriteLock)
+            try
             {
-                if (EnvironmentHelper.IsDebug)
+                lock (WriteLock)
                 {
-                    CheckLogFileExists();
+                    if (EnvironmentHelper.IsDebug)
+                    {
+                        CheckLogFileExists();
 
-                    File.AppendAllText(LogPath, $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}\t[Debug]\t{message}{Environment.NewLine}");
+                        File.AppendAllText(LogPath, $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}\t[Debug]\t{message}{Environment.NewLine}");
+                    }
+
+                    System.Diagnostics.Debug.WriteLine(message);
                 }
-                
-                System.Diagnostics.Debug.WriteLine(message);
             }
-
+            catch { }
         }
 
         public static void Write(string message, EventType eventType = EventType.Info)

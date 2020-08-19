@@ -14,11 +14,13 @@ using Remotely.Desktop.Core.Models;
 using Remotely.Shared.Utilities;
 using System.Windows;
 using Remotely.Desktop.Win.Views;
+using System.Windows.Forms;
 
 namespace Remotely.Desktop.Win
 {
     public class Program
 	{
+        public static Form BackgroundForm { get; private set; }
         private static CasterSocket CasterSocket { get; set; }
         private static Conductor Conductor { get; set; }
         private static ICursorIconWatcher CursorIconWatcher { get; set; }
@@ -33,7 +35,7 @@ namespace Remotely.Desktop.Win
                 }
             }
         }
-        
+        [STAThread]
         public static void Main(string[] args)
         {
             try
@@ -54,19 +56,18 @@ namespace Remotely.Desktop.Win
                 else if (Conductor.Mode == Core.Enums.AppMode.Unattended)
                 {
                     StartUiThread(null);
+                    Task.Run(StartScreenCasting);
                     App.Current.Dispatcher.Invoke(() =>
                     {
                         App.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
                     });
-                    Task.Run(StartScreenCasting);
                 }
                 else
                 {
                     StartUiThread(() => new MainWindow());
                 }
-
-                System.Windows.Forms.Application.Run();
-
+                
+                System.Windows.Forms.Application.Run(BackgroundForm);
             }
             catch (Exception ex)
             {
@@ -96,6 +97,17 @@ namespace Remotely.Desktop.Win
             serviceCollection.AddTransient<Viewer>();
             serviceCollection.AddScoped<IWebRtcSessionFactory, WebRtcSessionFactory>();
             serviceCollection.AddScoped<IFileTransferService, FileTransferService>();
+            serviceCollection.AddSingleton<ISessionIndicator, SessionIndicatorWin>();
+
+            BackgroundForm = new Form()
+            {
+                Visible = false,
+                Opacity = 0,
+                ShowIcon = false,
+                ShowInTaskbar = false,
+                WindowState = FormWindowState.Minimized
+            };
+            serviceCollection.AddSingleton((serviceProvider) => BackgroundForm);
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
         }
