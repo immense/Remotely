@@ -1,10 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Remotely.Desktop.Core;
+using Remotely.Desktop.Core.Interfaces;
+using Remotely.Desktop.Core.Services;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.Win32;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Remotely.Desktop.Win
@@ -42,18 +45,13 @@ namespace Remotely.Desktop.Win
 
         private void Application_Exit(object sender, ExitEventArgs e)
         {
-            System.Windows.Forms.Application.Exit();
-
-            var conductor = ServiceContainer.Instance.GetRequiredService<Conductor>();
-
-            foreach (var viewer in conductor.Viewers.Values)
+            Task.Run(async () =>
             {
-                try
-                {
-                    viewer.Dispose();
-                }
-                catch { }
-            }
+                var casterSocket = ServiceContainer.Instance.GetRequiredService<CasterSocket>();
+                await casterSocket.DisconnectAllViewers();
+                System.Windows.Forms.Application.Exit();
+                Environment.Exit(0);
+            });
         }
     }
 }

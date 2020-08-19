@@ -25,10 +25,8 @@ namespace Remotely.Server.Hubs
 
         public static ConcurrentDictionary<string, RCSessionInfo> SessionInfoList { get; } = new ConcurrentDictionary<string, RCSessionInfo>();
         public ApplicationConfig AppConfig { get; }
-        private IHubContext<BrowserHub> BrowserHubContext { get; }
-      
         private IHubContext<AgentHub> AgentHubContext { get; }
-
+        private IHubContext<BrowserHub> BrowserHubContext { get; }
         private IHubContext<RCBrowserHub> RCBrowserHubContext { get; }
 
         private RCSessionInfo SessionInfo
@@ -65,6 +63,18 @@ namespace Remotely.Server.Hubs
         {
             return AgentHubContext.Clients.Client(SessionInfo.ServiceID).SendAsync("CtrlAltDel");
         }
+        public async Task DisconnectViewer(string viewerID, bool notifyViewer)
+        {
+            lock (ViewerList)
+            {
+                ViewerList.Remove(viewerID);
+            }
+            if (notifyViewer)
+            {
+                await RCBrowserHubContext.Clients.Client(viewerID).SendAsync("ViewerRemoved");
+            }
+        }
+
         public IceServerModel[] GetIceServers()
         {
             return AppConfig.IceServers;
@@ -94,10 +104,6 @@ namespace Remotely.Server.Hubs
         {
             return RCBrowserHubContext.Clients.Clients(viewerIDs).SendAsync("RelaunchedScreenCasterReady", Context.ConnectionId);
         }
-        public Task SendWindowsSessions(List<WindowsSession> windowsSessions, string viewerID)
-        {
-            return RCBrowserHubContext.Clients.Client(viewerID).SendAsync("WindowsSessions", windowsSessions);
-        }
         public override async Task OnConnectedAsync()
         {
             SessionInfo = new RCSessionInfo()
@@ -109,6 +115,7 @@ namespace Remotely.Server.Hubs
 
             await base.OnConnectedAsync();
         }
+
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             SessionInfoList.Remove(Context.ConnectionId, out _);
@@ -151,10 +158,12 @@ namespace Remotely.Server.Hubs
         {
             return RCBrowserHubContext.Clients.Clients(viewerIDs).SendAsync("ConnectionFailed");
         }
+
         public Task SendConnectionRequestDenied(string viewerID)
         {
             return RCBrowserHubContext.Clients.Client(viewerID).SendAsync("ConnectionRequestDenied");
         }
+
         public Task SendCursorChange(CursorInfo cursor, string viewerID)
         {
             return RCBrowserHubContext.Clients.Client(viewerID).SendAsync("CursorChange", cursor);
@@ -184,6 +193,7 @@ namespace Remotely.Server.Hubs
 
             return Task.CompletedTask;
         }
+
         public Task SendScreenCapture(byte[] captureBytes, string rcBrowserHubConnectionID, int left, int top, int width, int height, long imageQuality, bool endOfFrame)
         {
             return RCBrowserHubContext.Clients.Client(rcBrowserHubConnectionID).SendAsync("ScreenCapture", captureBytes, left, top, width, height, imageQuality, endOfFrame);
@@ -203,18 +213,9 @@ namespace Remotely.Server.Hubs
             return RCBrowserHubContext.Clients.Client(rcBrowserHubConnectionID).SendAsync("ScreenSize", width, height);
         }
 
-        public Task SendViewerRemoved(string viewerID)
+        public Task SendWindowsSessions(List<WindowsSession> windowsSessions, string viewerID)
         {
-            return RCBrowserHubContext.Clients.Clients(viewerID).SendAsync("ViewerRemoved");
-        }
-
-
-        public void ViewerDisconnected(string viewerID)
-        {
-            lock (ViewerList)
-            {
-                ViewerList.Remove(viewerID);
-            }
+            return RCBrowserHubContext.Clients.Client(viewerID).SendAsync("WindowsSessions", windowsSessions);
         }
     }
 }

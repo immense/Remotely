@@ -60,8 +60,12 @@ namespace Remotely.Desktop.Win.Services
         public string SelectedScreen { get; private set; } = Screen.PrimaryScreen.DeviceName;
         public void Dispose()
         {
-            SystemEvents.DisplaySettingsChanged -= SystemEvents_DisplaySettingsChanged;
-            ClearDirectXOutputs();
+            try
+            {
+                SystemEvents.DisplaySettingsChanged -= SystemEvents_DisplaySettingsChanged;
+                ClearDirectXOutputs();
+            }
+            catch { }
         }
         public IEnumerable<string> GetDisplayNames() => Screen.AllScreens.Select(x => x.DeviceName);
 

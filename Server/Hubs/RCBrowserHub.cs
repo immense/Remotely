@@ -157,8 +157,6 @@ namespace Remotely.Server.Hubs
                 CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("ViewerDisconnected", Context.ConnectionId);
             }
 
-            SessionInfo?.ViewerConnections?.Remove(Context.ConnectionId, out _);
-
             return base.OnDisconnectedAsync(exception);
         }
 
@@ -221,7 +219,6 @@ namespace Remotely.Server.Hubs
             }
 
             SessionInfo = sessionInfo;
-            SessionInfo.ViewerConnections.AddOrUpdate(Context.ConnectionId, requesterName, (k, v) => requesterName);
             ScreenCasterID = screenCasterID;
             RequesterName = requesterName;
             Mode = (RemoteControlMode)remoteControlMode;

@@ -149,9 +149,8 @@ namespace Remotely.Desktop.Win.ViewModels
                 {
                     foreach (Viewer viewer in (param as IList<object>).ToArray())
                     {
-                        viewer.DisconnectRequested = true;
                         ViewerRemoved(this, viewer.ViewerConnectionID);
-                        await CasterSocket.SendViewerRemoved(viewer.ViewerConnectionID);
+                        await CasterSocket.DisconnectViewer(viewer, true);
                     }
                 },
                 (param) =>
@@ -265,10 +264,6 @@ namespace Remotely.Desktop.Win.ViewModels
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                foreach (var viewer in Viewers)
-                {
-                    viewer.DisconnectRequested = true;
-                }
                 Viewers.Clear();
             });
         }
@@ -333,7 +328,6 @@ namespace Remotely.Desktop.Win.ViewModels
                 if (viewer != null)
                 {
                     Viewers.Remove(viewer);
-                    viewer.Dispose();
                 }
             });
         }

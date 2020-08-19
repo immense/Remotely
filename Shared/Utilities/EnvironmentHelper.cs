@@ -7,7 +7,7 @@ namespace Remotely.Shared.Utilities
 {
     public static class EnvironmentHelper
     {
-        public static string ClientExecutableFileName
+        public static string AgentExecutableFileName
         {
             get
             {

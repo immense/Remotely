@@ -21,18 +21,20 @@ namespace Remotely.Desktop.Core.Services
     public class ScreenCaster : IScreenCaster
     {
         public ScreenCaster(Conductor conductor, 
-            ICursorIconWatcher cursorIconWatcher)
+            ICursorIconWatcher cursorIconWatcher,
+            ISessionIndicator sessionIndicator)
         {
             Conductor = conductor;
             CursorIconWatcher = cursorIconWatcher;
+            SessionIndicator = sessionIndicator;
         }
 
         private Conductor Conductor { get; }
         private ICursorIconWatcher CursorIconWatcher { get; }
+        private ISessionIndicator SessionIndicator { get; }
 
         public async Task BeginScreenCasting(ScreenCastRequest screenCastRequest)
         {
-            var viewers = new ConcurrentDictionary<string, Viewer>();
             var mode = AppMode.Unattended;
 
             try
@@ -45,15 +47,18 @@ namespace Remotely.Desktop.Core.Services
                 var viewer = ServiceContainer.Instance.GetRequiredService<Viewer>();
                 viewer.Name = screenCastRequest.RequesterName;
                 viewer.ViewerConnectionID = screenCastRequest.ViewerID;
-                viewers = Conductor.Viewers;
 
                 Logger.Write($"Starting screen cast.  Requester: {viewer.Name}. Viewer ID: {viewer.ViewerConnectionID}.  App Mode: {mode}");
 
-                viewers.AddOrUpdate(viewer.ViewerConnectionID, viewer, (id, v) => viewer);
+                Conductor.Viewers.AddOrUpdate(viewer.ViewerConnectionID, viewer, (id, v) => viewer);
 
                 if (mode == AppMode.Normal)
                 {
                     Conductor.InvokeViewerAdded(viewer);
+                }
+                else
+                {
+                    SessionIndicator.Show();
                 }
 
                 if (EnvironmentHelper.IsWindows)
@@ -157,7 +162,7 @@ namespace Remotely.Desktop.Core.Services
                 }
 
                 Logger.Write($"Ended screen cast.  Requester: {viewer.Name}. Viewer ID: {viewer.ViewerConnectionID}.");
-                viewers.TryRemove(viewer.ViewerConnectionID, out _);
+                Conductor.Viewers.TryRemove(viewer.ViewerConnectionID, out _);
                 viewer.Dispose();
             }
             catch (Exception ex)
@@ -167,7 +172,7 @@ namespace Remotely.Desktop.Core.Services
             finally
             {
                 // Close if no one is viewing.
-                if (viewers.Count == 0 && mode == AppMode.Unattended)
+                if (Conductor.Viewers.Count == 0 && mode == AppMode.Unattended)
                 {
                     Logger.Debug($"Exiting process ID {Process.GetCurrentProcess().Id}.");
                     Environment.Exit(0);

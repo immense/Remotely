@@ -61,21 +61,6 @@ namespace Remotely.Server.API
                                 fileName = $"Remotely_Installer-{organizationID}.exe";
                                 break;
                             }
-                        // TODO: Remove after a few versions.
-                        case "Win10":
-                            {
-                                fileName = $"Install-{platformID}.ps1";
-
-                                fileContents.AddRange(await System.IO.File.ReadAllLinesAsync(Path.Combine(HostEnv.WebRootPath, "Downloads", $"{fileName}")));
-
-                                var hostIndex = fileContents.IndexOf("[string]$HostName = $null");
-                                var orgIndex = fileContents.IndexOf("[string]$Organization = $null");
-
-                                fileContents[hostIndex] = $"[string]$HostName = \"{scheme}://{Request.Host}\"";
-                                fileContents[orgIndex] = $"[string]$Organization = \"{organizationID}\"";
-                                fileBytes = System.Text.Encoding.UTF8.GetBytes(string.Join(Environment.NewLine, fileContents));
-                                break;
-                            }
                         case "Linux-x64":
                             {
                                 fileName = "Install-Linux-x64.sh";
