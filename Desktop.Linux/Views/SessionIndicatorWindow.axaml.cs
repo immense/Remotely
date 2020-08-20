@@ -30,8 +30,10 @@ namespace Remotely.Desktop.Linux.Views
 
         private void SessionIndicatorWindow_Opened(object sender, EventArgs e)
         {
-            var left = Screens.Primary.WorkingArea.Width - Width;
-            var top = Screens.Primary.WorkingArea.Width - Width;
+            var left = Screens.Primary.WorkingArea.Width - Width - 20;
+
+            // Additional reduction to include system decorator.
+            var top = Screens.Primary.WorkingArea.Height - Height - 40;
 
             Position = new PixelPoint((int)left, (int)top);
         }
