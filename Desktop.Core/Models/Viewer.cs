@@ -103,8 +103,11 @@ namespace Remotely.Desktop.Core.Models
         public void Dispose()
         {
             DisconnectRequested = true;
-            RtcSession?.Dispose();
-            Capturer?.Dispose();
+            Disposer.TryDisposeAll(new IDisposable[]
+            {
+                RtcSession,
+                Capturer
+            });
         }
 
         public async Task InitializeWebRtc()

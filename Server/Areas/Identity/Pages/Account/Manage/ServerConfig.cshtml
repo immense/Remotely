@@ -93,6 +93,13 @@
                     <span asp-validation-for="AppSettingsInput.RedirectToHttps" class="text-danger"></span>
                 </div>
                 <div class="form-group">
+                    <label asp-for="AppSettingsInput.RemoteControlNotifyUser"></label>
+                    <br />
+                    <input type="checkbox" asp-for="AppSettingsInput.RemoteControlNotifyUser" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.RemoteControlNotifyUser" class="text-danger"></span>
+                </div>
+                <div class="form-group">
                     <label asp-for="AppSettingsInput.RemoteControlRequiresAuthentication"></label>
                     <br />
                     <input type="checkbox" asp-for="AppSettingsInput.RemoteControlRequiresAuthentication" />

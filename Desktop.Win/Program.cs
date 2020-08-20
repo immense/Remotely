@@ -98,6 +98,7 @@ namespace Remotely.Desktop.Win
             serviceCollection.AddScoped<IWebRtcSessionFactory, WebRtcSessionFactory>();
             serviceCollection.AddScoped<IFileTransferService, FileTransferService>();
             serviceCollection.AddSingleton<ISessionIndicator, SessionIndicatorWin>();
+            serviceCollection.AddSingleton<IShutdownService, ShutdownServiceWin>();
 
             BackgroundForm = new Form()
             {

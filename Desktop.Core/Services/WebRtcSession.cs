@@ -1,6 +1,7 @@
 ﻿using MessagePack;
 using Microsoft.MixedReality.WebRTC;
 using Remotely.Desktop.Core.Models;
+using Remotely.Shared.Helpers;
 using Remotely.Shared.Models;
 using Remotely.Shared.Models.RtcDtos;
 using Remotely.Shared.Utilities;
@@ -57,18 +58,17 @@ namespace Remotely.Desktop.Core.Services
         {
             try
             {
-                Transceiver?.LocalVideoTrack?.Dispose();
-                VideoSource?.Dispose();
-                try
-                {
-                    // Unable to exit process until DataChannel is removed/disposed,
-                    // and this throws internally (at least in 2.0 version).
-                    PeerSession?.RemoveDataChannel(CaptureChannel);
-                }
-                catch { }
-                PeerSession?.Dispose();
+                // Unable to exit process until DataChannel is removed/disposed,
+                // and this throws internally (at least in 2.0 version).
+                PeerSession?.RemoveDataChannel(CaptureChannel);
             }
             catch { }
+            Disposer.TryDisposeAll(new IDisposable[]
+            {
+                PeerSession,
+                Transceiver?.LocalVideoTrack,
+                VideoSource
+            });
         }
 
         public async Task Init(IceServerModel[] iceServers)

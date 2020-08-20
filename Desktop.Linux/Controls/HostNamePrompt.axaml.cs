@@ -9,7 +9,7 @@ namespace Remotely.Desktop.Linux.Controls
     {
         public HostNamePrompt()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 #if DEBUG
             this.AttachDevTools();
 #endif

@@ -149,7 +149,11 @@ namespace Remotely.Desktop.Win.Services
         {
             foreach (var screen in directxScreens.Values)
             {
-                screen.Dispose();
+                try
+                {
+                    screen.Dispose();
+                }
+                catch { }
             }
             directxScreens.Clear();
         }

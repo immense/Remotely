@@ -7,11 +7,10 @@ namespace Remotely.Desktop.Linux.Views
 {
     public class MainWindow : Window
     {
-        public static MainWindow Current { get; set; }
         public MainWindow()
         {
             Current = this;
-            
+
             InitializeComponent();
 
 #if DEBUG
@@ -19,26 +18,27 @@ namespace Remotely.Desktop.Linux.Views
 #endif
         }
 
-        private void TitleBanner_PointerPressed(object sender, Avalonia.Input.PointerPressedEventArgs e)
-        {
-            if (e.GetCurrentPoint(this).Properties.PointerUpdateKind == Avalonia.Input.PointerUpdateKind.LeftButtonPressed)
-            {
-                this.BeginMoveDrag(e);
-            }
-        }
-
+        public static MainWindow Current { get; set; }
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
 
             this.FindControl<Border>("TitleBanner").PointerPressed += TitleBanner_PointerPressed;
 
-            this.Opened += MainWindow_Opened;
+            Opened += MainWindow_Opened;
         }
 
         private async void MainWindow_Opened(object sender, System.EventArgs e)
         {
-            await (this.DataContext as MainWindowViewModel).Init();
+            await (DataContext as MainWindowViewModel).Init();
+        }
+
+        private void TitleBanner_PointerPressed(object sender, Avalonia.Input.PointerPressedEventArgs e)
+        {
+            if (e.GetCurrentPoint(this).Properties.PointerUpdateKind == Avalonia.Input.PointerUpdateKind.LeftButtonPressed)
+            {
+                BeginMoveDrag(e);
+            }
         }
     }
 }
