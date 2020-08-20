@@ -40,7 +40,7 @@ namespace Remotely.Desktop.Win.Services
                     return;
                 }
 
-                BackgroundForm.Invoke(new Action(()=>
+                BackgroundForm.Invoke(new Action(() =>
                 {
                     container = new Container();
                     contextMenuStrip = new ContextMenuStrip(container);

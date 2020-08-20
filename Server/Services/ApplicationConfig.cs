@@ -26,6 +26,7 @@ namespace Remotely.Server.Services
         public int MaxConcurrentUpdates => int.Parse(Config["ApplicationOptions:MaxConcurrentUpdates"] ?? "10");
         public int MaxOrganizationCount => int.Parse(Config["ApplicationOptions:MaxOrganizationCount"] ?? "1");
         public bool RedirectToHttps => bool.Parse(Config["ApplicationOptions:RedirectToHttps"] ?? "false");
+        public bool RemoteControlNotifyUser => bool.Parse(Config["ApplicationOptions:RemoteControlNotifyUser"] ?? "true");
         public bool RemoteControlRequiresAuthentication => bool.Parse(Config["ApplicationOptions:RemoteControlRequiresAuthentication"] ?? "true");
         public double RemoteControlSessionLimit => double.Parse(Config["ApplicationOptions:RemoteControlSessionLimit"] ?? "3");
         public bool Require2FA => bool.Parse(Config["ApplicationOptions:Require2FA"] ?? "false");

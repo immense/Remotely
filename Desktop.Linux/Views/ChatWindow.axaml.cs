@@ -15,7 +15,7 @@ namespace Remotely.Desktop.Linux.Views
     {
         public ChatWindow()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 #if DEBUG
             this.AttachDevTools();
 #endif
@@ -40,7 +40,7 @@ namespace Remotely.Desktop.Linux.Views
         {
             AvaloniaXamlLoader.Load(this);
 
-            this.Closed += ChatWindow_Closed;
+            Closed += ChatWindow_Closed;
 
             this.FindControl<Border>("TitleBanner").PointerPressed += TitleBanner_PointerPressed;
 
@@ -63,7 +63,7 @@ namespace Remotely.Desktop.Linux.Views
         {
             if (e.GetCurrentPoint(this).Properties.PointerUpdateKind == Avalonia.Input.PointerUpdateKind.LeftButtonPressed)
             {
-                this.BeginMoveDrag(e);
+                BeginMoveDrag(e);
             }
         }
     }

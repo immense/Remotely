@@ -272,11 +272,16 @@ namespace Remotely.Desktop.Core.Services
                 await DisconnectAllViewers();
             });
 
-            Connection.On("GetScreenCast", (string viewerID, string requesterName) =>
+            Connection.On("GetScreenCast", (string viewerID, string requesterName, bool notifyUser) =>
             {
                 try
                 {
-                    ScreenCaster.BeginScreenCasting(new ScreenCastRequest() { ViewerID = viewerID, RequesterName = requesterName });
+                    ScreenCaster.BeginScreenCasting(new ScreenCastRequest()
+                    { 
+                        NotifyUser = notifyUser,
+                        ViewerID = viewerID, 
+                        RequesterName = requesterName 
+                    });
                 }
                 catch (Exception ex)
                 {
@@ -292,9 +297,14 @@ namespace Remotely.Desktop.Core.Services
                 }
             });
 
-            Connection.On("RequestScreenCast", (string viewerID, string requesterName) =>
+            Connection.On("RequestScreenCast", (string viewerID, string requesterName, bool notifyUser) =>
             {
-                conductor.InvokeScreenCastRequested(new ScreenCastRequest() { ViewerID = viewerID, RequesterName = requesterName });
+                conductor.InvokeScreenCastRequested(new ScreenCastRequest() 
+                { 
+                    NotifyUser = notifyUser,
+                    ViewerID = viewerID, 
+                    RequesterName = requesterName 
+                });
             });
 
             Connection.On("KeyDown", (string key, string viewerID) =>

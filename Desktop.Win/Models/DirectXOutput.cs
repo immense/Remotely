@@ -1,4 +1,5 @@
-﻿using SharpDX.Direct3D11;
+﻿using Remotely.Shared.Helpers;
+using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using System;
 
@@ -24,10 +25,13 @@ namespace Remotely.Desktop.Win.Models
 
         public void Dispose()
         {
-            Adapter?.Dispose();
-            Device?.Dispose();
-            OutputDuplication?.Dispose();
-            Texture2D?.Dispose();
+            Disposer.TryDisposeAll(new IDisposable[] 
+            { 
+                Adapter,
+                Device,
+                OutputDuplication,
+                Texture2D
+            });
         }
     }
 }

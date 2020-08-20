@@ -169,6 +169,9 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Redirect To HTTPS")]
             public bool RedirectToHttps { get; set; }
 
+            [Display(Name = "Remote Control Notify User")]
+            public bool RemoteControlNotifyUser { get; set; }
+
             [Display(Name = "Remote Control Requires Authentication")]
             public bool RemoteControlRequiresAuthentication { get; set; }
 

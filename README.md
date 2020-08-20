@@ -99,21 +99,24 @@ The following settings are available in appsettings.json.
 
 Note: To retain your settings between upgrades, copy your settings to appsettings.Production.json, which will supersede the original.
 
-* DefaultPrompt: The default prompt string you'll see for each line on the console.
+* AllowApiLogin: Whether to allow logging in via the API controller.  API access tokens are recommended over this approach.
+* DataRetentionInDays: How long event logs and remote command logs will be kept.
 * DBProvider: Determines which of the three connection strings (at the top) will be used.  The appropriate DB provider for the database type is automatically loaded in code.
+* DefaultPrompt: The default prompt string you'll see for each line on the console.
+* EnableWindowsEventLog: Whether to also add server log entries to the Windows Event Log.
+* IceServers: The ICE (STUN/TURN) servers to use for WebRTC.
+* KnownProxies: If your Nginx server is on a different machine and is forwarding requests to the Remotely server, you will need to add the IP of the Nginx server to this array.
 * MaxOrganizationCount: By default, one organization can exist on the server, which is created automatically when the first account is registered.  Afterward, self-registration will be disabled.
     * Set this to -1 or increase it to a specific number to allow multi-tenancy.
 * RedirectToHttps: Whether ASP.NET Core will redirect all traffic from HTTP to HTTPS.  This is independent of Nginx and IIS configurations that do the same.
-* UseHsts: Whether ASP.NET Core will use HTTP Strict Transport Security.
-* DataRetentionInDays: How long event logs and remote command logs will be kept.
+* RemoteControlNotifyUsers: Whether to show a notification to the end user when an unattended remote control session starts.
 * RemoteControlSessionLimit: How many concurrent remote control sessions are allowed per organization.
 * RemoteControlRequiresAuthentication: Whether the remote control page requires authentication to establish a connection.
 * Require2FA: Require users to set up 2FA before they can use the main app.
-* AllowApiLogin: Whether to allow logging in via the API controller.  API access tokens are recommended over this approach.
-* TrustedCorsOrigins: For cross-origin API requests via JavaScript.  The websites listed in this array with be allowed to make requests to the API.  This does not grant authentication, which is still required on most endpoints.
-* KnownProxies: If your Nginx server is on a different machine and is forwarding requests to the Remotely server, you will need to add the IP of the Nginx server to this array.
 * Smpt*: SMTP settings for auto-generated system emails (such as registration and password reset).
 * Theme: The color theme to use for the site.  Values are "Light" or "Dark".  This can also be configured per-user in Account - Options.
+* TrustedCorsOrigins: For cross-origin API requests via JavaScript.  The websites listed in this array with be allowed to make requests to the API.  This does not grant authentication, which is still required on most endpoints.
+* UseHsts: Whether ASP.NET Core will use HTTP Strict Transport Security.
 * UseWebRtc: Attempt to create a peer-to-peer connection via WebRTC for screen sharing.
     * Only works on Windows agents.
 

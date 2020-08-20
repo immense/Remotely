@@ -34,7 +34,7 @@ namespace Remotely.Desktop.Linux.Controls
         }
         public MessageBox()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 #if DEBUG
             this.AttachDevTools();
 #endif

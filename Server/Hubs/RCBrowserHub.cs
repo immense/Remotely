@@ -268,7 +268,7 @@ namespace Remotely.Server.Hubs
                     (Context.User.Identity.IsAuthenticated &&
                         DataService.DoesUserHaveAccessToDevice(deviceID, Context.UserIdentifier)))
                 {
-                    return CasterHubContext.Clients.Client(screenCasterID).SendAsync("GetScreenCast", Context.ConnectionId, requesterName);
+                    return CasterHubContext.Clients.Client(screenCasterID).SendAsync("GetScreenCast", Context.ConnectionId, requesterName, AppConfig.RemoteControlNotifyUser);
                 }
                 else
                 {
@@ -279,7 +279,7 @@ namespace Remotely.Server.Hubs
             {
                 SessionInfo.Mode = RemoteControlMode.Normal;
                 _ = Clients.Caller.SendAsync("RequestingScreenCast");
-                return CasterHubContext.Clients.Client(screenCasterID).SendAsync("RequestScreenCast", Context.ConnectionId, requesterName);
+                return CasterHubContext.Clients.Client(screenCasterID).SendAsync("RequestScreenCast", Context.ConnectionId, requesterName, AppConfig.RemoteControlNotifyUser);
             }
         }
         public Task SendSetKeyStatesUp()

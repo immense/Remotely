@@ -81,8 +81,6 @@ namespace Remotely.Server
                 .AddDefaultUI()
                 .AddDefaultTokenProviders();
 
-            var remoteControlAuthentication = Configuration.GetSection("ApplicationOptions:RemoteControlRequiresAuthentication").Get<bool>();   
-
             services.ConfigureApplicationCookie(cookieOptions =>
             {
                 cookieOptions.Cookie.SameSite = SameSiteMode.None;

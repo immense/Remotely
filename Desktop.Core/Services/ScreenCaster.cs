@@ -22,16 +22,19 @@ namespace Remotely.Desktop.Core.Services
     {
         public ScreenCaster(Conductor conductor, 
             ICursorIconWatcher cursorIconWatcher,
-            ISessionIndicator sessionIndicator)
+            ISessionIndicator sessionIndicator,
+            IShutdownService shutdownService)
         {
             Conductor = conductor;
             CursorIconWatcher = cursorIconWatcher;
             SessionIndicator = sessionIndicator;
+            ShutdownService = shutdownService;
         }
 
         private Conductor Conductor { get; }
         private ICursorIconWatcher CursorIconWatcher { get; }
         private ISessionIndicator SessionIndicator { get; }
+        private IShutdownService ShutdownService { get; }
 
         public async Task BeginScreenCasting(ScreenCastRequest screenCastRequest)
         {
@@ -56,7 +59,8 @@ namespace Remotely.Desktop.Core.Services
                 {
                     Conductor.InvokeViewerAdded(viewer);
                 }
-                else
+
+                if (mode == AppMode.Unattended && screenCastRequest.NotifyUser)
                 {
                     SessionIndicator.Show();
                 }
@@ -174,8 +178,7 @@ namespace Remotely.Desktop.Core.Services
                 // Close if no one is viewing.
                 if (Conductor.Viewers.Count == 0 && mode == AppMode.Unattended)
                 {
-                    Logger.Debug($"Exiting process ID {Process.GetCurrentProcess().Id}.");
-                    Environment.Exit(0);
+                    await ShutdownService.Shutdown();
                 }
             }
         }
