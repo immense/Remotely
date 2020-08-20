@@ -1,8 +1,13 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Remotely.Desktop.Linux.ViewModels;
 using Remotely.Desktop.Linux.Views;
+using Remotely.Shared.Helpers;
+using System;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Remotely.Desktop.Linux.Controls
@@ -28,12 +33,28 @@ namespace Remotely.Desktop.Linux.Controls
                     break;
             }
 
-            await messageBox.ShowDialog(MainWindow.Current);
-
+            if (App.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop &&
+                desktop.Windows.Count > 0)
+            {
+                await messageBox.ShowDialog(desktop.Windows.First());
+            }
+            else
+            {
+                var isClosed = false;
+                messageBox.Closed += (sender, args) =>
+                {
+                    isClosed = true;
+                };
+                messageBox.Show();
+                await TaskHelper.DelayUntilAsync(() => isClosed, TimeSpan.MaxValue);
+            }
             return viewModel.Result;
+
         }
         public MessageBox()
         {
+            // This doesn't appear to work when set in XAML.
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
             InitializeComponent();
 #if DEBUG
             this.AttachDevTools();

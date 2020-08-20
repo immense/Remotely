@@ -6,7 +6,9 @@
         xmlns:vm="clr-namespace:Remotely.Desktop.Linux.ViewModels;assembly=Remotely_Desktop"
         x:Class="Remotely.Desktop.Linux.Controls.MessageBox"
         Icon="/Assets/favicon.ico"
-        Title="{Binding Caption}" SizeToContent="WidthAndHeight" MinWidth="300" MinHeight="100" WindowStartupLocation="CenterScreen">
+        Title="{Binding Caption}" 
+        SizeToContent="WidthAndHeight" MinWidth="300" MinHeight="100" 
+        WindowStartupLocation="CenterScreen">
   <Window.DataContext>
     <vm:MessageBoxViewModel></vm:MessageBoxViewModel>
   </Window.DataContext>
@@ -26,7 +28,7 @@
                 Content="Yes">
         </Button>
         <Button Classes="NormalButton" HorizontalAlignment="Right" IsVisible="{Binding AreYesNoButtonsVisible}" Margin="5,0,5,0"
-                Command="{Binding OKCommand}"
+                Command="{Binding NoCommand}"
                 CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"
                 Content="No">
         </Button>
