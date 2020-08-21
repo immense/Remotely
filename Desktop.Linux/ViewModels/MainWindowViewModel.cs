@@ -194,11 +194,11 @@ namespace Remotely.Desktop.Linux.ViewModels
             var prompt = new HostNamePrompt();
             if (!string.IsNullOrWhiteSpace(Host))
             {
-                HostNamePromptViewModel.Current.Host = Host;
+                prompt.ViewModel.Host = Host;
             }
             prompt.Owner = MainWindow.Current;
             await prompt.ShowDialog(MainWindow.Current);
-            var result = HostNamePromptViewModel.Current.Host;
+            var result = prompt.ViewModel.Host;
 
             if (result is null)
             {

@@ -242,11 +242,11 @@ namespace Remotely.Desktop.Win.ViewModels
             var prompt = new HostNamePrompt();
             if (!string.IsNullOrWhiteSpace(Host))
             {
-                HostNamePromptViewModel.Current.Host = Host;
+                prompt.ViewModel.Host = Host;
             }
             prompt.Owner = App.Current?.MainWindow;
             prompt.ShowDialog();
-            var result = HostNamePromptViewModel.Current.Host;
+            var result = prompt.ViewModel.Host;
             if (!result.StartsWith("https://") && !result.StartsWith("http://"))
             {
                 result = $"https://{result}";
