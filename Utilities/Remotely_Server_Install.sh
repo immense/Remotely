@@ -68,6 +68,8 @@ nginxConfig="server {
 		proxy_set_header Connection \"upgrade\";
 		proxy_set_header Host \$host;
 		proxy_cache_bypass \$http_upgrade;
+		proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto \$scheme;
 	}
 	location /AgentHub {
 		proxy_pass http://localhost:5000;
@@ -76,6 +78,8 @@ nginxConfig="server {
 		proxy_set_header Connection \"upgrade\";
 		proxy_set_header Host \$host;
 		proxy_cache_bypass \$http_upgrade;
+		proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto \$scheme;
 	}
 
 	location /RCBrowserHub {
@@ -85,6 +89,8 @@ nginxConfig="server {
 		proxy_set_header Connection \"upgrade\";
 		proxy_set_header Host \$host;
 		proxy_cache_bypass \$http_upgrade;
+		proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto \$scheme;
 	}
 	location /CasterHub {
 		proxy_pass http://localhost:5000;
@@ -93,6 +99,8 @@ nginxConfig="server {
 		proxy_set_header Connection \"upgrade\";
 		proxy_set_header Host \$host;
 		proxy_cache_bypass \$http_upgrade;
+		proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto \$scheme;
 	}
 }"
 
