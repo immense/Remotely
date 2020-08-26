@@ -163,9 +163,6 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Max Organizations")]
             public int MaxOrganizationCount { get; set; }
 
-            [Display(Name = "Record Remote Control Sessions")]
-            public bool RecordRemoteControlSessions { get; set; }
-
             [Display(Name = "Redirect To HTTPS")]
             public bool RedirectToHttps { get; set; }
 
