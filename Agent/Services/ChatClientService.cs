@@ -60,6 +60,16 @@ namespace Remotely.Agent.Services
 
                     var procID = await AppLauncher.LaunchChatService(orgName, senderConnectionID, hubConnection);
 
+                    if (procID > 0)
+                    {
+                        Logger.Write($"Chat app started.  Process ID: {procID}");
+                    }
+                    else
+                    {
+                        Logger.Write($"Chat app did not start successfully.");
+                        return;
+                    }
+
                     var clientPipe = new NamedPipeClientStream(".", "Remotely_Chat" + senderConnectionID, PipeDirection.InOut, PipeOptions.Asynchronous);
                     clientPipe.Connect(15000);
                     if (!clientPipe.IsConnected)

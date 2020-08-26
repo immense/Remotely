@@ -48,19 +48,25 @@ namespace Remotely.Desktop.Win
                 CasterSocket = Services.GetRequiredService<CasterSocket>();
                 Conductor.ProcessArgs(Environment.GetCommandLineArgs().SkipWhile(x => !x.StartsWith("-")).ToArray());
 
+                Win32Interop.SwitchToInputDesktop();
+
                 if (Conductor.Mode == Core.Enums.AppMode.Chat)
                 {
                     StartUiThread(null);
-                    Services.GetRequiredService<IChatHostService>().StartChat(Conductor.RequesterID, Conductor.OrganizationName).Wait();
+                    _ = Task.Run(async () =>
+                    {
+                        var chatService = Services.GetRequiredService<IChatHostService>();
+                        await chatService.StartChat(Conductor.RequesterID, Conductor.OrganizationName);
+                    });
                 }
                 else if (Conductor.Mode == Core.Enums.AppMode.Unattended)
                 {
                     StartUiThread(null);
-                    Task.Run(StartScreenCasting);
                     App.Current.Dispatcher.Invoke(() =>
                     {
                         App.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
                     });
+                    _ = Task.Run(StartScreenCasting);
                 }
                 else
                 {

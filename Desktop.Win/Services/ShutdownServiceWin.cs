@@ -20,6 +20,7 @@ namespace Remotely.Desktop.Win.Services
             await casterSocket.DisconnectAllViewers();
             System.Windows.Forms.Application.Exit();
             App.Current.Shutdown();
+            Environment.Exit(0);
         }
     }
 }
