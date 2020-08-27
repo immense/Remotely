@@ -32,7 +32,7 @@ namespace Remotely.Desktop.Linux
         public static Conductor Conductor { get; private set; }
         public static IServiceProvider Services => ServiceContainer.Instance;
 
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             try
             {
@@ -45,7 +45,7 @@ namespace Remotely.Desktop.Linux
                 Logger.Write("Processing Args: " + string.Join(", ", Environment.GetCommandLineArgs()));
                 Conductor.ProcessArgs(args);
 
-                Task.Run(() =>
+                _ = Task.Run(() =>
                 {
                     BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
                 });
@@ -57,12 +57,12 @@ namespace Remotely.Desktop.Linux
 
                 if (Conductor.Mode == Core.Enums.AppMode.Chat)
                 {
-                    Services.GetRequiredService<IChatHostService>().StartChat(Conductor.RequesterID, Conductor.OrganizationName).Wait();
+                    await Services.GetRequiredService<IChatHostService>().StartChat(Conductor.RequesterID, Conductor.OrganizationName);
                 }
                 else if (Conductor.Mode == Core.Enums.AppMode.Unattended)
                 {
                     var casterSocket = Services.GetRequiredService<CasterSocket>();
-                    casterSocket.Connect(Conductor.Host).ContinueWith(async (task) =>
+                    await casterSocket.Connect(Conductor.Host).ContinueWith(async (task) =>
                     {
                         await casterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
                         await casterSocket.NotifyRequesterUnattendedReady(Conductor.RequesterID);

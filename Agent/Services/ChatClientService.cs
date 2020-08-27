@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using Remotely.Agent.Interfaces;
 using Remotely.Agent.Models;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
@@ -15,13 +16,13 @@ namespace Remotely.Agent.Services
 {
     public class ChatClientService
     {
-        public ChatClientService(AppLauncher appLauncher)
+        public ChatClientService(IAppLauncher appLauncher)
         {
             AppLauncher = appLauncher;
         }
 
         private SemaphoreSlim MessageLock { get; } = new SemaphoreSlim(1);
-        private AppLauncher AppLauncher { get; }
+        private IAppLauncher AppLauncher { get; }
         private CacheItemPolicy CacheItemPolicy { get; } = new CacheItemPolicy()
         {
             SlidingExpiration = TimeSpan.FromMinutes(10),
@@ -34,6 +35,7 @@ namespace Remotely.Agent.Services
         };
 
         private MemoryCache ChatClients { get; } = new MemoryCache("ChatClients");
+
         public async Task SendMessage(string senderName, 
             string message, 
             string orgName, 

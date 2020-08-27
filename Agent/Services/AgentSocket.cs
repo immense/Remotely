@@ -15,6 +15,7 @@ using System.Text.Json;
 using System.Threading;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.Enums;
+using Remotely.Agent.Interfaces;
 
 namespace Remotely.Agent.Services
 {
@@ -24,7 +25,7 @@ namespace Remotely.Agent.Services
             Uninstaller uninstaller, 
             CommandExecutor commandExecutor,
             ScriptRunner scriptRunner,
-            AppLauncher appLauncher,
+            IAppLauncher appLauncher,
             ChatClientService chatService)
         {
             ConfigService = configService;
@@ -35,7 +36,7 @@ namespace Remotely.Agent.Services
             ChatService = chatService;
         }
         public bool IsConnected => HubConnection?.State == HubConnectionState.Connected;
-        private AppLauncher AppLauncher { get; }
+        private IAppLauncher AppLauncher { get; }
         private ChatClientService ChatService { get; }
         private CommandExecutor CommandExecutor { get; }
         private ConfigService ConfigService { get; }

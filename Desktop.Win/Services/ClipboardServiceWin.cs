@@ -31,7 +31,7 @@ namespace Remotely.Desktop.Win.Services
             }
         }
 
-        public void SetText(string clipboardText)
+        public Task SetText(string clipboardText)
         {
             var thread = new Thread(() =>
             {
@@ -53,7 +53,8 @@ namespace Remotely.Desktop.Win.Services
             });
             thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
-         
+            
+            return Task.CompletedTask;
         }
 
         public void StopWatching()

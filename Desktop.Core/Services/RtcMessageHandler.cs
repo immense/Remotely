@@ -115,7 +115,7 @@ namespace Remotely.Desktop.Core.Services
                         ToggleWebRtcVideo(message);
                         break;
                     case BinaryDtoType.ClipboardTransfer:
-                        ClipboardTransfer(message);
+                        await ClipboardTransfer(message);
                         break;
                     case BinaryDtoType.KeyPress:
                         await KeyPress(message);
@@ -145,7 +145,7 @@ namespace Remotely.Desktop.Core.Services
             }
         }
 
-        private void ClipboardTransfer(byte[] message)
+        private async Task ClipboardTransfer(byte[] message)
         {
             var dto = MessagePackSerializer.Deserialize<ClipboardTransferDto>(message);
             if (dto.TypeText)
@@ -154,7 +154,7 @@ namespace Remotely.Desktop.Core.Services
             }
             else
             {
-                ClipboardService.SetText(dto.Text);
+                await ClipboardService.SetText(dto.Text);
             }
         }
 
