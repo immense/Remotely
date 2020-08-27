@@ -13,15 +13,14 @@ export function AddConsoleOutput(strOutputMessage) {
     outputBlock.appendChild(output);
     ConsoleOutputDiv.appendChild(outputBlock);
     ConsoleFrame.scrollTop = ConsoleFrame.scrollHeight;
-    if (!ConsoleTab.classList.contains("active")) {
-        ConsoleAlert.hidden = false;
-    }
+    IncrementMissedMessageCount();
 }
 export function AddConsoleHTML(html) {
     var contentWrapper = document.createElement("div");
     contentWrapper.innerHTML = html;
     ConsoleOutputDiv.appendChild(contentWrapper);
     ConsoleFrame.scrollTop = ConsoleFrame.scrollHeight;
+    IncrementMissedMessageCount();
 }
 export function AddTransferHarness(transferID, totalDevices) {
     var transferHarness = document.createElement("div");
@@ -38,5 +37,17 @@ export function AddTransferHarness(transferID, totalDevices) {
 export function AutoSizeTextArea() {
     ConsoleTextArea.style.height = "1px";
     ConsoleTextArea.style.height = Math.max(12, ConsoleTextArea.scrollHeight) + "px";
+}
+export function IncrementMissedMessageCount() {
+    if (!ConsoleTab.classList.contains("active")) {
+        var currentCount = Number.parseInt(ConsoleAlert.innerText);
+        if (Number.isNaN(currentCount)) {
+            ConsoleAlert.innerText = "1";
+        }
+        else {
+            ConsoleAlert.innerText = String(currentCount + 1);
+        }
+        ConsoleAlert.hidden = false;
+    }
 }
 //# sourceMappingURL=Console.js.map
