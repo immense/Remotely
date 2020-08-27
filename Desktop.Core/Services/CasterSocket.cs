@@ -236,7 +236,7 @@ namespace Remotely.Desktop.Core.Services
                 }
             });
 
-            Connection.On("ClipboardTransfer", (string transferText, bool typeText, string viewerID) =>
+            Connection.On("ClipboardTransfer", async (string transferText, bool typeText, string viewerID) =>
             {
                 try
                 {
@@ -248,7 +248,7 @@ namespace Remotely.Desktop.Core.Services
                         }
                         else
                         {
-                            ClipboardService.SetText(transferText);
+                            await ClipboardService.SetText(transferText);
                         }
                     }
                 }
@@ -523,12 +523,11 @@ namespace Remotely.Desktop.Core.Services
 
                     var dirPath = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "RemotelySharedFiles")).FullName;
                     var filePath = Path.Combine(dirPath, fileName);
+
                     using (var fs = new FileStream(filePath, FileMode.Create))
+                    using (var rs = response.GetResponseStream())
                     {
-                        using (var rs = response.GetResponseStream())
-                        {
-                            rs.CopyTo(fs);
-                        }
+                        rs.CopyTo(fs);
                     }
                     Process.Start("explorer.exe", dirPath);
                 });

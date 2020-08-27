@@ -30,17 +30,17 @@ namespace Remotely.Desktop.Linux.Services
             }
         }
 
-        public void SetText(string clipboardText)
+        public async Task SetText(string clipboardText)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(clipboardText))
                 {
-                    App.Current.Clipboard.ClearAsync().Wait();
+                    await App.Current.Clipboard.ClearAsync();
                 }
                 else
                 {
-                    App.Current.Clipboard.SetTextAsync(clipboardText).Wait();
+                    await App.Current.Clipboard.SetTextAsync(clipboardText);
                 }
             }
             catch (Exception ex)

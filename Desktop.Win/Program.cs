@@ -36,7 +36,7 @@ namespace Remotely.Desktop.Win
             }
         }
         [STAThread]
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             try
             {
@@ -51,7 +51,7 @@ namespace Remotely.Desktop.Win
                 if (Conductor.Mode == Core.Enums.AppMode.Chat)
                 {
                     StartUiThread(null);
-                    _ = Task.Run(async () =>
+                    await Task.Run(async () =>
                     {
                         var chatService = Services.GetRequiredService<IChatHostService>();
                         await chatService.StartChat(Conductor.RequesterID, Conductor.OrganizationName);
@@ -64,7 +64,7 @@ namespace Remotely.Desktop.Win
                     {
                         App.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
                     });
-                    _ = Task.Run(StartScreenCasting);
+                    await Task.Run(StartScreenCasting);
                 }
                 else
                 {

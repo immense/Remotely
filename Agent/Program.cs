@@ -7,6 +7,7 @@ using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Utilities;
+using Remotely.Agent.Interfaces;
 
 namespace Remotely.Agent
 {
@@ -29,6 +30,7 @@ namespace Remotely.Agent
             catch (Exception ex)
             {
                 Logger.Write(ex);
+                throw;
             }
         }
 
@@ -50,7 +52,23 @@ namespace Remotely.Agent
             serviceCollection.AddScoped<Uninstaller>();
             serviceCollection.AddScoped<ScriptRunner>();
             serviceCollection.AddScoped<CommandExecutor>();
-            serviceCollection.AddScoped<AppLauncher>();
+
+            if (EnvironmentHelper.IsWindows)
+            {
+                serviceCollection.AddScoped<IAppLauncher, AppLauncherWin>();
+            }
+            else if (EnvironmentHelper.IsLinux)
+            {
+                serviceCollection.AddScoped<IAppLauncher, AppLauncherLinux>();
+            }
+            else if (EnvironmentHelper.IsMac)
+            {
+                // TODO: Mac.
+            }
+            else
+            {
+                throw new NotSupportedException("Operating system not supported.");
+            }
 
             Services = serviceCollection.BuildServiceProvider();
         }

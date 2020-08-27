@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Remotely.Desktop.Core.Interfaces
 {
@@ -8,6 +9,6 @@ namespace Remotely.Desktop.Core.Interfaces
 
         void BeginWatching();
 
-        void SetText(string clipboardText);
+        Task SetText(string clipboardText);
     }
 }
