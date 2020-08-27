@@ -43,7 +43,7 @@ namespace Remotely.Desktop.Linux
                 Conductor = Services.GetRequiredService<Conductor>();
 
                 Logger.Write("Processing Args: " + string.Join(", ", Environment.GetCommandLineArgs()));
-                Conductor.ProcessArgs(Environment.GetCommandLineArgs().SkipWhile(x => !x.StartsWith("-")).ToArray());
+                Conductor.ProcessArgs(args);
 
                 Task.Run(() =>
                 {

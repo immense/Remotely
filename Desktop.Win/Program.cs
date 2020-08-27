@@ -46,9 +46,7 @@ namespace Remotely.Desktop.Win
 
                 Conductor = Services.GetRequiredService<Conductor>();
                 CasterSocket = Services.GetRequiredService<CasterSocket>();
-                Conductor.ProcessArgs(Environment.GetCommandLineArgs().SkipWhile(x => !x.StartsWith("-")).ToArray());
-
-                Win32Interop.SwitchToInputDesktop();
+                Conductor.ProcessArgs(args);
 
                 if (Conductor.Mode == Core.Enums.AppMode.Chat)
                 {
