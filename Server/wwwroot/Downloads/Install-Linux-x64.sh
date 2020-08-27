@@ -63,7 +63,7 @@ connectionInfo="{
 
 echo "$connectionInfo" > ./ConnectionInfo.json
 
-curl --head $HostName/Downloads/Remotely-Linux.zip | grep etag | cut -d' ' -f 2 > ./etag.txt
+curl --head $HostName/Downloads/Remotely-Linux.zip | grep -i "etag" | cut -d' ' -f 2 > ./etag.txt
 
 echo Creating service...
 
