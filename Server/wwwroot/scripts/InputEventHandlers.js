@@ -154,6 +154,7 @@ function inputOnFilterTextBox() {
 function consoleTabSelected() {
     $(UI.ConsoleTab).on("shown.bs.tab", () => {
         UI.ConsoleAlert.hidden = true;
+        UI.ConsoleAlert.innerText = "0";
         UI.ConsoleFrame.scrollTop = UI.ConsoleFrame.scrollHeight;
     });
 }
