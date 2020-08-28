@@ -101,9 +101,10 @@ jobs:
         
         echo "Creating Pfx for signing assemblies."
         
-        $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
+        $pfx_cert_byte = [System.Convert]::FromBase64String($env:PfxBase64)
         $certificatePath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath GitHubActionsWorkflow.pfx
-        [IO.File]::WriteAllBytes("$certificatePath", $pfx_cert_byte)
+        echo "Writing file to $certificatePath."
+        [IO.File]::WriteAllBytes($certificatePath, $pfx_cert_byte)
     
     # Store the assembly version in an environment variable
     - name: Set current version
