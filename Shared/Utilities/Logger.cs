@@ -79,7 +79,7 @@ namespace Remotely.Shared.Utilities
                 File.Create(LogPath).Close();
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {
-                    Process.Start("sudo", $"chmod 666 {LogPath}").WaitForExit();
+                    Process.Start("sudo", $"chmod 777 {LogPath}").WaitForExit();
                 }
             }
             if (File.Exists(LogPath))
