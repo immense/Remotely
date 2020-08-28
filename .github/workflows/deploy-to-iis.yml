@@ -166,7 +166,7 @@ jobs:
         
     # Publish server to IIS
     - name: Publish
-      run: dotnet publish --configuration $env:Configuration /p:PublishProfile=Test /p:Password=$env:ServerPassword /p:Version=$env:CurrentVersion /p:FileVersion=$env:CurrentVersion
+      run: dotnet publish --configuration $env:Configuration /p:PublishProfile="Test|x64" /p:Password=$env:ServerPassword /p:Version=$env:CurrentVersion /p:FileVersion=$env:CurrentVersion
 
     # Remove the pfx
     - name: Remove the pfx
