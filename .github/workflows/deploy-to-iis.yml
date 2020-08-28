@@ -95,7 +95,7 @@ jobs:
     - name: Decode the pfx
       run: |
         if (!($env:PfxBase64)) {
-          echo "Skipping cert signing because Base64_Encoded_Pfx secret is missing.
+          echo "Skipping cert signing because Base64_Encoded_Pfx secret is missing."
           return
         }
         
