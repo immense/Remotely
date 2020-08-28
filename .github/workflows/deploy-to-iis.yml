@@ -151,7 +151,7 @@ jobs:
             <SkipExtraFilesOnServer>True</SkipExtraFilesOnServer>
             <MSDeployPublishMethod>WMSVC</MSDeployPublishMethod>
             <EnableMSDeployBackup>True</EnableMSDeployBackup>
-            <UserName>$ServerUsername</UserName>
+            <UserName>$env:ServerUsername</UserName>
             <TargetFramework>netcoreapp3.1</TargetFramework>
             <SelfContained>true</SelfContained>
             <AllowUntrustedCertificate>true</AllowUntrustedCertificate>
