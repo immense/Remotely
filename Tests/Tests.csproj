@@ -25,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Agent.Installer.Win\Agent.Installer.Win.csproj" />
     <ProjectReference Include="..\Desktop.Core\Desktop.Core.csproj" />
     <ProjectReference Include="..\Desktop.Win\Desktop.Win.csproj" />
     <ProjectReference Include="..\Server\Server.csproj" />
