@@ -5,7 +5,8 @@ A remote control and remote scripting solution, built with .NET Core, SignalR Co
 [![Donate](https://www.paypalobjects.com/webstatic/en_US/i/buttons/pp-acceptance-small.png)](https://paypal.me/translucency)
 
 Website: https://remotely.one  
-Multi-Tenant Demo Server: https://app.remotely.one
+Hosted App: https://app.remotely.one
+Subreddit: https://www.reddit.com/r/remotely_app/
 
 ## Client Prerequisites:
 * Endpoint devices require the .NET Core runtime to be installed.
@@ -26,7 +27,7 @@ The following steps will configure your Windows 10 machine for building the Remo
 * Install the latest .NET Core SDK.
     * Link: https://dotnet.microsoft.com/download
 * Clone the git repository and open the solution in Visual Studio.
-* Run Publish.ps1 in the [Utilities folder in source control](https://raw.githubusercontent.com/Jay-Rad/Remotely/master/Utilities/Publish.ps1).
+* Run Publish.ps1 in the [Utilities folder in source control](https://raw.githubusercontent.com/lucent-sea/Remotely/master/Utilities/Publish.ps1).
     * Example: powershell -f [path]\Publish.ps1 -outdir C:\inetpub\remotely -rid win10-x64 -hostname https://mysite.mydomain.com
     * The output folder will now contain the server, with the clients in the Downloads folder.
 	* The above hostname will be hardcoded in the screen-sharing desktop apps, but can be changed via the options menu.
@@ -37,7 +38,7 @@ The following steps will configure your Windows 10 machine for building the Remo
 ## Hosting a Server (Windows)
 * Build the Remotely server and clients using the above steps.
 * Create a site in IIS that will run Remotely.
-* Run Install-RemotelyServer.ps1 (as an administrator), which is in the [Utilities folder in source control](https://raw.githubusercontent.com/Jay-Rad/Remotely/master/Utilities/Install-RemotelyServer.ps1) and on the Releases page.
+* Run Install-RemotelyServer.ps1 (as an administrator), which is in the [Utilities folder in source control](https://raw.githubusercontent.com/lucent-sea/Remotely/master/Utilities/Install-RemotelyServer.ps1) and on the Releases page.
     * Alternatively, you can build from source and copy the server files to the site folder.
 * Download and install the .NET Core Runtime (not the SDK) with the Hosting Bundle.
 	* Link: https://dotnet.microsoft.com/download/dotnet-core/current/runtime
@@ -54,7 +55,7 @@ The following steps will configure your Windows 10 machine for building the Remo
 
 ## Hosting a Server (Ubuntu)
 * Ubuntu 18.04 and 19.04 have been tested.
-* Run Remotely_Server_Setup.sh (with sudo), which is in the [Utilities folder in source control](https://raw.githubusercontent.com/Jay-Rad/Remotely/master/Utilities/Remotely_Server_Install.sh).
+* Run Remotely_Server_Setup.sh (with sudo), which is in the [Utilities folder in source control](https://raw.githubusercontent.com/lucent-sea/Remotely/master/Utilities/Remotely_Server_Install.sh).
 	* The script is designed to install Remotely and Nginx on the same server, running Ubuntu 18.04 or 19.04.  You'll need to manually set up other configurations.
     * A helpful user supplied an example Apache configuration, which can be found in the Utilities folder.
     * The script will prompt for the "App root" location, which is the above directory where the server files are located.

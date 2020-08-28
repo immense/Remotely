@@ -321,7 +321,7 @@ try {
     }
     Wrap-Host "Downloading server package..."
 	$ProgressPreference = "SilentlyContinue"
-    Invoke-WebRequest -Uri "https://github.com/Jay-Rad/Remotely/releases/latest/download/Remotely_Server_Win-x64.zip" -OutFile "$env:TEMP\Remotely_Server_Win-x64.zip"
+    Invoke-WebRequest -Uri "https://github.com/lucent-sea/Remotely/releases/latest/download/Remotely_Server_Win-x64.zip" -OutFile "$env:TEMP\Remotely_Server_Win-x64.zip"
     $ProgressPreference = "Continue"
     Wrap-Host "Extracting server files..."
 	[System.Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem") | Out-Null
