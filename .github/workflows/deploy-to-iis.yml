@@ -99,7 +99,7 @@ jobs:
     # Decode the base 64 encoded pfx and save the Signing_Certificate
     - name: Decode the pfx
       run: |
-        if (!(${{ $env:PfxBase64 }})) {
+        if (!($env:PfxBase64)) {
           echo "Skipping cert signing because Base64_Encoded_Pfx secret is missing.
           return
         }
