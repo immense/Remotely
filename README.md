@@ -2,12 +2,16 @@
 A remote control and remote scripting solution, built with .NET Core, SignalR Core, and WebRTC.
 
 [![Build Status](https://dev.azure.com/translucency/Remotely/_apis/build/status/Remotely-ReleaseBuild?branchName=master)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=17&branchName=master)
-[![Donate](https://www.paypalobjects.com/webstatic/en_US/i/buttons/pp-acceptance-small.png)](https://paypal.me/translucency)
 
+## Sponsor This Project
+Ongoing via GitHub: https://github.com/sponsors/lucent-sea  
+One-Time via PayPal: https://paypal.me/translucency  
 
+## Project Links
+Demo App: https://app.remotely.one  
 Website: https://remotely.one  
-Hosted App: https://app.remotely.one  
-Subreddit: https://www.reddit.com/r/remotely_app/
+Feedback: https://feedback-tsrk7wsw.featureupvote.com/  
+Subreddit: https://www.reddit.com/r/remotely_app/  
 
 ## Client Prerequisites:
 * Endpoint devices require the .NET Core runtime to be installed.
