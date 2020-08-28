@@ -1,0 +1,177 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# This workflow will build, test, sign and package a WPF or Windows Forms desktop application
+# built on .NET Core.
+# To learn how to migrate your existing application to .NET Core,
+# refer to https://docs.microsoft.com/en-us/dotnet/desktop-wpf/migration/convert-project-from-net-framework
+#
+# To configure this workflow:
+#
+# 1. Configure environment variables
+# GitHub sets default environment variables for every workflow run.
+# Replace the variables relative to your project in the "env" section below.
+#
+# 2. Signing
+# Generate a signing certificate in the Windows Application
+# Packaging Project or add an existing signing certificate to the project.
+# Next, use PowerShell to encode the .pfx file using Base64 encoding
+# by running the following Powershell script to generate the output string:
+#
+# $pfx_cert = Get-Content '.\SigningCertificate.pfx' -Encoding Byte
+# [System.Convert]::ToBase64String($pfx_cert) | Out-File 'SigningCertificate_Encoded.txt'
+#
+# Open the output file, SigningCertificate_Encoded.txt, and copy the
+# string inside. Then, add the string to the repo as a GitHub secret
+# and name it "Base64_Encoded_Pfx."
+# For more information on how to configure your signing certificate for
+# this workflow, refer to https://github.com/microsoft/github-actions-for-desktop-apps#signing
+#
+# Finally, add the signing certificate password to the repo as a secret and name it "Pfx_Key".
+# See "Build the Windows Application Packaging project" below to see how the secret is used.
+#
+# For more information on GitHub Actions, refer to https://github.com/features/actions
+# For a complete CI/CD sample to get started with GitHub Action workflows for Desktop Applications,
+# refer to https://github.com/microsoft/github-actions-for-desktop-apps
+
+name: Remotely Build and Publish
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+
+    runs-on: windows-latest  # For a list of available runner types, refer to
+                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+
+    env:
+      Solution_Name: Remotely.sln                               # Replace with your solution name, i.e. MyWpfApp.sln.
+      Test_Project_Path: Tests\Tests.csproj                     # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
+      PfxBase64: ${{ secrets.BASE64_ENCODED_PFX }}
+      PfxKey: ${{ secrets.PFX_KEY }}
+      ServerUsername: ${{ secrets.SERVER_USERNAME }}
+      ServerPassword: ${{ secrets.SERVER_Password }}
+      IisAppPath: ${{ secrets.IIS_APP_PATH }}
+      SiteUrl: ${{ secrets.SITE_URL }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    # Install the .NET Core workload
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.101
+      
+    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@2008f912f56e61277eefaac6d1888b750582aa16
+    
+    # Restore .NET Framework Project Packages
+    - name: NuGet Restore
+      uses: nuget/setup-nuget@v1
+    - run: nuget restore .\Agent.Installer.Win\packages.config
+
+    # Execute all unit tests in the solution
+    - name: Execute unit tests
+      run: dotnet test
+
+    # Restore the application to populate the obj folder with RuntimeIdentifiers
+    - name: Restore the application
+      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
+      env:
+        Configuration: ${{ matrix.configuration }}
+
+    # Decode the base 64 encoded pfx and save the Signing_Certificate
+    - name: Decode the pfx
+      run: |
+        if (!(${{ $env:PfxBase64 }})) {
+          echo "Skipping cert signing because Base64_Encoded_Pfx secret is missing.
+          return
+        }
+        
+        echo "Creating Pfx for signing assemblies."
+        
+        $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
+        $certificatePath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath GitHubActionsWorkflow.pfx
+        [IO.File]::WriteAllBytes("$certificatePath", $pfx_cert_byte)
+    
+    # Store the assembly version in an environment variable
+    - name: Set current version
+      shell: powershell
+      run: |
+        $VersionString = git show -s --format=%ci
+        $VersionDate = [DateTimeOffset]::Parse($VersionString)
+
+        $Year = $VersionDate.Year.ToString()
+        $Month = $VersionDate.Month.ToString().PadLeft(2, "0")
+        $Day = $VersionDate.Day.ToString().PadLeft(2, "0")
+        $Hour = $VersionDate.Hour.ToString().PadLeft(2, "0")
+        $Minute = $VersionDate.Minute.ToString().PadLeft(2, "0")
+        $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
+        
+        echo "::set-env name=CurrentVersion::$CurrentVersion"
+        # This was needed in Azure Pipelines.
+        #[System.Console]::WriteLine("##vso[task.setvariable variable=CurrentVersion]$CurrentVersion")
+
+        Write-Host "Setting current version to $CurrentVersion."
+
+    # Run the Publish script to build clients and server.
+    - name: Run Publish script
+      shell: powershell
+      run: $env:GITHUB_WORKSPACE\Utilities\Publish.ps1 -CertificatePath "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx" -CertificatePassword $env:PfxKey -Hostname $env:SiteUrl -CurrentVersion $env:CurrentVersion
+    
+    # Create MSDeploy Publishing Profile
+    - name: Create MSDeploy Profile
+      shell: powershell
+      run: |
+        $PublishProfile = @"
+        <?xml version="1.0" encoding="utf-8"?>
+        <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+          <PropertyGroup>
+            <WebPublishMethod>MSDeploy</WebPublishMethod>
+            <LastUsedBuildConfiguration>Release</LastUsedBuildConfiguration>
+            <LastUsedPlatform>x64</LastUsedPlatform>
+            <SiteUrlToLaunchAfterPublish>$($env:SiteUrl):80/</SiteUrlToLaunchAfterPublish>
+            <LaunchSiteAfterPublish>False</LaunchSiteAfterPublish>
+            <ExcludeApp_Data>False</ExcludeApp_Data>
+            <ProjectGuid>3e835099-c417-4d82-8d5c-13dc09af48ac</ProjectGuid>
+            <MSDeployServiceURL>$($env:SiteUrl):8172/msdeploy.axd</MSDeployServiceURL>
+            <DeployIisAppPath>$IisAppPath</DeployIisAppPath>
+            <RemoteSitePhysicalPath />
+            <SkipExtraFilesOnServer>True</SkipExtraFilesOnServer>
+            <MSDeployPublishMethod>WMSVC</MSDeployPublishMethod>
+            <EnableMSDeployBackup>True</EnableMSDeployBackup>
+            <UserName>$ServerUsername</UserName>
+            <TargetFramework>netcoreapp3.1</TargetFramework>
+            <SelfContained>true</SelfContained>
+            <AllowUntrustedCertificate>true</AllowUntrustedCertificate>
+            <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+          </PropertyGroup>
+        </Project>
+        "@
+
+        New-Item -Path "$env:GITHUB_WORKSPACE\Server\Properties\PublishProfiles\" -ItemType Directory -Force
+        Set-Content -Path "$env:GITHUB_WORKSPACE\Server\Properties\PublishProfiles\Prod.pubxml" -Value $PublishProfile -Force
+        
+    # Publish server to IIS
+    - name: Publish
+      run: dotnet publish --configuration Release /p:PublishProfile=Prod /p:Password=$env:ServerPassword /p:Version=$env:CurrentVersion /p:FileVersion=$env:CurrentVersion
+
+    # Remove the pfx
+    - name: Remove the pfx
+      run: Remove-Item -path $env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx
