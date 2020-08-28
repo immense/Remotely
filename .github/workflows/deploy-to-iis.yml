@@ -146,7 +146,7 @@ jobs:
             <ExcludeApp_Data>False</ExcludeApp_Data>
             <ProjectGuid>3e835099-c417-4d82-8d5c-13dc09af48ac</ProjectGuid>
             <MSDeployServiceURL>$($env:SiteUrl):8172/msdeploy.axd</MSDeployServiceURL>
-            <DeployIisAppPath>$IisAppPath</DeployIisAppPath>
+            <DeployIisAppPath>$env:IisAppPath</DeployIisAppPath>
             <RemoteSitePhysicalPath />
             <SkipExtraFilesOnServer>True</SkipExtraFilesOnServer>
             <MSDeployPublishMethod>WMSVC</MSDeployPublishMethod>
