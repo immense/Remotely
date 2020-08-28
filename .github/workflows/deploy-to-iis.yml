@@ -167,7 +167,7 @@ jobs:
     - name: Publish
       run: | 
         echo "Publishing with configuration $env:Configuration."
-        dotnet publish /p:Platform="x64" /p:Configuration="$env:Configuration" /p:PublishProfile="Test" /p:Password=$env:ServerPassword /p:Version=$env:CurrentVersion /p:FileVersion=$env:CurrentVersion
+        dotnet publish /p:Platform="x64" /p:Configuration="$env:Configuration" /p:PublishProfile="Test" /p:Password=$env:ServerPassword /p:Version=$env:CurrentVersion /p:FileVersion=$env:CurrentVersion ".\Server"
 
     # Remove the pfx
     - name: Remove the pfx
