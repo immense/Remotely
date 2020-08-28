@@ -129,7 +129,7 @@ jobs:
     # Run the Publish script to build clients and server.
     - name: Run Publish script
       shell: powershell
-      run: &"$env:GITHUB_WORKSPACE\Utilities\Publish.ps1" -CertificatePath "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx" -CertificatePassword $env:PfxKey -Hostname $env:SiteUrl -CurrentVersion $env:CurrentVersion
+      run: .\Utilities\Publish.ps1 -CertificatePath "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx" -CertificatePassword $env:PfxKey -Hostname $env:SiteUrl -CurrentVersion $env:CurrentVersion
     
     # Create MSDeploy Publishing Profile
     - name: Create MSDeploy Profile
