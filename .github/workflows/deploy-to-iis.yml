@@ -80,11 +80,6 @@ jobs:
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@2008f912f56e61277eefaac6d1888b750582aa16
-    
-    # NuGet restore for .NET Framework projects.
-    - name: NuGet Restore
-      uses: nuget/setup-nuget@v1
-    - run: nuget restore $env:Solution_Name
 
     # Execute all unit tests in the solution
     - name: Execute unit tests
@@ -144,7 +139,7 @@ jobs:
         <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
           <PropertyGroup>
             <WebPublishMethod>MSDeploy</WebPublishMethod>
-            <LastUsedBuildConfiguration>Release</LastUsedBuildConfiguration>
+            <LastUsedBuildConfiguration>$env:Configuration</LastUsedBuildConfiguration>
             <LastUsedPlatform>x64</LastUsedPlatform>
             <SiteUrlToLaunchAfterPublish>$($env:SiteUrl):80/</SiteUrlToLaunchAfterPublish>
             <LaunchSiteAfterPublish>False</LaunchSiteAfterPublish>
@@ -166,11 +161,11 @@ jobs:
         "@
 
         New-Item -Path "$env:GITHUB_WORKSPACE\Server\Properties\PublishProfiles\" -ItemType Directory -Force
-        Set-Content -Path "$env:GITHUB_WORKSPACE\Server\Properties\PublishProfiles\Prod.pubxml" -Value $PublishProfile -Force
+        Set-Content -Path "$env:GITHUB_WORKSPACE\Server\Properties\PublishProfiles\Test.pubxml" -Value $PublishProfile -Force
         
     # Publish server to IIS
     - name: Publish
-      run: dotnet publish --configuration Release /p:PublishProfile=Prod /p:Password=$env:ServerPassword /p:Version=$env:CurrentVersion /p:FileVersion=$env:CurrentVersion
+      run: dotnet publish --configuration $env:Configuration /p:PublishProfile=Test /p:Password=$env:ServerPassword /p:Version=$env:CurrentVersion /p:FileVersion=$env:CurrentVersion
 
     # Remove the pfx
     - name: Remove the pfx
