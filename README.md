@@ -4,8 +4,9 @@ A remote control and remote scripting solution, built with .NET Core, SignalR Co
 [![Build Status](https://dev.azure.com/translucency/Remotely/_apis/build/status/Remotely-ReleaseBuild?branchName=master)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=17&branchName=master)
 [![Donate](https://www.paypalobjects.com/webstatic/en_US/i/buttons/pp-acceptance-small.png)](https://paypal.me/translucency)
 
+
 Website: https://remotely.one  
-Hosted App: https://app.remotely.one
+Hosted App: https://app.remotely.one  
 Subreddit: https://www.reddit.com/r/remotely_app/
 
 ## Client Prerequisites:
