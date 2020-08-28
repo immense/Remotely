@@ -15,60 +15,41 @@ namespace Remotely.Tests
     {
         private DataService DataService { get; set; }
 
-        [TestInitialize]
-        public async Task TestInit()
-        {
-            await TestData.PopulateTestData();
-            DataService = IoCActivator.ServiceProvider.GetRequiredService<DataService>();
-        }
-
-        [TestCleanup]
-        public void TestCleanup()
-        {
-            TestData.ClearData();
-        }
-
         [TestMethod]
         [DoNotParallelize]
-        public void VerifyInitialData()
+        public async Task AddAlert()
         {
-            Assert.IsNotNull(DataService.GetUserByName(TestData.Admin1.UserName));
-            Assert.IsNotNull(DataService.GetUserByName(TestData.Admin2.UserName));
-            Assert.IsNotNull(DataService.GetUserByName(TestData.User1.UserName));
-            Assert.IsNotNull(DataService.GetUserByName(TestData.User2.UserName));
-            Assert.AreEqual(1, DataService.GetOrganizationCount());
-
-            var devices = DataService.GetAllDevices(TestData.OrganizationID);
-
-            Assert.AreEqual(2, devices.Count());
-            Assert.IsTrue(devices.Any(x => x.ID == "Device1"));
-            Assert.IsTrue(devices.Any(x => x.ID == "Device2"));
-
-            var orgIDs = new string[]
+            var options = new AlertOptions()
             {
-                TestData.Group1.OrganizationID,
-                TestData.Group2.OrganizationID,
-                TestData.Admin1.OrganizationID,
-                TestData.Admin2.OrganizationID,
-                TestData.User1.OrganizationID,
-                TestData.User2.OrganizationID,
-                TestData.Device1.OrganizationID,
-                TestData.Device2.OrganizationID
+                AlertDeviceID = TestData.Device1.ID,
+                AlertMessage = "Test Message",
+                ShouldAlert = true
             };
+            await DataService.AddAlert(options, TestData.OrganizationID);
 
-            Assert.IsTrue(orgIDs.All(x => x == TestData.OrganizationID));
+            var alerts = DataService.GetAlerts(TestData.Admin1.Id);
+
+            Assert.AreEqual("Test Message", alerts.First().Message);
         }
-
 
         [TestMethod]
         [DoNotParallelize]
-        public void UpdateOrganizationName()
+        public async Task AddOrUpdateDevice()
         {
-            Assert.IsTrue(string.IsNullOrWhiteSpace(TestData.Admin1.Organization.OrganizationName));
-            DataService.UpdateOrganizationName(TestData.OrganizationID, "Test Org");
-            Assert.AreEqual(TestData.Admin1.Organization.OrganizationName, "Test Org");
-        }
+            var newDeviceID = "NewDeviceName";
+            var storedDevice = DataService.GetDevice(newDeviceID);
 
+            Assert.IsNull(storedDevice);
+
+            var newDevice = await DeviceInformation.Create(newDeviceID, TestData.OrganizationID);
+            Assert.IsTrue(DataService.AddOrUpdateDevice(newDevice, out _));
+
+            storedDevice = DataService.GetDevice(newDeviceID);
+
+            Assert.AreEqual(newDeviceID, storedDevice.ID);
+            Assert.AreEqual(Environment.MachineName, storedDevice.DeviceName);
+            Assert.AreEqual(Environment.Is64BitOperatingSystem, storedDevice.Is64Bit);
+        }
 
         [TestMethod]
         [DoNotParallelize]
@@ -102,21 +83,25 @@ namespace Remotely.Tests
             Assert.AreEqual(1, DataService.FilterDeviceIDsByUserPermission(allDevices, TestData.User2).Count());
         }
 
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            TestData.ClearData();
+        }
+
+        [TestInitialize]
+        public async Task TestInit()
+        {
+            await TestData.PopulateTestData();
+            DataService = IoCActivator.ServiceProvider.GetRequiredService<DataService>();
+        }
         [TestMethod]
         [DoNotParallelize]
-        public async Task UpdateDevice()
+        public void UpdateOrganizationName()
         {
-            var newDevice = await DeviceInformation.Create("Device1", TestData.OrganizationID);
-            Assert.IsTrue(DataService.AddOrUpdateDevice(newDevice, out _));
-            Assert.AreEqual(TestData.Device1.OrganizationID, TestData.OrganizationID);
-            Assert.AreEqual(TestData.Device1.DeviceName, Environment.MachineName);
-            Assert.IsTrue(TestData.Device1.CpuUtilization > 0);
-            Assert.IsTrue(TestData.Device1.TotalMemory > 0);
-            Assert.IsTrue(TestData.Device1.TotalStorage > 0);
-            Assert.IsTrue(TestData.Device1.UsedMemory > 0);
-            Assert.IsTrue(TestData.Device1.UsedStorage > 0);
-            Assert.IsTrue(TestData.Device1.IsOnline);
-            Assert.AreEqual(Environment.Is64BitOperatingSystem, TestData.Device1.Is64Bit);
+            Assert.IsTrue(string.IsNullOrWhiteSpace(TestData.Admin1.Organization.OrganizationName));
+            DataService.UpdateOrganizationName(TestData.OrganizationID, "Test Org");
+            Assert.AreEqual(TestData.Admin1.Organization.OrganizationName, "Test Org");
         }
 
         [TestMethod]
@@ -145,21 +130,33 @@ namespace Remotely.Tests
 
         [TestMethod]
         [DoNotParallelize]
-        public async Task AddAlert()
+        public void VerifyInitialData()
         {
-            var options = new AlertOptions()
+            Assert.IsNotNull(DataService.GetUserByName(TestData.Admin1.UserName));
+            Assert.IsNotNull(DataService.GetUserByName(TestData.Admin2.UserName));
+            Assert.IsNotNull(DataService.GetUserByName(TestData.User1.UserName));
+            Assert.IsNotNull(DataService.GetUserByName(TestData.User2.UserName));
+            Assert.AreEqual(1, DataService.GetOrganizationCount());
+
+            var devices = DataService.GetAllDevices(TestData.OrganizationID);
+
+            Assert.AreEqual(2, devices.Count());
+            Assert.IsTrue(devices.Any(x => x.ID == "Device1"));
+            Assert.IsTrue(devices.Any(x => x.ID == "Device2"));
+
+            var orgIDs = new string[]
             {
-                AlertDeviceID = TestData.Device1.ID,
-                AlertMessage = "Test Message",
-                ShouldAlert = true
+                TestData.Group1.OrganizationID,
+                TestData.Group2.OrganizationID,
+                TestData.Admin1.OrganizationID,
+                TestData.Admin2.OrganizationID,
+                TestData.User1.OrganizationID,
+                TestData.User2.OrganizationID,
+                TestData.Device1.OrganizationID,
+                TestData.Device2.OrganizationID
             };
-            await DataService.AddAlert(options, TestData.OrganizationID);
 
-            var alerts = DataService.GetAlerts(TestData.Admin1.Id);
-
-            var json = System.Text.Json.JsonSerializer.Serialize(options);
-
-            Assert.AreEqual("Test Message", alerts.First().Message);
+            Assert.IsTrue(orgIDs.All(x => x == TestData.OrganizationID));
         }
     }
 }
