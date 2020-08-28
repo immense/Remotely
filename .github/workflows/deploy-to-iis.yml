@@ -81,10 +81,10 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@2008f912f56e61277eefaac6d1888b750582aa16
     
-    # Restore .NET Framework Project Packages
+    # NuGet restore for .NET Framework projects.
     - name: NuGet Restore
       uses: nuget/setup-nuget@v1
-    - run: nuget restore .\Agent.Installer.Win\packages.config
+    - run: nuget restore $env:Solution_Name
 
     # Execute all unit tests in the solution
     - name: Execute unit tests
