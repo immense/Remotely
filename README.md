@@ -10,7 +10,7 @@ One-Time via PayPal: https://paypal.me/translucency
 ## Project Links
 Demo App: https://app.remotely.one  
 Website: https://remotely.one  
-Feedback: https://feedback-tsrk7wsw.featureupvote.com/  
+Feedback: https://remotely.featureupvote.com/  
 Subreddit: https://www.reddit.com/r/remotely_app/  
 
 ## Client Prerequisites:
