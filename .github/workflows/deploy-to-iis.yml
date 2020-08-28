@@ -57,6 +57,7 @@ jobs:
 
     env:
       Solution_Name: Remotely.sln                               # Replace with your solution name, i.e. MyWpfApp.sln.
+      Configuration: ${{ matrix.configuration }}
       Test_Project_Path: Tests\Tests.csproj                     # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
       PfxBase64: ${{ secrets.BASE64_ENCODED_PFX }}
       PfxKey: ${{ secrets.PFX_KEY }}
@@ -88,8 +89,6 @@ jobs:
     # Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application
       run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
-      env:
-        Configuration: ${{ matrix.configuration }}
 
     # Decode the base 64 encoded pfx and save the Signing_Certificate
     - name: Decode the pfx
