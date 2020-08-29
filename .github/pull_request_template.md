@@ -1,4 +1,10 @@
-*Add your PR comments here.*
+**Important:** I realize Remotely is currently lacking in unit and integration tests.  I was pretty newb when I wrote a lot of the foundational code, and I haven't had time to refactor and restructure.
+
+I'd like to start changing that, though. Enough people are starting to depend on Remotely that I want to make sure it's maintainable and lives on.  So I need every PR to include automated tests that prove the new functionality is working.
+
+If you have the time and the desire, it would also be incredibly helpful if you included some new tests against services touched by your changes.  I know that this is my mess you're cleaning up, so I thank you wholeheartedly for your help.  The people who use Remotely appreciate it too. :)
+
+*Delete the above and add your PR comments here and delete the above.*
 
 
 ---
