@@ -72,12 +72,12 @@ The following steps will configure your Windows 10 machine for building the Remo
 * Change values in appsettings.json for your environment.
 * Documentation for hosting behind Nginx can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx?view=aspnetcore-3.1
 
-## Changing the database.
+## Changing the Database
 By default, Remotely uses a SQLite database.  When first run, it creates a file as specified for the SQLite connection string in appsettings.json.
 
-You can change databases by changing `DBProvider` in `ApplicationOptions` to `SQLServer` or `PostgreSQL`.
+You can change database by changing `DBProvider` in `ApplicationOptions` to `SQLServer` or `PostgreSQL`.
 
-However, in order for the server to run properly, you must also recreate the migration files and recompile the server.  Migration files are C# files that get compiled into the server app, and they tell the server how to create the database.
+However, in order for the server to run properly, you must also recreate the migration files and recompile the server.  Migration files are C# files that get compiled into the server app, and they tell the server how to create the database with the proper schema.
 
 Here's what you need to do:
 - Delete the `Migrations` folder under the `Server` project.
