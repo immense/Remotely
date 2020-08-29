@@ -2,6 +2,7 @@
 A remote control and remote scripting solution, built with .NET Core, SignalR Core, and WebRTC.
 
 [![Build Status](https://dev.azure.com/translucency/Remotely/_apis/build/status/Remotely-ReleaseBuild?branchName=master)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=17&branchName=master)
+![GitHub Build](https://github.com/lucent-sea/Remotely/workflows/GitHub%20Build/badge.svg)
 
 ## Sponsor This Project
 Ongoing via GitHub: https://github.com/sponsors/lucent-sea  
