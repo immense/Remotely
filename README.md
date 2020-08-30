@@ -14,12 +14,6 @@ Website: https://remotely.one
 Feedback: https://remotely.featureupvote.com/  
 Subreddit: https://www.reddit.com/r/remotely_app/  
 
-## Client Prerequisites:
-* Endpoint devices require the .NET Core runtime to be installed.
-	* For Windows, the Desktop Runtime is required.
-    * Download Link: https://dotnet.microsoft.com/download/dotnet-core/current/runtime
-		* The installer will automatically download and install the runtime if missing.
-
 ## Build Instructions (Windows 10)  
 The following steps will configure your Windows 10 machine for building the Remotely server and clients.
 * Install Visual Studio 2019.
