@@ -1,5 +1,4 @@
 ﻿import * as Utilities from "../Utilities.js";
-import { RCHubConnection } from "./RCHubConnection.js";
 import { RtcSession } from "./RtcSession.js";
 import * as UI from "./UI.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
@@ -8,14 +7,15 @@ import { RtcMessageHandler } from "./RtcMessageHandler.js";
 import { MessageSender } from "./MessageSender.js";
 import { SessionRecorder } from "./SessionRecorder.js";
 import { ApplyInputHandlers } from "./InputEventHandlers.js";
+import { ViewerHubConnection } from "./ViewerHubConnection.js";
 
 
 var queryString = Utilities.ParseSearchString();
 
-export const MainRc = {
+export const MainViewer = {
     ClipboardWatcher: new ClipboardWatcher(),
     MessageSender: new MessageSender(),
-    RCHubConnection: new RCHubConnection(),
+    ViewerHubConnection: new ViewerHubConnection(),
     RtcMessageHandler: new RtcMessageHandler(),
     RtcSession: new RtcSession(),
     SessionRecorder: new SessionRecorder(),
@@ -29,9 +29,9 @@ export const MainRc = {
         ApplyInputHandlers();
 
         if (queryString["clientID"]) {
-            MainRc.Mode = RemoteControlMode.Unattended;
+            MainViewer.Mode = RemoteControlMode.Unattended;
             UI.ConnectBox.style.display = "none";
-            MainRc.RCHubConnection.Connect();
+            MainViewer.ViewerHubConnection.Connect();
         }
         else if (queryString["sessionID"]) {
             UI.SessionIDInput.value = decodeURIComponent(queryString["sessionID"]);
@@ -43,12 +43,12 @@ export const MainRc = {
     },
     ConnectToClient: () => {
         UI.ConnectButton.disabled = true;
-        MainRc.ClientID = UI.SessionIDInput.value.split(" ").join("");
-        MainRc.RequesterName = UI.RequesterNameInput.value;
-        MainRc.Mode = RemoteControlMode.Normal;
-        MainRc.RCHubConnection.Connect();
+        MainViewer.ClientID = UI.SessionIDInput.value.split(" ").join("");
+        MainViewer.RequesterName = UI.RequesterNameInput.value;
+        MainViewer.Mode = RemoteControlMode.Normal;
+        MainViewer.ViewerHubConnection.Connect();
         UI.StatusMessage.innerHTML = "Sending connection request...";
     }
 }
 
-window["Remotely"] = MainRc;
+window["Remotely"] = MainViewer;

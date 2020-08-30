@@ -1,7 +1,7 @@
 ﻿import * as UI from "./UI.js";
 import { BinaryDtoType } from "../Enums/BinaryDtoType.js";
 import { BinaryDto } from "./BinaryDto.js";
-import { MainRc } from "./Main.js";
+import { MainViewer } from "./Main.js";
 import { ShowMessage } from "../UI.js";
 import { Sound } from "../Sound.js";
 import {
@@ -60,7 +60,7 @@ export class RtcMessageHandler {
         }
 
         if (captureFrame.EndOfFrame) {
-            MainRc.MessageSender.SendFrameReceived();
+            MainViewer.MessageSender.SendFrameReceived();
             var url = window.URL.createObjectURL(new Blob(this.PartialCaptureFrames));
             var img = document.createElement("img");
             img.onload = () => {
@@ -79,7 +79,7 @@ export class RtcMessageHandler {
         }
     }
     HandleClipboardText(clipboardText: ClipboardTextDto) {
-        MainRc.ClipboardWatcher.SetClipboardText(clipboardText.ClipboardText);
+        MainViewer.ClipboardWatcher.SetClipboardText(clipboardText.ClipboardText);
         ShowMessage("Clipboard updated.");
     }
     HandleCursorChange(cursorChange: CursorChangeDto) {

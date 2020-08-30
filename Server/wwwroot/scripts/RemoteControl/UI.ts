@@ -1,4 +1,4 @@
-﻿import { MainRc } from "./Main.js";
+﻿import { MainViewer } from "./Main.js";
 import { ConvertUInt8ArrayToBase64 } from "../Utilities.js";
 import { WindowsSession, SessionType } from "./RtcDtos.js";
 
@@ -133,7 +133,7 @@ export function UpdateDisplays(selectedDisplay: string, displayNames: string[]) 
         }
         ScreenSelectBar.appendChild(button);
         button.onclick = (ev: MouseEvent) => {
-            MainRc.MessageSender.SendSelectScreen(displayNames[i]);
+            MainViewer.MessageSender.SendSelectScreen(displayNames[i]);
             document.querySelectorAll("#screenSelectBar .horizontal-bar-button").forEach(button => {
                 button.classList.remove("toggled");
             });

@@ -14,9 +14,9 @@ using Remotely.Server.Services;
 namespace Remotely.Server.Hubs
 {
     [ServiceFilter(typeof(RemoteControlFilterAttribute))]
-    public class RCBrowserHub : Hub
+    public class ViewerHub : Hub
     {
-        public RCBrowserHub(DataService dataService,
+        public ViewerHub(DataService dataService,
             IHubContext<CasterHub> casterHubContext,
             IHubContext<AgentHub> agentHub,
             ApplicationConfig appConfig)

@@ -15,16 +15,16 @@ namespace Remotely.Server.Hubs
     {
         public AgentHub(DataService dataService,
             IHubContext<BrowserHub> browserHubContext,
-            IHubContext<RCBrowserHub> rcBrowserHubContext)
+            IHubContext<ViewerHub> viewerHubContext)
         {
             DataService = dataService;
             BrowserHubContext = browserHubContext;
-            RCBrowserHubContext = rcBrowserHubContext;
+            ViewerHubContext = viewerHubContext;
         }
 
         public static ConcurrentDictionary<string, Device> ServiceConnections { get; } = new ConcurrentDictionary<string, Device>();
         public static IMemoryCache ApiScriptResults { get; } = new MemoryCache(new MemoryCacheOptions());
-        public IHubContext<RCBrowserHub> RCBrowserHubContext { get; }
+        public IHubContext<ViewerHub> ViewerHubContext { get; }
         private IHubContext<BrowserHub> BrowserHubContext { get; }
         private DataService DataService { get; }
 		private Device Device
@@ -205,7 +205,7 @@ namespace Remotely.Server.Hubs
 
         public Task SendConnectionFailedToViewers(List<string> viewerIDs)
         {
-            return RCBrowserHubContext.Clients.Clients(viewerIDs).SendAsync("ConnectionFailed");
+            return ViewerHubContext.Clients.Clients(viewerIDs).SendAsync("ConnectionFailed");
         }
 
         public Task SendServerVerificationToken()

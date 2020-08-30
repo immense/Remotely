@@ -76,7 +76,7 @@ nginxConfig="server {
 		proxy_cache_bypass \$http_upgrade;
 	}
 
-	location /RCBrowserHub {
+	location /ViewerHub {
 		proxy_pass http://localhost:5000;
 		proxy_http_version 1.1;
 		proxy_set_header Upgrade \$http_upgrade;
