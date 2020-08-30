@@ -1,13 +1,3 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# This workflow will build, test, sign and package a WPF or Windows Forms desktop application
-# built on .NET Core.
-# To learn how to migrate your existing application to .NET Core,
-# refer to https://docs.microsoft.com/en-us/dotnet/desktop-wpf/migration/convert-project-from-net-framework
-#
 # To configure this workflow:
 #
 # 1. Configure environment variables
@@ -162,12 +152,13 @@ jobs:
 
         New-Item -Path "$env:GITHUB_WORKSPACE\Server\Properties\PublishProfiles\" -ItemType Directory -Force
         Set-Content -Path "$env:GITHUB_WORKSPACE\Server\Properties\PublishProfiles\Test.pubxml" -Value $PublishProfile -Force
-        
+
+    # Uncomment the below to enable deployment to the server.
     # Publish server to IIS
-    - name: Publish
-      run: | 
-        echo "Publishing with configuration $env:Configuration."
-        dotnet publish /p:Platform="x64" /p:Configuration="$env:Configuration" /p:PublishProfile="Test" /p:Password=$env:ServerPassword /p:Version=$env:CurrentVersion /p:FileVersion=$env:CurrentVersion ".\Server"
+    #- name: Publish
+    #  run: | 
+    #    echo "Publishing with configuration $env:Configuration."
+    #    dotnet publish /p:Platform="x64" /p:Configuration="$env:Configuration" /p:PublishProfile="Test" /p:Password=$env:ServerPassword /p:Version=$env:CurrentVersion /p:FileVersion=$env:CurrentVersion ".\Server"
 
     # Remove the pfx
     - name: Remove the pfx
