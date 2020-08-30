@@ -13,12 +13,12 @@ namespace Remotely.Server.Hubs
     public class CasterHub : Hub
     {
         public CasterHub(IHubContext<BrowserHub> browserHub,
-            IHubContext<RCBrowserHub> rcBrowserHub,
+            IHubContext<ViewerHub> viewerHubContext,
             IHubContext<AgentHub> agentHubContext,
             ApplicationConfig appConfig)
         {
             BrowserHubContext = browserHub;
-            RCBrowserHubContext = rcBrowserHub;
+            ViewerHubContext = viewerHubContext;
             AgentHubContext = agentHubContext;
             AppConfig = appConfig;
         }
@@ -27,7 +27,7 @@ namespace Remotely.Server.Hubs
         public ApplicationConfig AppConfig { get; }
         private IHubContext<AgentHub> AgentHubContext { get; }
         private IHubContext<BrowserHub> BrowserHubContext { get; }
-        private IHubContext<RCBrowserHub> RCBrowserHubContext { get; }
+        private IHubContext<ViewerHub> ViewerHubContext { get; }
 
         private RCSessionInfo SessionInfo
         {
@@ -71,7 +71,7 @@ namespace Remotely.Server.Hubs
             }
             if (notifyViewer)
             {
-                await RCBrowserHubContext.Clients.Client(viewerID).SendAsync("ViewerRemoved");
+                await ViewerHubContext.Clients.Client(viewerID).SendAsync("ViewerRemoved");
             }
         }
 
@@ -102,7 +102,7 @@ namespace Remotely.Server.Hubs
 
         public Task NotifyViewersRelaunchedScreenCasterReady(string[] viewerIDs)
         {
-            return RCBrowserHubContext.Clients.Clients(viewerIDs).SendAsync("RelaunchedScreenCasterReady", Context.ConnectionId);
+            return ViewerHubContext.Clients.Clients(viewerIDs).SendAsync("RelaunchedScreenCasterReady", Context.ConnectionId);
         }
         public override async Task OnConnectedAsync()
         {
@@ -122,13 +122,13 @@ namespace Remotely.Server.Hubs
 
             if (SessionInfo.Mode == Shared.Enums.RemoteControlMode.Normal)
             {
-                await RCBrowserHubContext.Clients.Clients(ViewerList).SendAsync("ScreenCasterDisconnected");
+                await ViewerHubContext.Clients.Clients(ViewerList).SendAsync("ScreenCasterDisconnected");
             }
             else if (SessionInfo.Mode == Shared.Enums.RemoteControlMode.Unattended)
             {
                 if (ViewerList.Count > 0)
                 {
-                    await RCBrowserHubContext.Clients.Clients(ViewerList).SendAsync("Reconnecting");
+                    await ViewerHubContext.Clients.Clients(ViewerList).SendAsync("Reconnecting");
                     await AgentHubContext.Clients.Client(SessionInfo.ServiceID).SendAsync("RestartScreenCaster", ViewerList, SessionInfo.ServiceID, Context.ConnectionId);
                 }
             }
@@ -146,34 +146,34 @@ namespace Remotely.Server.Hubs
 
         public Task SendAudioSample(byte[] buffer, string viewerID)
         {
-            return RCBrowserHubContext.Clients.Client(viewerID).SendAsync("AudioSample", buffer);
+            return ViewerHubContext.Clients.Client(viewerID).SendAsync("AudioSample", buffer);
         }
 
         public Task SendClipboardText(string clipboardText, string viewerID)
         {
-            return RCBrowserHubContext.Clients.Client(viewerID).SendAsync("ClipboardTextChanged", clipboardText);
+            return ViewerHubContext.Clients.Client(viewerID).SendAsync("ClipboardTextChanged", clipboardText);
         }
 
         public Task SendConnectionFailedToViewers(List<string> viewerIDs)
         {
-            return RCBrowserHubContext.Clients.Clients(viewerIDs).SendAsync("ConnectionFailed");
+            return ViewerHubContext.Clients.Clients(viewerIDs).SendAsync("ConnectionFailed");
         }
 
         public Task SendConnectionRequestDenied(string viewerID)
         {
-            return RCBrowserHubContext.Clients.Client(viewerID).SendAsync("ConnectionRequestDenied");
+            return ViewerHubContext.Clients.Client(viewerID).SendAsync("ConnectionRequestDenied");
         }
 
         public Task SendCursorChange(CursorInfo cursor, string viewerID)
         {
-            return RCBrowserHubContext.Clients.Client(viewerID).SendAsync("CursorChange", cursor);
+            return ViewerHubContext.Clients.Client(viewerID).SendAsync("CursorChange", cursor);
         }
 
         public Task SendIceCandidateToBrowser(string candidate, int sdpMlineIndex, string sdpMid, string viewerID)
         {
             if (AppConfig.UseWebRtc)
             {
-                return RCBrowserHubContext.Clients.Client(viewerID).SendAsync("ReceiveIceCandidate", candidate, sdpMlineIndex, sdpMid);
+                return ViewerHubContext.Clients.Client(viewerID).SendAsync("ReceiveIceCandidate", candidate, sdpMlineIndex, sdpMid);
             }
 
             return Task.CompletedTask;
@@ -181,22 +181,22 @@ namespace Remotely.Server.Hubs
 
         public Task SendMachineName(string machineName, string viewerID)
         {
-            return RCBrowserHubContext.Clients.Client(viewerID).SendAsync("ReceiveMachineName", machineName);
+            return ViewerHubContext.Clients.Client(viewerID).SendAsync("ReceiveMachineName", machineName);
         }
 
         public Task SendRtcOfferToBrowser(string sdp, string viewerID, IceServerModel[] iceServers)
         {
             if (AppConfig.UseWebRtc)
             {
-                return RCBrowserHubContext.Clients.Client(viewerID).SendAsync("ReceiveRtcOffer", sdp, iceServers);
+                return ViewerHubContext.Clients.Client(viewerID).SendAsync("ReceiveRtcOffer", sdp, iceServers);
             }
 
             return Task.CompletedTask;
         }
 
-        public Task SendScreenCapture(byte[] captureBytes, string rcBrowserHubConnectionID, int left, int top, int width, int height, long imageQuality, bool endOfFrame)
+        public Task SendScreenCapture(byte[] captureBytes, string viewerHubConnectionID, int left, int top, int width, int height, long imageQuality, bool endOfFrame)
         {
-            return RCBrowserHubContext.Clients.Client(rcBrowserHubConnectionID).SendAsync("ScreenCapture", captureBytes, left, top, width, height, imageQuality, endOfFrame);
+            return ViewerHubContext.Clients.Client(viewerHubConnectionID).SendAsync("ScreenCapture", captureBytes, left, top, width, height, imageQuality, endOfFrame);
         }
 
         public Task SendScreenDataToBrowser(string selectedDisplay, string[] displayNames, string browserHubConnectionId)
@@ -205,17 +205,17 @@ namespace Remotely.Server.Hubs
             {
                 ViewerList.Add(browserHubConnectionId);
             }
-            return RCBrowserHubContext.Clients.Client(browserHubConnectionId).SendAsync("ScreenData", selectedDisplay, displayNames);
+            return ViewerHubContext.Clients.Client(browserHubConnectionId).SendAsync("ScreenData", selectedDisplay, displayNames);
         }
 
-        public Task SendScreenSize(int width, int height, string rcBrowserHubConnectionID)
+        public Task SendScreenSize(int width, int height, string viewerHubConnectionID)
         {
-            return RCBrowserHubContext.Clients.Client(rcBrowserHubConnectionID).SendAsync("ScreenSize", width, height);
+            return ViewerHubContext.Clients.Client(viewerHubConnectionID).SendAsync("ScreenSize", width, height);
         }
 
         public Task SendWindowsSessions(List<WindowsSession> windowsSessions, string viewerID)
         {
-            return RCBrowserHubContext.Clients.Client(viewerID).SendAsync("WindowsSessions", windowsSessions);
+            return ViewerHubContext.Clients.Client(viewerID).SendAsync("WindowsSessions", windowsSessions);
         }
     }
 }

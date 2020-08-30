@@ -210,7 +210,7 @@ namespace Remotely.Server
                     options.ApplicationMaxBufferSize = 100_000;
                     options.TransportMaxBufferSize = 100_000;
                 });
-                routeBuilder.MapHub<RCBrowserHub>("/RCBrowserHub", options =>
+                routeBuilder.MapHub<ViewerHub>("/ViewerHub", options =>
                 {
                     options.ApplicationMaxBufferSize = 100_000;
                     options.TransportMaxBufferSize = 100_000;

@@ -1,5 +1,5 @@
 import * as UI from "./UI.js";
-import { MainRc } from "./Main.js";
+import { MainViewer } from "./Main.js";
 export class RtcSession {
     constructor() {
         this.MessagePack = window['MessagePack'];
@@ -39,7 +39,7 @@ export class RtcSession {
             };
             this.DataChannel.onmessage = async (ev) => {
                 var data = ev.data;
-                MainRc.RtcMessageHandler.ParseBinaryMessage(data);
+                MainViewer.RtcMessageHandler.ParseBinaryMessage(data);
             };
             this.DataChannel.onopen = (ev) => {
                 console.log("Data channel opened.");
@@ -55,7 +55,7 @@ export class RtcSession {
             console.log("ICE connection state changed to " + this.iceConnectionState);
         };
         this.PeerConnection.onicecandidate = async (ev) => {
-            await MainRc.RCHubConnection.SendIceCandidate(ev.candidate);
+            await MainViewer.ViewerHubConnection.SendIceCandidate(ev.candidate);
         };
         UI.VideoScreenViewer.onloadedmetadata = (ev) => {
             UI.VideoScreenViewer.play();
@@ -72,7 +72,7 @@ export class RtcSession {
     async ReceiveRtcOffer(sdp) {
         await this.PeerConnection.setRemoteDescription({ type: "offer", sdp: sdp });
         await this.PeerConnection.setLocalDescription(await this.PeerConnection.createAnswer());
-        await MainRc.RCHubConnection.SendRtcAnswer(this.PeerConnection.localDescription);
+        await MainViewer.ViewerHubConnection.SendRtcAnswer(this.PeerConnection.localDescription);
         console.log("Set RTC offer.");
     }
     async ReceiveCandidate(candidate) {

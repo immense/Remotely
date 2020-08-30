@@ -19,21 +19,21 @@ namespace Remotely.Server.API
         public LoginController(SignInManager<RemotelyUser> signInManager, 
             DataService dataService, 
             ApplicationConfig appConfig,
-            IHubContext<CasterHub> casterHub,
-            IHubContext<RCBrowserHub> rcBrowserHub)
+            IHubContext<CasterHub> casterHubContext,
+            IHubContext<ViewerHub> viewerHubContext)
         {
             SignInManager = signInManager;
             DataService = dataService;
             AppConfig = appConfig;
-            CasterHubContext = casterHub;
-            RCBrowserHubContext = rcBrowserHub;
+            CasterHubContext = casterHubContext;
+            ViewerHubContext = viewerHubContext;
         }
 
         private SignInManager<RemotelyUser> SignInManager { get; }
         private DataService DataService { get; }
         public ApplicationConfig AppConfig { get; }
         private IHubContext<CasterHub> CasterHubContext { get; }
-        private IHubContext<RCBrowserHub> RCBrowserHubContext { get; }
+        private IHubContext<ViewerHub> ViewerHubContext { get; }
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]ApiLogin login)
@@ -77,7 +77,7 @@ namespace Remotely.Server.API
                 foreach (var session in activeSessions.ToList())
                 {
                     await CasterHubContext.Clients.Client(session.Value.CasterSocketID).SendAsync("Disconnect", "User logged out.");
-                    await RCBrowserHubContext.Clients.Client(session.Value.RequesterSocketID).SendAsync("ConnectionFailed");
+                    await ViewerHubContext.Clients.Client(session.Value.RequesterSocketID).SendAsync("ConnectionFailed");
                 }
             }
             await SignInManager.SignOutAsync();

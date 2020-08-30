@@ -1,4 +1,4 @@
-﻿import { MainRc } from "./Main.js";
+﻿import { MainViewer } from "./Main.js";
 
 export class ClipboardWatcher {
     ClipboardTimer: number;
@@ -19,7 +19,7 @@ export class ClipboardWatcher {
                 navigator.clipboard.readText().then(newText => {
                     if (this.LastClipboardText != newText) {
                         this.LastClipboardText = newText;
-                        MainRc.MessageSender.SendClipboardTransfer(newText, false);
+                        MainViewer.MessageSender.SendClipboardTransfer(newText, false);
                     }
                 })
             }, 100);

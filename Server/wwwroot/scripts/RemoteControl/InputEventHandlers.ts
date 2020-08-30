@@ -32,7 +32,7 @@
     StreamVideoButton
 } from "./UI.js";
 import { Sound } from "../Sound.js";
-import { MainRc } from "./Main.js";
+import { MainViewer } from "./Main.js";
 import { Point } from "../Models/Point.js";
 import { UploadFiles } from "./FileUploader.js";
 import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
@@ -60,7 +60,7 @@ export function ApplyInputHandlers() {
         if (toggleOn) {
             Sound.Init();
         }
-        MainRc.MessageSender.SendToggleAudio(toggleOn);
+        MainViewer.MessageSender.SendToggleAudio(toggleOn);
     });
     ChangeScreenButton.addEventListener("click", (ev) => {
         closeAllHorizontalBars("screenSelectBar");
@@ -77,7 +77,7 @@ export function ApplyInputHandlers() {
         }
 
         navigator.clipboard.readText().then(text => {
-            MainRc.MessageSender.SendClipboardTransfer(text, true);
+            MainViewer.MessageSender.SendClipboardTransfer(text, true);
             ShowMessage("Clipboard sent!");
         }, reason => {
             alert("Unable to read clipboard.  Please check your permissions.");
@@ -85,19 +85,19 @@ export function ApplyInputHandlers() {
         });
     });
     ConnectButton.addEventListener("click", (ev) => {
-        MainRc.ConnectToClient();
+        MainViewer.ConnectToClient();
     });
     CtrlAltDelButton.addEventListener("click", (ev) => {
-        if (!MainRc.ServiceID) {
+        if (!MainViewer.ServiceID) {
             ShowMessage("Not available for this session.");
             return;
         }
         closeAllHorizontalBars(null);
-        MainRc.MessageSender.SendCtrlAltDel();
+        MainViewer.MessageSender.SendCtrlAltDel();
     });
     DisconnectButton.addEventListener("click", (ev) => {
         ConnectButton.removeAttribute("disabled");
-        MainRc.RCHubConnection.Connection.stop();
+        MainViewer.ViewerHubConnection.Connection.stop();
         if (location.search.includes("fromApi=true")) {
             window.close();
         }
@@ -105,7 +105,7 @@ export function ApplyInputHandlers() {
     document.querySelectorAll("#sessionIDInput, #nameInput").forEach(x => {
         x.addEventListener("keypress", (ev: KeyboardEvent) => {
             if (ev.key.toLowerCase() == "enter") {
-                MainRc.ConnectToClient();
+                MainViewer.ConnectToClient();
             }
         })
     });
@@ -133,21 +133,21 @@ export function ApplyInputHandlers() {
     BlockInputButton.addEventListener("click", (ev) => {
         BlockInputButton.classList.toggle("toggled");
         if (BlockInputButton.classList.contains("toggled")) {
-            MainRc.MessageSender.SendToggleBlockInput(true);
+            MainViewer.MessageSender.SendToggleBlockInput(true);
         }
         else {
-            MainRc.MessageSender.SendToggleBlockInput(false);
+            MainViewer.MessageSender.SendToggleBlockInput(false);
         }
     });
     InviteButton.addEventListener("click", (ev) => {
         var url = "";
-        if (MainRc.Mode == RemoteControlMode.Normal) {
-            url = `${location.origin}${location.pathname}?sessionID=${MainRc.ClientID}`;
+        if (MainViewer.Mode == RemoteControlMode.Normal) {
+            url = `${location.origin}${location.pathname}?sessionID=${MainViewer.ClientID}`;
         }
         else {
-            url = `${location.origin}${location.pathname}?clientID=${MainRc.ClientID}&serviceID=${MainRc.ServiceID}`;
+            url = `${location.origin}${location.pathname}?clientID=${MainViewer.ClientID}&serviceID=${MainViewer.ServiceID}`;
         }
-        MainRc.ClipboardWatcher.SetClipboardText(url);
+        MainViewer.ClipboardWatcher.SetClipboardText(url);
         ShowMessage("Link copied to clipboard.");
     });
     KeyboardButton.addEventListener("click", (ev) => {
@@ -183,25 +183,25 @@ export function ApplyInputHandlers() {
         QualityBar.classList.toggle("open");
     })
     QualitySlider.addEventListener("change", (ev) => {
-        MainRc.MessageSender.SendQualityChange(Number(QualitySlider.value));
+        MainViewer.MessageSender.SendQualityChange(Number(QualitySlider.value));
     });
     StreamVideoButton.addEventListener("click", (ev) => {
         StreamVideoButton.classList.toggle("toggled");
         if (StreamVideoButton.classList.contains("toggled")) {
-            MainRc.MessageSender.SendToggleWebRtcVideo(true);
+            MainViewer.MessageSender.SendToggleWebRtcVideo(true);
             VideoScreenViewer.removeAttribute("hidden");
             ScreenViewer.setAttribute("hidden", "hidden");
             QualityButton.setAttribute("hidden", "hidden");
         }
         else {
-            MainRc.MessageSender.SendToggleWebRtcVideo(false);
+            MainViewer.MessageSender.SendToggleWebRtcVideo(false);
             ScreenViewer.removeAttribute("hidden");
             QualityButton.removeAttribute("hidden");
             VideoScreenViewer.setAttribute("hidden", "hidden");
         }
     });
     AutoQualityAdjustCheckBox.addEventListener("change", ev => {
-        MainRc.MessageSender.SendAutoQualityAdjust(AutoQualityAdjustCheckBox.checked);
+        MainViewer.MessageSender.SendAutoQualityAdjust(AutoQualityAdjustCheckBox.checked);
     });
 
     [ ScreenViewer, VideoScreenViewer ].forEach(viewer => {
@@ -225,7 +225,7 @@ export function ApplyInputHandlers() {
             lastPointerMove = Date.now();
             var percentX = e.offsetX / viewer.clientWidth;
             var percentY = e.offsetY / viewer.clientHeight;
-            MainRc.MessageSender.SendMouseMove(percentX, percentY);
+            MainViewer.MessageSender.SendMouseMove(percentX, percentY);
         });
 
 
@@ -239,7 +239,7 @@ export function ApplyInputHandlers() {
             e.preventDefault();
             var percentX = e.offsetX / viewer.clientWidth;
             var percentY = e.offsetY / viewer.clientHeight;
-            MainRc.MessageSender.SendMouseDown(e.button, percentX, percentY);
+            MainViewer.MessageSender.SendMouseDown(e.button, percentX, percentY);
         });
 
         viewer.addEventListener("mouseup", function (e: MouseEvent) {
@@ -252,7 +252,7 @@ export function ApplyInputHandlers() {
             e.preventDefault();
             var percentX = e.offsetX / viewer.clientWidth;
             var percentY = e.offsetY / viewer.clientHeight;
-            MainRc.MessageSender.SendMouseUp(e.button, percentX, percentY);
+            MainViewer.MessageSender.SendMouseUp(e.button, percentX, percentY);
         });
 
         viewer.addEventListener("click", function (e: MouseEvent) {
@@ -267,7 +267,7 @@ export function ApplyInputHandlers() {
             else if (currentPointerDevice == "touch" && currentTouchCount == 0) {
                 var percentX = e.offsetX / viewer.clientWidth;
                 var percentY = e.offsetY / viewer.clientHeight;
-                MainRc.MessageSender.SendTap(percentX, percentY);
+                MainViewer.MessageSender.SendTap(percentX, percentY);
             }
         });
 
@@ -278,8 +278,8 @@ export function ApplyInputHandlers() {
                 startLongPressTimeout = window.setTimeout(() => {
                     var percentX = e.touches[0].pageX / viewer.clientWidth;
                     var percentY = e.touches[0].pageY / viewer.clientHeight;
-                    MainRc.MessageSender.SendMouseDown(2, percentX, percentY);
-                    MainRc.MessageSender.SendMouseUp(2, percentX, percentY);
+                    MainViewer.MessageSender.SendMouseDown(2, percentX, percentY);
+                    MainViewer.MessageSender.SendMouseUp(2, percentX, percentY);
                 }, 1000);
             }
 
@@ -376,7 +376,7 @@ export function ApplyInputHandlers() {
                 var screenViewerTop = viewer.getBoundingClientRect().top;
                 var pagePercentX = (e.touches[0].pageX - screenViewerLeft) / viewer.clientWidth;
                 var pagePercentY = (e.touches[0].pageY - screenViewerTop) / viewer.clientHeight;
-                MainRc.MessageSender.SendMouseMove(pagePercentX, pagePercentY);
+                MainViewer.MessageSender.SendMouseMove(pagePercentX, pagePercentY);
             }
         });
 
@@ -389,8 +389,8 @@ export function ApplyInputHandlers() {
                 isDragging = true;
                 var percentX = (e.touches[0].pageX - viewer.getBoundingClientRect().left) / viewer.clientWidth;
                 var percentY = (e.touches[0].pageY - viewer.getBoundingClientRect().top) / viewer.clientHeight;
-                MainRc.MessageSender.SendMouseMove(percentX, percentY);
-                MainRc.MessageSender.SendMouseDown(0, percentX, percentY);
+                MainViewer.MessageSender.SendMouseMove(percentX, percentY);
+                MainViewer.MessageSender.SendMouseDown(0, percentX, percentY);
                 return;
             }
 
@@ -404,7 +404,7 @@ export function ApplyInputHandlers() {
             if (isDragging) {
                 var percentX = (e.changedTouches[0].pageX - viewer.getBoundingClientRect().left) / viewer.clientWidth;
                 var percentY = (e.changedTouches[0].pageY - viewer.getBoundingClientRect().top) / viewer.clientHeight;
-                MainRc.MessageSender.SendMouseUp(0, percentX, percentY);
+                MainViewer.MessageSender.SendMouseUp(0, percentX, percentY);
             }
 
             isDragging = false;
@@ -417,7 +417,7 @@ export function ApplyInputHandlers() {
 
         viewer.addEventListener("wheel", function (e: WheelEvent) {
             e.preventDefault();
-            MainRc.MessageSender.SendMouseWheel(e.deltaX, e.deltaY);
+            MainViewer.MessageSender.SendMouseWheel(e.deltaX, e.deltaY);
         });
 
     });
@@ -425,13 +425,13 @@ export function ApplyInputHandlers() {
 
     TouchKeyboardTextArea.addEventListener("input", (ev) => {
         if (TouchKeyboardTextArea.value.length == 1) {
-            MainRc.MessageSender.SendKeyPress("Backspace");
+            MainViewer.MessageSender.SendKeyPress("Backspace");
         }
         else if (TouchKeyboardTextArea.value.endsWith("\n")) {
-            MainRc.MessageSender.SendKeyPress("Enter");
+            MainViewer.MessageSender.SendKeyPress("Enter");
         }
         else if (TouchKeyboardTextArea.value.endsWith(" ")) {
-            MainRc.MessageSender.SendKeyPress(" ");
+            MainViewer.MessageSender.SendKeyPress(" ");
         }
         else {
             var input = TouchKeyboardTextArea.value.trim().substr(1);
@@ -439,13 +439,13 @@ export function ApplyInputHandlers() {
                 var character = input.charAt(i);
                 var sendShift = character.match(/[A-Z~!@#$%^&*()_+{}|<>?]/);
                 if (sendShift) {
-                    MainRc.MessageSender.SendKeyDown("Shift");
+                    MainViewer.MessageSender.SendKeyDown("Shift");
                 }
 
-                MainRc.MessageSender.SendKeyPress(character);
+                MainViewer.MessageSender.SendKeyPress(character);
 
                 if (sendShift) {
-                    MainRc.MessageSender.SendKeyUp("Shift");
+                    MainViewer.MessageSender.SendKeyUp("Shift");
                 }
             }
         }
@@ -456,25 +456,25 @@ export function ApplyInputHandlers() {
         });
     });
     WindowsSessionSelect.addEventListener("focus", () => {
-        MainRc.MessageSender.GetWindowsSessions();
+        MainViewer.MessageSender.GetWindowsSessions();
     });
     WindowsSessionSelect.addEventListener("change", () => {
         ShowMessage("Switching sessions...");
-        MainRc.MessageSender.ChangeWindowsSession(Number(WindowsSessionSelect.selectedOptions[0].value));
+        MainViewer.MessageSender.ChangeWindowsSession(Number(WindowsSessionSelect.selectedOptions[0].value));
     });
     RecordSessionButton.addEventListener("click", () => {
         RecordSessionButton.classList.toggle("toggled");
         if (RecordSessionButton.classList.contains("toggled")) {
             RecordSessionButton.innerHTML = `Stop <i class="fas fa-record-vinyl">`;
-            MainRc.SessionRecorder.Start();
+            MainViewer.SessionRecorder.Start();
         }
         else {
             RecordSessionButton.innerHTML = `Start <i class="fas fa-record-vinyl">`;
-            MainRc.SessionRecorder.Stop();
+            MainViewer.SessionRecorder.Stop();
         }
     });
     DownloadRecordingButton.addEventListener("click", () => {
-        MainRc.SessionRecorder.DownloadVideo();
+        MainViewer.SessionRecorder.DownloadVideo();
     });
 
     window.addEventListener("keydown", function (e) {
@@ -482,18 +482,18 @@ export function ApplyInputHandlers() {
             return;
         }
         e.preventDefault();
-        MainRc.MessageSender.SendKeyDown(e.key);
+        MainViewer.MessageSender.SendKeyDown(e.key);
     });
     window.addEventListener("keyup", function (e) {
         if (document.querySelector("input:focus") || document.querySelector("textarea:focus")) {
             return;
         }
         e.preventDefault();
-        MainRc.MessageSender.SendKeyUp(e.key);
+        MainViewer.MessageSender.SendKeyUp(e.key);
     });
 
     window.addEventListener("blur", () => {
-        MainRc.MessageSender.SendSetKeyStatesUp();
+        MainViewer.MessageSender.SendSetKeyStatesUp();
     });
 
     window.ondragover = function (e) {

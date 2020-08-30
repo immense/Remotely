@@ -176,7 +176,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\SessionRecorder.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\UI.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\ResultsParser.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RCHubConnection.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\ViewerHubConnection.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Sound.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Store.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\UI.ts" />

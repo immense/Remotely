@@ -1,4 +1,4 @@
-import { MainRc } from "./Main.js";
+import { MainViewer } from "./Main.js";
 import { ConvertUInt8ArrayToBase64 } from "../Utilities.js";
 import { SessionType } from "./RtcDtos.js";
 export var AudioButton = document.getElementById("audioButton");
@@ -116,7 +116,7 @@ export function UpdateDisplays(selectedDisplay, displayNames) {
         }
         ScreenSelectBar.appendChild(button);
         button.onclick = (ev) => {
-            MainRc.MessageSender.SendSelectScreen(displayNames[i]);
+            MainViewer.MessageSender.SendSelectScreen(displayNames[i]);
             document.querySelectorAll("#screenSelectBar .horizontal-bar-button").forEach(button => {
                 button.classList.remove("toggled");
             });

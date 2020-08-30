@@ -20,16 +20,16 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
         public LogoutModel(SignInManager<RemotelyUser> signInManager,
             ILogger<LogoutModel> logger,
             IHubContext<CasterHub> casterHubContext,
-            IHubContext<RCBrowserHub> rcBrowserHubContext)
+            IHubContext<ViewerHub> viewerHubContext)
         {
             _signInManager = signInManager;
             _logger = logger;
             CasterHubContext = casterHubContext;
-            RCBrowserHubContext = rcBrowserHubContext;
+            ViewerHubContext = viewerHubContext;
         }
 
         private IHubContext<CasterHub> CasterHubContext { get; }
-        private IHubContext<RCBrowserHub> RCBrowserHubContext { get; }
+        private IHubContext<ViewerHub> ViewerHubContext { get; }
 
         public void OnGet()
         {
@@ -43,7 +43,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
                 foreach (var session in activeSessions.ToList())
                 {
                     await CasterHubContext.Clients.Client(session.Value.CasterSocketID).SendAsync("Disconnect", "User logged out.");
-                    await RCBrowserHubContext.Clients.Client(session.Value.RequesterSocketID).SendAsync("ConnectionFailed");
+                    await ViewerHubContext.Clients.Client(session.Value.RequesterSocketID).SendAsync("ConnectionFailed");
                 }
             }
         

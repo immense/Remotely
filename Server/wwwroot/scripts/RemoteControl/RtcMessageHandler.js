@@ -1,6 +1,6 @@
 import * as UI from "./UI.js";
 import { BinaryDtoType } from "../Enums/BinaryDtoType.js";
-import { MainRc } from "./Main.js";
+import { MainViewer } from "./Main.js";
 import { ShowMessage } from "../UI.js";
 import { Sound } from "../Sound.js";
 export class RtcMessageHandler {
@@ -48,7 +48,7 @@ export class RtcMessageHandler {
             UI.QualitySlider.value = String(captureFrame.ImageQuality);
         }
         if (captureFrame.EndOfFrame) {
-            MainRc.MessageSender.SendFrameReceived();
+            MainViewer.MessageSender.SendFrameReceived();
             var url = window.URL.createObjectURL(new Blob(this.PartialCaptureFrames));
             var img = document.createElement("img");
             img.onload = () => {
@@ -63,7 +63,7 @@ export class RtcMessageHandler {
         }
     }
     HandleClipboardText(clipboardText) {
-        MainRc.ClipboardWatcher.SetClipboardText(clipboardText.ClipboardText);
+        MainViewer.ClipboardWatcher.SetClipboardText(clipboardText.ClipboardText);
         ShowMessage("Clipboard updated.");
     }
     HandleCursorChange(cursorChange) {
