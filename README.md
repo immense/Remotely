@@ -90,11 +90,16 @@ Here's what you need to do:
 * You can configure logging levels and other settings in appsetttings.json.
 	* More information: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-3.1
 
-## Remote Control Requirements
+## Remote Control Client Requirements
 * Windows: Only the latest version of Windows 10 is tested.  Windows 7 and 8.1 should work, though performance will be reduced on Windows 7.
-	* Requires .NET Core Desktop Runtime.
 	* Windows 2016/2019 should work as well, but isn't tested regularly.
 * Linux: Only Ubuntu 18.04+ is tested.
+* For the Ubuntu's "quick support" client, you must first install the following dependencies:
+    * libx11-dev
+    * libc6-dev
+    * libgdiplus
+    * libxtst-dev
+    * xclip
 
 ## Remote Control on Mobile
 Ideally, you'd be doing remote control from an actual computer or laptop.  However, I've tried to make the remote control at least somewhat usable from a mobile device.  Here are the controls:
