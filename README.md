@@ -14,6 +14,13 @@ Website: https://remotely.one
 Feedback: https://remotely.featureupvote.com/  
 Subreddit: https://www.reddit.com/r/remotely_app/  
 
+## Build Instructions (GitHub)
+GitHub Actions allows you to build and deploy Remotely for free from their cloud servers.  The definitions for the build processes are located in `/.github/workflows/` folder.
+
+After forking the repo, it's recommended that you create a `release` branch. Then you'll need to create a few repository secrets that are specific to your server, then uncomment the deploy section.  Afterward, every change to your release branch will trigger and automatic build and deploy.
+
+More info coming soon.
+
 ## Build Instructions (Windows 10)  
 The following steps will configure your Windows 10 machine for building the Remotely server and clients.
 * Install Visual Studio 2019.
@@ -65,6 +72,10 @@ The following steps will configure your Windows 10 machine for building the Remo
 	* Alternatively, you can build from source (using RuntimeIdentifier "linux-x64" for the server) and copy the server files to the site folder.
 * Change values in appsettings.json for your environment.
 * Documentation for hosting behind Nginx can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx?view=aspnetcore-3.1
+
+## Hosting Scenarios
+There are countless ways to host an ASP.NET Core app, and I can't document or automate all of them.  For hosting scenarios aside from the above two, please refer to Microsoft's documentation.
+- https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/?view=aspnetcore-3.1
 
 ## Changing the Database
 By default, Remotely uses a SQLite database.  When first run, it creates a file as specified for the SQLite connection string in appsettings.json.
