@@ -15,24 +15,6 @@ namespace Remotely.Shared.Services
     {
         public static async Task<Device> Create(string deviceID, string orgID)
         {
-            DriveInfo systemDrive;
-
-            if (EnvironmentHelper.IsWindows)
-            {
-                systemDrive = DriveInfo.GetDrives().FirstOrDefault(x =>
-                     x.IsReady &&
-                     x.RootDirectory.FullName.Contains(Path.GetPathRoot(Environment.SystemDirectory ?? Environment.CurrentDirectory)));
-            }
-            else if (EnvironmentHelper.IsLinux)
-            {
-                systemDrive = new DriveInfo("/");
-            }
-            else
-            {
-                systemDrive = DriveInfo.GetDrives().FirstOrDefault();
-            }
- 
-
             var device = new Device()
             {
                 ID = deviceID,
@@ -43,7 +25,36 @@ namespace Remotely.Shared.Services
                 OSDescription = RuntimeInformation.OSDescription,
                 Is64Bit = Environment.Is64BitOperatingSystem,
                 IsOnline = true,
-                Drives = DriveInfo.GetDrives().Where(x => x.IsReady).Select(x => new Drive()
+                OrganizationID = orgID
+            };
+
+            try
+            {
+                var (usedStorage, totalStorage) = GetSystemDriveInfo();
+                var (usedMemory, totalMemory) = GetMemoryInGB();
+
+                device.CurrentUser = GetCurrentUser();
+                device.Drives = GetAllDrives();
+                device.UsedStorage = usedStorage;
+                device.TotalStorage = totalStorage;
+                device.UsedMemory = usedMemory;
+                device.TotalMemory = totalMemory;
+                device.CpuUtilization = await GetCpuUtilization();
+                device.AgentVersion = GetAgentVersion();
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex, "Error getting device info.");
+            }
+
+            return device;
+        }
+
+        public static List<Drive> GetAllDrives()
+        {
+            try
+            {
+                return DriveInfo.GetDrives().Where(x => x.IsReady).Select(x => new Drive()
                 {
                     DriveFormat = x.DriveFormat,
                     DriveType = x.DriveType,
@@ -52,30 +63,13 @@ namespace Remotely.Shared.Services
                     FreeSpace = x.TotalSize > 0 ? x.TotalFreeSpace / x.TotalSize : 0,
                     TotalSize = x.TotalSize > 0 ? Math.Round((double)(x.TotalSize / 1024 / 1024 / 1024), 2) : 0,
                     VolumeLabel = x.VolumeLabel
-                }).ToList(),
-                OrganizationID = orgID,
-                CurrentUser = GetCurrentUser()
-            };
-
-            if (systemDrive != null && systemDrive.TotalSize > 0 && systemDrive.TotalFreeSpace > 0)
-            {
-                device.TotalStorage = Math.Round((double)(systemDrive.TotalSize / 1024 / 1024 / 1024), 2);
-                device.UsedStorage = Math.Round((double)((systemDrive.TotalSize - systemDrive.TotalFreeSpace) / 1024 / 1024 / 1024), 2);
+                }).ToList();
             }
-
-
-            var (usedMemory, totalMemory) = GetMemoryInGB();
-            device.UsedMemory = usedMemory;
-            device.TotalMemory = totalMemory;
-
-            device.CpuUtilization = await GetCpuUtilization();
-
-            if (File.Exists("Remotely_Agent.dll"))
+            catch (Exception ex)
             {
-                device.AgentVersion = FileVersionInfo.GetVersionInfo("Remotely_Agent.dll")?.FileVersion?.ToString()?.Trim();
+                Logger.Write(ex, "Error getting drive info.");
+                return null;
             }
-
-            return device;
         }
 
         public static async Task<double> GetCpuUtilization()
@@ -138,13 +132,14 @@ namespace Remotely.Shared.Services
                 }
                 throw new Exception("Unsupported operating system.");
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.Write(ex, "Error getting current user.");
                 return "Error Retrieving";
             }
         }
 
-        public static (double, double) GetMemoryInGB()
+        public static (double usedGB, double totalGB) GetMemoryInGB()
         {
             if (EnvironmentHelper.IsWindows)
             {
@@ -159,7 +154,67 @@ namespace Remotely.Shared.Services
                 return (0, 0);
             }
         }
-        private static (double, double) GetLinuxMemoryInGB()
+
+        public static (double usedStorage, double totalStorage) GetSystemDriveInfo()
+        {
+            try
+            {
+                DriveInfo systemDrive;
+                var allDrives = DriveInfo.GetDrives();
+
+                if (EnvironmentHelper.IsWindows)
+                {
+                    systemDrive = allDrives.FirstOrDefault(x =>
+                         x.IsReady &&
+                         x.RootDirectory.FullName.Contains(Path.GetPathRoot(Environment.SystemDirectory ?? Environment.CurrentDirectory)));
+                }
+                else if (EnvironmentHelper.IsLinux)
+                {
+                    systemDrive = allDrives.FirstOrDefault(x =>
+                        x.IsReady &&
+                        x.RootDirectory.FullName == Path.GetPathRoot(Environment.CurrentDirectory));
+                }
+                else
+                {
+                    systemDrive = allDrives.FirstOrDefault();
+                }
+
+
+                if (systemDrive != null && systemDrive.TotalSize > 0 && systemDrive.TotalFreeSpace > 0)
+                {
+                    var totalStorage = Math.Round((double)(systemDrive.TotalSize / 1024 / 1024 / 1024), 2);
+                    var usedStorage = Math.Round((double)((systemDrive.TotalSize - systemDrive.TotalFreeSpace) / 1024 / 1024 / 1024), 2);
+
+                    return (usedStorage, totalStorage);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex, "Error getting system drive info.");
+            }
+
+            return (0, 0);
+        }
+
+        private static string GetAgentVersion()
+        {
+            try
+            {
+                if (File.Exists("Remotely_Agent.dll"))
+                {
+                    return FileVersionInfo.GetVersionInfo("Remotely_Agent.dll")?.FileVersion?.ToString()?.Trim();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex, "Error getting agent version.");
+            }
+
+            return "0.0.0.0";
+        }
+
+        private static (double usedGB, double totalGB) GetLinuxMemoryInGB()
         {
             try
             {
@@ -194,7 +249,7 @@ namespace Remotely.Shared.Services
             }
         }
 
-        private static (double, double) GetWinMemoryInGB()
+        private static (double usedGB, double totalGB) GetWinMemoryInGB()
         {
             try
             {

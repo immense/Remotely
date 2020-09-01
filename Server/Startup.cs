@@ -81,12 +81,6 @@ namespace Remotely.Server
                 .AddDefaultUI()
                 .AddDefaultTokenProviders();
 
-            services.ConfigureApplicationCookie(cookieOptions =>
-            {
-                cookieOptions.Cookie.SameSite = SameSiteMode.None;
-            });
-
-
             var trustedOrigins = Configuration.GetSection("ApplicationOptions:TrustedCorsOrigins").Get<string[]>();
             
             if (trustedOrigins != null)
@@ -157,6 +151,7 @@ namespace Remotely.Server
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseDatabaseErrorPage();
             }
             else
             {
