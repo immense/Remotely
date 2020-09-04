@@ -177,28 +177,40 @@ namespace Remotely.Agent.Installer.Win.Services
             string deviceAlias,
             string organizationId)
         {
-            if (!string.IsNullOrWhiteSpace(deviceGroup) ||
-                !string.IsNullOrWhiteSpace(deviceAlias))
+            try
             {
-                var setupOptions = new DeviceSetupOptions()
+                if (!string.IsNullOrWhiteSpace(deviceGroup) ||
+                    !string.IsNullOrWhiteSpace(deviceAlias))
                 {
-                    DeviceID = deviceUuid,
-                    DeviceGroupName = deviceGroup,
-                    DeviceAlias = deviceAlias,
-                    OrganizationID = organizationId
-                };
+                    var setupOptions = new DeviceSetupOptions()
+                    {
+                        DeviceID = deviceUuid,
+                        DeviceGroupName = deviceGroup,
+                        DeviceAlias = deviceAlias,
+                        OrganizationID = organizationId
+                    };
 
-                var wr = WebRequest.CreateHttp(serverUrl.TrimEnd('/') + "/api/devices");
-                wr.Method = "POST";
-                wr.ContentType = "application/json";
-                using (var rs = await wr.GetRequestStreamAsync())
-                using (var sw = new StreamWriter(rs))
-                {
-                    await sw.WriteAsync(Serializer.Serialize(setupOptions));
+                    var wr = WebRequest.CreateHttp(serverUrl.TrimEnd('/') + "/api/devices");
+                    wr.Method = "POST";
+                    wr.ContentType = "application/json";
+                    using (var rs = await wr.GetRequestStreamAsync())
+                    using (var sw = new StreamWriter(rs))
+                    {
+                        await sw.WriteAsync(Serializer.Serialize(setupOptions));
+                    }
+                    var response = await wr.GetResponseAsync() as HttpWebResponse;
+                    Logger.Write($"Create device response: {response.StatusCode}");
                 }
-                var response = await wr.GetResponseAsync() as HttpWebResponse;
-                Logger.Write($"Create device response: {response.StatusCode}");
             }
+            catch (WebException ex) when ((ex.Response is HttpWebResponse response) && response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                Logger.Write("Bad request when creating device.  The device ID may already be created.");
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+            }
+          
         }
 
         private void CreateSupportShortcut(string serverUrl, string deviceUuid, bool createSupportShortcut)
@@ -321,6 +333,11 @@ namespace Remotely.Agent.Installer.Win.Services
 
             if (!string.IsNullOrWhiteSpace(deviceUuid))
             {
+                // Clear the server verification token if we're installing this as a new device.
+                if (connectionInfo.DeviceID != deviceUuid)
+                {
+                    connectionInfo.ServerVerificationToken = null;
+                }
                 connectionInfo.DeviceID = deviceUuid;
             }
             connectionInfo.OrganizationID = organizationId;
