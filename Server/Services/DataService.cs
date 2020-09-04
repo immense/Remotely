@@ -345,14 +345,16 @@ namespace Remotely.Server.Services
             {
                 if (options is null ||
                     string.IsNullOrWhiteSpace(options.DeviceID) ||
+                    string.IsNullOrWhiteSpace(options.OrganizationID) ||
                     RemotelyContext.Devices.Any(x => x.ID == options.DeviceID))
-                    {
+                {
                     return null;
                 }
 
                 var device = new Device()
                 {
-                    ID = options.DeviceID
+                    ID = options.DeviceID,
+                    OrganizationID = options.OrganizationID
                 };
 
                 if (!string.IsNullOrWhiteSpace(options.DeviceAlias))
