@@ -53,6 +53,26 @@ namespace Remotely.Tests
 
         [TestMethod]
         [DoNotParallelize]
+        public async Task CreateDevice()
+        {
+            var deviceOptions = new DeviceSetupOptions()
+            {
+                DeviceID = Guid.NewGuid().ToString(),
+                DeviceAlias = "Spare Laptop",
+                OrganizationID = TestData.OrganizationID
+            };
+
+            // First call should create and return device.
+            var savedDevice = await DataService.CreateDevice(deviceOptions);
+            Assert.IsInstanceOfType(savedDevice, typeof(Device));
+
+            // Second call with same DeviceUuid should return null;
+            var secondSave = await DataService.CreateDevice(deviceOptions);
+            Assert.IsNull(secondSave);
+        }
+
+        [TestMethod]
+        [DoNotParallelize]
         public void DeviceGroupPermissions()
         {
             Assert.IsTrue(DataService.GetDevicesForUser(TestData.Admin1.UserName).Count() == 2);

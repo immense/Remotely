@@ -121,6 +121,9 @@
     <Compile Include="..\Shared\Models\ConnectionInfo.cs">
       <Link>Models\ConnectionInfo.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\Models\DeviceSetupOptions.cs">
+      <Link>Models\DeviceSetupOptions.cs</Link>
+    </Compile>
     <Compile Include="Services\CommandLineParser.cs" />
     <Compile Include="Services\MessageBoxEx.cs" />
     <Compile Include="Services\Executor.cs" />

@@ -95,11 +95,6 @@ namespace Remotely.Agent.Services
                     await HubConnection.SendAsync("SendServerVerificationToken");
                 }
 
-                if (ConfigService.TryGetDeviceSetupOptions(out DeviceSetupOptions options))
-                {
-                    await HubConnection.SendAsync("DeviceSetupOptions", options, ConnectionInfo.DeviceID);
-                }
-
                 HeartbeatTimer?.Dispose();
                 HeartbeatTimer = new System.Timers.Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
                 HeartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;

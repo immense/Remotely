@@ -4,6 +4,8 @@ using Remotely.Server.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Remotely.Server.Attributes;
+using Microsoft.AspNetCore.Http.Extensions;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,10 +19,8 @@ namespace Remotely.Server.API
         public DevicesController(DataService dataService, UserManager<RemotelyUser> userManager)
         {
             this.DataService = dataService;
-            this.UserManager = userManager;
         }
         private DataService DataService { get; set; }
-        private UserManager<RemotelyUser> UserManager { get; set; }
 
         
         [HttpGet]
@@ -51,6 +51,17 @@ namespace Remotely.Server.API
                 return null;
             }
             return device;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody]DeviceSetupOptions deviceOptions)
+        {
+            var device = await DataService.CreateDevice(deviceOptions);
+            if (device is null)
+            {
+                return BadRequest("Device already exists.");
+            }
+            return Created(Request.GetDisplayUrl(), device);
         }
     }
 }

@@ -92,19 +92,5 @@ namespace Remotely.Agent.Services
                 File.WriteAllText("ConnectionInfo.json", JsonConvert.SerializeObject(connectionInfo));
             }
         }
-
-        public bool TryGetDeviceSetupOptions(out DeviceSetupOptions options)
-        {
-            if (File.Exists("DeviceSetupOptions.json"))
-            {
-                options = JsonSerializer.Deserialize<DeviceSetupOptions>(File.ReadAllText("DeviceSetupOptions.json"));
-                File.Delete("DeviceSetupOptions.json");
-                return true;
-            }
-
-            options = null;
-            return false;
-        }
-
     }
 }
