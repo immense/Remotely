@@ -59,7 +59,7 @@ namespace Remotely.Agent.Installer.Win.Services
 
                 FileIO.Copy(Assembly.GetExecutingAssembly().Location, Path.Combine(InstallPath, "Remotely_Installer.exe"));
 
-                CreateDeviceSetupOptions(deviceGroup, deviceAlias);
+                await CreateDeviceOnServer(connectionInfo.DeviceID, serverUrl, deviceGroup, deviceAlias, organizationId);
 
                 AddFirewallRule();
 
@@ -171,18 +171,33 @@ namespace Remotely.Agent.Installer.Win.Services
             }
         }
 
-        private void CreateDeviceSetupOptions(string deviceGroup, string deviceAlias)
+        private async Task CreateDeviceOnServer(string deviceUuid, 
+            string serverUrl,
+            string deviceGroup, 
+            string deviceAlias,
+            string organizationId)
         {
             if (!string.IsNullOrWhiteSpace(deviceGroup) ||
                 !string.IsNullOrWhiteSpace(deviceAlias))
             {
-                var setupOptions = new
+                var setupOptions = new DeviceSetupOptions()
                 {
-                    DeviceGroup = deviceGroup,
-                    DeviceAlias = deviceAlias
+                    DeviceID = deviceUuid,
+                    DeviceGroupName = deviceGroup,
+                    DeviceAlias = deviceAlias,
+                    OrganizationID = organizationId
                 };
 
-                FileIO.WriteAllText(Path.Combine(InstallPath, "DeviceSetupOptions.json"), Serializer.Serialize(setupOptions));
+                var wr = WebRequest.CreateHttp(serverUrl.TrimEnd('/') + "/api/devices");
+                wr.Method = "POST";
+                wr.ContentType = "application/json";
+                using (var rs = await wr.GetRequestStreamAsync())
+                using (var sw = new StreamWriter(rs))
+                {
+                    await sw.WriteAsync(Serializer.Serialize(setupOptions));
+                }
+                var response = await wr.GetResponseAsync() as HttpWebResponse;
+                Logger.Write($"Create device response: {response.StatusCode}");
             }
         }
 

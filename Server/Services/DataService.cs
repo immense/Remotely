@@ -339,6 +339,49 @@ namespace Remotely.Server.Services
             return newToken;
         }
 
+        public async Task<Device> CreateDevice(DeviceSetupOptions options)
+        {
+            try
+            {
+                if (options is null ||
+                    string.IsNullOrWhiteSpace(options.DeviceID) ||
+                    RemotelyContext.Devices.Any(x => x.ID == options.DeviceID))
+                    {
+                    return null;
+                }
+
+                var device = new Device()
+                {
+                    ID = options.DeviceID
+                };
+
+                if (!string.IsNullOrWhiteSpace(options.DeviceAlias))
+                {
+                    device.Alias = options.DeviceAlias;
+                }
+
+                if (!string.IsNullOrWhiteSpace(options.DeviceGroupName))
+                {
+                    var group = RemotelyContext.DeviceGroups.FirstOrDefault(x =>
+                        x.Name.ToLower() == options.DeviceGroupName.ToLower() &&
+                        x.OrganizationID == device.OrganizationID);
+                    device.DeviceGroup = group;
+                }
+
+                RemotelyContext.Devices.Add(device);
+
+                await RemotelyContext.SaveChangesAsync();
+
+                return device;
+            }
+            catch (Exception ex)
+            {
+                WriteEvent(ex, options.OrganizationID);
+                return null;
+            }
+          
+        }
+
         public async Task<bool> CreateUser(string userEmail, bool isAdmin, string organizationID)
         {
             try
@@ -877,27 +920,7 @@ namespace Remotely.Server.Services
             RemotelyContext.SaveChanges();
         }
 
-        public void SetDeviceSetupOptions(string deviceID, DeviceSetupOptions options)
-        {
-            var device = RemotelyContext.Devices.FirstOrDefault(x => x.ID == deviceID);
-            if (device != null)
-            {
-                if (!string.IsNullOrWhiteSpace(options.DeviceAlias))
-                {
-                    device.Alias = options.DeviceAlias;
-                }
 
-                if (!string.IsNullOrWhiteSpace(options.DeviceGroup))
-                {
-                    var group = RemotelyContext.DeviceGroups.FirstOrDefault(x =>
-                    x.Name.ToLower() == options.DeviceGroup.ToLower() &&
-                    x.OrganizationID == device.OrganizationID);
-                    device.DeviceGroup = group;
-                }
-
-                RemotelyContext.SaveChanges();
-            }
-        }
 
         public async Task SetDisplayName(RemotelyUser user, string displayName)
         {
