@@ -50,7 +50,7 @@ namespace Remotely.Desktop.Win
 
                 if (Conductor.Mode == Core.Enums.AppMode.Chat)
                 {
-                    StartUiThread(null);
+                    StartUiThreads(null);
                     await Task.Run(async () =>
                     {
                         var chatService = Services.GetRequiredService<IChatHostService>();
@@ -59,7 +59,7 @@ namespace Remotely.Desktop.Win
                 }
                 else if (Conductor.Mode == Core.Enums.AppMode.Unattended)
                 {
-                    StartUiThread(null);
+                    StartUiThreads(null);
                     App.Current.Dispatcher.Invoke(() =>
                     {
                         App.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
@@ -68,10 +68,10 @@ namespace Remotely.Desktop.Win
                 }
                 else
                 {
-                    StartUiThread(() => new MainWindow());
+                    StartUiThreads(() => new MainWindow());
                 }
-                
-                System.Windows.Forms.Application.Run(BackgroundForm);
+
+                Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception ex)
             {
@@ -163,9 +163,9 @@ namespace Remotely.Desktop.Win
             Services.GetRequiredService<IClipboardService>().BeginWatching();
         }
 
-        private static void StartUiThread(Func<Window> createWindowFunc)
+        private static void StartUiThreads(Func<Window> createWindowFunc)
         {
-            var uiThread = new Thread(() =>
+            var wpfUiThread = new Thread(() =>
             {
                 var app = new App();
                 app.InitializeComponent();
@@ -178,8 +178,17 @@ namespace Remotely.Desktop.Win
                     app.Run(createWindowFunc());
                 }
             });
-            uiThread.TrySetApartmentState(ApartmentState.STA);
-            uiThread.Start();
+            wpfUiThread.TrySetApartmentState(ApartmentState.STA);
+            wpfUiThread.Start();
+
+            var winformsThread = new Thread(() =>
+            {
+                System.Windows.Forms.Application.Run(BackgroundForm);
+            });
+            winformsThread.TrySetApartmentState(ApartmentState.STA);
+            winformsThread.Start();
+
+
             while (App.Current is null)
             {
                 Thread.Sleep(100);
