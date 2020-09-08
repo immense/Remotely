@@ -60,7 +60,13 @@
         <p>
             <strong>Quiet Install:</strong>
             <br />
-            <span class="label label-default code">Remotely_Installer.exe -install -quiet</span>
+            <span class="label label-default code">
+               Remotely_Installer.exe
+                -install 
+                -quiet
+                -organizationid "0b3d706b-9c5d-41e6-8ae9-5720d16324e6" 
+                -serverurl "https://remotely.mytechshop.com"
+            </span>
         </p>
         <p>
             <strong>Quiet Uninstall:</strong>
@@ -71,7 +77,14 @@
             <strong>Local Install:</strong>
             <span data-toggle="modal" data-target="#localInstallInfo" class="fas fa-question-circle pointer"></span>
             <br />
-            <span class="label label-default code">Remotely_Installer.exe -install -quiet -path \\[path]\Remotely-Win10-x64.zip</span>
+            <span class="label label-default code">
+                Remotely_Installer.exe
+                -install 
+                -quiet
+                -organizationid "0b3d706b-9c5d-41e6-8ae9-5720d16324e6" 
+                -serverurl "https://remotely.mytechshop.com"
+                -path "[path]\Remotely-Win10-x64.zip"
+            </span>
         </p>
         <p>
             <strong>Override Options:</strong>
