@@ -9,53 +9,43 @@ import { ShowModal } from "../Shared/UI.js";
 
 
 export const DataSource: Array<Device> = new Array<Device>();
+
 export const FilterOptions = new class {
-    GroupFilter: string;
-    SearchFilter: string;
+    GroupFilter: string = "";
+    OnlineOnly: boolean = false;
+    SearchFilter: string = "";
     ShowAllGroups: boolean = true;
 };
 
 
 export function AddOrUpdateDevices(devices: Array<Device>) {
+    DataSource.splice(0);
+
     devices.sort((a, b) => {
-        if (a.IsOnline && !b.IsOnline) {
-            return -1;
-        }
-        else if (b.IsOnline && !a.IsOnline) {
-            return 1;
-        }
+        //if (a.IsOnline && !b.IsOnline) {
+        //    return -1;
+        //}
+        //else if (b.IsOnline && !a.IsOnline) {
+        //    return 1;
+        //}
         return a.DeviceName.localeCompare(b.DeviceName, [], { sensitivity: "base" });
     });
 
     devices.forEach(x => {
-        AddOrUpdateDevice(x, false);
+        AddOrUpdateDevice(x);
     });
+
     ApplyFilter();
     UpdateDeviceCounts();
 }
 
-export function AddOrUpdateDevice(device: Device, sortDevices: boolean) {
+export function AddOrUpdateDevice(device: Device) {
     var existingIndex = DataSource.findIndex(x => x.ID == device.ID);
     if (existingIndex > -1) {
         DataSource[existingIndex] = device;
     }
     else {
         DataSource.push(device);
-    }
-
-    if (sortDevices) {
-        var selectedDevices = GetSelectedDevices();
-
-        UI.DeviceGrid.querySelectorAll(".record-row").forEach(row => {
-            row.remove();
-        });
-        AddOrUpdateDevices(DataSource);
-
-        selectedDevices.forEach(x => {
-            document.getElementById(x.ID).classList.add("row-selected");
-        });
-
-        return;
     }
 
     var tableBody = document.querySelector("#" + Main.UI.DeviceGrid.id + " tbody");
@@ -116,18 +106,29 @@ export function AddOrUpdateDevice(device: Device, sortDevices: boolean) {
         AddConsoleOutput("Launching remote control on client device...");
         HubConnection.Connection.invoke("RemoteControl", device.ID);
     };
+
     UpdateDeviceCounts();
 }
 export function ApplyFilter() {
     for (var i = 0; i < DataSource.length; i++) {
         var row = document.getElementById(DataSource[i].ID);
-        if (FilterOptions.ShowAllGroups ||
-            (DataSource[i].DeviceGroupID || "") == (FilterOptions.GroupFilter || "")) {
-            if (!FilterOptions.SearchFilter || deviceMatchesFilter(DataSource[i])) {
-                row.classList.remove("hidden");
-                continue;
-            }
+
+        if (FilterOptions.OnlineOnly && !DataSource[i].IsOnline) {
+            row.classList.add("hidden");
+            continue;
         }
+
+        if (!FilterOptions.ShowAllGroups &&
+            (DataSource[i].DeviceGroupID || "") != (FilterOptions.GroupFilter || "")) {
+            row.classList.add("hidden");
+            continue;
+        }
+
+        if (deviceMatchesSearchFilter(DataSource[i])) {
+            row.classList.remove("hidden");
+            continue;
+        }
+
         row.classList.add("hidden");
     }
 }
@@ -202,7 +203,11 @@ export function UpdateDeviceCounts() {
     }
 }
 
-function deviceMatchesFilter(device: Device) {
+function deviceMatchesSearchFilter(device: Device) {
+    if (!FilterOptions.SearchFilter) {
+        return true;
+    }
+
     for (var key in device) {
         var value = device[key];
         if (!value) {

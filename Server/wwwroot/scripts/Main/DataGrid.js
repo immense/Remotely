@@ -8,43 +8,36 @@ import { ShowModal } from "../Shared/UI.js";
 export const DataSource = new Array();
 export const FilterOptions = new class {
     constructor() {
+        this.GroupFilter = "";
+        this.OnlineOnly = false;
+        this.SearchFilter = "";
         this.ShowAllGroups = true;
     }
 };
 export function AddOrUpdateDevices(devices) {
+    DataSource.splice(0);
     devices.sort((a, b) => {
-        if (a.IsOnline && !b.IsOnline) {
-            return -1;
-        }
-        else if (b.IsOnline && !a.IsOnline) {
-            return 1;
-        }
+        //if (a.IsOnline && !b.IsOnline) {
+        //    return -1;
+        //}
+        //else if (b.IsOnline && !a.IsOnline) {
+        //    return 1;
+        //}
         return a.DeviceName.localeCompare(b.DeviceName, [], { sensitivity: "base" });
     });
     devices.forEach(x => {
-        AddOrUpdateDevice(x, false);
+        AddOrUpdateDevice(x);
     });
     ApplyFilter();
     UpdateDeviceCounts();
 }
-export function AddOrUpdateDevice(device, sortDevices) {
+export function AddOrUpdateDevice(device) {
     var existingIndex = DataSource.findIndex(x => x.ID == device.ID);
     if (existingIndex > -1) {
         DataSource[existingIndex] = device;
     }
     else {
         DataSource.push(device);
-    }
-    if (sortDevices) {
-        var selectedDevices = GetSelectedDevices();
-        UI.DeviceGrid.querySelectorAll(".record-row").forEach(row => {
-            row.remove();
-        });
-        AddOrUpdateDevices(DataSource);
-        selectedDevices.forEach(x => {
-            document.getElementById(x.ID).classList.add("row-selected");
-        });
-        return;
     }
     var tableBody = document.querySelector("#" + Main.UI.DeviceGrid.id + " tbody");
     var recordRow = document.getElementById(device.ID);
@@ -106,12 +99,18 @@ export function AddOrUpdateDevice(device, sortDevices) {
 export function ApplyFilter() {
     for (var i = 0; i < DataSource.length; i++) {
         var row = document.getElementById(DataSource[i].ID);
-        if (FilterOptions.ShowAllGroups ||
-            (DataSource[i].DeviceGroupID || "") == (FilterOptions.GroupFilter || "")) {
-            if (!FilterOptions.SearchFilter || deviceMatchesFilter(DataSource[i])) {
-                row.classList.remove("hidden");
-                continue;
-            }
+        if (FilterOptions.OnlineOnly && !DataSource[i].IsOnline) {
+            row.classList.add("hidden");
+            continue;
+        }
+        if (!FilterOptions.ShowAllGroups &&
+            (DataSource[i].DeviceGroupID || "") != (FilterOptions.GroupFilter || "")) {
+            row.classList.add("hidden");
+            continue;
+        }
+        if (deviceMatchesSearchFilter(DataSource[i])) {
+            row.classList.remove("hidden");
+            continue;
         }
         row.classList.add("hidden");
     }
@@ -182,7 +181,10 @@ export function UpdateDeviceCounts() {
         AddConsoleOutput(`Your selection contains offline computers.  Your commands will only be sent to those that are online.`);
     }
 }
-function deviceMatchesFilter(device) {
+function deviceMatchesSearchFilter(device) {
+    if (!FilterOptions.SearchFilter) {
+        return true;
+    }
     for (var key in device) {
         var value = device[key];
         if (!value) {
