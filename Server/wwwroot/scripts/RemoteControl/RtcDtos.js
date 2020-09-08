@@ -1,4 +1,4 @@
-import { BinaryDtoType } from "../Enums/BinaryDtoType.js";
+import { BinaryDtoType } from "../Shared/Enums/BinaryDtoType.js";
 export class AutoQualityAdjustDto {
     constructor(isOn) {
         this.DtoType = BinaryDtoType.AutoQualityAdjust;

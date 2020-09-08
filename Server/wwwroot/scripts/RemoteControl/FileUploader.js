@@ -1,5 +1,6 @@
-import { ShowMessage, FileTransferProgress, FileTransferInput, FileTransferNameSpan } from "./UI.js";
+import { FileTransferProgress, FileTransferInput, FileTransferNameSpan } from "./UI.js";
 import { MainViewer } from "./Main.js";
+import { ShowMessage } from "../Shared/UI.js";
 export async function UploadFiles(fileList) {
     if (!FileTransferProgress.parentElement.hasAttribute("hidden")) {
         FileTransferInput.value = null;

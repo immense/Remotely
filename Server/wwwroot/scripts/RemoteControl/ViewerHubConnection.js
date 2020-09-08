@@ -1,8 +1,8 @@
 import * as UI from "./UI.js";
 import { MainViewer } from "./Main.js";
-import { Sound } from "../Sound.js";
-import { ShowMessage } from "../UI.js";
-import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
+import { Sound } from "../Shared/Sound.js";
+import { RemoteControlMode } from "../Shared/Enums/RemoteControlMode.js";
+import { ShowMessage } from "../Shared/UI.js";
 var signalR = window["signalR"];
 export class ViewerHubConnection {
     constructor() {
@@ -179,24 +179,24 @@ export class ViewerHubConnection {
         hubConnection.on("ConnectionFailed", () => {
             UI.ConnectButton.removeAttribute("disabled");
             UI.StatusMessage.innerHTML = "Connection failed or was denied.";
-            UI.ShowMessage("Connection failed.  Please reconnect.");
+            ShowMessage("Connection failed.  Please reconnect.");
             this.Connection.stop();
         });
         hubConnection.on("ConnectionRequestDenied", () => {
             this.Connection.stop();
             UI.StatusMessage.innerHTML = "Connection request denied.";
-            UI.ShowMessage("Connection request denied.");
+            ShowMessage("Connection request denied.");
         });
         hubConnection.on("Unauthorized", () => {
             UI.ConnectButton.removeAttribute("disabled");
             UI.StatusMessage.innerHTML = "Authorization failed.";
-            UI.ShowMessage("Authorization failed.");
+            ShowMessage("Authorization failed.");
             this.Connection.stop();
         });
         hubConnection.on("ViewerRemoved", () => {
             UI.ConnectButton.removeAttribute("disabled");
             UI.StatusMessage.innerHTML = "The session was stopped by your partner.";
-            UI.ShowMessage("Session ended.");
+            ShowMessage("Session ended.");
             this.Connection.stop();
         });
         hubConnection.on("SessionIDNotFound", () => {
@@ -217,13 +217,13 @@ export class ViewerHubConnection {
             this.Connect();
         });
         hubConnection.on("Reconnecting", () => {
-            UI.ShowMessage("Reconnecting...");
+            ShowMessage("Reconnecting...");
         });
         hubConnection.on("CursorChange", (cursor) => {
             UI.UpdateCursor(cursor.ImageBytes, cursor.HotSpot.X, cursor.HotSpot.Y, cursor.CssOverride);
         });
         hubConnection.on("RequestingScreenCast", () => {
-            UI.ShowMessage("Requesting remote control...");
+            ShowMessage("Requesting remote control...");
         });
         hubConnection.on("ReceiveRtcOffer", async (sdp, iceServers) => {
             console.log("Rtc offer SDP received.");
@@ -239,7 +239,7 @@ export class ViewerHubConnection {
             });
         });
         hubConnection.on("ShowMessage", (message) => {
-            UI.ShowMessage(message);
+            ShowMessage(message);
         });
         hubConnection.on("WindowsSessions", (windowsSessions) => {
             UI.UpdateWindowsSessions(windowsSessions);

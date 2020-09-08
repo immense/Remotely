@@ -1,4 +1,4 @@
-﻿import { ShowModal, ValidateInput, ShowMessage } from "../UI.js";
+﻿import { ShowModal } from "../Shared/UI.js";
 
 
 document.getElementById("usersHelpButton").addEventListener("click", (ev) => {

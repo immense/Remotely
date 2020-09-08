@@ -6,7 +6,6 @@
     ClipboardTransferButton,
     ClipboardTransferBar,
     TypeClipboardButton,
-    ShowMessage,
     ConnectButton,
     CtrlAltDelButton,
     DisconnectButton,
@@ -28,15 +27,17 @@
     WindowsSessionSelect,
     RecordSessionButton,
     DownloadRecordingButton,
-    VideoScreenViewer,
+    VideoScreenViewer,
+
     StreamVideoButton
 } from "./UI.js";
-import { Sound } from "../Sound.js";
+import { Sound } from "../Shared/Sound.js";
 import { MainViewer } from "./Main.js";
-import { Point } from "../Models/Point.js";
+import { Point } from "../Shared/Models/Point.js";
 import { UploadFiles } from "./FileUploader.js";
-import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
-import { GetDistanceBetween } from "../Utilities.js";
+import { RemoteControlMode } from "../Shared/Enums/RemoteControlMode.js";
+import { GetDistanceBetween } from "../Shared/Utilities.js";
+import { ShowMessage } from "../Shared/UI.js";
 
 var lastPointerMove = Date.now();
 var isDragging: boolean;

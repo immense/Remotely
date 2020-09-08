@@ -1,5 +1,5 @@
 import { MainViewer } from "./Main.js";
-import { ConvertUInt8ArrayToBase64 } from "../Utilities.js";
+import { ConvertUInt8ArrayToBase64 } from "../Shared/Utilities.js";
 import { SessionType } from "./RtcDtos.js";
 export var AudioButton = document.getElementById("audioButton");
 export var MenuButton = document.getElementById("menuButton");
@@ -39,7 +39,6 @@ export var ClipboardTransferButton = document.getElementById("clipboardTransferB
 export var TypeClipboardButton = document.getElementById("typeClipboardButton");
 export var ConnectionP2PIcon = document.getElementById("connectionP2PIcon");
 export var ConnectionRelayedIcon = document.getElementById("connectionRelayedIcon");
-export var ToastsWrapper = document.getElementById("toastsWrapper");
 export var WindowsSessionSelect = document.getElementById("windowsSessionSelect");
 export var RecordSessionButton = document.getElementById("recordSessionButton");
 export var DownloadRecordingButton = document.getElementById("downloadRecordingButton");
@@ -82,15 +81,6 @@ export function SetScreenSize(width, height) {
     ScreenViewer.width = width;
     ScreenViewer.height = height;
     Screen2DContext.clearRect(0, 0, width, height);
-}
-export function ShowMessage(message) {
-    var messageDiv = document.createElement("div");
-    messageDiv.classList.add("toast-message");
-    messageDiv.innerHTML = message;
-    ToastsWrapper.appendChild(messageDiv);
-    window.setTimeout(() => {
-        messageDiv.remove();
-    }, 5000);
 }
 export function UpdateCursor(imageBytes, hotSpotX, hotSpotY, cssOverride) {
     var targetElement = GetCurrentViewer();

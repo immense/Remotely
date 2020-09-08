@@ -20,9 +20,9 @@ import {
     GenericDto,
     ToggleWebRtcVideoDto
 } from "./RtcDtos.js";
-import { CreateGUID, When } from "../Utilities.js";
+import { CreateGUID, When } from "../Shared/Utilities.js";
 import { FileTransferProgress } from "./UI.js";
-import { BinaryDtoType } from "../Enums/BinaryDtoType.js";
+import { BinaryDtoType } from "../Shared/Enums/BinaryDtoType.js";
 
 export class MessageSender {
     GetWindowsSessions() {

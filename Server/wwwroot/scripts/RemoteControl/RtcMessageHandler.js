@@ -1,8 +1,8 @@
 import * as UI from "./UI.js";
-import { BinaryDtoType } from "../Enums/BinaryDtoType.js";
+import { BinaryDtoType } from "../Shared/Enums/BinaryDtoType.js";
 import { MainViewer } from "./Main.js";
-import { ShowMessage } from "../UI.js";
-import { Sound } from "../Sound.js";
+import { ShowMessage } from "../Shared/UI.js";
+import { Sound } from "../Shared/Sound.js";
 export class RtcMessageHandler {
     constructor() {
         this.MessagePack = window['MessagePack'];
