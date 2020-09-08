@@ -4,17 +4,26 @@
     <div id="deviceGridInnerWrapper">
         <div id="gridControlsWrapper">
             <div>
-                <label>Device Group:</label>
-                <select id="deviceGroupSelect" asp-items="Model.DeviceGroups" class="form-control" style="width: 200px">
-                    <option value="">All</option>
-                    <option value="">Ungrouped</option>
-                </select>
+                <div class="mb-2">
+                    <label>Device Group:</label>
+                    <select id="deviceGroupSelect" asp-items="Model.DeviceGroups" class="form-control" style="width: 200px">
+                        <option value="">All</option>
+                        <option value="">Ungrouped</option>
+                    </select>
+                </div>
+                <div class="custom-control custom-checkbox">
+                    <input id="hideOfflineDevicesCheckbox" type="checkbox" class="custom-control-input" checked />
+                    <label class="custom-control-label" for="hideOfflineDevicesCheckbox">Hide offline devices</label>
+                </div>
             </div>
-            <div style="text-align: right">
-                <button id="startRemoteControlButton" class="btn btn-sm btn-secondary">Remote Control</button>
-                <button id="toggleAllDevices" class="btn btn-sm btn-secondary">Select All</button>
-                <div style="display: inline-block">
-                    <span>Filter:</span>
+            <div>
+                <div class="mb-2">
+                    <button id="startRemoteControlButton" class="btn btn-sm btn-secondary mr-1">Remote Control</button>
+                    <button id="toggleAllDevices" class="btn btn-sm btn-secondary">Select All</button>
+                </div>
+
+                <div>
+                    <span class="mr-1">Filter:</span>
                     <input id="gridFilter" />
                 </div>
             </div>

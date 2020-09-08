@@ -16,8 +16,15 @@ export function ApplyInputEventHandlers() {
     consoleTabSelected();
     deviceGroupSelectChanged();
     addAlertHandlers();
+    hideOfflineDevicesCheckboxChanged();
     window.addEventListener("resize", ev => {
         PositionCommandCompletionWindow();
+    });
+}
+function hideOfflineDevicesCheckboxChanged() {
+    UI.HideOfflineDevicesCheckbox.addEventListener("change", ev => {
+        DataGrid.FilterOptions.HideOffline = UI.HideOfflineDevicesCheckbox.checked;
+        DataGrid.ApplyFilter();
     });
 }
 function arrowUpOrDownOnTextArea(e) {

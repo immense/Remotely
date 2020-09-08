@@ -54,16 +54,24 @@ h6 {
     display: grid;
     grid-template-columns: auto 1fr;
     grid-column-gap: 20px;
+    grid-row-gap: 10px;
     margin-bottom: 5px;
     margin-right: 5px;
     padding-top: 3px;
 }
 
-#gridControlsWrapper span {
-    margin-right: 10px;
+#gridControlsWrapper > :last-child {
+    text-align: right;
 }
-#gridControlsWrapper button {
-    margin-right: 10px;
+
+@media only screen and (max-width: 520px) {
+    #gridControlsWrapper {
+        grid-template-columns: 1fr;
+    }
+
+    #gridControlsWrapper > :last-child {
+        text-align: left;
+    }
 }
 
 #consoleFrame.show {
