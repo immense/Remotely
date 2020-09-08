@@ -16,9 +16,9 @@ namespace Remotely.Server.API
     public class DevicesController : ControllerBase
     {
    
-        public DevicesController(DataService dataService, UserManager<RemotelyUser> userManager)
+        public DevicesController(DataService dataService)
         {
-            this.DataService = dataService;
+            DataService = dataService;
         }
         private DataService DataService { get; set; }
 

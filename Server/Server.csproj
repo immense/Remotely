@@ -29,30 +29,30 @@
     <Content Remove="wwwroot\scripts\Chat.ts" />
     <Content Remove="wwwroot\scripts\CommandCompletion.ts" />
     <Content Remove="wwwroot\scripts\CommandProcessor.ts" />
-    <Content Remove="wwwroot\scripts\Commands\BashCommands.ts" />
-    <Content Remove="wwwroot\scripts\Commands\CMDCommands.ts" />
-    <Content Remove="wwwroot\scripts\Commands\PSCommands.ts" />
-    <Content Remove="wwwroot\scripts\Commands\WebCommands.ts" />
+    <Content Remove="wwwroot\scripts\Main\Commands\BashCommands.ts" />
+    <Content Remove="wwwroot\scripts\Main\Commands\CMDCommands.ts" />
+    <Content Remove="wwwroot\scripts\Main\Commands\PSCommands.ts" />
+    <Content Remove="wwwroot\scripts\Main\Commands\WebCommands.ts" />
     <Content Remove="wwwroot\scripts\Console.ts" />
     <Content Remove="wwwroot\scripts\DataGrid.ts" />
-    <Content Remove="wwwroot\scripts\Enums\RemoteControlMode.ts" />
+    <Content Remove="wwwroot\scripts\Shared\Enums\RemoteControlMode.ts" />
     <Content Remove="wwwroot\scripts\HubConnection.ts" />
     <Content Remove="wwwroot\scripts\InputEventHandlers.ts" />
     <Content Remove="wwwroot\scripts\Main.ts" />
-    <Content Remove="wwwroot\scripts\Models\CaptureFrame.ts" />
-    <Content Remove="wwwroot\scripts\Models\CommandLineParameter.ts" />
-    <Content Remove="wwwroot\scripts\Models\CommandResult.ts" />
-    <Content Remove="wwwroot\scripts\Models\ConsoleCommand.ts" />
-    <Content Remove="wwwroot\scripts\Models\CursorInfo.ts" />
-    <Content Remove="wwwroot\scripts\Models\Device.ts" />
-    <Content Remove="wwwroot\scripts\Models\DynamicDtoType.ts" />
-    <Content Remove="wwwroot\scripts\Models\GenericCommandResult.ts" />
-    <Content Remove="wwwroot\scripts\Models\IceServerModel.ts" />
-    <Content Remove="wwwroot\scripts\Models\Parameter.ts" />
-    <Content Remove="wwwroot\scripts\Models\Point.ts" />
+    <Content Remove="wwwroot\scripts\Shared\Models\CaptureFrame.ts" />
+    <Content Remove="wwwroot\scripts\Shared\Models\CommandLineParameter.ts" />
+    <Content Remove="wwwroot\scripts\Shared\Models\CommandResult.ts" />
+    <Content Remove="wwwroot\scripts\Shared\Models\ConsoleCommand.ts" />
+    <Content Remove="wwwroot\scripts\Shared\Models\CursorInfo.ts" />
+    <Content Remove="wwwroot\scripts\Shared\Models\Device.ts" />
+    <Content Remove="wwwroot\scripts\Shared\Models\DynamicDtoType.ts" />
+    <Content Remove="wwwroot\scripts\Shared\Models\GenericCommandResult.ts" />
+    <Content Remove="wwwroot\scripts\Shared\Models\IceServerModel.ts" />
+    <Content Remove="wwwroot\scripts\Shared\Models\Parameter.ts" />
+    <Content Remove="wwwroot\scripts\Shared\Models\Point.ts" />
     <Content Remove="wwwroot\scripts\RemoteControl\InputEventHandlers.ts" />
     <Content Remove="wwwroot\scripts\RemoteControl\MessageSender.ts" />
-    <Content Remove="wwwroot\scripts\Models\UserOptions.ts" />
+    <Content Remove="wwwroot\scripts\Shared\Models\UserOptions.ts" />
     <Content Remove="wwwroot\scripts\Pages\ApiTokens.ts" />
     <Content Remove="wwwroot\scripts\Pages\IndexNotLoggedIn.ts" />
     <Content Remove="wwwroot\scripts\Pages\OrganizationManagement.ts" />
@@ -65,9 +65,9 @@
     <Content Remove="wwwroot\scripts\RemoteControl\UI.ts" />
     <Content Remove="wwwroot\scripts\ResultsParser.ts" />
     <Content Remove="wwwroot\scripts\RTC.ts" />
+    <Content Remove="wwwroot\scripts\Shared\UI.ts" />
     <Content Remove="wwwroot\scripts\SocketsRC.ts" />
     <Content Remove="wwwroot\scripts\Sound.ts" />
-    <Content Remove="wwwroot\scripts\Store.ts" />
     <Content Remove="wwwroot\scripts\UI.ts" />
     <Content Remove="wwwroot\scripts\UserSettings.ts" />
     <Content Remove="wwwroot\scripts\Utilities.ts" />
@@ -121,15 +121,15 @@
     <None Include="wwwroot\lib\signalr\signalr.js.map" />
     <None Include="wwwroot\lib\signalr\signalr.min.js" />
     <None Include="wwwroot\lib\signalr\signalr.min.js.map" />
-    <None Include="wwwroot\scripts\Models\CommandResult.ts">
+    <None Include="wwwroot\scripts\Shared\Models\CommandResult.ts">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </None>
-    <None Include="wwwroot\scripts\Models\CursorInfo.ts">
+    <None Include="wwwroot\scripts\Shared\Models\CursorInfo.ts">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </None>
-    <None Include="wwwroot\scripts\Models\GenericCommandResult.ts">
+    <None Include="wwwroot\scripts\Shared\Models\GenericCommandResult.ts">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </None>
@@ -145,27 +145,27 @@
     <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\legacy.d.ts" />
     <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\misc.d.ts" />
     <TypeScriptCompile Include="wwwroot\lib\%40types\sizzle\index.d.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Chat.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\CommandCompletion.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Commands\BashCommands.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Commands\CMDCommands.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Commands\WebCommands.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Commands\PSCommands.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Console.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\DataGrid.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Enums\RemoteControlMode.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\InputEventHandlers.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Main.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\CommandProcessor.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Models\CommandLineParameter.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Models\ConsoleCommand.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Models\IceServerModel.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Main\Chat.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Main\CommandCompletion.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Main\Commands\BashCommands.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Main\Commands\CMDCommands.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Main\Commands\WebCommands.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Main\Commands\PSCommands.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Main\Console.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Main\DataGrid.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Shared\Enums\RemoteControlMode.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Main\InputEventHandlers.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Main\Main.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Main\CommandProcessor.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Shared\Models\CommandLineParameter.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Shared\Models\ConsoleCommand.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Shared\Models\IceServerModel.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\InputEventHandlers.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\MessageSender.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Models\Point.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Models\UserOptions.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Models\Device.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Models\Parameter.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Shared\Models\Point.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Shared\Models\UserOptions.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Shared\Models\Device.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Shared\Models\Parameter.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Pages\ApiTokens.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Pages\IndexNotLoggedIn.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\Pages\OrganizationManagement.ts" />
@@ -176,14 +176,14 @@
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RtcSession.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\SessionRecorder.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\UI.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\ResultsParser.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Main\ResultsParser.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\ViewerHubConnection.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Sound.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Store.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\UI.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\UserSettings.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Utilities.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\HubConnection.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Shared\Sound.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Main\UI.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Main\UserSettings.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Shared\UI.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Shared\Utilities.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\Main\HubConnection.ts" />
   </ItemGroup>
 
 

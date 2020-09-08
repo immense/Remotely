@@ -1,7 +1,7 @@
 import { BinaryDto } from "./BinaryDto.js";
-import { BinaryDtoType } from "../Enums/BinaryDtoType.js";
-import { CursorInfo } from "../Models/CursorInfo.js";
-import { Point } from "../Models/Point.js";
+import { BinaryDtoType } from "../Shared/Enums/BinaryDtoType.js";
+import { CursorInfo } from "../Shared/Models/CursorInfo.js";
+import { Point } from "../Shared/Models/Point.js";
 
 export class AutoQualityAdjustDto implements BinaryDto {
     constructor(isOn: boolean) {

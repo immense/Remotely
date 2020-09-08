@@ -1,5 +1,5 @@
 ﻿import { MainViewer } from "./Main.js";
-import { ConvertUInt8ArrayToBase64 } from "../Utilities.js";
+import { ConvertUInt8ArrayToBase64 } from "../Shared/Utilities.js";
 import { WindowsSession, SessionType } from "./RtcDtos.js";
 
 export var AudioButton = document.getElementById("audioButton") as HTMLButtonElement;
@@ -40,7 +40,6 @@ export var ClipboardTransferButton = document.getElementById("clipboardTransferB
 export var TypeClipboardButton = document.getElementById("typeClipboardButton") as HTMLButtonElement;
 export var ConnectionP2PIcon = document.getElementById("connectionP2PIcon") as HTMLElement;
 export var ConnectionRelayedIcon = document.getElementById("connectionRelayedIcon") as HTMLElement;
-export var ToastsWrapper = document.getElementById("toastsWrapper") as HTMLDivElement;
 export var WindowsSessionSelect = document.getElementById("windowsSessionSelect") as HTMLSelectElement;
 export var RecordSessionButton = document.getElementById("recordSessionButton") as HTMLButtonElement;
 export var DownloadRecordingButton = document.getElementById("downloadRecordingButton") as HTMLButtonElement;
@@ -95,16 +94,6 @@ export function SetScreenSize(width: number, height: number) {
     ScreenViewer.width = width;
     ScreenViewer.height = height;
     Screen2DContext.clearRect(0, 0, width, height);
-}
-
-export function ShowMessage(message: string) {
-    var messageDiv = document.createElement("div");
-    messageDiv.classList.add("toast-message");
-    messageDiv.innerHTML = message;
-    ToastsWrapper.appendChild(messageDiv);
-    window.setTimeout(() => {
-        messageDiv.remove();
-    }, 5000);
 }
 
 export function UpdateCursor(imageBytes: Uint8Array, hotSpotX: number, hotSpotY: number, cssOverride: string) {
@@ -166,4 +155,3 @@ export function UpdateWindowsSessions(windowsSessions: Array<WindowsSession>) {
         WindowsSessionSelect.options.add(option);
     });
 }
-

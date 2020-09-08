@@ -1,9 +1,10 @@
-import { AudioButton, ChangeScreenButton, HorizontalBars, ScreenSelectBar, ClipboardTransferButton, ClipboardTransferBar, TypeClipboardButton, ShowMessage, ConnectButton, CtrlAltDelButton, DisconnectButton, FileTransferButton, FileTransferInput, FitToScreenButton, ScreenViewer, BlockInputButton, InviteButton, KeyboardButton, TouchKeyboardTextArea, MenuFrame, MenuButton, QualityButton, QualityBar, QualitySlider, AutoQualityAdjustCheckBox, ScreenViewerWrapper, WindowsSessionSelect, RecordSessionButton, DownloadRecordingButton, VideoScreenViewer, StreamVideoButton } from "./UI.js";
-import { Sound } from "../Sound.js";
+import { AudioButton, ChangeScreenButton, HorizontalBars, ScreenSelectBar, ClipboardTransferButton, ClipboardTransferBar, TypeClipboardButton, ConnectButton, CtrlAltDelButton, DisconnectButton, FileTransferButton, FileTransferInput, FitToScreenButton, ScreenViewer, BlockInputButton, InviteButton, KeyboardButton, TouchKeyboardTextArea, MenuFrame, MenuButton, QualityButton, QualityBar, QualitySlider, AutoQualityAdjustCheckBox, ScreenViewerWrapper, WindowsSessionSelect, RecordSessionButton, DownloadRecordingButton, VideoScreenViewer, StreamVideoButton } from "./UI.js";
+import { Sound } from "../Shared/Sound.js";
 import { MainViewer } from "./Main.js";
 import { UploadFiles } from "./FileUploader.js";
-import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
-import { GetDistanceBetween } from "../Utilities.js";
+import { RemoteControlMode } from "../Shared/Enums/RemoteControlMode.js";
+import { GetDistanceBetween } from "../Shared/Utilities.js";
+import { ShowMessage } from "../Shared/UI.js";
 var lastPointerMove = Date.now();
 var isDragging;
 var currentPointerDevice;

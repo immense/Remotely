@@ -1,4 +1,4 @@
-import { ShowModal } from "../UI.js";
+import { ShowModal } from "../Shared/UI.js";
 document.getElementById("usersHelpButton").addEventListener("click", (ev) => {
     ShowModal("Users", `All users for the organization are managed here.<br><br>
         Administrators will have access to this management screen as well as all computers.`);

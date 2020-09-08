@@ -10,9 +10,9 @@ namespace Remotely.Agent.Services
 {
     public class ConfigService
     {
-        private static object fileLock = new object();
+        private static readonly object fileLock = new object();
         private ConnectionInfo connectionInfo;
-        private string debugGuid = "f2b0a595-5ea8-471b-975f-12e70e0f3497";
+        private readonly string debugGuid = "f2b0a595-5ea8-471b-975f-12e70e0f3497";
 
         private Dictionary<string, string> commandLineArgs;
         private Dictionary<string, string> CommandLineArgs

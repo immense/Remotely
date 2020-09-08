@@ -213,11 +213,9 @@ namespace Remotely.Server.Services
             byte[] fileContents;
             using (var stream = file.OpenReadStream())
             {
-                using (var ms = new MemoryStream())
-                {
-                    await stream.CopyToAsync(ms);
-                    fileContents = ms.ToArray();
-                }
+                using var ms = new MemoryStream();
+                await stream.CopyToAsync(ms);
+                fileContents = ms.ToArray();
             }
             var newEntity = RemotelyContext.Add(new SharedFile()
             {
@@ -260,8 +258,8 @@ namespace Remotely.Server.Services
                 return false;
             }
 
-            deviceGroup.PermissionLinks = deviceGroup.PermissionLinks ?? new List<UserDevicePermission>();
-            user.PermissionLinks = user.PermissionLinks ?? new List<UserDevicePermission>();
+            deviceGroup.PermissionLinks ??= new List<UserDevicePermission>();
+            user.PermissionLinks ??= new List<UserDevicePermission>();
 
             if (deviceGroup.PermissionLinks.Any(x => x.UserID == user.Id))
             {

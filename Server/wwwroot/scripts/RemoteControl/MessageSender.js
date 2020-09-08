@@ -1,8 +1,8 @@
 import { MainViewer } from "./Main.js";
 import { CtrlAltDelDto, KeyDownDto, KeyPressDto, KeyUpDto, MouseDownDto, MouseMoveDto, MouseUpDto, MouseWheelDto, QualityChangeDto, SelectScreenDto, TapDto, AutoQualityAdjustDto, ToggleAudioDto, ToggleBlockInputDto, ClipboardTransferDto, FileDto, WindowsSessionsDto, GenericDto, ToggleWebRtcVideoDto } from "./RtcDtos.js";
-import { CreateGUID, When } from "../Utilities.js";
+import { CreateGUID, When } from "../Shared/Utilities.js";
 import { FileTransferProgress } from "./UI.js";
-import { BinaryDtoType } from "../Enums/BinaryDtoType.js";
+import { BinaryDtoType } from "../Shared/Enums/BinaryDtoType.js";
 export class MessageSender {
     GetWindowsSessions() {
         this.SendToAgent(() => MainViewer.RtcSession.SendDto(new WindowsSessionsDto()), () => MainViewer.ViewerHubConnection.GetWindowsSessions());

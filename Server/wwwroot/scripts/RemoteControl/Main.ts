@@ -1,7 +1,7 @@
-﻿import * as Utilities from "../Utilities.js";
+﻿import * as Utilities from "../Shared/Utilities.js";
 import { RtcSession } from "./RtcSession.js";
 import * as UI from "./UI.js";
-import { RemoteControlMode } from "../Enums/RemoteControlMode.js";
+import { RemoteControlMode } from "../Shared/Enums/RemoteControlMode.js";
 import { ClipboardWatcher } from "./ClipboardWatcher.js";
 import { RtcMessageHandler } from "./RtcMessageHandler.js";
 import { MessageSender } from "./MessageSender.js";
