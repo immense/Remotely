@@ -1,6 +1,5 @@
-import * as UI from "./UI.js";
 import { Main } from "./Main.js";
-import { DeviceGrid } from "./UI.js";
+import { DeviceGrid, DevicesSelectedCount, OnlineDevicesCount, TotalDevicesCount } from "./UI.js";
 import { AddConsoleOutput } from "./Console.js";
 import { CreateChatWindow } from "./Chat.js";
 import * as HubConnection from "./HubConnection.js";
@@ -9,7 +8,7 @@ export const DataSource = new Array();
 export const FilterOptions = new class {
     constructor() {
         this.GroupFilter = "";
-        this.OnlineOnly = false;
+        this.HideOffline = true;
         this.SearchFilter = "";
         this.ShowAllGroups = true;
     }
@@ -99,7 +98,7 @@ export function AddOrUpdateDevice(device) {
 export function ApplyFilter() {
     for (var i = 0; i < DataSource.length; i++) {
         var row = document.getElementById(DataSource[i].ID);
-        if (FilterOptions.OnlineOnly && !DataSource[i].IsOnline) {
+        if (FilterOptions.HideOffline && !DataSource[i].IsOnline) {
             row.classList.add("hidden");
             continue;
         }
@@ -117,7 +116,7 @@ export function ApplyFilter() {
 }
 export function ClearAllData() {
     DataSource.splice(0, DataSource.length);
-    UI.DeviceGrid.querySelectorAll(".record-row").forEach(row => {
+    DeviceGrid.querySelectorAll(".record-row").forEach(row => {
         row.remove();
     });
     UpdateDeviceCounts();
@@ -172,9 +171,9 @@ export function ToggleSelectAll() {
     UpdateDeviceCounts();
 }
 export function UpdateDeviceCounts() {
-    UI.DevicesSelectedCount.innerText = UI.DeviceGrid.querySelectorAll(".row-selected").length.toString();
-    UI.OnlineDevicesCount.innerText = DataSource.filter(x => x.IsOnline).length.toString();
-    UI.TotalDevicesCount.innerText = DataSource.length.toString();
+    DevicesSelectedCount.innerText = DeviceGrid.querySelectorAll(".row-selected").length.toString();
+    OnlineDevicesCount.innerText = DataSource.filter(x => x.IsOnline).length.toString();
+    TotalDevicesCount.innerText = DataSource.length.toString();
     if (DataSource.some(x => !x.IsOnline &&
         document.getElementById(x.ID) &&
         document.getElementById(x.ID).classList.contains("row-selected"))) {

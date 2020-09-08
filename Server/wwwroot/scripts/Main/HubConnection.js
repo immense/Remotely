@@ -51,13 +51,13 @@ function applyMessageHandlers(hubConnection) {
         location.assign("/Identity/Account/Lockout");
     });
     hubConnection.on("DeviceCameOnline", (device) => {
-        DataGrid.AddOrUpdateDevice(device, true);
+        DataGrid.AddOrUpdateDevice(device);
     });
     hubConnection.on("DeviceWentOffline", (device) => {
-        DataGrid.AddOrUpdateDevice(device, true);
+        DataGrid.AddOrUpdateDevice(device);
     });
     hubConnection.on("DeviceHeartbeat", (device) => {
-        DataGrid.AddOrUpdateDevice(device, false);
+        DataGrid.AddOrUpdateDevice(device);
     });
     hubConnection.on("RefreshDeviceList", () => {
         DataGrid.RefreshGrid();
