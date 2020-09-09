@@ -1,20 +1,27 @@
-import { Main } from "./Main.js";
-import { DeviceGrid, DevicesSelectedCount, OnlineDevicesCount, TotalDevicesCount } from "./UI.js";
+import { DeviceGrid, DevicesSelectedCount, OnlineDevicesCount, TotalDevicesCount, TotalPagesSpan, DeviceGridBody, CurrentPageInput } from "./UI.js";
 import { AddConsoleOutput } from "./Console.js";
 import { CreateChatWindow } from "./Chat.js";
 import * as HubConnection from "./HubConnection.js";
 import { ShowModal } from "../Shared/UI.js";
 export const DataSource = new Array();
-export const FilterOptions = new class {
+export const FilteredDevices = new Array();
+export const GridState = new class {
     constructor() {
         this.GroupFilter = "";
         this.HideOffline = true;
         this.SearchFilter = "";
         this.ShowAllGroups = true;
+        this.CurrentPage = 1;
+        this.TotalPages = 1;
+    }
+    get RowsPerPage() {
+        return 100;
     }
 };
 export function AddOrUpdateDevices(devices) {
     DataSource.splice(0);
+    FilteredDevices.splice(0);
+    GridState.CurrentPage = 1;
     devices.sort((a, b) => {
         //if (a.IsOnline && !b.IsOnline) {
         //    return -1;
@@ -25,12 +32,12 @@ export function AddOrUpdateDevices(devices) {
         return a.DeviceName.localeCompare(b.DeviceName, [], { sensitivity: "base" });
     });
     devices.forEach(x => {
-        AddOrUpdateDevice(x);
+        AddOrUpdateDevice(x, false);
     });
-    ApplyFilter();
     UpdateDeviceCounts();
+    RenderDeviceRows();
 }
-export function AddOrUpdateDevice(device) {
+export function AddOrUpdateDevice(device, rerenderGrid) {
     var existingIndex = DataSource.findIndex(x => x.ID == device.ID);
     if (existingIndex > -1) {
         DataSource[existingIndex] = device;
@@ -38,28 +45,68 @@ export function AddOrUpdateDevice(device) {
     else {
         DataSource.push(device);
     }
-    var tableBody = document.querySelector("#" + Main.UI.DeviceGrid.id + " tbody");
-    var recordRow = document.getElementById(device.ID);
-    if (recordRow == null) {
-        recordRow = document.createElement("tr");
-        recordRow.classList.add("record-row");
-        recordRow.id = device.ID;
-        tableBody.appendChild(recordRow);
-        recordRow.addEventListener("click", (e) => {
-            if (!e.ctrlKey && !e.shiftKey) {
-                var selectedID = e.currentTarget.id;
-                DeviceGrid.querySelectorAll(`.record-row.row-selected:not([id='${selectedID}'])`).forEach(elem => {
-                    elem.classList.remove("row-selected");
-                });
-            }
-            e.currentTarget.classList.toggle("row-selected");
-            UpdateDeviceCounts();
-        });
+    ApplyFilterToDevice(device);
+    if (rerenderGrid) {
+        UpdateDeviceCounts();
+        RenderDeviceRows();
     }
-    recordRow.innerHTML = `
+}
+export function ApplyFilterToAll() {
+    FilteredDevices.splice(0);
+    GridState.CurrentPage = 1;
+    for (var i = 0; i < DataSource.length; i++) {
+        ApplyFilterToDevice(DataSource[i]);
+    }
+    UpdateDeviceCounts();
+    RenderDeviceRows();
+}
+export function ApplyFilterToDevice(device) {
+    if (GridState.HideOffline && !device.IsOnline) {
+        return;
+    }
+    if (!GridState.ShowAllGroups &&
+        (device.DeviceGroupID || "") != (GridState.GroupFilter || "")) {
+        return;
+    }
+    if (deviceMatchesSearchFilter(device)) {
+        var existingIndex = FilteredDevices.findIndex(x => x.ID == device.ID);
+        if (existingIndex > -1) {
+            FilteredDevices[existingIndex] = device;
+        }
+        else {
+            FilteredDevices.push(device);
+        }
+        return;
+    }
+}
+export function RenderDeviceRows() {
+    DeviceGridBody.innerHTML = "";
+    var startCurrentDevices = (GridState.CurrentPage - 1) * GridState.RowsPerPage;
+    var endCurrentDevices = startCurrentDevices + GridState.RowsPerPage;
+    var currentPageDevices = FilteredDevices.slice(startCurrentDevices, endCurrentDevices);
+    for (var i = 0; i < currentPageDevices.length; i++) {
+        var device = currentPageDevices[i];
+        var recordRow = document.getElementById(device.ID);
+        if (recordRow == null) {
+            recordRow = document.createElement("tr");
+            recordRow.classList.add("record-row");
+            recordRow.id = device.ID;
+            DeviceGridBody.appendChild(recordRow);
+            recordRow.addEventListener("click", (e) => {
+                if (!e.ctrlKey && !e.shiftKey) {
+                    var selectedID = e.currentTarget.id;
+                    DeviceGrid.querySelectorAll(`.record-row.row-selected:not([id='${selectedID}'])`).forEach(elem => {
+                        elem.classList.remove("row-selected");
+                    });
+                }
+                e.currentTarget.classList.toggle("row-selected");
+                UpdateDeviceCounts();
+            });
+        }
+        recordRow.innerHTML = `
                     <td>${String(device.IsOnline)
-        .replace("true", "<span class='fa fa-check-circle'></span>")
-        .replace("false", "<span class='fa fa-times'></span>")}</td>
+            .replace("true", "<span class='fa fa-check-circle'></span>")
+            .replace("false", "<span class='fa fa-times'></span>")}</td>
                     <td>${device.DeviceName}</td>
                     <td>${device.Alias || ""}</td>
                     <td>${device.CurrentUser}</td>
@@ -77,49 +124,23 @@ export function AddOrUpdateDevice(device) {
                         <i class="fas fa-mouse device-remotecontrol-button mr-2" title="Remote Control" style="font-size:1.5em"></i>
                         <i class="fas fa-edit device-edit-button" title="Edit" style="font-size:1.5em"></i>
                     </td>`;
-    recordRow.querySelector(".device-edit-button").onclick = (ev) => {
-        ev.preventDefault();
-        ev.stopPropagation();
-        window.open(`${location.origin}/EditDevice?deviceID=${device.ID}`, "_blank");
-    };
-    recordRow.querySelector(".device-chat-button").onclick = (ev) => {
-        ev.preventDefault();
-        ev.stopPropagation();
-        CreateChatWindow(device.ID, device.DeviceName);
-    };
-    recordRow.querySelector(".device-remotecontrol-button").onclick = (ev) => {
-        ev.preventDefault();
-        ev.stopPropagation();
-        AddConsoleOutput("Launching remote control on client device...");
-        HubConnection.Connection.invoke("RemoteControl", device.ID);
-    };
-    UpdateDeviceCounts();
-}
-export function ApplyFilter() {
-    for (var i = 0; i < DataSource.length; i++) {
-        var row = document.getElementById(DataSource[i].ID);
-        if (FilterOptions.HideOffline && !DataSource[i].IsOnline) {
-            row.classList.add("hidden");
-            continue;
-        }
-        if (!FilterOptions.ShowAllGroups &&
-            (DataSource[i].DeviceGroupID || "") != (FilterOptions.GroupFilter || "")) {
-            row.classList.add("hidden");
-            continue;
-        }
-        if (deviceMatchesSearchFilter(DataSource[i])) {
-            row.classList.remove("hidden");
-            continue;
-        }
-        row.classList.add("hidden");
+        recordRow.querySelector(".device-edit-button").onclick = (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            window.open(`${location.origin}/EditDevice?deviceID=${device.ID}`, "_blank");
+        };
+        recordRow.querySelector(".device-chat-button").onclick = (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            CreateChatWindow(device.ID, device.DeviceName);
+        };
+        recordRow.querySelector(".device-remotecontrol-button").onclick = (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            AddConsoleOutput("Launching remote control on client device...");
+            HubConnection.Connection.invoke("RemoteControl", device.ID);
+        };
     }
-}
-export function ClearAllData() {
-    DataSource.splice(0, DataSource.length);
-    DeviceGrid.querySelectorAll(".record-row").forEach(row => {
-        row.remove();
-    });
-    UpdateDeviceCounts();
 }
 export function GetSelectedDevices() {
     var devices = new Array();
@@ -129,8 +150,34 @@ export function GetSelectedDevices() {
     return devices;
 }
 ;
+export function GoToCurrentPage() {
+    var newPage = Number(CurrentPageInput.value);
+    if (Number.isInteger(newPage) &&
+        newPage > 0 &&
+        newPage < GridState.TotalPages) {
+        GridState.CurrentPage = newPage;
+        UpdateDeviceCounts();
+        RenderDeviceRows();
+    }
+}
+export function PageDown() {
+    if (GridState.CurrentPage > 1) {
+        GridState.CurrentPage--;
+        UpdateDeviceCounts();
+        RenderDeviceRows();
+    }
+}
+export function PageUp() {
+    if (GridState.CurrentPage < GridState.TotalPages) {
+        GridState.CurrentPage++;
+        UpdateDeviceCounts();
+        RenderDeviceRows();
+    }
+}
 export function RefreshGrid() {
-    ClearAllData();
+    DataSource.splice(0);
+    DeviceGridBody.innerHTML = "";
+    UpdateDeviceCounts();
     var xhr = new XMLHttpRequest();
     xhr.open("get", "/API/Devices");
     xhr.onerror = () => {
@@ -171,17 +218,20 @@ export function ToggleSelectAll() {
     UpdateDeviceCounts();
 }
 export function UpdateDeviceCounts() {
+    GridState.TotalPages = Math.ceil(FilteredDevices.length / GridState.RowsPerPage);
+    TotalPagesSpan.innerHTML = String(GridState.TotalPages);
+    CurrentPageInput.value = String(GridState.CurrentPage);
     DevicesSelectedCount.innerText = DeviceGrid.querySelectorAll(".row-selected").length.toString();
-    OnlineDevicesCount.innerText = DataSource.filter(x => x.IsOnline).length.toString();
-    TotalDevicesCount.innerText = DataSource.length.toString();
-    if (DataSource.some(x => !x.IsOnline &&
+    OnlineDevicesCount.innerText = FilteredDevices.filter(x => x.IsOnline).length.toString();
+    TotalDevicesCount.innerText = FilteredDevices.length.toString();
+    if (FilteredDevices.some(x => !x.IsOnline &&
         document.getElementById(x.ID) &&
         document.getElementById(x.ID).classList.contains("row-selected"))) {
         AddConsoleOutput(`Your selection contains offline computers.  Your commands will only be sent to those that are online.`);
     }
 }
 function deviceMatchesSearchFilter(device) {
-    if (!FilterOptions.SearchFilter) {
+    if (!GridState.SearchFilter) {
         return true;
     }
     for (var key in device) {
@@ -189,7 +239,7 @@ function deviceMatchesSearchFilter(device) {
         if (!value) {
             continue;
         }
-        if (value.toString().toLowerCase().includes(FilterOptions.SearchFilter.toLowerCase())) {
+        if (value.toString().toLowerCase().includes(GridState.SearchFilter.toLowerCase())) {
             return true;
         }
     }

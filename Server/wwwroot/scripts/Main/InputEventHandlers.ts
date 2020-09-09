@@ -19,16 +19,59 @@ export function ApplyInputEventHandlers() {
     deviceGroupSelectChanged();
     addAlertHandlers();
     hideOfflineDevicesCheckboxChanged();
+    addGridPaginationHandlers();
 
     window.addEventListener("resize", ev => {
         PositionCommandCompletionWindow();
     });
 }
 
-function hideOfflineDevicesCheckboxChanged() {
-    UI.HideOfflineDevicesCheckbox.addEventListener("change", ev => {
-        DataGrid.FilterOptions.HideOffline = UI.HideOfflineDevicesCheckbox.checked;
-        DataGrid.ApplyFilter();
+function addGridPaginationHandlers() {
+    UI.LeftPaginationButton.addEventListener("click", (ev) => {
+        DataGrid.PageDown();
+    });
+
+    UI.RightPaginationButton.addEventListener("click", (ev) => {
+        DataGrid.PageUp();
+    });
+
+    var changePageTimeout = -1;
+    UI.CurrentPageInput.addEventListener("input", (ev) => {
+        if (changePageTimeout > 0) {
+            window.clearTimeout(changePageTimeout);
+        }
+        changePageTimeout = window.setTimeout(() => {
+            DataGrid.GoToCurrentPage();
+        }, 2000);
+    });
+}
+
+function addAlertHandlers() {
+    UI.AlertsButton.addEventListener("click", ev => {
+        UI.AlertsFrame.classList.toggle("open");
+    });
+    UI.CloseAlertsButton.addEventListener("click", ev => {
+        UI.AlertsFrame.classList.toggle("open");
+    });
+
+    document.querySelectorAll(".alert-dismiss-button").forEach(element => {
+        element.addEventListener("click", ev => {
+            var alertID = (ev.currentTarget as HTMLButtonElement).getAttribute("alert");
+            var xhr = new XMLHttpRequest();
+            xhr.open("delete", location.origin + "/api/Alerts/Delete/" + alertID);
+            xhr.onload = function () {
+                if (xhr.status == 200) {
+                    document.getElementById(alertID).remove();
+                    var currentCount = Number(UI.AlertsCount.innerText);
+                    currentCount--;
+                    UI.AlertsCount.innerText = String(currentCount);
+                }
+                else {
+                    ShowModal("API Error", "There was an error deleting the alert.");
+                }
+            };
+            xhr.send();
+        })
     });
 }
 
@@ -73,6 +116,78 @@ function arrowUpOrDownOnTextArea(e: KeyboardEvent) {
             }
         }
     }
+}
+
+function clickToggleAllDevices() {
+    document.getElementById("toggleAllDevices").addEventListener("click", function (e) {
+        DataGrid.ToggleSelectAll();
+    })
+}
+
+function clickStartRemoteControlButton() {
+    document.getElementById("startRemoteControlButton").addEventListener("click", function (e) {
+        var selectedDevices = DataGrid.GetSelectedDevices();
+        if (selectedDevices.length == 0) {
+            ShowMessage("You must select a device first.");
+        }
+        else if (selectedDevices.length > 1) {
+            ShowMessage("You must select only one device to control.");
+        }
+        else {
+            WebCommands.find(x => x.Name == "RemoteControl").Execute([]);
+        }
+    })
+}
+
+function consoleTabSelected() {
+    $(UI.ConsoleTab).on("shown.bs.tab", () => {
+        UI.ConsoleAlert.hidden = true;
+        UI.ConsoleAlert.innerText = "0";
+        UI.ConsoleFrame.scrollTop = UI.ConsoleFrame.scrollHeight;
+    });
+}
+
+function deviceGroupSelectChanged() {
+    UI.DeviceGroupSelect.addEventListener("change", (ev) => {
+        DataGrid.GridState.GroupFilter = UI.DeviceGroupSelect.value;
+        if (UI.DeviceGroupSelect.selectedIndex == 0) {
+            DataGrid.GridState.ShowAllGroups = true;
+        }
+        else {
+            DataGrid.GridState.ShowAllGroups = false;
+        }
+        DataGrid.ApplyFilterToAll();
+    });
+}
+
+function hideOfflineDevicesCheckboxChanged() {
+    UI.HideOfflineDevicesCheckbox.addEventListener("change", ev => {
+        DataGrid.GridState.HideOffline = UI.HideOfflineDevicesCheckbox.checked;
+        DataGrid.ApplyFilterToAll();
+    });
+}
+
+function inputOnCommandTextArea() {
+    UI.ConsoleTextArea.addEventListener("input", (e: KeyboardEvent) => {
+        var commandMode = CommandProcessor.GetCommandModeShortcut();
+        if (commandMode) {
+            UI.CommandModeSelect.value = commandMode;
+            UI.ConsoleTextArea.value = "";
+            UI.CommandCompletionDiv.classList.add("hidden");
+        }
+        else {
+            CommandProcessor.EvaluateCurrentCommandText();
+        }
+        UI.ConsoleFrame.scrollTop = UI.ConsoleFrame.scrollHeight;
+    });
+}
+
+function inputOnFilterTextBox() {
+    UI.GridFilter.addEventListener("input", (e) => {
+        var currentText = (e.currentTarget as HTMLInputElement).value.toLowerCase();
+        DataGrid.GridState.SearchFilter = currentText;
+        DataGrid.ApplyFilterToAll();
+    })
 }
 
 function keyDownOnInputTextArea() {
@@ -142,95 +257,5 @@ function keyDownOnWindow() {
         if (e.ctrlKey && e.key.toLowerCase() == "q") {
             UI.ConsoleOutputDiv.innerHTML = "";
         }
-    });
-}
-
-function inputOnCommandTextArea() {
-    UI.ConsoleTextArea.addEventListener("input", (e: KeyboardEvent) => {
-        var commandMode = CommandProcessor.GetCommandModeShortcut();
-        if (commandMode) {
-            UI.CommandModeSelect.value = commandMode;
-            UI.ConsoleTextArea.value = "";
-            UI.CommandCompletionDiv.classList.add("hidden");
-        }
-        else {
-            CommandProcessor.EvaluateCurrentCommandText();
-        }
-        UI.ConsoleFrame.scrollTop = UI.ConsoleFrame.scrollHeight;
-    });
-}
-function inputOnFilterTextBox() {
-    UI.GridFilter.addEventListener("input", (e) => {
-        var currentText = (e.currentTarget as HTMLInputElement).value.toLowerCase();
-        DataGrid.FilterOptions.SearchFilter = currentText;
-        DataGrid.ApplyFilter();
-    })
-}
-function consoleTabSelected() {
-    $(UI.ConsoleTab).on("shown.bs.tab", () => {
-        UI.ConsoleAlert.hidden = true;
-        UI.ConsoleAlert.innerText = "0";
-        UI.ConsoleFrame.scrollTop = UI.ConsoleFrame.scrollHeight;
-    });
-}
-function addAlertHandlers() {
-    UI.AlertsButton.addEventListener("click", ev => {
-        UI.AlertsFrame.classList.toggle("open");
-    });
-    UI.CloseAlertsButton.addEventListener("click", ev => {
-        UI.AlertsFrame.classList.toggle("open");
-    });
-
-    document.querySelectorAll(".alert-dismiss-button").forEach(element => {
-        element.addEventListener("click", ev => {
-            var alertID = (ev.currentTarget as HTMLButtonElement).getAttribute("alert");
-            var xhr = new XMLHttpRequest();
-            xhr.open("delete", location.origin + "/api/Alerts/Delete/" + alertID);
-            xhr.onload = function () {
-                if (xhr.status == 200) {
-                    document.getElementById(alertID).remove();
-                    var currentCount = Number(UI.AlertsCount.innerText);
-                    currentCount--;
-                    UI.AlertsCount.innerText = String(currentCount);
-                }
-                else {
-                    ShowModal("API Error", "There was an error deleting the alert.");
-                }
-            };
-            xhr.send();
-        })
-    });
-}
-function clickToggleAllDevices() {
-    document.getElementById("toggleAllDevices").addEventListener("click", function (e) {
-        DataGrid.ToggleSelectAll();
-    })
-}
-
-function clickStartRemoteControlButton() {
-    document.getElementById("startRemoteControlButton").addEventListener("click", function (e) {
-        var selectedDevices = DataGrid.GetSelectedDevices();
-        if (selectedDevices.length == 0) {
-            ShowMessage("You must select a device first.");
-        }
-        else if (selectedDevices.length > 1) {
-            ShowMessage("You must select only one device to control.");
-        }
-        else {
-            WebCommands.find(x => x.Name == "RemoteControl").Execute([]);
-        }
-    })
-}
-
-function deviceGroupSelectChanged() {
-    UI.DeviceGroupSelect.addEventListener("change", (ev) => {
-        DataGrid.FilterOptions.GroupFilter = UI.DeviceGroupSelect.value;
-        if (UI.DeviceGroupSelect.selectedIndex == 0) {
-            DataGrid.FilterOptions.ShowAllGroups = true;
-        }
-        else {
-            DataGrid.FilterOptions.ShowAllGroups = false;
-        }
-        DataGrid.ApplyFilter();
     });
 }
