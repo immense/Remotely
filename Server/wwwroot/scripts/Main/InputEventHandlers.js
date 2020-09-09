@@ -36,7 +36,7 @@ function addGridPaginationHandlers() {
         }
         changePageTimeout = window.setTimeout(() => {
             DataGrid.GoToCurrentPage();
-        }, 2000);
+        }, 1500);
     });
 }
 function addAlertHandlers() {

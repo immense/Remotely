@@ -13,9 +13,7 @@ export const GridState = new class {
         this.ShowAllGroups = true;
         this.CurrentPage = 1;
         this.TotalPages = 1;
-    }
-    get RowsPerPage() {
-        return 100;
+        this.RowsPerPage = 100;
     }
 };
 export function AddOrUpdateDevices(devices) {
@@ -159,6 +157,9 @@ export function GoToCurrentPage() {
         UpdateDeviceCounts();
         RenderDeviceRows();
     }
+    else {
+        CurrentPageInput.value = String(GridState.CurrentPage);
+    }
 }
 export function PageDown() {
     if (GridState.CurrentPage > 1) {
@@ -183,7 +184,7 @@ export function RefreshGrid() {
     xhr.onerror = () => {
         ShowModal("Request Failure", "Failed to retrieve device data.  Please refresh your connection or contact support.");
     };
-    xhr.onload = (e) => {
+    xhr.onload = () => {
         if (xhr.status == 200) {
             var devices = JSON.parse(xhr.responseText);
             if (devices.length == 0) {

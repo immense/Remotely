@@ -1,11 +1,9 @@
-﻿import { Main } from "./Main.js";
-import { DeviceGrid, DevicesSelectedCount, OnlineDevicesCount, TotalDevicesCount, TotalPagesSpan, DeviceGridBody, CurrentPageInput } from "./UI.js";
+﻿import { DeviceGrid, DevicesSelectedCount, OnlineDevicesCount, TotalDevicesCount, TotalPagesSpan, DeviceGridBody, CurrentPageInput } from "./UI.js";
 import { AddConsoleOutput } from "./Console.js";
 import { CreateChatWindow } from "./Chat.js";
 import * as HubConnection from "./HubConnection.js"
 import { ShowModal } from "../Shared/UI.js";
 import { Device } from "../Shared/Models/Device.js";
-
 
 export const DataSource: Array<Device> = new Array<Device>();
 export const FilteredDevices: Array<Device> = new Array<Device>();
@@ -17,9 +15,7 @@ export const GridState = new class {
     ShowAllGroups: boolean = true;
     CurrentPage: number = 1;
     TotalPages: number = 1;
-    get RowsPerPage() {
-        return 100;
-    }
+    readonly RowsPerPage: number = 100;
 };
 
 
@@ -189,6 +185,9 @@ export function GoToCurrentPage() {
         UpdateDeviceCounts();
         RenderDeviceRows();
     }
+    else {
+        CurrentPageInput.value = String(GridState.CurrentPage);
+    }
 }
 
 export function PageDown() {
@@ -216,7 +215,7 @@ export function RefreshGrid() {
     xhr.onerror = () => {
         ShowModal("Request Failure", "Failed to retrieve device data.  Please refresh your connection or contact support.");
     };
-    xhr.onload = (e) => {
+    xhr.onload = () => {
         if (xhr.status == 200) {
             var devices = JSON.parse(xhr.responseText) as Device[];
             if (devices.length == 0) {

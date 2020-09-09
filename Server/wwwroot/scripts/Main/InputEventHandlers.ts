@@ -40,9 +40,10 @@ function addGridPaginationHandlers() {
         if (changePageTimeout > 0) {
             window.clearTimeout(changePageTimeout);
         }
+        
         changePageTimeout = window.setTimeout(() => {
             DataGrid.GoToCurrentPage();
-        }, 2000);
+        }, 1500);
     });
 }
 
