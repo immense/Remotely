@@ -66,13 +66,13 @@ function applyMessageHandlers(hubConnection) {
     });
 
     hubConnection.on("DeviceCameOnline", (device:Device) => {
-        DataGrid.AddOrUpdateDevice(device);
+        DataGrid.AddOrUpdateDevice(device, true);
     });
     hubConnection.on("DeviceWentOffline", (device: Device) => {
-        DataGrid.AddOrUpdateDevice(device);
+        DataGrid.AddOrUpdateDevice(device, true);
     });
     hubConnection.on("DeviceHeartbeat", (device: Device) => {
-        DataGrid.AddOrUpdateDevice(device);
+        DataGrid.AddOrUpdateDevice(device, true);
     });
 
     hubConnection.on("RefreshDeviceList", () => {

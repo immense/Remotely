@@ -20,6 +20,7 @@ namespace Remotely.Desktop.Win
 {
     public class Program
 	{
+        public static ManualResetEvent AppExitEvent { get; } = new ManualResetEvent(false);
         public static Form BackgroundForm { get; private set; }
         private static CasterSocket CasterSocket { get; set; }
         private static Conductor Conductor { get; set; }
@@ -71,7 +72,16 @@ namespace Remotely.Desktop.Win
                     StartUiThreads(() => new MainWindow());
                 }
 
-                Thread.Sleep(Timeout.Infinite);
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    App.Current.Exit += (sender, exitArgs) =>
+                    {
+                        AppExitEvent.Set();
+                    };
+                });
+
+
+                AppExitEvent.WaitOne(Timeout.Infinite);
             }
             catch (Exception ex)
             {
