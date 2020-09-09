@@ -20,8 +20,7 @@ namespace Remotely.Desktop.Win.Services
             await casterSocket.DisconnectAllViewers();
             System.Windows.Forms.Application.Exit();
             App.Current.Shutdown();
-            // TODO: Still needed?
-            //Environment.Exit(0);
+            Environment.Exit(0);
         }
     }
 }

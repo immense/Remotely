@@ -104,9 +104,9 @@ export function RenderDeviceRows() {
     var currentPageDevices = FilteredDevices.slice(startCurrentDevices, endCurrentDevices);
 
     for (var i = 0; i < currentPageDevices.length; i++) {
+        let device = currentPageDevices[i];
+        let recordRow = document.getElementById(device.ID) as HTMLTableRowElement;
 
-        var device = currentPageDevices[i];
-        var recordRow = document.getElementById(device.ID) as HTMLTableRowElement;
         if (recordRow == null) {
             recordRow = document.createElement("tr");
             recordRow.classList.add("record-row");
@@ -125,9 +125,13 @@ export function RenderDeviceRows() {
         }
 
         recordRow.innerHTML = `
-                    <td>${String(device.IsOnline)
-                .replace("true", "<span class='fa fa-check-circle'></span>")
-                .replace("false", "<span class='fa fa-times'></span>")}</td>
+                    <td>
+                        ${
+                            device.IsOnline ?
+                                "<span class='fa fa-check-circle'></span>" :
+                                "<span class='fa fa-times'></span>"
+                        }
+                    </td>
                     <td>${device.DeviceName}</td>
                     <td>${device.Alias || ""}</td>
                     <td>${device.CurrentUser}</td>
