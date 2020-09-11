@@ -17,9 +17,9 @@ Subreddit: https://www.reddit.com/r/remotely_app/
 ## Build Instructions (GitHub)
 GitHub Actions allows you to build and deploy Remotely for free from their cloud servers.  The definitions for the build processes are located in `/.github/workflows/` folder.
 
-After forking the repo, it's recommended that you create a `release` branch. Then you'll need to create a few repository secrets that are specific to your server, then uncomment the deploy section.  Afterward, every change to your release branch will trigger and automatic build and deploy.
+After forking the repo, it's recommended that you use the `release` branch to deploy the server.  The deployment sections are uncommented in `release`, but they are commented out and won't run in `master`.
 
-More info coming soon.
+Refer to the instructions in the workflow YML files.
 
 ## Build Instructions (Windows 10)  
 The following steps will configure your Windows 10 machine for building the Remotely server and clients.
