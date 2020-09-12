@@ -60,10 +60,11 @@
 name: Deploy To IIS
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+ # Uncomment these for automatic deployment.
+ # push:
+ #   branches: [ master ]
+ # pull_request:
+ #   branches: [ master ]
   workflow_dispatch:
 
 jobs:
