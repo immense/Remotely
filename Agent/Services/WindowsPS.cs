@@ -47,20 +47,18 @@ namespace Remotely.Agent.Services
         private string StandardOut { get; set; }
         public static WindowsPS GetCurrent(string connectionID)
         {
-            if (Sessions.ContainsKey(connectionID))
+            if (Sessions.TryGetValue(connectionID, out var session))
             {
-                var winPS = Sessions[connectionID];
-                winPS.ProcessIdleTimeout.Stop();
-                winPS.ProcessIdleTimeout.Start();
-                return winPS;
+                session.ProcessIdleTimeout.Stop();
+                session.ProcessIdleTimeout.Start();
+                return session;
             }
             else
             {
-                var winPS = Program.Services.GetRequiredService<WindowsPS>();
-
-                winPS.ConnectionID = connectionID;
-                Sessions.AddOrUpdate(connectionID, winPS, (id, w) => winPS);
-                return winPS;
+                session = Program.Services.GetRequiredService<WindowsPS>();
+                session.ConnectionID = connectionID;
+                Sessions.AddOrUpdate(connectionID, session, (id, b) => session);
+                return session;
             }
         }
 
