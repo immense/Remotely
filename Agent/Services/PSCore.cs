@@ -38,19 +38,18 @@ namespace Remotely.Agent.Services
 
         public static PSCore GetCurrent(string connectionID)
         {
-            if (Sessions.ContainsKey(connectionID))
+            if (Sessions.TryGetValue(connectionID, out var session))
             {
-                var psCore = Sessions[connectionID];
-                psCore.ProcessIdleTimeout.Stop();
-                psCore.ProcessIdleTimeout.Start();
-                return psCore;
+                session.ProcessIdleTimeout.Stop();
+                session.ProcessIdleTimeout.Start();
+                return session;
             }
             else
             {
-                var psCore = Program.Services.GetRequiredService<PSCore>();
-                psCore.ConnectionID = connectionID;
-                Sessions.AddOrUpdate(connectionID, psCore, (id, p) => psCore);
-                return psCore;
+                session = Program.Services.GetRequiredService<PSCore>();
+                session.ConnectionID = connectionID;
+                Sessions.AddOrUpdate(connectionID, session, (id, b) => session);
+                return session;
             }
         }
 

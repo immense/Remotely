@@ -48,19 +48,18 @@ namespace Remotely.Agent.Services
         private string StandardOut { get; set; }
         public static CMD GetCurrent(string connectionID)
         {
-            if (Sessions.ContainsKey(connectionID))
+            if (Sessions.TryGetValue(connectionID, out var session))
             {
-                var cmd = Sessions[connectionID];
-                cmd.ProcessIdleTimeout.Stop();
-                cmd.ProcessIdleTimeout.Start();
-                return cmd;
+                session.ProcessIdleTimeout.Stop();
+                session.ProcessIdleTimeout.Start();
+                return session;
             }
             else
             {
-                var cmd = Program.Services.GetRequiredService<CMD>();
-                cmd.ConnectionID = connectionID;
-                Sessions.AddOrUpdate(connectionID, cmd, (id, c) => cmd);
-                return cmd;
+                session = Program.Services.GetRequiredService<CMD>();
+                session.ConnectionID = connectionID;
+                Sessions.AddOrUpdate(connectionID, session, (id, b) => session);
+                return session;
             }
         }
 

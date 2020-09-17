@@ -47,19 +47,18 @@ namespace Remotely.Agent.Services
         private string StandardOut { get; set; }
         public static Bash GetCurrent(string connectionID)
         {
-            if (Sessions.ContainsKey(connectionID))
+            if (Sessions.TryGetValue(connectionID, out var session))
             {
-                var bash = Sessions[connectionID];
-                bash.ProcessIdleTimeout.Stop();
-                bash.ProcessIdleTimeout.Start();
-                return bash;
+                session.ProcessIdleTimeout.Stop();
+                session.ProcessIdleTimeout.Start();
+                return session;
             }
             else
             {
-                var bash = Program.Services.GetRequiredService<Bash>();
-                bash.ConnectionID = connectionID;
-                Sessions.AddOrUpdate(connectionID, bash, (id, b) => bash);
-                return bash;
+                session = Program.Services.GetRequiredService<Bash>();
+                session.ConnectionID = connectionID;
+                Sessions.AddOrUpdate(connectionID, session, (id, b) => session);
+                return session;
             }
         }
 
