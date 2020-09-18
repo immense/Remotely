@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Remotely.Server.Attributes;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
+using Remotely.Shared.Models.RemoteControlDtos;
 
 namespace Remotely.Server.Hubs
 {
@@ -84,14 +85,7 @@ namespace Remotely.Server.Hubs
                 Context.Items["ScreenCasterID"] = value;
             }
         }
-        public Task CtrlAltDel()
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("CtrlAltDel", Context.ConnectionId);
-        }
-        public Task GetWindowsSessions()
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("GetWindowsSessions", Context.ConnectionId);
-        }
+  
         public Task ChangeWindowsSession(int sessionID)
         {
             if (SessionInfo?.Mode == RemoteControlMode.Unattended)
@@ -105,44 +99,10 @@ namespace Remotely.Server.Hubs
             }
             return Task.CompletedTask;
         }
-        public Task KeyDown(string key)
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("KeyDown", key, Context.ConnectionId);
-        }
 
-        public Task KeyPress(string key)
+        public Task SendDtoToClient(byte[] baseDto)
         {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("KeyPress", key, Context.ConnectionId);
-        }
-
-        public Task KeyUp(string key)
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("KeyUp", key, Context.ConnectionId);
-        }
-
-        public Task LongPress()
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("LongPress", Context.ConnectionId);
-        }
-
-        public Task MouseDown(int button, double percentX, double percentY)
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("MouseDown", button, percentX, percentY, Context.ConnectionId);
-        }
-
-        public Task MouseMove(double percentX, double percentY)
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("MouseMove", percentX, percentY, Context.ConnectionId);
-        }
-
-        public Task MouseUp(int button, double percentX, double percentY)
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("MouseUp", button, percentX, percentY, Context.ConnectionId);
-        }
-
-        public Task MouseWheel(double deltaX, double deltaY)
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("MouseWheel", deltaX, deltaY, Context.ConnectionId);
+            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("SendDtoToClient", baseDto, Context.ConnectionId);
         }
 
         public override Task OnConnectedAsync()
@@ -158,44 +118,13 @@ namespace Remotely.Server.Hubs
             }
 
             return base.OnDisconnectedAsync(exception);
-        }
-
-        public Task SelectScreen(string displayName)
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("SelectScreen", displayName, Context.ConnectionId);
-        }
-
-        public Task SendAutoQualityAdjust(bool isOn)
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("AutoQualityAdjust", isOn, Context.ConnectionId);
-        }
-
-        public Task SendClipboardTransfer(string transferText, bool typeText)
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("ClipboardTransfer", transferText, typeText, Context.ConnectionId);
-        }
-        public async Task SendFile(byte[] buffer, string fileName, string messageId, bool endOfFile, bool startOfFile)
-        {
-            await CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("ReceiveFile",
-                buffer,
-                fileName,
-                messageId,
-                endOfFile,
-                startOfFile);
-        }
-        public Task SendFrameReceived()
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("FrameReceived", Context.ConnectionId);
-        }
+        }      
+       
         public Task SendIceCandidateToAgent(string candidate, int sdpMlineIndex, string sdpMid)
         {
             return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("ReceiveIceCandidate", candidate, sdpMlineIndex, sdpMid, Context.ConnectionId);
         }
 
-        public Task SendQualityChange(int qualityLevel)
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("QualityChange", qualityLevel, Context.ConnectionId);
-        }
         public Task SendRtcAnswerToAgent(string sdp)
         {
             return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("ReceiveRtcAnswer", sdp, Context.ConnectionId);
@@ -282,44 +211,6 @@ namespace Remotely.Server.Hubs
                 return CasterHubContext.Clients.Client(screenCasterID).SendAsync("RequestScreenCast", Context.ConnectionId, requesterName, AppConfig.RemoteControlNotifyUser);
             }
         }
-        public Task SendSetKeyStatesUp()
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("SetKeyStatesUp", Context.ConnectionId);
-        }
-
-        public Task SendSharedFileIDs(List<string> fileIDs)
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("SharedFileIDs", fileIDs);
-        }
-        public Task SendToggleAudio(bool toggleOn)
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("ToggleAudio", toggleOn, Context.ConnectionId);
-        }
-        public Task SendToggleBlockInput(bool toggleOn)
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("ToggleBlockInput", toggleOn, Context.ConnectionId);
-        }
-        public Task SendToggleWebRtcVideo(bool toggleOn)
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("ToggleWebRtcVideo", toggleOn, Context.ConnectionId);
-        }
-
-        public Task Tap(double percentX, double percentY)
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("Tap", percentX, percentY, Context.ConnectionId);
-        }
-
-        public Task TouchDown()
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("TouchDown", Context.ConnectionId);
-        }
-        public Task TouchMove(double moveX, double moveY)
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("TouchMove", moveX, moveY, Context.ConnectionId);
-        }
-        public Task TouchUp()
-        {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("TouchUp", Context.ConnectionId);
-        }
+ 
     }
 }

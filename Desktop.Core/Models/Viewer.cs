@@ -133,6 +133,8 @@ namespace Remotely.Desktop.Core.Models
                 Logger.Write(ex);
             }
         }
+
+        // TODO: SendDtoToBrowser.
         public async Task SendAudioSample(byte[] audioSample)
         {
             await SendToViewer(() => RtcSession.SendAudioSample(audioSample),
@@ -144,6 +146,11 @@ namespace Remotely.Desktop.Core.Models
             await SendToViewer(() => RtcSession.SendClipboardText(clipboardText),
                 () => CasterSocket.SendClipboardText(clipboardText, ViewerConnectionID));
         }
+        public async Task SendCtrlAltDel()
+        {
+            await CasterSocket.SendCtrlAltDel();
+        }
+
         public async Task SendCursorChange(CursorInfo cursorInfo)
         {
             await SendToViewer(() => RtcSession.SendCursorChange(cursorInfo),
