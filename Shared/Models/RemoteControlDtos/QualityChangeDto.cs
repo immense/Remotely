@@ -13,6 +13,6 @@ namespace Remotely.Shared.Models.RemoteControlDtos
         public int QualityLevel { get; set; }
 
         [DataMember(Name = "DtoType")]
-        public new BinaryDtoType DtoType { get; } = BinaryDtoType.QualityChange;
+        public new BaseDtoType DtoType { get; } = BaseDtoType.QualityChange;
     }
 }

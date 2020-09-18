@@ -13,6 +13,6 @@ namespace Remotely.Shared.Models.RemoteControlDtos
         public bool IsOn { get; set; }
 
         [DataMember(Name = "DtoType")]
-        public new BinaryDtoType DtoType { get; } = BinaryDtoType.AutoQualityAdjust;
+        public new BaseDtoType DtoType { get; } = BaseDtoType.AutoQualityAdjust;
     }
 }

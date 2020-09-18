@@ -13,6 +13,6 @@ namespace Remotely.Shared.Models.RemoteControlDtos
         public string Key { get; set; }
 
         [DataMember(Name = "DtoType")]
-        public new BinaryDtoType DtoType { get; } = BinaryDtoType.KeyDown;
+        public new BaseDtoType DtoType { get; } = BaseDtoType.KeyDown;
     }
 }

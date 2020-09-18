@@ -1,6 +1,5 @@
 import * as UI from "./UI.js";
 import { MainViewer } from "./Main.js";
-import { Sound } from "../Shared/Sound.js";
 import { RemoteControlMode } from "../Shared/Enums/RemoteControlMode.js";
 import { GenericDto } from "./Dtos.js";
 import { ShowMessage } from "../Shared/UI.js";
@@ -72,6 +71,9 @@ export class ViewerHubConnection {
         }
     }
     ApplyMessageHandlers(hubConnection) {
+        hubConnection.on("SendDtoToBrowser", (dto) => {
+            MainViewer.DtoMessageHandler.ParseBinaryMessage(dto);
+        });
         hubConnection.on("ClipboardTextChanged", (clipboardText) => {
             MainViewer.ClipboardWatcher.SetClipboardText(clipboardText);
             ShowMessage("Clipboard updated.");
@@ -100,9 +102,6 @@ export class ViewerHubConnection {
             else {
                 this.PartialCaptureFrames.push(buffer);
             }
-        });
-        hubConnection.on("AudioSample", (buffer) => {
-            Sound.Play(buffer);
         });
         hubConnection.on("ConnectionFailed", () => {
             UI.ConnectButton.removeAttribute("disabled");

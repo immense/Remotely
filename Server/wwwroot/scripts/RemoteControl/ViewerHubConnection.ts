@@ -9,6 +9,7 @@ import { ShowMessage } from "../Shared/UI.js";
 import { BaseDto } from "./BaseDto.js";
 import { WindowsSession } from "../Shared/Models/WindowsSession.js";
 import { BaseDtoType } from "../Shared/Enums/BaseDtoType.js";
+import { DtoMessageHandler } from "./DtoMessageHandler.js";
 
 var signalR = window["signalR"];
 
@@ -95,6 +96,9 @@ export class ViewerHubConnection {
     }
 
     private ApplyMessageHandlers(hubConnection) {
+        hubConnection.on("SendDtoToBrowser", (dto: ArrayBuffer) => {
+            MainViewer.DtoMessageHandler.ParseBinaryMessage(dto);
+        });
         hubConnection.on("ClipboardTextChanged", (clipboardText: string) => {
             MainViewer.ClipboardWatcher.SetClipboardText(clipboardText);
             ShowMessage("Clipboard updated.");
@@ -131,9 +135,6 @@ export class ViewerHubConnection {
             else {
                 this.PartialCaptureFrames.push(buffer);
             }
-        });
-        hubConnection.on("AudioSample", (buffer: Uint8Array) => {
-            Sound.Play(buffer);
         });
         hubConnection.on("ConnectionFailed", () => {
             UI.ConnectButton.removeAttribute("disabled");

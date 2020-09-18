@@ -48,18 +48,18 @@ namespace Remotely.Desktop.Core.Services
 
                 switch (baseDto.DtoType)
                 {
-                    case BinaryDtoType.MouseMove:
-                    case BinaryDtoType.MouseDown:
-                    case BinaryDtoType.MouseUp:
-                    case BinaryDtoType.Tap:
-                    case BinaryDtoType.MouseWheel:
-                    case BinaryDtoType.KeyDown:
-                    case BinaryDtoType.KeyUp:
-                    case BinaryDtoType.CtrlAltDel:
-                    case BinaryDtoType.ToggleBlockInput:
-                    case BinaryDtoType.ClipboardTransfer:
-                    case BinaryDtoType.KeyPress:
-                    case BinaryDtoType.SetKeyStatesUp:
+                    case BaseDtoType.MouseMove:
+                    case BaseDtoType.MouseDown:
+                    case BaseDtoType.MouseUp:
+                    case BaseDtoType.Tap:
+                    case BaseDtoType.MouseWheel:
+                    case BaseDtoType.KeyDown:
+                    case BaseDtoType.KeyUp:
+                    case BaseDtoType.CtrlAltDel:
+                    case BaseDtoType.ToggleBlockInput:
+                    case BaseDtoType.ClipboardTransfer:
+                    case BaseDtoType.KeyPress:
+                    case BaseDtoType.SetKeyStatesUp:
                         {
                             if (!Viewer.HasControl)
                             {
@@ -73,64 +73,64 @@ namespace Remotely.Desktop.Core.Services
 
                 switch (baseDto.DtoType)
                 {
-                    case BinaryDtoType.SelectScreen:
+                    case BaseDtoType.SelectScreen:
                         SelectScreen(message);
                         break;
-                    case BinaryDtoType.MouseMove:
+                    case BaseDtoType.MouseMove:
                         MouseMove(message);
                         break;
-                    case BinaryDtoType.MouseDown:
+                    case BaseDtoType.MouseDown:
                         MouseDown(message);
                         break;
-                    case BinaryDtoType.MouseUp:
+                    case BaseDtoType.MouseUp:
                         MouseUp(message);
                         break;
-                    case BinaryDtoType.Tap:
+                    case BaseDtoType.Tap:
                         Tap(message);
                         break;
-                    case BinaryDtoType.MouseWheel:
+                    case BaseDtoType.MouseWheel:
                         MouseWheel(message);
                         break;
-                    case BinaryDtoType.KeyDown:
+                    case BaseDtoType.KeyDown:
                         KeyDown(message);
                         break;
-                    case BinaryDtoType.KeyUp:
+                    case BaseDtoType.KeyUp:
                         KeyUp(message);
                         break;
-                    case BinaryDtoType.CtrlAltDel:
+                    case BaseDtoType.CtrlAltDel:
                         await Viewer.SendCtrlAltDel();
                         break;
-                    case BinaryDtoType.AutoQualityAdjust:
+                    case BaseDtoType.AutoQualityAdjust:
                         SetAutoQualityAdjust(message);
                         break;
-                    case BinaryDtoType.ToggleAudio:
+                    case BaseDtoType.ToggleAudio:
                         ToggleAudio(message);
                         break;
-                    case BinaryDtoType.ToggleBlockInput:
+                    case BaseDtoType.ToggleBlockInput:
                         ToggleBlockInput(message);
                         break;
-                    case BinaryDtoType.ToggleWebRtcVideo:
+                    case BaseDtoType.ToggleWebRtcVideo:
                         ToggleWebRtcVideo(message);
                         break;
-                    case BinaryDtoType.ClipboardTransfer:
+                    case BaseDtoType.ClipboardTransfer:
                         await ClipboardTransfer(message);
                         break;
-                    case BinaryDtoType.KeyPress:
+                    case BaseDtoType.KeyPress:
                         await KeyPress(message);
                         break;
-                    case BinaryDtoType.QualityChange:
+                    case BaseDtoType.QualityChange:
                         QualityChange(message);
                         break;
-                    case BinaryDtoType.File:
+                    case BaseDtoType.File:
                         await DownloadFile(message);
                         break;
-                    case BinaryDtoType.WindowsSessions:
+                    case BaseDtoType.WindowsSessions:
                         await GetWindowsSessions();
                         break;
-                    case BinaryDtoType.SetKeyStatesUp:
+                    case BaseDtoType.SetKeyStatesUp:
                         SetKeyStatesUp();
                         break;
-                    case BinaryDtoType.FrameReceived:
+                    case BaseDtoType.FrameReceived:
                         HandleFrameReceived();
                         break;
                     default:

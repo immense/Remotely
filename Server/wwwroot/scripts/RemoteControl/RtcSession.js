@@ -39,7 +39,7 @@ export class RtcSession {
             };
             this.DataChannel.onmessage = async (ev) => {
                 var data = ev.data;
-                MainViewer.RtcMessageHandler.ParseBinaryMessage(data);
+                MainViewer.DtoMessageHandler.ParseBinaryMessage(data);
             };
             this.DataChannel.onopen = (ev) => {
                 console.log("Data channel opened.");

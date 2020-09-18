@@ -7,7 +7,7 @@ namespace Remotely.Shared.Models.RemoteControlDtos
     public class CaptureFrameDto : BaseDto
     {
         [DataMember(Name = "DtoType")]
-        public new BinaryDtoType DtoType { get; } = BinaryDtoType.CaptureFrame;
+        public new BaseDtoType DtoType { get; } = BaseDtoType.CaptureFrame;
 
         [DataMember(Name = "EndOfFrame")]
         public bool EndOfFrame { get; set; }

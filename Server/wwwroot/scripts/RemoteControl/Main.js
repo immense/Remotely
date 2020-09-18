@@ -13,7 +13,7 @@ export const MainViewer = {
     ClipboardWatcher: new ClipboardWatcher(),
     MessageSender: new MessageSender(),
     ViewerHubConnection: new ViewerHubConnection(),
-    RtcMessageHandler: new DtoMessageHandler(),
+    DtoMessageHandler: new DtoMessageHandler(),
     RtcSession: new RtcSession(),
     SessionRecorder: new SessionRecorder(),
     ClientID: queryString["clientID"] ? decodeURIComponent(queryString["clientID"]) : "",

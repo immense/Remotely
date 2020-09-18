@@ -26,6 +26,6 @@ namespace Remotely.Shared.Models.RemoteControlDtos
         public bool StartOfFile { get; set; }
 
         [DataMember(Name = "DtoType")]
-        public new BinaryDtoType DtoType { get; } = BinaryDtoType.File;
+        public new BaseDtoType DtoType { get; } = BaseDtoType.File;
     }
 }

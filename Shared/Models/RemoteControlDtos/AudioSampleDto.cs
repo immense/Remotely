@@ -19,7 +19,7 @@ namespace Remotely.Shared.Models.RemoteControlDtos
 
 
         [DataMember(Name = "DtoType")]
-        public new BinaryDtoType DtoType { get; } = BinaryDtoType.AudioSample;
+        public new BaseDtoType DtoType { get; } = BaseDtoType.AudioSample;
 
     }
 }

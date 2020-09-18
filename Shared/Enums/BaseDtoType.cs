@@ -3,7 +3,7 @@
 namespace Remotely.Shared.Enums
 {
     [DataContract]
-    public enum BinaryDtoType
+    public enum BaseDtoType
     {
         [EnumMember(Value = "CaptureFrame")]
         CaptureFrame = 0,

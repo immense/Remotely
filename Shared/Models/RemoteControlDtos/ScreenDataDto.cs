@@ -20,7 +20,7 @@ namespace Remotely.Shared.Models.RemoteControlDtos
 
 
         [DataMember(Name = "DtoType")]
-        public new BinaryDtoType DtoType { get; } = BinaryDtoType.ScreenData;
+        public new BaseDtoType DtoType { get; } = BaseDtoType.ScreenData;
 
         [DataMember(Name = "SelectedScreen")]
         public string SelectedScreen { get; }

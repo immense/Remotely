@@ -144,9 +144,9 @@ namespace Remotely.Server.Hubs
             return Task.CompletedTask;
         }
 
-        public Task SendAudioSample(byte[] buffer, string viewerID)
+        public Task SendDtoToBrowser(byte[] dto, string viewerId)
         {
-            return ViewerHubContext.Clients.Client(viewerID).SendAsync("AudioSample", buffer);
+            return ViewerHubContext.Clients.Client(viewerId).SendAsync("SendDtoToBrowser", dto);
         }
 
         public Task SendClipboardText(string clipboardText, string viewerID)

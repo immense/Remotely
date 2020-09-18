@@ -7,6 +7,6 @@ namespace Remotely.Shared.Models.RemoteControlDtos
     public class BaseDto
     {
         [DataMember(Name = "DtoType")]
-        public BinaryDtoType DtoType { get; set; }
+        public BaseDtoType DtoType { get; set; }
     }
 }
