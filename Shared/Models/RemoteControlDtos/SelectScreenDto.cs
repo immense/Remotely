@@ -13,6 +13,6 @@ namespace Remotely.Shared.Models.RemoteControlDtos
         public string DisplayName { get; set; }
 
         [DataMember(Name = "DtoType")]
-        public new BinaryDtoType DtoType { get; } = BinaryDtoType.SelectScreen;
+        public new BaseDtoType DtoType { get; } = BaseDtoType.SelectScreen;
     }
 }

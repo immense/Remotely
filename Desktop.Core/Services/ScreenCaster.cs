@@ -68,7 +68,7 @@ namespace Remotely.Desktop.Core.Services
                 if (EnvironmentHelper.IsWindows)
                 {
                     Win32Interop.SwitchToInputDesktop();
-                    await viewer.InitializeWebRtc();
+                    //await viewer.InitializeWebRtc();
                 }
 
                 await viewer.SendMachineName(Environment.MachineName);

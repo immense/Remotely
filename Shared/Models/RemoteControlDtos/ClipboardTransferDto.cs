@@ -18,6 +18,6 @@ namespace Remotely.Shared.Models.RemoteControlDtos
 
 
         [DataMember(Name = "DtoType")]
-        public new BinaryDtoType DtoType { get; } = BinaryDtoType.ClipboardTransfer;
+        public new BaseDtoType DtoType { get; } = BaseDtoType.ClipboardTransfer;
     }
 }

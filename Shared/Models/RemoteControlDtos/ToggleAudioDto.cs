@@ -13,6 +13,6 @@ namespace Remotely.Shared.Models.RemoteControlDtos
         public bool ToggleOn { get; set; }
 
         [DataMember(Name = "DtoType")]
-        public new BinaryDtoType DtoType { get; } = BinaryDtoType.ToggleAudio;
+        public new BaseDtoType DtoType { get; } = BaseDtoType.ToggleAudio;
     }
 }

@@ -15,7 +15,7 @@ namespace Remotely.Shared.Models.RemoteControlDtos
         }
 
         [DataMember(Name = "DtoType")]
-        public new BinaryDtoType DtoType { get; } = BinaryDtoType.MachineName;
+        public new BaseDtoType DtoType { get; } = BaseDtoType.MachineName;
 
         [DataMember(Name = "MachineName")]
         public string MachineName { get; }

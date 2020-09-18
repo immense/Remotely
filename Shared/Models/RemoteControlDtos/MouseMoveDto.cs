@@ -11,7 +11,7 @@ namespace Remotely.Shared.Models.RemoteControlDtos
     {
 
         [DataMember(Name = "DtoType")]
-        public new BinaryDtoType DtoType { get; set; } = BinaryDtoType.MouseMove;
+        public new BaseDtoType DtoType { get; set; } = BaseDtoType.MouseMove;
 
         [DataMember(Name = "PercentX")]
         public double PercentX { get; set; }

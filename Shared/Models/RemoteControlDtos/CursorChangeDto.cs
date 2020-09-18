@@ -22,7 +22,7 @@ namespace Remotely.Shared.Models.RemoteControlDtos
         public string CssOverride { get; }
 
         [DataMember(Name = "DtoType")]
-        public new BinaryDtoType DtoType { get; } = BinaryDtoType.CursorChange;
+        public new BaseDtoType DtoType { get; } = BaseDtoType.CursorChange;
 
         [DataMember(Name = "HotSpotX")]
         public int HotSpotX { get; }
