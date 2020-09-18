@@ -2,10 +2,13 @@ import * as UI from "./UI.js";
 import { MainViewer } from "./Main.js";
 import { Sound } from "../Shared/Sound.js";
 import { RemoteControlMode } from "../Shared/Enums/RemoteControlMode.js";
+import { GenericDto } from "./Dtos.js";
 import { ShowMessage } from "../Shared/UI.js";
+import { BaseDtoType } from "../Shared/Enums/BaseDtoType.js";
 var signalR = window["signalR"];
 export class ViewerHubConnection {
     constructor() {
+        this.MessagePack = window['MessagePack'];
         this.PartialCaptureFrames = [];
     }
     Connect() {
@@ -29,15 +32,13 @@ export class ViewerHubConnection {
         });
         MainViewer.ClipboardWatcher.WatchClipboard();
     }
-    GetWindowsSessions() {
-        if (MainViewer.Mode == RemoteControlMode.Unattended) {
-            this.Connection.invoke("GetWindowsSessions");
-        }
-    }
     ChangeWindowsSession(sessionID) {
         if (MainViewer.Mode == RemoteControlMode.Unattended) {
             this.Connection.invoke("ChangeWindowsSession", sessionID);
         }
+    }
+    SendDtoToClient(dto) {
+        return this.Connection.invoke("SendDtoToClient", this.MessagePack.encode(dto));
     }
     SendIceCandidate(candidate) {
         if (candidate) {
@@ -52,79 +53,6 @@ export class ViewerHubConnection {
     }
     SendScreenCastRequestToDevice() {
         this.Connection.invoke("SendScreenCastRequestToDevice", MainViewer.ClientID, MainViewer.RequesterName, MainViewer.Mode, MainViewer.Otp);
-    }
-    async SendFile(buffer, fileName, messageId, endOfFile, startOfFile) {
-        await this.Connection.invoke("SendFile", buffer, fileName, messageId, endOfFile, startOfFile);
-    }
-    SendFrameReceived() {
-        this.Connection.invoke("SendFrameReceived");
-    }
-    SendSelectScreen(displayName) {
-        this.Connection.invoke("SelectScreen", displayName);
-    }
-    SendMouseMove(percentX, percentY) {
-        this.Connection.invoke("MouseMove", percentX, percentY);
-    }
-    SendMouseDown(button, percentX, percentY) {
-        this.Connection.invoke("MouseDown", button, percentX, percentY);
-    }
-    SendMouseUp(button, percentX, percentY) {
-        this.Connection.invoke("MouseUp", button, percentX, percentY);
-    }
-    SendTouchDown() {
-        this.Connection.invoke("TouchDown");
-    }
-    SendLongPress() {
-        this.Connection.invoke("LongPress");
-    }
-    SendTouchMove(moveX, moveY) {
-        this.Connection.invoke("TouchMove", moveX, moveY);
-    }
-    SendTouchUp() {
-        this.Connection.invoke("TouchUp");
-    }
-    SendTap(percentX, percentY) {
-        this.Connection.invoke("Tap", percentX, percentY);
-    }
-    SendMouseWheel(deltaX, deltaY) {
-        this.Connection.invoke("MouseWheel", deltaX, deltaY);
-    }
-    SendKeyDown(key) {
-        this.Connection.invoke("KeyDown", key);
-    }
-    SendKeyUp(key) {
-        this.Connection.invoke("KeyUp", key);
-    }
-    SendKeyPress(key) {
-        this.Connection.invoke("KeyPress", key);
-    }
-    SendSetKeyStatesUp() {
-        this.Connection.invoke("SendSetKeyStatesUp");
-    }
-    SendCtrlAltDel() {
-        this.Connection.invoke("CtrlAltDel");
-    }
-    SendSharedFileIDs(fileIDs) {
-        this.Connection.invoke("SendSharedFileIDs", JSON.parse(fileIDs));
-    }
-    SendQualityChange(qualityLevel) {
-        this.Connection.invoke("SendQualityChange", qualityLevel);
-    }
-    SendAutoQualityAdjust(isOn) {
-        this.Connection.invoke("SendAutoQualityAdjust", isOn);
-    }
-    SendToggleAudio(toggleOn) {
-        this.Connection.invoke("SendToggleAudio", toggleOn);
-    }
-    ;
-    SendToggleBlockInput(toggleOn) {
-        this.Connection.invoke("SendToggleBlockInput", toggleOn);
-    }
-    SendToggleWebRtcVideo(toggleOn) {
-        this.Connection.invoke("SendToggleWebRtcVideo", toggleOn);
-    }
-    SendClipboardTransfer(text, typeText) {
-        this.Connection.invoke("SendClipboardTransfer", text, typeText);
     }
     ToggleConnectUI(shown) {
         if (shown) {
@@ -159,7 +87,7 @@ export class ViewerHubConnection {
                 UI.QualitySlider.value = String(imageQuality);
             }
             if (endOfFrame) {
-                this.SendFrameReceived();
+                this.SendDtoToClient(new GenericDto(BaseDtoType.FrameReceived));
                 var url = window.URL.createObjectURL(new Blob(this.PartialCaptureFrames));
                 var img = document.createElement("img");
                 img.onload = () => {

@@ -113,6 +113,7 @@ namespace Remotely.Desktop.Win
             serviceCollection.AddScoped<IFileTransferService, FileTransferService>();
             serviceCollection.AddSingleton<ISessionIndicator, SessionIndicatorWin>();
             serviceCollection.AddSingleton<IShutdownService, ShutdownServiceWin>();
+            serviceCollection.AddScoped<IDtoMessageHandler, DtoMessageHandler>();
 
             BackgroundForm = new Form()
             {

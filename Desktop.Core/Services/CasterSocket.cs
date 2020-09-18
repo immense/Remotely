@@ -12,31 +12,23 @@ using Microsoft.Extensions.DependencyInjection;
 using Remotely.Shared.Utilities;
 using System.Threading;
 using Remotely.Desktop.Core.Models;
+using Remotely.Shared.Models.RemoteControlDtos;
 
 namespace Remotely.Desktop.Core.Services
 {
     public class CasterSocket
     {
         public CasterSocket(
-            IKeyboardMouseInput keyboardMouseInput,
-            IScreenCaster screenCastService,
-            IAudioCapturer audioCapturer,
-            IFileTransferService fileDownloadService,
-            IClipboardService clipboardService)
+            IDtoMessageHandler messageHandler,
+            IScreenCaster screenCastService)
         {
-            KeyboardMouseInput = keyboardMouseInput;
-            AudioCapturer = audioCapturer;
+            MessageHandler = messageHandler;
             ScreenCaster = screenCastService;
-            FileDownloadService = fileDownloadService;
-            ClipboardService = clipboardService;
         }
 
         public HubConnection Connection { get; private set; }
         public bool IsConnected => Connection?.State == HubConnectionState.Connected;
-        private IAudioCapturer AudioCapturer { get; }
-        private IClipboardService ClipboardService { get; }
-        private IFileTransferService FileDownloadService { get; }
-        private IKeyboardMouseInput KeyboardMouseInput { get; }
+        private IDtoMessageHandler MessageHandler { get; }
         private IScreenCaster ScreenCaster { get; }
         public async Task<bool> Connect(string host)
         {
@@ -205,6 +197,30 @@ namespace Remotely.Desktop.Core.Services
                 return Task.CompletedTask;
             };
 
+            Connection.On("Disconnect", async (string reason) =>
+            {
+                Logger.Write($"Disconnecting caster socket.  Reason: {reason}");
+                await DisconnectAllViewers();
+            });
+
+            Connection.On("GetScreenCast", (string viewerID, string requesterName, bool notifyUser) =>
+            {
+                try
+                {
+                    ScreenCaster.BeginScreenCasting(new ScreenCastRequest()
+                    { 
+                        NotifyUser = notifyUser,
+                        ViewerID = viewerID, 
+                        RequesterName = requesterName 
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
+            });
+
+
             Connection.On("ReceiveIceCandidate", (string candidate, int sdpMlineIndex, string sdpMid, string viewerID) =>
             {
                 try
@@ -236,67 +252,6 @@ namespace Remotely.Desktop.Core.Services
                 }
             });
 
-            Connection.On("ClipboardTransfer", async (string transferText, bool typeText, string viewerID) =>
-            {
-                try
-                {
-                    if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
-                    {
-                        if (typeText)
-                        {
-                            KeyboardMouseInput.SendText(transferText, viewer);
-                        }
-                        else
-                        {
-                            await ClipboardService.SetText(transferText);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.Write(ex);
-                }
-            });
-
-            Connection.On("CtrlAltDel", async (string viewerID) =>
-            {
-                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
-                {
-                    await SendCtrlAltDel();
-                }
-            });
-
-            Connection.On("Disconnect", async (string reason) =>
-            {
-                Logger.Write($"Disconnecting caster socket.  Reason: {reason}");
-                await DisconnectAllViewers();
-            });
-
-            Connection.On("GetScreenCast", (string viewerID, string requesterName, bool notifyUser) =>
-            {
-                try
-                {
-                    ScreenCaster.BeginScreenCasting(new ScreenCastRequest()
-                    { 
-                        NotifyUser = notifyUser,
-                        ViewerID = viewerID, 
-                        RequesterName = requesterName 
-                    });
-                }
-                catch (Exception ex)
-                {
-                    Logger.Write(ex);
-                }
-            });
-
-            Connection.On("GetWindowsSessions", async (string viewerID) =>
-            {
-                if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
-                {
-                    await viewer.SendWindowsSessions();
-                }
-            });
-
             Connection.On("RequestScreenCast", (string viewerID, string requesterName, bool notifyUser) =>
             {
                 conductor.InvokeScreenCastRequested(new ScreenCastRequest() 
@@ -307,84 +262,19 @@ namespace Remotely.Desktop.Core.Services
                 });
             });
 
-            Connection.On("KeyDown", (string key, string viewerID) =>
+            Connection.On("SendDtoToClient", (byte[] baseDto, string viewerConnectionId) =>
             {
-                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
+                if (conductor.Viewers.TryGetValue(viewerConnectionId, out var viewer))
                 {
-                    KeyboardMouseInput.SendKeyDown(key, viewer);
+                    MessageHandler.ParseMessage(viewer, baseDto);
                 }
             });
 
-            Connection.On("KeyUp", (string key, string viewerID) =>
+            Connection.On("SessionID", (string sessionID) =>
             {
-                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
-                {
-                    KeyboardMouseInput.SendKeyUp(key, viewer);
-                }
+                conductor.InvokeSessionIDChanged(sessionID);
             });
 
-            Connection.On("KeyPress", async (string key, string viewerID) =>
-            {
-                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
-                {
-                    KeyboardMouseInput.SendKeyDown(key, viewer);
-                    await Task.Delay(1);
-                    KeyboardMouseInput.SendKeyUp(key, viewer);
-                }
-            });
-
-            Connection.On("MouseMove", (double percentX, double percentY, string viewerID) =>
-            {
-                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
-                {
-                    KeyboardMouseInput.SendMouseMove(percentX, percentY, viewer);
-                }
-            });
-
-            Connection.On("MouseDown", (int button, double percentX, double percentY, string viewerID) =>
-            {
-                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
-                {
-                    if (button == 0)
-                    {
-                        KeyboardMouseInput.SendLeftMouseDown(percentX, percentY, viewer);
-                    }
-                    else if (button == 2)
-                    {
-                        KeyboardMouseInput.SendRightMouseDown(percentX, percentY, viewer);
-                    }
-                }
-            });
-
-            Connection.On("MouseUp", (int button, double percentX, double percentY, string viewerID) =>
-            {
-                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
-                {
-                    if (button == 0)
-                    {
-                        KeyboardMouseInput.SendLeftMouseUp(percentX, percentY, viewer);
-                    }
-                    else if (button == 2)
-                    {
-                        KeyboardMouseInput.SendRightMouseUp(percentX, percentY, viewer);
-                    }
-                }
-            });
-
-            Connection.On("MouseWheel", (double deltaX, double deltaY, string viewerID) =>
-            {
-                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
-                {
-                    KeyboardMouseInput.SendMouseWheel(-(int)deltaY, viewer);
-                }
-            });
-            Connection.On("SetKeyStatesUp", (string viewerID) =>
-            {
-                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
-                {
-                    KeyboardMouseInput.SetKeyStatesUp();
-                }
-            });
             Connection.On("ViewerDisconnected", async (string viewerID) =>
             {
                 await Connection.SendAsync("DisconnectViewer", viewerID, false);
@@ -395,147 +285,6 @@ namespace Remotely.Desktop.Core.Services
                 }
                 conductor.InvokeViewerRemoved(viewerID);
 
-            });
-            Connection.On("FrameReceived", (string viewerID) =>
-            {
-                if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
-                {
-                    for (int i = 0; i < 5; i++)
-                    {
-                        if (viewer.PendingSentFrames.TryDequeue(out _))
-                        {
-                            break;
-                        }
-                    }
-                }
-            });
-
-            Connection.On("SelectScreen", (string displayName, string viewerID) =>
-            {
-                if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
-                {
-                    viewer.Capturer.SetSelectedScreen(displayName);
-                }
-            });
-
-            Connection.On("QualityChange", (int qualityLevel, string viewerID) =>
-            {
-                if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
-                {
-                    viewer.ImageQuality = qualityLevel;
-                }
-            });
-
-            Connection.On("AutoQualityAdjust", (bool isOn, string viewerID) =>
-            {
-                if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
-                {
-                    viewer.AutoAdjustQuality = isOn;
-                }
-            });
-
-            Connection.On("ReceiveFile", async (byte[] buffer, string fileName, string messageId, bool endOfFile, bool startOfFile) =>
-            {
-                await FileDownloadService.ReceiveFile(buffer, fileName, messageId, endOfFile, startOfFile);
-            });
-
-            Connection.On("ToggleAudio", (bool toggleOn, string viewerID) =>
-            {
-                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
-                {
-                    AudioCapturer.ToggleAudio(toggleOn);
-                }
-            });
-            Connection.On("ToggleBlockInput", (bool toggleOn, string viewerID) =>
-            {
-                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
-                {
-                    KeyboardMouseInput.ToggleBlockInput(toggleOn);
-                }
-            });
-
-            Connection.On("ToggleWebRtcVideo", (bool toggleOn, string viewerID) =>
-            {
-                if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
-                {
-                    viewer.ToggleWebRtcVideo(toggleOn);
-                }
-            });
-
-            Connection.On("TouchDown", (string viewerID) =>
-            {
-                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
-                {
-                    //User32.GetCursorPos(out var point);
-                    //Win32Interop.SendLeftMouseDown(point.X, point.Y);
-                }
-            });
-            Connection.On("LongPress", (string viewerID) =>
-            {
-                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
-                {
-                    //User32.GetCursorPos(out var point);
-                    //Win32Interop.SendRightMouseDown(point.X, point.Y);
-                    //Win32Interop.SendRightMouseUp(point.X, point.Y);
-                }
-            });
-            Connection.On("TouchMove", (double moveX, double moveY, string viewerID) =>
-            {
-                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
-                {
-                    //User32.GetCursorPos(out var point);
-                    //Win32Interop.SendMouseMove(point.X + moveX, point.Y + moveY);
-                }
-            });
-            Connection.On("TouchUp", (string viewerID) =>
-            {
-                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
-                {
-                    //User32.GetCursorPos(out var point);
-                    //Win32Interop.SendLeftMouseUp(point.X, point.Y);
-                }
-            });
-            Connection.On("Tap", (double percentX, double percentY, string viewerID) =>
-            {
-                if (conductor.Viewers.TryGetValue(viewerID, out var viewer) && viewer.HasControl)
-                {
-                    KeyboardMouseInput.SendLeftMouseDown(percentX, percentY, viewer);
-                    KeyboardMouseInput.SendLeftMouseUp(percentX, percentY, viewer);
-                }
-            });
-
-            Connection.On("SharedFileIDs", (List<string> fileIDs) =>
-            {
-                fileIDs.ForEach(id =>
-                {
-                    var url = $"{conductor.Host}/API/FileSharing/{id}";
-                    var webRequest = WebRequest.CreateHttp(url);
-                    var response = webRequest.GetResponse();
-                    var contentDisp = response.Headers["Content-Disposition"];
-                    var fileName = contentDisp
-                        .Split(";".ToCharArray())
-                        .FirstOrDefault(x => x.Trim().StartsWith("filename"))
-                        .Split("=".ToCharArray())[1];
-
-                    var legalChars = fileName.ToCharArray().Where(x => !Path.GetInvalidFileNameChars().Any(y => x == y));
-
-                    fileName = new string(legalChars.ToArray());
-
-                    var dirPath = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "RemotelySharedFiles")).FullName;
-                    var filePath = Path.Combine(dirPath, fileName);
-
-                    using (var fs = new FileStream(filePath, FileMode.Create))
-                    using (var rs = response.GetResponseStream())
-                    {
-                        rs.CopyTo(fs);
-                    }
-                    Process.Start("explorer.exe", dirPath);
-                });
-            });
-
-            Connection.On("SessionID", (string sessionID) =>
-            {
-                conductor.InvokeSessionIDChanged(sessionID);
             });
         }
     }

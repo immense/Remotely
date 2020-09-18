@@ -3,7 +3,7 @@ import { RtcSession } from "./RtcSession.js";
 import * as UI from "./UI.js";
 import { RemoteControlMode } from "../Shared/Enums/RemoteControlMode.js";
 import { ClipboardWatcher } from "./ClipboardWatcher.js";
-import { RtcMessageHandler } from "./RtcMessageHandler.js";
+import { DtoMessageHandler } from "./DtoMessageHandler.js";
 import { MessageSender } from "./MessageSender.js";
 import { SessionRecorder } from "./SessionRecorder.js";
 import { ApplyInputHandlers } from "./InputEventHandlers.js";
@@ -13,7 +13,7 @@ export const MainViewer = {
     ClipboardWatcher: new ClipboardWatcher(),
     MessageSender: new MessageSender(),
     ViewerHubConnection: new ViewerHubConnection(),
-    RtcMessageHandler: new RtcMessageHandler(),
+    RtcMessageHandler: new DtoMessageHandler(),
     RtcSession: new RtcSession(),
     SessionRecorder: new SessionRecorder(),
     ClientID: queryString["clientID"] ? decodeURIComponent(queryString["clientID"]) : "",

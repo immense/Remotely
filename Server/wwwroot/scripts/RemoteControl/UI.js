@@ -1,6 +1,6 @@
 import { MainViewer } from "./Main.js";
 import { ConvertUInt8ArrayToBase64 } from "../Shared/Utilities.js";
-import { SessionType } from "./RtcDtos.js";
+import { WindowsSessionType } from "../Shared/Enums/WindowsSessionType.js";
 export var AudioButton = document.getElementById("audioButton");
 export var MenuButton = document.getElementById("menuButton");
 export var MenuFrame = document.getElementById("menuFrame");
@@ -122,7 +122,7 @@ export function UpdateWindowsSessions(windowsSessions) {
     windowsSessions.forEach(x => {
         var sessionType = "";
         if (typeof x.Type == "number") {
-            sessionType = x.Type == SessionType.Console ? "Console" : "RDP";
+            sessionType = x.Type == WindowsSessionType.Console ? "Console" : "RDP";
         }
         else {
             sessionType = x.Type;

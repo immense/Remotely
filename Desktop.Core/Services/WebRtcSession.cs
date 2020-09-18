@@ -3,7 +3,7 @@ using Microsoft.MixedReality.WebRTC;
 using Remotely.Desktop.Core.Models;
 using Remotely.Shared.Helpers;
 using Remotely.Shared.Models;
-using Remotely.Shared.Models.RtcDtos;
+using Remotely.Shared.Models.RemoteControlDtos;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
@@ -16,7 +16,7 @@ namespace Remotely.Desktop.Core.Services
 {
     public class WebRtcSession : IDisposable
     {
-        public WebRtcSession(Viewer viewer, IRtcMessageHandler rtcMessageHandler)
+        public WebRtcSession(Viewer viewer, IDtoMessageHandler rtcMessageHandler)
         {
             Viewer = viewer;
             RtcMessageHandler = rtcMessageHandler;
@@ -40,7 +40,7 @@ namespace Remotely.Desktop.Core.Services
         private DataChannel CaptureChannel { get; set; }
         private IceServerModel[] IceServers { get; set; }
         private PeerConnection PeerSession { get; set; }
-        private IRtcMessageHandler RtcMessageHandler { get; }
+        private IDtoMessageHandler RtcMessageHandler { get; }
         private Transceiver Transceiver { get; set; }
         private ExternalVideoTrackSource VideoSource { get; set; }
         private Viewer Viewer { get; }
@@ -210,7 +210,7 @@ namespace Remotely.Desktop.Core.Services
         private async void CaptureChannel_MessageReceived(byte[] obj)
         {
             Logger.Debug($"DataChannel message received.  Size: {obj.Length}");
-            await RtcMessageHandler.ParseMessage(obj);
+            await RtcMessageHandler.ParseMessage(Viewer, obj);
         }
         private async void CaptureChannel_StateChanged()
         {

@@ -4,8 +4,11 @@ import { CursorInfo } from "../Shared/Models/CursorInfo.js";
 import { Sound } from "../Shared/Sound.js";
 import { IceServerModel } from "../Shared/Models/IceServerModel.js";
 import { RemoteControlMode } from "../Shared/Enums/RemoteControlMode.js";
-import {  WindowsSession } from "./RtcDtos.js";
+import { GenericDto } from "./Dtos.js";
 import { ShowMessage } from "../Shared/UI.js";
+import { BaseDto } from "./BaseDto.js";
+import { WindowsSession } from "../Shared/Models/WindowsSession.js";
+import { BaseDtoType } from "../Shared/Enums/BaseDtoType.js";
 
 var signalR = window["signalR"];
 
@@ -19,6 +22,7 @@ type HubConnection = {
 
 export class ViewerHubConnection {
     Connection: HubConnection;
+    MessagePack: any = window['MessagePack'];
     PartialCaptureFrames: Uint8Array[] = [];
     Connect() {
         this.Connection = new signalR.HubConnectionBuilder()
@@ -45,16 +49,16 @@ export class ViewerHubConnection {
         MainViewer.ClipboardWatcher.WatchClipboard();
     }
 
-    GetWindowsSessions() {
-        if (MainViewer.Mode == RemoteControlMode.Unattended) {
-            this.Connection.invoke("GetWindowsSessions");
-        }
-    }
     ChangeWindowsSession(sessionID: number) {
         if (MainViewer.Mode == RemoteControlMode.Unattended) {
             this.Connection.invoke("ChangeWindowsSession", sessionID);
         }
     }
+
+    SendDtoToClient(dto: BaseDto): Promise<any> {
+        return this.Connection.invoke("SendDtoToClient", this.MessagePack.encode(dto));
+    }
+
     SendIceCandidate(candidate: RTCIceCandidate) {
         if (candidate) {
             this.Connection.invoke("SendIceCandidateToAgent", candidate.candidate, candidate.sdpMLineIndex, candidate.sdpMid);
@@ -71,78 +75,7 @@ export class ViewerHubConnection {
     SendScreenCastRequestToDevice() {
         this.Connection.invoke("SendScreenCastRequestToDevice", MainViewer.ClientID, MainViewer.RequesterName, MainViewer.Mode, MainViewer.Otp);
     }
-    async SendFile(buffer: Uint8Array, fileName: string, messageId: string, endOfFile: boolean, startOfFile: boolean) {
-        await this.Connection.invoke("SendFile", buffer, fileName, messageId, endOfFile, startOfFile);
-    }
-    SendFrameReceived() {
-        this.Connection.invoke("SendFrameReceived",);
-    }
-    SendSelectScreen(displayName: string) {
-        this.Connection.invoke("SelectScreen", displayName);
-    }
-    SendMouseMove(percentX: number, percentY: number): any {
-        this.Connection.invoke("MouseMove", percentX, percentY);
-    }
-    SendMouseDown(button: number, percentX: number, percentY: number): any {
-        this.Connection.invoke("MouseDown", button, percentX, percentY);
-    }
-    SendMouseUp(button: number, percentX: number, percentY: number): any {
-        this.Connection.invoke("MouseUp", button, percentX, percentY);
-    }
-    SendTouchDown(): any {
-        this.Connection.invoke("TouchDown");
-    }
-    SendLongPress(): any {
-        this.Connection.invoke("LongPress");
-    }
-    SendTouchMove(moveX: number, moveY: number): any {
-        this.Connection.invoke("TouchMove", moveX, moveY);
-    }
-    SendTouchUp(): any {
-        this.Connection.invoke("TouchUp");
-    }
-    SendTap(percentX: number, percentY: number): any {
-        this.Connection.invoke("Tap", percentX, percentY);
-    }
-    SendMouseWheel(deltaX: number, deltaY: number): any {
-        this.Connection.invoke("MouseWheel", deltaX, deltaY);
-    }
-    SendKeyDown(key: string): any {
-        this.Connection.invoke("KeyDown", key);
-    }
-    SendKeyUp(key: string): any {
-        this.Connection.invoke("KeyUp", key);
-    }
-    SendKeyPress(key: string): any {
-        this.Connection.invoke("KeyPress", key);
-    }
-    SendSetKeyStatesUp() {
-        this.Connection.invoke("SendSetKeyStatesUp");
-    }
-    SendCtrlAltDel() {
-        this.Connection.invoke("CtrlAltDel");
-    }
-    SendSharedFileIDs(fileIDs: string): any {
-        this.Connection.invoke("SendSharedFileIDs", JSON.parse(fileIDs));
-    }
-    SendQualityChange(qualityLevel: number) {
-        this.Connection.invoke("SendQualityChange", qualityLevel);
-    }
-    SendAutoQualityAdjust(isOn: boolean) {
-        this.Connection.invoke("SendAutoQualityAdjust", isOn);
-    }
-    SendToggleAudio(toggleOn: boolean) {
-        this.Connection.invoke("SendToggleAudio", toggleOn);
-    };
-    SendToggleBlockInput(toggleOn: boolean) {
-        this.Connection.invoke("SendToggleBlockInput", toggleOn);
-    }
-    SendToggleWebRtcVideo(toggleOn: boolean) {
-        this.Connection.invoke("SendToggleWebRtcVideo", toggleOn);
-    }
-    SendClipboardTransfer(text: string, typeText: boolean) {
-        this.Connection.invoke("SendClipboardTransfer", text, typeText);
-    }
+
     ToggleConnectUI(shown: boolean) {
         if (shown) {
             UI.Screen2DContext.clearRect(0, 0, UI.ScreenViewer.width, UI.ScreenViewer.height);
@@ -160,6 +93,7 @@ export class ViewerHubConnection {
             UI.StatusMessage.innerHTML = "";
         }
     }
+
     private ApplyMessageHandlers(hubConnection) {
         hubConnection.on("ClipboardTextChanged", (clipboardText: string) => {
             MainViewer.ClipboardWatcher.SetClipboardText(clipboardText);
@@ -184,7 +118,7 @@ export class ViewerHubConnection {
             }
 
             if (endOfFrame) {
-                this.SendFrameReceived();
+                this.SendDtoToClient(new GenericDto(BaseDtoType.FrameReceived));
                 var url = window.URL.createObjectURL(new Blob(this.PartialCaptureFrames));
                 var img = document.createElement("img");
                 img.onload = () => {

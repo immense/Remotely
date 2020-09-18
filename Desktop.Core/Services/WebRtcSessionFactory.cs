@@ -14,11 +14,13 @@ namespace Remotely.Desktop.Core.Services
     public class WebRtcSessionFactory : IWebRtcSessionFactory
     {
         public WebRtcSessionFactory(CasterSocket casterSocket,
-         IKeyboardMouseInput keyboardMouseInput,
-         IAudioCapturer audioCapturer,
-         IClipboardService clipboardService,
-         IFileTransferService fileDownloadService)
+            IDtoMessageHandler messageHandler,
+            IKeyboardMouseInput keyboardMouseInput,
+            IAudioCapturer audioCapturer,
+            IClipboardService clipboardService,
+            IFileTransferService fileDownloadService)
         {
+            MessageHandler = messageHandler;
             CasterSocket = casterSocket;
             KeyboardMouseInput = keyboardMouseInput;
             AudioCapturer = audioCapturer;
@@ -26,7 +28,7 @@ namespace Remotely.Desktop.Core.Services
             FileDownloadService = fileDownloadService;
         }
         private IAudioCapturer AudioCapturer { get; }
-
+        private IDtoMessageHandler MessageHandler { get; }
         private CasterSocket CasterSocket { get; }
 
         private IClipboardService ClipboardService { get; }
@@ -37,14 +39,7 @@ namespace Remotely.Desktop.Core.Services
 
         public WebRtcSession GetNewSession(Viewer viewer)
         {
-            var messageHandler = new RtcMessageHandler(viewer,
-                CasterSocket,
-                KeyboardMouseInput,
-                AudioCapturer,
-                ClipboardService,
-                FileDownloadService);
-
-            return new WebRtcSession(viewer, messageHandler);
+            return new WebRtcSession(viewer, MessageHandler);
         }
     }
 }

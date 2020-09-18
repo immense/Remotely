@@ -110,6 +110,7 @@ namespace Remotely.Desktop.Linux
             serviceCollection.AddSingleton<ICursorIconWatcher, CursorIconWatcherLinux>();
             serviceCollection.AddSingleton<ISessionIndicator, SessionIndicatorLinux>();
             serviceCollection.AddSingleton<IShutdownService, ShutdownServiceLinux>();
+            serviceCollection.AddScoped<IDtoMessageHandler, DtoMessageHandler>();
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
         }
