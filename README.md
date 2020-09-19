@@ -25,17 +25,19 @@ Refer to the instructions in the workflow YML files.
 The following steps will configure your Windows 10 machine for building the Remotely server and clients.
 * Install Visual Studio 2019.
     * Link: https://visualstudio.microsoft.com/downloads/
-	* You only need the below Individual Components:
+	* You only need the below Individual Components for building:
 	    * .NET Core SDK (latest version).
 		* MSBuild (which auto-selects Roslyn compilers).
 		* NuGet targets and build tasks.
 		* .NET Framework 4.6.2 SDK.
 		* .NET Framework 4.6.2 targeting pack.
-* Install the latest .NET Core SDK.
-    * Link: https://dotnet.microsoft.com/download
-* Clone the git repository and open the solution in Visual Studio.
+	    * For debugging and development, you'll need all relevant workloads.
+* Install Git for Windows.
+    * Link: https://git-scm.com/downloads
+* Clone the git repository: `git clone https://github.com/lucent-sea/remotely`
 * Run Publish.ps1 in the [Utilities folder in source control](https://raw.githubusercontent.com/lucent-sea/Remotely/master/Utilities/Publish.ps1).
-    * Example: powershell -f [path]\Publish.ps1 -outdir C:\inetpub\remotely -rid win10-x64 -hostname https://mysite.mydomain.com
+    * Example: `powershell -f [path]\Publish.ps1 -outdir C:\inetpub\remotely -rid win10-x64 -hostname https://mysite.mydomain.com`
+    	* Use `-rid linux-x64` if you're going to host on Ubuntu.
     * The output folder will now contain the server, with the clients in the Downloads folder.
 	* The above hostname will be hardcoded in the screen-sharing desktop apps, but can be changed via the options menu.
 * When debugging, the agent will use a pre-defined device ID and connect to https://localhost:5001.
