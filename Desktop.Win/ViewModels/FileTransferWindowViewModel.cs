@@ -2,7 +2,10 @@
 using Remotely.Desktop.Core.Models;
 using Remotely.Desktop.Core.ViewModels;
 using Remotely.Desktop.Win.Services;
+using Remotely.Shared.Win32;
+using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,12 +36,22 @@ namespace Remotely.Desktop.Win.ViewModels
         public ObservableCollection<FileUpload> FileUploads { get; } = new ObservableCollection<FileUpload>();
 
         public ICommand OpenFileUploadDialog => new Executor(async (param) =>
-                {
+        {
+            // Change initial directory so it doesn't open in %userprofile% path
+            // for SYSTEM account.
+            var rootDir = Path.GetPathRoot(Environment.SystemDirectory);
+            var userDir = Path.Combine(rootDir, 
+                "Users", 
+                Win32Interop.GetUsernameFromSessionId((uint)Process.GetCurrentProcess().SessionId));
+            
             var ofd = new OpenFileDialog
             {
                 Title = "Upload File via Remotely",
-                Multiselect = true
+                Multiselect = true,
+                CheckFileExists = true,
+                InitialDirectory = Directory.Exists(userDir) ? userDir : rootDir
             };
+            
             var result = ofd.ShowDialog();
             if (result == DialogResult.Cancel)
             {
