@@ -37,7 +37,7 @@ export const MainViewer = {
             UI.SessionIDInput.value = decodeURIComponent(queryString["sessionID"]);
             if (queryString["requesterName"]) {
                 UI.RequesterNameInput.value = decodeURIComponent(queryString["requesterName"]);
-                this.ConnectToClient();
+                MainViewer.ConnectToClient();
             }
         }
     },

@@ -8,14 +8,15 @@ using System.Collections.Concurrent;
 using Remotely.Desktop.Linux.Controls;
 using Remotely.Desktop.Core.Interfaces;
 using Avalonia.Controls;
+using Remotely.Desktop.Core.Models;
+using Remotely.Desktop.Core.ViewModels;
 
 namespace Remotely.Desktop.Linux.Services
 {
     public class FileTransferServiceLinux : IFileTransferService
     {
-        private static readonly ConcurrentDictionary<string, FileStream> partialTransfers = new ConcurrentDictionary<string, FileStream>();
-
         private static readonly SemaphoreSlim _writeLock = new SemaphoreSlim(1);
+        private static readonly ConcurrentDictionary<string, FileStream> partialTransfers = new ConcurrentDictionary<string, FileStream>();
         private static volatile bool _messageBoxPending;
 
         public string GetBaseDirectory()
@@ -30,7 +31,7 @@ namespace Remotely.Desktop.Linux.Services
             return Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "Remotely_Shared")).FullName;
         }
 
-        public void OpenFileTransferWindow(string viewerName, string viewerConnectionId)
+        public void OpenFileTransferWindow(Viewer viewer)
         {
             // TODO: Create file transfer window.
         }
@@ -60,7 +61,7 @@ namespace Remotely.Desktop.Linux.Services
                     }
 
                     File.Create(filePath).Close();
-                    
+
                     var fs = new FileStream(filePath, FileMode.OpenOrCreate);
                     partialTransfers.AddOrUpdate(messageId, fs, (k, v) => fs);
                 }
@@ -91,6 +92,11 @@ namespace Remotely.Desktop.Linux.Services
                     await Task.Run(ShowTransferComplete);
                 }
             }
+        }
+
+        public Task UploadFile(FileUpload file, Viewer viewer)
+        {
+            throw new NotImplementedException();
         }
 
         private async Task ShowTransferComplete()

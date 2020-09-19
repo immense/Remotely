@@ -38,7 +38,7 @@
 import { Sound } from "../Shared/Sound.js";
 import { MainViewer } from "./Main.js";
 import { Point } from "../Shared/Models/Point.js";
-import { UploadFiles } from "./FileUploader.js";
+import { UploadFiles } from "./FileTransferService.js";
 import { RemoteControlMode } from "../Shared/Enums/RemoteControlMode.js";
 import { GetDistanceBetween } from "../Shared/Utilities.js";
 import { ShowMessage } from "../Shared/UI.js";

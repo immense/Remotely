@@ -12,8 +12,10 @@ import {
     MachineNameDto,
     ScreenDataDto,
     ScreenSizeDto,
+    FileDto,
     WindowsSessionsDto
 } from "./Dtos.js";
+import { ReceiveFile } from "./FileTransferService.js";
 
 
 export class DtoMessageHandler {
@@ -46,10 +48,13 @@ export class DtoMessageHandler {
             case BaseDtoType.WindowsSessions:
                 this.HandleWindowsSessions(model as unknown as WindowsSessionsDto)
                 break;
+            case BaseDtoType.File:
+                this.HandleFile(model as unknown as FileDto);
             default:
                 break;
         }
     }
+
     HandleAudioSample(audioSample: AudioSampleDto) {
         Sound.Play(audioSample.Buffer);
     }
@@ -84,6 +89,9 @@ export class DtoMessageHandler {
     }
     HandleCursorChange(cursorChange: CursorChangeDto) {
         UI.UpdateCursor(cursorChange.ImageBytes, cursorChange.HotSpotX, cursorChange.HotSpotY, cursorChange.CssOverride);
+    }
+    HandleFile(file: FileDto) {
+        ReceiveFile(file);
     }
     HandleMachineName(machineNameDto: MachineNameDto) {
         document.title = `${machineNameDto.MachineName} - Remotely Session`;

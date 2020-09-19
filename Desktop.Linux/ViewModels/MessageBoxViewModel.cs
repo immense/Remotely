@@ -1,12 +1,13 @@
 ﻿using Avalonia.Controls;
 using ReactiveUI;
+using Remotely.Desktop.Core.ViewModels;
 using Remotely.Desktop.Linux.Controls;
 using Remotely.Desktop.Linux.Services;
 using System.Windows.Input;
 
 namespace Remotely.Desktop.Linux.ViewModels
 {
-    public class MessageBoxViewModel : ViewModelBase
+    public class MessageBoxViewModel : ReactiveViewModel
     {
         private bool areYesNoButtonsVisible;
         private string caption;

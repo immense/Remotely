@@ -1,11 +1,12 @@
 ﻿using System.Windows.Input;
 using Avalonia.Controls;
 using ReactiveUI;
+using Remotely.Desktop.Core.ViewModels;
 using Remotely.Desktop.Linux.Services;
 
 namespace Remotely.Desktop.Linux.ViewModels
 {
-    public class HostNamePromptViewModel : ViewModelBase
+    public class HostNamePromptViewModel : ReactiveViewModel
     {
         public string host;
 

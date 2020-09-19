@@ -242,7 +242,7 @@ namespace Remotely.Desktop.Core.Services
 
         private void OpenFileTransferWindow(Viewer viewer)
         {
-            FileTransferService.OpenFileTransferWindow(viewer.Name, viewer.ViewerConnectionID);
+            FileTransferService.OpenFileTransferWindow(viewer);
         }
         private void QualityChange(byte[] message, Viewer viewer)
         {

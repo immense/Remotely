@@ -1,7 +1,9 @@
 ﻿using Remotely.Desktop.Core.Interfaces;
-using Remotely.Desktop.Core.Services;
+using Remotely.Desktop.Core.Models;
+using Remotely.Desktop.Core.ViewModels;
+using Remotely.Desktop.Win.ViewModels;
+using Remotely.Desktop.Win.Views;
 using Remotely.Shared.Utilities;
-using Remotely.Shared.Win32;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -18,7 +20,11 @@ namespace Remotely.Desktop.Win.Services
 {
     public class FileTransferServiceWin : IFileTransferService
     {
-        private static readonly ConcurrentDictionary<string, FileStream> partialTransfers = new ConcurrentDictionary<string, FileStream>();
+        private static readonly ConcurrentDictionary<string, FileStream> _partialTransfers = 
+            new ConcurrentDictionary<string, FileStream>();
+
+        private static readonly ConcurrentDictionary<string, FileTransferWindow> _fileTransferWindows =
+            new ConcurrentDictionary<string, FileTransferWindow>();
 
         private static readonly SemaphoreSlim _writeLock = new SemaphoreSlim(1);
         private static MessageBoxResult? _result;
@@ -29,9 +35,28 @@ namespace Remotely.Desktop.Win.Services
             return Directory.CreateDirectory(Path.Combine(programDataPath, "Remotely", "Shared")).FullName;
         }
 
-        public void OpenFileTransferWindow(string viewerName, string viewerConnectionId)
+        public void OpenFileTransferWindow(Viewer viewer)
         {
-            // TODO: Create file transfer window.
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                if (_fileTransferWindows.TryGetValue(viewer.ViewerConnectionID, out var window))
+                {
+                    window.Activate();
+                }
+                else
+                {
+                    window = new FileTransferWindow
+                    {
+                        DataContext = new FileTransferWindowViewModel(viewer, this)
+                    };
+                    window.Closed += (sender, arg) =>
+                    {
+                        _fileTransferWindows.Remove(viewer.ViewerConnectionID, out _);
+                    };
+                    _fileTransferWindows.AddOrUpdate(viewer.ViewerConnectionID, window, (k, v) => window);
+                    window.Show();
+                }
+            });
         }
 
         public async Task ReceiveFile(byte[] buffer, string fileName, string messageId, bool endOfFile, bool startOfFile)
@@ -63,10 +88,10 @@ namespace Remotely.Desktop.Win.Services
                     File.Create(filePath).Close();
                     SetFileOrFolderPermissions(filePath);
                     var fs = new FileStream(filePath, FileMode.OpenOrCreate);
-                    partialTransfers.AddOrUpdate(messageId, fs, (k, v) => fs);
+                    _partialTransfers.AddOrUpdate(messageId, fs, (k, v) => fs);
                 }
 
-                var fileStream = partialTransfers[messageId];
+                var fileStream = _partialTransfers[messageId];
 
                 if (buffer?.Length > 0)
                 {
@@ -77,7 +102,7 @@ namespace Remotely.Desktop.Win.Services
                 if (endOfFile)
                 {
                     fileStream.Close();
-                    partialTransfers.Remove(messageId, out _);
+                    _partialTransfers.Remove(messageId, out _);
                 }
             }
             catch (Exception ex)
@@ -91,6 +116,18 @@ namespace Remotely.Desktop.Win.Services
                 {
                     await Task.Run(ShowTransferComplete);
                 }
+            }
+        }
+
+        public async Task UploadFile(FileUpload fileUpload, Viewer viewer)
+        {
+            try
+            {
+                await viewer.SendFile(fileUpload);
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
             }
         }
 
@@ -147,18 +184,12 @@ namespace Remotely.Desktop.Win.Services
             // Prevent multiple dialogs from popping up.
             if (_result is null)
             {
-                _result = MessageBox.Show("Transfer Complete",
-                    "File transfer complete.  Show folder?",
+                _result = MessageBox.Show("File transfer complete.  Show folder?",
+                    "Transfer Complete",
                     MessageBoxButton.YesNo,
-                    MessageBoxImage.Question);
-
-                //var result = Win32Interop.ShowMessageBox(User32.GetDesktopWindow(),
-                //                "File transfer complete.  Show folder?",
-                //                "Transfer Complete",
-                //                User32.MessageBoxType.MB_YESNO |
-                //                User32.MessageBoxType.MB_ICONINFORMATION |
-                //                User32.MessageBoxType.MB_TOPMOST |
-                //                User32.MessageBoxType.MB_SYSTEMMODAL);
+                    MessageBoxImage.Question,
+                    MessageBoxResult.Yes,
+                    MessageBoxOptions.ServiceNotification);
 
                 if (_result == MessageBoxResult.Yes)
                 {
