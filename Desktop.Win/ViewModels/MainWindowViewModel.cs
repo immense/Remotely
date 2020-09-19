@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Win32;
 using Remotely.Shared.Utilities;
+using Remotely.Desktop.Core.ViewModels;
 
 namespace Remotely.Desktop.Win.ViewModels
 {

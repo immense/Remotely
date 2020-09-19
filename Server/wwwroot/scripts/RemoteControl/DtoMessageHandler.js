@@ -3,6 +3,7 @@ import { BaseDtoType } from "../Shared/Enums/BaseDtoType.js";
 import { MainViewer } from "./Main.js";
 import { ShowMessage } from "../Shared/UI.js";
 import { Sound } from "../Shared/Sound.js";
+import { ReceiveFile } from "./FileTransferService.js";
 export class DtoMessageHandler {
     constructor() {
         this.MessagePack = window['MessagePack'];
@@ -35,6 +36,8 @@ export class DtoMessageHandler {
             case BaseDtoType.WindowsSessions:
                 this.HandleWindowsSessions(model);
                 break;
+            case BaseDtoType.File:
+                this.HandleFile(model);
             default:
                 break;
         }
@@ -68,6 +71,9 @@ export class DtoMessageHandler {
     }
     HandleCursorChange(cursorChange) {
         UI.UpdateCursor(cursorChange.ImageBytes, cursorChange.HotSpotX, cursorChange.HotSpotY, cursorChange.CssOverride);
+    }
+    HandleFile(file) {
+        ReceiveFile(file);
     }
     HandleMachineName(machineNameDto) {
         document.title = `${machineNameDto.MachineName} - Remotely Session`;

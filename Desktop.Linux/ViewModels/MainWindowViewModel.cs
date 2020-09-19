@@ -24,7 +24,7 @@ using Remotely.Shared.Utilities;
 
 namespace Remotely.Desktop.Linux.ViewModels
 {
-    public class MainWindowViewModel : ReactiveObject
+    public class MainWindowViewModel : ReactiveViewModel
     {
         private double copyMessageOpacity;
         private string host;

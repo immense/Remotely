@@ -1,4 +1,6 @@
-﻿namespace Remotely.Desktop.Win.ViewModels
+﻿using Remotely.Desktop.Core.ViewModels;
+
+namespace Remotely.Desktop.Win.ViewModels
 {
     public class HostNamePromptViewModel : ViewModelBase
     {

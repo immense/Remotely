@@ -1,5 +1,6 @@
 ﻿using Remotely.Desktop.Core.Interfaces;
 using Remotely.Desktop.Core.Services;
+using Remotely.Desktop.Core.ViewModels;
 using Remotely.Shared.Helpers;
 using Remotely.Shared.Models;
 using Remotely.Shared.Models.RemoteControlDtos;
@@ -10,6 +11,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -136,7 +138,57 @@ namespace Remotely.Desktop.Core.Models
             }
         }
 
-        // TODO: SendDtoToBrowser.
+        public async Task SendFile(FileUpload fileUpload)
+        {
+            try
+            {
+                var messageId = Guid.NewGuid().ToString();
+                var fileDto = new FileDto()
+                {
+                    EndOfFile = false,
+                    FileName = fileUpload.DisplayName,
+                    MessageId = messageId,
+                    StartOfFile = true
+                };
+
+                await SendToViewer(() => RtcSession.SendDto(fileDto),
+                    () => CasterSocket.SendDtoToViewer(fileDto, ViewerConnectionID));
+
+                using var fs = File.OpenRead(fileUpload.FilePath);
+                using var br = new BinaryReader(fs);
+                while (fs.Position < fs.Length)
+                {
+                    fileDto = new FileDto()
+                    {
+                        Buffer = br.ReadBytes(50_000),
+                        FileName = fileUpload.DisplayName,
+                        MessageId = messageId
+                    };
+                    await SendToViewer(() => RtcSession.SendDto(fileDto),
+                        () => CasterSocket.SendDtoToViewer(fileDto, ViewerConnectionID));
+
+                    fileUpload.PercentProgress = fs.Position / fs.Length;
+                }
+
+                fileDto = new FileDto()
+                {
+                    EndOfFile = true,
+                    FileName = fileUpload.DisplayName,
+                    MessageId = messageId,
+                    StartOfFile = false
+                };
+
+                await SendToViewer(() => RtcSession.SendDto(fileDto),
+                    () => CasterSocket.SendDtoToViewer(fileDto, ViewerConnectionID));
+
+                fileUpload.PercentProgress = 1;
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+            }
+        }
+
         public async Task SendAudioSample(byte[] audioSample)
         {
             var dto = new AudioSampleDto(audioSample);
