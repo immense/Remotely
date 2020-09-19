@@ -110,7 +110,7 @@ namespace Remotely.Desktop.Win
             serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerWin>();
             serviceCollection.AddTransient<Viewer>();
             serviceCollection.AddScoped<IWebRtcSessionFactory, WebRtcSessionFactory>();
-            serviceCollection.AddScoped<IFileTransferService, FileTransferService>();
+            serviceCollection.AddScoped<IFileTransferService, FileTransferServiceWin>();
             serviceCollection.AddSingleton<ISessionIndicator, SessionIndicatorWin>();
             serviceCollection.AddSingleton<IShutdownService, ShutdownServiceWin>();
             serviceCollection.AddScoped<IDtoMessageHandler, DtoMessageHandler>();
