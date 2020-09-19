@@ -40,7 +40,7 @@ namespace Remotely.Desktop.Win.Services
             return new Tuple<double, double>(absoluteX, absoluteY);
         }
 
-        public void SendKeyDown(string key, Viewer viewer)
+        public void SendKeyDown(string key)
         {
             TryOnInputDesktop(() =>
             {
@@ -60,7 +60,7 @@ namespace Remotely.Desktop.Win.Services
             });
         }
 
-        public void SendKeyUp(string key, Viewer viewer)
+        public void SendKeyUp(string key)
         {
             TryOnInputDesktop(() =>
             {
@@ -123,7 +123,7 @@ namespace Remotely.Desktop.Win.Services
             });
         }
 
-        public void SendMouseWheel(int deltaY, Viewer viewer)
+        public void SendMouseWheel(int deltaY)
         {
             TryOnInputDesktop(() =>
             {
@@ -135,9 +135,9 @@ namespace Remotely.Desktop.Win.Services
                 {
                     deltaY = 120;
                 }
-                var union = new User32.InputUnion() { mi = new User32.MOUSEINPUT() { dwFlags = MOUSEEVENTF.WHEEL, dx = 0, dy = 0, time = 0, mouseData = deltaY, dwExtraInfo = GetMessageExtraInfo() } };
-                var input = new User32.INPUT() { type = InputType.MOUSE, U = union };
-                SendInput(1, new User32.INPUT[] { input }, INPUT.Size);
+                var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.WHEEL, dx = 0, dy = 0, time = 0, mouseData = deltaY, dwExtraInfo = GetMessageExtraInfo() } };
+                var input = new INPUT() { type = InputType.MOUSE, U = union };
+                SendInput(1, new INPUT[] { input }, INPUT.Size);
             });
         }
 
@@ -169,7 +169,7 @@ namespace Remotely.Desktop.Win.Services
             });
         }
 
-        public void SendText(string transferText, Viewer viewer)
+        public void SendText(string transferText)
         {
             TryOnInputDesktop(() =>
             {

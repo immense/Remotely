@@ -156,7 +156,9 @@ namespace Remotely.Server.Hubs
 
             if (Context?.User?.Identity?.IsAuthenticated == true)
             {
-                orgId = DataService.GetUserByID(Context.UserIdentifier).OrganizationID;
+                var user = DataService.GetUserByID(Context.UserIdentifier);
+                RequesterName = user.DisplayName ?? user.UserName;
+                orgId = user.OrganizationID;
                 var currentUsers = CasterHub.SessionInfoList.Count(x => 
                     x.Key != screenCasterID &&
                     x.Value.OrganizationID == orgId);
@@ -178,7 +180,7 @@ namespace Remotely.Server.Hubs
                 Message = $"Remote control session requested.  " +
                                 $"Login ID (if logged in): {Context?.User?.Identity?.Name}.  " +
                                 $"Machine Name: {SessionInfo.MachineName}.  " +
-                                $"Requester Name (if specified): {requesterName}.  " +
+                                $"Requester Name (if specified): {RequesterName}.  " +
                                 $"Connection ID: {Context.ConnectionId}. User ID: {Context.UserIdentifier}.  " +
                                 $"Screen Caster ID: {screenCasterID}.  " + 
                                 $"Mode: {(RemoteControlMode)remoteControlMode}.  " + 
@@ -197,7 +199,7 @@ namespace Remotely.Server.Hubs
                     (Context.User.Identity.IsAuthenticated &&
                         DataService.DoesUserHaveAccessToDevice(deviceID, Context.UserIdentifier)))
                 {
-                    return CasterHubContext.Clients.Client(screenCasterID).SendAsync("GetScreenCast", Context.ConnectionId, requesterName, AppConfig.RemoteControlNotifyUser);
+                    return CasterHubContext.Clients.Client(screenCasterID).SendAsync("GetScreenCast", Context.ConnectionId, RequesterName, AppConfig.RemoteControlNotifyUser);
                 }
                 else
                 {
@@ -208,7 +210,7 @@ namespace Remotely.Server.Hubs
             {
                 SessionInfo.Mode = RemoteControlMode.Normal;
                 _ = Clients.Caller.SendAsync("RequestingScreenCast");
-                return CasterHubContext.Clients.Client(screenCasterID).SendAsync("RequestScreenCast", Context.ConnectionId, requesterName, AppConfig.RemoteControlNotifyUser);
+                return CasterHubContext.Clients.Client(screenCasterID).SendAsync("RequestScreenCast", Context.ConnectionId, RequesterName, AppConfig.RemoteControlNotifyUser);
             }
         }
  

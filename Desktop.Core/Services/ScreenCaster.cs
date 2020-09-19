@@ -144,19 +144,17 @@ namespace Remotely.Desktop.Core.Services
                             continue;
                         }
 
-                        using (var newImage = currentFrame.Clone(diffArea, PixelFormat.Format32bppArgb))
+                        using var newImage = currentFrame.Clone(diffArea, PixelFormat.Format32bppArgb);
+                        if (viewer.Capturer.CaptureFullscreen)
                         {
-                            if (viewer.Capturer.CaptureFullscreen)
-                            {
-                                viewer.Capturer.CaptureFullscreen = false;
-                            }
+                            viewer.Capturer.CaptureFullscreen = false;
+                        }
 
-                            encodedImageBytes = ImageUtils.EncodeBitmap(newImage, viewer.EncoderParams);
+                        encodedImageBytes = ImageUtils.EncodeBitmap(newImage, viewer.EncoderParams);
 
-                            if (encodedImageBytes?.Length > 0)
-                            {
-                                await viewer.SendScreenCapture(encodedImageBytes, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height);
-                            }
+                        if (encodedImageBytes?.Length > 0)
+                        {
+                            await viewer.SendScreenCapture(encodedImageBytes, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height);
                         }
                     }
                     catch (Exception ex)
