@@ -1,4 +1,4 @@
-﻿using Remotely.Desktop.Core.Models;
+﻿using Remotely.Desktop.Core.Services;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Concurrent;
@@ -13,7 +13,7 @@ namespace Remotely.Desktop.Core.Services
             ViewerList = conductor.Viewers;
         }
 
-        public ConcurrentDictionary<string, Viewer> ViewerList { get; }
+        public ConcurrentDictionary<string, Services.Viewer> ViewerList { get; }
 
         public DateTimeOffset ViewersLastSeen { get; private set; } = DateTimeOffset.Now;
 

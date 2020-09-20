@@ -7,7 +7,7 @@ using Remotely.Desktop.Linux.Services;
 using Remotely.Desktop.Linux.Views;
 using Remotely.Desktop.Core;
 using Remotely.Desktop.Core.Interfaces;
-using Remotely.Desktop.Core.Models;
+using Remotely.Desktop.Core.Services;
 using Remotely.Desktop.Core.Services;
 using Remotely.Shared.Models;
 using System;
@@ -24,7 +24,7 @@ using Remotely.Shared.Utilities;
 
 namespace Remotely.Desktop.Linux.ViewModels
 {
-    public class MainWindowViewModel : ReactiveObject
+    public class MainWindowViewModel : ReactiveViewModel
     {
         private double copyMessageOpacity;
         private string host;

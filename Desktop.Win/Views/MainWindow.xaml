@@ -10,7 +10,7 @@
         WindowStyle="None" 
         ResizeMode="NoResize"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
-        Loaded="Window_Loaded" Icon="/Remotely_Icon.png">
+        Loaded="Window_Loaded" Icon="/Assets/Remotely_Icon.png">
     <Window.Resources>
         <DrawingBrush x:Key="GearBrush">
             <DrawingBrush.Drawing>

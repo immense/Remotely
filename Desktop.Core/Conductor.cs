@@ -1,6 +1,6 @@
 ﻿using Remotely.Shared.Models;
 using Remotely.Desktop.Core.Enums;
-using Remotely.Desktop.Core.Models;
+using Remotely.Desktop.Core.Services;
 using Remotely.Desktop.Core.Services;
 using System;
 using System.Collections.Concurrent;
@@ -16,7 +16,7 @@ namespace Remotely.Desktop.Core
 
         public event EventHandler<string> SessionIDChanged;
 
-        public event EventHandler<Viewer> ViewerAdded;
+        public event EventHandler<Services.Viewer> ViewerAdded;
 
         public event EventHandler<string> ViewerRemoved;
 
@@ -27,7 +27,7 @@ namespace Remotely.Desktop.Core
         public string OrganizationName { get; private set; }
         public string RequesterID { get; private set; }
         public string ServiceID { get; private set; }
-        public ConcurrentDictionary<string, Viewer> Viewers { get; } = new ConcurrentDictionary<string, Viewer>();
+        public ConcurrentDictionary<string, Services.Viewer> Viewers { get; } = new ConcurrentDictionary<string, Services.Viewer>();
 
         public void InvokeScreenCastRequested(ScreenCastRequest viewerIdAndRequesterName)
         {
@@ -39,7 +39,7 @@ namespace Remotely.Desktop.Core
             SessionIDChanged?.Invoke(null, sessionID);
         }
 
-        public void InvokeViewerAdded(Viewer viewer)
+        public void InvokeViewerAdded(Services.Viewer viewer)
         {
             ViewerAdded?.Invoke(null, viewer);
         }

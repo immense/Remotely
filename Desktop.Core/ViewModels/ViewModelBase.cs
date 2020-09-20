@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Remotely.Desktop.Win.ViewModels
+namespace Remotely.Desktop.Core.ViewModels
 {
     public class ViewModelBase : INotifyPropertyChanged
     {

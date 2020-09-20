@@ -1,5 +1,5 @@
 ﻿using Remotely.Desktop.Core.Interfaces;
-using Remotely.Desktop.Core.Models;
+using Remotely.Desktop.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,36 +8,18 @@ namespace Remotely.Desktop.Core.Services
 {
     public interface IWebRtcSessionFactory
     {
-        WebRtcSession GetNewSession(Viewer viewer);
+        WebRtcSession GetNewSession(Services.Viewer viewer);
     }
 
     public class WebRtcSessionFactory : IWebRtcSessionFactory
     {
-        public WebRtcSessionFactory(CasterSocket casterSocket,
-            IDtoMessageHandler messageHandler,
-            IKeyboardMouseInput keyboardMouseInput,
-            IAudioCapturer audioCapturer,
-            IClipboardService clipboardService,
-            IFileTransferService fileDownloadService)
+        public WebRtcSessionFactory(IDtoMessageHandler messageHandler)
         {
             MessageHandler = messageHandler;
-            CasterSocket = casterSocket;
-            KeyboardMouseInput = keyboardMouseInput;
-            AudioCapturer = audioCapturer;
-            ClipboardService = clipboardService;
-            FileDownloadService = fileDownloadService;
         }
-        private IAudioCapturer AudioCapturer { get; }
         private IDtoMessageHandler MessageHandler { get; }
-        private CasterSocket CasterSocket { get; }
 
-        private IClipboardService ClipboardService { get; }
-
-        private IFileTransferService FileDownloadService { get; }
-
-        private IKeyboardMouseInput KeyboardMouseInput { get; }
-
-        public WebRtcSession GetNewSession(Viewer viewer)
+        public WebRtcSession GetNewSession(Services.Viewer viewer)
         {
             return new WebRtcSession(viewer, MessageHandler);
         }

@@ -2,7 +2,7 @@
 using Remotely.Desktop.Core.Services;
 using Remotely.Desktop.Linux.X11Interop;
 using System;
-using Remotely.Desktop.Core.Models;
+using Remotely.Desktop.Core.Services;
 using Remotely.Shared.Utilities;
 
 namespace Remotely.Desktop.Linux.Services
@@ -16,7 +16,7 @@ namespace Remotely.Desktop.Linux.Services
 
         public IntPtr Display { get; }
 
-        public void SendKeyDown(string key, Viewer viewer)
+        public void SendKeyDown(string key)
         {
             try
             {
@@ -38,7 +38,7 @@ namespace Remotely.Desktop.Linux.Services
             }
         }
 
-        public void SendKeyUp(string key, Viewer viewer)
+        public void SendKeyUp(string key)
         {
             try
             {
@@ -106,7 +106,7 @@ namespace Remotely.Desktop.Linux.Services
             }
         }
 
-        public void SendMouseWheel(int deltaY, Viewer viewer)
+        public void SendMouseWheel(int deltaY)
         {
             try
             {
@@ -156,12 +156,12 @@ namespace Remotely.Desktop.Linux.Services
             }
         }
 
-        public void SendText(string transferText, Viewer viewer)
+        public void SendText(string transferText)
         {
             foreach (var key in transferText)
             {
-                SendKeyDown(key.ToString(), viewer);
-                SendKeyUp(key.ToString(), viewer);
+                SendKeyDown(key.ToString());
+                SendKeyUp(key.ToString());
             }
         }
 
@@ -177,169 +177,62 @@ namespace Remotely.Desktop.Linux.Services
 
         private string ConvertJavaScriptKeyToX11Key(string key)
         {
-            string keySym;
-            switch (key)
+            string keySym = key switch
             {
-                case "ArrowDown":
-                    keySym = "Down";
-                    break;
-                case "ArrowUp":
-                    keySym = "Up";
-                    break;
-                case "ArrowLeft":
-                    keySym = "Left";
-                    break;
-                case "ArrowRight":
-                    keySym = "Right";
-                    break;
-                case "Enter":
-                    keySym = "Return";
-                    break;
-                case "Esc":
-                    keySym = "Escape";
-                    break;
-                case "Alt":
-                    keySym = "Alt_L";
-                    break;
-                case "Control":
-                    keySym = "Control_L";
-                    break;
-                case "Shift":
-                    keySym = "Shift_L";
-                    break;
-                case "PAUSE":
-                    keySym = "Pause";
-                    break;
-                case "BREAK":
-                    keySym = "Break";
-                    break;
-                case "Backspace":
-                    keySym = "BackSpace";
-                    break;
-                case "Tab":
-                    keySym = "Tab";
-                    break;
-                case "CapsLock":
-                    keySym = "Caps_Lock";
-                    break;
-                case "Delete":
-                    keySym = "Delete";
-                    break;
-                case "PageUp":
-                    keySym = "Page_Up";
-                    break;
-                case "PageDown":
-                    keySym = "Page_Down";
-                    break;
-                case "NumLock":
-                    keySym = "Num_Lock";
-                    break;
-                case "ScrollLock":
-                    keySym = "Scroll_Lock";
-                    break;
-                case "ContextMenu":
-                    keySym = "Menu";
-                    break;
-                case " ":
-                    keySym = "space";
-                    break;
-                case "!":
-                    keySym = "exclam";
-                    break;
-                case "\"":
-                    keySym = "quotedbl";
-                    break;
-                case "#":
-                    keySym = "numbersign";
-                    break;
-                case "$":
-                    keySym = "dollar";
-                    break;
-                case "%":
-                    keySym = "percent";
-                    break;
-                case "&":
-                    keySym = "ampersand";
-                    break;
-                case "'":
-                    keySym = "apostrophe";
-                    break;
-                case "(":
-                    keySym = "parenleft";
-                    break;
-                case ")":
-                    keySym = "parenright";
-                    break;
-                case "*":
-                    keySym = "asterisk";
-                    break;
-                case "+":
-                    keySym = "plus";
-                    break;
-                case ",":
-                    keySym = "comma";
-                    break;
-                case "-":
-                    keySym = "minus";
-                    break;
-                case ".":
-                    keySym = "period";
-                    break;
-                case "/":
-                    keySym = "slash";
-                    break;
-                case ":":
-                    keySym = "colon";
-                    break;
-                case ";":
-                    keySym = "semicolon";
-                    break;
-                case "<":
-                    keySym = "less";
-                    break;
-                case "=":
-                    keySym = "equal";
-                    break;
-                case ">":
-                    keySym = "greater";
-                    break;
-                case "?":
-                    keySym = "question";
-                    break;
-                case "@":
-                    keySym = "at";
-                    break;
-                case "[":
-                    keySym = "bracketleft";
-                    break;
-                case "\\":
-                    keySym = "backslash";
-                    break;
-                case "]":
-                    keySym = "bracketright";
-                    break;
-                case "_":
-                    keySym = "underscore";
-                    break;
-                case "`":
-                    keySym = "grave";
-                    break;
-                case "{":
-                    keySym = "braceleft";
-                    break;
-                case "|":
-                    keySym = "bar";
-                    break;
-                case "}":
-                    keySym = "braceright";
-                    break;
-                case "~":
-                    keySym = "asciitilde";
-                    break;
-                default:
-                    keySym = key;
-                    break;
-            }
+                "ArrowDown" => "Down",
+                "ArrowUp" => "Up",
+                "ArrowLeft" => "Left",
+                "ArrowRight" => "Right",
+                "Enter" => "Return",
+                "Esc" => "Escape",
+                "Alt" => "Alt_L",
+                "Control" => "Control_L",
+                "Shift" => "Shift_L",
+                "PAUSE" => "Pause",
+                "BREAK" => "Break",
+                "Backspace" => "BackSpace",
+                "Tab" => "Tab",
+                "CapsLock" => "Caps_Lock",
+                "Delete" => "Delete",
+                "PageUp" => "Page_Up",
+                "PageDown" => "Page_Down",
+                "NumLock" => "Num_Lock",
+                "ScrollLock" => "Scroll_Lock",
+                "ContextMenu" => "Menu",
+                " " => "space",
+                "!" => "exclam",
+                "\"" => "quotedbl",
+                "#" => "numbersign",
+                "$" => "dollar",
+                "%" => "percent",
+                "&" => "ampersand",
+                "'" => "apostrophe",
+                "(" => "parenleft",
+                ")" => "parenright",
+                "*" => "asterisk",
+                "+" => "plus",
+                "," => "comma",
+                "-" => "minus",
+                "." => "period",
+                "/" => "slash",
+                ":" => "colon",
+                ";" => "semicolon",
+                "<" => "less",
+                "=" => "equal",
+                ">" => "greater",
+                "?" => "question",
+                "@" => "at",
+                "[" => "bracketleft",
+                "\\" => "backslash",
+                "]" => "bracketright",
+                "_" => "underscore",
+                "`" => "grave",
+                "{" => "braceleft",
+                "|" => "bar",
+                "}" => "braceright",
+                "~" => "asciitilde",
+                _ => key,
+            };
             return keySym;
         }
 

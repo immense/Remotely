@@ -2,7 +2,7 @@
 using Remotely.Desktop.Win.Services;
 using Remotely.Shared.Models;
 using Remotely.Desktop.Core;
-using Remotely.Desktop.Core.Models;
+using Remotely.Desktop.Core.Services;
 using Remotely.Desktop.Core.Services;
 using System;
 using System.Collections.Generic;
@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Win32;
 using Remotely.Shared.Utilities;
+using Remotely.Desktop.Core.ViewModels;
 
 namespace Remotely.Desktop.Win.ViewModels
 {

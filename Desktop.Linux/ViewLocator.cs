@@ -26,7 +26,7 @@ namespace Remotely.Desktop.Linux
 
         public bool Match(object data)
         {
-            return data is ViewModelBase;
+            return data is ReactiveViewModel;
         }
     }
 }

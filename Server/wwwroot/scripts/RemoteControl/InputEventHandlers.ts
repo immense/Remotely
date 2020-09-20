@@ -29,12 +29,16 @@
     DownloadRecordingButton,
     VideoScreenViewer,
 
-    StreamVideoButton
+    StreamVideoButton,
+
+    FileTransferBar,
+    FileUploadButtton,
+    FileDownloadButton
 } from "./UI.js";
 import { Sound } from "../Shared/Sound.js";
 import { MainViewer } from "./Main.js";
 import { Point } from "../Shared/Models/Point.js";
-import { UploadFiles } from "./FileUploader.js";
+import { UploadFiles } from "./FileTransferService.js";
 import { RemoteControlMode } from "../Shared/Enums/RemoteControlMode.js";
 import { GetDistanceBetween } from "../Shared/Utilities.js";
 import { ShowMessage } from "../Shared/UI.js";
@@ -111,7 +115,14 @@ export function ApplyInputHandlers() {
         })
     });
     FileTransferButton.addEventListener("click", (ev) => {
+        closeAllHorizontalBars(FileTransferBar.id);
+        FileTransferBar.classList.toggle("open");
+    });
+    FileUploadButtton.addEventListener("click", (ev) => {
         FileTransferInput.click();
+    });
+    FileDownloadButton.addEventListener("click", (ev) => {
+        MainViewer.MessageSender.SendOpenFileTransferWindow();
     });
     FileTransferInput.addEventListener("change", (ev) => {
         UploadFiles(FileTransferInput.files);

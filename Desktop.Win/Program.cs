@@ -10,7 +10,7 @@ using Remotely.Desktop.Win.Services;
 using Remotely.Desktop.Core.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Remotely.Desktop.Core.Models;
+using Remotely.Desktop.Core.Services;
 using Remotely.Shared.Utilities;
 using System.Windows;
 using Remotely.Desktop.Win.Views;
@@ -110,7 +110,7 @@ namespace Remotely.Desktop.Win
             serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerWin>();
             serviceCollection.AddTransient<Viewer>();
             serviceCollection.AddScoped<IWebRtcSessionFactory, WebRtcSessionFactory>();
-            serviceCollection.AddScoped<IFileTransferService, FileTransferService>();
+            serviceCollection.AddScoped<IFileTransferService, FileTransferServiceWin>();
             serviceCollection.AddSingleton<ISessionIndicator, SessionIndicatorWin>();
             serviceCollection.AddSingleton<IShutdownService, ShutdownServiceWin>();
             serviceCollection.AddScoped<IDtoMessageHandler, DtoMessageHandler>();

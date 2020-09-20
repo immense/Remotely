@@ -1,6 +1,9 @@
 ﻿import { FileTransferProgress, FileTransferInput, FileTransferNameSpan } from "./UI.js";
 import { MainViewer } from "./Main.js";
 import { ShowMessage } from "../Shared/UI.js";
+import { FileDto } from "./Dtos.js";
+
+const PartialDownloads: Record<string, Array<Uint8Array>> = {};
 
 export async function UploadFiles(fileList: FileList) {
     if (!FileTransferProgress.parentElement.hasAttribute("hidden")) {
@@ -25,4 +28,35 @@ export async function UploadFiles(fileList: FileList) {
     }
     FileTransferInput.value = null;
     FileTransferProgress.parentElement.setAttribute("hidden", "hidden");
+}
+
+export async function ReceiveFile(file: FileDto) {
+    if (file.StartOfFile) {
+        ShowMessage(`Downloading file ${file.FileName}...`);
+    }
+
+    var partial = PartialDownloads[file.MessageId];
+    if (!partial) {
+        partial = new Array<Uint8Array>();
+        PartialDownloads[file.MessageId] = partial;
+    }
+
+    if (file.Buffer) {
+        partial.push(file.Buffer);
+    }
+
+    if (file.EndOfFile) {
+        var blob = new Blob(partial, { type: 'application/octet-stream' });
+        var url = window.URL.createObjectURL(blob);
+        var link = document.createElement('a');
+        link.style.display = 'none';
+        link.href = url;
+        link.download = file.FileName;
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(() => {
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        }, 100);
+    }
 }

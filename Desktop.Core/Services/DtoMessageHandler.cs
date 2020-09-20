@@ -1,7 +1,7 @@
 ﻿using MessagePack;
 using Microsoft.Extensions.DependencyInjection;
 using Remotely.Desktop.Core.Interfaces;
-using Remotely.Desktop.Core.Models;
+using Remotely.Desktop.Core.Services;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models.RemoteControlDtos;
 using Remotely.Shared.Utilities;
@@ -18,32 +18,29 @@ namespace Remotely.Desktop.Core.Services
 {
     public interface IDtoMessageHandler
     {
-        Task ParseMessage(Viewer viewer, byte[] message);
+        Task ParseMessage(Services.Viewer viewer, byte[] message);
     }
     public class DtoMessageHandler : IDtoMessageHandler
     {
         public DtoMessageHandler(IKeyboardMouseInput keyboardMouseInput,
             IAudioCapturer audioCapturer,
             IClipboardService clipboardService,
-            IFileTransferService fileDownloadService)
+            IFileTransferService fileTransferService)
         {
             KeyboardMouseInput = keyboardMouseInput;
             AudioCapturer = audioCapturer;
             ClipboardService = clipboardService;
-            FileDownloadService = fileDownloadService;
+            FileTransferService = fileTransferService;
         }
 
         private IAudioCapturer AudioCapturer { get; }
         private IClipboardService ClipboardService { get; }
-        private IFileTransferService FileDownloadService { get; }
+        private IFileTransferService FileTransferService { get; }
         private IKeyboardMouseInput KeyboardMouseInput { get; }
-        private Viewer Viewer { get; set; }
-        public async Task ParseMessage(Viewer viewer, byte[] message)
+        public async Task ParseMessage(Services.Viewer viewer, byte[] message)
         {
             try
             {
-                // TODO: Remove property and pass viewer into methods.
-                Viewer = viewer;
                 var baseDto = MessagePackSerializer.Deserialize<BaseDto>(message);
 
                 switch (baseDto.DtoType)
@@ -61,7 +58,7 @@ namespace Remotely.Desktop.Core.Services
                     case BaseDtoType.KeyPress:
                     case BaseDtoType.SetKeyStatesUp:
                         {
-                            if (!Viewer.HasControl)
+                            if (!viewer.HasControl)
                             {
                                 return;
                             }
@@ -74,19 +71,19 @@ namespace Remotely.Desktop.Core.Services
                 switch (baseDto.DtoType)
                 {
                     case BaseDtoType.SelectScreen:
-                        SelectScreen(message);
+                        SelectScreen(message, viewer);
                         break;
                     case BaseDtoType.MouseMove:
-                        MouseMove(message);
+                        MouseMove(message, viewer);
                         break;
                     case BaseDtoType.MouseDown:
-                        MouseDown(message);
+                        MouseDown(message, viewer);
                         break;
                     case BaseDtoType.MouseUp:
-                        MouseUp(message);
+                        MouseUp(message, viewer);
                         break;
                     case BaseDtoType.Tap:
-                        Tap(message);
+                        Tap(message, viewer);
                         break;
                     case BaseDtoType.MouseWheel:
                         MouseWheel(message);
@@ -98,10 +95,10 @@ namespace Remotely.Desktop.Core.Services
                         KeyUp(message);
                         break;
                     case BaseDtoType.CtrlAltDel:
-                        await Viewer.SendCtrlAltDel();
+                        await viewer.SendCtrlAltDel();
                         break;
                     case BaseDtoType.AutoQualityAdjust:
-                        SetAutoQualityAdjust(message);
+                        SetAutoQualityAdjust(message, viewer);
                         break;
                     case BaseDtoType.ToggleAudio:
                         ToggleAudio(message);
@@ -110,7 +107,7 @@ namespace Remotely.Desktop.Core.Services
                         ToggleBlockInput(message);
                         break;
                     case BaseDtoType.ToggleWebRtcVideo:
-                        ToggleWebRtcVideo(message);
+                        ToggleWebRtcVideo(message, viewer);
                         break;
                     case BaseDtoType.ClipboardTransfer:
                         await ClipboardTransfer(message);
@@ -119,19 +116,22 @@ namespace Remotely.Desktop.Core.Services
                         await KeyPress(message);
                         break;
                     case BaseDtoType.QualityChange:
-                        QualityChange(message);
+                        QualityChange(message, viewer);
                         break;
                     case BaseDtoType.File:
                         await DownloadFile(message);
                         break;
                     case BaseDtoType.WindowsSessions:
-                        await GetWindowsSessions();
+                        await GetWindowsSessions(viewer);
                         break;
                     case BaseDtoType.SetKeyStatesUp:
                         SetKeyStatesUp();
                         break;
                     case BaseDtoType.FrameReceived:
-                        HandleFrameReceived();
+                        HandleFrameReceived(viewer);
+                        break;
+                    case BaseDtoType.OpenFileTransferWindow:
+                        OpenFileTransferWindow(viewer);
                         break;
                     default:
                         break;
@@ -148,7 +148,7 @@ namespace Remotely.Desktop.Core.Services
             var dto = MessagePackSerializer.Deserialize<ClipboardTransferDto>(message);
             if (dto.TypeText)
             {
-                KeyboardMouseInput.SendText(dto.Text, Viewer);
+                KeyboardMouseInput.SendText(dto.Text);
             }
             else
             {
@@ -159,23 +159,23 @@ namespace Remotely.Desktop.Core.Services
         private async Task DownloadFile(byte[] message)
         {
             var dto = MessagePackSerializer.Deserialize<FileDto>(message);
-            await FileDownloadService.ReceiveFile(dto.Buffer,
+            await FileTransferService.ReceiveFile(dto.Buffer,
                 dto.FileName,
                 dto.MessageId,
                 dto.EndOfFile,
                 dto.StartOfFile);
         }
 
-        private async Task GetWindowsSessions()
+        private async Task GetWindowsSessions(Services.Viewer viewer)
         {
-            await Viewer.SendWindowsSessions();
+            await viewer.SendWindowsSessions();
         }
 
-        private void HandleFrameReceived()
+        private void HandleFrameReceived(Services.Viewer viewer)
         {
             for (int i = 0; i < 5; i++)
             {
-                if (Viewer.PendingSentFrames.TryDequeue(out _))
+                if (viewer.PendingSentFrames.TryDequeue(out _))
                 {
                     break;
                 }
@@ -185,77 +185,81 @@ namespace Remotely.Desktop.Core.Services
         private void KeyDown(byte[] message)
         {
             var dto = MessagePackSerializer.Deserialize<KeyDownDto>(message);
-            KeyboardMouseInput.SendKeyDown(dto.Key, Viewer);
+            KeyboardMouseInput.SendKeyDown(dto.Key);
         }
 
         private async Task KeyPress(byte[] message)
         {
             var dto = MessagePackSerializer.Deserialize<KeyPressDto>(message);
-            KeyboardMouseInput.SendKeyDown(dto.Key, Viewer);
+            KeyboardMouseInput.SendKeyDown(dto.Key);
             await Task.Delay(1);
-            KeyboardMouseInput.SendKeyUp(dto.Key, Viewer);
+            KeyboardMouseInput.SendKeyUp(dto.Key);
         }
 
         private void KeyUp(byte[] message)
         {
             var dto = MessagePackSerializer.Deserialize<KeyUpDto>(message);
-            KeyboardMouseInput.SendKeyUp(dto.Key, Viewer);
+            KeyboardMouseInput.SendKeyUp(dto.Key);
         }
 
-        private void MouseDown(byte[] message)
+        private void MouseDown(byte[] message, Services.Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<MouseDownDto>(message);
             if (dto.Button == 0)
             {
-                KeyboardMouseInput.SendLeftMouseDown(dto.PercentX, dto.PercentY, Viewer);
+                KeyboardMouseInput.SendLeftMouseDown(dto.PercentX, dto.PercentY, viewer);
             }
             else if (dto.Button == 2)
             {
-                KeyboardMouseInput.SendRightMouseDown(dto.PercentX, dto.PercentY, Viewer);
+                KeyboardMouseInput.SendRightMouseDown(dto.PercentX, dto.PercentY, viewer);
             }
         }
 
-        private void MouseMove(byte[] message)
+        private void MouseMove(byte[] message, Services.Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<MouseMoveDto>(message);
-            KeyboardMouseInput.SendMouseMove(dto.PercentX, dto.PercentY, Viewer);
+            KeyboardMouseInput.SendMouseMove(dto.PercentX, dto.PercentY, viewer);
         }
 
-        private void MouseUp(byte[] message)
+        private void MouseUp(byte[] message, Services.Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<MouseUpDto>(message);
             if (dto.Button == 0)
             {
-                KeyboardMouseInput.SendLeftMouseUp(dto.PercentX, dto.PercentY, Viewer);
+                KeyboardMouseInput.SendLeftMouseUp(dto.PercentX, dto.PercentY, viewer);
             }
             else if (dto.Button == 2)
             {
-                KeyboardMouseInput.SendRightMouseUp(dto.PercentX, dto.PercentY, Viewer);
+                KeyboardMouseInput.SendRightMouseUp(dto.PercentX, dto.PercentY, viewer);
             }
         }
 
         private void MouseWheel(byte[] message)
         {
             var dto = MessagePackSerializer.Deserialize<MouseWheelDto>(message);
-            KeyboardMouseInput.SendMouseWheel(-(int)dto.DeltaY, Viewer);
+            KeyboardMouseInput.SendMouseWheel(-(int)dto.DeltaY);
         }
 
-        private void QualityChange(byte[] message)
+        private void OpenFileTransferWindow(Services.Viewer viewer)
+        {
+            FileTransferService.OpenFileTransferWindow(viewer);
+        }
+        private void QualityChange(byte[] message, Services.Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<QualityChangeDto>(message);
-            Viewer.ImageQuality = dto.QualityLevel;
+            viewer.ImageQuality = dto.QualityLevel;
         }
 
-        private void SelectScreen(byte[] message)
+        private void SelectScreen(byte[] message, Services.Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<SelectScreenDto>(message);
-            Viewer.Capturer.SetSelectedScreen(dto.DisplayName);
+            viewer.Capturer.SetSelectedScreen(dto.DisplayName);
         }
 
-        private void SetAutoQualityAdjust(byte[] message)
+        private void SetAutoQualityAdjust(byte[] message, Services.Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<AutoQualityAdjustDto>(message);
-            Viewer.AutoAdjustQuality = dto.IsOn;
+            viewer.AutoAdjustQuality = dto.IsOn;
         }
 
         private void SetKeyStatesUp()
@@ -263,11 +267,11 @@ namespace Remotely.Desktop.Core.Services
             KeyboardMouseInput.SetKeyStatesUp();
         }
 
-        private void Tap(byte[] message)
+        private void Tap(byte[] message, Services.Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<TapDto>(message);
-            KeyboardMouseInput.SendLeftMouseDown(dto.PercentX, dto.PercentY, Viewer);
-            KeyboardMouseInput.SendLeftMouseUp(dto.PercentX, dto.PercentY, Viewer);
+            KeyboardMouseInput.SendLeftMouseDown(dto.PercentX, dto.PercentY, viewer);
+            KeyboardMouseInput.SendLeftMouseUp(dto.PercentX, dto.PercentY, viewer);
         }
 
         private void ToggleAudio(byte[] message)
@@ -282,10 +286,10 @@ namespace Remotely.Desktop.Core.Services
             KeyboardMouseInput.ToggleBlockInput(dto.ToggleOn);
         }
 
-        private void ToggleWebRtcVideo(byte[] message)
+        private void ToggleWebRtcVideo(byte[] message, Services.Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<ToggleWebRtcVideoDto>(message);
-            Viewer.ToggleWebRtcVideo(dto.ToggleOn);
+            viewer.ToggleWebRtcVideo(dto.ToggleOn);
         }
     }
 }

@@ -62,6 +62,10 @@ export class MessageSender {
         var dto = new CtrlAltDelDto();
         this.SendToAgent(() => MainViewer.RtcSession.SendDto(dto), () => MainViewer.ViewerHubConnection.SendDtoToClient(dto));
     }
+    SendOpenFileTransferWindow() {
+        var dto = new GenericDto(BaseDtoType.OpenFileTransferWindow);
+        this.SendToAgent(() => MainViewer.RtcSession.SendDto(dto), () => MainViewer.ViewerHubConnection.SendDtoToClient(dto));
+    }
     async SendFile(buffer, fileName) {
         var messageId = CreateGUID();
         let dto = new FileDto(null, fileName, messageId, false, true);

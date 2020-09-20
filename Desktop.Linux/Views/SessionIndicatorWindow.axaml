@@ -10,6 +10,7 @@
         Title="Remotely Desktop"
         Icon="/Assets/favicon.ico"
         WindowStartupLocation="Manual"
+        Topmost="True"
         SizeToContent="WidthAndHeight">
   
   <StackPanel Margin="15 10 40 15">

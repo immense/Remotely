@@ -1,4 +1,5 @@
-﻿using Remotely.Shared.Models;
+﻿using Remotely.Desktop.Core.ViewModels;
+using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

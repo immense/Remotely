@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Remotely.Desktop.Core;
 using Remotely.Desktop.Core.Interfaces;
-using Remotely.Desktop.Core.Models;
+using Remotely.Desktop.Core.Services;
 using Remotely.Desktop.Core.Services;
 using Remotely.Desktop.Linux.Services;
 using Remotely.Desktop.Linux.Views;
@@ -105,7 +105,7 @@ namespace Remotely.Desktop.Linux
             serviceCollection.AddSingleton<IChatHostService, ChatHostServiceLinux>();
             serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerLinux>();
             serviceCollection.AddTransient<Viewer>();
-            serviceCollection.AddScoped<IFileTransferService, FileTransferService>();
+            serviceCollection.AddScoped<IFileTransferService, FileTransferServiceLinux>();
             serviceCollection.AddScoped<IWebRtcSessionFactory, WebRtcSessionFactory>();
             serviceCollection.AddSingleton<ICursorIconWatcher, CursorIconWatcherLinux>();
             serviceCollection.AddSingleton<ISessionIndicator, SessionIndicatorLinux>();
