@@ -41,6 +41,7 @@ namespace Remotely.Desktop.Linux.Views
             AvaloniaXamlLoader.Load(this);
 
             Closed += ChatWindow_Closed;
+            Opened += ChatWindow_Opened;
 
             this.FindControl<Border>("TitleBanner").PointerPressed += TitleBanner_PointerPressed;
 
@@ -48,6 +49,12 @@ namespace Remotely.Desktop.Linux.Views
 
             this.FindControl<ItemsControl>("MessagesListBox").ItemContainerGenerator.Materialized += ItemContainerGenerator_Materialized;
         }
+
+        private void ChatWindow_Opened(object sender, EventArgs e)
+        {
+            Topmost = false;
+        }
+
         private async void ItemContainerGenerator_Materialized(object sender, Avalonia.Controls.Generators.ItemContainerEventArgs e)
         {
             // Allows listbox height to adjust to content before scrolling the scrollviewer.

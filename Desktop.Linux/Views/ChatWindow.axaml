@@ -12,6 +12,7 @@
         BorderThickness="1"
         MinHeight="250"
         MinWidth="200"
+        Topmost="True"
         Title="Remotely Chat" Height="450" Width="350">
   
   <Window.DataContext>
