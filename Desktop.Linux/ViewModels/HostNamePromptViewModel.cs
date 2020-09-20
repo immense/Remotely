@@ -8,12 +8,12 @@ namespace Remotely.Desktop.Linux.ViewModels
 {
     public class HostNamePromptViewModel : ReactiveViewModel
     {
-        public string host;
+        public string _host;
 
         public string Host
         {
-            get => host;
-            set => this.RaiseAndSetIfChanged(ref host, value);
+            get => _host;
+            set => this.RaiseAndSetIfChanged(ref _host, value);
         }
 
         public ICommand OKCommand => new Executor((param) =>

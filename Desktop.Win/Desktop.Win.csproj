@@ -7,7 +7,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>Remotely_Desktop</AssemblyName>
     <RootNamespace>Remotely.Desktop.Win</RootNamespace>
-    <ApplicationIcon>favicon.ico</ApplicationIcon>
+    <ApplicationIcon>Assets\favicon.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Description>Desktop client for allowing remote control via the Remotely server.</Description>
     <Copyright>Copyright ©  2020 Translucency Software</Copyright>
@@ -31,8 +31,6 @@
   <ItemGroup>
     <None Remove="Assets\favicon.ico" />
     <None Remove="Assets\Remotely_Icon.png" />
-    <None Remove="favicon.ico" />
-    <None Remove="Remotely_Icon.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,8 +50,6 @@
   <ItemGroup>
     <Resource Include="Assets\favicon.ico" />
     <Resource Include="Assets\Remotely_Icon.png" />
-    <Resource Include="favicon.ico" />
-    <Resource Include="Remotely_Icon.png" />
   </ItemGroup>
 
   <ItemGroup>

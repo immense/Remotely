@@ -10,18 +10,23 @@ using Remotely.Desktop.Core.Interfaces;
 using Avalonia.Controls;
 using Remotely.Desktop.Core.Models;
 using Remotely.Desktop.Core.ViewModels;
+using Avalonia.Threading;
+using Remotely.Desktop.Linux.Views;
+using Remotely.Desktop.Linux.ViewModels;
 
 namespace Remotely.Desktop.Linux.Services
 {
     public class FileTransferServiceLinux : IFileTransferService
     {
         private static readonly SemaphoreSlim _writeLock = new SemaphoreSlim(1);
-        private static readonly ConcurrentDictionary<string, FileStream> partialTransfers = new ConcurrentDictionary<string, FileStream>();
+        private static readonly ConcurrentDictionary<string, FileStream> _partialTransfers = 
+            new ConcurrentDictionary<string, FileStream>();
+        private static readonly ConcurrentDictionary<string, FileTransferWindow> _fileTransferWindows =
+            new ConcurrentDictionary<string, FileTransferWindow>();
         private static volatile bool _messageBoxPending;
 
         public string GetBaseDirectory()
         {
-            // TODO: Is this working on Linux?
             var desktopDir = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
             if (Directory.Exists(desktopDir))
             {
@@ -33,7 +38,26 @@ namespace Remotely.Desktop.Linux.Services
 
         public void OpenFileTransferWindow(Viewer viewer)
         {
-            // TODO: Create file transfer window.
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (_fileTransferWindows.TryGetValue(viewer.ViewerConnectionID, out var window))
+                {
+                    window.Activate();
+                }
+                else
+                {
+                    window = new FileTransferWindow
+                    {
+                        DataContext = new FileTransferWindowViewModel(viewer, this)
+                    };
+                    window.Closed += (sender, arg) =>
+                    {
+                        _fileTransferWindows.Remove(viewer.ViewerConnectionID, out _);
+                    };
+                    _fileTransferWindows.AddOrUpdate(viewer.ViewerConnectionID, window, (k, v) => window);
+                    window.Show();
+                }
+            });
         }
 
         public async Task ReceiveFile(byte[] buffer, string fileName, string messageId, bool endOfFile, bool startOfFile)
@@ -63,10 +87,10 @@ namespace Remotely.Desktop.Linux.Services
                     File.Create(filePath).Close();
 
                     var fs = new FileStream(filePath, FileMode.OpenOrCreate);
-                    partialTransfers.AddOrUpdate(messageId, fs, (k, v) => fs);
+                    _partialTransfers.AddOrUpdate(messageId, fs, (k, v) => fs);
                 }
 
-                var fileStream = partialTransfers[messageId];
+                var fileStream = _partialTransfers[messageId];
 
                 if (buffer?.Length > 0)
                 {
@@ -77,7 +101,7 @@ namespace Remotely.Desktop.Linux.Services
                 if (endOfFile)
                 {
                     fileStream.Close();
-                    partialTransfers.Remove(messageId, out _);
+                    _partialTransfers.Remove(messageId, out _);
                 }
             }
             catch (Exception ex)
@@ -94,9 +118,16 @@ namespace Remotely.Desktop.Linux.Services
             }
         }
 
-        public Task UploadFile(FileUpload file, Viewer viewer)
+        public async Task UploadFile(FileUpload fileUpload, Viewer viewer)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await viewer.SendFile(fileUpload);
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+            }
         }
 
         private async Task ShowTransferComplete()
