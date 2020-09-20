@@ -24,7 +24,7 @@
     </Grid.RowDefinitions>
 
     <StackPanel Grid.Row="0" Orientation="Horizontal">
-      <TextBlock FontWeight="Bold" FontSize="16" Text="Upload files to"></TextBlock>
+      <TextBlock FontWeight="Bold" FontSize="16" Text="Upload files to "></TextBlock>
       <TextBlock FontWeight="Bold" FontSize="16" Text="{Binding ViewerName}"></TextBlock>
     </StackPanel>
 

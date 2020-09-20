@@ -1,5 +1,5 @@
 ﻿using Remotely.Desktop.Core.Interfaces;
-using Remotely.Desktop.Core.Models;
+using Remotely.Desktop.Core.Services;
 using Remotely.Desktop.Core.ViewModels;
 using Remotely.Desktop.Win.ViewModels;
 using Remotely.Desktop.Win.Views;

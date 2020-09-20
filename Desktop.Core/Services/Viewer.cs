@@ -15,7 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Remotely.Desktop.Core.Models
+namespace Remotely.Desktop.Core.Services
 {
     public class Viewer : IDisposable
     {
@@ -164,8 +164,15 @@ namespace Remotely.Desktop.Core.Models
                         FileName = fileUpload.DisplayName,
                         MessageId = messageId
                     };
-                    await SendToViewer(() => RtcSession.SendDto(fileDto),
-                        () => CasterSocket.SendDtoToViewer(fileDto, ViewerConnectionID));
+                    await SendToViewer(async () =>
+                    {
+                        RtcSession.SendDto(fileDto);
+                        await TaskHelper.DelayUntilAsync(() => RtcSession.CurrentBuffer == 0, TimeSpan.MaxValue);
+                    },
+                    async () => 
+                    {
+                        await CasterSocket.SendDtoToViewer(fileDto, ViewerConnectionID);
+                    });
 
                     fileUpload.PercentProgress = fs.Position / fs.Length;
                 }

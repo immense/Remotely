@@ -8,8 +8,8 @@ namespace Remotely.Desktop.Linux.Services
     public class Config
     {
         public string Host { get; set; } = "";
-        private static string ConfigFile => Path.Combine("/var/remotely", "Config.json");
-        private static string ConfigFolder => "/var/remotely";
+        private static string ConfigFile => Path.Combine(ConfigFolder, "Config.json");
+        private static string ConfigFolder => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "remotely");
         public static Config GetConfig()
         {
 
