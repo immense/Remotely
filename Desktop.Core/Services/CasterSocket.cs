@@ -11,7 +11,7 @@ using Remotely.Desktop.Core.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Remotely.Shared.Utilities;
 using System.Threading;
-using Remotely.Desktop.Core.Models;
+using Remotely.Desktop.Core.Services;
 using Remotely.Shared.Models.RemoteControlDtos;
 
 namespace Remotely.Desktop.Core.Services
@@ -127,7 +127,7 @@ namespace Remotely.Desktop.Core.Services
             await Connection.SendAsync("SendRtcOfferToBrowser", sdp, viewerID, iceServers);
         }
 
-        public async Task DisconnectViewer(Viewer viewer, bool notifyViewer)
+        public async Task DisconnectViewer(Services.Viewer viewer, bool notifyViewer)
         {
             viewer.DisconnectRequested = true;
             viewer.Dispose();

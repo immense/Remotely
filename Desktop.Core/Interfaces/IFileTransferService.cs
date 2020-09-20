@@ -1,4 +1,4 @@
-﻿using Remotely.Desktop.Core.Models;
+﻿using Remotely.Desktop.Core.Services;
 using Remotely.Desktop.Core.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ namespace Remotely.Desktop.Core.Interfaces
         string GetBaseDirectory();
 
         Task ReceiveFile(byte[] buffer, string fileName, string messageId, bool endOfFile, bool startOfFile);
-        void OpenFileTransferWindow(Viewer viewer);
-        Task UploadFile(FileUpload file, Viewer viewer);
+        void OpenFileTransferWindow(Services.Viewer viewer);
+        Task UploadFile(FileUpload file, Services.Viewer viewer);
     }
 }

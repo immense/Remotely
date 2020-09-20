@@ -8,7 +8,7 @@ using System.Collections.Concurrent;
 using Remotely.Desktop.Linux.Controls;
 using Remotely.Desktop.Core.Interfaces;
 using Avalonia.Controls;
-using Remotely.Desktop.Core.Models;
+using Remotely.Desktop.Core.Services;
 using Remotely.Desktop.Core.ViewModels;
 using Avalonia.Threading;
 using Remotely.Desktop.Linux.Views;

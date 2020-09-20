@@ -1,6 +1,6 @@
 ﻿using MessagePack;
 using Microsoft.MixedReality.WebRTC;
-using Remotely.Desktop.Core.Models;
+using Remotely.Desktop.Core.Services;
 using Remotely.Shared.Helpers;
 using Remotely.Shared.Models;
 using Remotely.Shared.Models.RemoteControlDtos;
@@ -16,7 +16,7 @@ namespace Remotely.Desktop.Core.Services
 {
     public class WebRtcSession : IDisposable
     {
-        public WebRtcSession(Viewer viewer, IDtoMessageHandler rtcMessageHandler)
+        public WebRtcSession(Services.Viewer viewer, IDtoMessageHandler rtcMessageHandler)
         {
             Viewer = viewer;
             RtcMessageHandler = rtcMessageHandler;
@@ -43,7 +43,7 @@ namespace Remotely.Desktop.Core.Services
         private IDtoMessageHandler RtcMessageHandler { get; }
         private Transceiver Transceiver { get; set; }
         private ExternalVideoTrackSource VideoSource { get; set; }
-        private Viewer Viewer { get; }
+        private Services.Viewer Viewer { get; }
         public void AddIceCandidate(string sdpMid, int sdpMlineIndex, string candidate)
         {
             PeerSession.AddIceCandidate(new IceCandidate()

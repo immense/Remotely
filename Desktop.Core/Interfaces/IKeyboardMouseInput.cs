@@ -1,4 +1,4 @@
-﻿using Remotely.Desktop.Core.Models;
+﻿using Remotely.Desktop.Core.Services;
 
 namespace Remotely.Desktop.Core.Interfaces
 {
@@ -6,11 +6,11 @@ namespace Remotely.Desktop.Core.Interfaces
     {
         void SendKeyDown(string key);
         void SendKeyUp(string key);
-        void SendMouseMove(double percentX, double percentY, Viewer viewer);
-        void SendLeftMouseDown(double percentX, double percentY, Viewer viewer);
-        void SendLeftMouseUp(double percentX, double percentY, Viewer viewer);
-        void SendRightMouseDown(double percentX, double percentY, Viewer viewer);
-        void SendRightMouseUp(double percentX, double percentY, Viewer viewer);
+        void SendMouseMove(double percentX, double percentY, Services.Viewer viewer);
+        void SendLeftMouseDown(double percentX, double percentY, Services.Viewer viewer);
+        void SendLeftMouseUp(double percentX, double percentY, Services.Viewer viewer);
+        void SendRightMouseDown(double percentX, double percentY, Services.Viewer viewer);
+        void SendRightMouseUp(double percentX, double percentY, Services.Viewer viewer);
         void SendMouseWheel(int deltaY);
         void SendText(string transferText);
         void ToggleBlockInput(bool toggleOn);

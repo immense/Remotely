@@ -1,5 +1,5 @@
 ﻿using Remotely.Desktop.Core.Interfaces;
-using Remotely.Desktop.Core.Models;
+using Remotely.Desktop.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,7 +8,7 @@ namespace Remotely.Desktop.Core.Services
 {
     public interface IWebRtcSessionFactory
     {
-        WebRtcSession GetNewSession(Viewer viewer);
+        WebRtcSession GetNewSession(Services.Viewer viewer);
     }
 
     public class WebRtcSessionFactory : IWebRtcSessionFactory
@@ -19,7 +19,7 @@ namespace Remotely.Desktop.Core.Services
         }
         private IDtoMessageHandler MessageHandler { get; }
 
-        public WebRtcSession GetNewSession(Viewer viewer)
+        public WebRtcSession GetNewSession(Services.Viewer viewer)
         {
             return new WebRtcSession(viewer, MessageHandler);
         }

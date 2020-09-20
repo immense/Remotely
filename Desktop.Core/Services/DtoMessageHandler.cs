@@ -1,7 +1,7 @@
 ﻿using MessagePack;
 using Microsoft.Extensions.DependencyInjection;
 using Remotely.Desktop.Core.Interfaces;
-using Remotely.Desktop.Core.Models;
+using Remotely.Desktop.Core.Services;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models.RemoteControlDtos;
 using Remotely.Shared.Utilities;
@@ -18,7 +18,7 @@ namespace Remotely.Desktop.Core.Services
 {
     public interface IDtoMessageHandler
     {
-        Task ParseMessage(Viewer viewer, byte[] message);
+        Task ParseMessage(Services.Viewer viewer, byte[] message);
     }
     public class DtoMessageHandler : IDtoMessageHandler
     {
@@ -37,7 +37,7 @@ namespace Remotely.Desktop.Core.Services
         private IClipboardService ClipboardService { get; }
         private IFileTransferService FileTransferService { get; }
         private IKeyboardMouseInput KeyboardMouseInput { get; }
-        public async Task ParseMessage(Viewer viewer, byte[] message)
+        public async Task ParseMessage(Services.Viewer viewer, byte[] message)
         {
             try
             {
@@ -166,12 +166,12 @@ namespace Remotely.Desktop.Core.Services
                 dto.StartOfFile);
         }
 
-        private async Task GetWindowsSessions(Viewer viewer)
+        private async Task GetWindowsSessions(Services.Viewer viewer)
         {
             await viewer.SendWindowsSessions();
         }
 
-        private void HandleFrameReceived(Viewer viewer)
+        private void HandleFrameReceived(Services.Viewer viewer)
         {
             for (int i = 0; i < 5; i++)
             {
@@ -202,7 +202,7 @@ namespace Remotely.Desktop.Core.Services
             KeyboardMouseInput.SendKeyUp(dto.Key);
         }
 
-        private void MouseDown(byte[] message, Viewer viewer)
+        private void MouseDown(byte[] message, Services.Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<MouseDownDto>(message);
             if (dto.Button == 0)
@@ -215,13 +215,13 @@ namespace Remotely.Desktop.Core.Services
             }
         }
 
-        private void MouseMove(byte[] message, Viewer viewer)
+        private void MouseMove(byte[] message, Services.Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<MouseMoveDto>(message);
             KeyboardMouseInput.SendMouseMove(dto.PercentX, dto.PercentY, viewer);
         }
 
-        private void MouseUp(byte[] message, Viewer viewer)
+        private void MouseUp(byte[] message, Services.Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<MouseUpDto>(message);
             if (dto.Button == 0)
@@ -240,23 +240,23 @@ namespace Remotely.Desktop.Core.Services
             KeyboardMouseInput.SendMouseWheel(-(int)dto.DeltaY);
         }
 
-        private void OpenFileTransferWindow(Viewer viewer)
+        private void OpenFileTransferWindow(Services.Viewer viewer)
         {
             FileTransferService.OpenFileTransferWindow(viewer);
         }
-        private void QualityChange(byte[] message, Viewer viewer)
+        private void QualityChange(byte[] message, Services.Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<QualityChangeDto>(message);
             viewer.ImageQuality = dto.QualityLevel;
         }
 
-        private void SelectScreen(byte[] message, Viewer viewer)
+        private void SelectScreen(byte[] message, Services.Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<SelectScreenDto>(message);
             viewer.Capturer.SetSelectedScreen(dto.DisplayName);
         }
 
-        private void SetAutoQualityAdjust(byte[] message, Viewer viewer)
+        private void SetAutoQualityAdjust(byte[] message, Services.Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<AutoQualityAdjustDto>(message);
             viewer.AutoAdjustQuality = dto.IsOn;
@@ -267,7 +267,7 @@ namespace Remotely.Desktop.Core.Services
             KeyboardMouseInput.SetKeyStatesUp();
         }
 
-        private void Tap(byte[] message, Viewer viewer)
+        private void Tap(byte[] message, Services.Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<TapDto>(message);
             KeyboardMouseInput.SendLeftMouseDown(dto.PercentX, dto.PercentY, viewer);
@@ -286,7 +286,7 @@ namespace Remotely.Desktop.Core.Services
             KeyboardMouseInput.ToggleBlockInput(dto.ToggleOn);
         }
 
-        private void ToggleWebRtcVideo(byte[] message, Viewer viewer)
+        private void ToggleWebRtcVideo(byte[] message, Services.Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<ToggleWebRtcVideoDto>(message);
             viewer.ToggleWebRtcVideo(dto.ToggleOn);
