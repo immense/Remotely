@@ -94,12 +94,15 @@ namespace Remotely.Desktop.Win.ViewModels
 
         public async Task UploadFile(string filePath)
         {
-            var fileUpload = new FileUpload()
+            await App.Current.Dispatcher.InvokeAsync(async () =>
             {
-                FilePath = filePath
-            };
-            FileUploads.Add(fileUpload);
-            await _fileTransferService.UploadFile(fileUpload, _viewer);
+                var fileUpload = new FileUpload()
+                {
+                    FilePath = filePath
+                };
+                FileUploads.Add(fileUpload);
+                await _fileTransferService.UploadFile(fileUpload, _viewer);
+            });
         }
 
         public ICommand RemoveFileUpload => new Executor((param) =>
