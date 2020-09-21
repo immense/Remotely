@@ -260,12 +260,18 @@
             <p>&copy; @DateTimeOffset.Now.Year - Translucency Software</p>
         </div>
     </footer>
-    <script type="module" src="~/scripts/RemoteControl/Main.js">
-    </script>
-    <script>
-        window.onload = () => {
-            Remotely.Init();
-        }
+    <script src="~/lib/require.js"></script>
+
+    <script defer>
+        require.config({
+            paths: {
+                "RemoteControl/App": "outViewer"
+            }
+        });
+        require(["RemoteControl/App"], function (remotely) {
+            remotely.ViewerApp.Init();
+        });
+
     </script>
 </body>
 </html>
