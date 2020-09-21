@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Threading;
 using ReactiveUI;
 using Remotely.Desktop.Core.Interfaces;
 using Remotely.Desktop.Core.Services;
@@ -80,12 +81,15 @@ namespace Remotely.Desktop.Linux.ViewModels
 
         public async Task UploadFile(string filePath)
         {
-            var fileUpload = new FileUpload()
+            await Dispatcher.UIThread.InvokeAsync(async () =>
             {
-                FilePath = filePath
-            };
-            FileUploads.Add(fileUpload);
-            await _fileTransferService.UploadFile(fileUpload, _viewer);
+                var fileUpload = new FileUpload()
+                {
+                    FilePath = filePath
+                };
+                FileUploads.Add(fileUpload);
+                await _fileTransferService.UploadFile(fileUpload, _viewer);
+            });
         }
 
         public ICommand RemoveFileUpload => new Executor((param) =>
