@@ -281,3 +281,5 @@ Server/wwwroot/Downloads/Win-x86/Remotely_Desktop.exe
 /Desktop.Win.Wrapper/Remotely_Desktop.zip
 /Server/Remotely.db-wal
 /Server/Remotely.db-shm
+/Server/wwwroot/out.js
+/Server/wwwroot/out.js.map

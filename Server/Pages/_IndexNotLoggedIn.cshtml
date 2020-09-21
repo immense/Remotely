@@ -27,4 +27,14 @@
     </div>
 </div>
 
-<script type="module" src="~/src/Pages/IndexNotLoggedIn.js"></script>
+<script>
+    require.config({
+        paths: {
+            "App": "out"
+        }
+    });
+    require(["App"], function (remotely) {
+        remotely.App.Pages.IndexNotLoggedIn.Init();
+    });
+
+</script>

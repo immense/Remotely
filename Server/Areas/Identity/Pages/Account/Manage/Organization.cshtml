@@ -223,7 +223,15 @@
 
     }
 
-    <script type="module" src="~/src/Pages/OrganizationManagement.js">
+    <script>
+        require.config({
+            paths: {
+                "App": "/out"
+            }
+        });
+        require(["App"], function (remotely) {
+            remotely.App.Pages.OrganizationManagement.Init();
+        });
     </script>
 
 }

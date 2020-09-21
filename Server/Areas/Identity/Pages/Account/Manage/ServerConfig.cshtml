@@ -263,13 +263,21 @@
         </div>
     </div>
 
-    <script type="module" src="~/src/Pages/ServerConfig.js"></script>
+    <script>
+        require.config({
+            paths: {
+                "App": "/out"
+            }
+        });
+        require(["App"], function (remotely) {
+            remotely.App.Pages.ServerConfig.Init();
+        });
+    </script>
     <style>
         input[type='checkbox'] {
             width: 25px;
             height: 25px;
         }
-
     </style>
 
 }

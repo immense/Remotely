@@ -24,7 +24,7 @@
 
     @if (user is RemotelyUser)
     {
-      
+
         switch (user.UserOptions.Theme)
         {
             case Remotely.Shared.Enums.Theme.Light:
@@ -70,6 +70,9 @@
         <script src="~/lib/signalr/msgpack5.min.js"></script>
         <script src="~/lib/signalr/signalr-protocol-msgpack.min.js"></script>
     </environment>
+
+    <script src="~/lib/require.js"></script>
+
 </head>
 <body>
     <header>

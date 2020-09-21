@@ -7,7 +7,7 @@
     "target": "es2017",
     "module": "AMD",
     "allowJs": false,
-    "outFile": "../../outMain.js",
+    "outFile": "../out.js",
     "moduleResolution": "Node"
   },
   "exclude": [

@@ -1,4 +1,12 @@
-﻿function typeText(textParts: string[], header: HTMLHeadingElement) {
+﻿export const IndexNotLoggedIn = {
+    Init() {
+        var header = document.getElementById("remotelyHeader") as HTMLHeadingElement;
+
+        typeText(text, header);
+    }
+}
+
+function typeText(textParts: string[], header: HTMLHeadingElement) {
     var currentText = textParts[0];
     textParts[0] = currentText.slice(1);
 
@@ -29,7 +37,7 @@
             window.setTimeout(() => {
                 typeText(textParts, header);
             }, timeout);
-        }   
+        }
     }
 }
 
@@ -40,7 +48,3 @@ var text = [
     "          ",
     "ly"
 ];
-
-var header = document.getElementById("remotelyHeader") as HTMLHeadingElement;
-
-typeText(text, header);
