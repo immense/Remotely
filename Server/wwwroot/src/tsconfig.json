@@ -8,7 +8,8 @@
     "module": "AMD",
     "allowJs": false,
     "outFile": "../out.js",
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "typeRoots": [ "../lib/@types/" ]
   },
   "exclude": [
     "node_modules",
