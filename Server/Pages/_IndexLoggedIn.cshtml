@@ -71,12 +71,20 @@
 
 </div>
 
+<script src="~/lib/require.js"></script>
 
-<script src="~/scripts/Main/Main.js" type="module"></script>
-<script>
-    window.onload = (ev) => {
-        Remotely.Init();
+<script defer>
+    require.config({
+        paths: {
+            "Main/App": "outMain"
+        }
+    });
+    require(["Main/App"], function (remotely) {
+        console.log("app loaded");
+        console.log(remotely);
+        remotely.MainApp.Init();
         document.querySelector(".loading-wheel").remove();
         document.querySelector(".work-area").classList.remove("hidden");
-    }
+    });
+
 </script>

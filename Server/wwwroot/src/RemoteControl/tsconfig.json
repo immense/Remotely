@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "removeComments": false,
+    "sourceMap": true,
+    "target": "es2017",
+    "module": "AMD",
+    "allowJs": false,
+    "outFile": "../../outViewer.js",
+    "moduleResolution": "Node"
+  },
+  "exclude": [
+    "node_modules",
+    "obj",
+    "bin"
+  ],
+  "compileOnSave": true
+}
