@@ -30,5 +30,7 @@ export const MainApp = {
         UI.ConsoleTextArea.focus();
         ApplyInputEventHandlers();
         HubConnection.Connect();
+        document.querySelector(".loading-wheel").remove();
+        document.querySelector(".work-area").classList.remove("hidden");
     }
 }

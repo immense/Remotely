@@ -71,20 +71,15 @@
 
 </div>
 
-<script src="~/lib/require.js"></script>
 
-<script defer>
+
+<script>
     require.config({
         paths: {
-            "Main/App": "outMain"
+            "App": "out"
         }
     });
-    require(["Main/App"], function (remotely) {
-        console.log("app loaded");
-        console.log(remotely);
-        remotely.MainApp.Init();
-        document.querySelector(".loading-wheel").remove();
-        document.querySelector(".work-area").classList.remove("hidden");
+    require(["App"], function (remotely) {
+        remotely.App.Main.Init();
     });
-
 </script>

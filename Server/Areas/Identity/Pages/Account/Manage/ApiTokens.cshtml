@@ -92,7 +92,15 @@
         </div>
     </div>
 
-    <script type="module" src="~/src/Pages/ApiTokens.js">
+    <script>
+        require.config({
+            paths: {
+                "App": "/out"
+            }
+        });
+        require(["App"], function (remotely) {
+            remotely.App.Pages.ApiTokens.Init();
+        });
     </script>
 
 }
