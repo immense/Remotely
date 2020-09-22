@@ -3,7 +3,6 @@ using Remotely.Desktop.Win.Services;
 using Remotely.Shared.Models;
 using Remotely.Desktop.Core;
 using Remotely.Desktop.Core.Services;
-using Remotely.Desktop.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

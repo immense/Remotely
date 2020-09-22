@@ -8,7 +8,6 @@ using Remotely.Desktop.Linux.Views;
 using Remotely.Desktop.Core;
 using Remotely.Desktop.Core.Interfaces;
 using Remotely.Desktop.Core.Services;
-using Remotely.Desktop.Core.Services;
 using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;

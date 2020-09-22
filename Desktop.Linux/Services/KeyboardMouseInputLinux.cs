@@ -2,7 +2,6 @@
 using Remotely.Desktop.Core.Services;
 using Remotely.Desktop.Linux.X11Interop;
 using System;
-using Remotely.Desktop.Core.Services;
 using Remotely.Shared.Utilities;
 
 namespace Remotely.Desktop.Linux.Services
