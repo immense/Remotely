@@ -186,10 +186,10 @@ jobs:
 
     # Uncomment the below to enable deployment to the server.
     # Publish server to IIS
-    #- name: Publish
-    #  run: | 
-    #    echo "Publishing with configuration $env:Configuration."
-    #    dotnet publish /p:Platform="x64" /p:Configuration="$env:Configuration" /p:PublishProfile="DeployIIS" /p:Password=$env:MsDeployPassword /p:Version=$env:CurrentVersion /p:FileVersion=$env:CurrentVersion ".\Server"
+    - name: Publish
+      run: | 
+        echo "Publishing with configuration $env:Configuration."
+        dotnet publish /p:Platform="x64" /p:Configuration="$env:Configuration" /p:PublishProfile="DeployIIS" /p:Password=$env:MsDeployPassword /p:Version=$env:CurrentVersion /p:FileVersion=$env:CurrentVersion ".\Server"
 
     # Remove the pfx
     - name: Remove the pfx

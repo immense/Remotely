@@ -17,9 +17,7 @@ Subreddit: https://www.reddit.com/r/remotely_app/
 ## Build Instructions (GitHub)
 GitHub Actions allows you to build and deploy Remotely for free from their cloud servers.  The definitions for the build processes are located in `/.github/workflows/` folder.
 
-After forking the repo, it's recommended that you use the `release` branch to deploy the server.  The deployment sections are uncommented in `release`, but they are commented out and won't run in `master`.
-
-Refer to the instructions in the workflow YML files.
+After forking the repo, follow the instructions in the workflow YML file for configuring GitHub Secrets, then run the workflow.
 
 ## Build Instructions (Windows 10)  
 The following steps will configure your Windows 10 machine for building the Remotely server and clients.
@@ -81,6 +79,39 @@ The following steps will configure your Windows 10 machine for building the Remo
 There are countless ways to host an ASP.NET Core app, and I can't document or automate all of them.  For hosting scenarios aside from the above two, please refer to Microsoft's documentation.
 - https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/?view=aspnetcore-3.1
 
+
+## Configuration
+The following settings are available in appsettings.json, under the ApplicationOptions section.
+
+When deployed to production, the application will use the `appsettings.Production.json` file, if it's present. To retain your settings between upgrades, copy your `appsettings.json` file to `appsettings.Production.json` on your production server, then make your configuration changes.
+
+Likewise, `appsettings.Development.json` can be used while developing in Visual Studio to override the other.
+
+Whenever there's a reference to `appsettings.json` in this document, it refers to whichever file is currently being used.
+
+* AllowApiLogin: Whether to allow logging in via the API controller.  API access tokens are recommended over this approach.
+* DataRetentionInDays: How long event logs and remote command logs will be kept.
+* DBProvider: Determines which of the three connection strings (at the top) will be used.  The appropriate DB provider for the database type is automatically loaded in code.
+* DefaultPrompt: The default prompt string you'll see for each line on the console.
+* EnableWindowsEventLog: Whether to also add server log entries to the Windows Event Log.
+* IceServers: The ICE (STUN/TURN) servers to use for WebRTC.
+* KnownProxies: If your Nginx server is on a different machine and is forwarding requests to the Remotely server, you will need to add the IP of the Nginx server to this array.
+* MaxOrganizationCount: By default, one organization can exist on the server, which is created automatically when the first account is registered.  Afterward, self-registration will be disabled.
+    * Set this to -1 or increase it to a specific number to allow multi-tenancy.
+* RedirectToHttps: Whether ASP.NET Core will redirect all traffic from HTTP to HTTPS.  This is independent of Nginx and IIS configurations that do the same.
+* RemoteControlNotifyUsers: Whether to show a notification to the end user when an unattended remote control session starts.
+* RemoteControlSessionLimit: How many concurrent remote control sessions are allowed per organization.
+* RemoteControlRequiresAuthentication: Whether the remote control page requires authentication to establish a connection.
+* Require2FA: Require users to set up 2FA before they can use the main app.
+* Smpt*: SMTP settings for auto-generated system emails (such as registration and password reset).
+* Theme: The color theme to use for the site.  Values are "Light" or "Dark".  This can also be configured per-user in Account - Options.
+* TrustedCorsOrigins: For cross-origin API requests via JavaScript.  The websites listed in this array with be allowed to make requests to the API.  This does not grant authentication, which is still required on most endpoints.
+* UseHsts: Whether ASP.NET Core will use HTTP Strict Transport Security.
+* UseWebRtc: Attempt to create a peer-to-peer connection via WebRTC for screen sharing.
+    * Only works on Windows agents.
+
+
+
 ## Changing the Database
 By default, Remotely uses a SQLite database.  When first run, it creates a file as specified for the SQLite connection string in appsettings.json.
 
@@ -128,33 +159,6 @@ Ideally, you'd be doing remote control from an actual computer or laptop.  Howev
 There's a page at `/GetSupport` where end users can request support.  When the form is submitted, an alert appears on the main page, above the grid.
 
 A shortcut to this page is placed in the `\Program Files\Remotely\` folder.  You can copy it anywhere you like.  You can also have it copied to the desktop automatically by using the `-supportshortcut` switch on the installer.
-
-## Configuration
-The following settings are available in appsettings.json.
-
-Note: To retain your settings between upgrades, copy your settings to appsettings.Production.json, which will supersede the original.
-
-* AllowApiLogin: Whether to allow logging in via the API controller.  API access tokens are recommended over this approach.
-* DataRetentionInDays: How long event logs and remote command logs will be kept.
-* DBProvider: Determines which of the three connection strings (at the top) will be used.  The appropriate DB provider for the database type is automatically loaded in code.
-* DefaultPrompt: The default prompt string you'll see for each line on the console.
-* EnableWindowsEventLog: Whether to also add server log entries to the Windows Event Log.
-* IceServers: The ICE (STUN/TURN) servers to use for WebRTC.
-* KnownProxies: If your Nginx server is on a different machine and is forwarding requests to the Remotely server, you will need to add the IP of the Nginx server to this array.
-* MaxOrganizationCount: By default, one organization can exist on the server, which is created automatically when the first account is registered.  Afterward, self-registration will be disabled.
-    * Set this to -1 or increase it to a specific number to allow multi-tenancy.
-* RedirectToHttps: Whether ASP.NET Core will redirect all traffic from HTTP to HTTPS.  This is independent of Nginx and IIS configurations that do the same.
-* RemoteControlNotifyUsers: Whether to show a notification to the end user when an unattended remote control session starts.
-* RemoteControlSessionLimit: How many concurrent remote control sessions are allowed per organization.
-* RemoteControlRequiresAuthentication: Whether the remote control page requires authentication to establish a connection.
-* Require2FA: Require users to set up 2FA before they can use the main app.
-* Smpt*: SMTP settings for auto-generated system emails (such as registration and password reset).
-* Theme: The color theme to use for the site.  Values are "Light" or "Dark".  This can also be configured per-user in Account - Options.
-* TrustedCorsOrigins: For cross-origin API requests via JavaScript.  The websites listed in this array with be allowed to make requests to the API.  This does not grant authentication, which is still required on most endpoints.
-* UseHsts: Whether ASP.NET Core will use HTTP Strict Transport Security.
-* UseWebRtc: Attempt to create a peer-to-peer connection via WebRTC for screen sharing.
-    * Only works on Windows agents.
-
 	
 ## .NET Core Deployments
 * .NET Core has two methods of deployment: framework-dependent and self-contained.
