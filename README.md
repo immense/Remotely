@@ -32,6 +32,8 @@ The following steps will configure your Windows 10 machine for building the Remo
 		* .NET Framework 4.6.2 SDK.
 		* .NET Framework 4.6.2 targeting pack.
 	    * For debugging and development, you'll need all relevant workloads.
+* Install Node.js.
+	* Link: https://nodejs.org/
 * Install Git for Windows.
     * Link: https://git-scm.com/downloads
 * Clone the git repository: `git clone https://github.com/lucent-sea/remotely`
@@ -87,6 +89,7 @@ You can change database by changing `DBProvider` in `ApplicationOptions` to `SQL
 However, in order for the server to run properly, you must also recreate the migration files and recompile the server.  Migration files are C# files that get compiled into the server app, and they tell the server how to create the database with the proper schema.
 
 Here's what you need to do:
+- Set the `DBProvider` property to the desired database type.
 - Delete the `Migrations` folder under the `Server` project.
 - Open a console in the `Server` directory and type `dotnet ef migrations add "Initial"`.
 - Set the connection string for the new database provider in the server's `appsettings.Production.json`.
