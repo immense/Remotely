@@ -89,6 +89,8 @@ Likewise, `appsettings.Development.json` can be used while developing in Visual 
 
 Whenever there's a reference to `appsettings.json` in this document, it refers to whichever file is currently being used.
 
+For more information on configuring ASP.NET Core, see https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-3.1.
+
 * AllowApiLogin: Whether to allow logging in via the API controller.  API access tokens are recommended over this approach.
 * DataRetentionInDays: How long event logs and remote command logs will be kept.
 * DBProvider: Determines which of the three connection strings (at the top) will be used.  The appropriate DB provider for the database type is automatically loaded in code.
