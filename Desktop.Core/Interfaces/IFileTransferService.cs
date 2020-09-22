@@ -12,7 +12,7 @@ namespace Remotely.Desktop.Core.Interfaces
         string GetBaseDirectory();
 
         Task ReceiveFile(byte[] buffer, string fileName, string messageId, bool endOfFile, bool startOfFile);
-        void OpenFileTransferWindow(Services.Viewer viewer);
-        Task UploadFile(FileUpload file, Services.Viewer viewer);
+        void OpenFileTransferWindow(Viewer viewer);
+        Task UploadFile(FileUpload file, Viewer viewer, Action<double> progressUpdateCallback);
     }
 }

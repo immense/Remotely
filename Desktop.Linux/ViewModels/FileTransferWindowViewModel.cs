@@ -81,14 +81,22 @@ namespace Remotely.Desktop.Linux.ViewModels
 
         public async Task UploadFile(string filePath)
         {
-            await Dispatcher.UIThread.InvokeAsync(async () =>
+            var fileUpload = new FileUpload()
             {
-                var fileUpload = new FileUpload()
-                {
-                    FilePath = filePath
-                };
+                FilePath = filePath
+            };
+
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
                 FileUploads.Add(fileUpload);
-                await _fileTransferService.UploadFile(fileUpload, _viewer);
+            });
+
+            await _fileTransferService.UploadFile(fileUpload, _viewer, async progress =>
+            {
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    fileUpload.PercentProgress = progress;
+                });
             });
         }
 

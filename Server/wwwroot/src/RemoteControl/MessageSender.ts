@@ -117,7 +117,7 @@ export class MessageSender {
                 ViewerApp.RtcSession.SendDto(dto);
                 await When(() => ViewerApp.RtcSession.DataChannel.bufferedAmount == 0, 10);
             }, async () => {
-                    await ViewerApp.ViewerHubConnection.SendDtoToClient(dto);
+                await ViewerApp.ViewerHubConnection.SendDtoToClient(dto);
             });
 
             if (i > 0) {

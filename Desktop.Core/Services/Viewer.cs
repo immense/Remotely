@@ -138,7 +138,7 @@ namespace Remotely.Desktop.Core.Services
             }
         }
 
-        public async Task SendFile(FileUpload fileUpload)
+        public async Task SendFile(FileUpload fileUpload, Action<double> progressUpdateCallback)
         {
             try
             {
@@ -164,17 +164,19 @@ namespace Remotely.Desktop.Core.Services
                         FileName = fileUpload.DisplayName,
                         MessageId = messageId
                     };
+
                     await SendToViewer(async () =>
                     {
-                        RtcSession.SendDto(fileDto);
-                        await TaskHelper.DelayUntilAsync(() => RtcSession.CurrentBuffer == 0, TimeSpan.MaxValue);
+                        await RtcSession.SendDto(fileDto);
+                        //await TaskHelper.DelayUntilAsync(() => RtcSession.CurrentBuffer > 0, TimeSpan.FromSeconds(1), 100);
+                        await TaskHelper.DelayUntilAsync(() => RtcSession.CurrentBuffer == 0, TimeSpan.MaxValue, 100);
                     },
                     async () => 
                     {
                         await CasterSocket.SendDtoToViewer(fileDto, ViewerConnectionID);
                     });
 
-                    fileUpload.PercentProgress = fs.Position / fs.Length;
+                    progressUpdateCallback((double)fs.Position / fs.Length);
                 }
 
                 fileDto = new FileDto()
@@ -188,7 +190,7 @@ namespace Remotely.Desktop.Core.Services
                 await SendToViewer(() => RtcSession.SendDto(fileDto),
                     () => CasterSocket.SendDtoToViewer(fileDto, ViewerConnectionID));
 
-                fileUpload.PercentProgress = 1;
+                progressUpdateCallback(1);
             }
             catch (Exception ex)
             {
@@ -246,13 +248,8 @@ namespace Remotely.Desktop.Core.Services
                     ImageQuality = imageQuality
                 };
 
-                await SendToViewer(() =>
-                {
-                    RtcSession.SendDto(dto);
-                }, async () =>
-                {
-                    await CasterSocket.SendDtoToViewer(dto, ViewerConnectionID);
-                });
+                await SendToViewer(() => RtcSession.SendDto(dto),
+                    () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
             }
 
             var endOfFrameDto = new CaptureFrameDto()
@@ -265,13 +262,8 @@ namespace Remotely.Desktop.Core.Services
                 ImageQuality = imageQuality
             };
 
-            await SendToViewer(() =>
-            {
-                RtcSession.SendDto(endOfFrameDto);
-            }, async () =>
-            {
-                await CasterSocket.SendDtoToViewer(endOfFrameDto, ViewerConnectionID);
-            });
+            await SendToViewer(() => RtcSession.SendDto(endOfFrameDto),
+                () => CasterSocket.SendDtoToViewer(endOfFrameDto, ViewerConnectionID));
         }
 
         public async Task SendScreenData(string selectedScreen, string[] displayNames)
@@ -333,12 +325,11 @@ namespace Remotely.Desktop.Core.Services
         {
             await SendClipboardText(clipboardText);
         }
-        private Task SendToViewer(Action webRtcSend, Func<Task> websocketSend)
+        private Task SendToViewer(Func<Task> webRtcSend, Func<Task> websocketSend)
         {
             if (IsUsingWebRtc)
             {
-                webRtcSend();
-                return Task.CompletedTask;
+                return webRtcSend();
             }
             else
             {
