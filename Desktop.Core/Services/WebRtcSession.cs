@@ -109,9 +109,10 @@ namespace Remotely.Desktop.Core.Services
             PeerSession.CreateOffer();
         }
 
-        public void SendDto<T>(T dto) where T : BaseDto
+        public Task SendDto<T>(T dto) where T : BaseDto
         {
             CaptureChannel.SendMessage(MessagePackSerializer.Serialize(dto));
+            return Task.CompletedTask;
         }
 
         public async Task SetRemoteDescription(string type, string sdp)

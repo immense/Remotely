@@ -91,10 +91,10 @@ namespace Remotely.Desktop.Core.Services
             await Connection.SendAsync("NotifyViewersRelaunchedScreenCasterReady", viewerIDs);
         }
 
-        public async Task SendDtoToViewer<T>(T baseDto, string viewerId)
+        public Task SendDtoToViewer<T>(T baseDto, string viewerId)
         {
             var serializedDto = MessagePack.MessagePackSerializer.Serialize(baseDto);
-            await Connection.SendAsync("SendDtoToBrowser", serializedDto, viewerId);
+            return Connection.SendAsync("SendDtoToBrowser", serializedDto, viewerId);
         }
 
         public async Task SendConnectionFailedToViewers(List<string> viewerIDs)

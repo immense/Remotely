@@ -17,14 +17,17 @@ namespace Remotely.Shared.Helpers
             return condition();
         }
 
-        public static async Task<bool> DelayUntilAsync(Func<bool> condition, TimeSpan timeout, int pollingMs = 10)
+        public static Task<bool> DelayUntilAsync(Func<bool> condition, TimeSpan timeout, int pollingMs = 10)
         {
-            var sw = Stopwatch.StartNew();
-            while (!condition() && sw.Elapsed < timeout)
+            return Task.Run(() =>
             {
-                await Task.Delay(pollingMs);
-            }
-            return condition();
+                var sw = Stopwatch.StartNew();
+                while (!condition() && sw.Elapsed < timeout)
+                {
+                    Thread.Sleep(pollingMs);
+                }
+                return condition();
+            });
         }
     }
 }

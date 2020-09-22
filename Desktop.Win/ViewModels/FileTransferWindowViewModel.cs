@@ -44,14 +44,22 @@ namespace Remotely.Desktop.Win.ViewModels
                 "Users", 
                 Win32Interop.GetUsernameFromSessionId((uint)Process.GetCurrentProcess().SessionId));
             
-            var ofd = new OpenFileDialog
+            var ofd = new OpenFileDialog()
             {
                 Title = "Upload File via Remotely",
                 Multiselect = true,
                 CheckFileExists = true,
                 InitialDirectory = Directory.Exists(userDir) ? userDir : rootDir
             };
-            
+
+            try
+            {
+                // The OpenFileDialog throws an error if SYSTEM doesn't have a Desktop folder.
+                var desktop = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Desktop");
+                Directory.CreateDirectory(desktop);
+            }
+            catch { }
+
             var result = ofd.ShowDialog();
             if (result == DialogResult.Cancel)
             {
@@ -94,14 +102,19 @@ namespace Remotely.Desktop.Win.ViewModels
 
         public async Task UploadFile(string filePath)
         {
-            await App.Current.Dispatcher.InvokeAsync(async () =>
+            var fileUpload = new FileUpload()
             {
-                var fileUpload = new FileUpload()
-                {
-                    FilePath = filePath
-                };
+                FilePath = filePath
+            };
+
+            App.Current.Dispatcher.Invoke(() =>
+            {
                 FileUploads.Add(fileUpload);
-                await _fileTransferService.UploadFile(fileUpload, _viewer);
+            });
+
+            await _fileTransferService.UploadFile(fileUpload, _viewer, (double progress) =>
+            {
+                App.Current.Dispatcher.Invoke(() => fileUpload.PercentProgress = progress);
             });
         }
 

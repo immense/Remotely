@@ -158,15 +158,17 @@ namespace Remotely.Desktop.Win
             if (Win32Interop.GetCurrentDesktop(out var currentDesktopName))
             {
                 Logger.Write($"Setting initial desktop to {currentDesktopName}.");
-                if (!Win32Interop.SwitchToInputDesktop())
-                {
-                    Logger.Write("Failed to set initial desktop.");
-                }
             }
             else
             {
                 Logger.Write("Failed to get initial desktop name.");
             }
+
+            if (!Win32Interop.SwitchToInputDesktop())
+            {
+                Logger.Write("Failed to set initial desktop.");
+            }
+
             await SendReadyNotificationToViewers();
             Services.GetRequiredService<IdleTimer>().Start();
             CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;

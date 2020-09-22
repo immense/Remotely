@@ -64,12 +64,6 @@ namespace Remotely.Desktop.Core.Services
                     SessionIndicator.Show();
                 }
 
-                if (EnvironmentHelper.IsWindows)
-                {
-                    Win32Interop.SwitchToInputDesktop();
-                    await viewer.InitializeWebRtc();
-                }
-
                 await viewer.SendMachineName(Environment.MachineName);
 
                 await viewer.SendScreenData(
@@ -98,7 +92,10 @@ namespace Remotely.Desktop.Core.Services
                          viewer.Capturer.CurrentScreenBounds.Height);
                 }
 
- 
+                if (EnvironmentHelper.IsWindows)
+                {
+                    await viewer.InitializeWebRtc();
+                }
 
                 while (!viewer.DisconnectRequested && viewer.IsConnected)
                 {
