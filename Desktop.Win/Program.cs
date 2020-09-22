@@ -10,7 +10,6 @@ using Remotely.Desktop.Win.Services;
 using Remotely.Desktop.Core.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Remotely.Desktop.Core.Services;
 using Remotely.Shared.Utilities;
 using System.Windows;
 using Remotely.Desktop.Win.Views;

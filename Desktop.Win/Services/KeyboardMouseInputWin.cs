@@ -5,7 +5,6 @@ using Remotely.Shared.Win32;
 using static Remotely.Shared.Win32.User32;
 using System.Windows.Forms;
 using System.Threading;
-using Remotely.Desktop.Core.Services;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Remotely.Desktop.Core;

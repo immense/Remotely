@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using Remotely.Desktop.Core;
 using Remotely.Desktop.Core.Interfaces;
 using Remotely.Desktop.Core.Services;
-using Remotely.Desktop.Core.Services;
 using Remotely.Desktop.Linux.Services;
 using Remotely.Desktop.Linux.Views;
 using Remotely.Shared.Utilities;

@@ -1,7 +1,6 @@
 ﻿using Remotely.Shared.Models;
 using Remotely.Desktop.Core.Enums;
 using Remotely.Desktop.Core.Services;
-using Remotely.Desktop.Core.Services;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
