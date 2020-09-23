@@ -1,4 +1,6 @@
 ﻿@page
+@using Remotely.Server.Hubs
+@inject Remotely.Server.Services.DataService DataService
 @model ServerConfigModel
 @{
     ViewData["Title"] = "Server Config";
@@ -8,17 +10,40 @@
 
 @if (Model.IsServerAdmin)
 {
-    <partial name="_StatusMessage" for="StatusMessage" />
+    <h5 class="mt-3">Server Info</h5>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-4" style="display:flex; justify-content: space-evenly">
+                <div class="d-inline-block text-center mr-2">
+                    <label>Devices Online</label>
+                    <br />
+                    <span class="badge badge-primary p-2">@AgentHub.ServiceConnections.Count</span>
+                </div>
+                <div class="d-inline-block text-center mr-2">
+                    <label>Devices Total</label>
+                    <br />
+                    <span class="badge badge-primary p-2">@DataService.GetTotalDevices()</span>
+                </div>
+                <div class="d-inline-block text-center">
+                    <label>Environment</label>
+                    <br />
+                    <span class="badge badge-primary p-2">@Model.Environment</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-6">
             <form id="serverConfigForm" method="post" autocomplete="off">
-                <div class="text-right">
-                    <span class="badge badge-info p-2">Environment: @Model.Environment</span>
-                </div>
+
+                <h5>Application Settings</h5>
+
+                <partial name="_StatusMessage" for="StatusMessage" />
+
                 <div asp-validation-summary="All" class="text-danger"></div>
-
-                <h4>Application Settings</h4>
-
 
                 <div class="form-group">
                     <label asp-for="AppSettingsInput.AllowApiLogin"></label>
