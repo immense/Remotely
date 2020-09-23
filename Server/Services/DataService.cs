@@ -767,6 +767,11 @@ namespace Remotely.Server.Services
             return RemotelyContext.SharedFiles.Find(fileID);
         }
 
+        public int GetTotalDevices()
+        {
+            return RemotelyContext.Devices.Count();
+        }
+
         public RemotelyUser GetUserByID(string userID)
         {
             if (userID == null)
