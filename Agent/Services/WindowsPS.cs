@@ -12,16 +12,20 @@ namespace Remotely.Agent.Services
         public WindowsPS(ConfigService configService)
         {
             ConfigService = configService;
-            var psi = new ProcessStartInfo("powershell.exe");
-            psi.WindowStyle = ProcessWindowStyle.Hidden;
-            psi.Verb = "RunAs";
-            psi.RedirectStandardError = true;
-            psi.RedirectStandardInput = true;
-            psi.RedirectStandardOutput = true;
+            var psi = new ProcessStartInfo("powershell.exe")
+            {
+                WindowStyle = ProcessWindowStyle.Hidden,
+                Verb = "RunAs",
+                RedirectStandardError = true,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true
+            };
 
-            PSProc = new Process();
-            PSProc.StartInfo = psi;
-            PSProc.EnableRaisingEvents = true;
+            PSProc = new Process
+            {
+                StartInfo = psi,
+                EnableRaisingEvents = true
+            };
             PSProc.ErrorDataReceived += CMDProc_ErrorDataReceived;
             PSProc.OutputDataReceived += CMDProc_OutputDataReceived;
 
@@ -30,8 +34,10 @@ namespace Remotely.Agent.Services
             PSProc.BeginErrorReadLine();
             PSProc.BeginOutputReadLine();
 
-            ProcessIdleTimeout = new System.Timers.Timer(600_000); // 10 minutes.
-            ProcessIdleTimeout.AutoReset = false;
+            ProcessIdleTimeout = new System.Timers.Timer(600_000)
+            {
+                AutoReset = false
+            }; // 10 minutes.
             ProcessIdleTimeout.Elapsed += ProcessIdleTimeout_Elapsed;
             ProcessIdleTimeout.Start();
         }

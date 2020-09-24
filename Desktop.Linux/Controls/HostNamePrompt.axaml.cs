@@ -2,7 +2,6 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Remotely.Desktop.Linux.ViewModels;
-using Remotely.Desktop.Linux.Views;
 
 namespace Remotely.Desktop.Linux.Controls
 {

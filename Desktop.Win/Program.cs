@@ -1,24 +1,23 @@
-﻿using Remotely.Shared.Models;
-using Remotely.Desktop.Core;
-using Remotely.Desktop.Core.Services;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Remotely.Shared.Win32;
-using System.Threading;
-using Remotely.Desktop.Win.Services;
-using Remotely.Desktop.Core.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Remotely.Shared.Utilities;
-using System.Windows;
+using Remotely.Desktop.Core;
+using Remotely.Desktop.Core.Interfaces;
+using Remotely.Desktop.Core.Services;
+using Remotely.Desktop.Win.Services;
 using Remotely.Desktop.Win.Views;
+using Remotely.Shared.Models;
+using Remotely.Shared.Utilities;
+using Remotely.Shared.Win32;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Forms;
 
 namespace Remotely.Desktop.Win
 {
     public class Program
-	{
+    {
         public static ManualResetEvent AppExitEvent { get; } = new ManualResetEvent(false);
         public static Form BackgroundForm { get; private set; }
         private static CasterSocket CasterSocket { get; set; }

@@ -1,7 +1,7 @@
-﻿using Remotely.Server.Services;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Remotely.Server.Services;
 
 namespace Remotely.Server.Pages
 {

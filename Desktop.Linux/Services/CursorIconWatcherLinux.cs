@@ -1,9 +1,7 @@
 ﻿using Remotely.Desktop.Core.Interfaces;
 using Remotely.Shared.Models;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Text;
 
 namespace Remotely.Desktop.Linux.Services
 {

@@ -23,7 +23,6 @@
 
 using Microsoft.Win32;
 using Remotely.Desktop.Core.Interfaces;
-using Remotely.Desktop.Core.Services;
 using Remotely.Desktop.Win.Models;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.Win32;
@@ -89,11 +88,11 @@ namespace Remotely.Desktop.Win.Services
                 // have it fall back to BitBlt in those cases.
                 if (directxScreens.ContainsKey(SelectedScreen))
                 {
-                    var directXResult = GetDirectXFrame();
+                    var (result, frame) = GetDirectXFrame();
 
-                    if (directXResult.result == GetDirectXFrameResult.Success)
+                    if (result == GetDirectXFrameResult.Success)
                     {
-                        return directXResult.frame;
+                        return frame;
                     }
                 }
 

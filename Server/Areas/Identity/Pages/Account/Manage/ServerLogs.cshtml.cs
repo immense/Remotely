@@ -1,10 +1,10 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Remotely.Server.Services;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
+using System;
+using System.Collections.Generic;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 {
@@ -37,17 +37,17 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             {
                 var from = Input.FromDate ?? DateTimeOffset.MinValue;
                 var to = Input.ToDate ?? DateTimeOffset.MaxValue;
-                EventLogs = DataService.GetEventLogs(User.Identity.Name, 
+                EventLogs = DataService.GetEventLogs(User.Identity.Name,
                     from,
-                    to, 
+                    to,
                     Input.Type,
                     Input.Message);
             }
             else
             {
-                EventLogs = DataService.GetEventLogs(User.Identity.Name, 
+                EventLogs = DataService.GetEventLogs(User.Identity.Name,
                     DateTimeOffset.Now.AddDays(-10),
-                    DateTimeOffset.Now, 
+                    DateTimeOffset.Now,
                     Input.Type,
                     Input.Message);
             }

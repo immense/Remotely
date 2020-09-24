@@ -1,5 +1,5 @@
-﻿using System.Security.Cryptography;
-using System.Linq;
+﻿using System.Linq;
+using System.Security.Cryptography;
 
 namespace Remotely.Shared.Utilities
 {

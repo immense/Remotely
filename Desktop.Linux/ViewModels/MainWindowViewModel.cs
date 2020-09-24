@@ -1,25 +1,22 @@
 ﻿using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Threading;
+using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
-using Remotely.Desktop.Linux.Controls;
-using Remotely.Desktop.Linux.Services;
-using Remotely.Desktop.Linux.Views;
 using Remotely.Desktop.Core;
 using Remotely.Desktop.Core.Interfaces;
 using Remotely.Desktop.Core.Services;
+using Remotely.Desktop.Linux.Controls;
+using Remotely.Desktop.Linux.Services;
+using Remotely.Desktop.Linux.Views;
 using Remotely.Shared.Models;
+using Remotely.Shared.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Remotely.Shared.Utilities;
 
 namespace Remotely.Desktop.Linux.ViewModels
 {
@@ -249,8 +246,8 @@ namespace Remotely.Desktop.Linux.ViewModels
                         Environment.NewLine + Environment.NewLine +
                         "libx11-dev" + Environment.NewLine +
                         "libc6-dev" + Environment.NewLine +
-                        "libgdiplus" + Environment.NewLine + 
-                        "libxtst-dev" + Environment.NewLine + 
+                        "libgdiplus" + Environment.NewLine +
+                        "libxtst-dev" + Environment.NewLine +
                         "xclip";
 
                     await MessageBox.Show(message, "Dependencies Required", MessageBoxType.OK);
@@ -268,7 +265,7 @@ namespace Remotely.Desktop.Linux.ViewModels
                 {
                     _ = Task.Run(() =>
                     {
-                            Services.GetRequiredService<IScreenCaster>().BeginScreenCasting(screenCastRequest);
+                        Services.GetRequiredService<IScreenCaster>().BeginScreenCasting(screenCastRequest);
                     });
                 }
             });

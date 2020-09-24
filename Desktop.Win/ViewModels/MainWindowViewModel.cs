@@ -1,23 +1,22 @@
-﻿using Remotely.Desktop.Win.Controls;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Remotely.Desktop.Core;
+using Remotely.Desktop.Core.Interfaces;
+using Remotely.Desktop.Core.Services;
+using Remotely.Desktop.Core.ViewModels;
+using Remotely.Desktop.Win.Controls;
 using Remotely.Desktop.Win.Services;
 using Remotely.Shared.Models;
-using Remotely.Desktop.Core;
-using Remotely.Desktop.Core.Services;
+using Remotely.Shared.Utilities;
+using Remotely.Shared.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Security.Principal;
 using System.Windows.Input;
-using Remotely.Desktop.Core.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Remotely.Shared.Win32;
-using Remotely.Shared.Utilities;
-using Remotely.Desktop.Core.ViewModels;
 
 namespace Remotely.Desktop.Win.ViewModels
 {
@@ -25,7 +24,7 @@ namespace Remotely.Desktop.Win.ViewModels
     {
         private string host;
         private string sessionID;
- 
+
         public static MainWindowViewModel Current { get; private set; }
 
         public MainWindowViewModel()
@@ -186,7 +185,7 @@ namespace Remotely.Desktop.Win.ViewModels
 
         public async Task Init()
         {
-          
+
             SessionID = "Retrieving...";
 
             Host = Config.GetConfig().Host;

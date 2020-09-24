@@ -13,7 +13,7 @@ namespace Remotely.Server.Services
             }
 
             var first = name.First().ToString().ToUpper();
-            
+
             return first + new string(name.Skip(1).ToArray());
         }
     }

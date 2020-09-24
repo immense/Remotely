@@ -11,6 +11,6 @@ namespace Remotely.Agent.Installer.Win.Services
                 return MessageBox.Show(message, caption, messageBoxButton, messageBoxImage);
             }
             return MessageBoxResult.None;
-        }    
+        }
     }
 }

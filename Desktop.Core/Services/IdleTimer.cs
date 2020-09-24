@@ -1,5 +1,4 @@
-﻿using Remotely.Desktop.Core.Services;
-using Remotely.Shared.Utilities;
+﻿using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Timers;

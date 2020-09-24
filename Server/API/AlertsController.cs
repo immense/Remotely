@@ -56,7 +56,7 @@ namespace Remotely.Server.API
                 {
                     DataService.WriteEvent(ex, orgID);
                 }
-              
+
             }
 
             if (alertOptions.ShouldSendApiRequest)
@@ -82,7 +82,7 @@ namespace Remotely.Server.API
                 {
                     DataService.WriteEvent(ex, orgID);
                 }
-              
+
             }
 
             return Ok();

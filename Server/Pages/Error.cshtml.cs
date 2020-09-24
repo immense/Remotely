@@ -1,9 +1,9 @@
-using System.Diagnostics;
-using Remotely.Server.Services;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Remotely.Server.Services;
 using Remotely.Shared.Enums;
+using System.Diagnostics;
 
 namespace Remotely.Server.Pages
 {

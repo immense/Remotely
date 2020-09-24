@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows;
 
 namespace Remotely.Tests.LoadTester
 {
@@ -29,7 +28,7 @@ namespace Remotely.Tests.LoadTester
                                 }
 
                                 key = key.Trim().Replace("-", "").ToLower();
- 
+
                                 commandLineArgs.Add(key, args[i + 1]);
                             }
                         }

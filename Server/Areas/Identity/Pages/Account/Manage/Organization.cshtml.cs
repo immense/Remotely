@@ -1,15 +1,15 @@
-using Remotely.Shared.Models;
-using Remotely.Server.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Remotely.Server.Services;
+using Remotely.Shared.Models;
+using Remotely.Shared.ViewModels.Organization;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using Remotely.Shared.ViewModels.Organization;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 {

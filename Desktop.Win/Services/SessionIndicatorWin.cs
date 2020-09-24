@@ -4,11 +4,9 @@ using Remotely.Desktop.Core.Interfaces;
 using Remotely.Desktop.Core.Services;
 using Remotely.Shared.Utilities;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Remotely.Desktop.Win.Services

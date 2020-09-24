@@ -4,9 +4,7 @@ using Remotely.Desktop.Core.Interfaces;
 using Remotely.Desktop.Core.Services;
 using Remotely.Shared.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Remotely.Desktop.Linux.Services

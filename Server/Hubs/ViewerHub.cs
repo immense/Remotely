@@ -1,16 +1,13 @@
-﻿using Remotely.Shared.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Remotely.Shared.Enums;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Remotely.Server.Attributes;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
-using Remotely.Shared.Models.RemoteControlDtos;
+using Remotely.Shared.Enums;
+using Remotely.Shared.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Remotely.Server.Hubs
 {
@@ -85,15 +82,15 @@ namespace Remotely.Server.Hubs
                 Context.Items["ScreenCasterID"] = value;
             }
         }
-  
+
         public Task ChangeWindowsSession(int sessionID)
         {
             if (SessionInfo?.Mode == RemoteControlMode.Unattended)
             {
                 return AgentHubContext.Clients
                     .Client(SessionInfo.ServiceID)
-                    .SendAsync("ChangeWindowsSession", 
-                        SessionInfo.ServiceID, 
+                    .SendAsync("ChangeWindowsSession",
+                        SessionInfo.ServiceID,
                         Context.ConnectionId,
                         sessionID);
             }
@@ -118,8 +115,8 @@ namespace Remotely.Server.Hubs
             }
 
             return base.OnDisconnectedAsync(exception);
-        }      
-       
+        }
+
         public Task SendIceCandidateToAgent(string candidate, int sdpMlineIndex, string sdpMid)
         {
             return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("ReceiveIceCandidate", candidate, sdpMlineIndex, sdpMid, Context.ConnectionId);
@@ -159,7 +156,7 @@ namespace Remotely.Server.Hubs
                 var user = DataService.GetUserByID(Context.UserIdentifier);
                 RequesterName = user.DisplayName ?? user.UserName;
                 orgId = user.OrganizationID;
-                var currentUsers = CasterHub.SessionInfoList.Count(x => 
+                var currentUsers = CasterHub.SessionInfoList.Count(x =>
                     x.Key != screenCasterID &&
                     x.Value.OrganizationID == orgId);
                 if (currentUsers >= AppConfig.RemoteControlSessionLimit)
@@ -182,8 +179,8 @@ namespace Remotely.Server.Hubs
                                 $"Machine Name: {SessionInfo.MachineName}.  " +
                                 $"Requester Name (if specified): {RequesterName}.  " +
                                 $"Connection ID: {Context.ConnectionId}. User ID: {Context.UserIdentifier}.  " +
-                                $"Screen Caster ID: {screenCasterID}.  " + 
-                                $"Mode: {(RemoteControlMode)remoteControlMode}.  " + 
+                                $"Screen Caster ID: {screenCasterID}.  " +
+                                $"Mode: {(RemoteControlMode)remoteControlMode}.  " +
                                 $"Requester IP Address: " + Context?.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString(),
                 OrganizationID = orgId
             });
@@ -194,7 +191,7 @@ namespace Remotely.Server.Hubs
                 var deviceID = AgentHub.ServiceConnections[SessionInfo.ServiceID].ID;
 
                 if ((!string.IsNullOrWhiteSpace(otp) &&
-                        RemoteControlFilterAttribute.OtpMatchesDevice(otp, deviceID)) 
+                        RemoteControlFilterAttribute.OtpMatchesDevice(otp, deviceID))
                     ||
                     (Context.User.Identity.IsAuthenticated &&
                         DataService.DoesUserHaveAccessToDevice(deviceID, Context.UserIdentifier)))
@@ -213,6 +210,6 @@ namespace Remotely.Server.Hubs
                 return CasterHubContext.Clients.Client(screenCasterID).SendAsync("RequestScreenCast", Context.ConnectionId, RequesterName, AppConfig.RemoteControlNotifyUser);
             }
         }
- 
+
     }
 }

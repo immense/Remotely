@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Remotely.Desktop.Core.Interfaces;
+using Remotely.Shared.Models;
+using Remotely.Shared.Win32;
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Timers;
 using System.Windows.Forms;
-using Remotely.Shared.Win32;
-using Remotely.Shared.Models;
-using Remotely.Desktop.Core.Interfaces;
 
 namespace Remotely.Desktop.Win.Services
 {
@@ -43,18 +43,12 @@ namespace Remotely.Desktop.Win.Services
                         return new CursorInfo(new byte[0], Point.Empty, "text");
                     }
 
-                    using (var icon = Icon.FromHandle(ci.hCursor))
-                    {
-                        using (var ms = new MemoryStream())
-                        {
-                            using (var cursor = new Cursor(ci.hCursor))
-                            {
-                                var hotspot = cursor.HotSpot;
-                                icon.ToBitmap().Save(ms, ImageFormat.Png);
-                                return new CursorInfo(ms.ToArray(), hotspot);
-                            }
-                        }
-                    }
+                    using var icon = Icon.FromHandle(ci.hCursor);
+                    using var ms = new MemoryStream();
+                    using var cursor = new Cursor(ci.hCursor);
+                    var hotspot = cursor.HotSpot;
+                    icon.ToBitmap().Save(ms, ImageFormat.Png);
+                    return new CursorInfo(ms.ToArray(), hotspot);
                 }
                 else
                 {
@@ -89,18 +83,12 @@ namespace Remotely.Desktop.Win.Services
                         }
                         else
                         {
-                            using (var icon = Icon.FromHandle(cursorInfo.hCursor))
-                            {
-                                using (var ms = new MemoryStream())
-                                {
-                                    using (var cursor = new Cursor(cursorInfo.hCursor))
-                                    {
-                                        var hotspot = cursor.HotSpot;
-                                        icon.ToBitmap().Save(ms, ImageFormat.Png);
-                                        OnChange?.Invoke(this, new CursorInfo(ms.ToArray(), hotspot));
-                                    }
-                                }
-                            }
+                            using var icon = Icon.FromHandle(cursorInfo.hCursor);
+                            using var ms = new MemoryStream();
+                            using var cursor = new Cursor(cursorInfo.hCursor);
+                            var hotspot = cursor.HotSpot;
+                            icon.ToBitmap().Save(ms, ImageFormat.Png);
+                            OnChange?.Invoke(this, new CursorInfo(ms.ToArray(), hotspot));
                         }
                         PreviousCursorHandle = currentCursor;
                     }

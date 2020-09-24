@@ -1,15 +1,11 @@
 ﻿using MessagePack;
 using Microsoft.MixedReality.WebRTC;
-using Remotely.Desktop.Core.Services;
 using Remotely.Shared.Helpers;
 using Remotely.Shared.Models;
 using Remotely.Shared.Models.RemoteControlDtos;
 using Remotely.Shared.Utilities;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Remotely.Desktop.Core.Services

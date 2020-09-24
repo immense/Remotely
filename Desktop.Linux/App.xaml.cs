@@ -1,10 +1,5 @@
 ﻿using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Microsoft.Extensions.DependencyInjection;
-using Remotely.Desktop.Core;
-using Remotely.Desktop.Linux.ViewModels;
-using Remotely.Desktop.Linux.Views;
 
 namespace Remotely.Desktop.Linux
 {
@@ -28,7 +23,7 @@ namespace Remotely.Desktop.Linux
             //        };
             //    }
             //}
-            
+
             base.OnFrameworkInitializationCompleted();
         }
     }

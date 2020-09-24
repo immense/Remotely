@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Remotely.Server.Models;
+using Remotely.Server.Services;
+using Remotely.Shared.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Drawing;
-using Remotely.Shared.Models;
-using Remotely.Server.Models;
-using Remotely.Server.Services;
 
 namespace Remotely.Server.Hubs
 {

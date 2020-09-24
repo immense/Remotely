@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Remotely.Shared.Utilities;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using System.Threading;
-using Remotely.Shared.Utilities;
+using System.Threading.Tasks;
 
 namespace Remotely.Agent.Services
 {
@@ -69,7 +68,7 @@ namespace Remotely.Agent.Services
                 }
 
                 var lastEtag = string.Empty;
-   
+
                 if (File.Exists("etag.txt"))
                 {
                     lastEtag = await File.ReadAllTextAsync("etag.txt");
@@ -180,7 +179,8 @@ namespace Remotely.Agent.Services
 
 
         private class WebClientEx : WebClient
-        {            private readonly int _requestTimeout;
+        {
+            private readonly int _requestTimeout;
 
             public WebClientEx(int requestTimeout)
             {

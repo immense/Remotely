@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using Remotely.Shared.Models;
-using Remotely.Server.Services;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Remotely.Server.Attributes;
-using Microsoft.AspNetCore.Http.Extensions;
+using Remotely.Server.Services;
+using Remotely.Shared.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -15,14 +14,14 @@ namespace Remotely.Server.API
     [Route("api/[controller]")]
     public class DevicesController : ControllerBase
     {
-   
+
         public DevicesController(DataService dataService)
         {
             DataService = dataService;
         }
         private DataService DataService { get; set; }
 
-        
+
         [HttpGet]
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
         public IEnumerable<Device> Get()
@@ -54,7 +53,7 @@ namespace Remotely.Server.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody]DeviceSetupOptions deviceOptions)
+        public async Task<IActionResult> Create([FromBody] DeviceSetupOptions deviceOptions)
         {
             var device = await DataService.CreateDevice(deviceOptions);
             if (device is null)

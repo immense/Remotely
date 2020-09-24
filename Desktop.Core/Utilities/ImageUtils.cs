@@ -12,11 +12,9 @@ namespace Remotely.Desktop.Core.Utilities
         public static ImageCodecInfo JpegEncoder { get; } = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == ImageFormat.Jpeg.Guid);
         public static byte[] EncodeBitmap(Bitmap bitmap, EncoderParameters encoderParams)
         {
-            using (var ms = new MemoryStream())
-            {
-                bitmap.Save(ms, JpegEncoder, encoderParams);
-                return ms.ToArray();
-            }
+            using var ms = new MemoryStream();
+            bitmap.Save(ms, JpegEncoder, encoderParams);
+            return ms.ToArray();
         }
 
         public static Rectangle GetDiffArea(Bitmap currentFrame, Bitmap previousFrame, bool captureFullscreen)

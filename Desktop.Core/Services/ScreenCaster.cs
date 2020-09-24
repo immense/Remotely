@@ -1,25 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Remotely.Desktop.Core.Interfaces;
-using System.Diagnostics;
-using System.Drawing.Imaging;
-using Microsoft.Extensions.DependencyInjection;
-using Remotely.Desktop.Core.Utilities;
-using Remotely.Shared.Utilities;
-using System.Collections.Concurrent;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Remotely.Desktop.Core.Enums;
+using Remotely.Desktop.Core.Interfaces;
+using Remotely.Desktop.Core.Utilities;
 using Remotely.Shared.Models;
-using Remotely.Shared.Win32;
+using Remotely.Shared.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Remotely.Desktop.Core.Services
 {
     public class ScreenCaster : IScreenCaster
     {
-        public ScreenCaster(Conductor conductor, 
+        public ScreenCaster(Conductor conductor,
             ICursorIconWatcher cursorIconWatcher,
             ISessionIndicator sessionIndicator,
             IShutdownService shutdownService)

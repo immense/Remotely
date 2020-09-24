@@ -1,11 +1,7 @@
 ﻿using Remotely.Desktop.Core.ViewModels;
 using Remotely.Shared.Models;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.IO.Pipes;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 

@@ -1,12 +1,10 @@
-﻿using System;
+﻿using NAudio.Wave;
+using Remotely.Desktop.Core.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
-using NAudio.Wave;
-using Remotely.Desktop.Core;
-using Remotely.Desktop.Core.Interfaces;
 
 namespace Remotely.Desktop.Win.Services
 {
@@ -36,26 +34,22 @@ namespace Remotely.Desktop.Win.Services
                 return;
             }
 
-            using (var ms1 = new MemoryStream())
+            using var ms1 = new MemoryStream();
+            using (var wfw = new WaveFileWriter(ms1, Capturer.WaveFormat))
             {
-                using (var wfw = new WaveFileWriter(ms1, Capturer.WaveFormat))
-                {
-                    wfw.Write(TempBuffer.ToArray(), 0, TempBuffer.Count);
-                }
-                TempBuffer.Clear();
-
-                // Resample to 16-bit so Firefox will play it.
-                using (var ms2 = new MemoryStream(ms1.ToArray()))
-                using (var wfr = new WaveFileReader(ms2))
-                using (var ms3 = new MemoryStream())
-                {
-                    using (var resampler = new MediaFoundationResampler(wfr, TargetFormat))
-                    {
-                        WaveFileWriter.WriteWavFileToStream(ms3, resampler);
-                    }
-                    AudioSampleReady?.Invoke(this, ms3.ToArray());
-                }
+                wfw.Write(TempBuffer.ToArray(), 0, TempBuffer.Count);
             }
+            TempBuffer.Clear();
+
+            // Resample to 16-bit so Firefox will play it.
+            using var ms2 = new MemoryStream(ms1.ToArray());
+            using var wfr = new WaveFileReader(ms2);
+            using var ms3 = new MemoryStream();
+            using (var resampler = new MediaFoundationResampler(wfr, TargetFormat))
+            {
+                WaveFileWriter.WriteWavFileToStream(ms3, resampler);
+            }
+            AudioSampleReady?.Invoke(this, ms3.ToArray());
         }
 
         private void Start()

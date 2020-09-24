@@ -11,7 +11,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Security.AccessControl;
 using System.Security.Principal;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,7 +19,7 @@ namespace Remotely.Desktop.Win.Services
 {
     public class FileTransferServiceWin : IFileTransferService
     {
-        private static readonly ConcurrentDictionary<string, FileStream> _partialTransfers = 
+        private static readonly ConcurrentDictionary<string, FileStream> _partialTransfers =
             new ConcurrentDictionary<string, FileStream>();
 
         private static readonly ConcurrentDictionary<string, FileTransferWindow> _fileTransferWindows =

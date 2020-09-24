@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Remotely.Server.Data;
 using Remotely.Server.Services;
-using System;
-using Microsoft.EntityFrameworkCore;
 using Remotely.Shared.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace Remotely.Tests
 {

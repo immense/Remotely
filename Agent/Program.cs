@@ -1,13 +1,13 @@
-﻿using Remotely.Agent.Services;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Remotely.Agent.Interfaces;
+using Remotely.Agent.Services;
+using Remotely.Shared.Utilities;
 using System;
 using System.IO;
 using System.ServiceProcess;
-using System.Threading.Tasks;
 using System.Threading;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Remotely.Shared.Utilities;
-using Remotely.Agent.Interfaces;
+using System.Threading.Tasks;
 
 namespace Remotely.Agent
 {
@@ -22,7 +22,7 @@ namespace Remotely.Agent
             {
                 BuildServices();
 
-                Task.Run(() => {_ = Init(); });
+                Task.Run(() => { _ = Init(); });
 
                 Thread.Sleep(Timeout.Infinite);
 

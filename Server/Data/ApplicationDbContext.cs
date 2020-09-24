@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using Remotely.Shared.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Remotely.Shared.Models;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Remotely.Server.Data
 {
@@ -49,10 +49,10 @@ namespace Remotely.Server.Data
 
             builder.Entity<Organization>()
                 .HasMany(x => x.Devices)
-                .WithOne(x=>x.Organization);
+                .WithOne(x => x.Organization);
             builder.Entity<Organization>()
                 .HasMany(x => x.RemotelyUsers)
-                .WithOne(x=> x.Organization);
+                .WithOne(x => x.Organization);
             builder.Entity<Organization>()
                 .HasMany(x => x.CommandResults)
                 .WithOne(x => x.Organization);
@@ -82,7 +82,7 @@ namespace Remotely.Server.Data
 
 
             builder.Entity<CommandResult>()
-                .Property(x=>x.TargetDeviceIDs)
+                .Property(x => x.TargetDeviceIDs)
                 .HasConversion(
                     x => JsonSerializer.Serialize(x, null),
                     x => JsonSerializer.Deserialize<string[]>(x, null));

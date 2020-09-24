@@ -1,14 +1,13 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Remotely.Server.Hubs;
-using Remotely.Server.Services;
 using Remotely.Shared.Models;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account
 {
@@ -46,7 +45,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
                     await ViewerHubContext.Clients.Client(session.Value.RequesterSocketID).SendAsync("ConnectionFailed");
                 }
             }
-        
+
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");
             if (returnUrl != null)

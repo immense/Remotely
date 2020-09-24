@@ -1,16 +1,15 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Remotely.Shared.Models;
+using Remotely.Server.Attributes;
+using Remotely.Server.Hubs;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
-using Remotely.Server.Attributes;
 using Remotely.Shared.Helpers;
-using Remotely.Server.Hubs;
+using Remotely.Shared.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,9 +19,9 @@ namespace Remotely.Server.API
     [ApiController]
     public class RemoteControlController : ControllerBase
     {
-        public RemoteControlController(DataService dataService, 
-            IHubContext<AgentHub> agentHub, 
-            ApplicationConfig appConfig, 
+        public RemoteControlController(DataService dataService,
+            IHubContext<AgentHub> agentHub,
+            ApplicationConfig appConfig,
             SignInManager<RemotelyUser> signInManager)
         {
             DataService = dataService;
@@ -45,7 +44,7 @@ namespace Remotely.Server.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]RemoteControlRequest rcRequest)
+        public async Task<IActionResult> Post([FromBody] RemoteControlRequest rcRequest)
         {
             if (!AppConfig.AllowApiLogin)
             {
@@ -77,7 +76,7 @@ namespace Remotely.Server.API
 
         private async Task<IActionResult> InitiateRemoteControl(string deviceID, string orgID)
         {
-            var targetDevice = Hubs.AgentHub.ServiceConnections.FirstOrDefault(x => 
+            var targetDevice = Hubs.AgentHub.ServiceConnections.FirstOrDefault(x =>
                                     x.Value.OrganizationID == orgID &&
                                     x.Value.ID.ToLower() == deviceID.ToLower());
 

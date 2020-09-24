@@ -1,8 +1,8 @@
 ﻿using Remotely.Desktop.Core.Interfaces;
 using Remotely.Desktop.Core.Services;
 using Remotely.Desktop.Linux.X11Interop;
-using System;
 using Remotely.Shared.Utilities;
+using System;
 
 namespace Remotely.Desktop.Linux.Services
 {
@@ -92,9 +92,9 @@ namespace Remotely.Desktop.Linux.Services
         {
             try
             {
-                LibXtst.XTestFakeMotionEvent(Display, 
+                LibXtst.XTestFakeMotionEvent(Display,
                     viewer.Capturer.GetSelectedScreenIndex(),
-                    (int)(viewer.Capturer.CurrentScreenBounds.Width * percentX), 
+                    (int)(viewer.Capturer.CurrentScreenBounds.Width * percentX),
                     (int)(viewer.Capturer.CurrentScreenBounds.Height * percentY),
                     0);
                 LibX11.XSync(Display, false);

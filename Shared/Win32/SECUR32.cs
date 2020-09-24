@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Microsoft.Win32.SafeHandles;
+using Remotely.Shared.Win32;
+using System;
+using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
-using Microsoft.Win32.SafeHandles;
-using System.Runtime.ConstrainedExecution;
-using Remotely.Shared.Win32;
 
 public static class SECUR32
 {
@@ -238,12 +238,12 @@ public static class SECUR32
     [StructLayout(LayoutKind.Sequential)]
     public struct QUOTA_LIMITS
     {
-        UInt32 PagedPoolLimit;
-        UInt32 NonPagedPoolLimit;
-        UInt32 MinimumWorkingSetSize;
-        UInt32 MaximumWorkingSetSize;
-        UInt32 PagefileLimit;
-        Int64 TimeLimit;
+        readonly UInt32 PagedPoolLimit;
+        readonly UInt32 NonPagedPoolLimit;
+        readonly UInt32 MinimumWorkingSetSize;
+        readonly UInt32 MaximumWorkingSetSize;
+        readonly UInt32 PagefileLimit;
+        readonly Int64 TimeLimit;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -308,7 +308,7 @@ public static class SECUR32
         }
 
         [System.Security.SecurityCritical]
-        override protected bool ReleaseHandle()
+        protected override bool ReleaseHandle()
         {
             // LsaDeregisterLogonProcess returns an NTSTATUS
             return LsaDeregisterLogonProcess(handle) >= 0;
@@ -329,9 +329,6 @@ public static class SECUR32
             UserName = "",
             Password = ""
         };
-        IntPtr pluid;
-        IntPtr lsaHan;
-        uint authPackID;
         IntPtr kerbLogInfo;
         SECUR32.LSA_STRING logonProc = new SECUR32.LSA_STRING()
         {
@@ -353,21 +350,29 @@ public static class SECUR32
         };
         IntPtr hLogonProc = Marshal.AllocHGlobal(Marshal.SizeOf(logonProc));
         Marshal.StructureToPtr(logonProc, hLogonProc, false);
-        ADVAPI32.AllocateLocallyUniqueId(out pluid);
-        LsaConnectUntrusted(out lsaHan);
+        ADVAPI32.AllocateLocallyUniqueId(out IntPtr pluid);
+        LsaConnectUntrusted(out IntPtr lsaHan);
         //SECUR32.LsaRegisterLogonProcess(hLogonProc, out lsaHan, out secMode);
-        SECUR32.LsaLookupAuthenticationPackage(lsaHan, ref authPackage, out authPackID);
+        SECUR32.LsaLookupAuthenticationPackage(lsaHan, ref authPackage, out uint authPackID);
 
         kerbLogInfo = Marshal.AllocHGlobal(Marshal.SizeOf(kli));
         Marshal.StructureToPtr(kli, kerbLogInfo, false);
 
         var ts = new SECUR32.TOKEN_SOURCE("Insta");
-        IntPtr profBuf;
-        uint profBufLen;
-        long logonID;
-        IntPtr logonToken;
-        SECUR32.QUOTA_LIMITS quotas;
-        SECUR32.WinStatusCodes subStatus;
-        SECUR32.LsaLogonUser(lsaHan, ref originName, SECUR32.SecurityLogonType.Interactive, authPackID, kerbLogInfo, (uint)Marshal.SizeOf(kerbLogInfo), IntPtr.Zero, ref ts, out profBuf, out profBufLen, out logonID, out logonToken, out quotas, out subStatus);
+        SECUR32.LsaLogonUser(
+            lsaHan, 
+            ref originName,
+            SECUR32.SecurityLogonType.Interactive,
+            authPackID, 
+            kerbLogInfo,
+            (uint)Marshal.SizeOf(kerbLogInfo),
+            IntPtr.Zero,
+            ref ts,
+            out IntPtr profBuf,
+            out uint profBufLen,
+            out long logonID, 
+            out IntPtr logonToken, 
+            out QUOTA_LIMITS quotas,
+            out WinStatusCodes subStatus);
     }
 }

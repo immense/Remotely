@@ -1,16 +1,16 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Remotely.Server.Attributes;
+using Remotely.Server.Hubs;
 using Remotely.Server.Services;
+using Remotely.Shared.Helpers;
 using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Remotely.Shared.Helpers;
-using System.IO;
-using Remotely.Server.Attributes;
-using Remotely.Server.Hubs;
 
 namespace Remotely.Server.API
 {
@@ -18,7 +18,7 @@ namespace Remotely.Server.API
     [Route("api/[controller]")]
     public class ScriptingController : ControllerBase
     {
-        public ScriptingController(DataService dataService, 
+        public ScriptingController(DataService dataService,
             UserManager<RemotelyUser> userManager,
             IHubContext<AgentHub> agentHub)
         {

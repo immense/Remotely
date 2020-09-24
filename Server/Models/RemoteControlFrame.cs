@@ -5,13 +5,13 @@ namespace Remotely.Server.Models
     public class RemoteControlFrame
     {
 
-        public RemoteControlFrame(byte[] frameBytes, 
+        public RemoteControlFrame(byte[] frameBytes,
             int left,
-            int top, 
+            int top,
             int screenWidth,
             int screenHeight,
             bool endOfFrame,
-            string viewerID, 
+            string viewerID,
             string machineName,
             DateTimeOffset startTime)
         {

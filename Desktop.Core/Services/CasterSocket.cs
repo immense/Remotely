@@ -1,18 +1,12 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
+using Remotely.Desktop.Core.Interfaces;
 using Remotely.Shared.Models;
+using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Diagnostics;
-using System.IO;
-using System.Net;
-using Remotely.Desktop.Core.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
-using Remotely.Shared.Utilities;
-using System.Threading;
-using Remotely.Desktop.Core.Services;
-using Remotely.Shared.Models.RemoteControlDtos;
 
 namespace Remotely.Desktop.Core.Services
 {
@@ -159,10 +153,10 @@ namespace Remotely.Desktop.Core.Services
                 try
                 {
                     ScreenCaster.BeginScreenCasting(new ScreenCastRequest()
-                    { 
+                    {
                         NotifyUser = notifyUser,
-                        ViewerID = viewerID, 
-                        RequesterName = requesterName 
+                        ViewerID = viewerID,
+                        RequesterName = requesterName
                     });
                 }
                 catch (Exception ex)
@@ -205,11 +199,11 @@ namespace Remotely.Desktop.Core.Services
 
             Connection.On("RequestScreenCast", (string viewerID, string requesterName, bool notifyUser) =>
             {
-                conductor.InvokeScreenCastRequested(new ScreenCastRequest() 
-                { 
+                conductor.InvokeScreenCastRequested(new ScreenCastRequest()
+                {
                     NotifyUser = notifyUser,
-                    ViewerID = viewerID, 
-                    RequesterName = requesterName 
+                    ViewerID = viewerID,
+                    RequesterName = requesterName
                 });
             });
 

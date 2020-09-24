@@ -1,5 +1,4 @@
-﻿using Remotely.Desktop.Win;
-using Remotely.Desktop.Win.ViewModels;
+﻿using Remotely.Desktop.Win.ViewModels;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
@@ -29,14 +28,16 @@ namespace Remotely.Desktop.Win.Views
         private async void CopyLinkButton_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.CopyLink();
-            var tooltip = new ToolTip();
-            tooltip.PlacementTarget = sender as Button;
-            tooltip.Placement = PlacementMode.Bottom;
-            tooltip.VerticalOffset = 5;
-            tooltip.Content = "Copied to clipboard!";
-            tooltip.HasDropShadow = true;
-            tooltip.StaysOpen = false;
-            tooltip.IsOpen = true;
+            var tooltip = new ToolTip
+            {
+                PlacementTarget = sender as Button,
+                Placement = PlacementMode.Bottom,
+                VerticalOffset = 5,
+                Content = "Copied to clipboard!",
+                HasDropShadow = true,
+                StaysOpen = false,
+                IsOpen = true
+            };
 
             await Task.Delay(750);
             var animation = new DoubleAnimation(0, TimeSpan.FromMilliseconds(750));

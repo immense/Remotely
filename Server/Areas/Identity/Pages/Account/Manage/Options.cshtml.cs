@@ -1,7 +1,7 @@
-using Remotely.Shared.Models;
-using Remotely.Server.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Remotely.Server.Services;
+using Remotely.Shared.Models;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 {

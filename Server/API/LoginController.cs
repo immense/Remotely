@@ -1,12 +1,12 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Remotely.Shared.Models;
-using Remotely.Server.Models;
-using Remotely.Server.Services;
 using Microsoft.AspNetCore.SignalR;
 using Remotely.Server.Hubs;
+using Remotely.Server.Models;
+using Remotely.Server.Services;
+using Remotely.Shared.Models;
+using System.Linq;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,8 +16,8 @@ namespace Remotely.Server.API
     [ApiController]
     public class LoginController : ControllerBase
     {
-        public LoginController(SignInManager<RemotelyUser> signInManager, 
-            DataService dataService, 
+        public LoginController(SignInManager<RemotelyUser> signInManager,
+            DataService dataService,
             ApplicationConfig appConfig,
             IHubContext<CasterHub> casterHubContext,
             IHubContext<ViewerHub> viewerHubContext)
@@ -36,7 +36,7 @@ namespace Remotely.Server.API
         private IHubContext<ViewerHub> ViewerHubContext { get; }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]ApiLogin login)
+        public async Task<IActionResult> Post([FromBody] ApiLogin login)
         {
             if (!AppConfig.AllowApiLogin)
             {

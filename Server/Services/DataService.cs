@@ -1,26 +1,24 @@
-﻿using Remotely.Shared.Models;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Remotely.Server.Data;
+using Remotely.Shared.Enums;
+using Remotely.Shared.Models;
+using Remotely.Shared.ViewModels.Organization;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Remotely.Shared.ViewModels.Organization;
-using Remotely.Server.Data;
-using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
-using Remotely.Shared.Enums;
-using Microsoft.Extensions.Logging;
-using System.Threading;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Remotely.Server.Services
 {
     public class DataService
     {
-        public DataService(ApplicationDbContext context, 
-            ApplicationConfig appConfig, 
+        public DataService(ApplicationDbContext context,
+            ApplicationConfig appConfig,
             IHostEnvironment hostEnvironment,
             UserManager<RemotelyUser> userManager)
         {
@@ -47,7 +45,8 @@ namespace Remotely.Server.Services
                 users = users.Where(x => filteredUserIDs.Contains(x.Id));
             }
 
-            await users.ForEachAsync(x => {
+            await users.ForEachAsync(x =>
+            {
                 var alert = new Alert()
                 {
                     CreatedOn = DateTimeOffset.Now,
@@ -57,7 +56,7 @@ namespace Remotely.Server.Services
                 };
                 x.Alerts.Add(alert);
             });
-            
+
             await RemotelyContext.SaveChangesAsync();
         }
 
@@ -69,8 +68,8 @@ namespace Remotely.Server.Services
             var organization = RemotelyContext.Organizations
                 .Include(x => x.DeviceGroups)
                 .FirstOrDefault(x => x.ID == orgID);
-          
-            if (RemotelyContext.DeviceGroups.Any(x => 
+
+            if (RemotelyContext.DeviceGroups.Any(x =>
                 x.OrganizationID == orgID &&
                 x.Name.ToLower() == deviceGroup.Name.ToLower()))
             {
@@ -379,7 +378,7 @@ namespace Remotely.Server.Services
                 WriteEvent(ex, options.OrganizationID);
                 return null;
             }
-          
+
         }
 
         public async Task<bool> CreateUser(string userEmail, bool isAdmin, string organizationID)
@@ -901,7 +900,7 @@ namespace Remotely.Server.Services
                 .FirstOrDefault(x => x.ID == orgID)
                 .RemotelyUsers.Remove(target);
 
-           
+
             RemotelyContext.Users.Remove(target);
 
             await UserManager.DeleteAsync(target);
@@ -1137,7 +1136,7 @@ namespace Remotely.Server.Services
                 RemotelyContext.SaveChanges();
             }
             catch { }
-           
+
         }
     }
 }
