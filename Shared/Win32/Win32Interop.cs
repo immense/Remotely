@@ -194,8 +194,8 @@ namespace Remotely.Shared.Win32
             SendMessage(0xFFFF, 0x112, 0xF170, (int)state);
         }
 
-        public static MessageBoxResult ShowMessageBox(IntPtr owner, 
-            string message, 
+        public static MessageBoxResult ShowMessageBox(IntPtr owner,
+            string message,
             string caption,
             MessageBoxType messageBoxType)
         {

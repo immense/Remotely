@@ -12,7 +12,6 @@ using Remotely.Desktop.Linux.Services;
 using Remotely.Desktop.Linux.Views;
 using Remotely.Shared.Utilities;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,7 +19,7 @@ namespace Remotely.Desktop.Linux
 {
     class Program
     {
-  
+
         // Avalonia configuration, don't remove; also used by visual designer.
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()

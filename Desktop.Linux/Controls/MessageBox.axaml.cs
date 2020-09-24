@@ -3,11 +3,9 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Remotely.Desktop.Linux.ViewModels;
-using Remotely.Desktop.Linux.Views;
 using Remotely.Shared.Helpers;
 using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Remotely.Desktop.Linux.Controls

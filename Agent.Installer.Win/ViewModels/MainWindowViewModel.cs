@@ -108,13 +108,13 @@ namespace Remotely.Agent.Installer.Win.ViewModels
                         Process.Start(logPath);
                     }
                     else
-                    { 
+                    {
                         MessageBoxEx.Show("Log file doesn't exist.", "No Logs", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 });
             }
         }
-      
+
         public string OrganizationID
         {
             get
@@ -213,7 +213,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             }
 
             AddExistingConnectionInfo();
-           
+
             if (CommandLineParser.CommandLineArgs.ContainsKey("install"))
             {
                 await Install();
@@ -333,7 +333,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
                 }
 
                 HeaderMessage = "Installing Remotely...";
-                
+
                 if (await Installer.Install(ServerUrl, OrganizationID, DeviceGroup, DeviceAlias, DeviceUuid, CreateSupportShortcut))
                 {
                     IsServiceInstalled = true;

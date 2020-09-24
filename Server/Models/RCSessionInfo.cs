@@ -1,6 +1,5 @@
 ﻿using Remotely.Shared.Enums;
 using System;
-using System.Collections.Concurrent;
 
 namespace Remotely.Server.Models
 {

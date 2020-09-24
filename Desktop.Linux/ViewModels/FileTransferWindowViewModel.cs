@@ -7,11 +7,9 @@ using Remotely.Desktop.Core.ViewModels;
 using Remotely.Desktop.Linux.Services;
 using Remotely.Desktop.Linux.Views;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 

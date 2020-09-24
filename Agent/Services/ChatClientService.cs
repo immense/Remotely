@@ -36,11 +36,11 @@ namespace Remotely.Agent.Services
 
         private MemoryCache ChatClients { get; } = new MemoryCache("ChatClients");
 
-        public async Task SendMessage(string senderName, 
-            string message, 
-            string orgName, 
+        public async Task SendMessage(string senderName,
+            string message,
+            string orgName,
             bool disconnected,
-            string senderConnectionID, 
+            string senderConnectionID,
             HubConnection hubConnection)
         {
             if (!await MessageLock.WaitAsync(30000))
@@ -93,12 +93,10 @@ namespace Remotely.Agent.Services
                     return;
                 }
 
-                using (var sw = new StreamWriter(chatSession.PipeStream, leaveOpen: true))
-                {
-                    var chatMessage = new ChatMessage(senderName, message, disconnected);
-                    await sw.WriteLineAsync(JsonSerializer.Serialize(chatMessage));
-                    await sw.FlushAsync();
-                }
+                using var sw = new StreamWriter(chatSession.PipeStream, leaveOpen: true);
+                var chatMessage = new ChatMessage(senderName, message, disconnected);
+                await sw.WriteLineAsync(JsonSerializer.Serialize(chatMessage));
+                await sw.FlushAsync();
             }
             catch (Exception ex)
             {
@@ -114,15 +112,13 @@ namespace Remotely.Agent.Services
         {
             while (clientPipe.IsConnected)
             {
-                using (var sr = new StreamReader(clientPipe, leaveOpen: true))
+                using var sr = new StreamReader(clientPipe, leaveOpen: true);
+                var messageJson = await sr.ReadLineAsync();
+                if (!string.IsNullOrWhiteSpace(messageJson))
                 {
-                    var messageJson = await sr.ReadLineAsync();
-                    if (!string.IsNullOrWhiteSpace(messageJson))
-                    {
-                        var chatMessage = JsonSerializer.Deserialize<ChatMessage>(messageJson);
-                        await hubConnection.SendAsync("Chat", chatMessage.Message, false, senderConnectionID);
-                    }
-                }               
+                    var chatMessage = JsonSerializer.Deserialize<ChatMessage>(messageJson);
+                    await hubConnection.SendAsync("Chat", chatMessage.Message, false, senderConnectionID);
+                }
             }
             await hubConnection.SendAsync("Chat", string.Empty, true, senderConnectionID);
             ChatClients.Remove(senderConnectionID);

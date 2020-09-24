@@ -2,7 +2,6 @@
 using Remotely.Agent.Interfaces;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
-using Remotely.Shared.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

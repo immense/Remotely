@@ -1,28 +1,27 @@
-using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
-using Remotely.Server.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using System.IO;
-using Remotely.Server.Services;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.AspNetCore.StaticFiles;
-using Remotely.Shared.Models;
-using Remotely.Shared.Services;
-using Microsoft.AspNetCore.HttpOverrides;
-using System.Net;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using Remotely.Server.Attributes;
-using Npgsql;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+using Npgsql;
+using Remotely.Server.Attributes;
+using Remotely.Server.Data;
 using Remotely.Server.Hubs;
+using Remotely.Server.Services;
+using Remotely.Shared.Models;
+using System;
+using System.IO;
+using System.Net;
 
 namespace Remotely.Server
 {
@@ -59,8 +58,10 @@ namespace Remotely.Server
                 // See https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-3.1
                 if (!string.IsNullOrWhiteSpace(Configuration.GetValue<string>("PostgresPassword")))
                 {
-                    var connectionBuilder = new NpgsqlConnectionStringBuilder(Configuration.GetConnectionString("PostgreSQL"));
-                    connectionBuilder.Password = Configuration["PostgresPassword"];
+                    var connectionBuilder = new NpgsqlConnectionStringBuilder(Configuration.GetConnectionString("PostgreSQL"))
+                    {
+                        Password = Configuration["PostgresPassword"]
+                    };
                     services.AddDbContext<ApplicationDbContext>(options =>
                         options.UseNpgsql(connectionBuilder.ConnectionString));
                 }
@@ -77,7 +78,7 @@ namespace Remotely.Server
                 .AddDefaultTokenProviders();
 
             var trustedOrigins = Configuration.GetSection("ApplicationOptions:TrustedCorsOrigins").Get<string[]>();
-            
+
             if (trustedOrigins != null)
             {
                 services.AddCors(options =>
@@ -137,9 +138,9 @@ namespace Remotely.Server
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, 
-            IWebHostEnvironment env, 
-            ApplicationDbContext context, 
+        public void Configure(IApplicationBuilder app,
+            IWebHostEnvironment env,
+            ApplicationDbContext context,
             DataService dataService,
             ILoggerFactory loggerFactory)
         {
@@ -208,7 +209,7 @@ namespace Remotely.Server
 
                 routeBuilder.MapRazorPages();
                 routeBuilder.MapControllers();
-                
+
             });
 
             try

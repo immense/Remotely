@@ -1,6 +1,4 @@
-﻿using Remotely.Desktop.Core.Services;
-
-namespace Remotely.Desktop.Core.Interfaces
+﻿namespace Remotely.Desktop.Core.Interfaces
 {
     public interface IKeyboardMouseInput
     {

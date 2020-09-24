@@ -5,10 +5,10 @@ namespace Remotely.Shared.Models
 {
     public class RemotelyUserOptions
     {
-        [Display(Name ="Console Prompt")]
+        [Display(Name = "Console Prompt")]
         [StringLength(5)]
         public string ConsolePrompt { get; set; } = "~>";
-        
+
         [Display(Name = "Web Shortcut")]
         [StringLength(10)]
         public string CommandModeShortcutWeb { get; set; } = "/web";

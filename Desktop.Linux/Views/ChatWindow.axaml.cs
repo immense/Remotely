@@ -1,12 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
-using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
-using Avalonia.VisualTree;
-using ReactiveUI;
 using Remotely.Desktop.Linux.ViewModels;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Remotely.Desktop.Linux.Views

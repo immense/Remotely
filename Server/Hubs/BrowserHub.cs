@@ -1,15 +1,15 @@
-﻿using Remotely.Shared.Models;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
+using Remotely.Server.Services;
+using Remotely.Shared.Enums;
+using Remotely.Shared.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Remotely.Shared.Enums;
-using Remotely.Server.Services;
 
 namespace Remotely.Server.Hubs
 {
@@ -17,8 +17,8 @@ namespace Remotely.Server.Hubs
     public class BrowserHub : Hub
     {
         public BrowserHub(
-            DataService dataService, 
-            SignInManager<RemotelyUser> signInManager, 
+            DataService dataService,
+            SignInManager<RemotelyUser> signInManager,
             IHubContext<AgentHub> agentHubContext,
             ApplicationConfig appConfig)
         {
@@ -31,7 +31,7 @@ namespace Remotely.Server.Hubs
         public static ConcurrentDictionary<string, RemotelyUser> ConnectionIdToUserLookup { get; } = new ConcurrentDictionary<string, RemotelyUser>();
         private ApplicationConfig AppConfig { get; }
         private DataService DataService { get; }
-		private IHubContext<AgentHub> AgentHubContext { get; }
+        private IHubContext<AgentHub> AgentHubContext { get; }
         private RemotelyUser RemotelyUser
         {
             get
@@ -52,7 +52,7 @@ namespace Remotely.Server.Hubs
             var organizationName = DataService.GetOrganizationName(RemotelyUser.UserName);
             return AgentHubContext.Clients.Clients(connections.Select(x => x.Key).ToList()).SendAsync("Chat",
                 RemotelyUser.DisplayName ?? RemotelyUser.UserName,
-                message, 
+                message,
                 organizationName,
                 false,
                 Context.ConnectionId);
@@ -115,47 +115,47 @@ namespace Remotely.Server.Hubs
         }
 
         public override async Task OnConnectedAsync()
-		{
-			RemotelyUser = DataService.GetUserByID(Context.UserIdentifier);
-			if (await IsConnectionValid() == false)
-			{
-				return;
-			}
+        {
+            RemotelyUser = DataService.GetUserByID(Context.UserIdentifier);
+            if (await IsConnectionValid() == false)
+            {
+                return;
+            }
             ConnectionIdToUserLookup.AddOrUpdate(Context.ConnectionId, RemotelyUser, (id, ru) => RemotelyUser);
 
             await Clients.Caller.SendAsync("UserOptions", RemotelyUser.UserOptions);
-			await base.OnConnectedAsync();
-		}
+            await base.OnConnectedAsync();
+        }
 
-		public override async Task OnDisconnectedAsync(Exception exception)
-		{
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
             ConnectionIdToUserLookup.Remove(Context.ConnectionId, out _);
             await base.OnDisconnectedAsync(exception);
-		}
+        }
 
-		public Task RemoteControl(string deviceID)
-		{
+        public Task RemoteControl(string deviceID)
+        {
             var targetDevice = AgentHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == deviceID);
             if (targetDevice.Value is null)
             {
                 return Clients.Caller.SendAsync("DisplayMessage", $"The selected device is not online.", "Device is not online."); ;
             }
             if (DataService.DoesUserHaveAccessToDevice(deviceID, RemotelyUser))
-			{
-				var currentUsers = CasterHub.SessionInfoList.Count(x => x.Value.OrganizationID == RemotelyUser.OrganizationID);
-				if (currentUsers >= AppConfig.RemoteControlSessionLimit)
-				{
-					return Clients.Caller.SendAsync("DisplayMessage", $"There are already the maximum amount of active remote control sessions for your organization.", "Max number of concurrent sessions reached.");
-				}
-				Clients.Caller.SendAsync("ServiceID", targetDevice.Key);
+            {
+                var currentUsers = CasterHub.SessionInfoList.Count(x => x.Value.OrganizationID == RemotelyUser.OrganizationID);
+                if (currentUsers >= AppConfig.RemoteControlSessionLimit)
+                {
+                    return Clients.Caller.SendAsync("DisplayMessage", $"There are already the maximum amount of active remote control sessions for your organization.", "Max number of concurrent sessions reached.");
+                }
+                Clients.Caller.SendAsync("ServiceID", targetDevice.Key);
                 return AgentHubContext.Clients.Client(targetDevice.Key).SendAsync("RemoteControl", Context.ConnectionId, targetDevice.Key);
-			}
+            }
             else
             {
                 DataService.WriteEvent($"Remote control attempted by unauthorized user.  Device ID: {deviceID}.  User Name: {RemotelyUser.UserName}.", EventType.Warning, targetDevice.Value.OrganizationID);
             }
             return Task.CompletedTask;
-		}
+        }
 
         public Task RemoveDevices(string[] deviceIDs)
         {
@@ -216,7 +216,7 @@ namespace Remotely.Server.Hubs
         }
         private async Task<bool> IsConnectionValid()
         {
-            if (Context?.User?.Identity?.IsAuthenticated != true || 
+            if (Context?.User?.Identity?.IsAuthenticated != true ||
                 await SignInManager.UserManager.IsLockedOutAsync(RemotelyUser))
             {
                 _ = Clients.Caller.SendAsync("LockedOut");

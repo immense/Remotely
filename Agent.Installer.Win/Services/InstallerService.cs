@@ -3,7 +3,6 @@ using Microsoft.VisualBasic.FileIO;
 using Microsoft.Win32;
 using Remotely.Shared.Models;
 using System;
-using System.Collections.Generic;
 using System.Configuration.Install;
 using System.Diagnostics;
 using System.IO;
@@ -68,7 +67,7 @@ namespace Remotely.Agent.Installer.Win.Services
                 CreateUninstallKey();
 
                 CreateSupportShortcut(serverUrl, connectionInfo.DeviceID, createSupportShortcut);
-               
+
                 return true;
             }
             catch (Exception ex)
@@ -171,9 +170,9 @@ namespace Remotely.Agent.Installer.Win.Services
             }
         }
 
-        private async Task CreateDeviceOnServer(string deviceUuid, 
+        private async Task CreateDeviceOnServer(string deviceUuid,
             string serverUrl,
-            string deviceGroup, 
+            string deviceGroup,
             string deviceAlias,
             string organizationId)
         {
@@ -210,7 +209,7 @@ namespace Remotely.Agent.Installer.Win.Services
             {
                 Logger.Write(ex);
             }
-          
+
         }
 
         private void CreateSupportShortcut(string serverUrl, string deviceUuid, bool createSupportShortcut)
@@ -439,7 +438,7 @@ namespace Remotely.Agent.Installer.Win.Services
                     remotelyService.WaitForStatus(ServiceControllerStatus.Stopped);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.Write(ex);
             }

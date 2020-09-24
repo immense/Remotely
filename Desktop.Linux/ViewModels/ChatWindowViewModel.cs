@@ -2,11 +2,8 @@
 using ReactiveUI;
 using Remotely.Desktop.Linux.Services;
 using Remotely.Shared.Models;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -40,7 +37,7 @@ namespace Remotely.Desktop.Linux.ViewModels
         public string OrganizationName
         {
             get => organizationName;
-            set 
+            set
             {
                 this.RaiseAndSetIfChanged(ref organizationName, value);
                 this.RaisePropertyChanged(nameof(ChatSessionHeader));

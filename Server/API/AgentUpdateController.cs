@@ -15,10 +15,10 @@ namespace Remotely.Server.API
     public class AgentUpdateController : ControllerBase
     {
         private static readonly MemoryCache downloadingAgents = new MemoryCache(new MemoryCacheOptions()
-            { ExpirationScanFrequency = TimeSpan.FromSeconds(10) });
+        { ExpirationScanFrequency = TimeSpan.FromSeconds(10) });
 
 
-        public AgentUpdateController(IWebHostEnvironment hostingEnv, 
+        public AgentUpdateController(IWebHostEnvironment hostingEnv,
             DataService dataService,
             ApplicationConfig appConfig)
         {

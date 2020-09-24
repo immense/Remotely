@@ -1,5 +1,4 @@
 ﻿using Remotely.Desktop.Core.Interfaces;
-using Remotely.Desktop.Core.Services;
 using Remotely.Desktop.Core.ViewModels;
 using Remotely.Shared.Helpers;
 using Remotely.Shared.Models;
@@ -8,8 +7,6 @@ using Remotely.Shared.Utilities;
 using Remotely.Shared.Win32;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;

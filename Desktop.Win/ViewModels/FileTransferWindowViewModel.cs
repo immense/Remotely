@@ -7,7 +7,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -40,10 +39,10 @@ namespace Remotely.Desktop.Win.ViewModels
             // Change initial directory so it doesn't open in %userprofile% path
             // for SYSTEM account.
             var rootDir = Path.GetPathRoot(Environment.SystemDirectory);
-            var userDir = Path.Combine(rootDir, 
-                "Users", 
+            var userDir = Path.Combine(rootDir,
+                "Users",
                 Win32Interop.GetUsernameFromSessionId((uint)Process.GetCurrentProcess().SessionId));
-            
+
             var ofd = new OpenFileDialog()
             {
                 Title = "Upload File via Remotely",

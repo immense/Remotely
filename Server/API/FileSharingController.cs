@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
 using Remotely.Server.Services;
-using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -17,7 +17,7 @@ namespace Remotely.Server.API
             DataService = dataService;
         }
         public DataService DataService { get; set; }
-        
+
         [HttpGet("{id}")]
         public ActionResult Get(string id)
         {

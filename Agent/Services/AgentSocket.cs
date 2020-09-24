@@ -1,28 +1,28 @@
-﻿using Remotely.Shared.Models;
+﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
+using Remotely.Agent.Interfaces;
+using Remotely.Shared.Enums;
+using Remotely.Shared.Models;
 using Remotely.Shared.Services;
-using Microsoft.AspNetCore.SignalR.Client;
+using Remotely.Shared.Utilities;
+using Remotely.Shared.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
-using System.Timers;
-using Remotely.Shared.Win32;
-using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 using System.Threading;
-using Remotely.Shared.Utilities;
-using Remotely.Shared.Enums;
-using Remotely.Agent.Interfaces;
+using System.Threading.Tasks;
+using System.Timers;
 
 namespace Remotely.Agent.Services
 {
     public class AgentSocket
     {
-        public AgentSocket(ConfigService configService, 
-            Uninstaller uninstaller, 
+        public AgentSocket(ConfigService configService,
+            Uninstaller uninstaller,
             CommandExecutor commandExecutor,
             ScriptRunner scriptRunner,
             IAppLauncher appLauncher,
@@ -145,7 +145,8 @@ namespace Remotely.Agent.Services
             // TODO: Remove possibility for circular dependencies in the future
             // by emitting these events so other services can listen for them.
 
-            HubConnection.On("Chat", async (string senderName, string message, string orgName, bool disconnected, string senderConnectionID) => {
+            HubConnection.On("Chat", async (string senderName, string message, string orgName, bool disconnected, string senderConnectionID) =>
+            {
                 if (!IsServerVerified)
                 {
                     Logger.Write("Chat attempted before server was verified.", EventType.Warning);
@@ -231,8 +232,8 @@ namespace Remotely.Agent.Services
                 }
 
                 Logger.Write($"File upload started by {requesterID}.");
-                var sharedFilePath = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(),"RemotelySharedFiles")).FullName;
-                
+                var sharedFilePath = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "RemotelySharedFiles")).FullName;
+
                 foreach (var fileID in fileIDs)
                 {
                     var url = $"{ConnectionInfo.Host}/API/FileSharing/{fileID}";
@@ -255,7 +256,8 @@ namespace Remotely.Agent.Services
                 }
                 await HubConnection.SendAsync("TransferCompleted", transferID, requesterID);
             });
-            HubConnection.On("DeployScript", async (string mode, string fileID, string commandResultID, string requesterID) => {
+            HubConnection.On("DeployScript", async (string mode, string fileID, string commandResultID, string requesterID) =>
+            {
                 if (!IsServerVerified)
                 {
                     Logger.Write($"Script deploy attempted before server was verified.  Mode: {mode}.  File ID: {fileID}.  Sender: {requesterID}", EventType.Warning);
@@ -269,7 +271,7 @@ namespace Remotely.Agent.Services
             {
                 Uninstaller.UninstallAgent();
             });
-          
+
             HubConnection.On("RemoteControl", async (string requesterID, string serviceID) =>
             {
                 if (!IsServerVerified)
@@ -297,7 +299,7 @@ namespace Remotely.Agent.Services
                 }
                 User32.SendSAS(false);
             });
-          
+
             HubConnection.On("ServerVerificationToken", (string verificationToken) =>
             {
                 if (verificationToken == ConnectionInfo.ServerVerificationToken)
@@ -309,7 +311,7 @@ namespace Remotely.Agent.Services
                     Logger.Write($"Server sent an incorrect verification token.  Token Sent: {verificationToken}.", EventType.Warning);
                     return;
                 }
-            });           
+            });
         }
     }
 }

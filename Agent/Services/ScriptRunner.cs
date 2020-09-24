@@ -33,14 +33,10 @@ namespace Remotely.Agent.Services
             var response = await wr.GetResponseAsync();
             var cd = response.Headers["Content-Disposition"];
             var filename = cd.Split(";").FirstOrDefault(x => x.Trim().StartsWith("filename")).Split("=")[1];
-            using (var rs = response.GetResponseStream())
-            {
-                using (var sr = new StreamReader(rs))
-                {
-                    var result = await sr.ReadToEndAsync();
-                    await CommandExecutor.ExecuteCommand(mode, result, commandResultID, requesterID, hubConnection);
-                }
-            }
+            using var rs = response.GetResponseStream();
+            using var sr = new StreamReader(rs);
+            var result = await sr.ReadToEndAsync();
+            await CommandExecutor.ExecuteCommand(mode, result, commandResultID, requesterID, hubConnection);
         }
     }
 }

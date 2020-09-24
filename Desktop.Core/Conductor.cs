@@ -1,11 +1,9 @@
-﻿using Remotely.Shared.Models;
-using Remotely.Desktop.Core.Enums;
-using Remotely.Desktop.Core.Services;
+﻿using Remotely.Desktop.Core.Enums;
+using Remotely.Shared.Models;
+using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Remotely.Shared.Utilities;
 
 namespace Remotely.Desktop.Core
 {

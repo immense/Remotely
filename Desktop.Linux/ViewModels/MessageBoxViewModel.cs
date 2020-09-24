@@ -1,6 +1,5 @@
 ﻿using Avalonia.Controls;
 using ReactiveUI;
-using Remotely.Desktop.Core.ViewModels;
 using Remotely.Desktop.Linux.Controls;
 using Remotely.Desktop.Linux.Services;
 using System.Windows.Input;

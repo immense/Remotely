@@ -1,15 +1,12 @@
 ﻿using Remotely.Desktop.Core.Interfaces;
 using Remotely.Desktop.Core.Services;
-using System;
-using Remotely.Shared.Win32;
-using static Remotely.Shared.Win32.User32;
-using System.Windows.Forms;
-using System.Threading;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
-using Remotely.Desktop.Core;
-using System.Runtime.InteropServices;
 using Remotely.Shared.Utilities;
+using Remotely.Shared.Win32;
+using System;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Windows.Forms;
+using static Remotely.Shared.Win32.User32;
 
 namespace Remotely.Desktop.Win.Services
 {

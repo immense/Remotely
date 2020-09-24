@@ -34,7 +34,7 @@ namespace Remotely.Desktop.Linux.X11Interop
 
         [DllImport("libX11")]
         public static extern IntPtr XGetImage(IntPtr display, IntPtr drawable, int x, int y, int width, int height, long plane_mask, int format);
-        
+
         [DllImport("libX11")]
         public static extern IntPtr XDefaultVisual(IntPtr display, int screen_number);
         [DllImport("libX11")]

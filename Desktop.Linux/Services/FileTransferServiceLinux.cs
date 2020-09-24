@@ -1,25 +1,24 @@
-﻿using Remotely.Shared.Utilities;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using System.Threading;
-using System.Collections.Concurrent;
-using Remotely.Desktop.Linux.Controls;
+﻿using Avalonia.Threading;
 using Remotely.Desktop.Core.Interfaces;
-using Avalonia.Controls;
 using Remotely.Desktop.Core.Services;
 using Remotely.Desktop.Core.ViewModels;
-using Avalonia.Threading;
-using Remotely.Desktop.Linux.Views;
+using Remotely.Desktop.Linux.Controls;
 using Remotely.Desktop.Linux.ViewModels;
+using Remotely.Desktop.Linux.Views;
+using Remotely.Shared.Utilities;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Remotely.Desktop.Linux.Services
 {
     public class FileTransferServiceLinux : IFileTransferService
     {
         private static readonly SemaphoreSlim _writeLock = new SemaphoreSlim(1);
-        private static readonly ConcurrentDictionary<string, FileStream> _partialTransfers = 
+        private static readonly ConcurrentDictionary<string, FileStream> _partialTransfers =
             new ConcurrentDictionary<string, FileStream>();
         private static readonly ConcurrentDictionary<string, FileTransferWindow> _fileTransferWindows =
             new ConcurrentDictionary<string, FileTransferWindow>();

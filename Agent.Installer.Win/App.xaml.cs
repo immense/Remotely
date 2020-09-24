@@ -7,6 +7,6 @@ namespace Remotely.Agent.Installer.Win
     /// </summary>
     public partial class App : Application
     {
-       
+
     }
 }

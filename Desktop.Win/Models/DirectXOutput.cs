@@ -7,9 +7,9 @@ namespace Remotely.Desktop.Win.Models
 {
     public class DirectXOutput : IDisposable
     {
-        public DirectXOutput(Adapter1 adapter, 
-            SharpDX.Direct3D11.Device device, 
-            OutputDuplication outputDuplication, 
+        public DirectXOutput(Adapter1 adapter,
+            SharpDX.Direct3D11.Device device,
+            OutputDuplication outputDuplication,
             Texture2D texture2D)
         {
             Adapter = adapter;
@@ -25,8 +25,8 @@ namespace Remotely.Desktop.Win.Models
 
         public void Dispose()
         {
-            Disposer.TryDisposeAll(new IDisposable[] 
-            { 
+            Disposer.TryDisposeAll(new IDisposable[]
+            {
                 Adapter,
                 Device,
                 OutputDuplication,

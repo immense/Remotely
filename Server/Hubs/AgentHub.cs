@@ -1,13 +1,13 @@
-﻿using Remotely.Shared.Models;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Caching.Memory;
+using Remotely.Server.Services;
+using Remotely.Shared.Enums;
+using Remotely.Shared.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
-using Remotely.Shared.Enums;
-using Remotely.Server.Services;
 
 namespace Remotely.Server.Hubs
 {
@@ -27,23 +27,23 @@ namespace Remotely.Server.Hubs
         public IHubContext<ViewerHub> ViewerHubContext { get; }
         private IHubContext<BrowserHub> BrowserHubContext { get; }
         private DataService DataService { get; }
-		private Device Device
-		{
-			get
-			{
-				return this.Context.Items["Device"] as Device;
-			}
-			set
-			{
-				this.Context.Items["Device"] = value;
-			}
-		}
+        private Device Device
+        {
+            get
+            {
+                return this.Context.Items["Device"] as Device;
+            }
+            set
+            {
+                this.Context.Items["Device"] = value;
+            }
+        }
 
-		public Task BashResultViaAjax(string commandID)
-		{
-			var commandResult = DataService.GetCommandResult(commandID);
-			return BrowserHubContext.Clients.Client(commandResult.SenderConnectionID).SendAsync("BashResultViaAjax", commandID, Device.ID);
-		}
+        public Task BashResultViaAjax(string commandID)
+        {
+            var commandResult = DataService.GetCommandResult(commandID);
+            return BrowserHubContext.Clients.Client(commandResult.SenderConnectionID).SendAsync("BashResultViaAjax", commandID, Device.ID);
+        }
 
         public Task Chat(string message, bool disconnected, string senderConnectionID)
         {
@@ -58,19 +58,19 @@ namespace Remotely.Server.Hubs
         }
 
         public Task CMDResultViaAjax(string commandID)
-		{
-			var commandResult = DataService.GetCommandResult(commandID);
+        {
+            var commandResult = DataService.GetCommandResult(commandID);
             return BrowserHubContext.Clients.Client(commandResult.SenderConnectionID).SendAsync("CMDResultViaAjax", commandID, Device.ID);
-		}
+        }
 
         public Task CommandResult(GenericCommandResult result)
-		{
-			result.DeviceID = Device.ID;
-			var commandResult = DataService.GetCommandResult(result.CommandResultID);
-			commandResult.CommandResults.Add(result);
-			DataService.AddOrUpdateCommandResult(commandResult);
+        {
+            result.DeviceID = Device.ID;
+            var commandResult = DataService.GetCommandResult(result.CommandResultID);
+            commandResult.CommandResults.Add(result);
+            DataService.AddOrUpdateCommandResult(commandResult);
             return BrowserHubContext.Clients.Client(commandResult.SenderConnectionID).SendAsync("CommandResult", result);
-		}
+        }
 
         public void CommandResultViaApi(string commandID, string requestID)
         {
@@ -98,7 +98,7 @@ namespace Remotely.Server.Hubs
                 {
                     Device = updatedDevice;
                     ServiceConnections.AddOrUpdate(Context.ConnectionId, Device, (id, d) => Device);
-                    
+
                     var userIDs = BrowserHub.ConnectionIdToUserLookup.Values.Select(x => x.Id);
 
                     var filteredUserIDs = DataService.FilterUsersByDevicePermission(userIDs, Device.ID);
@@ -149,7 +149,7 @@ namespace Remotely.Server.Hubs
         public Task DisplayMessage(string consoleMessage, string popupMessage, string requesterID)
         {
             return BrowserHubContext.Clients.Client(requesterID).SendAsync("DisplayMessage", consoleMessage, popupMessage);
-		}
+        }
         public Task DownloadFile(string fileID, string requesterID)
         {
             return BrowserHubContext.Clients.Client(requesterID).SendAsync("DownloadFile", fileID);
@@ -160,7 +160,7 @@ namespace Remotely.Server.Hubs
         }
 
         public override Task OnConnectedAsync()
-		{
+        {
             return base.OnConnectedAsync();
         }
         public override async Task OnDisconnectedAsync(Exception exception)
@@ -180,7 +180,7 @@ namespace Remotely.Server.Hubs
 
                 ServiceConnections.Remove(Context.ConnectionId, out _);
             }
-            
+
             await base.OnDisconnectedAsync(exception);
         }
         public Task PSCoreResult(PSCoreCommandResult result)
@@ -191,11 +191,11 @@ namespace Remotely.Server.Hubs
             DataService.AddOrUpdateCommandResult(commandResult);
             return BrowserHubContext.Clients.Client(commandResult.SenderConnectionID).SendAsync("PSCoreResult", result);
         }
-		public async void PSCoreResultViaAjax(string commandID)
-		{
-			var commandResult = DataService.GetCommandResult(commandID);
-			await BrowserHubContext.Clients.Client(commandResult.SenderConnectionID).SendAsync("PSCoreResultViaAjax", commandID, Device.ID);
-		}
+        public async void PSCoreResultViaAjax(string commandID)
+        {
+            var commandResult = DataService.GetCommandResult(commandID);
+            await BrowserHubContext.Clients.Client(commandResult.SenderConnectionID).SendAsync("PSCoreResultViaAjax", commandID, Device.ID);
+        }
 
         public Task SendConnectionFailedToViewers(List<string> viewerIDs)
         {

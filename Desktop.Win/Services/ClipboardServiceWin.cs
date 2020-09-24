@@ -1,5 +1,4 @@
 ﻿using Remotely.Desktop.Core.Interfaces;
-using Remotely.Desktop.Core.Services;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.Win32;
 using System;
@@ -53,7 +52,7 @@ namespace Remotely.Desktop.Win.Services
             });
             thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
-            
+
             return Task.CompletedTask;
         }
 

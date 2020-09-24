@@ -1,18 +1,18 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Remotely.Shared.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Remotely.Server.Services;
+using Remotely.Shared.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Remotely.Server.Pages
 {
     public class IndexModel : PageModel
     {
-        public IndexModel(DataService dataService, 
+        public IndexModel(DataService dataService,
             SignInManager<RemotelyUser> signInManager,
             ApplicationConfig appConfig)
         {
