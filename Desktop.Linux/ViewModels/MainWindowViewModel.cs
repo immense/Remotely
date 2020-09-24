@@ -22,10 +22,10 @@ namespace Remotely.Desktop.Linux.ViewModels
 {
     public class MainWindowViewModel : ReactiveViewModel
     {
-        private double copyMessageOpacity;
-        private string host;
-        private bool isCopyMessageVisible;
-        private string sessionID;
+        private double _copyMessageOpacity;
+        private string _host;
+        private bool _isCopyMessageVisible;
+        private string _sessionID;
 
         public MainWindowViewModel()
         {
@@ -66,7 +66,7 @@ namespace Remotely.Desktop.Linux.ViewModels
             CopyMessageOpacity = 1;
             IsCopyMessageVisible = true;
             await Task.Delay(1000);
-            while (copyMessageOpacity > 0)
+            while (_copyMessageOpacity > 0)
             {
                 CopyMessageOpacity -= .05;
                 await Task.Delay(25);
@@ -76,20 +76,20 @@ namespace Remotely.Desktop.Linux.ViewModels
 
         public double CopyMessageOpacity
         {
-            get => copyMessageOpacity;
-            set => this.RaiseAndSetIfChanged(ref copyMessageOpacity, value);
+            get => _copyMessageOpacity;
+            set => this.RaiseAndSetIfChanged(ref _copyMessageOpacity, value);
         }
 
         public string Host
         {
-            get => host;
-            set => this.RaiseAndSetIfChanged(ref host, value);
+            get => _host;
+            set => this.RaiseAndSetIfChanged(ref _host, value);
         }
 
         public bool IsCopyMessageVisible
         {
-            get => isCopyMessageVisible;
-            set => this.RaiseAndSetIfChanged(ref isCopyMessageVisible, value);
+            get => _isCopyMessageVisible;
+            set => this.RaiseAndSetIfChanged(ref _isCopyMessageVisible, value);
         }
 
         public ICommand MinimizeCommand => new Executor((param) =>
@@ -116,8 +116,8 @@ namespace Remotely.Desktop.Linux.ViewModels
 
         public string SessionID
         {
-            get => sessionID;
-            set => this.RaiseAndSetIfChanged(ref sessionID, value);
+            get => _sessionID;
+            set => this.RaiseAndSetIfChanged(ref _sessionID, value);
         }
 
         public ObservableCollection<Viewer> Viewers { get; } = new ObservableCollection<Viewer>();
@@ -179,7 +179,7 @@ namespace Remotely.Desktop.Linux.ViewModels
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                sessionID = "Failed";
+                _sessionID = "Failed";
                 await MessageBox.Show("Failed to connect to server.", "Connection Failed", MessageBoxType.OK);
                 return;
             }

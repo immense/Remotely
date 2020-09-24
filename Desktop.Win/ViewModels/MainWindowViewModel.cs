@@ -22,8 +22,8 @@ namespace Remotely.Desktop.Win.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        private string host;
-        private string sessionID;
+        private string _host;
+        private string _sessionID;
 
         public static MainWindowViewModel Current { get; private set; }
 
@@ -130,10 +130,10 @@ namespace Remotely.Desktop.Win.ViewModels
 
         public string Host
         {
-            get => host;
+            get => _host;
             set
             {
-                host = value;
+                _host = value;
                 FirePropertyChanged("Host");
             }
         }
@@ -162,10 +162,10 @@ namespace Remotely.Desktop.Win.ViewModels
 
         public string SessionID
         {
-            get => sessionID;
+            get => _sessionID;
             set
             {
-                sessionID = value;
+                _sessionID = value;
                 FirePropertyChanged("SessionID");
             }
         }
