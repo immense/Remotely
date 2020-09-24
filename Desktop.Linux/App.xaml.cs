@@ -14,16 +14,11 @@ namespace Remotely.Desktop.Linux
         {
             //if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             //{
-            //    var conductor = ServiceContainer.Instance.GetRequiredService<Conductor>();
-            //    if (conductor.Mode == Core.Enums.AppMode.Normal)
+            //    desktop.MainWindow = new MainWindow
             //    {
-            //        desktop.MainWindow = new MainWindow
-            //        {
-            //            DataContext = new MainWindowViewModel(),
-            //        };
-            //    }
+            //        DataContext = new MainWindowViewModel(),
+            //    };
             //}
-
             base.OnFrameworkInitializationCompleted();
         }
     }

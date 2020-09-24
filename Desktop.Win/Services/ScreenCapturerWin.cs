@@ -41,9 +41,9 @@ namespace Remotely.Desktop.Win.Services
 {
     public class ScreenCapturerWin : IScreenCapturer
     {
-        private readonly Dictionary<string, int> bitBltScreens = new Dictionary<string, int>();
-        private readonly Dictionary<string, DirectXOutput> directxScreens = new Dictionary<string, DirectXOutput>();
-        private readonly SemaphoreSlim screenCaptureLock = new SemaphoreSlim(1);
+        private readonly Dictionary<string, int> _bitBltScreens = new Dictionary<string, int>();
+        private readonly Dictionary<string, DirectXOutput> _directxScreens = new Dictionary<string, DirectXOutput>();
+        private readonly SemaphoreSlim _screenCaptureLock = new SemaphoreSlim(1);
 
         public ScreenCapturerWin()
         {
@@ -72,7 +72,7 @@ namespace Remotely.Desktop.Win.Services
         {
             try
             {
-                screenCaptureLock.Wait();
+                _screenCaptureLock.Wait();
 
                 Win32Interop.SwitchToInputDesktop();
 
@@ -86,7 +86,7 @@ namespace Remotely.Desktop.Win.Services
                 // on the screen.  I've observed this when a laptop lid is closed, or
                 // on some machines that aren't connected to a monitor.  This will
                 // have it fall back to BitBlt in those cases.
-                if (directxScreens.ContainsKey(SelectedScreen))
+                if (_directxScreens.ContainsKey(SelectedScreen))
                 {
                     var (result, frame) = GetDirectXFrame();
 
@@ -106,14 +106,14 @@ namespace Remotely.Desktop.Win.Services
             }
             finally
             {
-                screenCaptureLock.Release();
+                _screenCaptureLock.Release();
             }
             return null;
         }
 
         public int GetScreenCount() => Screen.AllScreens.Length;
 
-        public int GetSelectedScreenIndex() => bitBltScreens[SelectedScreen];
+        public int GetSelectedScreenIndex() => _bitBltScreens[SelectedScreen];
 
         public Rectangle GetVirtualScreenBounds() => SystemInformation.VirtualScreen;
 
@@ -133,20 +133,20 @@ namespace Remotely.Desktop.Win.Services
                 return;
             }
 
-            if (bitBltScreens.ContainsKey(displayName))
+            if (_bitBltScreens.ContainsKey(displayName))
             {
                 SelectedScreen = displayName;
             }
             else
             {
-                SelectedScreen = bitBltScreens.Keys.First();
+                SelectedScreen = _bitBltScreens.Keys.First();
             }
             RefreshCurrentScreenBounds();
         }
 
         private void ClearDirectXOutputs()
         {
-            foreach (var screen in directxScreens.Values)
+            foreach (var screen in _directxScreens.Values)
             {
                 try
                 {
@@ -154,7 +154,7 @@ namespace Remotely.Desktop.Win.Services
                 }
                 catch { }
             }
-            directxScreens.Clear();
+            _directxScreens.Clear();
         }
 
         private Bitmap GetBitBltFrame()
@@ -190,9 +190,9 @@ namespace Remotely.Desktop.Win.Services
         {
             try
             {
-                var duplicatedOutput = directxScreens[SelectedScreen].OutputDuplication;
-                var device = directxScreens[SelectedScreen].Device;
-                var texture2D = directxScreens[SelectedScreen].Texture2D;
+                var duplicatedOutput = _directxScreens[SelectedScreen].OutputDuplication;
+                var device = _directxScreens[SelectedScreen].Device;
+                var texture2D = _directxScreens[SelectedScreen].Texture2D;
 
                 // Try to get duplicated frame within given time is ms
                 var result = duplicatedOutput.TryAcquireNextFrame(100,
@@ -273,10 +273,10 @@ namespace Remotely.Desktop.Win.Services
 
         private void InitBitBlt()
         {
-            bitBltScreens.Clear();
+            _bitBltScreens.Clear();
             for (var i = 0; i < Screen.AllScreens.Length; i++)
             {
-                bitBltScreens.Add(Screen.AllScreens[i].DeviceName, i);
+                _bitBltScreens.Add(Screen.AllScreens[i].DeviceName, i);
             }
         }
 
@@ -317,7 +317,7 @@ namespace Remotely.Desktop.Win.Services
 
                             var texture2D = new Texture2D(device, textureDesc);
 
-                            directxScreens.Add(
+                            _directxScreens.Add(
                                 output1.Description.DeviceName,
                                 new DirectXOutput(adapter,
                                     device,
@@ -342,7 +342,7 @@ namespace Remotely.Desktop.Win.Services
 
         private void RefreshCurrentScreenBounds()
         {
-            CurrentScreenBounds = Screen.AllScreens[bitBltScreens[SelectedScreen]].Bounds;
+            CurrentScreenBounds = Screen.AllScreens[_bitBltScreens[SelectedScreen]].Bounds;
             CaptureFullscreen = true;
             NeedsInit = true;
             ScreenChanged?.Invoke(this, CurrentScreenBounds);

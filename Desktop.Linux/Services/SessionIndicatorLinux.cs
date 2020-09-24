@@ -1,4 +1,5 @@
-﻿using Avalonia.Threading;
+﻿using Avalonia.Controls;
+using Avalonia.Threading;
 using Remotely.Desktop.Core.Interfaces;
 using Remotely.Desktop.Linux.Views;
 
@@ -11,7 +12,7 @@ namespace Remotely.Desktop.Linux.Services
             Dispatcher.UIThread.Post(() =>
             {
                 var indicatorWindow = new SessionIndicatorWindow();
-                indicatorWindow.Show();
+                App.Current.Run(indicatorWindow);
             });
         }
     }
