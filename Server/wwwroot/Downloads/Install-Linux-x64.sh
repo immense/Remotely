@@ -12,15 +12,15 @@ if [ "$1" = "--uninstall" ]; then
 	exit
 fi
 
-UbuntuVersion=$(lsb_release -r -s)
+#UbuntuVersion=$(lsb_release -r -s)
 
-wget -q https://packages.microsoft.com/config/ubuntu/$UbuntuVersion/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-dpkg -i packages-microsoft-prod.deb
-apt-get update
-apt-get -y install apt-transport-https
-apt-get update
-apt-get -y install dotnet-runtime-3.1
-rm packages-microsoft-prod.deb
+#wget -q https://packages.microsoft.com/config/ubuntu/$UbuntuVersion/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+#dpkg -i packages-microsoft-prod.deb
+#apt-get update
+#apt-get -y install apt-transport-https
+#apt-get update
+#apt-get -y install dotnet-runtime-3.1
+#rm packages-microsoft-prod.deb
 
 apt-get -y install libx11-dev
 apt-get -y install unzip
