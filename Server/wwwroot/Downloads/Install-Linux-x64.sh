@@ -17,9 +17,9 @@ UbuntuVersion=$(lsb_release -r -s)
 wget -q https://packages.microsoft.com/config/ubuntu/$UbuntuVersion/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
 dpkg -i packages-microsoft-prod.deb
 apt-get update
-apt-get install apt-transport-https
+apt-get -y install apt-transport-https
 apt-get update
-apt-get install dotnet-runtime-3.1
+apt-get -y install dotnet-runtime-3.1
 rm packages-microsoft-prod.deb
 
 apt-get -y install libx11-dev

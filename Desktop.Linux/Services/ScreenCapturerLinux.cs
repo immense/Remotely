@@ -13,8 +13,8 @@ namespace Remotely.Desktop.Linux.Services
 {
     public class ScreenCapturerLinux : IScreenCapturer
     {
-        private readonly SemaphoreSlim screenCaptureLock = new SemaphoreSlim(1);
-        private readonly Dictionary<string, int> x11Screens = new Dictionary<string, int>();
+        private readonly SemaphoreSlim _screenCaptureLock = new SemaphoreSlim(1);
+        private readonly Dictionary<string, int> _x11Screens = new Dictionary<string, int>();
         public ScreenCapturerLinux()
         {
             Display = LibX11.XOpenDisplay(null);
@@ -33,13 +33,13 @@ namespace Remotely.Desktop.Linux.Services
             LibX11.XCloseDisplay(Display);
         }
 
-        public IEnumerable<string> GetDisplayNames() => x11Screens.Keys;
+        public IEnumerable<string> GetDisplayNames() => _x11Screens.Keys;
 
         public Bitmap GetNextFrame()
         {
             try
             {
-                screenCaptureLock.Wait();
+                _screenCaptureLock.Wait();
 
                 return GetX11Screen();
             }
@@ -51,7 +51,7 @@ namespace Remotely.Desktop.Linux.Services
             }
             finally
             {
-                screenCaptureLock.Release();
+                _screenCaptureLock.Release();
             }
         }
         public int GetScreenCount()
@@ -59,7 +59,7 @@ namespace Remotely.Desktop.Linux.Services
             return LibX11.XScreenCount(Display);
         }
 
-        public int GetSelectedScreenIndex() => x11Screens[SelectedScreen];
+        public int GetSelectedScreenIndex() => _x11Screens[SelectedScreen];
 
         public Rectangle GetVirtualScreenBounds()
         {
@@ -81,13 +81,13 @@ namespace Remotely.Desktop.Linux.Services
             try
             {
                 CaptureFullscreen = true;
-                x11Screens.Clear();
+                _x11Screens.Clear();
 
                 for (var i = 0; i < GetScreenCount(); i++)
                 {
-                    x11Screens.Add(i.ToString(), i);
+                    _x11Screens.Add(i.ToString(), i);
                 }
-                SetSelectedScreen(x11Screens.Keys.First());
+                SetSelectedScreen(_x11Screens.Keys.First());
             }
             catch (Exception ex)
             {
@@ -102,16 +102,16 @@ namespace Remotely.Desktop.Linux.Services
             }
             try
             {
-                if (x11Screens.ContainsKey(displayName))
+                if (_x11Screens.ContainsKey(displayName))
                 {
                     SelectedScreen = displayName;
                 }
                 else
                 {
-                    SelectedScreen = x11Screens.Keys.First();
+                    SelectedScreen = _x11Screens.Keys.First();
                 }
-                var width = LibX11.XDisplayWidth(Display, x11Screens[SelectedScreen]);
-                var height = LibX11.XDisplayHeight(Display, x11Screens[SelectedScreen]);
+                var width = LibX11.XDisplayWidth(Display, _x11Screens[SelectedScreen]);
+                var height = LibX11.XDisplayHeight(Display, _x11Screens[SelectedScreen]);
                 CurrentScreenBounds = new Rectangle(0, 0, width, height);
                 CaptureFullscreen = true;
                 ScreenChanged?.Invoke(this, CurrentScreenBounds);
@@ -127,7 +127,7 @@ namespace Remotely.Desktop.Linux.Services
         {
             var currentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
 
-            var window = LibX11.XRootWindow(Display, x11Screens[SelectedScreen]);
+            var window = LibX11.XRootWindow(Display, _x11Screens[SelectedScreen]);
 
             var imagePointer = LibX11.XGetImage(Display, window, 0, 0, CurrentScreenBounds.Width, CurrentScreenBounds.Height, ~0, 2);
             var image = Marshal.PtrToStructure<LibX11.XImage>(imagePointer);
