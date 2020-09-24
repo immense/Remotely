@@ -100,7 +100,7 @@ namespace Remotely.Agent.Services
 
             var display = ":0";
             var whoString = EnvironmentHelper.StartProcessWithResults("w", "-h")?.Trim();
-            var username = "root";
+            var username = "";
 
             if (!string.IsNullOrWhiteSpace(whoString))
             {

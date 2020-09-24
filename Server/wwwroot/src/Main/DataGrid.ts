@@ -97,6 +97,8 @@ export function ApplyFilterToDevice(device: Device) {
 }
 
 export function RenderDeviceRows() {
+    var selectedDevices = GetSelectedDevices();
+
     DeviceGridBody.innerHTML = "";
     var startCurrentDevices = (GridState.CurrentPage - 1) * GridState.RowsPerPage;
     var endCurrentDevices = startCurrentDevices + GridState.RowsPerPage;
@@ -110,6 +112,9 @@ export function RenderDeviceRows() {
         if (recordRow == null) {
             recordRow = document.createElement("tr");
             recordRow.classList.add("record-row");
+            if (selectedDevices.some(x => x.ID == device.ID)) {
+                recordRow.classList.add("row-selected");
+            }
             recordRow.id = device.ID;
             DeviceGridBody.appendChild(recordRow);
             recordRow.addEventListener("click", (e) => {
@@ -172,11 +177,11 @@ export function RenderDeviceRows() {
 
 
 export function GetSelectedDevices(): Device[] {
-    var devices = new Array<Device>();
+    var selectedIds = new Array<string>();
     DeviceGrid.querySelectorAll(".row-selected").forEach(row => {
-        devices.push(DataSource.find(x => x.ID == row.id));
+        selectedIds.push(row.id);
     });
-    return devices;
+    return DataSource.filter(x => selectedIds.includes(x.ID));
 };
 
 export function GoToCurrentPage() {
