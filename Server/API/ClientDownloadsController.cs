@@ -48,21 +48,20 @@ namespace Remotely.Server.API
                 if (await FileLock.WaitAsync(TimeSpan.FromSeconds(15)))
                 {
                     var scheme = AppConfig.RedirectToHttps ? "https" : Request.Scheme;
-                    var fileContents = new List<string>();
-                    string fileName;
-                    byte[] fileBytes;
+                    
                     switch (platformID)
                     {
                         case "Windows":
                             {
                                 var filePath = Path.Combine(HostEnv.WebRootPath, "Downloads", $"Remotely_Installer.exe");
-                                fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
-                                fileName = $"Remotely_Installer-{organizationID}.exe";
-                                break;
+                                var fileName = $"Remotely_Installer-{organizationID}.exe";
+                                var fileStream = System.IO.File.OpenRead(filePath);
+                                return File(fileStream, "application/octet-stream", $"{fileName}");
                             }
                         case "Linux-x64":
                             {
-                                fileName = "Install-Linux-x64.sh";
+                                var fileContents = new List<string>();
+                                var fileName = "Install-Linux-x64.sh";
 
                                 fileContents.AddRange(await System.IO.File.ReadAllLinesAsync(Path.Combine(HostEnv.WebRootPath, "Downloads", $"{fileName}")));
 
@@ -71,15 +70,13 @@ namespace Remotely.Server.API
 
                                 fileContents[hostIndex] = $"HostName=\"{scheme}://{Request.Host}\"";
                                 fileContents[orgIndex] = $"Organization=\"{organizationID}\"";
-                                fileBytes = Encoding.UTF8.GetBytes(string.Join("\n", fileContents));
-                                break;
+                                var fileBytes = Encoding.UTF8.GetBytes(string.Join("\n", fileContents));
+                                return File(fileBytes, "application/octet-stream", $"{fileName}");
                             }
 
                         default:
                             return BadRequest();
                     }
-
-                    return File(fileBytes, "application/octet-stream", $"{fileName}");
                 }
                 else
                 {
