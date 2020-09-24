@@ -31,12 +31,19 @@ $Root = (Get-Item -Path $PSScriptRoot).Parent.FullName
 $SignAssemblies = $false
 
 if (!$CurrentVersion) {
-    $Year = ([DateTime]::UtcNow).Year.ToString()
-    $Month = ([DateTime]::UtcNow).Month.ToString().PadLeft(2, "0")
-    $Day = ([DateTime]::UtcNow).Day.ToString().PadLeft(2, "0")
-    $Hour = ([DateTime]::UtcNow).Hour.ToString().PadLeft(2, "0")
-    $Minute = ([DateTime]::UtcNow).Minute.ToString().PadLeft(2, "0")
+    Push-Location -Path $Root
+
+    $VersionString = git show -s --format=%ci
+    $VersionDate = [DateTimeOffset]::Parse($VersionString)
+
+    $Year = $VersionDate.Year.ToString()
+    $Month = $VersionDate.Month.ToString().PadLeft(2, "0")
+    $Day = $VersionDate.Day.ToString().PadLeft(2, "0")
+    $Hour = $VersionDate.Hour.ToString().PadLeft(2, "0")
+    $Minute = $VersionDate.Minute.ToString().PadLeft(2, "0")
     $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
+
+    Pop-Location
 }
 
 if ($CertificatePath.Length -gt 0 -and 
