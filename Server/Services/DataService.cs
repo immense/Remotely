@@ -958,6 +958,24 @@ namespace Remotely.Server.Services
             RemotelyContext.SaveChanges();
         }
 
+        public async Task<Device> UpdateDevice(DeviceSetupOptions deviceOptions, string organizationId)
+        {
+            var device = RemotelyContext.Devices.Find(deviceOptions.DeviceID);
+            if (device == null || device.OrganizationID != organizationId)
+            {
+                return null;
+            }
+
+            var group = await RemotelyContext.DeviceGroups.FirstOrDefaultAsync(x =>
+              x.Name.ToLower() == deviceOptions.DeviceGroupName.ToLower() &&
+              x.OrganizationID == device.OrganizationID);
+            device.DeviceGroup = group;
+
+            device.Alias = deviceOptions.DeviceAlias;
+            await RemotelyContext.SaveChangesAsync();
+            return device;
+        }
+
         public void UpdateOrganizationName(string orgID, string organizationName)
         {
             RemotelyContext.Organizations
