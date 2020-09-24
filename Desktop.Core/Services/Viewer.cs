@@ -71,6 +71,7 @@ namespace Remotely.Desktop.Core.Services
         }
 
         public bool IsConnected => CasterSocket.IsConnected;
+
         public bool IsStalled
         {
             get
@@ -96,14 +97,21 @@ namespace Remotely.Desktop.Core.Services
         }
 
         public string Name { get; set; }
+
         public ConcurrentQueue<DateTimeOffset> PendingSentFrames { get; } = new ConcurrentQueue<DateTimeOffset>();
+
         public WebRtcSession RtcSession { get; set; }
+
         public string ViewerConnectionID { get; set; }
+
         private IAudioCapturer AudioCapturer { get; }
+
         private CasterSocket CasterSocket { get; }
+
         private IClipboardService ClipboardService { get; }
 
         private IWebRtcSessionFactory WebRtcSessionFactory { get; }
+
         public void Dispose()
         {
             DisconnectRequested = true;
@@ -136,6 +144,32 @@ namespace Remotely.Desktop.Core.Services
             {
                 Logger.Write(ex);
             }
+        }
+
+        public async Task SendAudioSample(byte[] audioSample)
+        {
+            var dto = new AudioSampleDto(audioSample);
+            await SendToViewer(() => RtcSession.SendDto(dto),
+                () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
+        }
+
+        public async Task SendClipboardText(string clipboardText)
+        {
+            var dto = new ClipboardTextDto(clipboardText);
+            await SendToViewer(() => RtcSession.SendDto(dto),
+                () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
+        }
+
+        public async Task SendCtrlAltDel()
+        {
+            await CasterSocket.SendCtrlAltDelToAgent();
+        }
+
+        public async Task SendCursorChange(CursorInfo cursorInfo)
+        {
+            var dto = new CursorChangeDto(cursorInfo.ImageBytes, cursorInfo.HotSpot.X, cursorInfo.HotSpot.Y, cursorInfo.CssOverride);
+            await SendToViewer(() => RtcSession.SendDto(dto),
+                () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
         }
 
         public async Task SendFile(FileUpload fileUpload, Action<double> progressUpdateCallback)
@@ -171,7 +205,7 @@ namespace Remotely.Desktop.Core.Services
                         //await TaskHelper.DelayUntilAsync(() => RtcSession.CurrentBuffer > 0, TimeSpan.FromSeconds(1), 100);
                         await TaskHelper.DelayUntilAsync(() => RtcSession.CurrentBuffer == 0, TimeSpan.MaxValue, 100);
                     },
-                    async () => 
+                    async () =>
                     {
                         await CasterSocket.SendDtoToViewer(fileDto, ViewerConnectionID);
                     });
@@ -196,32 +230,6 @@ namespace Remotely.Desktop.Core.Services
             {
                 Logger.Write(ex);
             }
-        }
-
-        public async Task SendAudioSample(byte[] audioSample)
-        {
-            var dto = new AudioSampleDto(audioSample);
-            await SendToViewer(() => RtcSession.SendDto(dto),
-                () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
-        }
-
-        public async Task SendClipboardText(string clipboardText)
-        {
-            var dto = new ClipboardTextDto(clipboardText);
-            await SendToViewer(() => RtcSession.SendDto(dto),
-                () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
-        }
-
-        public async Task SendCtrlAltDel()
-        {
-            await CasterSocket.SendCtrlAltDel();
-        }
-
-        public async Task SendCursorChange(CursorInfo cursorInfo)
-        {
-            var dto = new CursorChangeDto(cursorInfo.ImageBytes, cursorInfo.HotSpot.X, cursorInfo.HotSpot.Y, cursorInfo.CssOverride);
-            await SendToViewer(() => RtcSession.SendDto(dto),
-                () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
         }
 
         public async Task SendMachineName(string machineName)
@@ -280,6 +288,10 @@ namespace Remotely.Desktop.Core.Services
                  () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
         }
 
+        public async Task SendViewerConnected()
+        {
+            await CasterSocket.SendViewerConnected(ViewerConnectionID);
+        }
         public async Task SendWindowsSessions()
         {
             if (EnvironmentHelper.IsWindows)

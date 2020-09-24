@@ -72,6 +72,13 @@ namespace Remotely.Desktop.Core.Services
             }
         }
 
+        public async Task DisconnectViewer(Services.Viewer viewer, bool notifyViewer)
+        {
+            viewer.DisconnectRequested = true;
+            viewer.Dispose();
+            await Connection.SendAsync("DisconnectViewer", viewer.ViewerConnectionID, notifyViewer);
+        }
+
         public async Task<IceServerModel[]> GetIceServers()
         {
             return await Connection.InvokeAsync<IceServerModel[]>("GetIceServers");
@@ -91,12 +98,6 @@ namespace Remotely.Desktop.Core.Services
             await Connection.SendAsync("NotifyViewersRelaunchedScreenCasterReady", viewerIDs);
         }
 
-        public Task SendDtoToViewer<T>(T baseDto, string viewerId)
-        {
-            var serializedDto = MessagePack.MessagePackSerializer.Serialize(baseDto);
-            return Connection.SendAsync("SendDtoToBrowser", serializedDto, viewerId);
-        }
-
         public async Task SendConnectionFailedToViewers(List<string> viewerIDs)
         {
             await Connection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
@@ -107,9 +108,9 @@ namespace Remotely.Desktop.Core.Services
             await Connection.SendAsync("SendConnectionRequestDenied", viewerID);
         }
 
-        public async Task SendCtrlAltDel()
+        public async Task SendCtrlAltDelToAgent()
         {
-            await Connection.SendAsync("CtrlAltDel");
+            await Connection.SendAsync("SendCtrlAltDelToAgent");
         }
 
         public async Task SendDeviceInfo(string serviceID, string machineName, string deviceID)
@@ -117,6 +118,11 @@ namespace Remotely.Desktop.Core.Services
             await Connection.SendAsync("ReceiveDeviceInfo", serviceID, machineName, deviceID);
         }
 
+        public Task SendDtoToViewer<T>(T baseDto, string viewerId)
+        {
+            var serializedDto = MessagePack.MessagePackSerializer.Serialize(baseDto);
+            return Connection.SendAsync("SendDtoToBrowser", serializedDto, viewerId);
+        }
         public async Task SendIceCandidateToBrowser(string candidate, int sdpMlineIndex, string sdpMid, string viewerConnectionID)
         {
             await Connection.SendAsync("SendIceCandidateToBrowser", candidate, sdpMlineIndex, sdpMid, viewerConnectionID);
@@ -126,12 +132,9 @@ namespace Remotely.Desktop.Core.Services
         {
             await Connection.SendAsync("SendRtcOfferToBrowser", sdp, viewerID, iceServers);
         }
-
-        public async Task DisconnectViewer(Services.Viewer viewer, bool notifyViewer)
+        public async Task SendViewerConnected(string viewerConnectionId)
         {
-            viewer.DisconnectRequested = true;
-            viewer.Dispose();
-            await Connection.SendAsync("DisconnectViewer", viewer.ViewerConnectionID, notifyViewer);
+            await Connection.SendAsync("ViewerConnected", viewerConnectionId);
         }
 
         private void ApplyConnectionHandlers()

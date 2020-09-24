@@ -64,6 +64,8 @@ namespace Remotely.Desktop.Core.Services
                     SessionIndicator.Show();
                 }
 
+                await viewer.SendViewerConnected();
+
                 await viewer.SendMachineName(Environment.MachineName);
 
                 await viewer.SendScreenData(
