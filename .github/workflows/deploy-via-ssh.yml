@@ -92,7 +92,7 @@ jobs:
       Test_Project_Path: Tests\Tests.csproj                     # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
       PfxBase64: ${{ secrets.BASE64_ENCODED_PFX }}
       PfxKey: ${{ secrets.PFX_KEY }}
-      SiteHostname: ${{ secrets.SITE_HOSTNAME }}
+      SiteUrl: ${{ secrets.SITE_URL }}
 
     steps:
     - name: Checkout
@@ -167,12 +167,12 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: artifact
-        path: $env:GITHUB_WORKSPACE\publish.zip
+        path: publish.zip
     
 
     # Remove the pfx
     - name: Remove the pfx
-      run: Remove-Item -path $env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx
+      run: Remove-Item -path "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx"
 
   deploy:
     runs-on: ubuntu-latest
