@@ -166,7 +166,6 @@ jobs:
     - name: Upload build artifact
       uses: actions/upload-artifact@v2
       with:
-        name: artifact
         path: publish.zip
     
 
@@ -179,7 +178,6 @@ jobs:
     env:
       SshUsername: ${{ secrets.SSH_USERNAME }}
       SshPrivateKey: ${{ secrets.SSH_PRIVATE_KEY }}
-      SshPassphrase: ${{ secrets.SSH_PASSPHRASE }}
       SshHostname: ${{ secrets.SSH_HOSTNAME }}
     
     steps:
@@ -196,12 +194,10 @@ jobs:
     # Download Build Artifact
     - name: Download build artifact
       uses: actions/download-artifact@v2
-      with:
-        name: artifact
 
     - name: Publish
       shell: bash
       run: | 
         mkdir ./publish
         unzip -o ./publish.zip -d ./publish
-        rsync -r -v -W "./publish" $SshUsername@$SshHostname:/var/www/remotely/
+        rsync -r -v -W ./publish $SshUsername@$SshHostname:/var/www/remotely/
