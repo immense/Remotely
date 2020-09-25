@@ -7,14 +7,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Agent", "Agent\Agent.csproj
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{2CAC9A2B-1402-465F-83F8-958B4E081CA3}"
 	ProjectSection(SolutionItems) = preProject
+		Utilities\CentOS_Server_Install.sh = Utilities\CentOS_Server_Install.sh
 		Utilities\Example_Apache_Config.txt = Utilities\Example_Apache_Config.txt
 		Utilities\Get-PSCommands.ps1 = Utilities\Get-PSCommands.ps1
 		Utilities\Get-WindowsCommands.ps1 = Utilities\Get-WindowsCommands.ps1
 		Utilities\Install-RemotelyServer.ps1 = Utilities\Install-RemotelyServer.ps1
 		Utilities\Publish.ps1 = Utilities\Publish.ps1
-		Utilities\Remotely_CentOS_Install.sh = Utilities\Remotely_CentOS_Install.sh
-		Utilities\Remotely_Server_Install.sh = Utilities\Remotely_Server_Install.sh
 		Utilities\signtool.exe = Utilities\signtool.exe
+		Utilities\Ubuntu_Server_Install.sh = Utilities\Ubuntu_Server_Install.sh
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{D96B47F6-EF3E-4AF6-A1BE-006D531DDBA4}"
