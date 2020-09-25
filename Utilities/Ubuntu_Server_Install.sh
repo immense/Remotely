@@ -10,18 +10,18 @@ do
     if [ "${Args[$i]}" = "--hostname" ]; then
         HostName="${Args[$i+1]}"
     elif [ "${Args[$i]}" = "--approot" ]; then
-        AppRoot="${Args[$i+1}"
+        AppRoot="${Args[$i+1]}"
     fi
 done
 
-if [ -z AppRoot ]; then
+if [ -z "$AppRoot" ]; then
     read -p "Enter path where the Remotely server files should be installed (typically /var/www/remotely): " AppRoot
     if [ -z "$AppRoot" ]; then
         AppRoot="/var/www/remotely"
     fi
 fi
 
-if [ -z HostName ]; then
+if [ -z "$HostName" ]; then
     read -p "Enter server host (e.g. remotely.yourdomainname.com): " HostName
 fi
 
