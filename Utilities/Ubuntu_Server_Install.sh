@@ -51,7 +51,7 @@ wget "https://github.com/lucent-sea/Remotely/releases/latest/download/Remotely_S
 unzip -o Remotely_Server_Linux-x64.zip -d $AppRoot
 rm Remotely_Server_Linux-x64.zip
 setfacl -R -m u:www-data:rwx $AppRoot
-chown -R www-data:www-data $AppRoot
+chown -R "$USER":www-data $AppRoot
 
 
 # Install Nginx
