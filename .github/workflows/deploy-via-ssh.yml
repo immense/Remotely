@@ -193,10 +193,8 @@ jobs:
     # Download Build Artifact
     - name: Download build artifact
       uses: actions/download-artifact@v2
-      with:
-        path: ./publish/
 
     - name: Publish
       shell: bash
       run: | 
-        rsync -r -v -W ./publish $SshUsername@$SshHostname:/var/www/remotely/
+        rsync -r -v -W ./artifact $SshUsername@$SshHostname:/var/www/remotely/
