@@ -65,7 +65,7 @@ systemctl start nginx
 nginxConfig="
 
 http {
-    map $http_upgrade $connection_upgrade {
+    map \$http_upgrade \$connection_upgrade {
         default Upgrade;
         ''      close;
     }
