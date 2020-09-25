@@ -169,11 +169,11 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         # public keys of SSH servers
         known_hosts: ${{ secrets.SSH_HOSTNAME }}
-    
+      
     - name: Publish
       shell: bash
       run: | 
-        rsync -r -v -W "$GITHUB_WORKSPACE/Server/bin/Release/publish" $SshUsername@$SshHostname:/var/www/remotely/
+        scp -r "$GITHUB_WORKSPACE/Server/bin/Release/publish" $SshUsername@$SshHostname:/var/www/remotely/
      
 
     # Remove the pfx
