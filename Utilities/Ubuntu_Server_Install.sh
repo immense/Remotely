@@ -5,8 +5,6 @@ echo
 Args=( "$@" )
 ArgLength=${#Args[@]}
 
-HostName="*"
-
 for (( i=0; i<${ArgLength}; i+=2 ));
 do
     if [ "${Args[$i]}" = "--hostname" ]; then
