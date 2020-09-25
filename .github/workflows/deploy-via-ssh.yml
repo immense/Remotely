@@ -1,5 +1,10 @@
 # To use this workflow to deploy Remotely:
 #
+# IMPORTANT: You must run the install script as sudo first before using this
+#            GitHub workflow.  This will only deploy the updated files.
+#            The script will install dependencies, create the systemd
+#            ervice, create the Nginx site, etc.
+#
 # 1. Set up SSH on your Ubuntu server.  There are plenty of articles on
 #    the internet that describe the process.  Here's a good one:
 #    https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-on-ubuntu-1604
@@ -157,13 +162,21 @@ jobs:
       shell: powershell
       run: .\Utilities\Publish.ps1 -CertificatePath "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx" -CertificatePassword $env:PfxKey -Hostname $env:SiteUrl -CurrentVersion $env:CurrentVersion -RID linux-x64 -OutDir ".\publish"
 
+
     # Publish server via SSH
-    #- name: Publish
-    #  shell: bash
-    #  run: | 
-    #    echo "Publishing with configuration $env:Configuration."
+    - name: Install SSH Key
+      uses: shimataro/ssh-key-action@v2.1.0
+      with:
+        # SSH private key
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        # public keys of SSH servers
+        known_hosts: ${{ secrets.SSH_HOSTNAME }}
+    
+    - name: Publish
+      shell: bash
+      run: | 
+        rsync -r -v -W "$GITHUB_WORKSPACE/Server/bin/Release/publish" $SshUsername@$SshHostname:/var/www/remotely/
      
-      
 
     # Remove the pfx
     - name: Remove the pfx
