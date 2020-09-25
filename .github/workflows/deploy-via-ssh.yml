@@ -1,5 +1,12 @@
 # To use this workflow to deploy Remotely:
 #
+# 1. Set up SSH on your Ubuntu server.  There are plenty of articles on
+#    the internet that describe the process.  Here's a good one:
+#    https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-on-ubuntu-1604
+#
+#    It's a good idea to turn off password-based authentication.
+#
+#
 # 2. Create the below Secrets in GitHub.
 #     - BASE64_ENCODED_PFX
 #         - See below section to get this string.
@@ -7,12 +14,16 @@
 #         - The password for the certificate.
 #     - SSH_USERNAME
 #         - Username to use for SSH connection.
-#     - SSH_PASSWORD
-#         - The password for the above user.
+#     - SSH_PRIVATE_KEY
+#         - The private key to use for SSH.
+#     - SSH_PASSPHRASE
+#         - The passhprase for the private key.
 #     - SSH_HOSTNAME
 #         - The hostname or IP to use for the SSH connection.
 #     - SITE_URL
-#         - The public URL of the website (e.g. https://app.remotely.one).
+#         - The public hostname for the site (e.g. https://app.remotely.one).
+#           This can be an IP if it's only going to be used on the local network
+#           with HTTP.
 #
 # Secrets are created in GitHub under the repository (your forked repository, 
 # not the lucent-sea/Remotely repository).  They are only usable by you and
@@ -21,8 +32,8 @@
 #
 # If you don't want to sign your EXEs, skip creating the BASE64_ENCODED_PFX
 # and PFX_KEY secrets.  They won't be used.
-#
 # 
+#
 # 3. Getting the Base64-Encoded PFX
 # To get the base64-encoded certificate, use the below PowerShell snippet,
 # using your PFX file name.
@@ -33,8 +44,15 @@
 # The base64-encoded string is now in your clipboard.  You can paste
 # it into GitHub when creating the Secret.
 #
-# 4. Deploying via SSH
-# 
+#
+# 3. Deploying via SSH
+#
+# On GitHub, go to your forked repo, then to Actions. On the left, select 
+# "Deploy via SSH" action underneath "All Workflows".  There should be a
+# banner saying "This workflow has a workflow_dispatch event trigger."
+#
+# Click "Run workflow" and select "release".  If release branch is missing,
+# see below.
 #
 # 5. Keeping Your Fork Updated
 # You'll want to keep your fork updated so you can deploy the latest
@@ -72,9 +90,10 @@ jobs:
       PfxBase64: ${{ secrets.BASE64_ENCODED_PFX }}
       PfxKey: ${{ secrets.PFX_KEY }}
       SshUsername: ${{ secrets.SSH_USERNAME }}
-      SshPassword: ${{ secrets.SSH_PASSWORD }}
+      SshPrivateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+      SshPassphrase: ${{ secrets.SSH_PASSPHRASE }}
       SshHostname: ${{ secrets.SSH_HOSTNAME }}
-      SiteUrl: ${{ secrets.SITE_URL }}
+      SiteHostname: ${{ secrets.SITE_HOSTNAME }}
 
     steps:
     - name: Checkout
@@ -138,12 +157,13 @@ jobs:
       shell: powershell
       run: .\Utilities\Publish.ps1 -CertificatePath "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx" -CertificatePassword $env:PfxKey -Hostname $env:SiteUrl -CurrentVersion $env:CurrentVersion -RID linux-x64 -OutDir ".\publish"
 
-    # Uncomment the below to enable deployment to the server.
     # Publish server via SSH
     #- name: Publish
+    #  shell: bash
     #  run: | 
     #    echo "Publishing with configuration $env:Configuration."
-    # 
+     
+      
 
     # Remove the pfx
     - name: Remove the pfx
