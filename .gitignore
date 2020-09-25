@@ -283,3 +283,5 @@ Server/wwwroot/Downloads/Win-x86/Remotely_Desktop.exe
 /Server/Remotely.db-shm
 /Server/wwwroot/out.js
 /Server/wwwroot/out.js.map
+.vscode/launch.json
+.vscode/tasks.json
