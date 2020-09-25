@@ -46,15 +46,14 @@
 # "Deploy to IIS" action underneath "All Workflows".  There should be a
 # banner saying "This workflow has a workflow_dispatch event trigger."
 #
-# Click "Run workflow" and select "release".  If release branch is missing,
-# see below.
+# Click "Run workflow" and select the branch you want to deploy.
 #
 # 5. Keeping Your Fork Updated
 # You'll want to keep your fork updated so you can deploy the latest
 # changes.  There are a few ways to do it, and they're easy to find
 # with a little Googling.
 #
-# Once your release branch has been updated, you can run the
+# Once your branch has been updated, you can run the
 # workflow again manually in GitHub to re-deploy.
 
 name: Deploy To IIS
