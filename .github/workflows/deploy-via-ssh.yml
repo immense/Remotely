@@ -21,8 +21,6 @@
 #         - Username to use for SSH connection.
 #     - SSH_PRIVATE_KEY
 #         - The private key to use for SSH.
-#     - SSH_PASSPHRASE
-#         - The passhprase for the private key.
 #     - SSH_HOSTNAME
 #         - The hostname or IP to use for the SSH connection.
 #     - SITE_URL
