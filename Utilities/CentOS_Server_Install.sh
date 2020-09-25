@@ -31,7 +31,7 @@ yum -y install libgdiplus
 
 # Download and install Remotely files.
 mkdir -p $appRoot
-wget "https://github.com/Jay-Rad/Remotely/releases/latest/download/Remotely_Server_Linux-x64.zip"
+wget "https://github.com/lucent-sea/Remotely/releases/latest/download/Remotely_Server_Linux-x64.zip"
 unzip -o Remotely_Server_Linux-x64.zip -d $appRoot
 rm Remotely_Server_Linux-x64.zip
 setfacl -R -m u:apache:rwx $appRoot
