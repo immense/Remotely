@@ -157,16 +157,11 @@ jobs:
       run: |
         .\Utilities\Publish.ps1 -CertificatePath "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx" -CertificatePassword $env:PfxKey -Hostname $env:SiteUrl -CurrentVersion $env:CurrentVersion -RID linux-x64 -OutDir "$env:GITHUB_WORKSPACE\publish"
         
-    - name: Create zip
-      shell: powershell
-      run: |
-        Compress-Archive -Path "$env:GITHUB_WORKSPACE\publish\*" -DestinationPath "$env:GITHUB_WORKSPACE\publish.zip" -Force
-    
     # Upload build artifact to be deployed from Ubuntu runner
     - name: Upload build artifact
       uses: actions/upload-artifact@v2
       with:
-        path: publish.zip
+        path: ./publish/
     
 
     # Remove the pfx
@@ -194,10 +189,10 @@ jobs:
     # Download Build Artifact
     - name: Download build artifact
       uses: actions/download-artifact@v2
+      with:
+        path: ./publish/
 
     - name: Publish
       shell: bash
       run: | 
-        mkdir ./publish
-        unzip -o ./publish.zip -d ./publish
         rsync -r -v -W ./publish $SshUsername@$SshHostname:/var/www/remotely/
