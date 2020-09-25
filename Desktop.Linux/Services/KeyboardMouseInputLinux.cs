@@ -8,17 +8,13 @@ namespace Remotely.Desktop.Linux.Services
 {
     public class KeyboardMouseInputLinux : IKeyboardMouseInput
     {
-        public KeyboardMouseInputLinux()
-        {
-            Display = LibX11.XOpenDisplay(null);
-        }
-
-        public IntPtr Display { get; }
+        private IntPtr Display { get; set; }
 
         public void SendKeyDown(string key)
         {
             try
             {
+                Init();
                 key = ConvertJavaScriptKeyToX11Key(key);
                 var keySim = LibX11.XStringToKeysym(key);
                 if (keySim == null)
@@ -41,6 +37,7 @@ namespace Remotely.Desktop.Linux.Services
         {
             try
             {
+                Init();
                 key = ConvertJavaScriptKeyToX11Key(key);
                 var keySim = LibX11.XStringToKeysym(key);
                 if (keySim == null)
@@ -64,6 +61,7 @@ namespace Remotely.Desktop.Linux.Services
         {
             try
             {
+                Init();
                 SendMouseMove(percentX, percentY, viewer);
                 LibXtst.XTestFakeButtonEvent(Display, 1, true, 0);
                 LibX11.XSync(Display, false);
@@ -78,6 +76,7 @@ namespace Remotely.Desktop.Linux.Services
         {
             try
             {
+                Init();
                 SendMouseMove(percentX, percentY, viewer);
                 LibXtst.XTestFakeButtonEvent(Display, 1, false, 0);
                 LibX11.XSync(Display, false);
@@ -92,6 +91,7 @@ namespace Remotely.Desktop.Linux.Services
         {
             try
             {
+                Init();
                 LibXtst.XTestFakeMotionEvent(Display,
                     viewer.Capturer.GetSelectedScreenIndex(),
                     (int)(viewer.Capturer.CurrentScreenBounds.Width * percentX),
@@ -109,6 +109,7 @@ namespace Remotely.Desktop.Linux.Services
         {
             try
             {
+                Init();
                 if (deltaY > 0)
                 {
                     LibXtst.XTestFakeButtonEvent(Display, 4, true, 0);
@@ -131,6 +132,7 @@ namespace Remotely.Desktop.Linux.Services
         {
             try
             {
+                Init();
                 SendMouseMove(percentX, percentY, viewer);
                 LibXtst.XTestFakeButtonEvent(Display, 3, true, 0);
                 LibX11.XSync(Display, false);
@@ -145,6 +147,7 @@ namespace Remotely.Desktop.Linux.Services
         {
             try
             {
+                Init();
                 SendMouseMove(percentX, percentY, viewer);
                 LibXtst.XTestFakeButtonEvent(Display, 3, false, 0);
                 LibX11.XSync(Display, false);
@@ -235,5 +238,19 @@ namespace Remotely.Desktop.Linux.Services
             return keySym;
         }
 
+        private void Init()
+        {
+            try 
+            {
+                if (Display == IntPtr.Zero)
+                {
+                    Display = LibX11.XOpenDisplay(null);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+            }
+        }
     }
 }
