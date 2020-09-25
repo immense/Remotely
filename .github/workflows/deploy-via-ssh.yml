@@ -23,6 +23,9 @@
 #         - The private key to use for SSH.
 #     - SSH_HOSTNAME
 #         - The hostname or IP to use for the SSH connection.
+#     - SSH_KNOWN_HOSTS
+#         - The content to go into your known_hosts file.  This should
+#           contain the fingerprint for the SSH host.
 #     - SITE_URL
 #         - The public hostname for the site (e.g. https://app.remotely.one).
 #           This can be an IP if it's only going to be used on the local network
@@ -185,7 +188,7 @@ jobs:
         # SSH private key
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         # public keys of SSH servers
-        known_hosts: ${{ secrets.SSH_HOSTNAME }}
+        known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
 
     # Download Build Artifact
     - name: Download build artifact
