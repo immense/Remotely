@@ -156,7 +156,11 @@ jobs:
       shell: powershell
       run: |
         .\Utilities\Publish.ps1 -CertificatePath "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx" -CertificatePassword $env:PfxKey -Hostname $env:SiteUrl -CurrentVersion $env:CurrentVersion -RID linux-x64 -OutDir "$env:GITHUB_WORKSPACE\publish"
-        Compress-Archive -Path $env:GITHUB_WORKSPACE\publish -DestinationPath $env:GITHUB_WORKSPACE\publish.zip -Force
+        
+    - name: Create zip
+      shell: powershell
+      run: |
+        Compress-Archive -Path "$env:GITHUB_WORKSPACE\publish\*" -DestinationPath "$env:GITHUB_WORKSPACE\publish.zip" -Force
     
     # Upload build artifact to be deployed from Ubuntu runner
     - name: Upload build artifact
@@ -198,5 +202,6 @@ jobs:
     - name: Publish
       shell: bash
       run: | 
+        mkdir ./publish
         unzip -o ./publish.zip -d ./publish
         rsync -r -v -W "./publish" $SshUsername@$SshHostname:/var/www/remotely/
