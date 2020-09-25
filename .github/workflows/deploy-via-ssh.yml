@@ -92,10 +92,6 @@ jobs:
       Test_Project_Path: Tests\Tests.csproj                     # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
       PfxBase64: ${{ secrets.BASE64_ENCODED_PFX }}
       PfxKey: ${{ secrets.PFX_KEY }}
-      SshUsername: ${{ secrets.SSH_USERNAME }}
-      SshPrivateKey: ${{ secrets.SSH_PRIVATE_KEY }}
-      SshPassphrase: ${{ secrets.SSH_PASSPHRASE }}
-      SshHostname: ${{ secrets.SSH_HOSTNAME }}
       SiteHostname: ${{ secrets.SITE_HOSTNAME }}
 
     steps:
@@ -158,10 +154,33 @@ jobs:
     # Run the Publish script to build clients and server.
     - name: Run Publish script
       shell: powershell
-      run: .\Utilities\Publish.ps1 -CertificatePath "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx" -CertificatePassword $env:PfxKey -Hostname $env:SiteUrl -CurrentVersion $env:CurrentVersion -RID linux-x64 -OutDir ".\publish"
+      run: |
+        .\Utilities\Publish.ps1 -CertificatePath "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx" -CertificatePassword $env:PfxKey -Hostname $env:SiteUrl -CurrentVersion $env:CurrentVersion -RID linux-x64 -OutDir "$env:GITHUB_WORKSPACE\publish"
+        Compress-Archive -Path $env:GITHUB_WORKSPACE\publish -DestinationPath $env:GITHUB_WORKSPACE\publish.zip -Force
+    
+    # Upload build artifact to be deployed from Ubuntu runner
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: artifact
+        path: $env:GITHUB_WORKSPACE\publish.zip
+    
 
+    # Remove the pfx
+    - name: Remove the pfx
+      run: Remove-Item -path $env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx
 
-    # Publish server via SSH
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      SshUsername: ${{ secrets.SSH_USERNAME }}
+      SshPrivateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+      SshPassphrase: ${{ secrets.SSH_PASSPHRASE }}
+      SshHostname: ${{ secrets.SSH_HOSTNAME }}
+    
+    steps:
+
+    # Install SSH Key
     - name: Install SSH Key
       uses: shimataro/ssh-key-action@v2.1.0
       with:
@@ -169,13 +188,15 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         # public keys of SSH servers
         known_hosts: ${{ secrets.SSH_HOSTNAME }}
-    
+
+    # Download Build Artifact
+    - name: Download build artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: artifact
+
     - name: Publish
       shell: bash
       run: | 
-        rsync -r -v -W "$GITHUB_WORKSPACE/Server/bin/Release/publish" $SshUsername@$SshHostname:/var/www/remotely/
-     
-
-    # Remove the pfx
-    - name: Remove the pfx
-      run: Remove-Item -path $env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx
+        unzip -o ./publish.zip -d ./publish
+        rsync -r -v -W "./publish" $SshUsername@$SshHostname:/var/www/remotely/
