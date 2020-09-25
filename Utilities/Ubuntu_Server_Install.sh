@@ -2,23 +2,40 @@
 echo "Thanks for trying Remotely!"
 echo
 
-read -p "Enter path where the Remotely server files should be installed (typically /var/www/remotely): " appRoot
-if [ -z "$appRoot" ]; then
-    appRoot="/var/www/remotely"
+Args=( "$@" )
+ArgLength=${#Args[@]}
+
+HostName="*"
+
+for (( i=0; i<${ArgLength}; i+=2 ));
+do
+    if [ "${Args[$i]}" = "--hostname" ]; then
+        HostName="${Args[$i+1]}"
+    elif [ "${Args[$i]}" = "--approot" ]; then
+        AppRoot="${Args[$i+1}"
+    fi
+done
+
+if [ -z AppRoot ]; then
+    read -p "Enter path where the Remotely server files should be installed (typically /var/www/remotely): " AppRoot
+    if [ -z "$AppRoot" ]; then
+        AppRoot="/var/www/remotely"
+    fi
 fi
 
-read -p "Enter server host (e.g. remotely.yourdomainname.com): " serverHost
+if [ -z HostName ]; then
+    read -p "Enter server host (e.g. remotely.yourdomainname.com): " HostName
+fi
 
 UbuntuVersion=$(lsb_release -r -s)
 
-apt-get update
 
 # Install .NET Core Runtime.
 wget -q https://packages.microsoft.com/config/ubuntu/$UbuntuVersion/packages-microsoft-prod.deb
 dpkg -i packages-microsoft-prod.deb
 add-apt-repository universe
-apt-get -y install apt-transport-https
 apt-get update
+apt-get -y install apt-transport-https
 apt-get -y install aspnetcore-runtime-3.1
 rm packages-microsoft-prod.deb
 
@@ -31,12 +48,11 @@ apt-get -y install libgdiplus
 
 
 # Download and install Remotely files.
-mkdir -p $appRoot
-wget "https://github.com/Jay-Rad/Remotely/releases/latest/download/Remotely_Server_Linux-x64.zip"
-unzip -o Remotely_Server_Linux-x64.zip -d $appRoot
+mkdir -p $AppRoot
+unzip -o Remotely_Server_Linux-x64.zip -d $AppRoot
 rm Remotely_Server_Linux-x64.zip
-setfacl -R -m u:www-data:rwx $appRoot
-chown -R www-data:www-data $appRoot
+setfacl -R -m u:www-data:rwx $AppRoot
+chown -R www-data:www-data $AppRoot
 
 
 # Install Nginx
@@ -49,7 +65,7 @@ systemctl start nginx
 # Configure Nginx
 nginxConfig="server {
     listen        80;
-    server_name   $serverHost *.$serverHost;
+    server_name   $HostName *.$HostName;
     location / {
         proxy_pass         http://localhost:5000;
         proxy_http_version 1.1;
@@ -61,47 +77,47 @@ nginxConfig="server {
         proxy_set_header   X-Forwarded-Proto \$scheme;
     }
 
-	location /BrowserHub {
-		proxy_pass http://localhost:5000;
-		proxy_http_version 1.1;
-		proxy_set_header Upgrade \$http_upgrade;
-		proxy_set_header Connection \"upgrade\";
-		proxy_set_header Host \$host;
-		proxy_cache_bypass \$http_upgrade;
-		proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
+    location /BrowserHub {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection \"upgrade\";
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
+        proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header   X-Forwarded-Proto \$scheme;
-	}
-	location /AgentHub {
-		proxy_pass http://localhost:5000;
-		proxy_http_version 1.1;
-		proxy_set_header Upgrade \$http_upgrade;
-		proxy_set_header Connection \"upgrade\";
-		proxy_set_header Host \$host;
-		proxy_cache_bypass \$http_upgrade;
-		proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
+    }
+    location /AgentHub {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection \"upgrade\";
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
+        proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header   X-Forwarded-Proto \$scheme;
-	}
+    }
 
-	location /RCBrowserHub {
-		proxy_pass http://localhost:5000;
-		proxy_http_version 1.1;
-		proxy_set_header Upgrade \$http_upgrade;
-		proxy_set_header Connection \"upgrade\";
-		proxy_set_header Host \$host;
-		proxy_cache_bypass \$http_upgrade;
-		proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
+    location /RCBrowserHub {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection \"upgrade\";
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
+        proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header   X-Forwarded-Proto \$scheme;
-	}
-	location /CasterHub {
-		proxy_pass http://localhost:5000;
-		proxy_http_version 1.1;
-		proxy_set_header Upgrade \$http_upgrade;
-		proxy_set_header Connection \"upgrade\";
-		proxy_set_header Host \$host;
-		proxy_cache_bypass \$http_upgrade;
-		proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
+    }
+    location /CasterHub {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection \"upgrade\";
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
+        proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header   X-Forwarded-Proto \$scheme;
-	}
+    }
 }"
 
 echo "$nginxConfig" > /etc/nginx/sites-available/remotely
@@ -123,8 +139,8 @@ serviceConfig="[Unit]
 Description=Remotely Server
 
 [Service]
-WorkingDirectory=$appRoot
-ExecStart=/usr/bin/dotnet $appRoot/Remotely_Server.dll
+WorkingDirectory=$AppRoot
+ExecStart=/usr/bin/dotnet $AppRoot/Remotely_Server.dll
 Restart=always
 # Restart service after 10 seconds if the dotnet service crashes:
 RestartSec=10
