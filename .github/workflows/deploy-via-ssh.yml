@@ -170,6 +170,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
+    needs: build
     env:
       SshUsername: ${{ secrets.SSH_USERNAME }}
       SshPrivateKey: ${{ secrets.SSH_PRIVATE_KEY }}
