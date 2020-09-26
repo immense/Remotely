@@ -72,27 +72,18 @@ export function ApplyFilterToAll() {
 }
 
 export function ApplyFilterToDevice(device: Device) {
+    var existingDevice = FilteredDevices.findIndex(x => x.ID == device.ID);
 
-    if (GridState.HideOffline && !device.IsOnline) {
-        return;
-    }
-
-    if (!GridState.ShowAllGroups &&
-        (device.DeviceGroupID || "") != (GridState.GroupFilter || "")) {
-        return;
-    }
-
-    if (deviceMatchesSearchFilter(device)) {
-        var existingIndex = FilteredDevices.findIndex(x => x.ID == device.ID);
-
-        if (existingIndex > -1) {
-            FilteredDevices[existingIndex] = device;
+    if (shouldDeviceBeShown(device)) {
+        if (existingDevice > -1) {
+            FilteredDevices[existingDevice] = device;
         }
         else {
             FilteredDevices.push(device);
         }
-        
-        return;
+    }
+    else if (existingDevice > -1)  {
+        FilteredDevices.splice(existingDevice, 1);
     }
 }
 
@@ -276,7 +267,18 @@ export function UpdateDeviceCounts() {
     }
 }
 
-function deviceMatchesSearchFilter(device: Device) {
+function shouldDeviceBeShown(device: Device) {
+
+    if (GridState.HideOffline && !device.IsOnline) {
+        return false;
+    }
+
+    if (!GridState.ShowAllGroups &&
+        (device.DeviceGroupID || "") != (GridState.GroupFilter || "")) {
+        return false;
+    }
+
+
     if (!GridState.SearchFilter) {
         return true;
     }
