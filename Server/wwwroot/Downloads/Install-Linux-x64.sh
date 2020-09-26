@@ -8,8 +8,6 @@ ETag=
 Args=( "$@" )
 ArgLength=${#Args[@]}
 
-HostName="*"
-
 for (( i=0; i<${ArgLength}; i+=2 ));
 do
     if [ "${Args[$i]}" = "--uninstall" ]; then
@@ -52,7 +50,7 @@ rm -f /etc/systemd/system/remotely-agent.service
 mkdir -p /usr/local/bin/Remotely/
 cd /usr/local/bin/Remotely/
 
-if [ -z AppRoot ]; then
+if [ -z "$AppRoot" ]; then
     echo  "Downloading client..."
     wget $HostName/Downloads/Remotely-Linux.zip
 else
