@@ -70,15 +70,6 @@ namespace Remotely.Desktop.Win
                     StartUiThreads(() => new MainWindow());
                 }
 
-                App.Current.Dispatcher.Invoke(() =>
-                {
-                    App.Current.Exit += (sender, exitArgs) =>
-                    {
-                        AppExitEvent.Set();
-                    };
-                });
-
-
                 AppExitEvent.WaitOne(Timeout.Infinite);
             }
             catch (Exception ex)
