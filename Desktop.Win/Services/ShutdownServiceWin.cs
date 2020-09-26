@@ -16,9 +16,10 @@ namespace Remotely.Desktop.Win.Services
             Logger.Debug($"Exiting process ID {Process.GetCurrentProcess().Id}.");
             var casterSocket = ServiceContainer.Instance.GetRequiredService<CasterSocket>();
             await casterSocket.DisconnectAllViewers();
+            await casterSocket.Disconnect();
             System.Windows.Forms.Application.Exit();
             App.Current.Shutdown();
-            //Environment.Exit(0);
+            Program.AppExitEvent.Set();
         }
     }
 }

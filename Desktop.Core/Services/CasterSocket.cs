@@ -53,8 +53,15 @@ namespace Remotely.Desktop.Core.Services
 
         public async Task Disconnect()
         {
-            await Connection.StopAsync();
-            await Connection.DisposeAsync();
+            try
+            {
+                await Connection.StopAsync();
+                await Connection.DisposeAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex, "Error disconnecting websocket.");
+            }
         }
 
         public async Task DisconnectAllViewers()
@@ -66,7 +73,7 @@ namespace Remotely.Desktop.Core.Services
             }
         }
 
-        public async Task DisconnectViewer(Services.Viewer viewer, bool notifyViewer)
+        public async Task DisconnectViewer(Viewer viewer, bool notifyViewer)
         {
             viewer.DisconnectRequested = true;
             viewer.Dispose();
