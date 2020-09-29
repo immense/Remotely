@@ -4,6 +4,7 @@ import { CreateChatWindow } from "./Chat.js";
 import * as HubConnection from "./HubConnection.js"
 import { ShowModal } from "../Shared/UI.js";
 import { Device } from "../Shared/Models/Device.js";
+import { EncodeForHTML } from "../Shared/Utilities.js";
 
 export const DataSource: Array<Device> = new Array<Device>();
 export const FilteredDevices: Array<Device> = new Array<Device>();
@@ -128,18 +129,18 @@ export function RenderDeviceRows() {
                                 "<span class='fa fa-times'></span>"
                         }
                     </td>
-                    <td>${device.DeviceName}</td>
-                    <td>${device.Alias || ""}</td>
-                    <td>${device.CurrentUser}</td>
+                    <td>${EncodeForHTML(device.DeviceName)}</td>
+                    <td>${EncodeForHTML(device.Alias) || ""}</td>
+                    <td>${EncodeForHTML(device.CurrentUser)}</td>
                     <td>${new Date(device.LastOnline).toLocaleString()}</td>
-                    <td>${device.PublicIP}</td>
-                    <td>${device.Platform}</td>
-                    <td>${device.OSDescription}</td>
+                    <td>${EncodeForHTML(device.PublicIP)}</td>
+                    <td>${EncodeForHTML(device.Platform)}</td>
+                    <td>${EncodeForHTML(device.OSDescription)}</td>
                     <td>${Math.round(device.CpuUtilization * 100)}%</td>
                     <td>${Math.round(device.UsedStorage / device.TotalStorage * 100)}%</td>
-                    <td>${device.TotalStorage.toLocaleString()}</td>
+                    <td>${EncodeForHTML(device.TotalStorage.toLocaleString())}</td>
                     <td>${Math.round(device.UsedMemory / device.TotalMemory * 100)}%</td>
-                    <td>${device.TotalMemory.toLocaleString()}</td>
+                    <td>${EncodeForHTML(device.TotalMemory.toLocaleString())}</td>
                     <td style="white-space: nowrap">
                         <i class="fas fa-comment device-chat-button mr-2" title="Chat" style="font-size:1.5em"></i>
                         <i class="fas fa-mouse device-remotecontrol-button mr-2" title="Remote Control" style="font-size:1.5em"></i>
@@ -155,7 +156,7 @@ export function RenderDeviceRows() {
         (recordRow.querySelector(".device-chat-button") as HTMLButtonElement).onclick = (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            CreateChatWindow(device.ID, device.DeviceName);
+            CreateChatWindow(device.ID, EncodeForHTML(device.DeviceName));
         };
         (recordRow.querySelector(".device-remotecontrol-button") as HTMLButtonElement).onclick = (ev) => {
             ev.preventDefault();

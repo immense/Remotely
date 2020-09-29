@@ -7,6 +7,7 @@ import { MainApp } from "../App.js";
 import * as DataGrid from "../DataGrid.js";
 import { AddConsoleHTML, AddConsoleOutput, AddTransferHarness } from "../Console.js";
 import { GetSelectedDevices } from "../DataGrid.js";
+import { EncodeForHTML } from "../../Shared/Utilities.js";
 
 
 var commands: Array<ConsoleCommand> = [
@@ -242,17 +243,17 @@ var commands: Array<ConsoleCommand> = [
                         <td>${String(x.IsOnline)
                                 .replace("true", "<span class='fa fa-check-circle'></span>")
                                 .replace("false", "<span class='fa fa-times'></span>")}</td>
-                        <td>${x.DeviceName}</td>
-                        <td>${x.Alias}</td>
-                        <td>${x.CurrentUser}</td>
+                        <td>${EncodeForHTML(x.DeviceName)}</td>
+                        <td>${EncodeForHTML(x.Alias)}</td>
+                        <td>${EncodeForHTML(x.CurrentUser)}</td>
                         <td>${new Date(x.LastOnline).toLocaleString()}</td>
-                        <td>${x.Platform}</td>
-                        <td>${x.OSDescription}</td>
+                        <td>${EncodeForHTML(x.Platform)}</td>
+                        <td>${EncodeForHTML(x.OSDescription)}</td>
                         <td>${Math.round(x.UsedStorage / x.TotalStorage * 100)}%</td>
-                        <td>${x.TotalStorage.toLocaleString()}</td>
+                        <td>${EncodeForHTML(x.TotalStorage.toLocaleString())}</td>
                         <td>${Math.round(x.UsedMemory / x.TotalMemory * 100)}%</td>
-                        <td>${x.TotalMemory.toLocaleString()}</td>
-                        <td>${x.Tags || ""}</td>
+                        <td>${EncodeForHTML(x.TotalMemory.toLocaleString())}</td>
+                        <td>${EncodeForHTML(x.Tags || "")}</td>
                         </tr>`
             });
             output += deviceList.join("");

@@ -1,6 +1,7 @@
 ﻿import * as HubConnection from "./HubConnection.js";
 import { DataSource } from "./DataGrid.js";
 import { ShowMessage } from "../Shared/UI.js";
+import { EncodeForHTML } from "../Shared/Utilities.js";
 
 export function CreateChatWindow(deviceID: string, deviceName: string) {
     var chatWindow = document.getElementById("chat-" + deviceID);
@@ -59,10 +60,11 @@ export function CreateChatWindow(deviceID: string, deviceName: string) {
                 if (!inputText) {
                     return;
                 }
+                var encodedText = EncodeForHTML(inputText);
                 (chatWindow.querySelector(".chat-messages") as HTMLDivElement).innerHTML += `
                     <div>
                         <span class="text-secondary font-weight-bold">You: </span>
-                        <span>${inputText}</span>
+                        <span>${encodedText}</span>
                     </div>
                 `;
                 (ev.currentTarget as HTMLTextAreaElement).value = "";
