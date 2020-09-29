@@ -372,8 +372,10 @@ Start-Website -Name $SiteName
 
 
 ### SSL certificate installation. ###
-if ($WacsPath -ne $null -and (Test-Path -Path $WacsPath)) {
-    &"$WacsPath" --target iis --siteid (Get-Website -Name $SiteName).ID --installation iis --emailaddress $EmailAddress --accepttos 
+if ($WacsPath) {
+    if (Test-Path -Path $WacsPath) {
+        &"$WacsPath" --target iis --siteid (Get-Website -Name $SiteName).ID --installation iis --emailaddress $EmailAddress --accepttos 
+    }
 }
 
 Wrap-Host

@@ -10,6 +10,7 @@ import { MainApp } from "./App.js";
 import { AddConsoleOutput, AddConsoleHTML } from "./Console.js";
 import { ReceiveChatText } from "./Chat.js";
 import { ShowMessage, ShowModal } from "../Shared/UI.js";
+import { EncodeForHTML } from "../Shared/Utilities.js";
 
 
 export var Connection: any;
@@ -43,14 +44,15 @@ export function Connect() {
 
 function applyMessageHandlers(hubConnection) {
     hubConnection.on("Chat", (deviceID: string, deviceName: string, message: string, disconnected: boolean) => {
+        var encodedMessage = EncodeForHTML(message);
         if (disconnected) {
             AddConsoleHTML(`<span class="text-info font-italic">${deviceName} disconnected from chat.</span>`);
         }
         else if (message) {
-            AddConsoleHTML(`<span class="text-info font-weight-bold">Chat from ${deviceName}</span>: ${message}`);
+            AddConsoleHTML(`<span class="text-info font-weight-bold">Chat from ${deviceName}</span>: ${encodedMessage}`);
         }
 
-        ReceiveChatText(deviceID, deviceName, message, disconnected);
+        ReceiveChatText(deviceID, deviceName, encodedMessage, disconnected);
     });
     hubConnection.on("UserOptions", (options: UserOptions) => {
         MainApp.UserSettings.CommandModeShortcuts.Web = options.CommandModeShortcutWeb;
