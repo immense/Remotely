@@ -32,7 +32,7 @@ export function AddOrUpdateDevices(devices: Array<Device>) {
         //else if (b.IsOnline && !a.IsOnline) {
         //    return 1;
         //}
-        return a.DeviceName.localeCompare(b.DeviceName, [], { sensitivity: "base" });
+        return a.DeviceName && a.DeviceName.localeCompare(b.DeviceName, [], { sensitivity: "base" });
     });
 
     devices.forEach(x => {
