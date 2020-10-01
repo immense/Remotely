@@ -39,7 +39,7 @@ The following steps will configure your Windows 10 machine for building the Remo
     * Example: `powershell -f [path]\Publish.ps1 -outdir C:\inetpub\remotely -rid win10-x64 -hostname https://mysite.mydomain.com`
     	* Use `-rid linux-x64` if you're going to host on Ubuntu.
     * The output folder will now contain the server, with the clients in the Downloads folder.
-	* The above hostname will be hardcoded in the screen-sharing desktop apps, but can be changed via the options menu.
+	* The above hostname will be hardcoded in the screen-sharing desktop apps and the installer.
 * When debugging, the agent will use a pre-defined device ID and connect to https://localhost:5001.
 * In development environment, the server will assign all connecting agents to the first organization.
 * The above two allow you to debug the agent and server together, and see your device in the list.
