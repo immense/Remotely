@@ -18,8 +18,11 @@ namespace Remotely.Desktop.Win.Services
             await casterSocket.DisconnectAllViewers();
             await casterSocket.Disconnect();
             System.Windows.Forms.Application.Exit();
-            App.Current.Shutdown();
-            Program.AppExitEvent.Set();
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                App.Current.Shutdown();
+
+            });
         }
     }
 }
