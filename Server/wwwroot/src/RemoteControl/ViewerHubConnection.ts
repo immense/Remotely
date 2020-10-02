@@ -5,7 +5,7 @@ import { Sound } from "../Shared/Sound.js";
 import { IceServerModel } from "../Shared/Models/IceServerModel.js";
 import { RemoteControlMode } from "../Shared/Enums/RemoteControlMode.js";
 import { GenericDto } from "./Dtos.js";
-import { ShowMessage } from "../Shared/UI.js";
+import { ShowMessage, ShowModal } from "../Shared/UI.js";
 import { BaseDto } from "./BaseDto.js";
 import { WindowsSession } from "../Shared/Models/WindowsSession.js";
 import { BaseDtoType } from "../Shared/Enums/BaseDtoType.js";

@@ -113,6 +113,11 @@ namespace Remotely.Desktop.Core.Services
             await Connection.SendAsync("SendConnectionRequestDenied", viewerID);
         }
 
+        public async Task SendMessageToViewer(string viewerID, string message)
+        {
+            await Connection.SendAsync("SendMessageToViewer", viewerID, message);
+        }
+
         public async Task SendCtrlAltDelToAgent()
         {
             await Connection.SendAsync("SendCtrlAltDelToAgent");
@@ -170,6 +175,7 @@ namespace Remotely.Desktop.Core.Services
                 {
                     if (enforceAttendedAccess)
                     {
+                        await SendMessageToViewer(viewerID, "Asking user for permission...");
                         var result = await RemoteControlAccessService.PromptForAccess(requesterName, organizationName);
                         if (!result)
                         {

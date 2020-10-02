@@ -46,23 +46,13 @@
         A remote control session has been requested.
       </TextBlock>
 
-      <StackPanel Orientation="Horizontal">
-        <TextBlock Classes="SectionHeader"
+      <TextBlock Classes="SectionHeader"
                  FontWeight="Bold"
                  FontSize="18"
                  Foreground="DimGray"
                  Margin="10"
                  TextWrapping="Wrap"
-                 Text="{Binding RequesterName, StringFormat=Would you like to allow {0} }"></TextBlock>
-
-        <TextBlock Classes="SectionHeader"
-                 FontWeight="Bold"
-                 FontSize="18"
-                 Foreground="DimGray"
-                 Margin="10"
-                 TextWrapping="Wrap"
-                 Text="{Binding OrganizationName, StringFormat=from {0} to control your computer?}"></TextBlock>
-      </StackPanel>
+                 Text="{Binding RequestMessage}"></TextBlock>
 
     </StackPanel>
 

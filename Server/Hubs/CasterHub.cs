@@ -149,6 +149,11 @@ namespace Remotely.Server.Hubs
             return ViewerHubContext.Clients.Client(viewerID).SendAsync("ConnectionRequestDenied");
         }
 
+        public Task SendMessageToViewer(string viewerId, string message)
+        {
+            return ViewerHubContext.Clients.Client(viewerId).SendAsync("ShowMessage", message);
+        }
+
         public Task SendCtrlAltDelToAgent()
         {
             return AgentHubContext.Clients.Client(SessionInfo.ServiceID).SendAsync("CtrlAltDel");
