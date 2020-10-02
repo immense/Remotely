@@ -25,15 +25,32 @@ namespace Remotely.Desktop.Linux.ViewModels
         public string OrganizationName
         {
             get => _organizationName;
-            set => this.RaiseAndSetIfChanged(ref _organizationName, value);
+            set 
+            {
+                this.RaiseAndSetIfChanged(ref _organizationName, value);
+                this.RaisePropertyChanged(nameof(RequestMessage));
+            }
+
         }
 
         public bool PromptResult { get; set; }
 
+        public string RequestMessage
+        {
+            get
+            {
+                return $"Would you like to allow {RequesterName} from {OrganizationName} to control your computer?";
+            }
+        }
+
         public string RequesterName
         {
             get => _requesterName;
-            set => this.RaiseAndSetIfChanged(ref _requesterName, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _requesterName, value);
+                this.RaisePropertyChanged(nameof(RequestMessage));
+            }
         }
         public ICommand SetResultNo => new Executor(param =>
         {
