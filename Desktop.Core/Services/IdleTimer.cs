@@ -26,6 +26,12 @@ namespace Remotely.Desktop.Core.Services
             Timer.Start();
         }
 
+        public void Stop()
+        {
+            Timer?.Stop();
+            Timer?.Dispose();
+        }
+
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             if (ViewerList.Count > 0)
