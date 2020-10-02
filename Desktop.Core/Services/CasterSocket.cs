@@ -14,16 +14,20 @@ namespace Remotely.Desktop.Core.Services
     {
         public CasterSocket(
             IDtoMessageHandler messageHandler,
-            IScreenCaster screenCastService)
+            IScreenCaster screenCastService,
+            IRemoteControlAccessService remoteControlAccessService)
         {
             MessageHandler = messageHandler;
             ScreenCaster = screenCastService;
+            RemoteControlAccessService = remoteControlAccessService;
         }
 
         public HubConnection Connection { get; private set; }
         public bool IsConnected => Connection?.State == HubConnectionState.Connected;
         private IDtoMessageHandler MessageHandler { get; }
         private IScreenCaster ScreenCaster { get; }
+        private IRemoteControlAccessService RemoteControlAccessService { get; }
+
         public async Task<bool> Connect(string host)
         {
             try
@@ -155,11 +159,26 @@ namespace Remotely.Desktop.Core.Services
                 await DisconnectAllViewers();
             });
 
-            Connection.On("GetScreenCast", (string viewerID, string requesterName, bool notifyUser) =>
+            Connection.On("GetScreenCast", async (
+                string viewerID, 
+                string requesterName,
+                bool notifyUser,
+                bool enforceAttendedAccess,
+                string organizationName) =>
             {
                 try
                 {
-                    ScreenCaster.BeginScreenCasting(new ScreenCastRequest()
+                    if (enforceAttendedAccess)
+                    {
+                        var result = await RemoteControlAccessService.PromptForAccess(requesterName, organizationName);
+                        if (!result)
+                        {
+                            await SendConnectionRequestDenied(viewerID);
+                            return;
+                        }
+                    }
+
+                    _ = ScreenCaster.BeginScreenCasting(new ScreenCastRequest()
                     {
                         NotifyUser = notifyUser,
                         ViewerID = viewerID,

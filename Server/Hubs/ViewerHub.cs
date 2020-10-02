@@ -199,7 +199,13 @@ namespace Remotely.Server.Hubs
                     (Context.User.Identity.IsAuthenticated &&
                         DataService.DoesUserHaveAccessToDevice(deviceID, Context.UserIdentifier)))
                 {
-                    return CasterHubContext.Clients.Client(screenCasterID).SendAsync("GetScreenCast", Context.ConnectionId, RequesterName, AppConfig.RemoteControlNotifyUser);
+                    var orgName = DataService.GetOrganizationNameById(orgId);
+                    return CasterHubContext.Clients.Client(screenCasterID).SendAsync("GetScreenCast", 
+                        Context.ConnectionId, 
+                        RequesterName, 
+                        AppConfig.RemoteControlNotifyUser,
+                        AppConfig.EnforceAttendedAccess,
+                        orgName);
                 }
                 else
                 {
