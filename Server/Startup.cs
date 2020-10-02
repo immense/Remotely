@@ -39,43 +39,58 @@ namespace Remotely.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
             var dbProvider = Configuration["ApplicationOptions:DBProvider"].ToLower();
             if (dbProvider == "sqlite")
             {
-                services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(
-                    Configuration.GetConnectionString("SQLite")));
+                services.AddDbContext<SqliteDbContext>();
+
+                services.AddDbContext<ApplicationDbContext>(options => 
+                    options.UseSqlite(Configuration.GetConnectionString("SQLite")));
+
+                services.AddIdentity<RemotelyUser, IdentityRole>(options => options.Stores.MaxLengthForKeys = 128)
+                   .AddEntityFrameworkStores<ApplicationDbContext>()
+                   .AddDefaultUI()
+                   .AddDefaultTokenProviders();
             }
             else if (dbProvider == "sqlserver")
             {
+                services.AddDbContext<SqlServerDbContext>();
                 services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseSqlServer(
-                        Configuration.GetConnectionString("SQLServer")));
+                    options.UseSqlServer(Configuration.GetConnectionString("SQLServer")));
+                     
+
+                services.AddIdentity<RemotelyUser, IdentityRole>(options => options.Stores.MaxLengthForKeys = 128)
+                    .AddEntityFrameworkStores<ApplicationDbContext>()
+                    .AddDefaultUI()
+                    .AddDefaultTokenProviders();
             }
             else if (dbProvider == "postgresql")
             {
-                // Password should be set in User Secrets in dev environment.
-                // See https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-3.1
-                if (!string.IsNullOrWhiteSpace(Configuration.GetValue<string>("PostgresPassword")))
+                services.AddDbContext<PostgreSqlDbContext>();
+                services.AddDbContext<ApplicationDbContext>(options =>
                 {
-                    var connectionBuilder = new NpgsqlConnectionStringBuilder(Configuration.GetConnectionString("PostgreSQL"))
+                    // Password should be set in User Secrets in dev environment.
+                    // See https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-3.1
+                    if (!string.IsNullOrWhiteSpace(Configuration.GetValue<string>("PostgresPassword")))
                     {
-                        Password = Configuration["PostgresPassword"]
-                    };
-                    services.AddDbContext<ApplicationDbContext>(options =>
-                        options.UseNpgsql(connectionBuilder.ConnectionString));
-                }
-                else
-                {
-                    services.AddDbContext<ApplicationDbContext>(options =>
-                        options.UseNpgsql(Configuration.GetConnectionString("PostgreSQL")));
-                }
-            }
+                        var connectionBuilder = new NpgsqlConnectionStringBuilder(Configuration.GetConnectionString("PostgreSQL"))
+                        {
+                            Password = Configuration["PostgresPassword"]
+                        };
+                        options.UseNpgsql(connectionBuilder.ConnectionString);
+                    }
+                    else
+                    {
+                        options.UseNpgsql(Configuration.GetConnectionString("PostgreSQL"));
+                    }
+                });
 
-            services.AddIdentity<RemotelyUser, IdentityRole>(options => options.Stores.MaxLengthForKeys = 128)
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultUI()
-                .AddDefaultTokenProviders();
+                services.AddIdentity<RemotelyUser, IdentityRole>(options => options.Stores.MaxLengthForKeys = 128)
+                    .AddEntityFrameworkStores<ApplicationDbContext>()
+                    .AddDefaultUI()
+                    .AddDefaultTokenProviders();
+            }
 
             var trustedOrigins = Configuration.GetSection("ApplicationOptions:TrustedCorsOrigins").Get<string[]>();
 

@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace Remotely.Server.Migrations
+namespace Remotely.Server.Migrations.PostgreSql
 {
-    public partial class Initial : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -37,7 +39,7 @@ namespace Remotely.Server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     RoleId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -58,7 +60,7 @@ namespace Remotely.Server.Migrations
                 columns: table => new
                 {
                     ID = table.Column<string>(nullable: false),
-                    LastUsed = table.Column<string>(nullable: true),
+                    LastUsed = table.Column<DateTimeOffset>(nullable: true),
                     Name = table.Column<string>(maxLength: 200, nullable: true),
                     OrganizationID = table.Column<string>(nullable: true),
                     Secret = table.Column<string>(nullable: true),
@@ -87,7 +89,7 @@ namespace Remotely.Server.Migrations
                     TargetDeviceIDs = table.Column<string>(nullable: true),
                     PSCoreResults = table.Column<string>(nullable: true),
                     CommandResults = table.Column<string>(nullable: true),
-                    TimeStamp = table.Column<string>(nullable: false),
+                    TimeStamp = table.Column<DateTimeOffset>(nullable: false),
                     OrganizationID = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -130,7 +132,7 @@ namespace Remotely.Server.Migrations
                     Source = table.Column<string>(nullable: true),
                     StackTrace = table.Column<string>(nullable: true),
                     OrganizationID = table.Column<string>(nullable: true),
-                    TimeStamp = table.Column<string>(nullable: false)
+                    TimeStamp = table.Column<DateTimeOffset>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -150,7 +152,7 @@ namespace Remotely.Server.Migrations
                     ID = table.Column<string>(nullable: false),
                     InvitedUser = table.Column<string>(nullable: true),
                     IsAdmin = table.Column<bool>(nullable: false),
-                    DateSent = table.Column<string>(nullable: false),
+                    DateSent = table.Column<DateTimeOffset>(nullable: false),
                     OrganizationID = table.Column<string>(nullable: true),
                     ResetUrl = table.Column<string>(nullable: true)
                 },
@@ -181,13 +183,16 @@ namespace Remotely.Server.Migrations
                     PhoneNumber = table.Column<string>(nullable: true),
                     PhoneNumberConfirmed = table.Column<bool>(nullable: false),
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
-                    LockoutEnd = table.Column<string>(nullable: true),
+                    LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
                     Discriminator = table.Column<string>(nullable: false),
-                    UserOptions = table.Column<string>(nullable: true),
+                    DisplayName = table.Column<string>(maxLength: 100, nullable: true),
+                    IsAdministrator = table.Column<bool>(nullable: true),
+                    IsServerAdmin = table.Column<bool>(nullable: true),
                     OrganizationID = table.Column<string>(nullable: true),
-                    IsAdministrator = table.Column<bool>(nullable: true)
+                    TempPassword = table.Column<string>(nullable: true),
+                    UserOptions = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -208,7 +213,7 @@ namespace Remotely.Server.Migrations
                     FileName = table.Column<string>(nullable: true),
                     ContentType = table.Column<string>(nullable: true),
                     FileContents = table.Column<byte[]>(nullable: true),
-                    Timestamp = table.Column<string>(nullable: false),
+                    Timestamp = table.Column<DateTimeOffset>(nullable: false),
                     OrganizationID = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -234,20 +239,22 @@ namespace Remotely.Server.Migrations
                     DeviceGroupID = table.Column<string>(nullable: true),
                     DeviceName = table.Column<string>(nullable: true),
                     Drives = table.Column<string>(nullable: true),
-                    UsedMemory = table.Column<double>(nullable: false),
-                    UsedStorage = table.Column<double>(nullable: false),
                     Is64Bit = table.Column<bool>(nullable: false),
                     IsOnline = table.Column<bool>(nullable: false),
-                    LastOnline = table.Column<string>(nullable: false),
+                    LastOnline = table.Column<DateTimeOffset>(nullable: false),
+                    Notes = table.Column<string>(nullable: true),
                     OrganizationID = table.Column<string>(nullable: true),
                     OSArchitecture = table.Column<int>(nullable: false),
                     OSDescription = table.Column<string>(nullable: true),
                     Platform = table.Column<string>(nullable: true),
                     ProcessorCount = table.Column<int>(nullable: false),
+                    PublicIP = table.Column<string>(nullable: true),
                     ServerVerificationToken = table.Column<string>(nullable: true),
                     Tags = table.Column<string>(maxLength: 200, nullable: true),
                     TotalMemory = table.Column<double>(nullable: false),
-                    TotalStorage = table.Column<double>(nullable: false)
+                    TotalStorage = table.Column<double>(nullable: false),
+                    UsedMemory = table.Column<double>(nullable: false),
+                    UsedStorage = table.Column<double>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -271,7 +278,7 @@ namespace Remotely.Server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -375,6 +382,55 @@ namespace Remotely.Server.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "Alerts",
+                columns: table => new
+                {
+                    ID = table.Column<string>(nullable: false),
+                    CreatedOn = table.Column<DateTimeOffset>(nullable: false),
+                    DeviceID = table.Column<string>(nullable: true),
+                    Message = table.Column<string>(nullable: true),
+                    OrganizationID = table.Column<string>(nullable: true),
+                    UserID = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Alerts", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Alerts_Devices_DeviceID",
+                        column: x => x.DeviceID,
+                        principalTable: "Devices",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Alerts_Organizations_OrganizationID",
+                        column: x => x.OrganizationID,
+                        principalTable: "Organizations",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Alerts_RemotelyUsers_UserID",
+                        column: x => x.UserID,
+                        principalTable: "RemotelyUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Alerts_DeviceID",
+                table: "Alerts",
+                column: "DeviceID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Alerts_OrganizationID",
+                table: "Alerts",
+                column: "OrganizationID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Alerts_UserID",
+                table: "Alerts",
+                column: "UserID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiTokens_OrganizationID",
@@ -487,6 +543,9 @@ namespace Remotely.Server.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Alerts");
+
+            migrationBuilder.DropTable(
                 name: "ApiTokens");
 
             migrationBuilder.DropTable(
@@ -508,9 +567,6 @@ namespace Remotely.Server.Migrations
                 name: "CommandResults");
 
             migrationBuilder.DropTable(
-                name: "Devices");
-
-            migrationBuilder.DropTable(
                 name: "EventLogs");
 
             migrationBuilder.DropTable(
@@ -523,13 +579,16 @@ namespace Remotely.Server.Migrations
                 name: "SharedFiles");
 
             migrationBuilder.DropTable(
+                name: "Devices");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "DeviceGroups");
+                name: "RemotelyUsers");
 
             migrationBuilder.DropTable(
-                name: "RemotelyUsers");
+                name: "DeviceGroups");
 
             migrationBuilder.DropTable(
                 name: "Organizations");
