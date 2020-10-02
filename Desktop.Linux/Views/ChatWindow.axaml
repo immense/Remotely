@@ -38,7 +38,7 @@
           <Button Classes="TitlebarButton" Command="{Binding CloseCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Content="X" />
           <Button Classes="TitlebarButton" Command="{Binding MinimizeCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Content="_"/>
         </DockPanel>
-      </Border>
+    </Border>
 
     <TextBlock Grid.Row="1" 
                Text="{Binding ChatSessionHeader}"
