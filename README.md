@@ -96,6 +96,7 @@ For more information on configuring ASP.NET Core, see https://docs.microsoft.com
 * DBProvider: Determines which of the three connection strings (at the top) will be used.  The appropriate DB provider for the database type is automatically loaded in code.
 * DefaultPrompt: The default prompt string you'll see for each line on the console.
 * EnableWindowsEventLog: Whether to also add server log entries to the Windows Event Log.
+* EnforceAttendedAccess: Clients will be prompted to allow unattended remote control attempts.
 * IceServers: The ICE (STUN/TURN) servers to use for WebRTC.
 * KnownProxies: If your Nginx server is on a different machine and is forwarding requests to the Remotely server, you will need to add the IP of the Nginx server to this array.
 * MaxOrganizationCount: By default, one organization can exist on the server, which is created automatically when the first account is registered.  Afterward, self-registration will be disabled.

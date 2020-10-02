@@ -105,6 +105,7 @@ namespace Remotely.Desktop.Win
             serviceCollection.AddSingleton<ISessionIndicator, SessionIndicatorWin>();
             serviceCollection.AddSingleton<IShutdownService, ShutdownServiceWin>();
             serviceCollection.AddScoped<IDtoMessageHandler, DtoMessageHandler>();
+            serviceCollection.AddScoped<IRemoteControlAccessService, RemoteControlAccessServiceWin>();
 
             BackgroundForm = new Form()
             {
