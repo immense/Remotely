@@ -13,10 +13,12 @@ namespace Remotely.Desktop.Core.Services
     public class CasterSocket
     {
         public CasterSocket(
+            IdleTimer idleTimer,
             IDtoMessageHandler messageHandler,
             IScreenCaster screenCastService,
             IRemoteControlAccessService remoteControlAccessService)
         {
+            IdleTimer = idleTimer;
             MessageHandler = messageHandler;
             ScreenCaster = screenCastService;
             RemoteControlAccessService = remoteControlAccessService;
@@ -24,6 +26,7 @@ namespace Remotely.Desktop.Core.Services
 
         public HubConnection Connection { get; private set; }
         public bool IsConnected => Connection?.State == HubConnectionState.Connected;
+        private IdleTimer IdleTimer { get; }
         private IDtoMessageHandler MessageHandler { get; }
         private IScreenCaster ScreenCaster { get; }
         private IRemoteControlAccessService RemoteControlAccessService { get; }
@@ -176,7 +179,11 @@ namespace Remotely.Desktop.Core.Services
                     if (enforceAttendedAccess)
                     {
                         await SendMessageToViewer(viewerID, "Asking user for permission...");
+
+                        IdleTimer.Stop();
                         var result = await RemoteControlAccessService.PromptForAccess(requesterName, organizationName);
+                        IdleTimer.Start();
+
                         if (!result)
                         {
                             await SendConnectionRequestDenied(viewerID);
