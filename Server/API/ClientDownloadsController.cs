@@ -60,6 +60,8 @@ namespace Remotely.Server.API
                             }
                         case "Manjaro-x64":
                         case "Ubuntu-x64":
+                        // TODO: Remove this and delete the file after a few releases.
+                        case "Linux-x64":
                             {
                                 var fileContents = new List<string>();
                                 var fileName = $"Install-{platformID}.sh";
