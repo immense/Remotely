@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -150,8 +151,23 @@ namespace Remotely.Agent.Services
                 {
                     var installerPath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.sh");
 
+                    string platform;
+
+                    if (RuntimeInformation.OSDescription.Contains("Ubuntu", StringComparison.OrdinalIgnoreCase))
+                    {
+                        platform = "Ubuntu-x64";
+                    }
+                    else if (RuntimeInformation.OSDescription.Contains("Manjaro", StringComparison.OrdinalIgnoreCase))
+                    {
+                        platform = "Manjaro-x64";
+                    }
+                    else
+                    {
+                        throw new PlatformNotSupportedException();
+                    }
+
                     await wc.DownloadFileTaskAsync(
-                           serverUrl + $"/API/ClientDownloads/{connectionInfo.OrganizationID}/Linux-x64",
+                           serverUrl + $"/API/ClientDownloads/{connectionInfo.OrganizationID}/{platform}",
                            installerPath);
 
                     await wc.DownloadFileTaskAsync(
