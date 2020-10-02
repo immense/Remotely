@@ -154,7 +154,10 @@ namespace Remotely.Server.Hubs
             if (Context?.User?.Identity?.IsAuthenticated == true)
             {
                 var user = DataService.GetUserByID(Context.UserIdentifier);
-                RequesterName = user.DisplayName ?? user.UserName;
+                if (string.IsNullOrWhiteSpace(RequesterName))
+                {
+                    RequesterName = user.DisplayName ?? user.UserName;
+                }
                 orgId = user.OrganizationID;
                 var currentUsers = CasterHub.SessionInfoList.Count(x =>
                     x.Key != screenCasterID &&
