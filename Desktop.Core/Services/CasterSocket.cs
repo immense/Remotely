@@ -159,13 +159,18 @@ namespace Remotely.Desktop.Core.Services
                 await DisconnectAllViewers();
             });
 
-            Connection.On("GetScreenCast", async (string viewerID, string requesterName, bool notifyUser, bool enforceAttendedAccess) =>
+            Connection.On("GetScreenCast", async (
+                string viewerID, 
+                string requesterName,
+                bool notifyUser,
+                bool enforceAttendedAccess,
+                string organizationName) =>
             {
                 try
                 {
                     if (enforceAttendedAccess)
                     {
-                        var result = await RemoteControlAccessService.PromptForAccess();
+                        var result = await RemoteControlAccessService.PromptForAccess(requesterName, organizationName);
                         if (!result)
                         {
                             await SendConnectionRequestDenied(viewerID);

@@ -12,9 +12,9 @@ namespace Remotely.Desktop.Linux.ViewModels
 {
     public class ChatWindowViewModel : ReactiveViewModel
     {
-        private string inputText;
-        private string organizationName = "your IT provider";
-        private string senderName = "a technician";
+        private string _inputText;
+        private string _organizationName = "your IT provider";
+        private string _senderName = "a technician";
         public ObservableCollection<ChatMessage> ChatMessages { get; } = new ObservableCollection<ChatMessage>();
 
         public string ChatSessionHeader => $"Chat session with {OrganizationName}";
@@ -25,8 +25,8 @@ namespace Remotely.Desktop.Linux.ViewModels
         });
         public string InputText
         {
-            get => inputText;
-            set => this.RaiseAndSetIfChanged(ref inputText, value);
+            get => _inputText;
+            set => this.RaiseAndSetIfChanged(ref _inputText, value);
         }
 
         public ICommand MinimizeCommand => new Executor((param) =>
@@ -36,10 +36,10 @@ namespace Remotely.Desktop.Linux.ViewModels
 
         public string OrganizationName
         {
-            get => organizationName;
+            get => _organizationName;
             set
             {
-                this.RaiseAndSetIfChanged(ref organizationName, value);
+                this.RaiseAndSetIfChanged(ref _organizationName, value);
                 this.RaisePropertyChanged(nameof(ChatSessionHeader));
             }
         }
@@ -48,8 +48,8 @@ namespace Remotely.Desktop.Linux.ViewModels
 
         public string SenderName
         {
-            get => senderName;
-            set => this.RaiseAndSetIfChanged(ref senderName, value);
+            get => _senderName;
+            set => this.RaiseAndSetIfChanged(ref _senderName, value);
         }
 
         public async Task SendChatMessage()
