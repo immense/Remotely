@@ -40,6 +40,7 @@ apt-get -y install xclip
 apt-get -y install jq
 apt-get -y install curl
 
+
 if [ -f "/usr/local/bin/Remotely/ConnectionInfo.json" ]; then
     GUID=`cat "/usr/local/bin/Remotely/ConnectionInfo.json" | jq -r '.DeviceID'`
 fi

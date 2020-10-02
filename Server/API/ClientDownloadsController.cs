@@ -58,10 +58,11 @@ namespace Remotely.Server.API
                                 var fileStream = System.IO.File.OpenRead(filePath);
                                 return File(fileStream, "application/octet-stream", $"{fileName}");
                             }
-                        case "Linux-x64":
+                        case "Manjaro-x64":
+                        case "Ubuntu-x64":
                             {
                                 var fileContents = new List<string>();
-                                var fileName = "Install-Linux-x64.sh";
+                                var fileName = $"Install-{platformID}.sh";
 
                                 fileContents.AddRange(await System.IO.File.ReadAllLinesAsync(Path.Combine(HostEnv.WebRootPath, "Downloads", $"{fileName}")));
 

@@ -217,44 +217,52 @@ namespace Remotely.Desktop.Linux.ViewModels
 
         private async Task CheckDependencies()
         {
-            var dependencies = new string[]
+            try
             {
-                "libx11-dev",
-                "libc6-dev",
-                "libgdiplus",
-                "libxtst-dev",
-                "xclip"
-            };
-
-            foreach (var dependency in dependencies)
-            {
-                var proc = Process.Start("dpkg", $"-s {dependency}");
-                proc.WaitForExit();
-                if (proc.ExitCode != 0)
+                var dependencies = new string[]
                 {
-                    var commands = "sudo apt-get -y install libx11-dev ; " +
-                                "sudo apt-get -y install libc6-dev ; " +
-                                "sudo apt-get -y install libgdiplus ; " +
-                                "sudo apt-get -y install libxtst-dev ; " +
-                                "sudo apt-get -y install xclip";
+                    "libx11-dev",
+                    "libc6-dev",
+                    "libgdiplus",
+                    "libxtst-dev",
+                    "xclip"
+                };
 
-                    await App.Current.Clipboard.SetTextAsync(commands);
+                foreach (var dependency in dependencies)
+                {
+                    var proc = Process.Start("dpkg", $"-s {dependency}");
+                    proc.WaitForExit();
+                    if (proc.ExitCode != 0)
+                    {
+                        var commands = "sudo apt-get -y install libx11-dev ; " +
+                                    "sudo apt-get -y install libc6-dev ; " +
+                                    "sudo apt-get -y install libgdiplus ; " +
+                                    "sudo apt-get -y install libxtst-dev ; " +
+                                    "sudo apt-get -y install xclip";
 
-                    var message = "The following dependencies are required.  Install commands have been copied to your clipboard." +
-                        Environment.NewLine + Environment.NewLine +
-                        "Please paste them into a terminal and run, then try opening Remotely again." +
-                        Environment.NewLine + Environment.NewLine +
-                        "libx11-dev" + Environment.NewLine +
-                        "libc6-dev" + Environment.NewLine +
-                        "libgdiplus" + Environment.NewLine +
-                        "libxtst-dev" + Environment.NewLine +
-                        "xclip";
+                        await App.Current.Clipboard.SetTextAsync(commands);
 
-                    await MessageBox.Show(message, "Dependencies Required", MessageBoxType.OK);
+                        var message = "The following dependencies are required.  Install commands have been copied to your clipboard." +
+                            Environment.NewLine + Environment.NewLine +
+                            "Please paste them into a terminal and run, then try opening Remotely again." +
+                            Environment.NewLine + Environment.NewLine +
+                            "libx11-dev" + Environment.NewLine +
+                            "libc6-dev" + Environment.NewLine +
+                            "libgdiplus" + Environment.NewLine +
+                            "libxtst-dev" + Environment.NewLine +
+                            "xclip";
 
-                    Environment.Exit(0);
+                        await MessageBox.Show(message, "Dependencies Required", MessageBoxType.OK);
+
+                        Environment.Exit(0);
+                    }
                 }
             }
+            catch
+            {
+                Logger.Write("Unable to check dependencies.", Shared.Enums.EventType.Warning);
+            }
+          
         }
         private void ScreenCastRequested(object sender, ScreenCastRequest screenCastRequest)
         {
