@@ -154,6 +154,9 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Enable Windows Event Log")]
             public bool EnableWindowsEventLog { get; set; }
 
+            [Display(Name = "Enforce Attended Access")]
+            public bool EnforceAttendedAccess { get; set; }
+
             [Display(Name = "Ice Servers")]
             public IceServerModel[] IceServers { get; set; }
 

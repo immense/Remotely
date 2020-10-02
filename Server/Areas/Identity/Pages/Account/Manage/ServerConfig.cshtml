@@ -81,6 +81,13 @@
                     <span asp-validation-for="AppSettingsInput.EnableWindowsEventLog" class="text-danger"></span>
                 </div>
                 <div class="form-group">
+                    <label asp-for="AppSettingsInput.EnforceAttendedAccess"></label>
+                    <br />
+                    <input type="checkbox" asp-for="AppSettingsInput.EnforceAttendedAccess" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.EnforceAttendedAccess" class="text-danger"></span>
+                </div>
+                <div class="form-group">
                     <label asp-for="AppSettingsInput.KnownProxies" class="control-label"></label>
                     <br />
                     <select id="knownProxiesSelect"

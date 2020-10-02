@@ -21,6 +21,7 @@ namespace Remotely.Server.Services
         public string DBProvider => Config["ApplicationOptions:DBProvider"] ?? "SQLite";
         public string DefaultPrompt => Config["ApplicationOptions:DefaultPrompt"] ?? "~>";
         public bool EnableWindowsEventLog => bool.Parse(Config["ApplicationOptions:EnableWindowsEventLog"]);
+        public bool EnforceAttendedAccess => bool.Parse(Config["EnforceAttendedAccess"] ?? "false");
         public IceServerModel[] IceServers => Config.GetSection("ApplicationOptions:IceServers").Get<IceServerModel[]>() ?? fallbackIceServers;
         public string[] KnownProxies => Config.GetSection("ApplicationOptions:KnownProxies").Get<string[]>();
         public int MaxConcurrentUpdates => int.Parse(Config["ApplicationOptions:MaxConcurrentUpdates"] ?? "10");
