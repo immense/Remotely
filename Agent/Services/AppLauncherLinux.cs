@@ -87,16 +87,7 @@ namespace Remotely.Agent.Services
 
         private int StartLinuxDesktopApp(string args)
         {
-            var xauthority = string.Empty;
-
-            var processes = EnvironmentHelper.StartProcessWithResults("ps", "-eaf").Split(Environment.NewLine);
-            var xorgLine = processes.FirstOrDefault(x => x.Contains("xorg"));
-            var xorgSplit = xorgLine.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
-            var auth = xorgSplit[xorgSplit.IndexOf("-auth") + 1];
-            if (!string.IsNullOrWhiteSpace(auth))
-            {
-                xauthority = auth;
-            }
+            var xauthority = GetXorgAuth();
 
             var display = ":0";
             var whoString = EnvironmentHelper.StartProcessWithResults("w", "-h")?.Trim();
@@ -132,6 +123,33 @@ namespace Remotely.Agent.Services
             psi.Environment.Add("XAUTHORITY", xauthority);
             Logger.Write($"Attempting to launch screen caster with username {username}, xauthority {xauthority}, display {display}, and args {args}.");
             return Process.Start(psi).Id;
+        }
+
+        private string GetXorgAuth()
+        {
+            try
+            {
+                var processes = EnvironmentHelper.StartProcessWithResults("ps", "-eaf")?.Split(Environment.NewLine);
+                if (processes?.Length > 0)
+                {
+                    var xorgLine = processes.FirstOrDefault(x => x.Contains("xorg", StringComparison.OrdinalIgnoreCase));
+                    if (!string.IsNullOrWhiteSpace(xorgLine))
+                    {
+                        var xorgSplit = xorgLine?.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
+                        var authIndex = xorgSplit?.IndexOf("-auth");
+                        if (authIndex > -1 && xorgSplit?.Count >= authIndex + 1)
+                        {
+                            var auth = xorgSplit[(int)authIndex + 1];
+                            if (!string.IsNullOrWhiteSpace(auth))
+                            {
+                                return auth;
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+            return string.Empty;
         }
     }
 }

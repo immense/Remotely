@@ -84,18 +84,26 @@ namespace Remotely.Shared.Utilities
         }
         public static string StartProcessWithResults(string command, string arguments)
         {
-            var psi = new ProcessStartInfo(command, arguments)
+            try
             {
-                WindowStyle = ProcessWindowStyle.Hidden,
-                Verb = "RunAs",
-                UseShellExecute = false,
-                RedirectStandardOutput = true
-            };
+                var psi = new ProcessStartInfo(command, arguments)
+                {
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    Verb = "RunAs",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true
+                };
 
-            var proc = Process.Start(psi);
-            proc.WaitForExit();
+                var proc = Process.Start(psi);
+                proc.WaitForExit();
 
-            return proc.StandardOutput.ReadToEnd();
+                return proc.StandardOutput.ReadToEnd();
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex, "Failed to start process.");
+                return string.Empty;
+            }
         }
 
     }
