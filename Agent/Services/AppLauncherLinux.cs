@@ -90,7 +90,7 @@ namespace Remotely.Agent.Services
             var xauthority = GetXorgAuth();
 
             var display = ":0";
-            var whoString = EnvironmentHelper.StartProcessWithResults("w", "-h")?.Trim();
+            var whoString = EnvironmentHelper.StartProcessWithResults("who", "")?.Trim();
             var username = "";
 
             if (!string.IsNullOrWhiteSpace(whoString))
@@ -103,7 +103,7 @@ namespace Remotely.Agent.Services
 
                     var whoSplit = whoLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                     username = whoSplit[0];
-                    display = whoSplit[2];
+                    display = whoSplit.Last().TrimStart('(').TrimEnd(')');
                     xauthority = $"/home/{username}/.Xauthority";
                     args = $"-u {username} {args}";
                 }
