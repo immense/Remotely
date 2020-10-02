@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Remotely.Server.Data;
 
-namespace Remotely.Server.Migrations
+namespace Remotely.Server.Migrations.Sqlite
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20200305230311_Initial")]
