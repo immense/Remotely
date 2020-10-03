@@ -15,7 +15,7 @@ namespace Remotely.Desktop.Linux.Services
     {
         public async Task<bool> PromptForAccess(string requesterName, string organizationName)
         {
-            var result = await Dispatcher.UIThread.InvokeAsync(async () =>
+            return await Dispatcher.UIThread.InvokeAsync(async () =>
             {
                 var promptWindow = new PromptForAccessWindow();
                 var viewModel = promptWindow.DataContext as PromptForAccessWindowViewModel;
@@ -28,14 +28,19 @@ namespace Remotely.Desktop.Linux.Services
                     viewModel.OrganizationName = organizationName;
                 }
 
+                var isOpen = true;
+                promptWindow.Closed += (sender, arg) =>
+                {
+                    isOpen = false;
+                };
                 promptWindow.Show();
-                await TaskHelper.DelayUntilAsync(() => !promptWindow.IsVisible, TimeSpan.MaxValue);
-
+                while (isOpen)
+                {
+                    await Task.Delay(100);
+                }
+   
                 return viewModel.PromptResult;
             });
-
-
-            return result;
         }
     }
 }
