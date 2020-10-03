@@ -45,7 +45,7 @@ namespace Remotely.Desktop.Linux
 
                 _ = Task.Run(() =>
                 {
-                    BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+                    BuildAvaloniaApp().Start(AppMain, args);
                 });
 
                 while (App.Current is null)
@@ -83,6 +83,12 @@ namespace Remotely.Desktop.Linux
                 Logger.Write(ex);
                 throw;
             }
+        }
+
+        private static void AppMain(Application app, string[] args)
+        {
+            var cts = new CancellationTokenSource();
+            app.Run(cts.Token);
         }
 
         private static void BuildServices()
