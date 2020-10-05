@@ -14,6 +14,11 @@ Website: https://remotely.one
 Feedback: https://remotely.featureupvote.com/  
 Subreddit: https://www.reddit.com/r/remotely_app/  
 
+## Disclaimer
+Hosting a Remotely server requires building and running an ASP.NET Core web app behind IIS (Windows) or Nginx (Ubuntu).  It's expected that the person deploying and maintaining the server is familiar with this process.
+
+It's *highly* encouraged that you get comfortable building and deploying from source.  This allows you to hard-code your server's hostname into the desktop client and the installer, which makes for a better experience for the end user.  If you don't want to use any of the methods below, you can look at the GitHub Actions workflows to see how the process can be automated, using the `Publish.ps1` script.  You can use those as reference for creating an automation process that works for you.  You can also use Azure Pipelines for free (which I personally use).
+
 ## Build Instructions (GitHub)
 GitHub Actions allows you to build and deploy Remotely for free from their cloud servers.  The definitions for the build processes are located in `/.github/workflows/` folder.
 
@@ -53,7 +58,7 @@ The following steps will configure your Windows 10 machine for building the Remo
 	* Link: https://dotnet.microsoft.com/download/dotnet-core/current/runtime
 	* This includes the Hosting Bundle for Windows, which allows you to run ASP.NET Core in IIS.
 	* Important: If you installed .NET Core Runtime before installing all the required IIS features, you may need to run a repair on the .NET Core Runtime installation.
-* Change values in appsettings.json for your environment.
+* Change values in appsettings.json for your environment.  Make a copy named `appsettings.Production.json` (see Configuration section below).
 * By default, SQLite is used for the database.
     * The "Remotely.db" database file is automatically created in the root folder of your site.
 	* You can browse and modify the contents using [DB Browser for SQLite](https://sqlitebrowser.org/).
@@ -64,7 +69,7 @@ The following steps will configure your Windows 10 machine for building the Remo
 
 ## Hosting a Server (Ubuntu)
 * Ubuntu 18.04 and 19.04 have been tested.
-* Run Remotely_Server_Setup.sh (with sudo), which is in the [Utilities folder in source control](https://raw.githubusercontent.com/lucent-sea/Remotely/master/Utilities/Remotely_Server_Install.sh).
+* Run Ubuntu_Server_Install.sh (with sudo), which is in the [Utilities folder in source control](https://raw.githubusercontent.com/lucent-sea/Remotely/master/Utilities/Remotely_Server_Install.sh).
 	* The script is designed to install Remotely and Nginx on the same server, running Ubuntu 18.04 or 19.04.  You'll need to manually set up other configurations.
     * A helpful user supplied an example Apache configuration, which can be found in the Utilities folder.
     * The script will prompt for the "App root" location, which is the above directory where the server files are located.
@@ -72,12 +77,23 @@ The following steps will configure your Windows 10 machine for building the Remo
 	* Certbot is used in this script and will install an SSL certificate for your site.  Your server needs to have a public domain name that is accessible from the internet for this to work.
 		* More information: https://letsencrypt.org/, https://certbot.eff.org/
 	* Alternatively, you can build from source (using RuntimeIdentifier "linux-x64" for the server) and copy the server files to the site folder.
-* Change values in appsettings.json for your environment.
+* Change values in appsettings.json for your environment.  Make a copy named `appsettings.Production.json` (see Configuration section below).
 * Documentation for hosting behind Nginx can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx?view=aspnetcore-3.1
+
 
 ## Hosting Scenarios
 There are countless ways to host an ASP.NET Core app, and I can't document or automate all of them.  For hosting scenarios aside from the above two, please refer to Microsoft's documentation.
 - https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/?view=aspnetcore-3.1
+
+
+## Upgrading
+* To upgrade a server, do any of the below to copy the new Server application files.
+	* Run one of the GitHub Actions workflows.
+	* Build from source as described above and `rsync`/`robocopy` the output files to the server directory.
+	* Build from source and deploy to IIS (e.g. `dotnet publish /p:PublishProfile=MyProfile`)
+	* Re-run the installer script supplied in the releases.
+* For Linux, you'll also need to restart the Remotely service in systemd after overwriting the files.
+* The only things that can't be overwritten are the database DB file (if using SQLite) and the `appsettings.Production.json`.  These files should never exist in the publish output.
 
 
 ## Configuration
@@ -114,20 +130,10 @@ For more information on configuring ASP.NET Core, see https://docs.microsoft.com
     * Only works on Windows agents.
 
 
-
 ## Changing the Database
 By default, Remotely uses a SQLite database.  When first run, it creates a file as specified for the SQLite connection string in appsettings.json.
 
-You can change database by changing `DBProvider` in `ApplicationOptions` to `SQLServer` or `PostgreSQL`.
-
-However, in order for the server to run properly, you must also recreate the migration files and recompile the server.  Migration files are C# files that get compiled into the server app, and they tell the server how to create the database with the proper schema.
-
-Here's what you need to do:
-- Set the `DBProvider` property to the desired database type.
-- Delete the `Migrations` folder under the `Server` project.
-- Open a console in the `Server` directory and type `dotnet ef migrations add "Initial"`.
-- Set the connection string for the new database provider in the server's `appsettings.Production.json`.
-- Rebuild and deploy the server.
+You can change database by changing `DBProvider` in `ApplicationOptions` to `SQLServer` or `PostgreSQL`.  Be sure to set the connection string for the new database provider in the server's `appsettings.Production.json`.
 
 ## Logging
 * On clients, logs are kept in %temp%\Remotely_Logs.log.
