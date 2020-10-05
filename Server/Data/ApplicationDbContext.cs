@@ -13,7 +13,7 @@ namespace Remotely.Server.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> context)
+        public ApplicationDbContext(DbContextOptions context)
             : base(context)
         {
         }

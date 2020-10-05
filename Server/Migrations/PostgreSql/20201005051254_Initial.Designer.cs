@@ -10,8 +10,8 @@ using Remotely.Server.Data;
 namespace Remotely.Server.Migrations.PostgreSql
 {
     [DbContext(typeof(PostgreSqlDbContext))]
-    [Migration("20201002211851_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20201005051254_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

@@ -43,9 +43,7 @@ namespace Remotely.Server
             var dbProvider = Configuration["ApplicationOptions:DBProvider"].ToLower();
             if (dbProvider == "sqlite")
             {
-                services.AddDbContext<SqliteDbContext>();
-
-                services.AddDbContext<ApplicationDbContext>(options => 
+                services.AddDbContext<ApplicationDbContext, SqliteDbContext>(options => 
                     options.UseSqlite(Configuration.GetConnectionString("SQLite")));
 
                 services.AddIdentity<RemotelyUser, IdentityRole>(options => options.Stores.MaxLengthForKeys = 128)
@@ -55,8 +53,7 @@ namespace Remotely.Server
             }
             else if (dbProvider == "sqlserver")
             {
-                services.AddDbContext<SqlServerDbContext>();
-                services.AddDbContext<ApplicationDbContext>(options =>
+                services.AddDbContext<ApplicationDbContext, SqlServerDbContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("SQLServer")));
                      
 
@@ -67,8 +64,7 @@ namespace Remotely.Server
             }
             else if (dbProvider == "postgresql")
             {
-                services.AddDbContext<PostgreSqlDbContext>();
-                services.AddDbContext<ApplicationDbContext>(options =>
+                services.AddDbContext<ApplicationDbContext, PostgreSqlDbContext>(options =>
                 {
                     // Password should be set in User Secrets in dev environment.
                     // See https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-3.1

@@ -86,6 +86,7 @@
 
 
   <ItemGroup>
+    <Folder Include="Migrations\PostgreSql\" />
     <Folder Include="Properties\" />
   </ItemGroup>
 
