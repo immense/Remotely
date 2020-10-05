@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using System;
@@ -12,7 +13,7 @@ namespace Remotely.Server.Data
     {
         private readonly IConfiguration _configuration;
 
-        public PostgreSqlDbContext(DbContextOptions<ApplicationDbContext> context, IConfiguration configuration)
+        public PostgreSqlDbContext(DbContextOptions context, IConfiguration configuration)
             : base(context)
         {
             _configuration = configuration;

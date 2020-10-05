@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace Remotely.Server.Data
     {
         private readonly IConfiguration _configuration;
 
-        public SqliteDbContext(DbContextOptions<ApplicationDbContext> context, IConfiguration configuration)
+        public SqliteDbContext(DbContextOptions context, IConfiguration configuration)
             : base(context)
         {
             _configuration = configuration;
