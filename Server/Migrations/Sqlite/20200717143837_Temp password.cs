@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Remotely.Server.Migrations
+namespace Remotely.Server.Migrations.Sqlite
 {
     public partial class Temppassword : Migration
     {

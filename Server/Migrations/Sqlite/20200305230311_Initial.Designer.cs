@@ -8,7 +8,7 @@ using Remotely.Server.Data;
 
 namespace Remotely.Server.Migrations.Sqlite
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(SqliteDbContext))]
     [Migration("20200305230311_Initial")]
     partial class Initial
     {

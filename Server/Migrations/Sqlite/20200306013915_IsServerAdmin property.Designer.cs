@@ -6,9 +6,9 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Remotely.Server.Data;
 
-namespace Remotely.Server.Migrations
+namespace Remotely.Server.Migrations.Sqlite
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(SqliteDbContext))]
     [Migration("20200306013915_IsServerAdmin property")]
     partial class IsServerAdminproperty
     {

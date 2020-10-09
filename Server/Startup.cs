@@ -45,22 +45,11 @@ namespace Remotely.Server
             {
                 services.AddDbContext<ApplicationDbContext, SqliteDbContext>(options => 
                     options.UseSqlite(Configuration.GetConnectionString("SQLite")));
-
-                services.AddIdentity<RemotelyUser, IdentityRole>(options => options.Stores.MaxLengthForKeys = 128)
-                   .AddEntityFrameworkStores<ApplicationDbContext>()
-                   .AddDefaultUI()
-                   .AddDefaultTokenProviders();
             }
             else if (dbProvider == "sqlserver")
             {
                 services.AddDbContext<ApplicationDbContext, SqlServerDbContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("SQLServer")));
-                     
-
-                services.AddIdentity<RemotelyUser, IdentityRole>(options => options.Stores.MaxLengthForKeys = 128)
-                    .AddEntityFrameworkStores<ApplicationDbContext>()
-                    .AddDefaultUI()
-                    .AddDefaultTokenProviders();
             }
             else if (dbProvider == "postgresql")
             {
@@ -81,12 +70,12 @@ namespace Remotely.Server
                         options.UseNpgsql(Configuration.GetConnectionString("PostgreSQL"));
                     }
                 });
-
-                services.AddIdentity<RemotelyUser, IdentityRole>(options => options.Stores.MaxLengthForKeys = 128)
-                    .AddEntityFrameworkStores<ApplicationDbContext>()
-                    .AddDefaultUI()
-                    .AddDefaultTokenProviders();
             }
+
+            services.AddIdentity<RemotelyUser, IdentityRole>(options => options.Stores.MaxLengthForKeys = 128)
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultUI()
+                .AddDefaultTokenProviders();
 
             var trustedOrigins = Configuration.GetSection("ApplicationOptions:TrustedCorsOrigins").Get<string[]>();
 
