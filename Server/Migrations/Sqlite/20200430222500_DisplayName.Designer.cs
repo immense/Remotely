@@ -6,9 +6,9 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Remotely.Server.Data;
 
-namespace Remotely.Server.Migrations
+namespace Remotely.Server.Migrations.Sqlite
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(SqliteDbContext))]
     [Migration("20200430222500_DisplayName")]
     partial class DisplayName
     {

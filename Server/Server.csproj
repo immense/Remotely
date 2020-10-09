@@ -87,6 +87,7 @@
 
   <ItemGroup>
     <Folder Include="Migrations\PostgreSql\" />
+    <Folder Include="Migrations\Sqlite\" />
     <Folder Include="Properties\" />
   </ItemGroup>
 
