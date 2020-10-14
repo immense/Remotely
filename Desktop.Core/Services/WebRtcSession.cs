@@ -69,7 +69,7 @@ namespace Remotely.Desktop.Core.Services
 
         public async Task Init(IceServerModel[] iceServers)
         {
-            Logger.Debug("Starting WebRTC connection.");
+            Logger.Write("Starting WebRTC connection.");
 
             IceServers = iceServers;
 
@@ -155,7 +155,9 @@ namespace Remotely.Desktop.Core.Services
         }
         private async void CaptureChannel_StateChanged()
         {
-            Logger.Debug($"DataChannel state changed.  New State: {CaptureChannel.State}");
+            // Clear the queue when WebRTC state changes.
+            Viewer.PendingSentFrames.Clear();
+            Logger.Write($"DataChannel state changed.  New State: {CaptureChannel.State}");
             if (CaptureChannel.State == DataChannel.ChannelState.Closed)
             {
                 await Init(IceServers);
@@ -207,22 +209,24 @@ namespace Remotely.Desktop.Core.Services
 
         private void PeerConnection_Connected()
         {
-            Logger.Debug("PeerConnection connected.");
+            Logger.Write("PeerConnection connected.");
         }
 
         private void PeerConnection_IceStateChanged(IceConnectionState newState)
         {
-            Logger.Debug($"Ice state changed to {newState}.");
+            // Clear the queue when WebRTC state changes.
+            Viewer.PendingSentFrames.Clear();
+            Logger.Write($"Ice state changed to {newState}.");
         }
 
         private void PeerSession_IceCandidateReadytoSend(IceCandidate candidate)
         {
-            Logger.Debug("Ice candidate ready to send.");
+            Logger.Write("Ice candidate ready to send.");
             IceCandidateReady?.Invoke(this, candidate);
         }
         private void PeerSession_LocalSdpReadytoSend(SdpMessage message)
         {
-            Logger.Debug($"Local SDP ready.");
+            Logger.Write($"Local SDP ready.");
             LocalSdpReady?.Invoke(this, message);
         }
     }
