@@ -56,13 +56,14 @@ namespace Remotely.Server.API
                     _downloadingAgents.TryGetValue(string.Empty, out _);
                 }
 
-                var expirationTimespan = TimeSpan.FromMinutes(10);
+                var entryExpirationTime = TimeSpan.FromMinutes(6);
+                var tokenExpirationTime = entryExpirationTime.Add(TimeSpan.FromSeconds(15));
 
                 var expirationToken = new CancellationChangeToken(
-                    new CancellationTokenSource(expirationTimespan).Token);
+                    new CancellationTokenSource(tokenExpirationTime).Token);
 
                 var cacheOptions = new MemoryCacheEntryOptions()
-                    .SetAbsoluteExpiration(expirationTimespan)
+                    .SetAbsoluteExpiration(entryExpirationTime)
                     .AddExpirationToken(expirationToken);
 
                 _downloadingAgents.Set(downloadId, string.Empty, cacheOptions);
