@@ -56,7 +56,7 @@ namespace Remotely.Server.API
                     _downloadingAgents.TryGetValue(string.Empty, out _);
                 }
 
-                var expirationTimespan = TimeSpan.FromSeconds(10);
+                var expirationTimespan = TimeSpan.FromMinutes(10);
 
                 var expirationToken = new CancellationChangeToken(
                     new CancellationTokenSource(expirationTimespan).Token);
