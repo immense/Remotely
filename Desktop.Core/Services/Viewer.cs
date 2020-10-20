@@ -16,9 +16,9 @@ namespace Remotely.Desktop.Core.Services
 {
     public class Viewer : IDisposable
     {
-        private readonly int defaultImageQuality = 60;
-        private int imageQuality;
-        private DateTimeOffset lastQualityAdjustment;
+        private readonly int _defaultImageQuality = 60;
+        private int _imageQuality;
+        private DateTimeOffset _lastQualityAdjustment;
         public Viewer(CasterSocket casterSocket,
             IScreenCapturer screenCapturer,
             IClipboardService clipboardService,
@@ -29,7 +29,7 @@ namespace Remotely.Desktop.Core.Services
             CasterSocket = casterSocket;
             WebRtcSessionFactory = webRtcSessionFactory;
             EncoderParams = new EncoderParameters();
-            ImageQuality = defaultImageQuality;
+            ImageQuality = _defaultImageQuality;
             ClipboardService = clipboardService;
             ClipboardService.ClipboardTextChanged += ClipboardService_ClipboardTextChanged;
             AudioCapturer = audioCapturer;
@@ -47,21 +47,21 @@ namespace Remotely.Desktop.Core.Services
         {
             get
             {
-                return imageQuality;
+                return _imageQuality;
             }
             set
             {
-                if (imageQuality == value)
+                if (_imageQuality == value)
                 {
                     return;
                 }
 
-                if (imageQuality > 100 || imageQuality < 0)
+                if (_imageQuality > 100 || _imageQuality < 0)
                 {
                     return;
                 }
 
-                imageQuality = value;
+                _imageQuality = value;
 
                 EncoderParams.Param[0] = new EncoderParameter(Encoder.Quality, value);
             }
@@ -250,7 +250,7 @@ namespace Remotely.Desktop.Core.Services
                     Height = height,
                     EndOfFrame = false,
                     ImageBytes = encodedImageBytes.Skip(i).Take(50_000).ToArray(),
-                    ImageQuality = imageQuality
+                    ImageQuality = _imageQuality
                 };
 
                 await SendToViewer(() => RtcSession.SendDto(dto),
@@ -264,7 +264,7 @@ namespace Remotely.Desktop.Core.Services
                 Width = width,
                 Height = height,
                 EndOfFrame = true,
-                ImageQuality = imageQuality
+                ImageQuality = _imageQuality
             };
 
             await SendToViewer(() => RtcSession.SendDto(endOfFrameDto),
@@ -301,17 +301,17 @@ namespace Remotely.Desktop.Core.Services
 
         public void ThrottleIfNeeded()
         {
-            if (AutoAdjustQuality && DateTimeOffset.Now - lastQualityAdjustment > TimeSpan.FromSeconds(2))
+            if (AutoAdjustQuality && DateTimeOffset.Now - _lastQualityAdjustment > TimeSpan.FromSeconds(2))
             {
-                lastQualityAdjustment = DateTimeOffset.Now;
+                _lastQualityAdjustment = DateTimeOffset.Now;
                 if (PendingSentFrames.TryPeek(out var result) && DateTimeOffset.Now - result > TimeSpan.FromMilliseconds(200))
                 {
                     var latency = (DateTimeOffset.Now - result).TotalMilliseconds;
-                    ImageQuality = (int)(200 / latency * defaultImageQuality);
+                    ImageQuality = (int)(200 / latency * _defaultImageQuality);
                 }
-                else
+                else if (ImageQuality != _defaultImageQuality)
                 {
-                    ImageQuality = defaultImageQuality;
+                    ImageQuality = Math.Min(_defaultImageQuality, ImageQuality + 5);
                 }
             }
 

@@ -34,7 +34,7 @@ namespace Remotely.Agent.Services
 
                 // Start Desktop app.
                 await hubConnection.SendAsync("DisplayMessage", $"Starting chat service...", "Starting chat service.", requesterID);
-                if (EnvironmentHelper.IsDebug)
+                if (Process.GetCurrentProcess().SessionId > 0)
                 {
                     return Process.Start(rcBinaryPath, $"-mode Chat -requester \"{requesterID}\" -organization \"{orgName}\"").Id;
                 }
@@ -78,7 +78,7 @@ namespace Remotely.Agent.Services
 
                 // Start Desktop app.
                 await hubConnection.SendAsync("DisplayMessage", $"Starting remote control...", "Starting remote control.", requesterID);
-                if (EnvironmentHelper.IsDebug)
+                if (Process.GetCurrentProcess().SessionId > 0)
                 {
                     // SignalR Connection IDs might start with a hyphen.  We surround them
                     // with quotes so the command line will be parsed correctly.
@@ -111,7 +111,7 @@ namespace Remotely.Agent.Services
                 var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Desktop", EnvironmentHelper.DesktopExecutableFileName);
                 // Start Desktop app.                 
                 Logger.Write("Restarting screen caster.");
-                if (EnvironmentHelper.IsDebug)
+                if (Process.GetCurrentProcess().SessionId > 0)
                 {
                     // SignalR Connection IDs might start with a hyphen.  We surround them
                     // with quotes so the command line will be parsed correctly.

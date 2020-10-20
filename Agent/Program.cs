@@ -4,6 +4,7 @@ using Remotely.Agent.Interfaces;
 using Remotely.Agent.Services;
 using Remotely.Shared.Utilities;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.ServiceProcess;
 using System.Threading;
@@ -87,7 +88,8 @@ namespace Remotely.Agent
                 SetWorkingDirectory();
 
 
-                if (!EnvironmentHelper.IsDebug && EnvironmentHelper.IsWindows)
+                if (EnvironmentHelper.IsWindows &&
+                    Process.GetCurrentProcess().SessionId == 0)
                 {
                     _ = Task.Run(() =>
                     {
