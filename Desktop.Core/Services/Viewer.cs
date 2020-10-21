@@ -313,6 +313,33 @@ namespace Remotely.Desktop.Core.Services
                 TimeSpan.MaxValue);
         }
 
+        public void ToggleWebRtcVideo(bool toggleOn)
+        {
+            RtcSession.ToggleWebRtcVideo(toggleOn);
+        }
+
+        private async void AudioCapturer_AudioSampleReady(object sender, byte[] sample)
+        {
+            await SendAudioSample(sample);
+        }
+
+        private async void ClipboardService_ClipboardTextChanged(object sender, string clipboardText)
+        {
+            await SendClipboardText(clipboardText);
+        }
+
+        private Task SendToViewer(Func<Task> webRtcSend, Func<Task> websocketSend)
+        {
+            if (IsUsingWebRtc)
+            {
+                return webRtcSend();
+            }
+            else
+            {
+                return websocketSend();
+            }
+        }
+
         private void UpdateImageQuality()
         {
             if (AutoAdjustQuality && DateTimeOffset.Now - _lastQualityAdjustment > TimeSpan.FromSeconds(2))
@@ -328,30 +355,6 @@ namespace Remotely.Desktop.Core.Services
                 {
                     ImageQuality = Math.Min(_defaultImageQuality, ImageQuality + 10);
                 }
-            }
-        }
-
-        public void ToggleWebRtcVideo(bool toggleOn)
-        {
-            RtcSession.ToggleWebRtcVideo(toggleOn);
-        }
-        private async void AudioCapturer_AudioSampleReady(object sender, byte[] sample)
-        {
-            await SendAudioSample(sample);
-        }
-        private async void ClipboardService_ClipboardTextChanged(object sender, string clipboardText)
-        {
-            await SendClipboardText(clipboardText);
-        }
-        private Task SendToViewer(Func<Task> webRtcSend, Func<Task> websocketSend)
-        {
-            if (IsUsingWebRtc)
-            {
-                return webRtcSend();
-            }
-            else
-            {
-                return websocketSend();
             }
         }
     }
