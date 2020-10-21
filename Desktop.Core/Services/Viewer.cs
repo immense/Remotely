@@ -301,9 +301,24 @@ namespace Remotely.Desktop.Core.Services
 
         public void ThrottleIfNeeded()
         {
+            TaskHelper.DelayUntil(() =>
+                {
+                    UpdateImageQuality();
+
+                    return PendingSentFrames.Count < 5 &&
+                        (
+                            !PendingSentFrames.TryPeek(out var result) || DateTimeOffset.Now - result < TimeSpan.FromSeconds(1)
+                        );
+                },
+                TimeSpan.MaxValue);
+        }
+
+        private void UpdateImageQuality()
+        {
             if (AutoAdjustQuality && DateTimeOffset.Now - _lastQualityAdjustment > TimeSpan.FromSeconds(2))
             {
                 _lastQualityAdjustment = DateTimeOffset.Now;
+
                 if (PendingSentFrames.TryPeek(out var result) && DateTimeOffset.Now - result > TimeSpan.FromMilliseconds(200))
                 {
                     var latency = (DateTimeOffset.Now - result).TotalMilliseconds;
@@ -311,15 +326,9 @@ namespace Remotely.Desktop.Core.Services
                 }
                 else if (ImageQuality != _defaultImageQuality)
                 {
-                    ImageQuality = Math.Min(_defaultImageQuality, ImageQuality + 5);
+                    ImageQuality = Math.Min(_defaultImageQuality, ImageQuality + 10);
                 }
             }
-
-            TaskHelper.DelayUntil(() => PendingSentFrames.Count < 5 &&
-                (
-                    !PendingSentFrames.TryPeek(out var result) || DateTimeOffset.Now - result < TimeSpan.FromSeconds(1)
-                ),
-                TimeSpan.MaxValue);
         }
 
         public void ToggleWebRtcVideo(bool toggleOn)
