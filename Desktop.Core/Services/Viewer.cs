@@ -349,7 +349,7 @@ namespace Remotely.Desktop.Core.Services
                 if (PendingSentFrames.TryPeek(out var result) && DateTimeOffset.Now - result > TimeSpan.FromMilliseconds(200))
                 {
                     var latency = (DateTimeOffset.Now - result).TotalMilliseconds;
-                    ImageQuality = (int)(200 / latency * _defaultImageQuality);
+                    ImageQuality = Math.Max(20, (int)(200 / latency * _defaultImageQuality));
                 }
                 else if (ImageQuality != _defaultImageQuality)
                 {
