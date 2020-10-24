@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
 using Remotely.Agent.Services;
+using Remotely.Shared.Enums;
 using Remotely.Shared.Utilities;
 using System;
 using System.Diagnostics;
@@ -93,7 +94,14 @@ namespace Remotely.Agent
                 {
                     _ = Task.Run(() =>
                     {
-                        ServiceBase.Run(new WindowsService());
+                        try
+                        {
+                            ServiceBase.Run(new WindowsService());
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Write(ex, "Failed to start service.", EventType.Warning);
+                        }
                     });
                 }
 

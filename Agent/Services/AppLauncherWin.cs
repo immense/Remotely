@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Security.Principal;
 using System.Threading.Tasks;
 
 namespace Remotely.Agent.Services
@@ -34,11 +35,7 @@ namespace Remotely.Agent.Services
 
                 // Start Desktop app.
                 await hubConnection.SendAsync("DisplayMessage", $"Starting chat service...", "Starting chat service.", requesterID);
-                if (Process.GetCurrentProcess().SessionId > 0)
-                {
-                    return Process.Start(rcBinaryPath, $"-mode Chat -requester \"{requesterID}\" -organization \"{orgName}\"").Id;
-                }
-                else
+                if (WindowsIdentity.GetCurrent().IsSystem)
                 {
                     var result = Win32Interop.OpenInteractiveProcess($"{rcBinaryPath} -mode Chat -requester \"{requesterID}\" -organization \"{orgName}\"",
                         targetSessionId: -1,
@@ -54,6 +51,10 @@ namespace Remotely.Agent.Services
                     {
                         return procInfo.dwProcessId;
                     }
+                }
+                else
+                {
+                    return Process.Start(rcBinaryPath, $"-mode Chat -requester \"{requesterID}\" -organization \"{orgName}\"").Id;
                 }
             }
             catch (Exception ex)
@@ -78,13 +79,7 @@ namespace Remotely.Agent.Services
 
                 // Start Desktop app.
                 await hubConnection.SendAsync("DisplayMessage", $"Starting remote control...", "Starting remote control.", requesterID);
-                if (Process.GetCurrentProcess().SessionId > 0)
-                {
-                    // SignalR Connection IDs might start with a hyphen.  We surround them
-                    // with quotes so the command line will be parsed correctly.
-                    Process.Start(rcBinaryPath, $"-mode Unattended -requester \"{requesterID}\" -serviceid \"{serviceID}\" -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host}");
-                }
-                else
+                if (WindowsIdentity.GetCurrent().IsSystem)
                 {
                     var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester \"{requesterID}\" -serviceid \"{serviceID}\" -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host}",
                         targetSessionId: targetSessionId,
@@ -96,6 +91,12 @@ namespace Remotely.Agent.Services
                     {
                         await hubConnection.SendAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
                     }
+                }
+                else
+                {
+                    // SignalR Connection IDs might start with a hyphen.  We surround them
+                    // with quotes so the command line will be parsed correctly.
+                    Process.Start(rcBinaryPath, $"-mode Unattended -requester \"{requesterID}\" -serviceid \"{serviceID}\" -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host}");
                 }
             }
             catch (Exception ex)
@@ -111,15 +112,8 @@ namespace Remotely.Agent.Services
                 var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Desktop", EnvironmentHelper.DesktopExecutableFileName);
                 // Start Desktop app.                 
                 Logger.Write("Restarting screen caster.");
-                if (Process.GetCurrentProcess().SessionId > 0)
+                if (WindowsIdentity.GetCurrent().IsSystem)
                 {
-                    // SignalR Connection IDs might start with a hyphen.  We surround them
-                    // with quotes so the command line will be parsed correctly.
-                    Process.Start(rcBinaryPath, $"-mode Unattended -requester \"{requesterID}\" -serviceid \"{serviceID}\" -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} -relaunch true -viewers {String.Join(",", viewerIDs)}");
-                }
-                else
-                {
-
                     // Give a little time for session changing, etc.
                     await Task.Delay(1000);
 
@@ -136,6 +130,12 @@ namespace Remotely.Agent.Services
                         await hubConnection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
                         await hubConnection.SendAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", requesterID);
                     }
+                }
+                else
+                {
+                    // SignalR Connection IDs might start with a hyphen.  We surround them
+                    // with quotes so the command line will be parsed correctly.
+                    Process.Start(rcBinaryPath, $"-mode Unattended -requester \"{requesterID}\" -serviceid \"{serviceID}\" -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} -relaunch true -viewers {String.Join(",", viewerIDs)}");
                 }
             }
             catch (Exception ex)
