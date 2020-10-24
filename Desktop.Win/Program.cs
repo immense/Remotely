@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Win32;
 using Remotely.Desktop.Core;
 using Remotely.Desktop.Core.Interfaces;
 using Remotely.Desktop.Core.Services;
 using Remotely.Desktop.Win.Services;
 using Remotely.Desktop.Win.Views;
+using Remotely.Shared.Helpers;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.Win32;
@@ -46,6 +48,14 @@ namespace Remotely.Desktop.Win
                 CasterSocket = Services.GetRequiredService<CasterSocket>();
                 Conductor.ProcessArgs(args);
 
+                SystemEvents.SessionEnding += async (s, e) =>
+                {
+                    if (e.Reason == SessionEndReasons.SystemShutdown)
+                    {
+                        await CasterSocket.DisconnectAllViewers();
+                    }
+                };
+
                 if (Conductor.Mode == Core.Enums.AppMode.Chat)
                 {
                     StartUiThreads(null);
@@ -69,10 +79,9 @@ namespace Remotely.Desktop.Win
                     StartUiThreads(() => new MainWindow());
                 }
 
-                while (!App.Current.Dispatcher.HasShutdownFinished)
-                {
-                    Thread.Sleep(1000);
-                }
+                TaskHelper.DelayUntil(() => App.Current.Dispatcher.HasShutdownStarted,
+                    TimeSpan.MaxValue, 
+                    1000);
             }
             catch (Exception ex)
             {
