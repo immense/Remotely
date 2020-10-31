@@ -83,7 +83,7 @@ namespace Remotely.Agent.Services
                 {
                     var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester \"{requesterID}\" -serviceid \"{serviceID}\" -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host}",
                         targetSessionId: targetSessionId,
-                        forceConsoleSession: false,
+                        forceConsoleSession: Shlwapi.IsOS(OsType.OS_ANYSERVER) && targetSessionId == -1,
                         desktopName: "default",
                         hiddenWindow: true,
                         out _);
