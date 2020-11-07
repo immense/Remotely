@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -17,16 +18,19 @@ namespace Remotely.Desktop.Core.Utilities
             return ms.ToArray();
         }
 
-        public static Rectangle GetDiffArea(Bitmap currentFrame, Bitmap previousFrame, bool captureFullscreen)
+        public static List<Rectangle> GetDiffAreas(Bitmap currentFrame, Bitmap previousFrame, bool captureFullscreen)
         {
+            var changes = new List<Rectangle>();
+
             if (currentFrame == null || previousFrame == null)
             {
-                return Rectangle.Empty;
+                return changes;
             }
 
             if (captureFullscreen)
             {
-                return new Rectangle(new Point(0, 0), currentFrame.Size);
+                changes.Add(new Rectangle(new Point(0, 0), currentFrame.Size));
+                return changes;
             }
             if (currentFrame.Height != previousFrame.Height || currentFrame.Width != previousFrame.Width)
             {
@@ -60,8 +64,14 @@ namespace Remotely.Desktop.Core.Utilities
                     byte* scan1 = (byte*)bd1.Scan0.ToPointer();
                     byte* scan2 = (byte*)bd2.Scan0.ToPointer();
 
+                    var changeOnCurrentRow = false;
+                    var changeOnPreviousRow = false;
+
                     for (var row = 0; row < height; row++)
                     {
+                        changeOnPreviousRow = changeOnCurrentRow;
+                        changeOnCurrentRow = false;
+
                         for (var column = 0; column < width; column++)
                         {
                             var index = (row * width * bytesPerPixel) + (column * bytesPerPixel);
@@ -74,7 +84,8 @@ namespace Remotely.Desktop.Core.Utilities
                                 data1[2] != data2[2] ||
                                 data1[3] != data2[3])
                             {
-                                // Change was found.
+                                changeOnCurrentRow = true;
+
                                 if (row < top)
                                 {
                                     top = row;
@@ -94,28 +105,39 @@ namespace Remotely.Desktop.Core.Utilities
                             }
 
                         }
+                        if (!changeOnCurrentRow &&
+                            changeOnPreviousRow &&
+                            left <= right && 
+                            top <= bottom)
+                        {
+                            // Bounding box is valid.  Padding is necessary to prevent artifacts from
+                            // moving windows.
+                            left = Math.Max(left - 5, 0);
+                            top = Math.Max(top - 5, 0);
+                            right = Math.Min(right + 5, width);
+                            bottom = Math.Min(bottom + 5, height);
+
+                            changes.Add(new Rectangle(left, top, right - left, bottom - top));
+                        }
+                    }
+                    if (changeOnCurrentRow &&
+                        left <= right &&
+                        top <= bottom)
+                    {
+                        left = Math.Max(left - 5, 0);
+                        top = Math.Max(top - 5, 0);
+                        right = Math.Min(right + 5, width);
+                        bottom = Math.Min(bottom + 5, height);
+
+                        changes.Add(new Rectangle(left, top, right - left, bottom - top));
                     }
                 }
 
-                if (left <= right && top <= bottom)
-                {
-                    // Bounding box is valid.  Padding is necessary to prevent artifacts from
-                    // moving windows.
-                    left = Math.Max(left - 5, 0);
-                    top = Math.Max(top - 5, 0);
-                    right = Math.Min(right + 5, width);
-                    bottom = Math.Min(bottom + 5, height);
-
-                    return new Rectangle(left, top, right - left, bottom - top);
-                }
-                else
-                {
-                    return Rectangle.Empty;
-                }
+                return changes;
             }
             catch
             {
-                return Rectangle.Empty;
+                return changes;
             }
             finally
             {
