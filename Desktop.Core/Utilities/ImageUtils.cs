@@ -110,26 +110,19 @@ namespace Remotely.Desktop.Core.Utilities
                             left <= right && 
                             top <= bottom)
                         {
-                            // Bounding box is valid.  Padding is necessary to prevent artifacts from
-                            // moving windows.
-                            left = Math.Max(left - 5, 0);
-                            top = Math.Max(top - 5, 0);
-                            right = Math.Min(right + 5, width);
-                            bottom = Math.Min(bottom + 5, height);
+                            AddChangeToList(changes, left, top, right, bottom, width, height);
 
-                            changes.Add(new Rectangle(left, top, right - left, bottom - top));
+                            left = int.MaxValue;
+                            top = int.MaxValue;
+                            right = int.MinValue;
+                            bottom = int.MinValue;
                         }
                     }
                     if (changeOnCurrentRow &&
                         left <= right &&
                         top <= bottom)
                     {
-                        left = Math.Max(left - 5, 0);
-                        top = Math.Max(top - 5, 0);
-                        right = Math.Min(right + 5, width);
-                        bottom = Math.Min(bottom + 5, height);
-
-                        changes.Add(new Rectangle(left, top, right - left, bottom - top));
+                        AddChangeToList(changes, left, top, right, bottom, width, height);
                     }
                 }
 
@@ -144,6 +137,18 @@ namespace Remotely.Desktop.Core.Utilities
                 currentFrame.UnlockBits(bd1);
                 previousFrame.UnlockBits(bd2);
             }
+        }
+
+        private static void AddChangeToList(List<Rectangle> changes, int left, int top, int right, int bottom, int width, int height)
+        {
+            // Bounding box is valid.  Padding is necessary to prevent artifacts from
+            // moving windows.
+            left = Math.Max(left - 5, 0);
+            top = Math.Max(top - 5, 0);
+            right = Math.Min(right + 5, width);
+            bottom = Math.Min(bottom + 5, height);
+
+            changes.Add(new Rectangle(left, top, right - left, bottom - top));
         }
 
         public static Bitmap GetImageDiff(Bitmap currentFrame, Bitmap previousFrame, bool captureFullscreen)
