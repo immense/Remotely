@@ -133,25 +133,29 @@ namespace Remotely.Desktop.Core.Services
                         currentFrame?.Dispose();
                         currentFrame = viewer.Capturer.GetNextFrame();
 
-                        var diffArea = ImageUtils.GetDiffArea(currentFrame, previousFrame, viewer.Capturer.CaptureFullscreen);
+                        var diffAreas = ImageUtils.GetDiffAreas(currentFrame, previousFrame, viewer.Capturer.CaptureFullscreen);
 
-                        if (diffArea.IsEmpty)
+                        if (diffAreas.Count == 0)
                         {
                             continue;
                         }
 
-                        using var newImage = currentFrame.Clone(diffArea, PixelFormat.Format32bppArgb);
-                        if (viewer.Capturer.CaptureFullscreen)
+                        foreach (var diffArea in diffAreas)
                         {
-                            viewer.Capturer.CaptureFullscreen = false;
-                        }
+                            using var newImage = currentFrame.Clone(diffArea, PixelFormat.Format32bppArgb);
+                            if (viewer.Capturer.CaptureFullscreen)
+                            {
+                                viewer.Capturer.CaptureFullscreen = false;
+                            }
 
-                        encodedImageBytes = ImageUtils.EncodeBitmap(newImage, viewer.EncoderParams);
+                            encodedImageBytes = ImageUtils.EncodeBitmap(newImage, viewer.EncoderParams);
 
-                        if (encodedImageBytes?.Length > 0)
-                        {
-                            await viewer.SendScreenCapture(encodedImageBytes, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height);
+                            if (encodedImageBytes?.Length > 0)
+                            {
+                                await viewer.SendScreenCapture(encodedImageBytes, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height);
+                            }
                         }
+                      
                     }
                     catch (Exception ex)
                     {
