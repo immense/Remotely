@@ -60,36 +60,39 @@ namespace Remotely.Desktop.Core.Utilities
                     byte* scan1 = (byte*)bd1.Scan0.ToPointer();
                     byte* scan2 = (byte*)bd2.Scan0.ToPointer();
 
-                    for (int counter = 0; counter < totalSize - bytesPerPixel; counter += bytesPerPixel)
+                    for (var row = 0; row < height; row++)
                     {
-                        byte* data1 = scan1 + counter;
-                        byte* data2 = scan2 + counter;
-
-                        if (data1[0] != data2[0] ||
-                            data1[1] != data2[1] ||
-                            data1[2] != data2[2] ||
-                            data1[3] != data2[3])
+                        for (var column = 0; column < width; column++)
                         {
-                            // Change was found.
-                            var pixel = counter / 4;
-                            var row = (int)Math.Floor((double)pixel / bd1.Width);
-                            var column = pixel % bd1.Width;
-                            if (row < top)
+                            var index = (row * width * bytesPerPixel) + (column * bytesPerPixel);
+
+                            byte* data1 = scan1 + index;
+                            byte* data2 = scan2 + index;
+
+                            if (data1[0] != data2[0] ||
+                                data1[1] != data2[1] ||
+                                data1[2] != data2[2] ||
+                                data1[3] != data2[3])
                             {
-                                top = row;
+                                // Change was found.
+                                if (row < top)
+                                {
+                                    top = row;
+                                }
+                                if (row > bottom)
+                                {
+                                    bottom = row;
+                                }
+                                if (column < left)
+                                {
+                                    left = column;
+                                }
+                                if (column > right)
+                                {
+                                    right = column;
+                                }
                             }
-                            if (row > bottom)
-                            {
-                                bottom = row;
-                            }
-                            if (column < left)
-                            {
-                                left = column;
-                            }
-                            if (column > right)
-                            {
-                                right = column;
-                            }
+
                         }
                     }
                 }
@@ -98,10 +101,10 @@ namespace Remotely.Desktop.Core.Utilities
                 {
                     // Bounding box is valid.  Padding is necessary to prevent artifacts from
                     // moving windows.
-                    left = Math.Max(left - 10, 0);
-                    top = Math.Max(top - 10, 0);
-                    right = Math.Min(right + 10, width);
-                    bottom = Math.Min(bottom + 10, height);
+                    left = Math.Max(left - 5, 0);
+                    top = Math.Max(top - 5, 0);
+                    right = Math.Min(right + 5, width);
+                    bottom = Math.Min(bottom + 5, height);
 
                     return new Rectangle(left, top, right - left, bottom - top);
                 }
