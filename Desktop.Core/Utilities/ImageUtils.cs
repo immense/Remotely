@@ -139,18 +139,6 @@ namespace Remotely.Desktop.Core.Utilities
             }
         }
 
-        private static void AddChangeToList(List<Rectangle> changes, int left, int top, int right, int bottom, int width, int height)
-        {
-            // Bounding box is valid.  Padding is necessary to prevent artifacts from
-            // moving windows.
-            left = Math.Max(left - 5, 0);
-            top = Math.Max(top - 5, 0);
-            right = Math.Min(right + 5, width);
-            bottom = Math.Min(bottom + 5, height);
-
-            changes.Add(new Rectangle(left, top, right - left, bottom - top));
-        }
-
         public static Bitmap GetImageDiff(Bitmap currentFrame, Bitmap previousFrame, bool captureFullscreen)
         {
             if (captureFullscreen)
@@ -220,6 +208,18 @@ namespace Remotely.Desktop.Core.Utilities
                 currentFrame.UnlockBits(bd2);
                 mergedFrame.UnlockBits(bd3);
             }
+        }
+
+        private static void AddChangeToList(List<Rectangle> changes, int left, int top, int right, int bottom, int width, int height)
+        {
+            // Bounding box is valid.  Padding is necessary to prevent artifacts from
+            // moving windows.
+            left = Math.Max(left - 5, 0);
+            top = Math.Max(top - 5, 0);
+            right = Math.Min(right + 5, width);
+            bottom = Math.Min(bottom + 5, height);
+
+            changes.Add(new Rectangle(left, top, right - left, bottom - top));
         }
     }
 }
