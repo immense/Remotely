@@ -146,46 +146,50 @@ namespace Remotely.Desktop.Core.Utilities
             var bd2 = currentFrame.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, previousFrame.PixelFormat);
             var bd3 = mergedFrame.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, currentFrame.PixelFormat);
 
-
-            // Get the address of the first line.
-            IntPtr ptr1 = bd1.Scan0;
-            IntPtr ptr2 = bd2.Scan0;
-            IntPtr ptr3 = bd3.Scan0;
-
-            // Declare an array to hold the bytes of the bitmap.
-            int arraySize = Math.Abs(bd1.Stride) * currentFrame.Height;
-            var rgbValues1 = new byte[arraySize];
-            var rgbValues2 = new byte[arraySize];
-            var rgbValues3 = new byte[arraySize];
-
-            // Copy the RGBA values into the array.
-            Marshal.Copy(ptr1, rgbValues1, 0, arraySize);
-            Marshal.Copy(ptr2, rgbValues2, 0, arraySize);
-
-            // Check RGBA value for each pixel.
-            for (int counter = 0; counter < rgbValues2.Length - 4; counter += 4)
+            try
             {
-                if (rgbValues1[counter] != rgbValues2[counter] ||
-                    rgbValues1[counter + 1] != rgbValues2[counter + 1] ||
-                    rgbValues1[counter + 2] != rgbValues2[counter + 2] ||
-                    rgbValues1[counter + 3] != rgbValues2[counter + 3])
+                var bytesPerPixel = Bitmap.GetPixelFormatSize(currentFrame.PixelFormat) / 8;
+                var totalSize = bd1.Height * bd1.Width * bytesPerPixel;
+
+                unsafe
                 {
-                    // Change was found.
-                    rgbValues3[counter] = rgbValues2[counter];
-                    rgbValues3[counter + 1] = rgbValues2[counter + 1];
-                    rgbValues3[counter + 2] = rgbValues2[counter + 2];
-                    rgbValues3[counter + 3] = rgbValues2[counter + 3];
+                    byte* scan1 = (byte*)bd1.Scan0.ToPointer();
+                    byte* scan2 = (byte*)bd2.Scan0.ToPointer();
+                    byte* scan3 = (byte*)bd3.Scan0.ToPointer();
+
+                    for (int counter = 0; counter < totalSize - bytesPerPixel; counter += bytesPerPixel)
+                    {
+                        byte* data1 = scan1 + counter;
+                        byte* data2 = scan2 + counter;
+                        byte* data3 = scan3 + counter;
+
+                        if (data1[0] != data2[0] ||
+                            data1[1] != data2[1] ||
+                            data1[2] != data2[2] ||
+                            data1[3] != data2[3])
+                        {
+                            data3[0] = data2[0];
+                            data3[1] = data2[1];
+                            data3[2] = data2[2];
+                            data3[3] = data2[3];
+                        }
+                    }
                 }
+
+
+                return mergedFrame;
+
             }
-
-            // Copy merged frame to bitmap.
-            Marshal.Copy(rgbValues3, 0, ptr3, rgbValues3.Length);
-
-            previousFrame.UnlockBits(bd1);
-            currentFrame.UnlockBits(bd2);
-            mergedFrame.UnlockBits(bd3);
-
-            return mergedFrame;
+            catch
+            {
+                return mergedFrame;
+            }
+            finally
+            {
+                previousFrame.UnlockBits(bd1);
+                currentFrame.UnlockBits(bd2);
+                mergedFrame.UnlockBits(bd3);
+            }
         }
     }
 }
