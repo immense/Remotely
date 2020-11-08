@@ -36,10 +36,9 @@ namespace Remotely.Desktop.Core.Utilities
             {
                 throw new Exception("Bitmaps are not of equal dimensions.");
             }
-            if (!Bitmap.IsAlphaPixelFormat(currentFrame.PixelFormat) || !Bitmap.IsAlphaPixelFormat(previousFrame.PixelFormat) ||
-                !Bitmap.IsCanonicalPixelFormat(currentFrame.PixelFormat) || !Bitmap.IsCanonicalPixelFormat(previousFrame.PixelFormat))
+            if (currentFrame.PixelFormat != previousFrame.PixelFormat)
             {
-                throw new Exception("Bitmaps must be 32 bits per pixel and contain alpha channel.");
+                throw new Exception("Bitmaps are not the same format.");
             }
             var width = currentFrame.Width;
             var height = currentFrame.Height;
