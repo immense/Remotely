@@ -4,14 +4,14 @@
   "private": true,
   "devDependencies": {
     "@types/bootstrap": "^4.5.0",
-    "@types/jquery": "^3.5.1"
+    "@types/jquery": "^3.5.4"
   },
   "dependencies": {
-    "@microsoft/signalr": "^3.1.5",
-    "@microsoft/signalr-protocol-msgpack": "^3.1.5",
+    "@microsoft/signalr": "^5.0.0",
+    "@microsoft/signalr-protocol-msgpack": "^5.0.0",
     "msgpack5": "^4.2.1",
-    "typescript": "^4.0.3",
-    "@msgpack/msgpack": "^1.12.2",
+    "typescript": "^4.0.5",
+    "@msgpack/msgpack": "^2.3.0",
     "jquery": "^3.5.1"
   }
 }

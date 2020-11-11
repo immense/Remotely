@@ -177,7 +177,7 @@ namespace Remotely.Desktop.Core.Services
             finally
             {
                 // Close if no one is viewing.
-                if (Conductor.Viewers.Count == 0 && mode == AppMode.Unattended)
+                if (Conductor.Viewers.IsEmpty && mode == AppMode.Unattended)
                 {
                     await ShutdownService.Shutdown();
                 }

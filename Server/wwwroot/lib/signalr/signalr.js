@@ -103,8 +103,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var es6_promise_dist_es6_promise_auto_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 /* harmony import */ var es6_promise_dist_es6_promise_auto_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(es6_promise_dist_es6_promise_auto_js__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VERSION", function() { return _index__WEBPACK_IMPORTED_MODULE_1__["VERSION"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AbortError", function() { return _index__WEBPACK_IMPORTED_MODULE_1__["AbortError"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "HttpError", function() { return _index__WEBPACK_IMPORTED_MODULE_1__["HttpError"]; });
@@ -136,6 +134,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "JsonHubProtocol", function() { return _index__WEBPACK_IMPORTED_MODULE_1__["JsonHubProtocol"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Subject", function() { return _index__WEBPACK_IMPORTED_MODULE_1__["Subject"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VERSION", function() { return _index__WEBPACK_IMPORTED_MODULE_1__["VERSION"]; });
 
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
@@ -1397,7 +1397,6 @@ module.exports = g;
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VERSION", function() { return VERSION; });
 /* harmony import */ var _Errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AbortError", function() { return _Errors__WEBPACK_IMPORTED_MODULE_0__["AbortError"]; });
 
@@ -1413,7 +1412,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _DefaultHttpClient__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DefaultHttpClient", function() { return _DefaultHttpClient__WEBPACK_IMPORTED_MODULE_2__["DefaultHttpClient"]; });
 
-/* harmony import */ var _HubConnection__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(10);
+/* harmony import */ var _HubConnection__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(12);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "HubConnection", function() { return _HubConnection__WEBPACK_IMPORTED_MODULE_3__["HubConnection"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "HubConnectionState", function() { return _HubConnection__WEBPACK_IMPORTED_MODULE_3__["HubConnectionState"]; });
@@ -1424,7 +1423,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _IHubProtocol__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(15);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MessageType", function() { return _IHubProtocol__WEBPACK_IMPORTED_MODULE_5__["MessageType"]; });
 
-/* harmony import */ var _ILogger__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(9);
+/* harmony import */ var _ILogger__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(8);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "LogLevel", function() { return _ILogger__WEBPACK_IMPORTED_MODULE_6__["LogLevel"]; });
 
 /* harmony import */ var _ITransport__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(20);
@@ -1432,7 +1431,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TransferFormat", function() { return _ITransport__WEBPACK_IMPORTED_MODULE_7__["TransferFormat"]; });
 
-/* harmony import */ var _Loggers__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(14);
+/* harmony import */ var _Loggers__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(10);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "NullLogger", function() { return _Loggers__WEBPACK_IMPORTED_MODULE_8__["NullLogger"]; });
 
 /* harmony import */ var _JsonHubProtocol__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(25);
@@ -1441,11 +1440,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Subject__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(16);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Subject", function() { return _Subject__WEBPACK_IMPORTED_MODULE_10__["Subject"]; });
 
+/* harmony import */ var _Utils__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(9);
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VERSION", function() { return _Utils__WEBPACK_IMPORTED_MODULE_11__["VERSION"]; });
+
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-// Version token that will be replaced by the prepack command
-/** The version of the SignalR client. */
-var VERSION = "3.1.5";
+
 
 
 
@@ -1612,9 +1612,10 @@ var HttpClient = /** @class */ (function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DefaultHttpClient", function() { return DefaultHttpClient; });
 /* harmony import */ var _Errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
-/* harmony import */ var _HttpClient__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
-/* harmony import */ var _NodeHttpClient__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7);
-/* harmony import */ var _XhrHttpClient__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(8);
+/* harmony import */ var _FetchHttpClient__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7);
+/* harmony import */ var _HttpClient__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(5);
+/* harmony import */ var _Utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9);
+/* harmony import */ var _XhrHttpClient__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(11);
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 var __extends = (undefined && undefined.__extends) || (function () {
@@ -1631,17 +1632,21 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 
 
+
 /** Default implementation of {@link @microsoft/signalr.HttpClient}. */
 var DefaultHttpClient = /** @class */ (function (_super) {
     __extends(DefaultHttpClient, _super);
     /** Creates a new instance of the {@link @microsoft/signalr.DefaultHttpClient}, using the provided {@link @microsoft/signalr.ILogger} to log messages. */
     function DefaultHttpClient(logger) {
         var _this = _super.call(this) || this;
-        if (typeof XMLHttpRequest !== "undefined") {
-            _this.httpClient = new _XhrHttpClient__WEBPACK_IMPORTED_MODULE_3__["XhrHttpClient"](logger);
+        if (typeof fetch !== "undefined" || _Utils__WEBPACK_IMPORTED_MODULE_3__["Platform"].isNode) {
+            _this.httpClient = new _FetchHttpClient__WEBPACK_IMPORTED_MODULE_1__["FetchHttpClient"](logger);
+        }
+        else if (typeof XMLHttpRequest !== "undefined") {
+            _this.httpClient = new _XhrHttpClient__WEBPACK_IMPORTED_MODULE_4__["XhrHttpClient"](logger);
         }
         else {
-            _this.httpClient = new _NodeHttpClient__WEBPACK_IMPORTED_MODULE_2__["NodeHttpClient"](logger);
+            throw new Error("No usable HttpClient found.");
         }
         return _this;
     }
@@ -1663,7 +1668,7 @@ var DefaultHttpClient = /** @class */ (function (_super) {
         return this.httpClient.getCookieString(url);
     };
     return DefaultHttpClient;
-}(_HttpClient__WEBPACK_IMPORTED_MODULE_1__["HttpClient"]));
+}(_HttpClient__WEBPACK_IMPORTED_MODULE_2__["HttpClient"]));
 
 
 
@@ -1673,8 +1678,11 @@ var DefaultHttpClient = /** @class */ (function (_super) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "NodeHttpClient", function() { return NodeHttpClient; });
-/* harmony import */ var _HttpClient__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FetchHttpClient", function() { return FetchHttpClient; });
+/* harmony import */ var _Errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var _HttpClient__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
+/* harmony import */ var _ILogger__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(8);
+/* harmony import */ var _Utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9);
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 var __extends = (undefined && undefined.__extends) || (function () {
@@ -1687,21 +1695,186 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-// This is an empty implementation of the NodeHttpClient that will be included in browser builds so the output file will be smaller
-
-/** @private */
-var NodeHttpClient = /** @class */ (function (_super) {
-    __extends(NodeHttpClient, _super);
-    // @ts-ignore: Need ILogger to compile, but unused variables generate errors
-    function NodeHttpClient(logger) {
-        return _super.call(this) || this;
+var __assign = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
     }
-    NodeHttpClient.prototype.send = function () {
-        return Promise.reject(new Error("If using Node either provide an XmlHttpRequest polyfill or consume the cjs or esm script instead of the browser/signalr.js one."));
-    };
-    return NodeHttpClient;
-}(_HttpClient__WEBPACK_IMPORTED_MODULE_0__["HttpClient"]));
+    return t;
+};
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 
+
+
+
+var FetchHttpClient = /** @class */ (function (_super) {
+    __extends(FetchHttpClient, _super);
+    function FetchHttpClient(logger) {
+        var _this = _super.call(this) || this;
+        _this.logger = logger;
+        if (typeof fetch === "undefined") {
+            // In order to ignore the dynamic require in webpack builds we need to do this magic
+            // @ts-ignore: TS doesn't know about these names
+            var requireFunc =  true ? require : undefined;
+            // Cookies aren't automatically handled in Node so we need to add a CookieJar to preserve cookies across requests
+            _this.jar = new (requireFunc("tough-cookie")).CookieJar();
+            _this.fetchType = requireFunc("node-fetch");
+            // node-fetch doesn't have a nice API for getting and setting cookies
+            // fetch-cookie will wrap a fetch implementation with a default CookieJar or a provided one
+            _this.fetchType = requireFunc("fetch-cookie")(_this.fetchType, _this.jar);
+            // Node needs EventListener methods on AbortController which our custom polyfill doesn't provide
+            _this.abortControllerType = requireFunc("abort-controller");
+        }
+        else {
+            _this.fetchType = fetch.bind(self);
+            _this.abortControllerType = AbortController;
+        }
+        return _this;
+    }
+    /** @inheritDoc */
+    FetchHttpClient.prototype.send = function (request) {
+        return __awaiter(this, void 0, void 0, function () {
+            var abortController, error, timeoutId, msTimeout, response, e_1, content, payload;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        // Check that abort was not signaled before calling send
+                        if (request.abortSignal && request.abortSignal.aborted) {
+                            throw new _Errors__WEBPACK_IMPORTED_MODULE_0__["AbortError"]();
+                        }
+                        if (!request.method) {
+                            throw new Error("No method defined.");
+                        }
+                        if (!request.url) {
+                            throw new Error("No url defined.");
+                        }
+                        abortController = new this.abortControllerType();
+                        // Hook our abortSignal into the abort controller
+                        if (request.abortSignal) {
+                            request.abortSignal.onabort = function () {
+                                abortController.abort();
+                                error = new _Errors__WEBPACK_IMPORTED_MODULE_0__["AbortError"]();
+                            };
+                        }
+                        timeoutId = null;
+                        if (request.timeout) {
+                            msTimeout = request.timeout;
+                            timeoutId = setTimeout(function () {
+                                abortController.abort();
+                                _this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_2__["LogLevel"].Warning, "Timeout from HTTP request.");
+                                error = new _Errors__WEBPACK_IMPORTED_MODULE_0__["TimeoutError"]();
+                            }, msTimeout);
+                        }
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, 4, 5]);
+                        return [4 /*yield*/, this.fetchType(request.url, {
+                                body: request.content,
+                                cache: "no-cache",
+                                credentials: request.withCredentials === true ? "include" : "same-origin",
+                                headers: __assign({ "Content-Type": "text/plain;charset=UTF-8", "X-Requested-With": "XMLHttpRequest" }, request.headers),
+                                method: request.method,
+                                mode: "cors",
+                                redirect: "manual",
+                                signal: abortController.signal,
+                            })];
+                    case 2:
+                        response = _a.sent();
+                        return [3 /*break*/, 5];
+                    case 3:
+                        e_1 = _a.sent();
+                        if (error) {
+                            throw error;
+                        }
+                        this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_2__["LogLevel"].Warning, "Error from HTTP request. " + e_1 + ".");
+                        throw e_1;
+                    case 4:
+                        if (timeoutId) {
+                            clearTimeout(timeoutId);
+                        }
+                        if (request.abortSignal) {
+                            request.abortSignal.onabort = null;
+                        }
+                        return [7 /*endfinally*/];
+                    case 5:
+                        if (!response.ok) {
+                            throw new _Errors__WEBPACK_IMPORTED_MODULE_0__["HttpError"](response.statusText, response.status);
+                        }
+                        content = deserializeContent(response, request.responseType);
+                        return [4 /*yield*/, content];
+                    case 6:
+                        payload = _a.sent();
+                        return [2 /*return*/, new _HttpClient__WEBPACK_IMPORTED_MODULE_1__["HttpResponse"](response.status, response.statusText, payload)];
+                }
+            });
+        });
+    };
+    FetchHttpClient.prototype.getCookieString = function (url) {
+        var cookies = "";
+        if (_Utils__WEBPACK_IMPORTED_MODULE_3__["Platform"].isNode && this.jar) {
+            // @ts-ignore: unused variable
+            this.jar.getCookies(url, function (e, c) { return cookies = c.join("; "); });
+        }
+        return cookies;
+    };
+    return FetchHttpClient;
+}(_HttpClient__WEBPACK_IMPORTED_MODULE_1__["HttpClient"]));
+
+function deserializeContent(response, responseType) {
+    var content;
+    switch (responseType) {
+        case "arraybuffer":
+            content = response.arrayBuffer();
+            break;
+        case "text":
+            content = response.text();
+            break;
+        case "blob":
+        case "document":
+        case "json":
+            throw new Error(responseType + " is not supported.");
+        default:
+            content = response.text();
+            break;
+    }
+    return content;
+}
 
 
 /***/ }),
@@ -1710,10 +1883,386 @@ var NodeHttpClient = /** @class */ (function (_super) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LogLevel", function() { return LogLevel; });
+// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+// These values are designed to match the ASP.NET Log Levels since that's the pattern we're emulating here.
+/** Indicates the severity of a log message.
+ *
+ * Log Levels are ordered in increasing severity. So `Debug` is more severe than `Trace`, etc.
+ */
+var LogLevel;
+(function (LogLevel) {
+    /** Log level for very low severity diagnostic messages. */
+    LogLevel[LogLevel["Trace"] = 0] = "Trace";
+    /** Log level for low severity diagnostic messages. */
+    LogLevel[LogLevel["Debug"] = 1] = "Debug";
+    /** Log level for informational diagnostic messages. */
+    LogLevel[LogLevel["Information"] = 2] = "Information";
+    /** Log level for diagnostic messages that indicate a non-fatal problem. */
+    LogLevel[LogLevel["Warning"] = 3] = "Warning";
+    /** Log level for diagnostic messages that indicate a failure in the current operation. */
+    LogLevel[LogLevel["Error"] = 4] = "Error";
+    /** Log level for diagnostic messages that indicate a failure that will terminate the entire application. */
+    LogLevel[LogLevel["Critical"] = 5] = "Critical";
+    /** The highest possible log level. Used when configuring logging to indicate that no log messages should be emitted. */
+    LogLevel[LogLevel["None"] = 6] = "None";
+})(LogLevel || (LogLevel = {}));
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VERSION", function() { return VERSION; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Arg", function() { return Arg; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Platform", function() { return Platform; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getDataDetail", function() { return getDataDetail; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "formatArrayBuffer", function() { return formatArrayBuffer; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isArrayBuffer", function() { return isArrayBuffer; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sendMessage", function() { return sendMessage; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createLogger", function() { return createLogger; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SubjectSubscription", function() { return SubjectSubscription; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ConsoleLogger", function() { return ConsoleLogger; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getUserAgentHeader", function() { return getUserAgentHeader; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "constructUserAgent", function() { return constructUserAgent; });
+/* harmony import */ var _ILogger__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8);
+/* harmony import */ var _Loggers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
+// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+var __assign = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+
+
+// Version token that will be replaced by the prepack command
+/** The version of the SignalR client. */
+var VERSION = "5.0.0";
+/** @private */
+var Arg = /** @class */ (function () {
+    function Arg() {
+    }
+    Arg.isRequired = function (val, name) {
+        if (val === null || val === undefined) {
+            throw new Error("The '" + name + "' argument is required.");
+        }
+    };
+    Arg.isNotEmpty = function (val, name) {
+        if (!val || val.match(/^\s*$/)) {
+            throw new Error("The '" + name + "' argument should not be empty.");
+        }
+    };
+    Arg.isIn = function (val, values, name) {
+        // TypeScript enums have keys for **both** the name and the value of each enum member on the type itself.
+        if (!(val in values)) {
+            throw new Error("Unknown " + name + " value: " + val + ".");
+        }
+    };
+    return Arg;
+}());
+
+/** @private */
+var Platform = /** @class */ (function () {
+    function Platform() {
+    }
+    Object.defineProperty(Platform, "isBrowser", {
+        get: function () {
+            return typeof window === "object";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Platform, "isWebWorker", {
+        get: function () {
+            return typeof self === "object" && "importScripts" in self;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Platform, "isNode", {
+        get: function () {
+            return !this.isBrowser && !this.isWebWorker;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return Platform;
+}());
+
+/** @private */
+function getDataDetail(data, includeContent) {
+    var detail = "";
+    if (isArrayBuffer(data)) {
+        detail = "Binary data of length " + data.byteLength;
+        if (includeContent) {
+            detail += ". Content: '" + formatArrayBuffer(data) + "'";
+        }
+    }
+    else if (typeof data === "string") {
+        detail = "String data of length " + data.length;
+        if (includeContent) {
+            detail += ". Content: '" + data + "'";
+        }
+    }
+    return detail;
+}
+/** @private */
+function formatArrayBuffer(data) {
+    var view = new Uint8Array(data);
+    // Uint8Array.map only supports returning another Uint8Array?
+    var str = "";
+    view.forEach(function (num) {
+        var pad = num < 16 ? "0" : "";
+        str += "0x" + pad + num.toString(16) + " ";
+    });
+    // Trim of trailing space.
+    return str.substr(0, str.length - 1);
+}
+// Also in signalr-protocol-msgpack/Utils.ts
+/** @private */
+function isArrayBuffer(val) {
+    return val && typeof ArrayBuffer !== "undefined" &&
+        (val instanceof ArrayBuffer ||
+            // Sometimes we get an ArrayBuffer that doesn't satisfy instanceof
+            (val.constructor && val.constructor.name === "ArrayBuffer"));
+}
+/** @private */
+function sendMessage(logger, transportName, httpClient, url, accessTokenFactory, content, logMessageContent, withCredentials, defaultHeaders) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _a, headers, token, _b, name, value, responseType, response;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    headers = {};
+                    if (!accessTokenFactory) return [3 /*break*/, 2];
+                    return [4 /*yield*/, accessTokenFactory()];
+                case 1:
+                    token = _c.sent();
+                    if (token) {
+                        headers = (_a = {},
+                            _a["Authorization"] = "Bearer " + token,
+                            _a);
+                    }
+                    _c.label = 2;
+                case 2:
+                    _b = getUserAgentHeader(), name = _b[0], value = _b[1];
+                    headers[name] = value;
+                    logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"].Trace, "(" + transportName + " transport) sending data. " + getDataDetail(content, logMessageContent) + ".");
+                    responseType = isArrayBuffer(content) ? "arraybuffer" : "text";
+                    return [4 /*yield*/, httpClient.post(url, {
+                            content: content,
+                            headers: __assign({}, headers, defaultHeaders),
+                            responseType: responseType,
+                            withCredentials: withCredentials,
+                        })];
+                case 3:
+                    response = _c.sent();
+                    logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"].Trace, "(" + transportName + " transport) request complete. Response status: " + response.statusCode + ".");
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+/** @private */
+function createLogger(logger) {
+    if (logger === undefined) {
+        return new ConsoleLogger(_ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"].Information);
+    }
+    if (logger === null) {
+        return _Loggers__WEBPACK_IMPORTED_MODULE_1__["NullLogger"].instance;
+    }
+    if (logger.log) {
+        return logger;
+    }
+    return new ConsoleLogger(logger);
+}
+/** @private */
+var SubjectSubscription = /** @class */ (function () {
+    function SubjectSubscription(subject, observer) {
+        this.subject = subject;
+        this.observer = observer;
+    }
+    SubjectSubscription.prototype.dispose = function () {
+        var index = this.subject.observers.indexOf(this.observer);
+        if (index > -1) {
+            this.subject.observers.splice(index, 1);
+        }
+        if (this.subject.observers.length === 0 && this.subject.cancelCallback) {
+            this.subject.cancelCallback().catch(function (_) { });
+        }
+    };
+    return SubjectSubscription;
+}());
+
+/** @private */
+var ConsoleLogger = /** @class */ (function () {
+    function ConsoleLogger(minimumLogLevel) {
+        this.minimumLogLevel = minimumLogLevel;
+        this.outputConsole = console;
+    }
+    ConsoleLogger.prototype.log = function (logLevel, message) {
+        if (logLevel >= this.minimumLogLevel) {
+            switch (logLevel) {
+                case _ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"].Critical:
+                case _ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"].Error:
+                    this.outputConsole.error("[" + new Date().toISOString() + "] " + _ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"][logLevel] + ": " + message);
+                    break;
+                case _ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"].Warning:
+                    this.outputConsole.warn("[" + new Date().toISOString() + "] " + _ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"][logLevel] + ": " + message);
+                    break;
+                case _ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"].Information:
+                    this.outputConsole.info("[" + new Date().toISOString() + "] " + _ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"][logLevel] + ": " + message);
+                    break;
+                default:
+                    // console.debug only goes to attached debuggers in Node, so we use console.log for Trace and Debug
+                    this.outputConsole.log("[" + new Date().toISOString() + "] " + _ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"][logLevel] + ": " + message);
+                    break;
+            }
+        }
+    };
+    return ConsoleLogger;
+}());
+
+/** @private */
+function getUserAgentHeader() {
+    var userAgentHeaderName = "X-SignalR-User-Agent";
+    if (Platform.isNode) {
+        userAgentHeaderName = "User-Agent";
+    }
+    return [userAgentHeaderName, constructUserAgent(VERSION, getOsName(), getRuntime(), getRuntimeVersion())];
+}
+/** @private */
+function constructUserAgent(version, os, runtime, runtimeVersion) {
+    // Microsoft SignalR/[Version] ([Detailed Version]; [Operating System]; [Runtime]; [Runtime Version])
+    var userAgent = "Microsoft SignalR/";
+    var majorAndMinor = version.split(".");
+    userAgent += majorAndMinor[0] + "." + majorAndMinor[1];
+    userAgent += " (" + version + "; ";
+    if (os && os !== "") {
+        userAgent += os + "; ";
+    }
+    else {
+        userAgent += "Unknown OS; ";
+    }
+    userAgent += "" + runtime;
+    if (runtimeVersion) {
+        userAgent += "; " + runtimeVersion;
+    }
+    else {
+        userAgent += "; Unknown Runtime Version";
+    }
+    userAgent += ")";
+    return userAgent;
+}
+function getOsName() {
+    if (Platform.isNode) {
+        switch (process.platform) {
+            case "win32":
+                return "Windows NT";
+            case "darwin":
+                return "macOS";
+            case "linux":
+                return "Linux";
+            default:
+                return process.platform;
+        }
+    }
+    else {
+        return "";
+    }
+}
+function getRuntimeVersion() {
+    if (Platform.isNode) {
+        return process.versions.node;
+    }
+    return undefined;
+}
+function getRuntime() {
+    if (Platform.isNode) {
+        return "NodeJS";
+    }
+    else {
+        return "Browser";
+    }
+}
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "NullLogger", function() { return NullLogger; });
+// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+/** A logger that does nothing when log messages are sent to it. */
+var NullLogger = /** @class */ (function () {
+    function NullLogger() {
+    }
+    /** @inheritDoc */
+    // tslint:disable-next-line
+    NullLogger.prototype.log = function (_logLevel, _message) {
+    };
+    /** The singleton instance of the {@link @microsoft/signalr.NullLogger}. */
+    NullLogger.instance = new NullLogger();
+    return NullLogger;
+}());
+
+
+
+/***/ }),
+/* 11 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "XhrHttpClient", function() { return XhrHttpClient; });
 /* harmony import */ var _Errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
 /* harmony import */ var _HttpClient__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
-/* harmony import */ var _ILogger__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9);
+/* harmony import */ var _ILogger__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(8);
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 var __extends = (undefined && undefined.__extends) || (function () {
@@ -1752,7 +2301,7 @@ var XhrHttpClient = /** @class */ (function (_super) {
         return new Promise(function (resolve, reject) {
             var xhr = new XMLHttpRequest();
             xhr.open(request.method, request.url, true);
-            xhr.withCredentials = true;
+            xhr.withCredentials = request.withCredentials === undefined ? true : request.withCredentials;
             xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
             // Explicitly setting the Content-Type header for React Native on Android platform.
             xhr.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
@@ -1803,51 +2352,18 @@ var XhrHttpClient = /** @class */ (function (_super) {
 
 
 /***/ }),
-/* 9 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LogLevel", function() { return LogLevel; });
-// Copyright (c) .NET Foundation. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-// These values are designed to match the ASP.NET Log Levels since that's the pattern we're emulating here.
-/** Indicates the severity of a log message.
- *
- * Log Levels are ordered in increasing severity. So `Debug` is more severe than `Trace`, etc.
- */
-var LogLevel;
-(function (LogLevel) {
-    /** Log level for very low severity diagnostic messages. */
-    LogLevel[LogLevel["Trace"] = 0] = "Trace";
-    /** Log level for low severity diagnostic messages. */
-    LogLevel[LogLevel["Debug"] = 1] = "Debug";
-    /** Log level for informational diagnostic messages. */
-    LogLevel[LogLevel["Information"] = 2] = "Information";
-    /** Log level for diagnostic messages that indicate a non-fatal problem. */
-    LogLevel[LogLevel["Warning"] = 3] = "Warning";
-    /** Log level for diagnostic messages that indicate a failure in the current operation. */
-    LogLevel[LogLevel["Error"] = 4] = "Error";
-    /** Log level for diagnostic messages that indicate a failure that will terminate the entire application. */
-    LogLevel[LogLevel["Critical"] = 5] = "Critical";
-    /** The highest possible log level. Used when configuring logging to indicate that no log messages should be emitted. */
-    LogLevel[LogLevel["None"] = 6] = "None";
-})(LogLevel || (LogLevel = {}));
-
-
-/***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "HubConnectionState", function() { return HubConnectionState; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "HubConnection", function() { return HubConnection; });
-/* harmony import */ var _HandshakeProtocol__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(11);
+/* harmony import */ var _HandshakeProtocol__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(13);
 /* harmony import */ var _IHubProtocol__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(15);
-/* harmony import */ var _ILogger__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9);
+/* harmony import */ var _ILogger__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(8);
 /* harmony import */ var _Subject__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(16);
-/* harmony import */ var _Utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(13);
+/* harmony import */ var _Utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(9);
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -2425,6 +2941,9 @@ var HubConnection = /** @class */ (function () {
     };
     HubConnection.prototype.resetKeepAliveInterval = function () {
         var _this = this;
+        if (this.connection.features.inherentKeepAlive) {
+            return;
+        }
         this.cleanupPingTimer();
         this.pingServerHandle = setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
             var _a;
@@ -2646,23 +3165,42 @@ var HubConnection = /** @class */ (function () {
     };
     HubConnection.prototype.createInvocation = function (methodName, args, nonblocking, streamIds) {
         if (nonblocking) {
-            return {
-                arguments: args,
-                streamIds: streamIds,
-                target: methodName,
-                type: _IHubProtocol__WEBPACK_IMPORTED_MODULE_1__["MessageType"].Invocation,
-            };
+            if (streamIds.length !== 0) {
+                return {
+                    arguments: args,
+                    streamIds: streamIds,
+                    target: methodName,
+                    type: _IHubProtocol__WEBPACK_IMPORTED_MODULE_1__["MessageType"].Invocation,
+                };
+            }
+            else {
+                return {
+                    arguments: args,
+                    target: methodName,
+                    type: _IHubProtocol__WEBPACK_IMPORTED_MODULE_1__["MessageType"].Invocation,
+                };
+            }
         }
         else {
             var invocationId = this.invocationId;
             this.invocationId++;
-            return {
-                arguments: args,
-                invocationId: invocationId.toString(),
-                streamIds: streamIds,
-                target: methodName,
-                type: _IHubProtocol__WEBPACK_IMPORTED_MODULE_1__["MessageType"].Invocation,
-            };
+            if (streamIds.length !== 0) {
+                return {
+                    arguments: args,
+                    invocationId: invocationId.toString(),
+                    streamIds: streamIds,
+                    target: methodName,
+                    type: _IHubProtocol__WEBPACK_IMPORTED_MODULE_1__["MessageType"].Invocation,
+                };
+            }
+            else {
+                return {
+                    arguments: args,
+                    invocationId: invocationId.toString(),
+                    target: methodName,
+                    type: _IHubProtocol__WEBPACK_IMPORTED_MODULE_1__["MessageType"].Invocation,
+                };
+            }
         }
     };
     HubConnection.prototype.launchStreams = function (streams, promiseQueue) {
@@ -2727,13 +3265,23 @@ var HubConnection = /** @class */ (function () {
     HubConnection.prototype.createStreamInvocation = function (methodName, args, streamIds) {
         var invocationId = this.invocationId;
         this.invocationId++;
-        return {
-            arguments: args,
-            invocationId: invocationId.toString(),
-            streamIds: streamIds,
-            target: methodName,
-            type: _IHubProtocol__WEBPACK_IMPORTED_MODULE_1__["MessageType"].StreamInvocation,
-        };
+        if (streamIds.length !== 0) {
+            return {
+                arguments: args,
+                invocationId: invocationId.toString(),
+                streamIds: streamIds,
+                target: methodName,
+                type: _IHubProtocol__WEBPACK_IMPORTED_MODULE_1__["MessageType"].StreamInvocation,
+            };
+        }
+        else {
+            return {
+                arguments: args,
+                invocationId: invocationId.toString(),
+                target: methodName,
+                type: _IHubProtocol__WEBPACK_IMPORTED_MODULE_1__["MessageType"].StreamInvocation,
+            };
+        }
     };
     HubConnection.prototype.createCancelInvocation = function (id) {
         return {
@@ -2768,14 +3316,14 @@ var HubConnection = /** @class */ (function () {
 
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "HandshakeProtocol", function() { return HandshakeProtocol; });
-/* harmony import */ var _TextMessageFormat__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(12);
-/* harmony import */ var _Utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(13);
+/* harmony import */ var _TextMessageFormat__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(14);
+/* harmony import */ var _Utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9);
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
@@ -2834,7 +3382,7 @@ var HandshakeProtocol = /** @class */ (function () {
 
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2861,264 +3409,6 @@ var TextMessageFormat = /** @class */ (function () {
     TextMessageFormat.RecordSeparatorCode = 0x1e;
     TextMessageFormat.RecordSeparator = String.fromCharCode(TextMessageFormat.RecordSeparatorCode);
     return TextMessageFormat;
-}());
-
-
-
-/***/ }),
-/* 13 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Arg", function() { return Arg; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Platform", function() { return Platform; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getDataDetail", function() { return getDataDetail; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "formatArrayBuffer", function() { return formatArrayBuffer; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isArrayBuffer", function() { return isArrayBuffer; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sendMessage", function() { return sendMessage; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createLogger", function() { return createLogger; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SubjectSubscription", function() { return SubjectSubscription; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ConsoleLogger", function() { return ConsoleLogger; });
-/* harmony import */ var _ILogger__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
-/* harmony import */ var _Loggers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(14);
-// Copyright (c) .NET Foundation. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-
-
-/** @private */
-var Arg = /** @class */ (function () {
-    function Arg() {
-    }
-    Arg.isRequired = function (val, name) {
-        if (val === null || val === undefined) {
-            throw new Error("The '" + name + "' argument is required.");
-        }
-    };
-    Arg.isIn = function (val, values, name) {
-        // TypeScript enums have keys for **both** the name and the value of each enum member on the type itself.
-        if (!(val in values)) {
-            throw new Error("Unknown " + name + " value: " + val + ".");
-        }
-    };
-    return Arg;
-}());
-
-/** @private */
-var Platform = /** @class */ (function () {
-    function Platform() {
-    }
-    Object.defineProperty(Platform, "isBrowser", {
-        get: function () {
-            return typeof window === "object";
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Platform, "isWebWorker", {
-        get: function () {
-            return typeof self === "object" && "importScripts" in self;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Platform, "isNode", {
-        get: function () {
-            return !this.isBrowser && !this.isWebWorker;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return Platform;
-}());
-
-/** @private */
-function getDataDetail(data, includeContent) {
-    var detail = "";
-    if (isArrayBuffer(data)) {
-        detail = "Binary data of length " + data.byteLength;
-        if (includeContent) {
-            detail += ". Content: '" + formatArrayBuffer(data) + "'";
-        }
-    }
-    else if (typeof data === "string") {
-        detail = "String data of length " + data.length;
-        if (includeContent) {
-            detail += ". Content: '" + data + "'";
-        }
-    }
-    return detail;
-}
-/** @private */
-function formatArrayBuffer(data) {
-    var view = new Uint8Array(data);
-    // Uint8Array.map only supports returning another Uint8Array?
-    var str = "";
-    view.forEach(function (num) {
-        var pad = num < 16 ? "0" : "";
-        str += "0x" + pad + num.toString(16) + " ";
-    });
-    // Trim of trailing space.
-    return str.substr(0, str.length - 1);
-}
-// Also in signalr-protocol-msgpack/Utils.ts
-/** @private */
-function isArrayBuffer(val) {
-    return val && typeof ArrayBuffer !== "undefined" &&
-        (val instanceof ArrayBuffer ||
-            // Sometimes we get an ArrayBuffer that doesn't satisfy instanceof
-            (val.constructor && val.constructor.name === "ArrayBuffer"));
-}
-/** @private */
-function sendMessage(logger, transportName, httpClient, url, accessTokenFactory, content, logMessageContent) {
-    return __awaiter(this, void 0, void 0, function () {
-        var _a, headers, token, responseType, response;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    if (!accessTokenFactory) return [3 /*break*/, 2];
-                    return [4 /*yield*/, accessTokenFactory()];
-                case 1:
-                    token = _b.sent();
-                    if (token) {
-                        headers = (_a = {},
-                            _a["Authorization"] = "Bearer " + token,
-                            _a);
-                    }
-                    _b.label = 2;
-                case 2:
-                    logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"].Trace, "(" + transportName + " transport) sending data. " + getDataDetail(content, logMessageContent) + ".");
-                    responseType = isArrayBuffer(content) ? "arraybuffer" : "text";
-                    return [4 /*yield*/, httpClient.post(url, {
-                            content: content,
-                            headers: headers,
-                            responseType: responseType,
-                        })];
-                case 3:
-                    response = _b.sent();
-                    logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"].Trace, "(" + transportName + " transport) request complete. Response status: " + response.statusCode + ".");
-                    return [2 /*return*/];
-            }
-        });
-    });
-}
-/** @private */
-function createLogger(logger) {
-    if (logger === undefined) {
-        return new ConsoleLogger(_ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"].Information);
-    }
-    if (logger === null) {
-        return _Loggers__WEBPACK_IMPORTED_MODULE_1__["NullLogger"].instance;
-    }
-    if (logger.log) {
-        return logger;
-    }
-    return new ConsoleLogger(logger);
-}
-/** @private */
-var SubjectSubscription = /** @class */ (function () {
-    function SubjectSubscription(subject, observer) {
-        this.subject = subject;
-        this.observer = observer;
-    }
-    SubjectSubscription.prototype.dispose = function () {
-        var index = this.subject.observers.indexOf(this.observer);
-        if (index > -1) {
-            this.subject.observers.splice(index, 1);
-        }
-        if (this.subject.observers.length === 0 && this.subject.cancelCallback) {
-            this.subject.cancelCallback().catch(function (_) { });
-        }
-    };
-    return SubjectSubscription;
-}());
-
-/** @private */
-var ConsoleLogger = /** @class */ (function () {
-    function ConsoleLogger(minimumLogLevel) {
-        this.minimumLogLevel = minimumLogLevel;
-        this.outputConsole = console;
-    }
-    ConsoleLogger.prototype.log = function (logLevel, message) {
-        if (logLevel >= this.minimumLogLevel) {
-            switch (logLevel) {
-                case _ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"].Critical:
-                case _ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"].Error:
-                    this.outputConsole.error("[" + new Date().toISOString() + "] " + _ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"][logLevel] + ": " + message);
-                    break;
-                case _ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"].Warning:
-                    this.outputConsole.warn("[" + new Date().toISOString() + "] " + _ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"][logLevel] + ": " + message);
-                    break;
-                case _ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"].Information:
-                    this.outputConsole.info("[" + new Date().toISOString() + "] " + _ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"][logLevel] + ": " + message);
-                    break;
-                default:
-                    // console.debug only goes to attached debuggers in Node, so we use console.log for Trace and Debug
-                    this.outputConsole.log("[" + new Date().toISOString() + "] " + _ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"][logLevel] + ": " + message);
-                    break;
-            }
-        }
-    };
-    return ConsoleLogger;
-}());
-
-
-
-/***/ }),
-/* 14 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "NullLogger", function() { return NullLogger; });
-// Copyright (c) .NET Foundation. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-/** A logger that does nothing when log messages are sent to it. */
-var NullLogger = /** @class */ (function () {
-    function NullLogger() {
-    }
-    /** @inheritDoc */
-    // tslint:disable-next-line
-    NullLogger.prototype.log = function (_logLevel, _message) {
-    };
-    /** The singleton instance of the {@link @microsoft/signalr.NullLogger}. */
-    NullLogger.instance = new NullLogger();
-    return NullLogger;
 }());
 
 
@@ -3159,7 +3449,7 @@ var MessageType;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Subject", function() { return Subject; });
-/* harmony import */ var _Utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(13);
+/* harmony import */ var _Utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
@@ -3208,11 +3498,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "HubConnectionBuilder", function() { return HubConnectionBuilder; });
 /* harmony import */ var _DefaultReconnectPolicy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(18);
 /* harmony import */ var _HttpConnection__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(19);
-/* harmony import */ var _HubConnection__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(10);
-/* harmony import */ var _ILogger__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9);
+/* harmony import */ var _HubConnection__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(12);
+/* harmony import */ var _ILogger__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(8);
 /* harmony import */ var _JsonHubProtocol__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(25);
-/* harmony import */ var _Loggers__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(14);
-/* harmony import */ var _Utils__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(13);
+/* harmony import */ var _Loggers__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(10);
+/* harmony import */ var _Utils__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(9);
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 var __assign = (undefined && undefined.__assign) || Object.assign || function(t) {
@@ -3274,6 +3564,7 @@ var HubConnectionBuilder = /** @class */ (function () {
     };
     HubConnectionBuilder.prototype.withUrl = function (url, transportTypeOrOptions) {
         _Utils__WEBPACK_IMPORTED_MODULE_6__["Arg"].isRequired(url, "url");
+        _Utils__WEBPACK_IMPORTED_MODULE_6__["Arg"].isNotEmpty(url, "url");
         this.url = url;
         // Flow-typing knows where it's at. Since HttpTransportType is a number and IHttpConnectionOptions is guaranteed
         // to be an object, we know (as does TypeScript) this comparison is all we need to figure out which overload was called.
@@ -3370,14 +3661,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "HttpConnection", function() { return HttpConnection; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TransportSendQueue", function() { return TransportSendQueue; });
 /* harmony import */ var _DefaultHttpClient__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6);
-/* harmony import */ var _ILogger__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9);
+/* harmony import */ var _ILogger__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(8);
 /* harmony import */ var _ITransport__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(20);
 /* harmony import */ var _LongPollingTransport__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(21);
 /* harmony import */ var _ServerSentEventsTransport__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(23);
-/* harmony import */ var _Utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(13);
+/* harmony import */ var _Utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(9);
 /* harmony import */ var _WebSocketTransport__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(24);
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+var __assign = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -3421,15 +3720,6 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 
 var MAX_REDIRECTS = 100;
-var WebSocketModule = null;
-var EventSourceModule = null;
-if (_Utils__WEBPACK_IMPORTED_MODULE_5__["Platform"].isNode && "function" !== "undefined") {
-    // In order to ignore the dynamic require in webpack builds we need to do this magic
-    // @ts-ignore: TS doesn't know about these names
-    var requireFunc =  true ? require : undefined;
-    WebSocketModule = requireFunc("ws");
-    EventSourceModule = requireFunc("eventsource");
-}
 /** @private */
 var HttpConnection = /** @class */ (function () {
     function HttpConnection(url, options) {
@@ -3440,21 +3730,36 @@ var HttpConnection = /** @class */ (function () {
         this.logger = Object(_Utils__WEBPACK_IMPORTED_MODULE_5__["createLogger"])(options.logger);
         this.baseUrl = this.resolveUrl(url);
         options = options || {};
-        options.logMessageContent = options.logMessageContent || false;
+        options.logMessageContent = options.logMessageContent === undefined ? false : options.logMessageContent;
+        if (typeof options.withCredentials === "boolean" || options.withCredentials === undefined) {
+            options.withCredentials = options.withCredentials === undefined ? true : options.withCredentials;
+        }
+        else {
+            throw new Error("withCredentials option was not a 'boolean' or 'undefined' value");
+        }
+        var webSocketModule = null;
+        var eventSourceModule = null;
+        if (_Utils__WEBPACK_IMPORTED_MODULE_5__["Platform"].isNode && "function" !== "undefined") {
+            // In order to ignore the dynamic require in webpack builds we need to do this magic
+            // @ts-ignore: TS doesn't know about these names
+            var requireFunc =  true ? require : undefined;
+            webSocketModule = requireFunc("ws");
+            eventSourceModule = requireFunc("eventsource");
+        }
         if (!_Utils__WEBPACK_IMPORTED_MODULE_5__["Platform"].isNode && typeof WebSocket !== "undefined" && !options.WebSocket) {
             options.WebSocket = WebSocket;
         }
         else if (_Utils__WEBPACK_IMPORTED_MODULE_5__["Platform"].isNode && !options.WebSocket) {
-            if (WebSocketModule) {
-                options.WebSocket = WebSocketModule;
+            if (webSocketModule) {
+                options.WebSocket = webSocketModule;
             }
         }
         if (!_Utils__WEBPACK_IMPORTED_MODULE_5__["Platform"].isNode && typeof EventSource !== "undefined" && !options.EventSource) {
             options.EventSource = EventSource;
         }
         else if (_Utils__WEBPACK_IMPORTED_MODULE_5__["Platform"].isNode && !options.EventSource) {
-            if (typeof EventSourceModule !== "undefined") {
-                options.EventSource = EventSourceModule;
+            if (typeof eventSourceModule !== "undefined") {
+                options.EventSource = eventSourceModule;
             }
         }
         this.httpClient = options.httpClient || new _DefaultHttpClient__WEBPACK_IMPORTED_MODULE_0__["DefaultHttpClient"](this.logger);
@@ -3476,7 +3781,7 @@ var HttpConnection = /** @class */ (function () {
                         if (this.connectionState !== "Disconnected" /* Disconnected */) {
                             return [2 /*return*/, Promise.reject(new Error("Cannot start an HttpConnection that is not in the 'Disconnected' state."))];
                         }
-                        this.connectionState = "Connecting " /* Connecting */;
+                        this.connectionState = "Connecting" /* Connecting */;
                         this.startInternalPromise = this.startInternal(transferFormat);
                         return [4 /*yield*/, this.startInternalPromise];
                     case 1:
@@ -3670,7 +3975,7 @@ var HttpConnection = /** @class */ (function () {
                         if (this.transport instanceof _LongPollingTransport__WEBPACK_IMPORTED_MODULE_3__["LongPollingTransport"]) {
                             this.features.inherentKeepAlive = true;
                         }
-                        if (this.connectionState === "Connecting " /* Connecting */) {
+                        if (this.connectionState === "Connecting" /* Connecting */) {
                             // Ensure the connection transitions to the connected state prior to completing this.startInternalPromise.
                             // start() will handle the case when stop was called and startInternal exits still in the disconnecting state.
                             this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Debug, "The HttpConnection connected successfully.");
@@ -3690,21 +3995,22 @@ var HttpConnection = /** @class */ (function () {
     };
     HttpConnection.prototype.getNegotiationResponse = function (url) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, headers, token, negotiateUrl, response, negotiateResponse, e_4;
+            var headers, token, _a, name, value, negotiateUrl, response, negotiateResponse, e_4;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
+                        headers = {};
                         if (!this.accessTokenFactory) return [3 /*break*/, 2];
                         return [4 /*yield*/, this.accessTokenFactory()];
                     case 1:
                         token = _b.sent();
                         if (token) {
-                            headers = (_a = {},
-                                _a["Authorization"] = "Bearer " + token,
-                                _a);
+                            headers["Authorization"] = "Bearer " + token;
                         }
                         _b.label = 2;
                     case 2:
+                        _a = Object(_Utils__WEBPACK_IMPORTED_MODULE_5__["getUserAgentHeader"])(), name = _a[0], value = _a[1];
+                        headers[name] = value;
                         negotiateUrl = this.resolveNegotiateUrl(url);
                         this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Debug, "Sending negotiation request: " + negotiateUrl + ".");
                         _b.label = 3;
@@ -3712,12 +4018,13 @@ var HttpConnection = /** @class */ (function () {
                         _b.trys.push([3, 5, , 6]);
                         return [4 /*yield*/, this.httpClient.post(negotiateUrl, {
                                 content: "",
-                                headers: headers,
+                                headers: __assign({}, headers, this.options.headers),
+                                withCredentials: this.options.withCredentials,
                             })];
                     case 4:
                         response = _b.sent();
                         if (response.statusCode !== 200) {
-                            return [2 /*return*/, Promise.reject(new Error("Unexpected status code returned from negotiate " + response.statusCode))];
+                            return [2 /*return*/, Promise.reject(new Error("Unexpected status code returned from negotiate '" + response.statusCode + "'"))];
                         }
                         negotiateResponse = JSON.parse(response.content);
                         if (!negotiateResponse.negotiateVersion || negotiateResponse.negotiateVersion < 1) {
@@ -3799,7 +4106,7 @@ var HttpConnection = /** @class */ (function () {
                         this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Error, "Failed to start the transport '" + endpoint.transport + "': " + ex_2);
                         negotiate = undefined;
                         transportExceptions.push(endpoint.transport + " failed: " + ex_2);
-                        if (this.connectionState !== "Connecting " /* Connecting */) {
+                        if (this.connectionState !== "Connecting" /* Connecting */) {
                             message = "Failed to select transport before stop() was called.";
                             this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Debug, message);
                             return [2 /*return*/, Promise.reject(new Error(message))];
@@ -3823,14 +4130,14 @@ var HttpConnection = /** @class */ (function () {
                 if (!this.options.WebSocket) {
                     throw new Error("'WebSocket' is not supported in your environment.");
                 }
-                return new _WebSocketTransport__WEBPACK_IMPORTED_MODULE_6__["WebSocketTransport"](this.httpClient, this.accessTokenFactory, this.logger, this.options.logMessageContent || false, this.options.WebSocket);
+                return new _WebSocketTransport__WEBPACK_IMPORTED_MODULE_6__["WebSocketTransport"](this.httpClient, this.accessTokenFactory, this.logger, this.options.logMessageContent || false, this.options.WebSocket, this.options.headers || {});
             case _ITransport__WEBPACK_IMPORTED_MODULE_2__["HttpTransportType"].ServerSentEvents:
                 if (!this.options.EventSource) {
                     throw new Error("'EventSource' is not supported in your environment.");
                 }
-                return new _ServerSentEventsTransport__WEBPACK_IMPORTED_MODULE_4__["ServerSentEventsTransport"](this.httpClient, this.accessTokenFactory, this.logger, this.options.logMessageContent || false, this.options.EventSource);
+                return new _ServerSentEventsTransport__WEBPACK_IMPORTED_MODULE_4__["ServerSentEventsTransport"](this.httpClient, this.accessTokenFactory, this.logger, this.options.logMessageContent || false, this.options.EventSource, this.options.withCredentials, this.options.headers || {});
             case _ITransport__WEBPACK_IMPORTED_MODULE_2__["HttpTransportType"].LongPolling:
-                return new _LongPollingTransport__WEBPACK_IMPORTED_MODULE_3__["LongPollingTransport"](this.httpClient, this.accessTokenFactory, this.logger, this.options.logMessageContent || false);
+                return new _LongPollingTransport__WEBPACK_IMPORTED_MODULE_3__["LongPollingTransport"](this.httpClient, this.accessTokenFactory, this.logger, this.options.logMessageContent || false, this.options.withCredentials, this.options.headers || {});
             default:
                 throw new Error("Unknown transport: " + transport + ".");
         }
@@ -3891,9 +4198,9 @@ var HttpConnection = /** @class */ (function () {
             this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Debug, "Call to HttpConnection.stopConnection(" + error + ") was ignored because the connection is already in the disconnected state.");
             return;
         }
-        if (this.connectionState === "Connecting " /* Connecting */) {
-            this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Warning, "Call to HttpConnection.stopConnection(" + error + ") was ignored because the connection hasn't yet left the in the connecting state.");
-            return;
+        if (this.connectionState === "Connecting" /* Connecting */) {
+            this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Warning, "Call to HttpConnection.stopConnection(" + error + ") was ignored because the connection is still in the connecting state.");
+            throw new Error("HttpConnection.stopConnection(" + error + ") was called while the connection is still in the connecting state.");
         }
         if (this.connectionState === "Disconnecting" /* Disconnecting */) {
             // A call to stop() induced this call to stopConnection and needs to be completed.
@@ -4043,7 +4350,7 @@ var TransportSendQueue = /** @class */ (function () {
             result.set(new Uint8Array(item), offset);
             offset += item.byteLength;
         }
-        return result;
+        return result.buffer;
     };
     return TransportSendQueue;
 }());
@@ -4108,11 +4415,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LongPollingTransport", function() { return LongPollingTransport; });
 /* harmony import */ var _AbortController__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(22);
 /* harmony import */ var _Errors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4);
-/* harmony import */ var _ILogger__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9);
+/* harmony import */ var _ILogger__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(8);
 /* harmony import */ var _ITransport__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(20);
-/* harmony import */ var _Utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(13);
+/* harmony import */ var _Utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(9);
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+var __assign = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -4156,12 +4471,14 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 // Not exported from 'index', this type is internal.
 /** @private */
 var LongPollingTransport = /** @class */ (function () {
-    function LongPollingTransport(httpClient, accessTokenFactory, logger, logMessageContent) {
+    function LongPollingTransport(httpClient, accessTokenFactory, logger, logMessageContent, withCredentials, headers) {
         this.httpClient = httpClient;
         this.accessTokenFactory = accessTokenFactory;
         this.logger = logger;
         this.pollAbort = new _AbortController__WEBPACK_IMPORTED_MODULE_0__["AbortController"]();
         this.logMessageContent = logMessageContent;
+        this.withCredentials = withCredentials;
+        this.headers = headers;
         this.running = false;
         this.onreceive = null;
         this.onclose = null;
@@ -4176,9 +4493,9 @@ var LongPollingTransport = /** @class */ (function () {
     });
     LongPollingTransport.prototype.connect = function (url, transferFormat) {
         return __awaiter(this, void 0, void 0, function () {
-            var pollOptions, token, pollUrl, response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var _a, _b, name, value, headers, pollOptions, token, pollUrl, response;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
                         _Utils__WEBPACK_IMPORTED_MODULE_4__["Arg"].isRequired(url, "url");
                         _Utils__WEBPACK_IMPORTED_MODULE_4__["Arg"].isRequired(transferFormat, "transferFormat");
@@ -4190,23 +4507,26 @@ var LongPollingTransport = /** @class */ (function () {
                             (typeof XMLHttpRequest !== "undefined" && typeof new XMLHttpRequest().responseType !== "string")) {
                             throw new Error("Binary protocols over XmlHttpRequest not implementing advanced features are not supported.");
                         }
+                        _b = Object(_Utils__WEBPACK_IMPORTED_MODULE_4__["getUserAgentHeader"])(), name = _b[0], value = _b[1];
+                        headers = __assign((_a = {}, _a[name] = value, _a), this.headers);
                         pollOptions = {
                             abortSignal: this.pollAbort.signal,
-                            headers: {},
+                            headers: headers,
                             timeout: 100000,
+                            withCredentials: this.withCredentials,
                         };
                         if (transferFormat === _ITransport__WEBPACK_IMPORTED_MODULE_3__["TransferFormat"].Binary) {
                             pollOptions.responseType = "arraybuffer";
                         }
                         return [4 /*yield*/, this.getAccessToken()];
                     case 1:
-                        token = _a.sent();
+                        token = _c.sent();
                         this.updateHeaderToken(pollOptions, token);
                         pollUrl = url + "&_=" + Date.now();
                         this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_2__["LogLevel"].Trace, "(LongPolling transport) polling: " + pollUrl + ".");
                         return [4 /*yield*/, this.httpClient.get(pollUrl, pollOptions)];
                     case 2:
-                        response = _a.sent();
+                        response = _c.sent();
                         if (response.statusCode !== 200) {
                             this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_2__["LogLevel"].Error, "(LongPolling transport) Unexpected response code: " + response.statusCode + ".");
                             // Mark running as false so that the poll immediately ends and runs the close logic
@@ -4335,38 +4655,42 @@ var LongPollingTransport = /** @class */ (function () {
                 if (!this.running) {
                     return [2 /*return*/, Promise.reject(new Error("Cannot send until the transport is connected"))];
                 }
-                return [2 /*return*/, Object(_Utils__WEBPACK_IMPORTED_MODULE_4__["sendMessage"])(this.logger, "LongPolling", this.httpClient, this.url, this.accessTokenFactory, data, this.logMessageContent)];
+                return [2 /*return*/, Object(_Utils__WEBPACK_IMPORTED_MODULE_4__["sendMessage"])(this.logger, "LongPolling", this.httpClient, this.url, this.accessTokenFactory, data, this.logMessageContent, this.withCredentials, this.headers)];
             });
         });
     };
     LongPollingTransport.prototype.stop = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var deleteOptions, token;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var headers, _a, name_1, value, deleteOptions, token;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
                         this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_2__["LogLevel"].Trace, "(LongPolling transport) Stopping polling.");
                         // Tell receiving loop to stop, abort any current request, and then wait for it to finish
                         this.running = false;
                         this.pollAbort.abort();
-                        _a.label = 1;
+                        _b.label = 1;
                     case 1:
-                        _a.trys.push([1, , 5, 6]);
+                        _b.trys.push([1, , 5, 6]);
                         return [4 /*yield*/, this.receiving];
                     case 2:
-                        _a.sent();
+                        _b.sent();
                         // Send DELETE to clean up long polling on the server
                         this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_2__["LogLevel"].Trace, "(LongPolling transport) sending DELETE request to " + this.url + ".");
+                        headers = {};
+                        _a = Object(_Utils__WEBPACK_IMPORTED_MODULE_4__["getUserAgentHeader"])(), name_1 = _a[0], value = _a[1];
+                        headers[name_1] = value;
                         deleteOptions = {
-                            headers: {},
+                            headers: __assign({}, headers, this.headers),
+                            withCredentials: this.withCredentials,
                         };
                         return [4 /*yield*/, this.getAccessToken()];
                     case 3:
-                        token = _a.sent();
+                        token = _b.sent();
                         this.updateHeaderToken(deleteOptions, token);
                         return [4 /*yield*/, this.httpClient.delete(this.url, deleteOptions)];
                     case 4:
-                        _a.sent();
+                        _b.sent();
                         this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_2__["LogLevel"].Trace, "(LongPolling transport) DELETE request sent.");
                         return [3 /*break*/, 6];
                     case 5:
@@ -4448,11 +4772,19 @@ var AbortController = /** @class */ (function () {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ServerSentEventsTransport", function() { return ServerSentEventsTransport; });
-/* harmony import */ var _ILogger__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
+/* harmony import */ var _ILogger__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8);
 /* harmony import */ var _ITransport__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(20);
-/* harmony import */ var _Utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(13);
+/* harmony import */ var _Utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9);
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+var __assign = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -4493,12 +4825,14 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 /** @private */
 var ServerSentEventsTransport = /** @class */ (function () {
-    function ServerSentEventsTransport(httpClient, accessTokenFactory, logger, logMessageContent, eventSourceConstructor) {
+    function ServerSentEventsTransport(httpClient, accessTokenFactory, logger, logMessageContent, eventSourceConstructor, withCredentials, headers) {
         this.httpClient = httpClient;
         this.accessTokenFactory = accessTokenFactory;
         this.logger = logger;
         this.logMessageContent = logMessageContent;
+        this.withCredentials = withCredentials;
         this.eventSourceConstructor = eventSourceConstructor;
+        this.headers = headers;
         this.onreceive = null;
         this.onclose = null;
     }
@@ -4531,12 +4865,16 @@ var ServerSentEventsTransport = /** @class */ (function () {
                             }
                             var eventSource;
                             if (_Utils__WEBPACK_IMPORTED_MODULE_2__["Platform"].isBrowser || _Utils__WEBPACK_IMPORTED_MODULE_2__["Platform"].isWebWorker) {
-                                eventSource = new _this.eventSourceConstructor(url, { withCredentials: true });
+                                eventSource = new _this.eventSourceConstructor(url, { withCredentials: _this.withCredentials });
                             }
                             else {
                                 // Non-browser passes cookies via the dictionary
                                 var cookies = _this.httpClient.getCookieString(url);
-                                eventSource = new _this.eventSourceConstructor(url, { withCredentials: true, headers: { Cookie: cookies } });
+                                var headers = {};
+                                headers.Cookie = cookies;
+                                var _a = Object(_Utils__WEBPACK_IMPORTED_MODULE_2__["getUserAgentHeader"])(), name_1 = _a[0], value = _a[1];
+                                headers[name_1] = value;
+                                eventSource = new _this.eventSourceConstructor(url, { withCredentials: _this.withCredentials, headers: __assign({}, headers, _this.headers) });
                             }
                             try {
                                 eventSource.onmessage = function (e) {
@@ -4582,7 +4920,7 @@ var ServerSentEventsTransport = /** @class */ (function () {
                 if (!this.eventSource) {
                     return [2 /*return*/, Promise.reject(new Error("Cannot send until the transport is connected"))];
                 }
-                return [2 /*return*/, Object(_Utils__WEBPACK_IMPORTED_MODULE_2__["sendMessage"])(this.logger, "SSE", this.httpClient, this.url, this.accessTokenFactory, data, this.logMessageContent)];
+                return [2 /*return*/, Object(_Utils__WEBPACK_IMPORTED_MODULE_2__["sendMessage"])(this.logger, "SSE", this.httpClient, this.url, this.accessTokenFactory, data, this.logMessageContent, this.withCredentials, this.headers)];
             });
         });
     };
@@ -4611,11 +4949,19 @@ var ServerSentEventsTransport = /** @class */ (function () {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WebSocketTransport", function() { return WebSocketTransport; });
-/* harmony import */ var _ILogger__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
+/* harmony import */ var _ILogger__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8);
 /* harmony import */ var _ITransport__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(20);
-/* harmony import */ var _Utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(13);
+/* harmony import */ var _Utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9);
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+var __assign = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -4656,7 +5002,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 /** @private */
 var WebSocketTransport = /** @class */ (function () {
-    function WebSocketTransport(httpClient, accessTokenFactory, logger, logMessageContent, webSocketConstructor) {
+    function WebSocketTransport(httpClient, accessTokenFactory, logger, logMessageContent, webSocketConstructor, headers) {
         this.logger = logger;
         this.accessTokenFactory = accessTokenFactory;
         this.logMessageContent = logMessageContent;
@@ -4664,6 +5010,7 @@ var WebSocketTransport = /** @class */ (function () {
         this.httpClient = httpClient;
         this.onreceive = null;
         this.onclose = null;
+        this.headers = headers;
     }
     WebSocketTransport.prototype.connect = function (url, transferFormat) {
         return __awaiter(this, void 0, void 0, function () {
@@ -4689,12 +5036,16 @@ var WebSocketTransport = /** @class */ (function () {
                             var webSocket;
                             var cookies = _this.httpClient.getCookieString(url);
                             var opened = false;
-                            if (_Utils__WEBPACK_IMPORTED_MODULE_2__["Platform"].isNode && cookies) {
-                                // Only pass cookies when in non-browser environments
+                            if (_Utils__WEBPACK_IMPORTED_MODULE_2__["Platform"].isNode) {
+                                var headers = {};
+                                var _a = Object(_Utils__WEBPACK_IMPORTED_MODULE_2__["getUserAgentHeader"])(), name_1 = _a[0], value = _a[1];
+                                headers[name_1] = value;
+                                if (cookies) {
+                                    headers["Cookie"] = "" + cookies;
+                                }
+                                // Only pass headers when in non-browser environments
                                 webSocket = new _this.webSocketConstructor(url, undefined, {
-                                    headers: {
-                                        Cookie: "" + cookies,
-                                    },
+                                    headers: __assign({}, headers, _this.headers),
                                 });
                             }
                             if (!webSocket) {
@@ -4725,7 +5076,13 @@ var WebSocketTransport = /** @class */ (function () {
                             webSocket.onmessage = function (message) {
                                 _this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"].Trace, "(WebSockets transport) data received. " + Object(_Utils__WEBPACK_IMPORTED_MODULE_2__["getDataDetail"])(message.data, _this.logMessageContent) + ".");
                                 if (_this.onreceive) {
-                                    _this.onreceive(message.data);
+                                    try {
+                                        _this.onreceive(message.data);
+                                    }
+                                    catch (error) {
+                                        _this.close(error);
+                                        return;
+                                    }
                                 }
                             };
                             webSocket.onclose = function (event) {
@@ -4779,13 +5136,19 @@ var WebSocketTransport = /** @class */ (function () {
         }
         this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_0__["LogLevel"].Trace, "(WebSockets transport) socket closed.");
         if (this.onclose) {
-            if (event && (event.wasClean === false || event.code !== 1000)) {
+            if (this.isCloseEvent(event) && (event.wasClean === false || event.code !== 1000)) {
                 this.onclose(new Error("WebSocket closed with status code: " + event.code + " (" + event.reason + ")."));
+            }
+            else if (event instanceof Error) {
+                this.onclose(event);
             }
             else {
                 this.onclose();
             }
         }
+    };
+    WebSocketTransport.prototype.isCloseEvent = function (event) {
+        return event && typeof event.wasClean === "boolean" && typeof event.code === "number";
     };
     return WebSocketTransport;
 }());
@@ -4800,10 +5163,10 @@ var WebSocketTransport = /** @class */ (function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "JsonHubProtocol", function() { return JsonHubProtocol; });
 /* harmony import */ var _IHubProtocol__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(15);
-/* harmony import */ var _ILogger__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9);
+/* harmony import */ var _ILogger__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(8);
 /* harmony import */ var _ITransport__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(20);
-/* harmony import */ var _Loggers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(14);
-/* harmony import */ var _TextMessageFormat__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(12);
+/* harmony import */ var _Loggers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(10);
+/* harmony import */ var _TextMessageFormat__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(14);
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Copyright>Copyright ©  2020 Translucency Software</Copyright>
@@ -27,12 +27,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="3.1.9" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.9" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.9" />
-    <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="3.1.9" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="5.0.0" />
     <PackageReference Include="Microsoft.Management.Infrastructure" Version="2.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.9" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="5.0.0" />
     <PackageReference Include="Microsoft.PowerShell.Commands.Diagnostics" Version="7.0.3" />
     <PackageReference Include="Microsoft.PowerShell.Commands.Management" Version="7.0.3" />
     <PackageReference Include="Microsoft.PowerShell.Commands.Utility" Version="7.0.3" />
@@ -43,7 +43,7 @@
     <PackageReference Include="Microsoft.WSMan.Runtime" Version="7.0.3" />
     <PackageReference Include="NETStandard.Library" Version="2.0.3" />
     <PackageReference Include="System.Management.Automation" Version="7.0.3" />
-    <PackageReference Include="System.ServiceProcess.ServiceController" Version="4.7.0" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
