@@ -217,7 +217,7 @@ namespace Remotely.Server.Hubs
             else
             {
                 SessionInfo.Mode = RemoteControlMode.Normal;
-                _ = Clients.Caller.SendAsync("RequestingScreenCast");
+                await Clients.Caller.SendAsync("RequestingScreenCast");
                 await CasterHubContext.Clients.Client(screenCasterID).SendAsync("RequestScreenCast", Context.ConnectionId, RequesterName, AppConfig.RemoteControlNotifyUser);
             }
         }
