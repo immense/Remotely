@@ -127,13 +127,14 @@ namespace Remotely.Server.Hubs
             return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("ReceiveRtcAnswer", sdp, Context.ConnectionId);
         }
 
-        public async Task<Task> SendScreenCastRequestToDevice(string screenCasterID, string requesterName, int remoteControlMode, string otp)
+        public async Task SendScreenCastRequestToDevice(string screenCasterID, string requesterName, int remoteControlMode, string otp)
         {
             if ((RemoteControlMode)remoteControlMode == RemoteControlMode.Normal)
             {
                 if (!CasterHub.SessionInfoList.Any(x => x.Value.AttendedSessionID == screenCasterID))
                 {
-                    return Clients.Caller.SendAsync("SessionIDNotFound");
+                    await Clients.Caller.SendAsync("SessionIDNotFound");
+                    return;
                 }
 
                 screenCasterID = CasterHub.SessionInfoList.First(x => x.Value.AttendedSessionID == screenCasterID).Value.CasterSocketID;
@@ -141,7 +142,8 @@ namespace Remotely.Server.Hubs
 
             if (!CasterHub.SessionInfoList.TryGetValue(screenCasterID, out var sessionInfo))
             {
-                return Clients.Caller.SendAsync("SessionIDNotFound");
+                await Clients.Caller.SendAsync("SessionIDNotFound");
+                return;
             }
 
             SessionInfo = sessionInfo;
@@ -166,7 +168,7 @@ namespace Remotely.Server.Hubs
                 {
                     await Clients.Caller.SendAsync("ShowMessage", "Max number of concurrent sessions reached.");
                     Context.Abort();
-                    return Task.CompletedTask;
+                    return;
                 }
                 SessionInfo.OrganizationID = orgId;
                 SessionInfo.RequesterUserName = Context.User.Identity.Name;
@@ -200,7 +202,7 @@ namespace Remotely.Server.Hubs
                         DataService.DoesUserHaveAccessToDevice(deviceID, Context.UserIdentifier)))
                 {
                     var orgName = DataService.GetOrganizationNameById(orgId);
-                    return CasterHubContext.Clients.Client(screenCasterID).SendAsync("GetScreenCast", 
+                    await CasterHubContext.Clients.Client(screenCasterID).SendAsync("GetScreenCast", 
                         Context.ConnectionId, 
                         RequesterName, 
                         AppConfig.RemoteControlNotifyUser,
@@ -209,14 +211,14 @@ namespace Remotely.Server.Hubs
                 }
                 else
                 {
-                    return Clients.Caller.SendAsync("Unauthorized");
+                    await Clients.Caller.SendAsync("Unauthorized");
                 }
             }
             else
             {
                 SessionInfo.Mode = RemoteControlMode.Normal;
                 _ = Clients.Caller.SendAsync("RequestingScreenCast");
-                return CasterHubContext.Clients.Client(screenCasterID).SendAsync("RequestScreenCast", Context.ConnectionId, RequesterName, AppConfig.RemoteControlNotifyUser);
+                await CasterHubContext.Clients.Client(screenCasterID).SendAsync("RequestScreenCast", Context.ConnectionId, RequesterName, AppConfig.RemoteControlNotifyUser);
             }
         }
 
