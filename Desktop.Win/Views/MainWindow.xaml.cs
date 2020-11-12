@@ -56,7 +56,7 @@ namespace Remotely.Desktop.Win.Views
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            await ViewModel.Init();
+            await ViewModel?.Init();
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
