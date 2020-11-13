@@ -92,7 +92,12 @@ namespace Remotely.Server.Hubs
                     return Task.FromResult(false);
                 }
 
-                device.PublicIP = Context.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString();
+                var ip = Context.GetHttpContext()?.Connection?.RemoteIpAddress;
+                if (ip != null && ip.IsIPv4MappedToIPv6)
+                {
+                    ip = ip.MapToIPv4();
+                }
+                device.PublicIP = ip?.ToString();
 
                 if (DataService.AddOrUpdateDevice(device, out var updatedDevice))
                 {
@@ -129,7 +134,12 @@ namespace Remotely.Server.Hubs
 
         public Task DeviceHeartbeat(Device device)
         {
-            device.PublicIP = Context.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString();
+            var ip = Context.GetHttpContext()?.Connection?.RemoteIpAddress;
+            if (ip != null && ip.IsIPv4MappedToIPv6)
+            {
+                ip = ip.MapToIPv4();
+            }
+            device.PublicIP = ip?.ToString();
             DataService.AddOrUpdateDevice(device, out var updatedDevice);
             Device = updatedDevice;
 
