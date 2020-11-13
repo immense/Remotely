@@ -21,6 +21,7 @@ using Remotely.Server.Services;
 using Remotely.Shared.Models;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 
 namespace Remotely.Server
@@ -93,17 +94,19 @@ namespace Remotely.Server
             }
 
             var knownProxies = Configuration.GetSection("ApplicationOptions:KnownProxies").Get<string[]>();
-            if (knownProxies != null)
+            services.Configure<ForwardedHeadersOptions>(options =>
             {
-                services.Configure<ForwardedHeadersOptions>(options =>
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                options.ForwardLimit = null;
+
+                if (knownProxies?.Any() == true)
                 {
                     foreach (var proxy in knownProxies)
                     {
                         options.KnownProxies.Add(IPAddress.Parse(proxy));
-                        options.ForwardLimit = 2;
                     }
-                });
-            }
+                }
+            });
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0).AddJsonOptions(options =>
@@ -144,6 +147,9 @@ namespace Remotely.Server
             DataService dataService,
             ILoggerFactory loggerFactory)
         {
+
+            app.UseForwardedHeaders();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -163,11 +169,6 @@ namespace Remotely.Server
             }
 
             ConfigureStaticFiles(app);
-
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            });
 
             app.UseSwagger();
 
