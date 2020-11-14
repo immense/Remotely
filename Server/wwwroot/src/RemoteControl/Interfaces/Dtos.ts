@@ -1,8 +1,6 @@
 import { BaseDto } from "./BaseDto.js";
-import { BaseDtoType } from "../Shared/Enums/BaseDtoType.js";
-import { CursorInfo } from "../Shared/Models/CursorInfo.js";
-import { Point } from "../Shared/Models/Point.js";
-import { WindowsSession } from "../Shared/Models/WindowsSession.js";
+import { BaseDtoType } from "../../Shared/Enums/BaseDtoType.js";
+import { WindowsSession } from "../../Shared/Models/WindowsSession.js";
 
 export class AutoQualityAdjustDto implements BaseDto {
     constructor(isOn: boolean) {

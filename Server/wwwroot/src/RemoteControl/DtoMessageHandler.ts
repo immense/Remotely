@@ -1,6 +1,6 @@
 ﻿import * as UI from "./UI.js";
 import { BaseDtoType } from "../Shared/Enums/BaseDtoType.js";
-import { BaseDto } from "./BaseDto.js";
+import { BaseDto } from "./Interfaces/BaseDto.js";
 import { ViewerApp } from "./App.js";
 import { ShowMessage } from "../Shared/UI.js";
 import { Sound } from "../Shared/Sound.js";
@@ -14,7 +14,7 @@ import {
     ScreenSizeDto,
     FileDto,
     WindowsSessionsDto
-} from "./Dtos.js";
+} from "./Interfaces/Dtos.js";
 import { ReceiveFile } from "./FileTransferService.js";
 
 
@@ -98,6 +98,8 @@ export class DtoMessageHandler {
     }
     HandleScreenData(screenDataDto: ScreenDataDto) {
         UI.UpdateDisplays(screenDataDto.SelectedScreen, screenDataDto.DisplayNames);
+        ViewerApp.MessageSender.SendAutoQualityAdjust(ViewerApp.Settings.autoQualityEnabled);
+        ViewerApp.MessageSender.SendQualityChange(ViewerApp.Settings.qualityLevel);
     }
 
     HandleScreenSize(screenSizeDto: ScreenSizeDto) {

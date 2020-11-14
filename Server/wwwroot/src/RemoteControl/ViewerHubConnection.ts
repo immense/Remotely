@@ -1,15 +1,13 @@
 ﻿import * as UI from "./UI.js";
 import { ViewerApp } from "./App.js";
 import { CursorInfo } from "../Shared/Models/CursorInfo.js";
-import { Sound } from "../Shared/Sound.js";
 import { IceServerModel } from "../Shared/Models/IceServerModel.js";
 import { RemoteControlMode } from "../Shared/Enums/RemoteControlMode.js";
-import { GenericDto } from "./Dtos.js";
-import { ShowMessage, ShowModal } from "../Shared/UI.js";
-import { BaseDto } from "./BaseDto.js";
+import { GenericDto } from "./Interfaces/Dtos.js";
+import { ShowMessage } from "../Shared/UI.js";
+import { BaseDto } from "./Interfaces/BaseDto.js";
 import { WindowsSession } from "../Shared/Models/WindowsSession.js";
 import { BaseDtoType } from "../Shared/Enums/BaseDtoType.js";
-import { DtoMessageHandler } from "./DtoMessageHandler.js";
 
 var signalR = window["signalR"];
 
@@ -25,6 +23,8 @@ export class ViewerHubConnection {
     Connection: HubConnection;
     MessagePack: any = window['MessagePack'];
     PartialCaptureFrames: Uint8Array[] = [];
+
+ 
     Connect() {
         this.Connection = new signalR.HubConnectionBuilder()
             .withUrl("/ViewerHub")
@@ -36,15 +36,15 @@ export class ViewerHubConnection {
 
         this.Connection.start().then(() => {
             this.SendScreenCastRequestToDevice();
-            this.ToggleConnectUI(false);
+            UI.ToggleConnectUI(false);
         }).catch(err => {
             console.error(err.toString());
             console.log("Connection closed.");
             UI.StatusMessage.innerHTML = `Connection error: ${err.message}`;
-            this.ToggleConnectUI(true);
+            UI.ToggleConnectUI(true);
         });
         this.Connection.closedCallbacks.push((ev) => {
-            this.ToggleConnectUI(true);
+            UI.ToggleConnectUI(true);
         });
 
         ViewerApp.ClipboardWatcher.WatchClipboard();
@@ -77,23 +77,7 @@ export class ViewerHubConnection {
         this.Connection.invoke("SendScreenCastRequestToDevice", ViewerApp.ClientID, ViewerApp.RequesterName, ViewerApp.Mode, ViewerApp.Otp);
     }
 
-    ToggleConnectUI(shown: boolean) {
-        if (shown) {
-            UI.Screen2DContext.clearRect(0, 0, UI.ScreenViewer.width, UI.ScreenViewer.height);
-            UI.ScreenViewer.setAttribute("hidden", "hidden");
-            UI.VideoScreenViewer.setAttribute("hidden", "hidden");
-            UI.ConnectBox.style.removeProperty("display");
-            UI.StreamVideoButton.classList.remove("toggled");
-            UI.BlockInputButton.classList.remove("toggled");
-            UI.AudioButton.classList.remove("toggled");
-        }
-        else {
-            UI.ConnectButton.removeAttribute("disabled");
-            UI.ConnectBox.style.display = "none";
-            UI.ScreenViewer.removeAttribute("hidden");
-            UI.StatusMessage.innerHTML = "";
-        }
-    }
+
 
     private ApplyMessageHandlers(hubConnection) {
         hubConnection.on("SendDtoToBrowser", (dto: ArrayBuffer) => {

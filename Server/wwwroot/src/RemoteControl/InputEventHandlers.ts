@@ -28,12 +28,11 @@
     RecordSessionButton,
     DownloadRecordingButton,
     VideoScreenViewer,
-
     StreamVideoButton,
-
     FileTransferBar,
     FileUploadButtton,
-    FileDownloadButton
+    FileDownloadButton,
+    UpdateStreamingToggled
 } from "./UI.js";
 import { Sound } from "../Shared/Sound.js";
 import { ViewerApp } from "./App.js";
@@ -42,6 +41,7 @@ import { UploadFiles } from "./FileTransferService.js";
 import { RemoteControlMode } from "../Shared/Enums/RemoteControlMode.js";
 import { GetDistanceBetween } from "../Shared/Utilities.js";
 import { ShowMessage } from "../Shared/UI.js";
+import { GetSettings, SetSettings } from "./SettingsService.js";
 
 var lastPointerMove = Date.now();
 var isDragging: boolean;
@@ -195,25 +195,29 @@ export function ApplyInputHandlers() {
         QualityBar.classList.toggle("open");
     })
     QualitySlider.addEventListener("change", (ev) => {
-        ViewerApp.MessageSender.SendQualityChange(Number(QualitySlider.value));
+        var value = Number(QualitySlider.value);
+
+        ViewerApp.Settings.qualityLevel = value;
+        SetSettings(ViewerApp.Settings);
+
+        ViewerApp.MessageSender.SendQualityChange(value);
     });
     StreamVideoButton.addEventListener("click", (ev) => {
-        StreamVideoButton.classList.toggle("toggled");
-        if (StreamVideoButton.classList.contains("toggled")) {
-            ViewerApp.MessageSender.SendToggleWebRtcVideo(true);
-            VideoScreenViewer.removeAttribute("hidden");
-            ScreenViewer.setAttribute("hidden", "hidden");
-            QualityButton.setAttribute("hidden", "hidden");
-        }
-        else {
-            ViewerApp.MessageSender.SendToggleWebRtcVideo(false);
-            ScreenViewer.removeAttribute("hidden");
-            QualityButton.removeAttribute("hidden");
-            VideoScreenViewer.setAttribute("hidden", "hidden");
-        }
+        var toggleOn = !StreamVideoButton.classList.contains("toggled");
+
+        ViewerApp.Settings.streamModeEnabled = toggleOn;
+        SetSettings(ViewerApp.Settings);
+
+        UpdateStreamingToggled(toggleOn);
+        ViewerApp.MessageSender.SendToggleWebRtcVideo(toggleOn);
     });
     AutoQualityAdjustCheckBox.addEventListener("change", ev => {
-        ViewerApp.MessageSender.SendAutoQualityAdjust(AutoQualityAdjustCheckBox.checked);
+        var checked = AutoQualityAdjustCheckBox.checked;
+
+        ViewerApp.Settings.autoQualityEnabled = checked;
+        SetSettings(ViewerApp.Settings);
+
+        ViewerApp.MessageSender.SendAutoQualityAdjust(checked);
     });
 
     [ ScreenViewer, VideoScreenViewer ].forEach(viewer => {
