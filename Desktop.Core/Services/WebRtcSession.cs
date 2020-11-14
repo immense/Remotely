@@ -5,6 +5,7 @@ using Remotely.Shared.Models;
 using Remotely.Shared.Models.RemoteControlDtos;
 using Remotely.Shared.Utilities;
 using System;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -174,6 +175,11 @@ namespace Remotely.Desktop.Core.Services
         {
             try
             {
+                if (!IsVideoTrackConnected)
+                {
+                    return;
+                }
+
                 using var currentFrame = Viewer.Capturer.GetNextFrame();
                 if (currentFrame == null)
                 {
@@ -181,7 +187,7 @@ namespace Remotely.Desktop.Core.Services
                 }
 
                 var bitmapData = currentFrame.LockBits(
-                       Viewer.Capturer.CurrentScreenBounds,
+                       new Rectangle(Point.Empty, Viewer.Capturer.CurrentScreenBounds.Size),
                        System.Drawing.Imaging.ImageLockMode.ReadOnly,
                        System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
