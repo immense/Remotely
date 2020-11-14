@@ -90,7 +90,8 @@ namespace Remotely.Desktop.Win.Services
                 {
                     var (result, frame) = GetDirectXFrame();
 
-                    if (result == GetDirectXFrameResult.Success)
+                    if (result == GetDirectXFrameResult.Success ||
+                        result == GetDirectXFrameResult.Timeout)
                     {
                         return frame;
                     }
@@ -289,11 +290,11 @@ namespace Remotely.Desktop.Win.Services
                 using (var factory = new Factory1())
                 {
                     foreach (var adapter in factory.Adapters1.Where(x => (x.Outputs?.Length ?? 0) > 0))
+                    foreach (var output in adapter.Outputs)
                     {
                         try
                         {
                             var device = new SharpDX.Direct3D11.Device(adapter);
-                            var output = adapter.Outputs.FirstOrDefault();
                             var output1 = output.QueryInterface<Output1>();
 
                             var bounds = output1.Description.DesktopBounds;
