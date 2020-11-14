@@ -100,6 +100,24 @@ export function SetScreenSize(width: number, height: number) {
     Screen2DContext.clearRect(0, 0, width, height);
 }
 
+export function ToggleConnectUI(shown: boolean) {
+    if (shown) {
+        Screen2DContext.clearRect(0, 0, ScreenViewer.width, ScreenViewer.height);
+        ScreenViewer.setAttribute("hidden", "hidden");
+        VideoScreenViewer.setAttribute("hidden", "hidden");
+        ConnectBox.style.removeProperty("display");
+        StreamVideoButton.classList.remove("toggled");
+        BlockInputButton.classList.remove("toggled");
+        AudioButton.classList.remove("toggled");
+    }
+    else {
+        ConnectButton.removeAttribute("disabled");
+        ConnectBox.style.display = "none";
+        ScreenViewer.removeAttribute("hidden");
+        StatusMessage.innerHTML = "";
+    }
+}
+
 export function UpdateCursor(imageBytes: Uint8Array, hotSpotX: number, hotSpotY: number, cssOverride: string) {
     var targetElement = GetCurrentViewer();
 
@@ -132,6 +150,21 @@ export function UpdateDisplays(selectedDisplay: string, displayNames: string[]) 
             });
             (ev.currentTarget as HTMLButtonElement).classList.add("toggled");
         };
+    }
+}
+
+export function UpdateStreamingToggled(toggleOn: boolean) {
+    if (toggleOn) {
+        StreamVideoButton.classList.add("toggled");
+        VideoScreenViewer.removeAttribute("hidden");
+        ScreenViewer.setAttribute("hidden", "hidden");
+        QualityButton.setAttribute("hidden", "hidden");
+    }
+    else {
+        StreamVideoButton.classList.remove("toggled");
+        ScreenViewer.removeAttribute("hidden");
+        QualityButton.removeAttribute("hidden");
+        VideoScreenViewer.setAttribute("hidden", "hidden");
     }
 }
 

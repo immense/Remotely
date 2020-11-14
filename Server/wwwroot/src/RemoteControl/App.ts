@@ -8,6 +8,7 @@ import { MessageSender } from "./MessageSender.js";
 import { SessionRecorder } from "./SessionRecorder.js";
 import { ApplyInputHandlers } from "./InputEventHandlers.js";
 import { ViewerHubConnection } from "./ViewerHubConnection.js";
+import { GetSettings } from "./SettingsService.js";
 
 
 var queryString = Utilities.ParseSearchString();
@@ -24,8 +25,12 @@ export const ViewerApp = {
     ServiceID: queryString["serviceID"] ? decodeURIComponent(queryString["serviceID"]) : "",
     RequesterName: queryString["requesterName"] ? decodeURIComponent(queryString["requesterName"]) : "",
     Mode: RemoteControlMode.None,
+    Settings: GetSettings(),
 
     Init: () => {
+        UI.AutoQualityAdjustCheckBox.checked = ViewerApp.Settings.autoQualityEnabled;
+        UI.QualitySlider.value = String(ViewerApp.Settings.qualityLevel);
+
         ApplyInputHandlers();
 
         if (queryString["clientID"]) {

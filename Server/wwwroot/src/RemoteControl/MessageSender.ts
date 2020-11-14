@@ -19,7 +19,7 @@ import {
     WindowsSessionsDto,
     GenericDto,
     ToggleWebRtcVideoDto
-} from "./Dtos.js";
+} from "./Interfaces/Dtos.js";
 import { CreateGUID, When } from "../Shared/Utilities.js";
 import { FileTransferProgress } from "./UI.js";
 import { BaseDtoType } from "../Shared/Enums/BaseDtoType.js";
