@@ -99,6 +99,11 @@ namespace Remotely.Server.Hubs
 
         public Task SendDtoToClient(byte[] baseDto)
         {
+            if (string.IsNullOrWhiteSpace(ScreenCasterID))
+            {
+                return Task.CompletedTask;
+            }
+
             return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("SendDtoToClient", baseDto, Context.ConnectionId);
         }
 
@@ -109,7 +114,7 @@ namespace Remotely.Server.Hubs
 
         public override Task OnDisconnectedAsync(Exception exception)
         {
-            if (ScreenCasterID != null)
+            if (!string.IsNullOrWhiteSpace(ScreenCasterID))
             {
                 CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("ViewerDisconnected", Context.ConnectionId);
             }
@@ -129,6 +134,11 @@ namespace Remotely.Server.Hubs
 
         public async Task SendScreenCastRequestToDevice(string screenCasterID, string requesterName, int remoteControlMode, string otp)
         {
+            if (string.IsNullOrWhiteSpace(screenCasterID))
+            {
+                return;
+            }
+
             if ((RemoteControlMode)remoteControlMode == RemoteControlMode.Normal)
             {
                 if (!CasterHub.SessionInfoList.Any(x => x.Value.AttendedSessionID == screenCasterID))
