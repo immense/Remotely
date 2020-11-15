@@ -486,11 +486,11 @@ namespace Remotely.Server.Services
 
         public bool DoesUserExist(string userName)
         {
-            if (userName == null)
+            if (string.IsNullOrWhiteSpace(userName))
             {
                 return false;
             }
-            return RemotelyContext.Users.Any(x => x.UserName == userName);
+            return RemotelyContext.Users.Any(x => x.UserName.Trim().ToLower() == userName.Trim().ToLower());
         }
 
         public bool DoesUserHaveAccessToDevice(string deviceID, RemotelyUser remotelyUser)

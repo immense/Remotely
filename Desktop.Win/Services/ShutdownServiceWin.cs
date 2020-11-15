@@ -6,6 +6,7 @@ using Remotely.Shared.Utilities;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Remotely.Desktop.Win.Services
 {
@@ -17,12 +18,12 @@ namespace Remotely.Desktop.Win.Services
             var casterSocket = ServiceContainer.Instance.GetRequiredService<CasterSocket>();
             await casterSocket.DisconnectAllViewers();
             await casterSocket.Disconnect();
-            System.Windows.Forms.Application.Exit();
-            App.Current.Dispatcher.Invoke(() =>
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                App.Current.Shutdown();
-
+                Application.Current.Shutdown();
             });
+            System.Windows.Forms.Application.Exit();
+            Environment.Exit(0);
         }
     }
 }
