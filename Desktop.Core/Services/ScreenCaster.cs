@@ -84,12 +84,15 @@ namespace Remotely.Desktop.Core.Services
 
                 using (var initialFrame = viewer.Capturer.GetNextFrame())
                 {
-                    await viewer.SendScreenCapture(
+                    if (initialFrame != null)
+                    {
+                        await viewer.SendScreenCapture(
                          ImageUtils.EncodeBitmap(initialFrame, viewer.EncoderParams),
                          viewer.Capturer.CurrentScreenBounds.Left,
                          viewer.Capturer.CurrentScreenBounds.Top,
                          viewer.Capturer.CurrentScreenBounds.Width,
                          viewer.Capturer.CurrentScreenBounds.Height);
+                    }
                 }
 
                 if (EnvironmentHelper.IsWindows)
