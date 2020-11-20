@@ -1,4 +1,5 @@
-﻿using Remotely.Desktop.Core.Interfaces;
+﻿using Remotely.Desktop.Core.Enums;
+using Remotely.Desktop.Core.Interfaces;
 using Remotely.Desktop.Core.Services;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.Win32;
@@ -77,29 +78,60 @@ namespace Remotely.Desktop.Win.Services
             });
         }
 
-        public void SendLeftMouseDown(double percentX, double percentY, Viewer viewer)
+        public void SendMouseButtonAction(int button, ButtonAction buttonAction, double percentX, double percentY, Viewer viewer)
         {
             TryOnInputDesktop(() =>
             {
+                MOUSEEVENTF mouseEvent;
+                switch (button)
+                {
+                    case 0:
+                        switch (buttonAction)
+                        {
+                            case ButtonAction.Down:
+                                mouseEvent = MOUSEEVENTF.LEFTDOWN;
+                                break;
+                            case ButtonAction.Up:
+                                mouseEvent = MOUSEEVENTF.LEFTUP;
+                                break;
+                            default:
+                                return;
+                        }
+                        break;
+                    case 1:
+                        switch (buttonAction)
+                        {
+                            case ButtonAction.Down:
+                                mouseEvent = MOUSEEVENTF.MIDDLEDOWN;
+                                break;
+                            case ButtonAction.Up:
+                                mouseEvent = MOUSEEVENTF.MIDDLEUP;
+                                break;
+                            default:
+                                return;
+                        }
+                        break;
+                    case 2:
+                        switch (buttonAction)
+                        {
+                            case ButtonAction.Down:
+                                mouseEvent = MOUSEEVENTF.RIGHTDOWN;
+                                break;
+                            case ButtonAction.Up:
+                                mouseEvent = MOUSEEVENTF.RIGHTUP;
+                                break;
+                            default:
+                                return;
+                        }
+                        break;
+                    default:
+                        return;
+                }
                 var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
                 // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
                 var normalizedX = xyPercent.Item1 * 65535D;
                 var normalizedY = xyPercent.Item2 * 65535D;
-                var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.LEFTDOWN | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
-                var input = new INPUT() { type = InputType.MOUSE, U = union };
-                SendInput(1, new INPUT[] { input }, INPUT.Size);
-            });
-        }
-
-        public void SendLeftMouseUp(double percentX, double percentY, Viewer viewer)
-        {
-            TryOnInputDesktop(() =>
-            {
-                var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
-                // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
-                var normalizedX = xyPercent.Item1 * 65535D;
-                var normalizedY = xyPercent.Item2 * 65535D;
-                var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.LEFTUP | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
+                var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | mouseEvent | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
                 var input = new INPUT() { type = InputType.MOUSE, U = union };
                 SendInput(1, new INPUT[] { input }, INPUT.Size);
             });
@@ -132,34 +164,6 @@ namespace Remotely.Desktop.Win.Services
                     deltaY = 120;
                 }
                 var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.WHEEL, dx = 0, dy = 0, time = 0, mouseData = deltaY, dwExtraInfo = GetMessageExtraInfo() } };
-                var input = new INPUT() { type = InputType.MOUSE, U = union };
-                SendInput(1, new INPUT[] { input }, INPUT.Size);
-            });
-        }
-
-        public void SendRightMouseDown(double percentX, double percentY, Viewer viewer)
-        {
-            TryOnInputDesktop(() =>
-            {
-                var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
-                // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
-                var normalizedX = xyPercent.Item1 * 65535D;
-                var normalizedY = xyPercent.Item2 * 65535D;
-                var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.RIGHTDOWN | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
-                var input = new INPUT() { type = InputType.MOUSE, U = union };
-                SendInput(1, new INPUT[] { input }, INPUT.Size);
-            });
-        }
-
-        public void SendRightMouseUp(double percentX, double percentY, Viewer viewer)
-        {
-            TryOnInputDesktop(() =>
-            {
-                var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
-                // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
-                var normalizedX = xyPercent.Item1 * 65535D;
-                var normalizedY = xyPercent.Item2 * 65535D;
-                var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.RIGHTUP | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
                 var input = new INPUT() { type = InputType.MOUSE, U = union };
                 SendInput(1, new INPUT[] { input }, INPUT.Size);
             });

@@ -1,4 +1,5 @@
 ﻿using MessagePack;
+using Remotely.Desktop.Core.Enums;
 using Remotely.Desktop.Core.Interfaces;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models.RemoteControlDtos;
@@ -197,14 +198,7 @@ namespace Remotely.Desktop.Core.Services
         private void MouseDown(byte[] message, Services.Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<MouseDownDto>(message);
-            if (dto.Button == 0)
-            {
-                KeyboardMouseInput.SendLeftMouseDown(dto.PercentX, dto.PercentY, viewer);
-            }
-            else if (dto.Button == 2)
-            {
-                KeyboardMouseInput.SendRightMouseDown(dto.PercentX, dto.PercentY, viewer);
-            }
+            KeyboardMouseInput.SendMouseButtonAction(dto.Button, ButtonAction.Down, dto.PercentX, dto.PercentY, viewer);
         }
 
         private void MouseMove(byte[] message, Services.Viewer viewer)
@@ -216,14 +210,7 @@ namespace Remotely.Desktop.Core.Services
         private void MouseUp(byte[] message, Services.Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<MouseUpDto>(message);
-            if (dto.Button == 0)
-            {
-                KeyboardMouseInput.SendLeftMouseUp(dto.PercentX, dto.PercentY, viewer);
-            }
-            else if (dto.Button == 2)
-            {
-                KeyboardMouseInput.SendRightMouseUp(dto.PercentX, dto.PercentY, viewer);
-            }
+            KeyboardMouseInput.SendMouseButtonAction(dto.Button, ButtonAction.Up, dto.PercentX, dto.PercentY, viewer);
         }
 
         private void MouseWheel(byte[] message)
@@ -262,8 +249,8 @@ namespace Remotely.Desktop.Core.Services
         private void Tap(byte[] message, Services.Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<TapDto>(message);
-            KeyboardMouseInput.SendLeftMouseDown(dto.PercentX, dto.PercentY, viewer);
-            KeyboardMouseInput.SendLeftMouseUp(dto.PercentX, dto.PercentY, viewer);
+            KeyboardMouseInput.SendMouseButtonAction(0, ButtonAction.Down, dto.PercentX, dto.PercentY, viewer);
+            KeyboardMouseInput.SendMouseButtonAction(0, ButtonAction.Up, dto.PercentX, dto.PercentY, viewer);
         }
 
         private void ToggleAudio(byte[] message)

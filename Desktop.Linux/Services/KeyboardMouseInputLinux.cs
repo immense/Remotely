@@ -1,4 +1,5 @@
-﻿using Remotely.Desktop.Core.Interfaces;
+﻿using Remotely.Desktop.Core.Enums;
+using Remotely.Desktop.Core.Interfaces;
 using Remotely.Desktop.Core.Services;
 using Remotely.Desktop.Linux.X11Interop;
 using Remotely.Shared.Utilities;
@@ -57,35 +58,6 @@ namespace Remotely.Desktop.Linux.Services
 
         }
 
-        public void SendLeftMouseDown(double percentX, double percentY, Viewer viewer)
-        {
-            try
-            {
-                Init();
-                SendMouseMove(percentX, percentY, viewer);
-                LibXtst.XTestFakeButtonEvent(Display, 1, true, 0);
-                LibX11.XSync(Display, false);
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
-            }
-        }
-
-        public void SendLeftMouseUp(double percentX, double percentY, Viewer viewer)
-        {
-            try
-            {
-                Init();
-                SendMouseMove(percentX, percentY, viewer);
-                LibXtst.XTestFakeButtonEvent(Display, 1, false, 0);
-                LibX11.XSync(Display, false);
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
-            }
-        }
 
         public void SendMouseMove(double percentX, double percentY, Viewer viewer)
         {
@@ -150,6 +122,25 @@ namespace Remotely.Desktop.Linux.Services
                 Init();
                 SendMouseMove(percentX, percentY, viewer);
                 LibXtst.XTestFakeButtonEvent(Display, 3, false, 0);
+                LibX11.XSync(Display, false);
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+            }
+        }
+
+        public void SendMouseButtonAction(int button, ButtonAction buttonAction, double percentX, double percentY, Viewer viewer)
+        {
+            try
+            {
+                var isPressed = buttonAction == ButtonAction.Down;
+                // Browser buttons start at 0.  XTest starts at 1.
+                var mouseButton = (uint)(button + 1);
+
+                Init();
+                SendMouseMove(percentX, percentY, viewer);
+                LibXtst.XTestFakeButtonEvent(Display, mouseButton, isPressed, 0);
                 LibX11.XSync(Display, false);
             }
             catch (Exception ex)
