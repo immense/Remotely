@@ -249,9 +249,6 @@ export function ApplyInputHandlers() {
             if (currentPointerDevice == "touch") {
                 return;
             }
-            if (e.button != 0 && e.button != 2) {
-                return;
-            }
             e.preventDefault();
             var percentX = e.offsetX / viewer.clientWidth;
             var percentY = e.offsetY / viewer.clientHeight;
