@@ -86,7 +86,10 @@ namespace Remotely.Desktop.Win.Services
                 // on the screen.  I've observed this when a laptop lid is closed, or
                 // on some machines that aren't connected to a monitor.  This will
                 // have it fall back to BitBlt in those cases.
-                if (_directxScreens.ContainsKey(SelectedScreen))
+                // TODO: Make DX capture work with changed screen orientation.
+                if (_directxScreens.ContainsKey(SelectedScreen) &&
+                    SystemInformation.ScreenOrientation != ScreenOrientation.Angle270 &&
+                    SystemInformation.ScreenOrientation != ScreenOrientation.Angle90)
                 {
                     var (result, frame) = GetDirectXFrame();
 
@@ -224,7 +227,7 @@ namespace Remotely.Desktop.Win.Services
                     return (GetDirectXFrameResult.Failure, null);
                 }
 
-                var currentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
+                var currentFrame = new Bitmap(texture2D.Description.Width, texture2D.Description.Height, PixelFormat.Format32bppArgb);
 
                 // Copy resource into memory that can be accessed by the CPU
                 using (var screenTexture2D = screenResource.QueryInterface<Texture2D>())
@@ -290,44 +293,46 @@ namespace Remotely.Desktop.Win.Services
                 using (var factory = new Factory1())
                 {
                     foreach (var adapter in factory.Adapters1.Where(x => (x.Outputs?.Length ?? 0) > 0))
-                    foreach (var output in adapter.Outputs)
                     {
-                        try
+                        foreach (var output in adapter.Outputs)
                         {
-                            var device = new SharpDX.Direct3D11.Device(adapter);
-                            var output1 = output.QueryInterface<Output1>();
-
-                            var bounds = output1.Description.DesktopBounds;
-                            var width = bounds.Right - bounds.Left;
-                            var height = bounds.Bottom - bounds.Top;
-
-                            // Create Staging texture CPU-accessible
-                            var textureDesc = new Texture2DDescription
+                            try
                             {
-                                CpuAccessFlags = CpuAccessFlags.Read,
-                                BindFlags = BindFlags.None,
-                                Format = Format.B8G8R8A8_UNorm,
-                                Width = width,
-                                Height = height,
-                                OptionFlags = ResourceOptionFlags.None,
-                                MipLevels = 1,
-                                ArraySize = 1,
-                                SampleDescription = { Count = 1, Quality = 0 },
-                                Usage = ResourceUsage.Staging
-                            };
+                                var device = new SharpDX.Direct3D11.Device(adapter);
+                                var output1 = output.QueryInterface<Output1>();
 
-                            var texture2D = new Texture2D(device, textureDesc);
+                                var bounds = output1.Description.DesktopBounds;
+                                var width = bounds.Right - bounds.Left;
+                                var height = bounds.Bottom - bounds.Top;
 
-                            _directxScreens.Add(
-                                output1.Description.DeviceName,
-                                new DirectXOutput(adapter,
-                                    device,
-                                    output1.DuplicateOutput(device),
-                                    texture2D));
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Write(ex);
+                                // Create Staging texture CPU-accessible
+                                var textureDesc = new Texture2DDescription
+                                {
+                                    CpuAccessFlags = CpuAccessFlags.Read,
+                                    BindFlags = BindFlags.None,
+                                    Format = Format.B8G8R8A8_UNorm,
+                                    Width = width,
+                                    Height = height,
+                                    OptionFlags = ResourceOptionFlags.None,
+                                    MipLevels = 1,
+                                    ArraySize = 1,
+                                    SampleDescription = { Count = 1, Quality = 0 },
+                                    Usage = ResourceUsage.Staging
+                                };
+
+                                var texture2D = new Texture2D(device, textureDesc);
+
+                                _directxScreens.Add(
+                                    output1.Description.DeviceName,
+                                    new DirectXOutput(adapter,
+                                        device,
+                                        output1.DuplicateOutput(device),
+                                        texture2D));
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.Write(ex);
+                            }
                         }
                     }
                 }
