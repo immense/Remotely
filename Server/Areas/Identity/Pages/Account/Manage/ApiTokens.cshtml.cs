@@ -15,7 +15,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
     [Authorize]
     public class ApiTokensModel : PageModel
     {
-        public ApiTokensModel(DataService dataService)
+        public ApiTokensModel(IDataService dataService)
         {
             DataService = dataService;
         }
@@ -35,7 +35,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         [TempData]
         public string NewTokenSecret { get; set; }
 
-        private DataService DataService { get; }
+        private IDataService DataService { get; }
 
         public void OnGet()
         {

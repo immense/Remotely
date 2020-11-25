@@ -14,14 +14,14 @@ namespace Remotely.Server.Services
 
     public class EmailSenderEx : IEmailSenderEx
     {
-        public EmailSenderEx(ApplicationConfig appConfig, DataService dataService)
+        public EmailSenderEx(IApplicationConfig appConfig, IDataService dataService)
         {
             AppConfig = appConfig;
             DataService = dataService;
         }
 
-        private ApplicationConfig AppConfig { get; }
-        private DataService DataService { get; }
+        private IApplicationConfig AppConfig { get; }
+        private IDataService DataService { get; }
 
         public Task<bool> SendEmailAsync(string email, string replyTo, string subject, string htmlMessage, string organizationID = null)
         {

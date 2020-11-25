@@ -15,7 +15,9 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 {
     public class OrganizationModel : PageModel
     {
-        public OrganizationModel(DataService dataService, UserManager<RemotelyUser> userManager, IEmailSenderEx emailSender)
+        public OrganizationModel(IDataService dataService,
+            UserManager<RemotelyUser> userManager,
+            IEmailSenderEx emailSender)
         {
             DataService = dataService;
             UserManager = userManager;
@@ -40,7 +42,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         [Display(Name = "Users")]
         public List<OrganizationUser> Users { get; set; }
 
-        private DataService DataService { get; }
+        private IDataService DataService { get; }
 
         private IEmailSenderEx EmailSender { get; }
 

@@ -17,12 +17,12 @@ namespace Remotely.Server.API
     [ApiController]
     public class CommandsController : ControllerBase
     {
-        public CommandsController(DataService dataService)
+        public CommandsController(IDataService dataService)
         {
-            this.DataService = dataService;
+            DataService = dataService;
         }
 
-        private DataService DataService { get; }
+        private IDataService DataService { get; }
 
         // GET: api/<controller>
         [HttpGet("{fileExt}")]

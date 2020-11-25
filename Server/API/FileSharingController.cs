@@ -12,11 +12,11 @@ namespace Remotely.Server.API
     [ApiController]
     public class FileSharingController : ControllerBase
     {
-        public FileSharingController(DataService dataService)
+        public FileSharingController(IDataService dataService)
         {
             DataService = dataService;
         }
-        public DataService DataService { get; set; }
+        public IDataService DataService { get; set; }
 
         [HttpGet("{id}")]
         public ActionResult Get(string id)

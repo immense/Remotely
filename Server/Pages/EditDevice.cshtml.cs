@@ -13,7 +13,7 @@ namespace Remotely.Server.Pages
     [Authorize]
     public class EditDeviceModel : PageModel
     {
-        public EditDeviceModel(DataService dataService)
+        public EditDeviceModel(IDataService dataService)
         {
             DataService = dataService;
         }
@@ -29,7 +29,7 @@ namespace Remotely.Server.Pages
         public bool SaveSucessful { get; set; }
 
 
-        private DataService DataService { get; }
+        private IDataService DataService { get; }
 
         public IActionResult OnGet(string deviceID, bool success)
         {

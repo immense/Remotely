@@ -454,7 +454,7 @@ var commands: Array<ConsoleCommand> = [
         "",
         (parameters, parameterDict) => {
             var selectedDevices = DataGrid.GetSelectedDevices();
-            HubConnection.Connection.invoke("UninstallClients", selectedDevices.map(x=>x.ID));
+            HubConnection.Connection.invoke("UninstallAgents", selectedDevices.map(x=>x.ID));
         }
     ),
     new ConsoleCommand(

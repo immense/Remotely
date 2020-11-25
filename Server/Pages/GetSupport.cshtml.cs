@@ -8,13 +8,13 @@ namespace Remotely.Server.Pages
 {
     public class GetSupportModel : PageModel
     {
-        public GetSupportModel(DataService dataService)
+        public GetSupportModel(IDataService dataService)
         {
             DataService = dataService;
         }
 
 
-        private DataService DataService { get; }
+        private IDataService DataService { get; }
 
         [TempData]
         public string StatusMessage { get; set; }

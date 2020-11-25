@@ -7,11 +7,11 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 {
     public class OptionsModel : PageModel
     {
-        public OptionsModel(DataService dataService)
+        public OptionsModel(IDataService dataService)
         {
-            this.DataService = dataService;
+            DataService = dataService;
         }
-        private DataService DataService { get; set; }
+        private IDataService DataService { get; set; }
 
         [TempData]
         public string Message { get; set; }

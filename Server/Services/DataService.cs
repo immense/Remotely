@@ -15,10 +15,86 @@ using System.Threading.Tasks;
 
 namespace Remotely.Server.Services
 {
-    public class DataService
+    public interface IDataService
+    {
+        Task AddAlert(AlertOptions alertOptions, string organizationID);
+        bool AddDeviceGroup(string orgID, DeviceGroup deviceGroup, out string deviceGroupID, out string errorMessage);
+        InviteLink AddInvite(string orgID, Invite invite);
+        void AddOrUpdateCommandResult(CommandResult commandResult);
+        bool AddOrUpdateDevice(Device device, out Device updatedDevice);
+        Task<string> AddSharedFile(IFormFile file, string organizationID);
+        bool AddUserToDeviceGroup(string orgID, string groupID, string userName, out string resultMessage);
+        void ChangeUserIsAdmin(string organizationID, string targetUserID, bool isAdmin);
+        void CleanupOldRecords();
+        Task<ApiToken> CreateApiToken(string userName, string tokenName, string secretHash);
+        Task<Device> CreateDevice(DeviceSetupOptions options);
+        Task<bool> CreateUser(string userEmail, bool isAdmin, string organizationID);
+        Task DeleteAlert(Alert alert);
+        Task DeleteApiToken(string userName, string tokenId);
+        void DeleteDeviceGroup(string orgID, string deviceGroupID);
+        void DeleteInvite(string orgID, string inviteID);
+        void DetachEntity(object entity);
+        void DeviceDisconnected(string deviceID);
+        bool DoesUserExist(string userName);
+        bool DoesUserHaveAccessToDevice(string deviceID, RemotelyUser remotelyUser);
+        bool DoesUserHaveAccessToDevice(string deviceID, string remotelyUserID);
+        string[] FilterDeviceIDsByUserPermission(string[] deviceIDs, RemotelyUser remotelyUser);
+        string[] FilterUsersByDevicePermission(IEnumerable<string> userIDs, string deviceID);
+        Task<Alert> GetAlert(string alertID);
+        IEnumerable<Alert> GetAlerts(string userID);
+        IEnumerable<ApiToken> GetAllApiTokens(string userID);
+        IEnumerable<CommandResult> GetAllCommandResults(string orgID);
+        IEnumerable<Device> GetAllDevices(string orgID);
+        IEnumerable<EventLog> GetAllEventLogs(string orgID);
+        ICollection<InviteLink> GetAllInviteLinks(string userName);
+        IEnumerable<RemotelyUser> GetAllUsers(string userName);
+        ApiToken GetApiToken(string apiToken);
+        CommandResult GetCommandResult(string commandResultID);
+        CommandResult GetCommandResult(string commandResultID, string orgID);
+        string GetDefaultPrompt();
+        string GetDefaultPrompt(string userName);
+        Device GetDevice(string deviceID);
+        Device GetDevice(string orgID, string deviceID);
+        int GetDeviceCount();
+        IEnumerable<DeviceGroup> GetDeviceGroups(string username);
+        IEnumerable<Device> GetDevicesForUser(string userName);
+        IEnumerable<EventLog> GetEventLogs(string userName, DateTimeOffset from, DateTimeOffset to, EventType? type, string message);
+        int GetOrganizationCount();
+        string GetOrganizationName(string userName);
+        string GetOrganizationNameById(string organizationID);
+        List<string> GetServerAdmins();
+        SharedFile GetSharedFiled(string fileID);
+        int GetTotalDevices();
+        RemotelyUser GetUserByID(string userID);
+        RemotelyUser GetUserByName(string userName);
+        RemotelyUserOptions GetUserOptions(string userName);
+        bool JoinViaInvitation(string userName, string inviteID);
+        void RemoveDevices(string[] deviceIDs);
+        Task<bool> RemoveUserFromDeviceGroup(string orgID, string groupID, string userID);
+        Task RemoveUserFromOrganization(string orgID, string targetUserID);
+        Task RenameApiToken(string userName, string tokenId, string tokenName);
+        void SetAllDevicesNotOnline();
+        Task SetDisplayName(RemotelyUser user, string displayName);
+        void SetServerVerificationToken(string deviceID, string verificationToken);
+        Task<bool> TempPasswordSignIn(string email, string password);
+        Task<Device> UpdateDevice(DeviceSetupOptions deviceOptions, string organizationId);
+        void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes);
+        void UpdateOrganizationName(string orgID, string organizationName);
+        Task UpdateServerAdmins(List<string> serverAdmins, string callerUserName);
+        void UpdateTags(string deviceID, string tags);
+        void UpdateUserOptions(string userName, RemotelyUserOptions options);
+        bool ValidateApiToken(string apiToken, string apiSecret, string requestPath, string remoteIP);
+        void WriteEvent(EventLog eventLog);
+        void WriteEvent(Exception ex, string organizationID);
+        void WriteEvent(string message, EventType eventType, string organizationID);
+        void WriteEvent(string message, string organizationID);
+        void WriteLog(LogLevel logLevel, string category, EventId eventId, string state, Exception exception, List<string> scopeStack);
+    }
+
+    public class DataService : IDataService
     {
         public DataService(ApplicationDbContext context,
-            ApplicationConfig appConfig,
+            IApplicationConfig appConfig,
             IHostEnvironment hostEnvironment,
             UserManager<RemotelyUser> userManager)
         {
@@ -28,7 +104,7 @@ namespace Remotely.Server.Services
             UserManager = userManager;
         }
 
-        private ApplicationConfig AppConfig { get; }
+        private IApplicationConfig AppConfig { get; }
         private IHostEnvironment HostEnvironment { get; }
         private ApplicationDbContext RemotelyContext { get; }
         private UserManager<RemotelyUser> UserManager { get; }
@@ -192,7 +268,8 @@ namespace Remotely.Server.Services
                     WriteEvent(new EventLog()
                     {
                         EventType = EventType.Info,
-                        Message = $"Unable to add device {device.DeviceName} because organization {device.OrganizationID} does not exist.",
+                        Message = $"Unable to add device {device.DeviceName} because organization {device.OrganizationID}" +
+                            $"does not exist.  Device ID: {device.ID}.",
                         Source = "DataService.AddOrUpdateDevice"
                     });
                     return false;

@@ -6,12 +6,12 @@ namespace Remotely.Server.Attributes
 {
     public class ApiAuthorizationFilter : ActionFilterAttribute, IAuthorizationFilter
     {
-        public ApiAuthorizationFilter(DataService dataService)
+        public ApiAuthorizationFilter(IDataService dataService)
         {
             DataService = dataService;
         }
 
-        private DataService DataService { get; }
+        private IDataService DataService { get; }
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {

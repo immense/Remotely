@@ -48,12 +48,14 @@ namespace Remotely.Tests
 
         public static Device Device1 { get; private set; } = new Device()
         {
-            ID = "Device1"
+            ID = "Device1",
+            DeviceName = "Device1Name"
         };
 
         public static Device Device2 { get; private set; } = new Device()
         {
-            ID = "Device2"
+            ID = "Device2",
+            DeviceName = "Device2Name"
         };
 
         public static string OrganizationID { get; private set; }
@@ -70,7 +72,7 @@ namespace Remotely.Tests
 
         public static async Task PopulateTestData()
         {
-            var dataService = IoCActivator.ServiceProvider.GetRequiredService<DataService>();
+            var dataService = IoCActivator.ServiceProvider.GetRequiredService<IDataService>();
             var userManager = IoCActivator.ServiceProvider.GetRequiredService<UserManager<RemotelyUser>>();
             var emailSender = IoCActivator.ServiceProvider.GetRequiredService<IEmailSenderEx>();
             var organizationModel = new OrganizationModel(dataService, userManager, emailSender);

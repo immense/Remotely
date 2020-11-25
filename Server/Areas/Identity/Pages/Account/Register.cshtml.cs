@@ -24,7 +24,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSenderEx _emailSender;
         private readonly DataService _dataService;
-        private readonly ApplicationConfig _appConfig;
+        private readonly IApplicationConfig _appConfig;
 
         public RegisterModel(
             UserManager<RemotelyUser> userManager,
@@ -32,7 +32,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
             ILogger<RegisterModel> logger,
             IEmailSenderEx emailSender,
             DataService dataService,
-            ApplicationConfig appConfig)
+            IApplicationConfig appConfig)
         {
             _userManager = userManager;
             _signInManager = signInManager;

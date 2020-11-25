@@ -133,8 +133,8 @@ namespace Remotely.Server
             services.AddLogging();
             services.AddScoped<IEmailSenderEx, EmailSenderEx>();
             services.AddScoped<IEmailSender, EmailSender>();
-            services.AddScoped<DataService>();
-            services.AddSingleton<ApplicationConfig>();
+            services.AddScoped<IDataService, DataService>();
+            services.AddSingleton<IApplicationConfig, ApplicationConfig>();
             services.AddScoped<ApiAuthorizationFilter>();
             services.AddHostedService<CleanupService>();
             services.AddScoped<RemoteControlFilterAttribute>();
@@ -144,7 +144,7 @@ namespace Remotely.Server
         public void Configure(IApplicationBuilder app,
             IWebHostEnvironment env,
             ApplicationDbContext context,
-            DataService dataService,
+            IDataService dataService,
             ILoggerFactory loggerFactory)
         {
 

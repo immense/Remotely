@@ -18,14 +18,14 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
-        private readonly DataService _dataService;
+        private readonly IDataService _dataService;
         private readonly SignInManager<RemotelyUser> _signInManager;
         private readonly UserManager<RemotelyUser> _userManager;
         private readonly ILogger<LoginModel> _logger;
 
         public LoginModel(SignInManager<RemotelyUser> signInManager,
             UserManager<RemotelyUser> userManager,
-            DataService dataService,
+            IDataService dataService,
             ILogger<LoginModel> logger)
         {
             _dataService = dataService;

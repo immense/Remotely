@@ -17,14 +17,16 @@ namespace Remotely.Server.API
     [ApiController]
     public class OrganizationManagementController : ControllerBase
     {
-        public OrganizationManagementController(DataService dataService, UserManager<RemotelyUser> userManager, IEmailSenderEx emailSender)
+        public OrganizationManagementController(IDataService dataService, 
+            UserManager<RemotelyUser> userManager, 
+            IEmailSenderEx emailSender)
         {
-            this.DataService = dataService;
-            this.UserManager = userManager;
-            this.EmailSender = emailSender;
+            DataService = dataService;
+            UserManager = userManager;
+            EmailSender = emailSender;
         }
 
-        private DataService DataService { get; }
+        private IDataService DataService { get; }
         private IEmailSenderEx EmailSender { get; }
         private UserManager<RemotelyUser> UserManager { get; }
 

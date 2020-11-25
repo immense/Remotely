@@ -9,13 +9,13 @@ namespace Remotely.Server.Attributes
 {
     public class RemoteControlFilterAttribute : ActionFilterAttribute, IAuthorizationFilter
     {
-        public RemoteControlFilterAttribute(ApplicationConfig appConfig)
+        public RemoteControlFilterAttribute(IApplicationConfig appConfig)
         {
             AppConfig = appConfig;
         }
 
         private static MemoryCache OtpCache { get; } = new MemoryCache(new MemoryCacheOptions());
-        private ApplicationConfig AppConfig { get; }
+        private IApplicationConfig AppConfig { get; }
 
         public static string GetOtp(string deviceId)
         {

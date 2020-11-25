@@ -11,11 +11,11 @@ namespace Remotely.Server.API
     public class ServerLogsController : ControllerBase
     {
 
-        public ServerLogsController(DataService dataService)
+        public ServerLogsController(IDataService dataService)
         {
             DataService = dataService;
         }
-        public DataService DataService { get; set; }
+        public IDataService DataService { get; set; }
 
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
         [HttpGet("Download")]
