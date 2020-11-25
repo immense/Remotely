@@ -125,7 +125,7 @@ __webpack_require__.r(__webpack_exports__);
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 // Version token that will be replaced by the prepack command
 /** The version of the SignalR Message Pack protocol library. */
-var VERSION = "3.1.5";
+var VERSION = "5.0.0";
 
 
 
@@ -146,6 +146,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(9);
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+var __assign = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 
 
 
@@ -158,7 +166,11 @@ __webpack_require__.r(__webpack_exports__);
 var SERIALIZED_PING_MESSAGE = new Uint8Array([0x91, _microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Ping]);
 /** Implements the MessagePack Hub Protocol */
 var MessagePackHubProtocol = /** @class */ (function () {
-    function MessagePackHubProtocol() {
+    /**
+     *
+     * @param messagePackOptions MessagePack options passed to msgpack5
+     */
+    function MessagePackHubProtocol(messagePackOptions) {
         /** The name of the protocol. This is used by SignalR to resolve the protocol between the client and server. */
         this.name = "messagepack";
         /** The version of the protocol. */
@@ -168,6 +180,9 @@ var MessagePackHubProtocol = /** @class */ (function () {
         this.errorResult = 1;
         this.voidResult = 2;
         this.nonVoidResult = 3;
+        if (messagePackOptions) {
+            this.messagePackOptions = __assign({}, messagePackOptions, { compatibilityMode: false });
+        }
     }
     /** Creates an array of HubMessage objects from the specified serialized representation.
      *
@@ -221,7 +236,7 @@ var MessagePackHubProtocol = /** @class */ (function () {
         if (input.length === 0) {
             throw new Error("Invalid payload.");
         }
-        var msgpack = msgpack5__WEBPACK_IMPORTED_MODULE_1__();
+        var msgpack = msgpack5__WEBPACK_IMPORTED_MODULE_1__(this.messagePackOptions);
         var properties = msgpack.decode(buffer__WEBPACK_IMPORTED_MODULE_0__["Buffer"].from(input));
         if (properties.length === 0 || !(properties instanceof Array)) {
             throw new Error("Invalid payload.");
@@ -333,25 +348,39 @@ var MessagePackHubProtocol = /** @class */ (function () {
         return completionMessage;
     };
     MessagePackHubProtocol.prototype.writeInvocation = function (invocationMessage) {
-        var msgpack = msgpack5__WEBPACK_IMPORTED_MODULE_1__();
-        var payload = msgpack.encode([_microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Invocation, invocationMessage.headers || {}, invocationMessage.invocationId || null,
-            invocationMessage.target, invocationMessage.arguments, invocationMessage.streamIds]);
+        var msgpack = msgpack5__WEBPACK_IMPORTED_MODULE_1__(this.messagePackOptions);
+        var payload;
+        if (invocationMessage.streamIds) {
+            payload = msgpack.encode([_microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Invocation, invocationMessage.headers || {}, invocationMessage.invocationId || null,
+                invocationMessage.target, invocationMessage.arguments, invocationMessage.streamIds]);
+        }
+        else {
+            payload = msgpack.encode([_microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].Invocation, invocationMessage.headers || {}, invocationMessage.invocationId || null,
+                invocationMessage.target, invocationMessage.arguments]);
+        }
         return _BinaryMessageFormat__WEBPACK_IMPORTED_MODULE_3__["BinaryMessageFormat"].write(payload.slice());
     };
     MessagePackHubProtocol.prototype.writeStreamInvocation = function (streamInvocationMessage) {
-        var msgpack = msgpack5__WEBPACK_IMPORTED_MODULE_1__();
-        var payload = msgpack.encode([_microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].StreamInvocation, streamInvocationMessage.headers || {}, streamInvocationMessage.invocationId,
-            streamInvocationMessage.target, streamInvocationMessage.arguments, streamInvocationMessage.streamIds]);
+        var msgpack = msgpack5__WEBPACK_IMPORTED_MODULE_1__(this.messagePackOptions);
+        var payload;
+        if (streamInvocationMessage.streamIds) {
+            payload = msgpack.encode([_microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].StreamInvocation, streamInvocationMessage.headers || {}, streamInvocationMessage.invocationId,
+                streamInvocationMessage.target, streamInvocationMessage.arguments, streamInvocationMessage.streamIds]);
+        }
+        else {
+            payload = msgpack.encode([_microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].StreamInvocation, streamInvocationMessage.headers || {}, streamInvocationMessage.invocationId,
+                streamInvocationMessage.target, streamInvocationMessage.arguments]);
+        }
         return _BinaryMessageFormat__WEBPACK_IMPORTED_MODULE_3__["BinaryMessageFormat"].write(payload.slice());
     };
     MessagePackHubProtocol.prototype.writeStreamItem = function (streamItemMessage) {
-        var msgpack = msgpack5__WEBPACK_IMPORTED_MODULE_1__();
+        var msgpack = msgpack5__WEBPACK_IMPORTED_MODULE_1__(this.messagePackOptions);
         var payload = msgpack.encode([_microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].StreamItem, streamItemMessage.headers || {}, streamItemMessage.invocationId,
             streamItemMessage.item]);
         return _BinaryMessageFormat__WEBPACK_IMPORTED_MODULE_3__["BinaryMessageFormat"].write(payload.slice());
     };
     MessagePackHubProtocol.prototype.writeCompletion = function (completionMessage) {
-        var msgpack = msgpack5__WEBPACK_IMPORTED_MODULE_1__();
+        var msgpack = msgpack5__WEBPACK_IMPORTED_MODULE_1__(this.messagePackOptions);
         var resultKind = completionMessage.error ? this.errorResult : completionMessage.result ? this.nonVoidResult : this.voidResult;
         var payload;
         switch (resultKind) {
@@ -368,7 +397,7 @@ var MessagePackHubProtocol = /** @class */ (function () {
         return _BinaryMessageFormat__WEBPACK_IMPORTED_MODULE_3__["BinaryMessageFormat"].write(payload.slice());
     };
     MessagePackHubProtocol.prototype.writeCancelInvocation = function (cancelInvocationMessage) {
-        var msgpack = msgpack5__WEBPACK_IMPORTED_MODULE_1__();
+        var msgpack = msgpack5__WEBPACK_IMPORTED_MODULE_1__(this.messagePackOptions);
         var payload = msgpack.encode([_microsoft_signalr__WEBPACK_IMPORTED_MODULE_2__["MessageType"].CancelInvocation, cancelInvocationMessage.headers || {}, cancelInvocationMessage.invocationId]);
         return _BinaryMessageFormat__WEBPACK_IMPORTED_MODULE_3__["BinaryMessageFormat"].write(payload.slice());
     };

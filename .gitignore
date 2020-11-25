@@ -273,8 +273,8 @@ __pycache__/
 /Server/Server.db-shm
 /Server/Server.db-wal
 /Server/wwwroot/Downloads/Remotely_Desktop
-Server/wwwroot/Downloads/Win-x64/Remotely_Desktop.exe
-Server/wwwroot/Downloads/Win-x86/Remotely_Desktop.exe
+Server/wwwroot/Downloads/Win-x64/*
+Server/wwwroot/Downloads/Win-x86/*
 /ScreenCast.Win/Properties/launchSettings.json
 /Server/ScaffoldingReadMe.txt
 /Server/Remotely.db
@@ -285,3 +285,4 @@ Server/wwwroot/Downloads/Win-x86/Remotely_Desktop.exe
 /Server/wwwroot/out.js.map
 .vscode/launch.json
 .vscode/tasks.json
+Server/.config/dotnet-tools.json
