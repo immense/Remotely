@@ -32,8 +32,7 @@ The following steps will configure your Windows 10 machine for building the Remo
 	    * .NET Core SDK (latest version).
 		* MSBuild (which auto-selects Roslyn compilers).
 		* NuGet targets and build tasks.
-		* .NET Framework 4.6.2 SDK.
-		* .NET Framework 4.6.2 targeting pack.
+		* .NET Framework 4.8 SDK.
 	    * For debugging and development, you'll need all relevant workloads.
 * Install Node.js.
 	* Link: https://nodejs.org/
