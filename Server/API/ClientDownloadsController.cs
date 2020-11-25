@@ -17,13 +17,13 @@ namespace Remotely.Server.API
     public class ClientDownloadsController : ControllerBase
     {
         public ClientDownloadsController(IWebHostEnvironment hostEnv,
-            ApplicationConfig appConfig)
+            IApplicationConfig appConfig)
         {
             HostEnv = hostEnv;
             AppConfig = appConfig;
         }
 
-        private ApplicationConfig AppConfig { get; }
+        private IApplicationConfig AppConfig { get; }
         private SemaphoreSlim FileLock { get; } = new SemaphoreSlim(1);
         private IWebHostEnvironment HostEnv { get; set; }
 

@@ -17,8 +17,8 @@ namespace Remotely.Server.API
     public class LoginController : ControllerBase
     {
         public LoginController(SignInManager<RemotelyUser> signInManager,
-            DataService dataService,
-            ApplicationConfig appConfig,
+            IDataService dataService,
+            IApplicationConfig appConfig,
             IHubContext<CasterHub> casterHubContext,
             IHubContext<ViewerHub> viewerHubContext)
         {
@@ -30,8 +30,8 @@ namespace Remotely.Server.API
         }
 
         private SignInManager<RemotelyUser> SignInManager { get; }
-        private DataService DataService { get; }
-        public ApplicationConfig AppConfig { get; }
+        private IDataService DataService { get; }
+        public IApplicationConfig AppConfig { get; }
         private IHubContext<CasterHub> CasterHubContext { get; }
         private IHubContext<ViewerHub> ViewerHubContext { get; }
 

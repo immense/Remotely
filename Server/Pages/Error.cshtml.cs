@@ -10,7 +10,7 @@ namespace Remotely.Server.Pages
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class ErrorModel : PageModel
     {
-        public ErrorModel(DataService dataService)
+        public ErrorModel(IDataService dataService)
         {
             this.DataService = dataService;
         }
@@ -18,7 +18,7 @@ namespace Remotely.Server.Pages
 
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
-        private DataService DataService { get; }
+        private IDataService DataService { get; }
 
         public void OnGet()
         {

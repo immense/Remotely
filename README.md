@@ -107,6 +107,7 @@ Whenever there's a reference to `appsettings.json` in this document, it refers t
 For more information on configuring ASP.NET Core, see https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-3.1.
 
 * AllowApiLogin: Whether to allow logging in via the API controller.  API access tokens are recommended over this approach.
+* BannedDevices: An array of device IDs, names, or IP addresses to ban.  When they try to connect, an uninstall command will immediately be sent back.
 * DataRetentionInDays: How long event logs and remote command logs will be kept.
 * DBProvider: Determines which of the three connection strings (at the top) will be used.  The appropriate DB provider for the database type is automatically loaded in code.
 * DefaultPrompt: The default prompt string you'll see for each line on the console.

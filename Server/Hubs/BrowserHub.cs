@@ -17,10 +17,10 @@ namespace Remotely.Server.Hubs
     public class BrowserHub : Hub
     {
         public BrowserHub(
-            DataService dataService,
+            IDataService dataService,
             SignInManager<RemotelyUser> signInManager,
             IHubContext<AgentHub> agentHubContext,
-            ApplicationConfig appConfig)
+            IApplicationConfig appConfig)
         {
             SignInManager = signInManager;
             DataService = dataService;
@@ -29,8 +29,8 @@ namespace Remotely.Server.Hubs
         }
 
         public static ConcurrentDictionary<string, RemotelyUser> ConnectionIdToUserLookup { get; } = new ConcurrentDictionary<string, RemotelyUser>();
-        private ApplicationConfig AppConfig { get; }
-        private DataService DataService { get; }
+        private IApplicationConfig AppConfig { get; }
+        private IDataService DataService { get; }
         private IHubContext<AgentHub> AgentHubContext { get; }
         private RemotelyUser RemotelyUser
         {
@@ -182,13 +182,13 @@ namespace Remotely.Server.Hubs
             }
             return Task.CompletedTask;
         }
-        public Task UninstallClients(string[] deviceIDs)
+        public Task UninstallAgents(string[] deviceIDs)
         {
             deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
             var connections = GetActiveClientConnections(deviceIDs);
             foreach (var connection in connections)
             {
-                AgentHubContext.Clients.Client(connection.Key).SendAsync("UninstallClient");
+                AgentHubContext.Clients.Client(connection.Key).SendAsync("UninstallAgent");
             }
             DataService.RemoveDevices(deviceIDs);
             return Clients.Caller.SendAsync("RefreshDeviceList");

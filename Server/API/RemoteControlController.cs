@@ -19,9 +19,9 @@ namespace Remotely.Server.API
     [ApiController]
     public class RemoteControlController : ControllerBase
     {
-        public RemoteControlController(DataService dataService,
+        public RemoteControlController(IDataService dataService,
             IHubContext<AgentHub> agentHub,
-            ApplicationConfig appConfig,
+            IApplicationConfig appConfig,
             SignInManager<RemotelyUser> signInManager)
         {
             DataService = dataService;
@@ -30,9 +30,9 @@ namespace Remotely.Server.API
             SignInManager = signInManager;
         }
 
-        public DataService DataService { get; }
+        public IDataService DataService { get; }
         public IHubContext<AgentHub> AgentHubContext { get; }
-        public ApplicationConfig AppConfig { get; }
+        public IApplicationConfig AppConfig { get; }
         public SignInManager<RemotelyUser> SignInManager { get; }
 
         [HttpGet("{deviceID}")]

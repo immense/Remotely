@@ -20,7 +20,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         public ServerConfigModel(IConfiguration configuration,
             IWebHostEnvironment hostEnv,
             UserManager<RemotelyUser> userManager,
-            DataService dataService)
+            IDataService dataService)
         {
             Configuration = configuration;
             HostEnv = hostEnv;
@@ -52,7 +52,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         public string StatusMessage { get; set; }
 
         private IConfiguration Configuration { get; }
-        private DataService DataService { get; }
+        private IDataService DataService { get; }
         private IWebHostEnvironment HostEnv { get; }
         private UserManager<RemotelyUser> UserManager { get; }
 

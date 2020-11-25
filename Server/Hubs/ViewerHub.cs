@@ -14,18 +14,18 @@ namespace Remotely.Server.Hubs
     [ServiceFilter(typeof(RemoteControlFilterAttribute))]
     public class ViewerHub : Hub
     {
-        public ViewerHub(DataService dataService,
+        public ViewerHub(IDataService dataService,
             IHubContext<CasterHub> casterHubContext,
             IHubContext<AgentHub> agentHub,
-            ApplicationConfig appConfig)
+            IApplicationConfig appConfig)
         {
             DataService = dataService;
             CasterHubContext = casterHubContext;
             AgentHubContext = agentHub;
             AppConfig = appConfig;
         }
-        private ApplicationConfig AppConfig { get; set; }
-        private DataService DataService { get; }
+        private IApplicationConfig AppConfig { get; set; }
+        private IDataService DataService { get; }
 
         private RemoteControlMode Mode
         {

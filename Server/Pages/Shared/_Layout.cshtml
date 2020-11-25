@@ -1,6 +1,6 @@
 ﻿@using Remotely.Shared.Models
-@inject Remotely.Server.Services.ApplicationConfig AppConfig
-@inject DataService DataService
+@inject IApplicationConfig AppConfig
+@inject IDataService DataService
 
 @{ 
     RemotelyUser user = User.Identity.IsAuthenticated ?

@@ -18,9 +18,11 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
         private readonly UserManager<RemotelyUser> _userManager;
         private readonly IEmailSenderEx _emailSender;
 
-        private DataService DataService { get; }
+        private IDataService DataService { get; }
 
-        public ForgotPasswordModel(UserManager<RemotelyUser> userManager, IEmailSenderEx emailSender, DataService dataService)
+        public ForgotPasswordModel(UserManager<RemotelyUser> userManager,
+            IEmailSenderEx emailSender,
+            IDataService dataService)
         {
             _userManager = userManager;
             _emailSender = emailSender;

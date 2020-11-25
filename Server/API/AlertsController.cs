@@ -15,13 +15,13 @@ namespace Remotely.Server.API
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
     public class AlertsController : ControllerBase
     {
-        public AlertsController(DataService dataService, IEmailSenderEx emailSender)
+        public AlertsController(IDataService dataService, IEmailSenderEx emailSender)
         {
             DataService = dataService;
             EmailSender = emailSender;
         }
 
-        private DataService DataService { get; }
+        private IDataService DataService { get; }
         private IEmailSenderEx EmailSender { get; }
 
         [HttpPost("Create")]

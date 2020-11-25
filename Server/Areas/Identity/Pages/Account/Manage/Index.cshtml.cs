@@ -17,12 +17,12 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<RemotelyUser> _userManager;
         private readonly SignInManager<RemotelyUser> _signInManager;
         private readonly IEmailSenderEx _emailSender;
-        private readonly DataService _dataService;
+        private readonly IDataService _dataService;
 
         public IndexModel(
             UserManager<RemotelyUser> userManager,
             SignInManager<RemotelyUser> signInManager,
-            DataService dataService,
+            IDataService dataService,
             IEmailSenderEx emailSender)
         {
             _userManager = userManager;

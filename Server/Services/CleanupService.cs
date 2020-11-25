@@ -39,7 +39,7 @@ namespace Remotely.Server.Services
         private void CleanupTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             using var scope = Services.CreateScope();
-            var dataService = scope.ServiceProvider.GetRequiredService<DataService>();
+            var dataService = scope.ServiceProvider.GetRequiredService<IDataService>();
 
             dataService.CleanupOldRecords();
         }

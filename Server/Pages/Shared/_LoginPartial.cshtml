@@ -1,9 +1,9 @@
-@inject Remotely.Server.Services.ApplicationConfig AppConfig
 @using Microsoft.AspNetCore.Identity
 @using Remotely.Shared.Models
 
+@inject IApplicationConfig AppConfig
 @inject SignInManager<RemotelyUser> SignInManager
-@inject DataService  DataService
+@inject IDataService  DataService
 
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))

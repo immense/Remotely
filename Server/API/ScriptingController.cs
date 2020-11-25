@@ -18,7 +18,7 @@ namespace Remotely.Server.API
     [Route("api/[controller]")]
     public class ScriptingController : ControllerBase
     {
-        public ScriptingController(DataService dataService,
+        public ScriptingController(IDataService dataService,
             UserManager<RemotelyUser> userManager,
             IHubContext<AgentHub> agentHub)
         {
@@ -27,7 +27,7 @@ namespace Remotely.Server.API
             AgentHubContext = agentHub;
         }
 
-        private DataService DataService { get; }
+        private IDataService DataService { get; }
         private IHubContext<AgentHub> AgentHubContext { get; }
         private UserManager<RemotelyUser> UserManager { get; }
 

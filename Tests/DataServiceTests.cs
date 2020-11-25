@@ -13,7 +13,7 @@ namespace Remotely.Tests
     [TestClass]
     public class DataServiceTests
     {
-        private DataService DataService { get; set; }
+        private IDataService DataService { get; set; }
 
         [TestMethod]
         [DoNotParallelize]
@@ -113,7 +113,7 @@ namespace Remotely.Tests
         public async Task TestInit()
         {
             await TestData.PopulateTestData();
-            DataService = IoCActivator.ServiceProvider.GetRequiredService<DataService>();
+            DataService = IoCActivator.ServiceProvider.GetRequiredService<IDataService>();
         }
         [TestMethod]
         [DoNotParallelize]

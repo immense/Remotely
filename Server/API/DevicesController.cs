@@ -15,11 +15,11 @@ namespace Remotely.Server.API
     public class DevicesController : ControllerBase
     {
 
-        public DevicesController(DataService dataService)
+        public DevicesController(IDataService dataService)
         {
             DataService = dataService;
         }
-        private DataService DataService { get; set; }
+        private IDataService DataService { get; set; }
 
 
         [HttpGet]

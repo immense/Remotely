@@ -21,16 +21,16 @@ namespace Remotely.Server.API
 
 
         public AgentUpdateController(IWebHostEnvironment hostingEnv,
-            DataService dataService,
-            ApplicationConfig appConfig)
+            IDataService dataService,
+            IApplicationConfig appConfig)
         {
             HostEnv = hostingEnv;
             DataService = dataService;
             AppConfig = appConfig;
         }
 
-        private DataService DataService { get; }
-        public ApplicationConfig AppConfig { get; }
+        private IDataService DataService { get; }
+        public IApplicationConfig AppConfig { get; }
         private IWebHostEnvironment HostEnv { get; }
 
 

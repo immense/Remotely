@@ -1,5 +1,5 @@
-﻿@inject Remotely.Server.Services.ApplicationConfig AppConfig
-@inject Remotely.Server.Services.DataService DataService
+﻿@inject Remotely.Server.Services.IApplicationConfig AppConfig
+@inject Remotely.Server.Services.IDataService DataService
 @model IndexModel
 @{
     var organizationCount = DataService.GetOrganizationCount();

@@ -10,7 +10,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 {
     public class ServerLogsModel : PageModel
     {
-        public ServerLogsModel(DataService dataService)
+        public ServerLogsModel(IDataService dataService)
         {
             DataService = dataService;
         }
@@ -21,7 +21,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         public InputModel Input { get; set; } = new InputModel();
 
         public bool IsAdmin { get; private set; }
-        private DataService DataService { get; }
+        private IDataService DataService { get; }
 
         public void OnGet()
         {

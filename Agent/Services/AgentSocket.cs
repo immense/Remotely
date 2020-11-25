@@ -267,7 +267,7 @@ namespace Remotely.Agent.Services
                 await ScriptRunner.RunScript(mode, fileID, commandResultID, requesterID, HubConnection);
             });
 
-            HubConnection.On("UninstallClient", () =>
+            HubConnection.On("UninstallAgent", () =>
             {
                 Uninstaller.UninstallAgent();
             });
