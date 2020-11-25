@@ -547,7 +547,7 @@ namespace Remotely.Server.Services
                     userIDs.Contains(user.Id) &&
                     (
                         user.IsAdministrator ||
-                        allowedUsers.Count() == 0 ||
+                        allowedUsers.Any() ||
                         allowedUsers.Contains(user.Id)
                     )
                 )

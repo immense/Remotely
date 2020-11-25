@@ -79,7 +79,7 @@ namespace Remotely.Desktop.Win
                     StartUiThreads(() => new MainWindow());
                 }
 
-                TaskHelper.DelayUntil(() => App.Current.Dispatcher?.HasShutdownStarted != false,
+                TaskHelper.DelayUntil(() => App.Current?.Dispatcher?.HasShutdownStarted != false,
                     TimeSpan.MaxValue, 
                     1000);
             }
