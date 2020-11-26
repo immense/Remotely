@@ -1,6 +1,6 @@
 ﻿@page
 @model OrganizationModel
-@inject DataService  DataService
+@inject IDataService  DataService
 @{
     ViewData["Title"] = "Manage Organization";
     var currentUser = DataService.GetUserByName(User.Identity.Name);

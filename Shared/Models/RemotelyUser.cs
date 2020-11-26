@@ -7,12 +7,6 @@ namespace Remotely.Shared.Models
 {
     public class RemotelyUser : IdentityUser
     {
-        public RemotelyUser()
-        {
-            UserOptions = new RemotelyUserOptions();
-            Organization = new Organization();
-        }
-
         public ICollection<Alert> Alerts { get; set; }
 
         [StringLength(100)]

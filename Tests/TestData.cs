@@ -15,25 +15,33 @@ namespace Remotely.Tests
         {
             UserName = "admin1@test.com",
             IsAdministrator = true,
-            IsServerAdmin = true
+            IsServerAdmin = true,
+            Organization = new Organization(),
+            UserOptions = new RemotelyUserOptions()
         };
 
         public static RemotelyUser Admin2 { get; private set; } = new RemotelyUser()
         {
             UserName = "admin2@test.com",
-            IsAdministrator = true
+            IsAdministrator = true,
+            Organization = new Organization(),
+            UserOptions = new RemotelyUserOptions()
         };
 
         public static RemotelyUser User1 { get; private set; } = new RemotelyUser()
         {
             UserName = "testuser1@test.com",
-            IsAdministrator = false
+            IsAdministrator = false,
+            Organization = new Organization(),
+            UserOptions = new RemotelyUserOptions()
         };
 
         public static RemotelyUser User2 { get; private set; } = new RemotelyUser()
         {
             UserName = "testuser2@test.com",
-            IsAdministrator = false
+            IsAdministrator = false,
+            Organization = new Organization(),
+            UserOptions = new RemotelyUserOptions()
         };
 
         public static DeviceGroup Group1 { get; private set; } = new DeviceGroup()
