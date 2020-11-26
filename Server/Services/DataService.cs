@@ -467,7 +467,8 @@ namespace Remotely.Server.Services
                     UserName = userEmail.Trim().ToLower(),
                     Email = userEmail.Trim().ToLower(),
                     IsAdministrator = isAdmin,
-                    OrganizationID = organizationID
+                    OrganizationID = organizationID,
+                    UserOptions = new RemotelyUserOptions()
                 };
                 var org = RemotelyContext.Organizations
                     .Include(x => x.RemotelyUsers)
@@ -684,7 +685,7 @@ namespace Remotely.Server.Services
                    .ThenInclude(x => x.InviteLinks)
                    .FirstOrDefault(x => x.UserName == userName)
                    .Organization
-                   .InviteLinks;
+                   .InviteLinks ?? Array.Empty<InviteLink>();
         }
 
         public IEnumerable<RemotelyUser> GetAllUsers(string userName)

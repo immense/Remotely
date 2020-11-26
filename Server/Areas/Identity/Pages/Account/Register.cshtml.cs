@@ -23,7 +23,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
         private readonly UserManager<RemotelyUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSenderEx _emailSender;
-        private readonly DataService _dataService;
+        private readonly IDataService _dataService;
         private readonly IApplicationConfig _appConfig;
 
         public RegisterModel(
@@ -31,7 +31,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
             SignInManager<RemotelyUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSenderEx emailSender,
-            DataService dataService,
+            IDataService dataService,
             IApplicationConfig appConfig)
         {
             _userManager = userManager;
@@ -89,7 +89,9 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
                 {
                     UserName = Input.Email,
                     Email = Input.Email,
-                    IsServerAdmin = organizationCount == 0
+                    IsServerAdmin = organizationCount == 0,
+                    Organization = new Organization(),
+                    UserOptions = new RemotelyUserOptions()
                 };
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
