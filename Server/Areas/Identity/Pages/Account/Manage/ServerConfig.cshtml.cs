@@ -141,6 +141,9 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Allow API Login")]
             public bool AllowApiLogin { get; set; }
 
+            [Display(Name = "Banned Devices")]
+            public string[] BannedDevices { get; set; }
+
             [Display(Name = "Data Retention (days)")]
             public double DataRetentionInDays { get; set; }
 
@@ -162,6 +165,9 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
             [Display(Name = "Known Proxies")]
             public string[] KnownProxies { get; set; }
+
+            [Display(Name = "Max Concurrent Updates")]
+            public int MaxConcurrentUpdates { get; set; }
 
             [Display(Name = "Max Organizations")]
             public int MaxOrganizationCount { get; set; }
