@@ -1,6 +1,11 @@
 ﻿var serverConfigForm = document.getElementById("serverConfigForm") as HTMLFormElement;
 var serverConfigSaveButton = document.getElementById("serverConfigSaveButton") as HTMLButtonElement;
 
+var bannedDevicesAddButton = document.getElementById("bannedDevicesAddButton") as HTMLButtonElement;
+var bannedDevicesRemoveButton = document.getElementById("bannedDevicesRemoveButton") as HTMLButtonElement;
+var bannedDevicesInput = document.getElementById("bannedDevicesInput") as HTMLInputElement;
+var bannedDevicesSelect = document.getElementById("bannedDevicesSelect") as HTMLSelectElement;
+
 var trustedCorsAddButton = document.getElementById("trustedCorsAddButton") as HTMLButtonElement;
 var trustedCorsRemoveButton = document.getElementById("trustedCorsRemoveButton") as HTMLButtonElement;
 var trustedCorsInput = document.getElementById("trustedCorsInput") as HTMLInputElement;
@@ -19,6 +24,9 @@ var serverAdminsSelect = document.getElementById("serverAdminsSelect") as HTMLSe
 export const ServerConfig = {
     Init() {
         serverConfigSaveButton.addEventListener("click", e => {
+            for (var i = 0; i < bannedDevicesSelect.options.length; i++) {
+                bannedDevicesSelect.options[i].selected = true;
+            }
             for (var i = 0; i < trustedCorsSelect.options.length; i++) {
                 trustedCorsSelect.options[i].selected = true;
             }
@@ -30,6 +38,30 @@ export const ServerConfig = {
             }
 
             serverConfigForm.submit();
+        });
+
+        bannedDevicesAddButton.addEventListener("click", ev => {
+            if (bannedDevicesInput.value.length > 0) {
+                var option = document.createElement("option");
+                option.value = bannedDevicesInput.value;
+                option.text = bannedDevicesInput.value;
+                bannedDevicesSelect.add(option);
+                bannedDevicesInput.value = "";
+            }
+        });
+
+        bannedDevicesInput.addEventListener("keypress", ev => {
+            if (ev.key.toLowerCase() == "enter") {
+                ev.preventDefault();
+                ev.stopPropagation();
+                bannedDevicesAddButton.click();
+            }
+        })
+
+        bannedDevicesRemoveButton.addEventListener("click", ev => {
+            while (bannedDevicesSelect.selectedOptions.length > 0) {
+                bannedDevicesSelect.selectedOptions[0].remove();
+            }
         });
 
         trustedCorsAddButton.addEventListener("click", ev => {
