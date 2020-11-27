@@ -4,14 +4,19 @@ A remote control and remote scripting solution, built with .NET Core, SignalR Co
 [![Build Status](https://dev.azure.com/translucency/Remotely/_apis/build/status/Remotely-ReleaseBuild?branchName=master)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=17&branchName=master)
 ![GitHub Build](https://github.com/lucent-sea/Remotely/workflows/GitHub%20Build/badge.svg)
 
-## Sponsor This Project
+## Donations
+If this project has benefited you in some way, or if you just want to show appreciation, please consider donating to a charity.
+
+Suggested Charities: https://www.givewell.org/charities/top-charities
+
+If you want to send a few dollars my way as well, you can with the below links.  But if you have to choose between one or the other, please pick the charity.  Your money will have a much greater impact on their lives than mine.
+
 Ongoing via GitHub: https://github.com/sponsors/lucent-sea  
 One-Time via PayPal: https://paypal.me/translucency  
 
 ## Project Links
 Demo App: https://app.remotely.one  
 Website: https://remotely.one  
-Feedback: https://remotely.featureupvote.com/  
 Subreddit: https://www.reddit.com/r/remotely_app/  
 
 ## Disclaimer
