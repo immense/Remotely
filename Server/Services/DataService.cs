@@ -580,7 +580,7 @@ namespace Remotely.Server.Services
                     device.ID == deviceID &&
                     (
                         remotelyUser.IsAdministrator ||
-                        device.DeviceGroup.PermissionLinks.Count == 0 ||
+                        string.IsNullOrWhiteSpace(device.DeviceGroupID) ||
                         device.DeviceGroup.PermissionLinks.Any(permission => permission.UserID == remotelyUser.Id
                     )));
         }
@@ -616,18 +616,24 @@ namespace Remotely.Server.Services
                 .ThenInclude(x => x.PermissionLinks)
                 .FirstOrDefault(x => x.ID == deviceID);
 
-            var allowedUsers = device?.DeviceGroup?.PermissionLinks?.Select(x => x.UserID) ?? Array.Empty<string>();
-
-            return RemotelyContext.Users
-                .Include(x => x.PermissionLinks)
+            var orgUsers = RemotelyContext.Users
                 .Where(user =>
                     user.OrganizationID == device.OrganizationID &&
-                    userIDs.Contains(user.Id) &&
-                    (
-                        user.IsAdministrator ||
-                        allowedUsers.Any() ||
-                        allowedUsers.Contains(user.Id)
-                    )
+                    userIDs.Contains(user.Id));
+
+            if (string.IsNullOrWhiteSpace(device.DeviceGroupID))
+            {
+                return orgUsers
+                    .Select(x => x.Id)
+                    .ToArray();
+            }
+
+            var allowedUsers = device?.DeviceGroup?.PermissionLinks?.Select(x => x.UserID) ?? Array.Empty<string>();
+
+            return orgUsers
+                .Where(user =>
+                    user.IsAdministrator ||
+                    allowedUsers.Contains(user.Id)
                 )
                 .Select(x => x.Id)
                 .ToArray();
@@ -748,6 +754,7 @@ namespace Remotely.Server.Services
             {
                 return null;
             }
+            var userId = user.Id;
 
             return RemotelyContext.DeviceGroups
                 .Include(x => x.PermissionLinks)
@@ -757,7 +764,7 @@ namespace Remotely.Server.Services
                     (
                         user.IsAdministrator ||
                         x.PermissionLinks.Count == 0 ||
-                        x.PermissionLinks.Any(x => x.UserID == user.Id)
+                        x.PermissionLinks.Any(x => x.UserID == userId)
                     )
                 )
                 .OrderBy(x => x.Name) ?? Enumerable.Empty<DeviceGroup>();
@@ -780,9 +787,9 @@ namespace Remotely.Server.Services
                     x.OrganizationID == user.OrganizationID &&
                     (
                         user.IsAdministrator ||
-                        x.DeviceGroup.PermissionLinks.Count == 0 ||
-                        x.DeviceGroup.PermissionLinks.Any(permission => permission.UserID == userID
-                    )));
+                        string.IsNullOrWhiteSpace(x.DeviceGroupID)||
+                        x.DeviceGroup.PermissionLinks.Any(permission => permission.UserID == userID)
+                    ));
         }
 
         public IEnumerable<EventLog> GetEventLogs(string userName, DateTimeOffset from, DateTimeOffset to, EventType? type, string message)
