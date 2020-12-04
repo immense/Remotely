@@ -91,7 +91,8 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
                     Email = Input.Email,
                     IsServerAdmin = organizationCount == 0,
                     Organization = new Organization(),
-                    UserOptions = new RemotelyUserOptions()
+                    UserOptions = new RemotelyUserOptions(),
+                    IsAdministrator = true
                 };
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
