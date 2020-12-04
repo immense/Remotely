@@ -24,9 +24,9 @@ param (
 
 
 $ErrorActionPreference = "Stop"
-$MSBuildPath = (Get-ChildItem -Path "${env:ProgramFiles(x86)}\Microsoft Visual Studio\" -Recurse -Filter "MSBuild.exe" -File | ForEach-Object {
-    [System.Diagnostics.FileVersionInfo]::GetVersionInfo($_.FullName)
-} | Sort-Object -Property FileVersion -Descending | Select-Object -First 1).FileName
+$InstallerDir = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer"
+$VsWhere = "$InstallerDir\vswhere.exe"
+$MSBuildPath = (&"$VsWhere" -latest -find "**\Current\Bin\MSBuild.exe").Trim()
 $Root = (Get-Item -Path $PSScriptRoot).Parent.FullName
 $SignAssemblies = $false
 

@@ -75,7 +75,7 @@ namespace Remotely.Server.API
                     {
                         sw.Write(alertOptions.ApiRequestBody);
                     }
-                    var response = (HttpWebResponse)httpRequest.GetResponse();
+                    using var response = (HttpWebResponse)httpRequest.GetResponse();
                     DataService.WriteEvent($"Alert API Response Status: {response.StatusCode}.", orgID);
                 }
                 catch (Exception ex)

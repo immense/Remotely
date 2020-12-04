@@ -80,7 +80,7 @@ namespace Remotely.Agent.Services
                     var wr = WebRequest.CreateHttp(fileUrl);
                     wr.Method = "Head";
                     wr.Headers.Add("If-None-Match", lastEtag);
-                    var response = (HttpWebResponse)await wr.GetResponseAsync();
+                    using var response = (HttpWebResponse)await wr.GetResponseAsync();
                     if (response.StatusCode == HttpStatusCode.NotModified)
                     {
                         Logger.Write("Service Updater: Version is current.");
@@ -135,7 +135,7 @@ namespace Remotely.Agent.Services
                        serverUrl + $"/api/AgentUpdate/DownloadPackage/win-{platform}/{downloadId}",
                        zipPath);
 
-                    await WebRequest.CreateHttp(serverUrl + $"/api/AgentUpdate/ClearDownload/{downloadId}").GetResponseAsync();
+                    (await WebRequest.CreateHttp(serverUrl + $"/api/AgentUpdate/ClearDownload/{downloadId}").GetResponseAsync()).Dispose();
 
 
                     foreach (var proc in Process.GetProcessesByName("Remotely_Installer"))
@@ -174,7 +174,7 @@ namespace Remotely.Agent.Services
                        serverUrl + $"/api/AgentUpdate/DownloadPackage/linux/{downloadId}",
                        zipPath);
 
-                    await WebRequest.CreateHttp(serverUrl + $"/api/AgentUpdate/ClearDownload/{downloadId}").GetResponseAsync();
+                    (await WebRequest.CreateHttp(serverUrl + $"/api/AgentUpdate/ClearDownload/{downloadId}").GetResponseAsync()).Dispose();
 
                     Logger.Write("Launching installer to perform update.");
 
