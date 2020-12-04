@@ -47,7 +47,7 @@ export function GetDistanceBetween(fromX: number, fromY: number, toX: number, to
 }
 
 export async function When(predicate: () => boolean, pollingTimeMs: number = 100) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
         function checkCondition() {
             if (predicate()) {
                 resolve();
