@@ -38,8 +38,6 @@ namespace Remotely.Server.Data
 
         public DbSet<DeviceGroup> DeviceGroups { get; set; }
 
-        public DbSet<UserDevicePermission> PermissionLinks { get; set; }
-
         protected override void OnModelCreating(ModelBuilder builder)
         {
 
@@ -62,8 +60,6 @@ namespace Remotely.Server.Data
             builder.Entity<DeviceGroup>()
                 .HasMany(x => x.Devices)
                 .WithOne(x => x.DeviceGroup);
-            builder.Entity<DeviceGroup>()
-                .HasMany(x => x.PermissionLinks);
             builder.Entity<Organization>()
                 .HasMany(x => x.DeviceGroups)
                 .WithOne(x => x.Organization);
@@ -109,18 +105,13 @@ namespace Remotely.Server.Data
                 .Property(x => x.CommandResults)
                 .Metadata.SetValueComparer(new ValueComparer<ICollection<GenericCommandResult>>(true));
 
-            //builder.Entity<GenericCommandResult>()
-            //    .HasNoKey();
-
-            //builder.Entity<PSCoreCommandResult>()
-            //   .HasNoKey();
-
             builder.Entity<RemotelyUser>()
                .HasOne(x => x.Organization)
                .WithMany(x => x.RemotelyUsers);
 
             builder.Entity<RemotelyUser>()
-                .HasMany(x => x.PermissionLinks);
+                .HasMany(x => x.DeviceGroups)
+                .WithMany(x => x.Users);
             builder.Entity<RemotelyUser>()
                 .HasMany(x => x.Alerts)
                 .WithOne(x => x.User);
@@ -142,7 +133,6 @@ namespace Remotely.Server.Data
             builder.Entity<Device>()
                .Property(x => x.Drives)
                .Metadata.SetValueComparer(new ValueComparer<List<Drive>>(true));
-
             builder.Entity<Device>()
                 .HasIndex(x => x.DeviceName);
             builder.Entity<Device>()

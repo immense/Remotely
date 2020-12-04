@@ -193,11 +193,11 @@
                             If no users are added, everyone will have access.
                         </div>
                         <select multiple class="form-control device-group-user-list mb-1">
-                            @if (Model.DeviceGroups[i]?.PermissionLinks?.Any() == true)
+                            @if (Model.DeviceGroups[i]?.Users?.Any() == true)
                             {
-                                foreach (var link in Model.DeviceGroups[i].PermissionLinks)
+                                foreach (var user in Model.DeviceGroups[i].Users)
                                 {
-                                    <option value="@link.UserID">@link.User.UserName</option>
+                                    <option value="@user.Id">@user.UserName</option>
                                 }
                             }
                         </select>

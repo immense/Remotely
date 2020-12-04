@@ -12,14 +12,14 @@ namespace Remotely.Shared.Models
         [StringLength(100)]
         public string DisplayName { get; set; }
 
-        public bool IsAdministrator { get; set; } = true;
+        public bool IsAdministrator { get; set; }
         public bool IsServerAdmin { get; set; }
 
         [JsonIgnore]
         public Organization Organization { get; set; }
         public string OrganizationID { get; set; }
 
-        public List<UserDevicePermission> PermissionLinks { get; set; }
+        public List<DeviceGroup> DeviceGroups { get; set; }
 
         public string TempPassword { get; set; }
 

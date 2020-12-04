@@ -309,7 +309,7 @@ namespace Remotely.Server.Services
             resultMessage = string.Empty;
 
             var deviceGroup = RemotelyContext.DeviceGroups
-                .Include(x => x.PermissionLinks)
+                .Include(x => x.Users)
                 .FirstOrDefault(x =>
                     x.ID == groupID &&
                     x.OrganizationID == orgID);
@@ -323,7 +323,7 @@ namespace Remotely.Server.Services
             userName = userName.Trim().ToLower();
 
             var user = RemotelyContext.Users
-                .Include(x => x.PermissionLinks)
+                .Include(x => x.DeviceGroups)
                 .FirstOrDefault(x =>
                     x.UserName.ToLower() == userName &&
                     x.OrganizationID == orgID);
@@ -334,25 +334,17 @@ namespace Remotely.Server.Services
                 return false;
             }
 
-            deviceGroup.PermissionLinks ??= new List<UserDevicePermission>();
-            user.PermissionLinks ??= new List<UserDevicePermission>();
+            deviceGroup.Devices ??= new List<Device>();
+            user.DeviceGroups ??= new List<DeviceGroup>();
 
-            if (deviceGroup.PermissionLinks.Any(x => x.UserID == user.Id))
+            if (deviceGroup.Users.Any(x => x.Id == user.Id))
             {
                 resultMessage = "User already in group.";
                 return false;
             }
 
-            var link = new UserDevicePermission()
-            {
-                DeviceGroup = deviceGroup,
-                DeviceGroupID = deviceGroup.ID,
-                User = user,
-                UserID = user.Id
-            };
-
-            deviceGroup.PermissionLinks.Add(link);
-            user.PermissionLinks.Add(link);
+            deviceGroup.Users.Add(user);
+            user.DeviceGroups.Add(deviceGroup);
             RemotelyContext.SaveChanges();
             resultMessage = user.Id;
             return true;
@@ -506,24 +498,24 @@ namespace Remotely.Server.Services
         {
             var deviceGroup = RemotelyContext.DeviceGroups
                 .Include(x => x.Devices)
-                .Include(x => x.PermissionLinks)
-                .ThenInclude(x => x.User)
-                    .FirstOrDefault(x =>
-                        x.ID == deviceGroupID &&
-                        x.OrganizationID == orgID);
+                .Include(x => x.Users)
+                .ThenInclude(x => x.DeviceGroups)
+                .FirstOrDefault(x =>
+                    x.ID == deviceGroupID &&
+                    x.OrganizationID == orgID);
 
             deviceGroup.Devices?.ForEach(x =>
             {
                 x.DeviceGroup = null;
             });
 
-            deviceGroup.PermissionLinks?.ToList()?.ForEach(x =>
+            deviceGroup.Users?.ForEach(x =>
             {
-                x.User = null;
-                x.DeviceGroup = null;
-
-                RemotelyContext.PermissionLinks.Remove(x);
+                x.DeviceGroups.Remove(deviceGroup);
             });
+
+            deviceGroup.Devices.Clear();
+            deviceGroup.Users.Clear();
 
             RemotelyContext.DeviceGroups.Remove(deviceGroup);
 
@@ -575,13 +567,13 @@ namespace Remotely.Server.Services
         {
             return RemotelyContext.Devices
                 .Include(x => x.DeviceGroup)
-                .ThenInclude(x => x.PermissionLinks)
+                .ThenInclude(x => x.Users)
                 .Any(device => device.OrganizationID == remotelyUser.OrganizationID &&
                     device.ID == deviceID &&
                     (
                         remotelyUser.IsAdministrator ||
                         string.IsNullOrWhiteSpace(device.DeviceGroupID) ||
-                        device.DeviceGroup.PermissionLinks.Any(permission => permission.UserID == remotelyUser.Id
+                        device.DeviceGroup.Users.Any(user => user.Id == remotelyUser.Id
                     )));
         }
 
@@ -596,14 +588,14 @@ namespace Remotely.Server.Services
         {
             return RemotelyContext.Devices
                 .Include(x => x.DeviceGroup)
-                .ThenInclude(x => x.PermissionLinks)
+                .ThenInclude(x => x.Users)
                 .Where(device =>
                     device.OrganizationID == remotelyUser.OrganizationID &&
                     deviceIDs.Contains(device.ID) &&
                     (
                         remotelyUser.IsAdministrator ||
-                        device.DeviceGroup.PermissionLinks.Count == 0 ||
-                        device.DeviceGroup.PermissionLinks.Any(permission => permission.UserID == remotelyUser.Id
+                        device.DeviceGroup.Users.Count == 0 ||
+                        device.DeviceGroup.Users.Any(user => user.Id == remotelyUser.Id
                     )))
                 .Select(x => x.ID)
                 .ToArray();
@@ -613,7 +605,7 @@ namespace Remotely.Server.Services
         {
             var device = RemotelyContext.Devices
                 .Include(x => x.DeviceGroup)
-                .ThenInclude(x => x.PermissionLinks)
+                .ThenInclude(x => x.Users)
                 .FirstOrDefault(x => x.ID == deviceID);
 
             var orgUsers = RemotelyContext.Users
@@ -628,7 +620,7 @@ namespace Remotely.Server.Services
                     .ToArray();
             }
 
-            var allowedUsers = device?.DeviceGroup?.PermissionLinks?.Select(x => x.UserID) ?? Array.Empty<string>();
+            var allowedUsers = device?.DeviceGroup?.Users?.Select(x => x.Id) ?? Array.Empty<string>();
 
             return orgUsers
                 .Where(user =>
@@ -757,14 +749,14 @@ namespace Remotely.Server.Services
             var userId = user.Id;
 
             return RemotelyContext.DeviceGroups
-                .Include(x => x.PermissionLinks)
-                .ThenInclude(x => x.User)
+                .Include(x => x.Users)
+                .ThenInclude(x => x.DeviceGroups)
                 .Where(x =>
                     x.OrganizationID == user.OrganizationID &&
                     (
                         user.IsAdministrator ||
-                        x.PermissionLinks.Count == 0 ||
-                        x.PermissionLinks.Any(x => x.UserID == userId)
+                        x.Users.Count == 0 ||
+                        x.Users.Any(x => x.Id == userId)
                     )
                 )
                 .OrderBy(x => x.Name) ?? Enumerable.Empty<DeviceGroup>();
@@ -777,13 +769,13 @@ namespace Remotely.Server.Services
 
             return RemotelyContext.Devices
                 .Include(x => x.DeviceGroup)
-                .ThenInclude(x => x.PermissionLinks)
+                .ThenInclude(x => x.Users)
                 .Where(x =>
                     x.OrganizationID == user.OrganizationID &&
                     (
                         user.IsAdministrator ||
                         string.IsNullOrWhiteSpace(x.DeviceGroupID)||
-                        x.DeviceGroup.PermissionLinks.Any(permission => permission.UserID == userID)
+                        x.DeviceGroup.Users.Any(user => user.Id == userID)
                     ));
         }
 
@@ -923,20 +915,18 @@ namespace Remotely.Server.Services
         public async Task<bool> RemoveUserFromDeviceGroup(string orgID, string groupID, string userID)
         {
             var deviceGroup = RemotelyContext.DeviceGroups
-                .Include(x => x.PermissionLinks)
-                .ThenInclude(x => x.User)
+                .Include(x => x.Users)
+                .ThenInclude(x => x.DeviceGroups)
                 .FirstOrDefault(x =>
                     x.ID == groupID &&
                     x.OrganizationID == orgID);
 
-            if (deviceGroup?.PermissionLinks?.Any(x => x.UserID == userID) == true)
+            if (deviceGroup?.Users?.Any(x => x.Id == userID) == true)
             {
-                var link = deviceGroup.PermissionLinks.FirstOrDefault(x => x.UserID == userID);
+                var user = deviceGroup.Users.FirstOrDefault(x => x.Id == userID);
 
-                link.User = null;
-                link.DeviceGroup = null;
-
-                RemotelyContext.PermissionLinks.Remove(link);
+                user.DeviceGroups.Remove(deviceGroup);
+                deviceGroup.Users.Remove(user);
 
                 await RemotelyContext.SaveChangesAsync();
                 return true;
@@ -947,22 +937,19 @@ namespace Remotely.Server.Services
         public async Task RemoveUserFromOrganization(string orgID, string targetUserID)
         {
             var target = RemotelyContext.Users
-                .Include(x => x.PermissionLinks)
-                .ThenInclude(x => x.DeviceGroup)
+                .Include(x => x.DeviceGroups)
+                .ThenInclude(x => x.Devices)
                 .Include(x => x.Organization)
                 .Include(x => x.Alerts)
                 .FirstOrDefault(x =>
                     x.Id == targetUserID &&
                     x.OrganizationID == orgID);
 
-            if (target?.PermissionLinks?.Any() == true)
+            if (target?.DeviceGroups?.Any() == true)
             {
-                foreach (var link in target.PermissionLinks.ToList())
+                foreach (var deviceGroup in target.DeviceGroups.ToList())
                 {
-                    link.DeviceGroup = null;
-                    link.User = null;
-
-                    RemotelyContext.PermissionLinks.Remove(link);
+                    deviceGroup.Users.Remove(target);
                 }
             }
 
