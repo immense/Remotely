@@ -15,9 +15,24 @@ namespace Remotely.Server.Migrations.PostgreSql
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
-                .HasAnnotation("ProductVersion", "3.1.7")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .UseIdentityByDefaultColumns()
+                .HasAnnotation("Relational:MaxIdentifierLength", 63)
+                .HasAnnotation("ProductVersion", "5.0.0");
+
+            modelBuilder.Entity("DeviceGroupRemotelyUser", b =>
+                {
+                    b.Property<string>("DeviceGroupsID")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UsersId")
+                        .HasColumnType("text");
+
+                    b.HasKey("DeviceGroupsID", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("DeviceGroupRemotelyUser");
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -29,18 +44,18 @@ namespace Remotely.Server.Migrations.PostgreSql
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .HasColumnType("character varying(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedName")
-                        .HasColumnType("character varying(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("RoleNameIndex");
+                        .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles");
                 });
@@ -50,7 +65,7 @@ namespace Remotely.Server.Migrations.PostgreSql
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("text");
@@ -86,8 +101,8 @@ namespace Remotely.Server.Migrations.PostgreSql
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
-                        .HasColumnType("character varying(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
@@ -99,12 +114,12 @@ namespace Remotely.Server.Migrations.PostgreSql
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("NormalizedEmail")
-                        .HasColumnType("character varying(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedUserName")
-                        .HasColumnType("character varying(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");
@@ -122,17 +137,17 @@ namespace Remotely.Server.Migrations.PostgreSql
                         .HasColumnType("boolean");
 
                     b.Property<string>("UserName")
-                        .HasColumnType("character varying(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
-                        .HasName("EmailIndex");
+                        .HasDatabaseName("EmailIndex");
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasName("UserNameIndex");
+                        .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("RemotelyUsers");
 
@@ -144,7 +159,7 @@ namespace Remotely.Server.Migrations.PostgreSql
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("text");
@@ -166,12 +181,12 @@ namespace Remotely.Server.Migrations.PostgreSql
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("character varying(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("character varying(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("text");
@@ -208,12 +223,12 @@ namespace Remotely.Server.Migrations.PostgreSql
                         .HasColumnType("text");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("character varying(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("character varying(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("Value")
                         .HasColumnType("text");
@@ -263,8 +278,8 @@ namespace Remotely.Server.Migrations.PostgreSql
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
-                        .HasColumnType("character varying(200)")
-                        .HasMaxLength(200);
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("OrganizationID")
                         .HasColumnType("text");
@@ -332,8 +347,8 @@ namespace Remotely.Server.Migrations.PostgreSql
                         .HasColumnType("text");
 
                     b.Property<string>("Alias")
-                        .HasColumnType("character varying(100)")
-                        .HasMaxLength(100);
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<double>("CpuUtilization")
                         .HasColumnType("double precision");
@@ -384,8 +399,8 @@ namespace Remotely.Server.Migrations.PostgreSql
                         .HasColumnType("text");
 
                     b.Property<string>("Tags")
-                        .HasColumnType("character varying(200)")
-                        .HasMaxLength(200);
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<double>("TotalMemory")
                         .HasColumnType("double precision");
@@ -416,8 +431,8 @@ namespace Remotely.Server.Migrations.PostgreSql
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .HasColumnType("character varying(200)")
-                        .HasMaxLength(200);
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("OrganizationID")
                         .HasColumnType("text");
@@ -492,8 +507,8 @@ namespace Remotely.Server.Migrations.PostgreSql
                         .HasColumnType("text");
 
                     b.Property<string>("OrganizationName")
-                        .HasColumnType("character varying(25)")
-                        .HasMaxLength(25);
+                        .HasMaxLength(25)
+                        .HasColumnType("character varying(25)");
 
                     b.HasKey("ID");
 
@@ -527,33 +542,13 @@ namespace Remotely.Server.Migrations.PostgreSql
                     b.ToTable("SharedFiles");
                 });
 
-            modelBuilder.Entity("Remotely.Shared.Models.UserDevicePermission", b =>
-                {
-                    b.Property<string>("ID")
-                        .HasColumnType("text");
-
-                    b.Property<string>("DeviceGroupID")
-                        .HasColumnType("text");
-
-                    b.Property<string>("UserID")
-                        .HasColumnType("text");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("DeviceGroupID");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("PermissionLinks");
-                });
-
             modelBuilder.Entity("Remotely.Shared.Models.RemotelyUser", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
                     b.Property<string>("DisplayName")
-                        .HasColumnType("character varying(100)")
-                        .HasMaxLength(100);
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<bool>("IsAdministrator")
                         .HasColumnType("boolean");
@@ -575,6 +570,21 @@ namespace Remotely.Server.Migrations.PostgreSql
                     b.HasIndex("UserName");
 
                     b.HasDiscriminator().HasValue("RemotelyUser");
+                });
+
+            modelBuilder.Entity("DeviceGroupRemotelyUser", b =>
+                {
+                    b.HasOne("Remotely.Shared.Models.DeviceGroup", null)
+                        .WithMany()
+                        .HasForeignKey("DeviceGroupsID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Remotely.Shared.Models.RemotelyUser", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -641,6 +651,12 @@ namespace Remotely.Server.Migrations.PostgreSql
                     b.HasOne("Remotely.Shared.Models.RemotelyUser", "User")
                         .WithMany("Alerts")
                         .HasForeignKey("UserID");
+
+                    b.Navigation("Device");
+
+                    b.Navigation("Organization");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.ApiToken", b =>
@@ -648,6 +664,8 @@ namespace Remotely.Server.Migrations.PostgreSql
                     b.HasOne("Remotely.Shared.Models.Organization", "Organization")
                         .WithMany("ApiTokens")
                         .HasForeignKey("OrganizationID");
+
+                    b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.CommandResult", b =>
@@ -655,6 +673,8 @@ namespace Remotely.Server.Migrations.PostgreSql
                     b.HasOne("Remotely.Shared.Models.Organization", "Organization")
                         .WithMany("CommandResults")
                         .HasForeignKey("OrganizationID");
+
+                    b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.Device", b =>
@@ -666,6 +686,10 @@ namespace Remotely.Server.Migrations.PostgreSql
                     b.HasOne("Remotely.Shared.Models.Organization", "Organization")
                         .WithMany("Devices")
                         .HasForeignKey("OrganizationID");
+
+                    b.Navigation("DeviceGroup");
+
+                    b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.DeviceGroup", b =>
@@ -673,6 +697,8 @@ namespace Remotely.Server.Migrations.PostgreSql
                     b.HasOne("Remotely.Shared.Models.Organization", "Organization")
                         .WithMany("DeviceGroups")
                         .HasForeignKey("OrganizationID");
+
+                    b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.EventLog", b =>
@@ -680,6 +706,8 @@ namespace Remotely.Server.Migrations.PostgreSql
                     b.HasOne("Remotely.Shared.Models.Organization", "Organization")
                         .WithMany("EventLogs")
                         .HasForeignKey("OrganizationID");
+
+                    b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.InviteLink", b =>
@@ -687,6 +715,8 @@ namespace Remotely.Server.Migrations.PostgreSql
                     b.HasOne("Remotely.Shared.Models.Organization", "Organization")
                         .WithMany("InviteLinks")
                         .HasForeignKey("OrganizationID");
+
+                    b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.SharedFile", b =>
@@ -694,17 +724,8 @@ namespace Remotely.Server.Migrations.PostgreSql
                     b.HasOne("Remotely.Shared.Models.Organization", "Organization")
                         .WithMany("SharedFiles")
                         .HasForeignKey("OrganizationID");
-                });
 
-            modelBuilder.Entity("Remotely.Shared.Models.UserDevicePermission", b =>
-                {
-                    b.HasOne("Remotely.Shared.Models.DeviceGroup", "DeviceGroup")
-                        .WithMany("PermissionLinks")
-                        .HasForeignKey("DeviceGroupID");
-
-                    b.HasOne("Remotely.Shared.Models.RemotelyUser", "User")
-                        .WithMany("PermissionLinks")
-                        .HasForeignKey("UserID");
+                    b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.RemotelyUser", b =>
@@ -712,6 +733,44 @@ namespace Remotely.Server.Migrations.PostgreSql
                     b.HasOne("Remotely.Shared.Models.Organization", "Organization")
                         .WithMany("RemotelyUsers")
                         .HasForeignKey("OrganizationID");
+
+                    b.Navigation("Organization");
+                });
+
+            modelBuilder.Entity("Remotely.Shared.Models.Device", b =>
+                {
+                    b.Navigation("Alerts");
+                });
+
+            modelBuilder.Entity("Remotely.Shared.Models.DeviceGroup", b =>
+                {
+                    b.Navigation("Devices");
+                });
+
+            modelBuilder.Entity("Remotely.Shared.Models.Organization", b =>
+                {
+                    b.Navigation("Alerts");
+
+                    b.Navigation("ApiTokens");
+
+                    b.Navigation("CommandResults");
+
+                    b.Navigation("DeviceGroups");
+
+                    b.Navigation("Devices");
+
+                    b.Navigation("EventLogs");
+
+                    b.Navigation("InviteLinks");
+
+                    b.Navigation("RemotelyUsers");
+
+                    b.Navigation("SharedFiles");
+                });
+
+            modelBuilder.Entity("Remotely.Shared.Models.RemotelyUser", b =>
+                {
+                    b.Navigation("Alerts");
                 });
 #pragma warning restore 612, 618
         }
