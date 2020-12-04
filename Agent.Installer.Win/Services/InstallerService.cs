@@ -197,8 +197,10 @@ namespace Remotely.Agent.Installer.Win.Services
                     {
                         await sw.WriteAsync(Serializer.Serialize(setupOptions));
                     }
-                    var response = await wr.GetResponseAsync() as HttpWebResponse;
-                    Logger.Write($"Create device response: {response.StatusCode}");
+                    using (var response = await wr.GetResponseAsync() as HttpWebResponse)
+                    { 
+                        Logger.Write($"Create device response: {response.StatusCode}");
+                    }
                 }
             }
             catch (WebException ex) when ((ex.Response is HttpWebResponse response) && response.StatusCode == HttpStatusCode.BadRequest)
@@ -284,8 +286,10 @@ namespace Remotely.Agent.Installer.Win.Services
 
             var wr = WebRequest.CreateHttp($"{serverUrl}/Downloads/Remotely-Win10-{Platform}.zip");
             wr.Method = "Head";
-            var response = (HttpWebResponse)await wr.GetResponseAsync();
-            FileIO.WriteAllText(Path.Combine(InstallPath, "etag.txt"), response.Headers["ETag"]);
+            using (var response = (HttpWebResponse)await wr.GetResponseAsync())
+            {
+                FileIO.WriteAllText(Path.Combine(InstallPath, "etag.txt"), response.Headers["ETag"]);
+            }
 
             ZipFile.ExtractToDirectory(targetFile, tempDir);
             var fileSystemEntries = Directory.GetFileSystemEntries(tempDir);

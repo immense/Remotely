@@ -238,7 +238,7 @@ namespace Remotely.Agent.Services
                 {
                     var url = $"{ConnectionInfo.Host}/API/FileSharing/{fileID}";
                     var wr = WebRequest.CreateHttp(url);
-                    var response = await wr.GetResponseAsync();
+                    using var response = await wr.GetResponseAsync();
                     var cd = response.Headers["Content-Disposition"];
                     var filename = cd
                                     .Split(";")
