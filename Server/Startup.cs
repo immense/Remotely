@@ -44,7 +44,7 @@ namespace Remotely.Server
             var dbProvider = Configuration["ApplicationOptions:DBProvider"].ToLower();
             if (dbProvider == "sqlite")
             {
-                services.AddDbContext<ApplicationDbContext, SqliteDbContext>(options => 
+                services.AddDbContext<ApplicationDbContext, SqliteDbContext>(options =>
                     options.UseSqlite(Configuration.GetConnectionString("SQLite")));
             }
             else if (dbProvider == "sqlserver")
