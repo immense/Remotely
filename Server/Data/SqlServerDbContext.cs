@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,10 @@ namespace Remotely.Server.Data
             _configuration = configuration;
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options) => 
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        {
             options.UseSqlServer(_configuration.GetConnectionString("SQLServer"));
+            options.ConfigureWarnings(x => x.Ignore(RelationalEventId.MultipleCollectionIncludeWarning));
+        }
     }
 }

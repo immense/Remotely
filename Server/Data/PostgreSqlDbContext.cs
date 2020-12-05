@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using System;
@@ -35,6 +36,7 @@ namespace Remotely.Server.Data
             {
                 options.UseNpgsql(_configuration.GetConnectionString("PostgreSQL"));
             }
+            options.ConfigureWarnings(x => x.Ignore(RelationalEventId.MultipleCollectionIncludeWarning));
         }
     }
 }
