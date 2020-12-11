@@ -26,7 +26,7 @@ param (
 $ErrorActionPreference = "Stop"
 $InstallerDir = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer"
 $VsWhere = "$InstallerDir\vswhere.exe"
-$MSBuildPath = (&"$VsWhere" -latest -products * -find "**\Current\Bin\MSBuild.exe").Trim()
+$MSBuildPath = (&"$VsWhere" -latest -products * -find "\MSBuild\Current\Bin\MSBuild.exe").Trim()
 $Root = (Get-Item -Path $PSScriptRoot).Parent.FullName
 $SignAssemblies = $false
 
