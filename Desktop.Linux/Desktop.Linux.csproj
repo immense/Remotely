@@ -1,11 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <ApplicationIcon>Assets\favicon.ico</ApplicationIcon>
     <AssemblyName>Remotely_Desktop</AssemblyName>
     <RootNamespace>Remotely.Desktop.Linux</RootNamespace>
     <Platforms>AnyCPU;x64;x86</Platforms>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Compile Update="**\*.xaml.cs">
@@ -19,29 +34,25 @@
     <Compile Remove="Models\**" />
     <EmbeddedResource Remove="Models\**" />
     <None Remove="Models\**" />
-    <AvaloniaResource Remove="Controls\HostNamePrompt.xaml" />
-    <AvaloniaResource Remove="Controls\MessageBox.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Controls\HostNamePrompt.xaml" />
-    <None Remove="Controls\MessageBox.xaml" />
+    <None Remove="Assets\Remotely_Icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Controls\HostNamePrompt.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\MessageBox.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
+    <PackageReference Include="Avalonia" Version="0.9.12" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.9.12" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.12" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.9.10" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.9.10" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.10" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ScreenCast.Core\ScreenCast.Core.csproj" />
-    <ProjectReference Include="..\ScreenCast.Linux\ScreenCast.Linux.csproj" />
+    <ProjectReference Include="..\Desktop.Core\Desktop.Core.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Controls\HostNamePrompt.axaml.cs">
+      <DependentUpon>HostNamePrompt.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\MessageBox.axaml.cs">
+      <DependentUpon>MessageBox.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

@@ -155,12 +155,12 @@ else {
 ##    return
 ##}
 
-if ((Get-Package -Name "*3.1.2 - Windows Server Hosting*" -ErrorAction SilentlyContinue) -eq $null){
+if ((Get-Package -Name "*5.0.0 - Windows Server Hosting*" -ErrorAction SilentlyContinue) -eq $null){
     Wrap-Host "Downloading .NET Core Runtime and Hosting Bundle..."
     $ProgressPreference = "SilentlyContinue"
-    Invoke-WebRequest -Uri "https://download.visualstudio.microsoft.com/download/pr/dd119832-dc46-4ccf-bc12-69e7bfa61b18/990843c6e0cbd97f9df68c94f6de6bb6/dotnet-hosting-3.1.2-win.exe" -OutFile "$env:TEMP\dotnet-hosting-3.1.2-win.exe"
+    Invoke-WebRequest -Uri "https://download.visualstudio.microsoft.com/download/pr/08d642f7-8ade-4de3-9eae-b77fd05e5f01/503da91e7ea62d8be06488b014643c12/dotnet-hosting-5.0.0-win.exe" -OutFile "$env:TEMP\dotnet-hosting-5.0.0-win.exe"
     $ProgressPreference = "Continue"
-    Start-Process -FilePath "$env:TEMP\dotnet-hosting-3.1.2-win.exe" -ArgumentList "/install /quiet /norestart" -Wait
+    Start-Process -FilePath "$env:TEMP\dotnet-hosting-5.0.0-win.exe" -ArgumentList "/install /quiet /norestart" -Wait
     Wrap-Host
     Wrap-Host ".NET Runtime installation completed."
 }
@@ -321,7 +321,7 @@ try {
     }
     Wrap-Host "Downloading server package..."
 	$ProgressPreference = "SilentlyContinue"
-    Invoke-WebRequest -Uri "https://github.com/Jay-Rad/Remotely/releases/latest/download/Remotely_Server_Win-x64.zip" -OutFile "$env:TEMP\Remotely_Server_Win-x64.zip"
+    Invoke-WebRequest -Uri "https://github.com/lucent-sea/Remotely/releases/latest/download/Remotely_Server_Win-x64.zip" -OutFile "$env:TEMP\Remotely_Server_Win-x64.zip"
     $ProgressPreference = "Continue"
     Wrap-Host "Extracting server files..."
 	[System.Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem") | Out-Null
@@ -372,8 +372,10 @@ Start-Website -Name $SiteName
 
 
 ### SSL certificate installation. ###
-if ($WacsPath -ne $null -and (Test-Path -Path $WacsPath)) {
-    &"$WacsPath" --target iis --siteid (Get-Website -Name $SiteName).ID --installation iis --emailaddress $EmailAddress --accepttos 
+if ($WacsPath) {
+    if (Test-Path -Path $WacsPath) {
+        &"$WacsPath" --target iis --siteid (Get-Website -Name $SiteName).ID --installation iis --emailaddress $EmailAddress --accepttos 
+    }
 }
 
 Wrap-Host

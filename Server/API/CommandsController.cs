@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Remotely.Server.Attributes;
+using Remotely.Server.Services;
+using Remotely.Shared.Models;
+using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
-using Remotely.Shared.Models;
-using Remotely.Server.Services;
-using Microsoft.AspNetCore.Mvc;
-using Remotely.Server.Attributes;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,12 +17,12 @@ namespace Remotely.Server.API
     [ApiController]
     public class CommandsController : ControllerBase
     {
-        public CommandsController(DataService dataService)
+        public CommandsController(IDataService dataService)
         {
-            this.DataService = dataService;
+            DataService = dataService;
         }
 
-        private DataService DataService { get; }
+        private IDataService DataService { get; }
 
         // GET: api/<controller>
         [HttpGet("{fileExt}")]
@@ -100,33 +100,30 @@ namespace Remotely.Server.API
         [HttpPost("{resultType}")]
         public async Task Post(string resultType)
         {
-            using (var sr = new StreamReader(Request.Body))
+            using var sr = new StreamReader(Request.Body);
+            var content = await sr.ReadToEndAsync();
+            switch (resultType)
             {
-                var content = await sr.ReadToEndAsync();
-                switch (resultType)
-                {
-                    case "PSCore":
-                        {
-                            var result = System.Text.Json.JsonSerializer.Deserialize<PSCoreCommandResult>(content);
-                            var commandResult = DataService.GetCommandResult(result.CommandResultID);
-                            commandResult.PSCoreResults.Add(result);
-                            DataService.AddOrUpdateCommandResult(commandResult);
-                            break;
-                        }
-                    case "WinPS":
-                    case "CMD":
-                    case "Bash":
-                        {
-                            var result = System.Text.Json.JsonSerializer.Deserialize<GenericCommandResult>(content);
-                            var commandResult = DataService.GetCommandResult(result.CommandResultID);
-                            commandResult.CommandResults.Add(result);
-                            DataService.AddOrUpdateCommandResult(commandResult);
-                            break;
-                        }
-                    default:
+                case "PSCore":
+                    {
+                        var result = System.Text.Json.JsonSerializer.Deserialize<PSCoreCommandResult>(content);
+                        var commandResult = DataService.GetCommandResult(result.CommandResultID);
+                        commandResult.PSCoreResults.Add(result);
+                        DataService.AddOrUpdateCommandResult(commandResult);
                         break;
-                }
-
+                    }
+                case "WinPS":
+                case "CMD":
+                case "Bash":
+                    {
+                        var result = System.Text.Json.JsonSerializer.Deserialize<GenericCommandResult>(content);
+                        var commandResult = DataService.GetCommandResult(result.CommandResultID);
+                        commandResult.CommandResults.Add(result);
+                        DataService.AddOrUpdateCommandResult(commandResult);
+                        break;
+                    }
+                default:
+                    break;
             }
         }
     }

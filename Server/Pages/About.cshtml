@@ -18,5 +18,13 @@
     Open-Source Licenses: <a asp-page="/Credits">@Request.Scheme://@Request.Host/Credits</a>
 </p>
 <p>
-    Version: @System.Diagnostics.FileVersionInfo.GetVersionInfo("Remotely_Server.dll").FileVersion.ToString()
+    Version: @if (System.IO.File.Exists("Remotely_Server.dll"))
+    {
+        <span>@System.Diagnostics.FileVersionInfo.GetVersionInfo("Remotely_Server.dll").FileVersion.ToString()</span>
+    }
+    else
+    {
+        <span>1.0.0.0</span>
+    }
+
 </p>

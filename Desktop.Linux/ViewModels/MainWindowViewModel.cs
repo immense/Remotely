@@ -1,37 +1,31 @@
 ﻿using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Threading;
+using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
+using Remotely.Desktop.Core;
+using Remotely.Desktop.Core.Interfaces;
+using Remotely.Desktop.Core.Services;
 using Remotely.Desktop.Linux.Controls;
 using Remotely.Desktop.Linux.Services;
 using Remotely.Desktop.Linux.Views;
-using Remotely.ScreenCast.Core;
-using Remotely.ScreenCast.Core.Interfaces;
-using Remotely.ScreenCast.Core.Models;
-using Remotely.ScreenCast.Core.Services;
-using Remotely.ScreenCast.Core.Communication;
-using Remotely.ScreenCast.Linux.Services;
 using Remotely.Shared.Models;
+using Remotely.Shared.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Remotely.Shared.Utilities;
 
 namespace Remotely.Desktop.Linux.ViewModels
 {
-    public class MainWindowViewModel : ReactiveObject
+    public class MainWindowViewModel : ReactiveViewModel
     {
-        private double copyMessageOpacity;
-        private string host;
-        private bool isCopyMessageVisible;
-        private string sessionID;
+        private double _copyMessageOpacity;
+        private string _host;
+        private bool _isCopyMessageVisible;
+        private string _sessionID;
 
         public MainWindowViewModel()
         {
@@ -40,8 +34,6 @@ namespace Remotely.Desktop.Linux.ViewModels
             {
                 return;
             }
-
-            BuildServices();
 
             Conductor = Services.GetRequiredService<Conductor>();
             CasterSocket = Services.GetRequiredService<CasterSocket>();
@@ -64,6 +56,7 @@ namespace Remotely.Desktop.Linux.ViewModels
         public ICommand CloseCommand => new Executor((param) =>
         {
             (param as Window)?.Close();
+            Environment.Exit(0);
         });
 
         public ICommand CopyLinkCommand => new Executor(async (param) =>
@@ -73,7 +66,7 @@ namespace Remotely.Desktop.Linux.ViewModels
             CopyMessageOpacity = 1;
             IsCopyMessageVisible = true;
             await Task.Delay(1000);
-            while (copyMessageOpacity > 0)
+            while (_copyMessageOpacity > 0)
             {
                 CopyMessageOpacity -= .05;
                 await Task.Delay(25);
@@ -83,20 +76,20 @@ namespace Remotely.Desktop.Linux.ViewModels
 
         public double CopyMessageOpacity
         {
-            get => copyMessageOpacity;
-            set => this.RaiseAndSetIfChanged(ref copyMessageOpacity, value);
+            get => _copyMessageOpacity;
+            set => this.RaiseAndSetIfChanged(ref _copyMessageOpacity, value);
         }
 
         public string Host
         {
-            get => host;
-            set => this.RaiseAndSetIfChanged(ref host, value);
+            get => _host;
+            set => this.RaiseAndSetIfChanged(ref _host, value);
         }
 
         public bool IsCopyMessageVisible
         {
-            get => isCopyMessageVisible;
-            set => this.RaiseAndSetIfChanged(ref isCopyMessageVisible, value);
+            get => _isCopyMessageVisible;
+            set => this.RaiseAndSetIfChanged(ref _isCopyMessageVisible, value);
         }
 
         public ICommand MinimizeCommand => new Executor((param) =>
@@ -117,15 +110,14 @@ namespace Remotely.Desktop.Linux.ViewModels
             var viewerList = param as AvaloniaList<object> ?? new AvaloniaList<object>();
             foreach (Viewer viewer in viewerList)
             {
-                viewer.DisconnectRequested = true;
-                await CasterSocket.SendViewerRemoved(viewer.ViewerConnectionID);
+                await CasterSocket.DisconnectViewer(viewer, true);
             }
         });
 
         public string SessionID
         {
-            get => sessionID;
-            set => this.RaiseAndSetIfChanged(ref sessionID, value);
+            get => _sessionID;
+            set => this.RaiseAndSetIfChanged(ref _sessionID, value);
         }
 
         public ObservableCollection<Viewer> Viewers { get; } = new ObservableCollection<Viewer>();
@@ -143,9 +135,10 @@ namespace Remotely.Desktop.Linux.ViewModels
             try
             {
 
+                SessionID = "Retrieving...";
+
                 await CheckDependencies();
 
-                SessionID = "Retrieving...";
 
                 Host = Config.GetConfig().Host;
 
@@ -186,6 +179,7 @@ namespace Remotely.Desktop.Linux.ViewModels
             catch (Exception ex)
             {
                 Logger.Write(ex);
+                _sessionID = "Failed";
                 await MessageBox.Show("Failed to connect to server.", "Connection Failed", MessageBoxType.OK);
                 return;
             }
@@ -196,11 +190,17 @@ namespace Remotely.Desktop.Linux.ViewModels
             var prompt = new HostNamePrompt();
             if (!string.IsNullOrWhiteSpace(Host))
             {
-                HostNamePromptViewModel.Current.Host = Host;
+                prompt.ViewModel.Host = Host;
             }
             prompt.Owner = MainWindow.Current;
             await prompt.ShowDialog(MainWindow.Current);
-            var result = HostNamePromptViewModel.Current.Host;
+            var result = prompt.ViewModel.Host;
+
+            if (result is null)
+            {
+                return;
+            }
+
             if (!result.StartsWith("https://") && !result.StartsWith("http://"))
             {
                 result = $"https://{result}";
@@ -214,71 +214,55 @@ namespace Remotely.Desktop.Linux.ViewModels
             }
         }
 
-        private void BuildServices()
-        {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddLogging(builder =>
-            {
-                builder.AddConsole().AddDebug();
-            });
-
-            serviceCollection.AddSingleton<IScreenCaster, ScreenCaster>();
-            serviceCollection.AddSingleton<IKeyboardMouseInput, KeyboardMouseInputLinux>();
-            serviceCollection.AddSingleton<IClipboardService, ClipboardServiceLinux>();
-            serviceCollection.AddSingleton<IAudioCapturer, AudioCapturerLinux>();
-            serviceCollection.AddSingleton<CasterSocket>();
-            serviceCollection.AddSingleton<IdleTimer>();
-            serviceCollection.AddSingleton<Conductor>();
-            serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerLinux>();
-            serviceCollection.AddTransient<Viewer>();
-            serviceCollection.AddScoped<IFileTransferService, FileTransferService>();
-            serviceCollection.AddScoped<IWebRtcSessionFactory, WebRtcSessionFactory>();
-            serviceCollection.AddSingleton<ICursorIconWatcher, CursorIconWatcherLinux>();
-
-
-            ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
-        }
 
         private async Task CheckDependencies()
         {
-            var dependencies = new string[]
+            try
             {
-                "libx11-dev",
-                "libc6-dev",
-                "libgdiplus",
-                "libxtst-dev",
-                "xclip"
-            };
-
-            foreach (var dependency in dependencies)
-            {
-                var proc = Process.Start("dpkg", $"-s {dependency}");
-                proc.WaitForExit();
-                if (proc.ExitCode != 0)
+                var dependencies = new string[]
                 {
-                    var commands = "sudo apt-get -y install libx11-dev ; " +
-                                "sudo apt-get -y install libc6-dev ; " +
-                                "sudo apt-get -y install libgdiplus ; " +
-                                "sudo apt-get -y install libxtst-dev ; " +
-                                "sudo apt-get -y install xclip";
+                    "libx11-dev",
+                    "libc6-dev",
+                    "libgdiplus",
+                    "libxtst-dev",
+                    "xclip"
+                };
 
-                    await App.Current.Clipboard.SetTextAsync(commands);
+                foreach (var dependency in dependencies)
+                {
+                    var proc = Process.Start("dpkg", $"-s {dependency}");
+                    proc.WaitForExit();
+                    if (proc.ExitCode != 0)
+                    {
+                        var commands = "sudo apt-get -y install libx11-dev ; " +
+                                    "sudo apt-get -y install libc6-dev ; " +
+                                    "sudo apt-get -y install libgdiplus ; " +
+                                    "sudo apt-get -y install libxtst-dev ; " +
+                                    "sudo apt-get -y install xclip";
 
-                    var message = "The following dependencies are required.  Install commands have been copied to your clipboard." +
-                        Environment.NewLine + Environment.NewLine +
-                        "Please paste them into a terminal and run, then try opening Remotely again." +
-                        Environment.NewLine + Environment.NewLine +
-                        "libx11-dev" + Environment.NewLine +
-                        "libc6-dev" + Environment.NewLine +
-                        "libgdiplus" + Environment.NewLine + 
-                        "libxtst-dev" + Environment.NewLine + 
-                        "xclip";
+                        await App.Current.Clipboard.SetTextAsync(commands);
 
-                    await MessageBox.Show(message, "Dependencies Required", MessageBoxType.OK);
+                        var message = "The following dependencies are required.  Install commands have been copied to your clipboard." +
+                            Environment.NewLine + Environment.NewLine +
+                            "Please paste them into a terminal and run, then try opening Remotely again." +
+                            Environment.NewLine + Environment.NewLine +
+                            "libx11-dev" + Environment.NewLine +
+                            "libc6-dev" + Environment.NewLine +
+                            "libgdiplus" + Environment.NewLine +
+                            "libxtst-dev" + Environment.NewLine +
+                            "xclip";
 
-                    Environment.Exit(0);
+                        await MessageBox.Show(message, "Dependencies Required", MessageBoxType.OK);
+
+                        Environment.Exit(0);
+                    }
                 }
             }
+            catch
+            {
+                Logger.Write("Unable to check dependencies.", Shared.Enums.EventType.Warning);
+            }
+          
         }
         private void ScreenCastRequested(object sender, ScreenCastRequest screenCastRequest)
         {
@@ -289,7 +273,7 @@ namespace Remotely.Desktop.Linux.ViewModels
                 {
                     _ = Task.Run(() =>
                     {
-                            Services.GetRequiredService<IScreenCaster>().BeginScreenCasting(screenCastRequest);
+                        Services.GetRequiredService<IScreenCaster>().BeginScreenCasting(screenCastRequest);
                     });
                 }
             });

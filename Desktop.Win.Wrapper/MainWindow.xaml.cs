@@ -1,23 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using PathIO = System.IO.Path;
 
 namespace Remotely.Desktop.Win.Wrapper
 {
@@ -26,39 +14,13 @@ namespace Remotely.Desktop.Win.Wrapper
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static readonly string baseDir = Directory.CreateDirectory(PathIO.Combine(PathIO.GetTempPath(), "Remotely_Desktop")).FullName;
-        private string tempDir;
-
+        private static readonly string baseDir = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "Remotely_Desktop")).FullName;
+        private readonly string currentVersionDir = Path.Combine(baseDir, "Current");
+        private readonly string remotelyDesktopFilename = "Remotely_Desktop.exe";
+        private readonly string tempDir = Directory.CreateDirectory(Path.Combine(baseDir, Guid.NewGuid().ToString())).FullName;
         public MainWindow()
         {
             InitializeComponent();
-        }
-
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
-
-        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
-
-        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            DragMove();
-        }
-
-        private async void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            StatusText.Text = "Extracting files...";
-            await Task.Run(CleanupOldFiles);
-            tempDir = Directory.CreateDirectory(PathIO.Combine(baseDir, Guid.NewGuid().ToString())).FullName;
-            await Task.Run(ExtractRemotely);
-            await Task.Run(ExtractInstallScript);
-            StatusText.Text = "Updating .NET Core runtime...";
-            await Task.Run(RunInstallScript);
-            Close();
         }
 
         private void CleanupOldFiles()
@@ -67,7 +29,7 @@ namespace Remotely.Desktop.Win.Wrapper
             {
                 try
                 {
-                    if (Directory.Exists(fse) && fse != tempDir)
+                    if (Directory.Exists(fse) && fse != currentVersionDir)
                     {
                         Directory.Delete(fse, true);
                     }
@@ -77,15 +39,22 @@ namespace Remotely.Desktop.Win.Wrapper
                     }
                 }
                 catch { }
-               
+
             }
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
         }
 
         private void ExtractRemotely()
         {
             try
             {
-                var zipPath = PathIO.Combine(tempDir, "Remotely_Desktop.zip");
+                var zipPath = Path.Combine(tempDir, "Remotely_Desktop.zip");
+                var tempExePath = Path.Combine(tempDir, remotelyDesktopFilename);
+
                 using (var mrs = Assembly.GetExecutingAssembly()
                     .GetManifestResourceStream("Remotely.Desktop.Win.Wrapper.Remotely_Desktop.zip"))
                 {
@@ -94,57 +63,92 @@ namespace Remotely.Desktop.Win.Wrapper
                         mrs.CopyTo(fs);
                     }
                 }
-                ZipFile.ExtractToDirectory(zipPath, tempDir);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occured while extracting files.  Error: " +
-                    Environment.NewLine + Environment.NewLine + ex.Message, "Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-            }
-        }
 
-        private void RunInstallScript()
-        {
-            try
-            {
-                var installPath = PathIO.Combine(tempDir, "Install.ps1");
-                Process.Start(new ProcessStartInfo()
+                using (var zipArchive = ZipFile.OpenRead(zipPath))
                 {
-                    FileName = "powershell.exe",
-                    Arguments = $"-executionpolicy bypass -f \"{installPath}\"",
-                    WindowStyle = ProcessWindowStyle.Hidden
-                }).WaitForExit();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occured while updating .NET Core.  Error: " +
-                    Environment.NewLine + Environment.NewLine + ex.Message, "Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-            }
-        }
+                    zipArchive.GetEntry(remotelyDesktopFilename).ExtractToFile(tempExePath);
+                    var fileVersionInfo = FileVersionInfo.GetVersionInfo(tempExePath);
 
-        private void ExtractInstallScript()
-        {
-            try
-            {
-                var installPath = PathIO.Combine(tempDir, "Install.ps1");
-                using (var mrs = Assembly.GetExecutingAssembly()
-                    .GetManifestResourceStream("Remotely.Desktop.Win.Wrapper.Install.ps1"))
-                {
-                    using (var fs = new FileStream(installPath, FileMode.Create))
+                    var targetExePath = Path.Combine(currentVersionDir, remotelyDesktopFilename);
+                    if (File.Exists(targetExePath) &&
+                        FileVersionInfo.GetVersionInfo(targetExePath).FileVersion == fileVersionInfo.FileVersion)
                     {
-                        mrs.CopyTo(fs);
+                        return;
                     }
+
+                    try
+                    {
+                        var currentVersionDir = Path.GetDirectoryName(targetExePath);
+                        if (Directory.Exists(currentVersionDir))
+                        {
+                            Directory.Delete(currentVersionDir, true);
+                        }
+                        Directory.CreateDirectory(currentVersionDir);
+                        ZipFile.ExtractToDirectory(zipPath, currentVersionDir);
+                    }
+                    catch { }
+
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("An error occured while extracting files.  Error: " +
-                    Environment.NewLine + Environment.NewLine + ex.Message);
+                    Environment.NewLine + Environment.NewLine + ex.Message, "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
+        }
+
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void StartRemotely()
+        {
+            try
+            {
+                Process.Start(Path.Combine(currentVersionDir, remotelyDesktopFilename));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occured while starting Remotely.  Error: " +
+                    Environment.NewLine + Environment.NewLine + ex.Message, "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+        }
+
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            StatusText.Text = "Extracting files...";
+            await Task.Run(ExtractRemotely);
+            await Task.Run(StartRemotely);
+            await Task.Run(CleanupOldFiles);
+            await Task.Run(AddFirewallRule);
+            Close();
+        }
+
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            DragMove();
+        }
+
+        private void AddFirewallRule()
+        {
+            var psi = new ProcessStartInfo()
+            {
+                FileName = "netsh",
+                Arguments = "advfirewall firewall delete rule name=\"Remotely Desktop\"",
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true
+            };
+
+            Process.Start(psi).WaitForExit();
+
+            psi.Arguments = $"advfirewall firewall add rule name=\"Remotely Desktop\" program=\"{Path.Combine(currentVersionDir, remotelyDesktopFilename)}\" protocol=any dir=in enable=yes action=allow description=\"The agent that allows screen sharing and remote control for Remotely.\"";
+
+            Process.Start(psi).WaitForExit();
         }
     }
 }

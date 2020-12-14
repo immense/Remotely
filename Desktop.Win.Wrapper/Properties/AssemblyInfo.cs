@@ -1,18 +1,16 @@
 ﻿using System.Reflection;
-using System.Resources;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Desktop.Win.Wrapper")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Remotely Desktop")]
+[assembly: AssemblyDescription("Desktop client for allowing remote control via the Remotely server.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Desktop.Win.Wrapper")]
-[assembly: AssemblyCopyright("Copyright ©  2020")]
+[assembly: AssemblyCompany("Translucency Software")]
+[assembly: AssemblyProduct("Remotely Desktop")]
+[assembly: AssemblyCopyright("Copyright ©  2020 Translucency Software")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

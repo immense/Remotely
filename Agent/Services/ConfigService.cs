@@ -10,9 +10,9 @@ namespace Remotely.Agent.Services
 {
     public class ConfigService
     {
-        private static object fileLock = new object();
+        private static readonly object fileLock = new object();
         private ConnectionInfo connectionInfo;
-        private string debugGuid = "f2b0a595-5ea8-471b-975f-12e70e0f3497";
+        private readonly string debugGuid = "f2b0a595-5ea8-471b-975f-12e70e0f3497";
 
         private Dictionary<string, string> commandLineArgs;
         private Dictionary<string, string> CommandLineArgs
@@ -92,19 +92,5 @@ namespace Remotely.Agent.Services
                 File.WriteAllText("ConnectionInfo.json", JsonSerializer.Serialize(connectionInfo));
             }
         }
-
-        public bool TryGetDeviceSetupOptions(out DeviceSetupOptions options)
-        {
-            if (File.Exists("DeviceSetupOptions.json"))
-            {
-                options = JsonSerializer.Deserialize<DeviceSetupOptions>(File.ReadAllText("DeviceSetupOptions.json"));
-                File.Delete("DeviceSetupOptions.json");
-                return true;
-            }
-
-            options = null;
-            return false;
-        }
-
     }
 }

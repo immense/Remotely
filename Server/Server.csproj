@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <DockerTargetOS>Windows</DockerTargetOS>
@@ -16,91 +16,45 @@
 
   <ItemGroup>
     <Compile Remove="Areas\Identity\Services\**" />
-    <Compile Remove="wwwroot\lib\%40types\popper\**" />
+    <Compile Remove="wwwroot\scripts\**" />
     <Content Remove="Areas\Identity\Services\**" />
-    <Content Remove="wwwroot\lib\%40types\popper\**" />
+    <Content Remove="wwwroot\scripts\**" />
     <EmbeddedResource Remove="Areas\Identity\Services\**" />
-    <EmbeddedResource Remove="wwwroot\lib\%40types\popper\**" />
+    <EmbeddedResource Remove="wwwroot\scripts\**" />
     <None Remove="Areas\Identity\Services\**" />
-    <None Remove="wwwroot\lib\%40types\popper\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="wwwroot\scripts\Chat.ts" />
-    <Content Remove="wwwroot\scripts\CommandCompletion.ts" />
-    <Content Remove="wwwroot\scripts\CommandProcessor.ts" />
-    <Content Remove="wwwroot\scripts\Commands\BashCommands.ts" />
-    <Content Remove="wwwroot\scripts\Commands\CMDCommands.ts" />
-    <Content Remove="wwwroot\scripts\Commands\PSCommands.ts" />
-    <Content Remove="wwwroot\scripts\Commands\WebCommands.ts" />
-    <Content Remove="wwwroot\scripts\Console.ts" />
-    <Content Remove="wwwroot\scripts\DataGrid.ts" />
-    <Content Remove="wwwroot\scripts\Enums\RemoteControlMode.ts" />
-    <Content Remove="wwwroot\scripts\HubConnection.ts" />
-    <Content Remove="wwwroot\scripts\InputEventHandlers.ts" />
-    <Content Remove="wwwroot\scripts\Main.ts" />
-    <Content Remove="wwwroot\scripts\Models\CaptureFrame.ts" />
-    <Content Remove="wwwroot\scripts\Models\CommandLineParameter.ts" />
-    <Content Remove="wwwroot\scripts\Models\CommandResult.ts" />
-    <Content Remove="wwwroot\scripts\Models\ConsoleCommand.ts" />
-    <Content Remove="wwwroot\scripts\Models\CursorInfo.ts" />
-    <Content Remove="wwwroot\scripts\Models\Device.ts" />
-    <Content Remove="wwwroot\scripts\Models\DynamicDtoType.ts" />
-    <Content Remove="wwwroot\scripts\Models\GenericCommandResult.ts" />
-    <Content Remove="wwwroot\scripts\Models\IceServerModel.ts" />
-    <Content Remove="wwwroot\scripts\Models\Parameter.ts" />
-    <Content Remove="wwwroot\scripts\Models\Point.ts" />
-    <Content Remove="wwwroot\scripts\RemoteControl\MessageSender.ts" />
-    <Content Remove="wwwroot\scripts\Models\UserOptions.ts" />
-    <Content Remove="wwwroot\scripts\Pages\ApiTokens.ts" />
-    <Content Remove="wwwroot\scripts\Pages\IndexNotLoggedIn.ts" />
-    <Content Remove="wwwroot\scripts\Pages\OrganizationManagement.ts" />
-    <Content Remove="wwwroot\scripts\Pages\ServerConfig.ts" />
-    <Content Remove="wwwroot\scripts\RemoteControl\ClipboardWatcher.ts" />
-    <Content Remove="wwwroot\scripts\RemoteControl\Main.ts" />
-    <Content Remove="wwwroot\scripts\RemoteControl\RtcMessageHandler.ts" />
-    <Content Remove="wwwroot\scripts\RemoteControl\RtcSession.ts" />
-    <Content Remove="wwwroot\scripts\RemoteControl\UI.ts" />
-    <Content Remove="wwwroot\scripts\ResultsParser.ts" />
-    <Content Remove="wwwroot\scripts\RTC.ts" />
-    <Content Remove="wwwroot\scripts\SocketsRC.ts" />
-    <Content Remove="wwwroot\scripts\Sound.ts" />
-    <Content Remove="wwwroot\scripts\Store.ts" />
-    <Content Remove="wwwroot\scripts\UI.ts" />
-    <Content Remove="wwwroot\scripts\UserSettings.ts" />
-    <Content Remove="wwwroot\scripts\Utilities.ts" />
+    <None Remove="wwwroot\scripts\**" />
+    <TypeScriptCompile Remove="node_modules\**" />
   </ItemGroup>
 
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.4" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="3.1.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.4">
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="5.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.4" />
-    <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="3.1.4" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.3" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="5.0.0" />
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.1.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.1" PrivateAssets="All" />
     <PackageReference Include="NETStandard.Library" Version="2.0.3" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.3" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
-    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
   </ItemGroup>
 
 
 
 
   <ItemGroup>
-    <None Include="wwwroot\lib\%40types\bootstrap\LICENSE" />
-    <None Include="wwwroot\lib\%40types\bootstrap\README.md" />
-    <None Include="wwwroot\lib\%40types\jquery\LICENSE" />
-    <None Include="wwwroot\lib\%40types\jquery\README.md" />
-    <None Include="wwwroot\lib\%40types\sizzle\LICENSE" />
-    <None Include="wwwroot\lib\%40types\sizzle\README.md" />
     <None Include="wwwroot\lib\msgpack\msgpack.js" />
     <None Include="wwwroot\lib\msgpack\msgpack.js.map" />
     <None Include="wwwroot\lib\msgpack\msgpack.min.js" />
@@ -118,68 +72,6 @@
     <None Include="wwwroot\lib\signalr\signalr.js.map" />
     <None Include="wwwroot\lib\signalr\signalr.min.js" />
     <None Include="wwwroot\lib\signalr\signalr.min.js.map" />
-    <None Include="wwwroot\scripts\Models\CommandResult.ts">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </None>
-    <None Include="wwwroot\scripts\Models\CursorInfo.ts">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </None>
-    <None Include="wwwroot\scripts\Models\GenericCommandResult.ts">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </None>
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <TypeScriptCompile Include="wwwroot\lib\%40types\bootstrap\index.d.ts" />
-    <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\dist\jquery.slim.d.ts" />
-    <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\index.d.ts" />
-    <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\JQuery.d.ts" />
-    <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\JQueryStatic.d.ts" />
-    <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\legacy.d.ts" />
-    <TypeScriptCompile Include="wwwroot\lib\%40types\jquery\misc.d.ts" />
-    <TypeScriptCompile Include="wwwroot\lib\%40types\sizzle\index.d.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Chat.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\CommandCompletion.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Commands\BashCommands.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Commands\CMDCommands.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Commands\WebCommands.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Commands\PSCommands.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Console.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\DataGrid.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Enums\RemoteControlMode.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\InputEventHandlers.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Main.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\CommandProcessor.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Models\CommandLineParameter.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Models\ConsoleCommand.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Enums\DynamicDtoType.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Models\IceServerModel.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\MessageSender.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Models\Point.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Models\UserOptions.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Models\Device.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Models\Parameter.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Pages\ApiTokens.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Pages\IndexNotLoggedIn.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Pages\OrganizationManagement.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Pages\ServerConfig.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\ClipboardWatcher.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\Main.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RtcMessageHandler.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RtcSession.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\UI.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\ResultsParser.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\RemoteControl\RCHubConnection.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Sound.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Store.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\UI.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\UserSettings.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\Utilities.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\HubConnection.ts" />
   </ItemGroup>
 
 
@@ -193,17 +85,10 @@
     </Content>
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="CurrentVersion.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="ffmpeg.exe">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 
   <ItemGroup>
+    <Folder Include="Migrations\PostgreSql\" />
+    <Folder Include="Migrations\Sqlite\" />
     <Folder Include="Properties\" />
   </ItemGroup>
 

@@ -21,17 +21,17 @@
 		ProxyPassReverse http://localhost:5000/
 	</Location>
 
-	<LocationMatch "/DeviceHub">
+	<LocationMatch "/AgentHub">
 		ProxyPass http://localhost:5000/
 		ProxyPassReverse http://localhost:5000/
 	</LocationMatch>
 
-	<LocationMatch "/RCBrowserHub">
+	<LocationMatch "/ViewerHub">
 		ProxyPass http://localhost:5000/
 		ProxyPassReverse http://localhost:5000/
 	</LocationMatch>
 
-	<LocationMatch "/RCDeviceHub">
+	<LocationMatch "/CasterHub">
 		ProxyPass http://localhost:5000/
 		ProxyPassReverse http://localhost:5000/
 	</LocationMatch>

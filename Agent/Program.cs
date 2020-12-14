@@ -1,12 +1,15 @@
-﻿using Remotely.Agent.Services;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Remotely.Agent.Interfaces;
+using Remotely.Agent.Services;
+using Remotely.Shared.Enums;
+using Remotely.Shared.Utilities;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.ServiceProcess;
-using System.Threading.Tasks;
 using System.Threading;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Remotely.Shared.Utilities;
+using System.Threading.Tasks;
 
 namespace Remotely.Agent
 {
@@ -21,7 +24,7 @@ namespace Remotely.Agent
             {
                 BuildServices();
 
-                Task.Run(() => {_ = Init(); });
+                Task.Run(() => { _ = Init(); });
 
                 Thread.Sleep(Timeout.Infinite);
 
@@ -29,6 +32,7 @@ namespace Remotely.Agent
             catch (Exception ex)
             {
                 Logger.Write(ex);
+                throw;
             }
         }
 
@@ -39,7 +43,7 @@ namespace Remotely.Agent
             {
                 builder.AddConsole().AddDebug();
             });
-            serviceCollection.AddSingleton<DeviceSocket>();
+            serviceCollection.AddSingleton<AgentSocket>();
             serviceCollection.AddScoped<ChatClientService>();
             serviceCollection.AddTransient<Bash>();
             serviceCollection.AddTransient<CMD>();
@@ -50,7 +54,23 @@ namespace Remotely.Agent
             serviceCollection.AddScoped<Uninstaller>();
             serviceCollection.AddScoped<ScriptRunner>();
             serviceCollection.AddScoped<CommandExecutor>();
-            serviceCollection.AddScoped<AppLauncher>();
+
+            if (EnvironmentHelper.IsWindows)
+            {
+                serviceCollection.AddScoped<IAppLauncher, AppLauncherWin>();
+            }
+            else if (EnvironmentHelper.IsLinux)
+            {
+                serviceCollection.AddScoped<IAppLauncher, AppLauncherLinux>();
+            }
+            else if (EnvironmentHelper.IsMac)
+            {
+                // TODO: Mac.
+            }
+            else
+            {
+                throw new NotSupportedException("Operating system not supported.");
+            }
 
             Services = serviceCollection.BuildServiceProvider();
         }
@@ -69,21 +89,29 @@ namespace Remotely.Agent
                 SetWorkingDirectory();
 
 
-                if (!EnvironmentHelper.IsDebug && EnvironmentHelper.IsWindows)
+                if (EnvironmentHelper.IsWindows &&
+                    Process.GetCurrentProcess().SessionId == 0)
                 {
                     _ = Task.Run(() =>
                     {
-                        ServiceBase.Run(new WindowsService());
+                        try
+                        {
+                            ServiceBase.Run(new WindowsService());
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Write(ex, "Failed to start service.", EventType.Warning);
+                        }
                     });
                 }
 
                 await Services.GetRequiredService<Updater>().BeginChecking();
 
-                await Services.GetRequiredService<DeviceSocket>().Connect();
+                await Services.GetRequiredService<AgentSocket>().Connect();
             }
             finally
             {
-                await Services.GetRequiredService<DeviceSocket>().HandleConnection();
+                await Services.GetRequiredService<AgentSocket>().HandleConnection();
             }
         }
 

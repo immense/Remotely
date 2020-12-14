@@ -1,8 +1,8 @@
+using Microsoft.AspNetCore.Identity.UI.Services;
 using System;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace Remotely.Server.Services
 {
@@ -14,33 +14,37 @@ namespace Remotely.Server.Services
 
     public class EmailSenderEx : IEmailSenderEx
     {
-        public EmailSenderEx(ApplicationConfig appConfig, DataService dataService)
+        public EmailSenderEx(IApplicationConfig appConfig, IDataService dataService)
         {
             AppConfig = appConfig;
             DataService = dataService;
         }
 
-        private ApplicationConfig AppConfig { get; }
-        private DataService DataService { get; }
+        private IApplicationConfig AppConfig { get; }
+        private IDataService DataService { get; }
 
         public Task<bool> SendEmailAsync(string email, string replyTo, string subject, string htmlMessage, string organizationID = null)
         {
             try
             {
-                var mailClient = new SmtpClient();
-                mailClient.Host = AppConfig.SmtpHost;
-                mailClient.Port = AppConfig.SmtpPort;
-                mailClient.EnableSsl = AppConfig.SmtpEnableSsl;
-                mailClient.Credentials = new NetworkCredential(AppConfig.SmtpUserName, AppConfig.SmtpPassword);
-                mailClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+                var mailClient = new SmtpClient
+                {
+                    Host = AppConfig.SmtpHost,
+                    Port = AppConfig.SmtpPort,
+                    EnableSsl = AppConfig.SmtpEnableSsl,
+                    Credentials = new NetworkCredential(AppConfig.SmtpUserName, AppConfig.SmtpPassword),
+                    DeliveryMethod = SmtpDeliveryMethod.Network
+                };
 
                 var from = new MailAddress(AppConfig.SmtpEmail, AppConfig.SmtpDisplayName, System.Text.Encoding.UTF8);
                 var to = new MailAddress(email);
 
-                var mailMessage = new MailMessage(from, to);
-                mailMessage.IsBodyHtml = true;
-                mailMessage.Subject = subject;
-                mailMessage.Body = htmlMessage;
+                var mailMessage = new MailMessage(from, to)
+                {
+                    IsBodyHtml = true,
+                    Subject = subject,
+                    Body = htmlMessage
+                };
                 mailMessage.ReplyToList.Add(new MailAddress(replyTo));
                 mailClient.Send(mailMessage);
                 DataService.WriteEvent($"Email successfully sent to {email}.  Subject: \"{subject}\".", organizationID);

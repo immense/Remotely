@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -40,12 +38,10 @@ namespace Remotely.Server.Services
 
         private void CleanupTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            using (var scope = Services.CreateScope())
-            {
-                var dataService = scope.ServiceProvider.GetRequiredService<DataService>();
+            using var scope = Services.CreateScope();
+            var dataService = scope.ServiceProvider.GetRequiredService<IDataService>();
 
-                dataService.CleanupOldRecords();
-            }
+            dataService.CleanupOldRecords();
         }
     }
 }

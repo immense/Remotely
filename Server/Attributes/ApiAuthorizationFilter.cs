@@ -6,16 +6,16 @@ namespace Remotely.Server.Attributes
 {
     public class ApiAuthorizationFilter : ActionFilterAttribute, IAuthorizationFilter
     {
-        public ApiAuthorizationFilter(DataService dataService)
+        public ApiAuthorizationFilter(IDataService dataService)
         {
             DataService = dataService;
         }
 
-        private DataService DataService { get; }
+        private IDataService DataService { get; }
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            
+
             if (context.HttpContext.User.Identity.IsAuthenticated)
             {
                 var orgID = DataService.GetUserByName(context.HttpContext.User.Identity.Name)?.OrganizationID;
@@ -27,7 +27,7 @@ namespace Remotely.Server.Attributes
             {
                 var apiToken = result.ToString().Split(":")[0]?.Trim();
                 var apiSecret = result.ToString().Split(":")[1]?.Trim();
-                
+
                 if (DataService.ValidateApiToken(apiToken, apiSecret, context.HttpContext.Request.Path, context.HttpContext.Connection.RemoteIpAddress.ToString()))
                 {
                     var orgID = DataService.GetApiToken(apiToken)?.OrganizationID;

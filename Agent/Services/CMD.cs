@@ -1,9 +1,9 @@
-﻿using Remotely.Shared.Models;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Remotely.Shared.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Remotely.Agent.Services
 {
@@ -12,16 +12,20 @@ namespace Remotely.Agent.Services
         public CMD(ConfigService configService)
         {
             ConfigService = configService;
-            var psi = new ProcessStartInfo("cmd.exe");
-            psi.WindowStyle = ProcessWindowStyle.Hidden;
-            psi.Verb = "RunAs";
-            psi.UseShellExecute = false;
-            psi.RedirectStandardError = true;
-            psi.RedirectStandardInput = true;
-            psi.RedirectStandardOutput = true;
+            var psi = new ProcessStartInfo("cmd.exe")
+            {
+                WindowStyle = ProcessWindowStyle.Hidden,
+                Verb = "RunAs",
+                UseShellExecute = false,
+                RedirectStandardError = true,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true
+            };
 
-            CMDProc = new Process();
-            CMDProc.StartInfo = psi;
+            CMDProc = new Process
+            {
+                StartInfo = psi
+            };
             CMDProc.ErrorDataReceived += CMDProc_ErrorDataReceived;
             CMDProc.OutputDataReceived += CMDProc_OutputDataReceived;
 
@@ -30,8 +34,10 @@ namespace Remotely.Agent.Services
             CMDProc.BeginErrorReadLine();
             CMDProc.BeginOutputReadLine();
 
-            ProcessIdleTimeout = new System.Timers.Timer(600_000); // 10 minutes.
-            ProcessIdleTimeout.AutoReset = false;
+            ProcessIdleTimeout = new System.Timers.Timer(600_000)
+            {
+                AutoReset = false
+            }; // 10 minutes.
             ProcessIdleTimeout.Elapsed += ProcessIdleTimeout_Elapsed;
             ProcessIdleTimeout.Start();
         }
@@ -48,19 +54,18 @@ namespace Remotely.Agent.Services
         private string StandardOut { get; set; }
         public static CMD GetCurrent(string connectionID)
         {
-            if (Sessions.ContainsKey(connectionID))
+            if (Sessions.TryGetValue(connectionID, out var session))
             {
-                var cmd = Sessions[connectionID];
-                cmd.ProcessIdleTimeout.Stop();
-                cmd.ProcessIdleTimeout.Start();
-                return cmd;
+                session.ProcessIdleTimeout.Stop();
+                session.ProcessIdleTimeout.Start();
+                return session;
             }
             else
             {
-                var cmd = Program.Services.GetRequiredService<CMD>();
-                cmd.ConnectionID = connectionID;
-                Sessions.AddOrUpdate(connectionID, cmd, (id, c) => cmd);
-                return cmd;
+                session = Program.Services.GetRequiredService<CMD>();
+                session.ConnectionID = connectionID;
+                Sessions.AddOrUpdate(connectionID, session, (id, b) => session);
+                return session;
             }
         }
 

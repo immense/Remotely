@@ -1,11 +1,12 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Remotely.Shared.Models;
+using Microsoft.AspNetCore.SignalR;
+using Remotely.Server.Hubs;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
-using Microsoft.AspNetCore.SignalR;
+using Remotely.Shared.Models;
+using System.Linq;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,27 +16,27 @@ namespace Remotely.Server.API
     [ApiController]
     public class LoginController : ControllerBase
     {
-        public LoginController(SignInManager<RemotelyUser> signInManager, 
-            DataService dataService, 
-            ApplicationConfig appConfig,
-            IHubContext<RCDeviceHub> rcDeviceHub,
-            IHubContext<RCBrowserHub> rcBrowserHub)
+        public LoginController(SignInManager<RemotelyUser> signInManager,
+            IDataService dataService,
+            IApplicationConfig appConfig,
+            IHubContext<CasterHub> casterHubContext,
+            IHubContext<ViewerHub> viewerHubContext)
         {
             SignInManager = signInManager;
             DataService = dataService;
             AppConfig = appConfig;
-            RCDeviceHub = rcDeviceHub;
-            RCBrowserHub = rcBrowserHub;
+            CasterHubContext = casterHubContext;
+            ViewerHubContext = viewerHubContext;
         }
 
         private SignInManager<RemotelyUser> SignInManager { get; }
-        private DataService DataService { get; }
-        public ApplicationConfig AppConfig { get; }
-        private IHubContext<RCDeviceHub> RCDeviceHub { get; }
-        private IHubContext<RCBrowserHub> RCBrowserHub { get; }
+        private IDataService DataService { get; }
+        public IApplicationConfig AppConfig { get; }
+        private IHubContext<CasterHub> CasterHubContext { get; }
+        private IHubContext<ViewerHub> ViewerHubContext { get; }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]ApiLogin login)
+        public async Task<IActionResult> Post([FromBody] ApiLogin login)
         {
             if (!AppConfig.AllowApiLogin)
             {
@@ -72,11 +73,11 @@ namespace Remotely.Server.API
             if (HttpContext?.User?.Identity?.IsAuthenticated == true)
             {
                 orgId = DataService.GetUserByName(HttpContext.User.Identity.Name)?.OrganizationID;
-                var activeSessions = Services.RCDeviceHub.SessionInfoList.Where(x => x.Value.RequesterUserName == HttpContext.User.Identity.Name);
+                var activeSessions = CasterHub.SessionInfoList.Where(x => x.Value.RequesterUserName == HttpContext.User.Identity.Name);
                 foreach (var session in activeSessions.ToList())
                 {
-                    await RCDeviceHub.Clients.Client(session.Value.RCDeviceSocketID).SendAsync("Disconnect", "User logged out.");
-                    await RCBrowserHub.Clients.Client(session.Value.RequesterSocketID).SendAsync("ConnectionFailed");
+                    await CasterHubContext.Clients.Client(session.Value.CasterSocketID).SendAsync("Disconnect", "User logged out.");
+                    await ViewerHubContext.Clients.Client(session.Value.RequesterSocketID).SendAsync("ConnectionFailed");
                 }
             }
             await SignInManager.SignOutAsync();

@@ -1,7 +1,7 @@
-using System;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Remotely.Desktop.Linux.ViewModels;
+using System;
 
 namespace Remotely.Desktop.Linux
 {
@@ -26,7 +26,7 @@ namespace Remotely.Desktop.Linux
 
         public bool Match(object data)
         {
-            return data is ViewModelBase;
+            return data is ReactiveViewModel;
         }
     }
 }

@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "removeComments": false,
+    "sourceMap": true,
+    "target": "es2017",
+    "module": "AMD",
+    "allowJs": false,
+    "outFile": "../out.js",
+    "moduleResolution": "Node",
+    "typeRoots": [ "../lib/@types/" ]
+  },
+  "exclude": [
+    "node_modules",
+    "obj",
+    "bin"
+  ],
+  "compileOnSave": true
+}

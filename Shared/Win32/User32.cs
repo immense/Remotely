@@ -1045,6 +1045,15 @@ namespace Remotely.Shared.Win32
             IDTRYAGAIN = 10,
             IDYES = 6,
         }
+        public enum VkMapType : uint
+        {
+            MAPVK_VK_TO_VSC = 0,
+            MAPVK_VSC_TO_VK = 1,
+            MAPVK_VK_TO_CHAR = 2,
+            MAPVK_VSC_TO_VK_EX = 3,
+            MAPVK_VK_TO_VSC_EX = 4
+        }
+
         #endregion
 
         #region Structs
@@ -1141,10 +1150,10 @@ namespace Remotely.Shared.Win32
         public static extern bool GetIconInfo(IntPtr hIcon, out ICONINFO piconinfo);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-        public static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint cButtons, UIntPtr dwExtraInfo);
+        public static extern void Mouse_event(uint dwFlags, uint dx, uint dy, uint cButtons, UIntPtr dwExtraInfo);
 
         [DllImport("user32.dll")]
-        public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, UIntPtr dwExtraInfo);
+        public static extern void Keybd_event(byte bVk, byte bScan, uint dwFlags, UIntPtr dwExtraInfo);
 
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -1299,6 +1308,12 @@ namespace Remotely.Shared.Win32
 
         [DllImport("USER32.dll")]
         public static extern short GetKeyState(VirtualKey nVirtKey);
+
+        [DllImport("user32.dll")]
+        public static extern uint MapVirtualKeyEx(uint uCode, VkMapType uMapType, IntPtr dwhkl);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetKeyboardLayout(uint threadId = 0);
 
         #endregion
     }

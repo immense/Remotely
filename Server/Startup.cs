@@ -1,27 +1,28 @@
-using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
-using Remotely.Server.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using System.IO;
-using Remotely.Server.Services;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.AspNetCore.StaticFiles;
-using Remotely.Shared.Models;
-using Remotely.Shared.Services;
-using Microsoft.AspNetCore.HttpOverrides;
-using System.Net;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using Remotely.Server.Attributes;
-using Npgsql;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+using Npgsql;
+using Remotely.Server.Attributes;
+using Remotely.Server.Data;
+using Remotely.Server.Hubs;
+using Remotely.Server.Services;
+using Remotely.Shared.Models;
+using System;
+using System.IO;
+using System.Linq;
+using System.Net;
 
 namespace Remotely.Server
 {
@@ -39,40 +40,37 @@ namespace Remotely.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
-
+            services.AddDatabaseDeveloperPageExceptionFilter();
             var dbProvider = Configuration["ApplicationOptions:DBProvider"].ToLower();
             if (dbProvider == "sqlite")
             {
-                services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(
-                    Configuration.GetConnectionString("SQLite")));
+                services.AddDbContext<ApplicationDbContext, SqliteDbContext>(options =>
+                    options.UseSqlite(Configuration.GetConnectionString("SQLite")));
             }
             else if (dbProvider == "sqlserver")
             {
-                services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseSqlServer(
-                        Configuration.GetConnectionString("SQLServer")));
+                services.AddDbContext<ApplicationDbContext, SqlServerDbContext>(options =>
+                    options.UseSqlServer(Configuration.GetConnectionString("SQLServer")));
             }
             else if (dbProvider == "postgresql")
             {
-                // Password should be set in User Secrets in dev environment.
-                // See https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-3.1
-                if (!string.IsNullOrWhiteSpace(Configuration.GetValue<string>("PostgresPassword")))
+                services.AddDbContext<ApplicationDbContext, PostgreSqlDbContext>(options =>
                 {
-                    var connectionBuilder = new NpgsqlConnectionStringBuilder(Configuration.GetConnectionString("PostgreSQL"));
-                    connectionBuilder.Password = Configuration["PostgresPassword"];
-                    services.AddDbContext<ApplicationDbContext>(options =>
-                        options.UseNpgsql(connectionBuilder.ConnectionString));
-                }
-                else
-                {
-                    services.AddDbContext<ApplicationDbContext>(options =>
-                        options.UseNpgsql(Configuration.GetConnectionString("PostgreSQL")));
-                }
+                    // Password should be set in User Secrets in dev environment.
+                    // See https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-3.1
+                    if (!string.IsNullOrWhiteSpace(Configuration.GetValue<string>("PostgresPassword")))
+                    {
+                        var connectionBuilder = new NpgsqlConnectionStringBuilder(Configuration.GetConnectionString("PostgreSQL"))
+                        {
+                            Password = Configuration["PostgresPassword"]
+                        };
+                        options.UseNpgsql(connectionBuilder.ConnectionString);
+                    }
+                    else
+                    {
+                        options.UseNpgsql(Configuration.GetConnectionString("PostgreSQL"));
+                    }
+                });
             }
 
             services.AddIdentity<RemotelyUser, IdentityRole>(options => options.Stores.MaxLengthForKeys = 128)
@@ -80,16 +78,8 @@ namespace Remotely.Server
                 .AddDefaultUI()
                 .AddDefaultTokenProviders();
 
-            var remoteControlAuthentication = Configuration.GetSection("ApplicationOptions:RemoteControlRequiresAuthentication").Get<bool>();   
-
-            services.ConfigureApplicationCookie(cookieOptions =>
-            {
-                cookieOptions.Cookie.SameSite = SameSiteMode.None;
-            });
-
-
             var trustedOrigins = Configuration.GetSection("ApplicationOptions:TrustedCorsOrigins").Get<string[]>();
-            
+
             if (trustedOrigins != null)
             {
                 services.AddCors(options =>
@@ -104,17 +94,19 @@ namespace Remotely.Server
             }
 
             var knownProxies = Configuration.GetSection("ApplicationOptions:KnownProxies").Get<string[]>();
-            if (knownProxies != null)
+            services.Configure<ForwardedHeadersOptions>(options =>
             {
-                services.Configure<ForwardedHeadersOptions>(options =>
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                options.ForwardLimit = null;
+
+                if (knownProxies?.Any() == true)
                 {
                     foreach (var proxy in knownProxies)
                     {
                         options.KnownProxies.Add(IPAddress.Parse(proxy));
-                        options.ForwardLimit = 2;
                     }
-                });
-            }
+                }
+            });
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0).AddJsonOptions(options =>
@@ -141,24 +133,27 @@ namespace Remotely.Server
             services.AddLogging();
             services.AddScoped<IEmailSenderEx, EmailSenderEx>();
             services.AddScoped<IEmailSender, EmailSender>();
-            services.AddScoped<DataService>();
-            services.AddScoped<RemoteControlSessionRecorder>();
-            services.AddSingleton<ApplicationConfig>();
+            services.AddScoped<IDataService, DataService>();
+            services.AddSingleton<IApplicationConfig, ApplicationConfig>();
             services.AddScoped<ApiAuthorizationFilter>();
             services.AddHostedService<CleanupService>();
             services.AddScoped<RemoteControlFilterAttribute>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, 
-            IWebHostEnvironment env, 
-            ApplicationDbContext context, 
-            DataService dataService,
+        public void Configure(IApplicationBuilder app,
+            IWebHostEnvironment env,
+            ApplicationDbContext context,
+            IDataService dataService,
             ILoggerFactory loggerFactory)
         {
+
+            app.UseForwardedHeaders();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseMigrationsEndPoint();
             }
             else
             {
@@ -174,11 +169,6 @@ namespace Remotely.Server
             }
 
             ConfigureStaticFiles(app);
-
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.All
-            });
 
             app.UseSwagger();
 
@@ -202,17 +192,17 @@ namespace Remotely.Server
                     options.ApplicationMaxBufferSize = 500_000;
                     options.TransportMaxBufferSize = 500_000;
                 });
-                routeBuilder.MapHub<DeviceHub>("/DeviceHub", options =>
+                routeBuilder.MapHub<AgentHub>("/AgentHub", options =>
                 {
                     options.ApplicationMaxBufferSize = 500_000;
                     options.TransportMaxBufferSize = 500_000;
                 });
-                routeBuilder.MapHub<RCDeviceHub>("/RCDeviceHub", options =>
+                routeBuilder.MapHub<CasterHub>("/CasterHub", options =>
                 {
                     options.ApplicationMaxBufferSize = 100_000;
                     options.TransportMaxBufferSize = 100_000;
                 });
-                routeBuilder.MapHub<RCBrowserHub>("/RCBrowserHub", options =>
+                routeBuilder.MapHub<ViewerHub>("/ViewerHub", options =>
                 {
                     options.ApplicationMaxBufferSize = 100_000;
                     options.TransportMaxBufferSize = 100_000;
@@ -220,7 +210,7 @@ namespace Remotely.Server
 
                 routeBuilder.MapRazorPages();
                 routeBuilder.MapControllers();
-                
+
             });
 
             try

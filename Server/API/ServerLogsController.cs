@@ -1,8 +1,8 @@
-﻿using System.Text;
-using System.Text.Json;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Remotely.Server.Attributes;
 using Remotely.Server.Services;
+using System.Text;
+using System.Text.Json;
 
 namespace Remotely.Server.API
 {
@@ -11,11 +11,11 @@ namespace Remotely.Server.API
     public class ServerLogsController : ControllerBase
     {
 
-        public ServerLogsController(DataService dataService)
+        public ServerLogsController(IDataService dataService)
         {
             DataService = dataService;
         }
-        public DataService DataService { get; set; }
+        public IDataService DataService { get; set; }
 
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
         [HttpGet("Download")]

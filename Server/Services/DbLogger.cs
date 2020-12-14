@@ -4,10 +4,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Remotely.Server.Services
 {
@@ -60,7 +58,7 @@ namespace Remotely.Server.Services
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             using var scope = serviceProvider.CreateScope();
-            var dataService = scope.ServiceProvider.GetRequiredService<DataService>();
+            var dataService = scope.ServiceProvider.GetRequiredService<IDataService>();
             dataService.WriteLog(logLevel, categoryName, eventId, state.ToString(), exception, ScopeStack.ToList());
         }
 

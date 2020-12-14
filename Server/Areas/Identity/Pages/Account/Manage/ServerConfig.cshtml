@@ -1,4 +1,6 @@
 ﻿@page
+@using Remotely.Server.Hubs
+@inject Remotely.Server.Services.IDataService DataService
 @model ServerConfigModel
 @{
     ViewData["Title"] = "Server Config";
@@ -8,17 +10,40 @@
 
 @if (Model.IsServerAdmin)
 {
-    <partial name="_StatusMessage" for="StatusMessage" />
+    <h5 class="mt-3">Server Info</h5>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-4" style="display:flex; justify-content: space-evenly">
+                <div class="d-inline-block text-center mr-2">
+                    <label>Devices Online</label>
+                    <br />
+                    <span class="badge badge-primary p-2">@AgentHub.ServiceConnections.Count</span>
+                </div>
+                <div class="d-inline-block text-center mr-2">
+                    <label>Devices Total</label>
+                    <br />
+                    <span class="badge badge-primary p-2">@DataService.GetTotalDevices()</span>
+                </div>
+                <div class="d-inline-block text-center">
+                    <label>Environment</label>
+                    <br />
+                    <span class="badge badge-primary p-2">@Model.Environment</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-6">
             <form id="serverConfigForm" method="post" autocomplete="off">
-                <div class="text-right">
-                    <span class="badge badge-info p-2">Environment: @Model.Environment</span>
-                </div>
+
+                <h5>Application Settings</h5>
+
+                <partial name="_StatusMessage" for="StatusMessage" />
+
                 <div asp-validation-summary="All" class="text-danger"></div>
-
-                <h4>Application Settings</h4>
-
 
                 <div class="form-group">
                     <label asp-for="AppSettingsInput.AllowApiLogin"></label>
@@ -26,6 +51,23 @@
                     <input type="checkbox" asp-for="AppSettingsInput.AllowApiLogin" />
                     <br />
                     <span asp-validation-for="AppSettingsInput.AllowApiLogin" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.BannedDevices" class="control-label"></label>
+                    <br />
+                    <select id="bannedDevicesSelect"
+                            asp-for="AppSettingsInput.BannedDevices"
+                            asp-items="Model.AppSettingsInput.BannedDevices?.Select(x=>new SelectListItem(x,x))"
+                            class="form-control"></select>
+
+                    <div class="text-right mb-2 mt-1">
+                        <button id="bannedDevicesRemoveButton" type="button" class="btn btn-secondary">Remove</button>
+                    </div>
+                    <div class="input-group">
+                        <input id="bannedDevicesInput" placeholder="Add banned device ID, name, or IP" class="form-control" />
+                        <button id="bannedDevicesAddButton" type="button" class="btn btn-secondary">Add</button>
+                    </div>
+                    <span asp-validation-for="AppSettingsInput.BannedDevices" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="AppSettingsInput.DataRetentionInDays" class="control-label"></label>
@@ -56,6 +98,13 @@
                     <span asp-validation-for="AppSettingsInput.EnableWindowsEventLog" class="text-danger"></span>
                 </div>
                 <div class="form-group">
+                    <label asp-for="AppSettingsInput.EnforceAttendedAccess"></label>
+                    <br />
+                    <input type="checkbox" asp-for="AppSettingsInput.EnforceAttendedAccess" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.EnforceAttendedAccess" class="text-danger"></span>
+                </div>
+                <div class="form-group">
                     <label asp-for="AppSettingsInput.KnownProxies" class="control-label"></label>
                     <br />
                     <select id="knownProxiesSelect"
@@ -79,11 +128,11 @@
                     <span asp-validation-for="AppSettingsInput.MaxOrganizationCount" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="AppSettingsInput.RecordRemoteControlSessions"></label>
+                    <label asp-for="AppSettingsInput.MaxConcurrentUpdates" class="control-label"></label>
                     <br />
-                    <input type="checkbox" asp-for="AppSettingsInput.RecordRemoteControlSessions" />
+                    <input asp-for="AppSettingsInput.MaxConcurrentUpdates" class="form-control" />
                     <br />
-                    <span asp-validation-for="AppSettingsInput.RecordRemoteControlSessions" class="text-danger"></span>
+                    <span asp-validation-for="AppSettingsInput.MaxConcurrentUpdates" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="AppSettingsInput.RedirectToHttps"></label>
@@ -91,6 +140,13 @@
                     <input type="checkbox" asp-for="AppSettingsInput.RedirectToHttps" />
                     <br />
                     <span asp-validation-for="AppSettingsInput.RedirectToHttps" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AppSettingsInput.RemoteControlNotifyUser"></label>
+                    <br />
+                    <input type="checkbox" asp-for="AppSettingsInput.RemoteControlNotifyUser" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.RemoteControlNotifyUser" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="AppSettingsInput.RemoteControlRequiresAuthentication"></label>
@@ -263,13 +319,22 @@
         </div>
     </div>
 
-    <script type="module" src="~/scripts/Pages/ServerConfig.js"></script>
+    <script>
+        require.config({
+            waitSeconds: 30,
+            paths: {
+                "App": "/out"
+            }
+        });
+        require(["App"], function (remotely) {
+            remotely.App.Pages.ServerConfig.Init();
+        });
+    </script>
     <style>
         input[type='checkbox'] {
             width: 25px;
             height: 25px;
         }
-
     </style>
 
 }

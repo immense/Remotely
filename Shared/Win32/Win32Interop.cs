@@ -65,8 +65,7 @@ namespace Remotely.Shared.Win32
             try
             {
                 byte[] deskBytes = new byte[256];
-                uint lenNeeded;
-                if (!GetUserObjectInformationW(inputDesktop, UOI_NAME, deskBytes, 256, out lenNeeded))
+                if (!GetUserObjectInformationW(inputDesktop, UOI_NAME, deskBytes, 256, out uint lenNeeded))
                 {
                     desktopName = string.Empty;
                     return false;
@@ -195,8 +194,8 @@ namespace Remotely.Shared.Win32
             SendMessage(0xFFFF, 0x112, 0xF170, (int)state);
         }
 
-        public static MessageBoxResult ShowMessageBox(IntPtr owner, 
-            string message, 
+        public static MessageBoxResult ShowMessageBox(IntPtr owner,
+            string message,
             string caption,
             MessageBoxType messageBoxType)
         {

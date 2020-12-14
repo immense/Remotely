@@ -1,21 +1,23 @@
-using Remotely.Shared.Models;
-using Remotely.Server.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Remotely.Server.Services;
+using Remotely.Shared.Models;
+using Remotely.Shared.ViewModels.Organization;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using Remotely.Shared.ViewModels.Organization;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 {
     public class OrganizationModel : PageModel
     {
-        public OrganizationModel(DataService dataService, UserManager<RemotelyUser> userManager, IEmailSenderEx emailSender)
+        public OrganizationModel(IDataService dataService,
+            UserManager<RemotelyUser> userManager,
+            IEmailSenderEx emailSender)
         {
             DataService = dataService;
             UserManager = userManager;
@@ -40,7 +42,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         [Display(Name = "Users")]
         public List<OrganizationUser> Users { get; set; }
 
-        private DataService DataService { get; }
+        private IDataService DataService { get; }
 
         private IEmailSenderEx EmailSender { get; }
 
@@ -51,10 +53,10 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             PopulateViewModel();
         }
 
-        public async Task<IActionResult> OnPostSendInviteAsync()
+        public async Task<IActionResult> OnPostAddUserAsync()
         {
             var currentUser = await UserManager.FindByEmailAsync(User.Identity.Name);
-            return await SendInvite(currentUser);
+            return await AddUser(currentUser);
         }
 
         public async Task<IActionResult> OnPostCreateDeviceGroupAsync()
@@ -86,7 +88,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             return Page();
         }
 
-        public async Task<IActionResult> SendInvite(RemotelyUser currentUser)
+        public async Task<IActionResult> AddUser(RemotelyUser currentUser)
         {
             if (!currentUser.IsAdministrator)
             {

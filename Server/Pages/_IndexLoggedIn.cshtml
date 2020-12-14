@@ -72,11 +72,15 @@
 </div>
 
 
-<script src="~/scripts/Main.js" type="module"></script>
+
 <script>
-    window.onload = (ev) => {
-        Remotely.Init();
-        document.querySelector(".loading-frame").remove();
-        document.querySelector(".work-area").classList.remove("hidden");
-    }
+    require.config({
+        waitSeconds: 30,
+        paths: {
+            "App": "out"
+        }
+    });
+    require(["App"], function (remotely) {
+        remotely.App.Main.Init();
+    });
 </script>

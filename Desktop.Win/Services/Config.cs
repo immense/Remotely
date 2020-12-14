@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Remotely.Shared.Utilities;
+using System;
 using System.IO;
 using System.Text.Json;
 
@@ -11,10 +12,6 @@ namespace Remotely.Desktop.Win.Services
         private static string ConfigFolder => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Remotely");
         public static Config GetConfig()
         {
-            if (!Directory.Exists(ConfigFolder))
-            {
-                return new Config();
-            }
 
             if (File.Exists(ConfigFile))
             {
@@ -22,9 +19,9 @@ namespace Remotely.Desktop.Win.Services
                 {
                     return JsonSerializer.Deserialize<Config>(File.ReadAllText(ConfigFile));
                 }
-                catch
+                catch (Exception ex)
                 {
-                    return new Config();
+                    Logger.Write(ex);
                 }
             }
             return new Config();
@@ -37,8 +34,9 @@ namespace Remotely.Desktop.Win.Services
                 Directory.CreateDirectory(ConfigFolder);
                 File.WriteAllText(ConfigFile, JsonSerializer.Serialize(this));
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.Write(ex);
             }
         }
     }

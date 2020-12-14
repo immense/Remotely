@@ -4,18 +4,40 @@
     <div id="deviceGridInnerWrapper">
         <div id="gridControlsWrapper">
             <div>
-                <label>Device Group:</label>
-                <select id="deviceGroupSelect" asp-items="Model.DeviceGroups" class="form-control" style="width: 200px">
-                    <option value="">All</option>
-                    <option value="">Ungrouped</option>
-                </select>
+                <div>
+                    <label>Device Group:</label>
+                    <select id="deviceGroupSelect" asp-items="Model.DeviceGroups" class="form-control" style="width: 200px">
+                        <option value="">All</option>
+                        <option value="">Ungrouped</option>
+                    </select>
+                </div>
+                <div class="custom-control custom-checkbox mt-2">
+                    <input id="hideOfflineDevicesCheckbox" type="checkbox" class="custom-control-input" checked />
+                    <label class="custom-control-label" for="hideOfflineDevicesCheckbox">Hide offline devices</label>
+                </div>
             </div>
-            <div style="text-align: right">
-                <button id="startRemoteControlButton" class="btn btn-sm btn-secondary">Remote Control</button>
-                <button id="toggleAllDevices" class="btn btn-sm btn-secondary">Select All</button>
-                <div style="display: inline-block">
-                    <span>Filter:</span>
+            <div>
+                <div>
+                    <button id="startRemoteControlButton" class="btn btn-sm btn-secondary mr-1">Remote Control</button>
+                    <button id="toggleAllDevices" class="btn btn-sm btn-secondary">Select All</button>
+                </div>
+
+                <div class="mt-2">
+                    <span class="mr-1">Filter:</span>
                     <input id="gridFilter" />
+                </div>
+
+                <div class="mt-2" style="white-space: nowrap">
+                    <button id="leftPaginationButton" class="btn btn-sm btn-secondary">
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+                    <span class="small">Page</span>
+                    <input id="currentPageInput" style="width:75px; text-align: center" pattern="[0-9]" />
+                    <span class="small">of</span>
+                    <span id="totalPagesSpan"></span>
+                    <button id="rightPaginationButton" class="btn btn-sm btn-secondary">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -43,6 +65,5 @@
                 </tbody>
             </table>
         </div>
-       
     </div>
 </div>

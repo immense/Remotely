@@ -1,5 +1,4 @@
 ﻿using Remotely.Shared.Enums;
-using Remotely.Shared.Utilities;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -14,18 +13,21 @@ namespace Remotely.Shared.Utilities
         private static object WriteLock { get; } = new object();
         public static void Debug(string message)
         {
-            lock (WriteLock)
+            try
             {
-                if (EnvironmentHelper.IsDebug)
+                lock (WriteLock)
                 {
-                    CheckLogFileExists();
+                    if (EnvironmentHelper.IsDebug)
+                    {
+                        CheckLogFileExists();
 
-                    File.AppendAllText(LogPath, $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}\t[Debug]\t{message}{Environment.NewLine}");
+                        File.AppendAllText(LogPath, $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}\t[Debug]\t{message}{Environment.NewLine}");
+                    }
+
+                    System.Diagnostics.Debug.WriteLine(message);
                 }
-                
-                System.Diagnostics.Debug.WriteLine(message);
             }
-
+            catch { }
         }
 
         public static void Write(string message, EventType eventType = EventType.Info)
@@ -76,7 +78,7 @@ namespace Remotely.Shared.Utilities
                 File.Create(LogPath).Close();
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {
-                    Process.Start("sudo", $"chmod 666 {LogPath}").WaitForExit();
+                    Process.Start("sudo", $"chmod 777 {LogPath}").WaitForExit();
                 }
             }
             if (File.Exists(LogPath))

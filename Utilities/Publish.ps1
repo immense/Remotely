@@ -17,23 +17,43 @@ param (
 	[string]$RID = "",
 	[string]$Hostname = "",
 	[string]$CertificatePath = "",
-    [string]$CertificatePassword = ""
+    [string]$CertificatePassword = "",
+    [string]$CurrentVersion = ""
 )
 
 
 
 $ErrorActionPreference = "Stop"
-$Year = ([DateTime]::UtcNow).Year.ToString()
-$Month = ([DateTime]::UtcNow).Month.ToString().PadLeft(2, "0")
-$Day = ([DateTime]::UtcNow).Day.ToString().PadLeft(2, "0")
-$Hour = ([DateTime]::UtcNow).Hour.ToString().PadLeft(2, "0")
-$Minute = ([DateTime]::UtcNow).Minute.ToString().PadLeft(2, "0")
-$CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
-$MSBuildPath = (Get-ChildItem -Path "${env:ProgramFiles(x86)}\Microsoft Visual Studio\" -Recurse -Filter "MSBuild.exe" -File | ForEach-Object {
-    [System.Diagnostics.FileVersionInfo]::GetVersionInfo($_.FullName)
-} | Sort-Object -Property FileVersion -Descending | Select-Object -First 1).FileName
+$InstallerDir = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer"
+$VsWhere = "$InstallerDir\vswhere.exe"
+$MSBuildPath = (&"$VsWhere" -latest -products * -find "\MSBuild\Current\Bin\MSBuild.exe").Trim()
 $Root = (Get-Item -Path $PSScriptRoot).Parent.FullName
 $SignAssemblies = $false
+
+if (!$CurrentVersion) {
+    Push-Location -Path $Root
+
+    $VersionString = git show -s --format=%ci
+    $VersionDate = [DateTimeOffset]::Parse($VersionString)
+
+    $Year = $VersionDate.Year.ToString()
+    $Month = $VersionDate.Month.ToString().PadLeft(2, "0")
+    $Day = $VersionDate.Day.ToString().PadLeft(2, "0")
+    $Hour = $VersionDate.Hour.ToString().PadLeft(2, "0")
+    $Minute = $VersionDate.Minute.ToString().PadLeft(2, "0")
+    $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
+
+    Pop-Location
+}
+
+if ($CertificatePath.Length -gt 0 -and 
+    (Test-Path -Path $CertificatePath) -eq $true -and 
+    $CertificatePassword.Length -gt 0) 
+{
+    $SignAssemblies = $true
+}
+
+
 
 Set-Location -Path $Root
 
@@ -65,14 +85,6 @@ if ([string]::IsNullOrWhiteSpace($MSBuildPath) -or !(Test-Path -Path $MSBuildPat
     return
 }
 
-if ($CertificatePath.Length -gt 0 -and 
-    (Test-Path -Path $CertificatePath) -eq $true -and 
-    $CertificatePassword.Length -gt 0) 
-{
-    $SignAssemblies = $true
-}
-
-
 # Add Current Version file to root content folder for client update checks.
 # TODO: Remove after a few releases.
 Set-Content -Path "$Root\Server\CurrentVersion.txt" -Value $CurrentVersion.Trim() -Encoding UTF8 -Force
@@ -89,39 +101,39 @@ else {
 
     
 # Clear publish folders.
-if ((Test-Path -Path "$Root\Agent\bin\Release\netcoreapp3.1\win10-x64\publish") -eq $true) {
-	Get-ChildItem -Path "$Root\Agent\bin\Release\netcoreapp3.1\win10-x64\publish" | Remove-Item -Force -Recurse
+if ((Test-Path -Path "$Root\Agent\bin\Release\net5.0\win10-x64\publish") -eq $true) {
+	Get-ChildItem -Path "$Root\Agent\bin\Release\net5.0\win10-x64\publish" | Remove-Item -Force -Recurse
 }
-if ((Test-Path -Path  "$Root\Agent\bin\Release\netcoreapp3.1\win10-x86\publish" ) -eq $true) {
-	Get-ChildItem -Path  "$Root\Agent\bin\Release\netcoreapp3.1\win10-x86\publish" | Remove-Item -Force -Recurse
+if ((Test-Path -Path  "$Root\Agent\bin\Release\net5.0\win10-x86\publish" ) -eq $true) {
+	Get-ChildItem -Path  "$Root\Agent\bin\Release\net5.0\win10-x86\publish" | Remove-Item -Force -Recurse
 }
-if ((Test-Path -Path "$Root\Agent\bin\Release\netcoreapp3.1\linux-x64\publish") -eq $true) {
-	Get-ChildItem -Path "$Root\Agent\bin\Release\netcoreapp3.1\linux-x64\publish" | Remove-Item -Force -Recurse
+if ((Test-Path -Path "$Root\Agent\bin\Release\net5.0\linux-x64\publish") -eq $true) {
+	Get-ChildItem -Path "$Root\Agent\bin\Release\net5.0\linux-x64\publish" | Remove-Item -Force -Recurse
 }
 
 
 # Publish Core clients.
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win10-x64 --configuration Release --output "$Root\Agent\bin\Release\netcoreapp3.1\win10-x64\publish" "$Root\Agent"
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64 --configuration Release --output "$Root\Agent\bin\Release\netcoreapp3.1\linux-x64\publish" "$Root\Agent"
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win10-x86 --configuration Release --output "$Root\Agent\bin\Release\netcoreapp3.1\win10-x86\publish" "$Root\Agent"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win10-x64 --configuration Release --output "$Root\Agent\bin\Release\net5.0\win10-x64\publish" "$Root\Agent"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64 --configuration Release --output "$Root\Agent\bin\Release\net5.0\linux-x64\publish" "$Root\Agent"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win10-x86 --configuration Release --output "$Root\Agent\bin\Release\net5.0\win10-x86\publish" "$Root\Agent"
 
-New-Item -Path "$Root\Agent\bin\Release\netcoreapp3.1\win10-x64\publish\ScreenCast\" -ItemType Directory -Force
-New-Item -Path "$Root\Agent\bin\Release\netcoreapp3.1\win10-x86\publish\ScreenCast\" -ItemType Directory -Force
-New-Item -Path "$Root\Agent\bin\Release\netcoreapp3.1\linux-x64\publish\ScreenCast\" -ItemType Directory -Force
+New-Item -Path "$Root\Agent\bin\Release\net5.0\win10-x64\publish\Desktop\" -ItemType Directory -Force
+New-Item -Path "$Root\Agent\bin\Release\net5.0\win10-x86\publish\Desktop\" -ItemType Directory -Force
+New-Item -Path "$Root\Agent\bin\Release\net5.0\linux-x64\publish\Desktop\" -ItemType Directory -Force
 
 
 # Publish Linux ScreenCaster
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=linux-x64 --configuration Release "$Root\ScreenCast.Linux\"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=packaged-linux-x64 --configuration Release "$Root\Desktop.Linux\"
 
 # Publish Linux GUI App
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=linux-x64 --configuration Release "$Root\Desktop.Linux\"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=desktop-linux-x64 --configuration Release "$Root\Desktop.Linux\"
 
 
 # Publish Windows ScreenCaster (32-bit)
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=win-x86 --configuration Release "$Root\ScreenCast.Win"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=packaged-win-x86 --configuration Release "$Root\Desktop.Win"
 
 # Publish Windows ScreenCaster (64-bit)
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=win-x64 --configuration Release "$Root\ScreenCast.Win"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=packaged-win-x64 --configuration Release "$Root\Desktop.Win"
 
 
 # Publish Windows GUI App (64-bit)
@@ -167,21 +179,21 @@ if ($SignAssemblies) {
 }
 
 # Compress Core clients.
-$PublishDir =  "$Root\Agent\bin\Release\netcoreapp3.1\win10-x64\publish"
+$PublishDir =  "$Root\Agent\bin\Release\net5.0\win10-x64\publish"
 Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Win10-x64.zip" -CompressionLevel Optimal -Force
 while ((Test-Path -Path "$PublishDir\Remotely-Win10-x64.zip") -eq $false){
     Start-Sleep -Seconds 1
 }
 Move-Item -Path "$PublishDir\Remotely-Win10-x64.zip" -Destination "$Root\Server\wwwroot\Downloads\Remotely-Win10-x64.zip" -Force
 
-$PublishDir =  "$Root\Agent\bin\Release\netcoreapp3.1\win10-x86\publish"
+$PublishDir =  "$Root\Agent\bin\Release\net5.0\win10-x86\publish"
 Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Win10-x86.zip" -CompressionLevel Optimal -Force
 while ((Test-Path -Path "$PublishDir\Remotely-Win10-x86.zip") -eq $false){
     Start-Sleep -Seconds 1
 }
 Move-Item -Path "$PublishDir\Remotely-Win10-x86.zip" -Destination "$Root\Server\wwwroot\Downloads\Remotely-Win10-x86.zip" -Force
 
-$PublishDir =  "$Root\Agent\bin\Release\netcoreapp3.1\linux-x64\publish"
+$PublishDir =  "$Root\Agent\bin\Release\net5.0\linux-x64\publish"
 Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Linux.zip" -CompressionLevel Optimal -Force
 while ((Test-Path -Path "$PublishDir\Remotely-Linux.zip") -eq $false){
     Start-Sleep -Seconds 1

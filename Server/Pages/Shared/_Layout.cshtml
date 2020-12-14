@@ -1,5 +1,12 @@
-﻿@inject Remotely.Server.Services.ApplicationConfig AppConfig
-@inject UserManager<Remotely.Shared.Models.RemotelyUser> UserManager
+﻿@using Remotely.Shared.Models
+@inject IApplicationConfig AppConfig
+@inject IDataService DataService
+
+@{ 
+    RemotelyUser user = User.Identity.IsAuthenticated ?
+        DataService.GetUserByName(User.Identity.Name) :
+        null;
+}
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,9 +22,9 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link href="~/lib/fontawesome/css/all.min.css" rel="stylesheet" />
 
-    @if (User.Identity.IsAuthenticated)
+    @if (user is RemotelyUser)
     {
-        var user = await UserManager.GetUserAsync(User);
+
         switch (user.UserOptions.Theme)
         {
             case Remotely.Shared.Enums.Theme.Light:
@@ -63,6 +70,9 @@
         <script src="~/lib/signalr/msgpack5.min.js"></script>
         <script src="~/lib/signalr/signalr-protocol-msgpack.min.js"></script>
     </environment>
+
+    <script src="~/lib/require.js"></script>
+
 </head>
 <body>
     <header>
@@ -70,12 +80,17 @@
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-page="/Index">
                     <div>
-                        Remotely
-                        <small>
-                            <span class="badge badge-info align-top">Beta</span>
-                        </small>
+                        @if (user is RemotelyUser &&
+                           !string.IsNullOrWhiteSpace(user?.Organization?.OrganizationName))
+                        {
+                            @user.Organization.OrganizationName
+                        }
+                        else
+                        {
+                            @Html.Raw("Remotely")
+                        }
                     </div>
-                    <div class="logo-subtitle">Do IT Remotely</div>
+                    <div class="logo-subtitle">Support Portal</div>
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">

@@ -1,19 +1,19 @@
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Remotely.Server.Services;
 using Remotely.Shared.Enums;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace Remotely.Server.Pages
 {
     [Authorize]
     public class EditDeviceModel : PageModel
     {
-        public EditDeviceModel(DataService dataService)
+        public EditDeviceModel(IDataService dataService)
         {
             DataService = dataService;
         }
@@ -29,7 +29,7 @@ namespace Remotely.Server.Pages
         public bool SaveSucessful { get; set; }
 
 
-        private DataService DataService { get; }
+        private IDataService DataService { get; }
 
         public IActionResult OnGet(string deviceID, bool success)
         {

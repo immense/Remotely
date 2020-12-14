@@ -1,14 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Encodings.Web;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using Remotely.Shared.Models;
 using Remotely.Server.Services;
+using Remotely.Shared.Models;
+using System.ComponentModel.DataAnnotations;
+using System.Text;
+using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account
 {
@@ -18,9 +18,11 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
         private readonly UserManager<RemotelyUser> _userManager;
         private readonly IEmailSenderEx _emailSender;
 
-        private DataService DataService { get; }
+        private IDataService DataService { get; }
 
-        public ForgotPasswordModel(UserManager<RemotelyUser> userManager, IEmailSenderEx emailSender, DataService dataService)
+        public ForgotPasswordModel(UserManager<RemotelyUser> userManager,
+            IEmailSenderEx emailSender,
+            IDataService dataService)
         {
             _userManager = userManager;
             _emailSender = emailSender;
@@ -70,7 +72,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
                     ModelState.AddModelError("EmailError", "Error sending email.");
                     return Page();
                 }
-              
+
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }

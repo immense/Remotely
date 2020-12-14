@@ -1,15 +1,15 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Remotely.Shared.Models;
+using Remotely.Server.Attributes;
+using Remotely.Server.Hubs;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
-using Remotely.Server.Attributes;
 using Remotely.Shared.Helpers;
+using Remotely.Shared.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,20 +19,20 @@ namespace Remotely.Server.API
     [ApiController]
     public class RemoteControlController : ControllerBase
     {
-        public RemoteControlController(DataService dataService, 
-            IHubContext<DeviceHub> deviceHub, 
-            ApplicationConfig appConfig, 
+        public RemoteControlController(IDataService dataService,
+            IHubContext<AgentHub> agentHub,
+            IApplicationConfig appConfig,
             SignInManager<RemotelyUser> signInManager)
         {
             DataService = dataService;
-            DeviceHub = deviceHub;
+            AgentHubContext = agentHub;
             AppConfig = appConfig;
             SignInManager = signInManager;
         }
 
-        public DataService DataService { get; }
-        public IHubContext<DeviceHub> DeviceHub { get; }
-        public ApplicationConfig AppConfig { get; }
+        public IDataService DataService { get; }
+        public IHubContext<AgentHub> AgentHubContext { get; }
+        public IApplicationConfig AppConfig { get; }
         public SignInManager<RemotelyUser> SignInManager { get; }
 
         [HttpGet("{deviceID}")]
@@ -44,7 +44,7 @@ namespace Remotely.Server.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]RemoteControlRequest rcRequest)
+        public async Task<IActionResult> Post([FromBody] RemoteControlRequest rcRequest)
         {
             if (!AppConfig.AllowApiLogin)
             {
@@ -76,7 +76,7 @@ namespace Remotely.Server.API
 
         private async Task<IActionResult> InitiateRemoteControl(string deviceID, string orgID)
         {
-            var targetDevice = Services.DeviceHub.ServiceConnections.FirstOrDefault(x => 
+            var targetDevice = Hubs.AgentHub.ServiceConnections.FirstOrDefault(x =>
                                     x.Value.OrganizationID == orgID &&
                                     x.Value.ID.ToLower() == deviceID.ToLower());
 
@@ -89,35 +89,35 @@ namespace Remotely.Server.API
                 }
 
 
-                var currentUsers = RCDeviceHub.SessionInfoList.Count(x => x.Value.OrganizationID == orgID);
+                var currentUsers = CasterHub.SessionInfoList.Count(x => x.Value.OrganizationID == orgID);
                 if (currentUsers >= AppConfig.RemoteControlSessionLimit)
                 {
                     return BadRequest("There are already the maximum amount of active remote control sessions for your organization.");
                 }
 
-                var existingSessions = RCDeviceHub.SessionInfoList
+                var existingSessions = CasterHub.SessionInfoList
                     .Where(x => x.Value.DeviceID == targetDevice.Value.ID)
                     .Select(x => x.Key)
                     .ToList();
 
-                await DeviceHub.Clients.Client(targetDevice.Key).SendAsync("RemoteControl", Request.HttpContext.Connection.Id, targetDevice.Key);
+                await AgentHubContext.Clients.Client(targetDevice.Key).SendAsync("RemoteControl", Request.HttpContext.Connection.Id, targetDevice.Key);
 
                 bool remoteControlStarted()
                 {
-                    return !RCDeviceHub.SessionInfoList.Values
+                    return !CasterHub.SessionInfoList.Values
                         .Where(x => x.DeviceID == targetDevice.Value.ID)
-                        .All(x => existingSessions.Contains(x.RCDeviceSocketID));
+                        .All(x => existingSessions.Contains(x.CasterSocketID));
                 };
 
-                if (!await TaskHelper.DelayUntil(remoteControlStarted, TimeSpan.FromSeconds(30)))
+                if (!await TaskHelper.DelayUntilAsync(remoteControlStarted, TimeSpan.FromSeconds(30)))
                 {
                     return StatusCode(408, "The remote control process failed to start in time on the remote device.");
                 }
                 else
                 {
-                    var rcSession = RCDeviceHub.SessionInfoList.Values.LastOrDefault(x => x.DeviceID == targetDevice.Value.ID && !existingSessions.Contains(x.RCDeviceSocketID));
+                    var rcSession = CasterHub.SessionInfoList.Values.LastOrDefault(x => x.DeviceID == targetDevice.Value.ID && !existingSessions.Contains(x.CasterSocketID));
                     var otp = RemoteControlFilterAttribute.GetOtp(targetDevice.Value.ID);
-                    return Ok($"{HttpContext.Request.Scheme}://{Request.Host}/RemoteControl?clientID={rcSession.RCDeviceSocketID}&serviceID={targetDevice.Key}&fromApi=true&otp={Uri.EscapeDataString(otp)}");
+                    return Ok($"{HttpContext.Request.Scheme}://{Request.Host}/RemoteControl?clientID={rcSession.CasterSocketID}&serviceID={targetDevice.Key}&fromApi=true&otp={Uri.EscapeDataString(otp)}");
                 }
             }
             else

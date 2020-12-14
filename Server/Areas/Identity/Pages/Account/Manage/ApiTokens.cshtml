@@ -1,6 +1,6 @@
 ﻿@page
 @model Remotely.Server.Areas.Identity.Pages.Account.Manage.ApiTokensModel
-@inject DataService  DataService
+@inject IDataService  DataService
 @{
     ViewData["Title"] = "API Access Tokens";
 }
@@ -92,7 +92,16 @@
         </div>
     </div>
 
-    <script type="module" src="~/scripts/Pages/ApiTokens.js">
+    <script>
+        require.config({
+            waitSeconds: 30,
+            paths: {
+                "App": "/out"
+            }
+        });
+        require(["App"], function (remotely) {
+            remotely.App.Pages.ApiTokens.Init();
+        });
     </script>
 
 }

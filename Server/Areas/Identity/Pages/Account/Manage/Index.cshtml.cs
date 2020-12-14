@@ -1,14 +1,14 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-using Remotely.Shared.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using System.Text;
 using Remotely.Server.Services;
+using Remotely.Shared.Models;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Text;
+using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 {
@@ -17,12 +17,12 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<RemotelyUser> _userManager;
         private readonly SignInManager<RemotelyUser> _signInManager;
         private readonly IEmailSenderEx _emailSender;
-        private readonly DataService _dataService;
+        private readonly IDataService _dataService;
 
         public IndexModel(
             UserManager<RemotelyUser> userManager,
             SignInManager<RemotelyUser> signInManager,
-            DataService dataService,
+            IDataService dataService,
             IEmailSenderEx emailSender)
         {
             _userManager = userManager;
@@ -123,7 +123,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-           
+
 
             if (Input.DisplayName != user.DisplayName)
             {
@@ -155,7 +155,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             var callbackUrl = Url.Page(
                 "/Account/ConfirmEmail",
                 pageHandler: null,
-                values: new { area = "Identity", userId = user.Id, code = code },
+                values: new { area = "Identity", userId = user.Id, code },
                 protocol: Request.Scheme);
             var emailResult = await _emailSender.SendEmailAsync(
                 email,

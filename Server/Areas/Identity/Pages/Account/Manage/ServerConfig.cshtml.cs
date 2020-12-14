@@ -20,7 +20,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         public ServerConfigModel(IConfiguration configuration,
             IWebHostEnvironment hostEnv,
             UserManager<RemotelyUser> userManager,
-            DataService dataService)
+            IDataService dataService)
         {
             Configuration = configuration;
             HostEnv = hostEnv;
@@ -52,7 +52,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         public string StatusMessage { get; set; }
 
         private IConfiguration Configuration { get; }
-        private DataService DataService { get; }
+        private IDataService DataService { get; }
         private IWebHostEnvironment HostEnv { get; }
         private UserManager<RemotelyUser> UserManager { get; }
 
@@ -141,6 +141,9 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Allow API Login")]
             public bool AllowApiLogin { get; set; }
 
+            [Display(Name = "Banned Devices")]
+            public string[] BannedDevices { get; set; }
+
             [Display(Name = "Data Retention (days)")]
             public double DataRetentionInDays { get; set; }
 
@@ -154,20 +157,26 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Enable Windows Event Log")]
             public bool EnableWindowsEventLog { get; set; }
 
+            [Display(Name = "Enforce Attended Access")]
+            public bool EnforceAttendedAccess { get; set; }
+
             [Display(Name = "Ice Servers")]
             public IceServerModel[] IceServers { get; set; }
 
             [Display(Name = "Known Proxies")]
             public string[] KnownProxies { get; set; }
 
+            [Display(Name = "Max Concurrent Updates")]
+            public int MaxConcurrentUpdates { get; set; }
+
             [Display(Name = "Max Organizations")]
             public int MaxOrganizationCount { get; set; }
 
-            [Display(Name = "Record Remote Control Sessions")]
-            public bool RecordRemoteControlSessions { get; set; }
-
             [Display(Name = "Redirect To HTTPS")]
             public bool RedirectToHttps { get; set; }
+
+            [Display(Name = "Remote Control Notify User")]
+            public bool RemoteControlNotifyUser { get; set; }
 
             [Display(Name = "Remote Control Requires Authentication")]
             public bool RemoteControlRequiresAuthentication { get; set; }

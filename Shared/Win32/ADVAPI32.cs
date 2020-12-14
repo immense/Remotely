@@ -305,7 +305,7 @@ namespace Remotely.Shared.Win32
         [DllImport("advapi32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool AdjustTokenPrivileges(IntPtr tokenHandle,
-           [MarshalAs(UnmanagedType.Bool)]bool disableAllPrivileges,
+           [MarshalAs(UnmanagedType.Bool)] bool disableAllPrivileges,
            ref TOKEN_PRIVILEGES newState,
            UInt32 bufferLengthInBytes,
            ref TOKEN_PRIVILEGES previousState,
@@ -351,7 +351,7 @@ namespace Remotely.Shared.Win32
         [DllImport("advapi32", SetLastError = true), SuppressUnmanagedCodeSecurityAttribute]
         public static extern bool OpenProcessToken(IntPtr ProcessHandle, int DesiredAccess, ref IntPtr TokenHandle);
         [DllImport("advapi32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        public extern static bool DuplicateTokenEx(
+        public static extern bool DuplicateTokenEx(
             IntPtr hExistingToken,
             uint dwDesiredAccess,
             ref SECURITY_ATTRIBUTES lpTokenAttributes,
@@ -367,6 +367,6 @@ namespace Remotely.Shared.Win32
              [Out] byte[] pvInfo, uint nLength, out uint lpnLengthNeeded);
         #endregion
 
-       
+
     }
 }

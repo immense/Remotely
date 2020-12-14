@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Remotely.Desktop.Win.ViewModels;
+using System.Windows;
 
 namespace Remotely.Desktop.Win.Controls
 {
@@ -11,6 +12,8 @@ namespace Remotely.Desktop.Win.Controls
         {
             InitializeComponent();
         }
+
+        public HostNamePromptViewModel ViewModel => DataContext as HostNamePromptViewModel;
 
         private void OKButton_Click(object sender, RoutedEventArgs e)
         {

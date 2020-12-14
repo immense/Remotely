@@ -7,7 +7,7 @@ namespace Remotely.Shared.Utilities
 {
     public static class EnvironmentHelper
     {
-        public static string ClientExecutableFileName
+        public static string AgentExecutableFileName
         {
             get
             {
@@ -24,6 +24,25 @@ namespace Remotely.Shared.Utilities
             }
         }
 
+        public static string DesktopExecutableFileName
+        {
+            get
+            {
+                if (IsWindows)
+                {
+                    return "Remotely_Desktop.exe";
+                }
+                else if (IsLinux)
+                {
+                    return "Remotely_Desktop";
+                }
+                else
+                {
+                    throw new Exception("Unsupported operating system.");
+                }
+            }
+        }
+
         public static bool IsDebug
         {
             get
@@ -35,21 +54,12 @@ namespace Remotely.Shared.Utilities
 #endif
             }
         }
-        public static bool IsLinux
-        {
-            get
-            {
-                return RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
-            }
-        }
+        public static bool IsLinux => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
 
-        public static bool IsWindows
-        {
-            get
-            {
-                return RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-            }
-        }
+        public static bool IsMac => RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+
+        public static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
         public static Platform Platform
         {
             get
@@ -72,40 +82,28 @@ namespace Remotely.Shared.Utilities
                 }
             }
         }
-
-        public static string ScreenCastExecutableFileName
-        {
-            get
-            {
-                if (IsWindows)
-                {
-                    return "Remotely_ScreenCast.exe";
-                }
-                else if (IsLinux)
-                {
-                    return "Remotely_ScreenCast.Linux";
-                }
-                else
-                {
-                    throw new Exception("Unsupported operating system.");
-                }
-            }
-        }
         public static string StartProcessWithResults(string command, string arguments)
         {
-            var psi = new ProcessStartInfo(command, arguments);
-            psi.WindowStyle = ProcessWindowStyle.Hidden;
-            psi.Verb = "RunAs";
-            psi.UseShellExecute = false;
-            psi.RedirectStandardOutput = true;
+            try
+            {
+                var psi = new ProcessStartInfo(command, arguments)
+                {
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    Verb = "RunAs",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true
+                };
 
-            var proc = new Process();
-            proc.StartInfo = psi;
+                var proc = Process.Start(psi);
+                proc.WaitForExit();
 
-            proc.Start();
-            proc.WaitForExit();
-
-            return proc.StandardOutput.ReadToEnd();
+                return proc.StandardOutput.ReadToEnd();
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex, "Failed to start process.");
+                return string.Empty;
+            }
         }
 
     }

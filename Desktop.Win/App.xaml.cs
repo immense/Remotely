@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Remotely.ScreenCast.Core;
-using Remotely.ScreenCast.Core.Services;
+using Remotely.Desktop.Core;
+using Remotely.Desktop.Core.Services;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.Win32;
 using System;
-using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Remotely.Desktop.Win
@@ -39,6 +39,17 @@ namespace Remotely.Desktop.Win
                 Logger.Write($"Elevate result: {result}. Process ID: {procInfo.dwProcessId}.");
                 Environment.Exit(0);
             }
+        }
+
+        private void Application_Exit(object sender, ExitEventArgs e)
+        {
+            Task.Run(async () =>
+            {
+                var casterSocket = ServiceContainer.Instance.GetRequiredService<CasterSocket>();
+                await casterSocket.DisconnectAllViewers();
+                System.Windows.Forms.Application.Exit();
+                Environment.Exit(0);
+            });
         }
     }
 }

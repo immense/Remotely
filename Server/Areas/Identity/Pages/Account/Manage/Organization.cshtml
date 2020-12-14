@@ -1,6 +1,6 @@
 ﻿@page
 @model OrganizationModel
-@inject DataService  DataService
+@inject IDataService  DataService
 @{
     ViewData["Title"] = "Manage Organization";
     var currentUser = DataService.GetUserByName(User.Identity.Name);
@@ -150,10 +150,11 @@
     <div class="row">
         <div class="col-sm-8">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <form method="post" asp-page-handler="SendInvite">
+            <form method="post" asp-page-handler="AddUser">
                 <div class="form-group">
+                    <label class="control-label">Add User</label>
                     <div class="input-group">
-                        <input asp-for="Input.UserEmail" placeholder="Username/email to invite" type="email" required class="form-control" />
+                        <input asp-for="Input.UserEmail" placeholder="Email of user to add" type="email" required class="form-control" />
                         <div class="input-group-append">
                             <span class="input-group-text pr-1">Admin?</span>
                         </div>
@@ -163,7 +164,7 @@
                             </div>
                         </div>
                         <div class="input-group-append">
-                            <button type="submit" class="btn btn-secondary">Invite</button>
+                            <button type="submit" class="btn btn-secondary">Add</button>
                         </div>
                     </div>
                 </div>
@@ -192,11 +193,11 @@
                             If no users are added, everyone will have access.
                         </div>
                         <select multiple class="form-control device-group-user-list mb-1">
-                            @if (Model.DeviceGroups[i]?.PermissionLinks?.Any() == true)
+                            @if (Model.DeviceGroups[i]?.Users?.Any() == true)
                             {
-                                foreach (var link in Model.DeviceGroups[i].PermissionLinks)
+                                foreach (var user in Model.DeviceGroups[i].Users)
                                 {
-                                    <option value="@link.UserID">@link.User.UserName</option>
+                                    <option value="@user.Id">@user.UserName</option>
                                 }
                             }
                         </select>
@@ -222,7 +223,16 @@
 
     }
 
-    <script type="module" src="~/scripts/Pages/OrganizationManagement.js">
+    <script>
+        require.config({
+            waitSeconds: 30,
+            paths: {
+                "App": "/out"
+            }
+        });
+        require(["App"], function (remotely) {
+            remotely.App.Pages.OrganizationManagement.Init();
+        });
     </script>
 
 }

@@ -151,7 +151,7 @@ namespace Remotely.Agent.Services
             {
                 await sw.WriteAsync(JsonSerializer.Serialize(result));
             }
-            await webRequest.GetResponseAsync();
+            (await webRequest.GetResponseAsync())?.Dispose();
         }
     }
 }

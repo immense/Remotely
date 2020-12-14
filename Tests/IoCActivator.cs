@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Remotely.Server.Data;
 using Remotely.Server.Services;
-using System;
-using Microsoft.EntityFrameworkCore;
 using Remotely.Shared.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace Remotely.Tests
 {
@@ -50,8 +50,8 @@ namespace Remotely.Tests
              .AddDefaultUI()
              .AddDefaultTokenProviders();
 
-            services.AddTransient<DataService>();
-            services.AddTransient<ApplicationConfig>();
+            services.AddTransient<IDataService, DataService>();
+            services.AddTransient<IApplicationConfig, ApplicationConfig>();
             services.AddTransient<IEmailSenderEx, EmailSenderEx>();
             IoCActivator.ServiceProvider = services.BuildServiceProvider();
         }

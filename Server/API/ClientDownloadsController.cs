@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Hosting;
-using Remotely.Server.Services;
-using System.Text;
-using Microsoft.Extensions.Configuration;
-using System.Threading;
 using Remotely.Server.Attributes;
+using Remotely.Server.Services;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Remotely.Server.API
 {
@@ -18,13 +17,13 @@ namespace Remotely.Server.API
     public class ClientDownloadsController : ControllerBase
     {
         public ClientDownloadsController(IWebHostEnvironment hostEnv,
-            ApplicationConfig appConfig)
+            IApplicationConfig appConfig)
         {
             HostEnv = hostEnv;
             AppConfig = appConfig;
         }
 
-        private ApplicationConfig AppConfig { get; }
+        private IApplicationConfig AppConfig { get; }
         private SemaphoreSlim FileLock { get; } = new SemaphoreSlim(1);
         private IWebHostEnvironment HostEnv { get; set; }
 
@@ -49,36 +48,23 @@ namespace Remotely.Server.API
                 if (await FileLock.WaitAsync(TimeSpan.FromSeconds(15)))
                 {
                     var scheme = AppConfig.RedirectToHttps ? "https" : Request.Scheme;
-                    var fileContents = new List<string>();
-                    string fileName;
-                    byte[] fileBytes;
+                    
                     switch (platformID)
                     {
                         case "Windows":
                             {
                                 var filePath = Path.Combine(HostEnv.WebRootPath, "Downloads", $"Remotely_Installer.exe");
-                                fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
-                                fileName = $"Remotely_Installer-{organizationID}.exe";
-                                break;
+                                var fileName = $"Remotely_Installer-{organizationID}.exe";
+                                var fileStream = System.IO.File.OpenRead(filePath);
+                                return File(fileStream, "application/octet-stream", $"{fileName}");
                             }
-                        // TODO: Remove after a few versions.
-                        case "Win10":
-                            {
-                                fileName = $"Install-{platformID}.ps1";
-
-                                fileContents.AddRange(await System.IO.File.ReadAllLinesAsync(Path.Combine(HostEnv.WebRootPath, "Downloads", $"{fileName}")));
-
-                                var hostIndex = fileContents.IndexOf("[string]$HostName = $null");
-                                var orgIndex = fileContents.IndexOf("[string]$Organization = $null");
-
-                                fileContents[hostIndex] = $"[string]$HostName = \"{scheme}://{Request.Host}\"";
-                                fileContents[orgIndex] = $"[string]$Organization = \"{organizationID}\"";
-                                fileBytes = System.Text.Encoding.UTF8.GetBytes(string.Join(Environment.NewLine, fileContents));
-                                break;
-                            }
+                        case "Manjaro-x64":
+                        case "Ubuntu-x64":
+                        // TODO: Remove this and delete the file after a few releases.
                         case "Linux-x64":
                             {
-                                fileName = "Install-Linux-x64.sh";
+                                var fileContents = new List<string>();
+                                var fileName = $"Install-{platformID}.sh";
 
                                 fileContents.AddRange(await System.IO.File.ReadAllLinesAsync(Path.Combine(HostEnv.WebRootPath, "Downloads", $"{fileName}")));
 
@@ -87,15 +73,13 @@ namespace Remotely.Server.API
 
                                 fileContents[hostIndex] = $"HostName=\"{scheme}://{Request.Host}\"";
                                 fileContents[orgIndex] = $"Organization=\"{organizationID}\"";
-                                fileBytes = Encoding.UTF8.GetBytes(string.Join("\n", fileContents));
-                                break;
+                                var fileBytes = Encoding.UTF8.GetBytes(string.Join("\n", fileContents));
+                                return File(fileBytes, "application/octet-stream", $"{fileName}");
                             }
 
                         default:
                             return BadRequest();
                     }
-
-                    return File(fileBytes, "application/octet-stream", $"{fileName}");
                 }
                 else
                 {

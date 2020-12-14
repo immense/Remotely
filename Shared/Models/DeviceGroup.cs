@@ -21,6 +21,7 @@ namespace Remotely.Shared.Models
 
         public string OrganizationID { get; set; }
 
-        public List<UserDevicePermission> PermissionLinks { get; set; }
+        [JsonIgnore]
+        public List<RemotelyUser> Users { get; set; }
     }
 }

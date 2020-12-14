@@ -1,6 +1,6 @@
 ﻿@page
 @using Remotely.Shared.Models
-@inject Remotely.Server.Services.ApplicationConfig AppConfig
+@inject Remotely.Server.Services.IApplicationConfig AppConfig
 @inject UserManager<RemotelyUser> UserManager
 @model Remotely.Server.Pages.RemoteControlModel
 @{
@@ -94,14 +94,37 @@
         </div>
 
         <div>
-            <button id="clipboardTransferButton" class="option-button">Clipboard  <i class="fas fa-clipboard"></i></button>
-            <button id="blockInputButton" class="option-button">Block Remote Input <i class="fas fa-mouse"></i></button>
-            <button id="inviteButton" class="option-button">Invite Others  <i class="fas fa-user-plus"></i></button>
-            <button id="audioButton" class="option-button">Audio <i class="fas fa-volume-up"></i></button>
-            <button id="fileTransferButton" class="option-button">File Transfer  <i class="fas fa-file-upload"></i></button>
-            <button id="ctrlAltDelButton" class="option-button">Ctrl+Alt+Del <i class="fas fa-sign-in-alt"></i></button>
-            <button id="keyboardButton" hidden="hidden" class="option-button">Keyboard  <i class="fas fa-keyboard"></i></button>
-            <button id="disconnectButton" class="option-button">Disconnect <i class="fas fa-window-close"></i></button>
+            <button id="clipboardTransferButton" class="option-button" title="Type the current clipboard text on the remote computer.">
+                Clipboard  <i class="fas fa-clipboard"></i>
+            </button>
+
+            <button id="blockInputButton" class="option-button" title="Prevent remote user from using keyboard and mouse.">
+                Block Remote Input <i class="fas fa-mouse"></i>
+            </button>
+
+            <button id="inviteButton" class="option-button" title="Copy a link that lets another person view the remote screen.">
+                Invite Others  <i class="fas fa-user-plus"></i>
+            </button>
+
+            <button id="audioButton" class="option-button" title="Windows only.  Stream the remote audio to the browser.">
+                Audio <i class="fas fa-volume-up"></i>
+            </button>
+
+            <button id="fileTransferButton" class="option-button" title="Transfer files to the remote computer.">
+                File Transfer  <i class="fas fa-file-upload"></i>
+            </button>
+
+            <button id="ctrlAltDelButton" class="option-button" title="Simulate the Ctrl+Alt+Del command on the remote computer.">
+                Ctrl+Alt+Del <i class="fas fa-sign-in-alt"></i>
+            </button>
+
+            <button id="keyboardButton" hidden="hidden" class="option-button" title="Invoke the mobile touch keyboard.">
+                Keyboard  <i class="fas fa-keyboard"></i>
+            </button>
+
+            <button id="disconnectButton" class="option-button" title="Disconnect from the current session.">
+                Disconnect <i class="fas fa-window-close"></i>
+            </button>
         </div>
 
 
@@ -110,17 +133,45 @@
         </div>
 
         <div>
-            <button id="changeScreenButton" class="option-button">Monitors <i class="fas fa-desktop"></i></button>
-            <button id="fitToScreenButton" class="toggled option-button">Fit <i class="fas fa-expand"></i></button>
-            <button id="qualityButton" class="option-button">Quality <i class="far fa-image"></i></button>
+            <button id="streamVideoButton" class="option-button" hidden title="Reduce bandwidth and increase FPS, but increase input delay.">
+                Stream Mode <i class="fas fa-video"></i>
+            </button>
+
+            <button id="changeScreenButton" class="option-button" title="Switch monitors on remote multi-monitor setups.">
+                Monitors <i class="fas fa-desktop"></i>
+            </button>
+
+            <button id="fitToScreenButton" class="toggled option-button" title="If toggled, will resize image to fit in the window.">
+                Fit <i class="fas fa-expand"></i>
+            </button>
+
+            <button id="qualityButton" class="option-button" title="Adjust the image quality when not in Stream Mode.">
+                Quality <i class="far fa-image"></i>
+            </button>
+        </div>
+
+
+        <div class="menu-options-header">
+            Recording
+        </div>
+
+        <div>
+            <button id="recordSessionButton" class="option-button" title="Record session as a WEBM video in the browser.">
+                Start <i class="fas fa-record-vinyl"></i>
+            </button>
+
+            <button id="downloadRecordingButton" class="option-button" title="Download the recorded session as a WEBM file.">
+                Download <i class="fas fa-download"></i>
+            </button>
         </div>
 
         <div class="menu-options-header">
             Windows Session
         </div>
         <div>
-            <select id="windowsSessionSelect" 
-                    class="option-button" 
+            <select id="windowsSessionSelect"
+                    title="Switch to a different Windows session."
+                    class="option-button"
                     style="height: 30px; width: 90%; margin: 5px 0;"></select>
         </div>
 
@@ -158,6 +209,15 @@
         </div>
     </div>
 
+    <div id="fileTransferBar" class="horizontal-button-bar">
+        <div style="color:white; font-size:12px">
+            File Transfer
+        </div>
+        <div style="color:white; font-size:12px;">
+            <button id="fileUploadButton" class="horizontal-bar-button">Upload File</button>
+            <button id="fileDownloadButton" class="horizontal-bar-button">Download File</button>
+        </div>
+    </div>
     <div id="connectBox">
         <h3>Connect to a client:</h3>
         <div class="form-block">
@@ -181,6 +241,7 @@
 
     <div id="screenViewerWrapper" class="center-aligned">
         <canvas id="screenViewer" hidden="hidden"></canvas>
+        <video id="videoScreenViewer" hidden="hidden"></video>
         <input id="fileTransferInput" hidden="hidden" type="file" multiple />
         <textarea id="touchKeyboardTextArea" value=" #"> #</textarea>
     </div>
@@ -199,12 +260,19 @@
             <p>&copy; @DateTimeOffset.Now.Year - Translucency Software</p>
         </div>
     </footer>
-    <script type="module" src="~/scripts/RemoteControl/Main.js">
-    </script>
+
+    <script src="~/lib/require.js"></script>
     <script>
-        window.onload = () => {
-            Remotely.Init();
-        }
+        require.config({
+            waitSeconds: 30,
+            paths: {
+                "App": "out"
+            }
+        });
+        require(["App"], function (remotely) {
+            remotely.App.Viewer.Init();
+        });
+
     </script>
 </body>
 </html>

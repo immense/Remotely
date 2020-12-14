@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,13 +5,17 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 {
     [Authorize]
     public class ApiTokensModel : PageModel
     {
-        public ApiTokensModel(DataService dataService)
+        public ApiTokensModel(IDataService dataService)
         {
             DataService = dataService;
         }
@@ -35,7 +35,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         [TempData]
         public string NewTokenSecret { get; set; }
 
-        private DataService DataService { get; }
+        private IDataService DataService { get; }
 
         public void OnGet()
         {
@@ -44,8 +44,8 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnPostRenameAsync()
         {
-            if (ModelState.IsValid && 
-                !string.IsNullOrWhiteSpace(Input.TokenId) && 
+            if (ModelState.IsValid &&
+                !string.IsNullOrWhiteSpace(Input.TokenId) &&
                 !string.IsNullOrWhiteSpace(Input.TokenName))
             {
                 await DataService.RenameApiToken(User.Identity.Name, Input.TokenId, Input.TokenName);

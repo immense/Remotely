@@ -1,12 +1,13 @@
-// Type definitions for Bootstrap 4.3
+// Type definitions for Bootstrap 4.5
 // Project: https://github.com/twbs/bootstrap/, https://getbootstrap.com
 // Definitions by: denisname <https://github.com/denisname>
+//                 Piotr Błażejewicz <https://github.com/peterblazejewicz>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 // TypeScript Version: 2.3
 
 /// <reference types="jquery"/>
 
-import * as Popper from "../popper.js/index";
+import * as Popper from "../popper.js/index"
 
 export as namespace Bootstrap;
 
@@ -73,6 +74,13 @@ export interface CarouselOption {
      * @default "hover"
      */
     pause?: "hover" | false;
+
+    /**
+     * Autoplays the carousel after the user manually cycles the first item.
+     * If `carousel`, autoplays the carousel on load.
+     * @default false
+     */
+    ride?: 'carousel' | boolean;
 
     /**
      * Whether the carousel should cycle continuously or have hard stops.
@@ -215,7 +223,7 @@ export interface ScrollspyOption {
      *
      * @default ""
      */
-    target?: string | Element;
+    target?: string | JQuery<Element> | Element;
 }
 
 export interface ToastOption {
@@ -363,7 +371,7 @@ export interface TooltipOption {
     /**
      * Object which contains allowed attributes and tags.
      */
-    whiteList?: {[key: string]: string[]};
+    whiteList?: { [key: string]: string[] };
 
     /**
      * Here you can supply your own sanitize function. This can be useful if you prefer to use a dedicated library to perform sanitization.
@@ -371,6 +379,12 @@ export interface TooltipOption {
      * @default null
      */
     sanitizeFn?: null | ((input: string) => string);
+
+    /**
+     * To change Bootstrap's default Popper.js config,
+     * see {@link https://popper.js.org/docs/v1/ Popper.js's configuration}
+     */
+    popperConfig?: null | object;
 }
 
 // --------------------------------------------------------------------------------------
@@ -449,7 +463,7 @@ export type AlertEvent = "close.bs.alert" | "closed.bs.alert";
 export type CarouselEvent = "slide.bs.carousel" | "slid.bs.carousel";
 export type CollapseEvent = "show.bs.collapse" | "shown.bs.collapse" | "hide.bs.collapse" | "hidden.bs.collapse";
 export type DropdownEvent = "show.bs.dropdown" | "shown.bs.dropdown" | "hide.bs.dropdown" | "hidden.bs.dropdown";
-export type ModalEvent = "show.bs.modal" | "shown.bs.modal" | "hide.bs.modal" | "hidden.bs.modal";
+export type ModalEvent = "show.bs.modal" | "shown.bs.modal" | "hide.bs.modal" | "hidden.bs.modal" | "hidePrevented.bs.modal";
 export type PopoverEvent = "show.bs.popover" | "shown.bs.popover" | "hide.bs.popover" | "hidden.bs.popover" | "inserted.bs.popover";
 export type ScrollspyEvent = "activate.bs.scrollspy";
 export type TapEvent = "show.bs.tab" | "shown.bs.tab" | "hide.bs.tab" | "hidden.bs.tab";
@@ -563,7 +577,7 @@ declare global {
          */
         popover(options?: PopoverOption): this;
 
-// tslint:disable:jsdoc-format
+        // tslint:disable:jsdoc-format
         /**
          * Call a method on the scrollspy element:
          * * `refresh` – When using scrollspy in conjunction with adding or removing of elements from the DOM, you'll need to call the refresh, see example.
@@ -576,7 +590,7 @@ $('[data-spy="scroll"]').each(function () {
 })
 ```
          */
-// tslint:enable:jsdoc-format
+        // tslint:enable:jsdoc-format
         scrollspy(action: "refresh" | "dispose"): this;
         /**
          * Add scrollspy behavior to a topbar navigation.

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Remotely.Shared.ViewModels.Organization
 {
@@ -7,6 +8,7 @@ namespace Remotely.Shared.ViewModels.Organization
         public string ID { get; set; }
         public bool IsAdmin { get; set; }
         public DateTimeOffset DateSent { get; set; }
+        [EmailAddress]
         public string InvitedUser { get; set; }
     }
 }

@@ -1,15 +1,16 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Remotely.Server.Attributes;
+using Remotely.Server.Hubs;
 using Remotely.Server.Services;
+using Remotely.Shared.Helpers;
 using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Remotely.Shared.Helpers;
-using System.IO;
-using Remotely.Server.Attributes;
 
 namespace Remotely.Server.API
 {
@@ -17,17 +18,17 @@ namespace Remotely.Server.API
     [Route("api/[controller]")]
     public class ScriptingController : ControllerBase
     {
-        public ScriptingController(DataService dataService, 
+        public ScriptingController(IDataService dataService,
             UserManager<RemotelyUser> userManager,
-            IHubContext<DeviceHub> deviceHub)
+            IHubContext<AgentHub> agentHub)
         {
             DataService = dataService;
             UserManager = userManager;
-            DeviceHub = deviceHub;
+            AgentHubContext = agentHub;
         }
 
-        private DataService DataService { get; }
-        private IHubContext<DeviceHub> DeviceHub { get; }
+        private IDataService DataService { get; }
+        private IHubContext<AgentHub> AgentHubContext { get; }
         private UserManager<RemotelyUser> UserManager { get; }
 
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
@@ -55,7 +56,7 @@ namespace Remotely.Server.API
 
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
 
-            KeyValuePair<string, Device> connection = Services.DeviceHub.ServiceConnections.FirstOrDefault(x =>
+            KeyValuePair<string, Device> connection = AgentHub.ServiceConnections.FirstOrDefault(x =>
                 x.Value.OrganizationID == orgID &&
                 x.Value.ID == deviceID);
 
@@ -75,14 +76,14 @@ namespace Remotely.Server.API
             };
             DataService.AddOrUpdateCommandResult(commandResult);
             var requestID = Guid.NewGuid().ToString();
-            await DeviceHub.Clients.Client(connection.Key).SendAsync("ExecuteCommandFromApi", mode, requestID, command, commandResult.ID, Guid.NewGuid().ToString());
-            var success = await TaskHelper.DelayUntil(() => Services.DeviceHub.ApiScriptResults.TryGetValue(requestID, out _), TimeSpan.FromSeconds(30));
+            await AgentHubContext.Clients.Client(connection.Key).SendAsync("ExecuteCommandFromApi", mode, requestID, command, commandResult.ID, Guid.NewGuid().ToString());
+            var success = await TaskHelper.DelayUntilAsync(() => AgentHub.ApiScriptResults.TryGetValue(requestID, out _), TimeSpan.FromSeconds(30));
             if (!success)
             {
                 return commandResult;
             }
-            Services.DeviceHub.ApiScriptResults.TryGetValue(requestID, out var commandID);
-            Services.DeviceHub.ApiScriptResults.Remove(requestID);
+            AgentHub.ApiScriptResults.TryGetValue(requestID, out var commandID);
+            AgentHub.ApiScriptResults.Remove(requestID);
             DataService.DetachEntity(commandResult);
             var result = DataService.GetCommandResult(commandID.ToString(), orgID);
             return result;

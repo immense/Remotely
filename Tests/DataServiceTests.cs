@@ -13,62 +13,63 @@ namespace Remotely.Tests
     [TestClass]
     public class DataServiceTests
     {
-        private DataService DataService { get; set; }
+        private IDataService DataService { get; set; }
 
-        [TestInitialize]
-        public async Task TestInit()
+        [TestMethod]
+        [DoNotParallelize]
+        public async Task AddAlert()
         {
-            await TestData.PopulateTestData();
-            DataService = IoCActivator.ServiceProvider.GetRequiredService<DataService>();
-        }
+            var options = new AlertOptions()
+            {
+                AlertDeviceID = TestData.Device1.ID,
+                AlertMessage = "Test Message",
+                ShouldAlert = true
+            };
+            await DataService.AddAlert(options, TestData.OrganizationID);
 
-        [TestCleanup]
-        public void TestCleanup()
-        {
-            TestData.ClearData();
+            var alerts = DataService.GetAlerts(TestData.Admin1.Id);
+
+            Assert.AreEqual("Test Message", alerts.First().Message);
         }
 
         [TestMethod]
         [DoNotParallelize]
-        public void VerifyInitialData()
+        public async Task AddOrUpdateDevice()
         {
-            Assert.IsNotNull(DataService.GetUserByName(TestData.Admin1.UserName));
-            Assert.IsNotNull(DataService.GetUserByName(TestData.Admin2.UserName));
-            Assert.IsNotNull(DataService.GetUserByName(TestData.User1.UserName));
-            Assert.IsNotNull(DataService.GetUserByName(TestData.User2.UserName));
-            Assert.AreEqual(1, DataService.GetOrganizationCount());
+            var newDeviceID = "NewDeviceName";
+            var storedDevice = DataService.GetDevice(newDeviceID);
 
-            var devices = DataService.GetAllDevices(TestData.OrganizationID);
+            Assert.IsNull(storedDevice);
 
-            Assert.AreEqual(2, devices.Count());
-            Assert.IsTrue(devices.Any(x => x.ID == "Device1"));
-            Assert.IsTrue(devices.Any(x => x.ID == "Device2"));
+            var newDevice = await DeviceInformation.Create(newDeviceID, TestData.OrganizationID);
+            Assert.IsTrue(DataService.AddOrUpdateDevice(newDevice, out _));
 
-            var orgIDs = new string[]
+            storedDevice = DataService.GetDevice(newDeviceID);
+
+            Assert.AreEqual(newDeviceID, storedDevice.ID);
+            Assert.AreEqual(Environment.MachineName, storedDevice.DeviceName);
+            Assert.AreEqual(Environment.Is64BitOperatingSystem, storedDevice.Is64Bit);
+        }
+
+        [TestMethod]
+        [DoNotParallelize]
+        public async Task CreateDevice()
+        {
+            var deviceOptions = new DeviceSetupOptions()
             {
-                TestData.Group1.OrganizationID,
-                TestData.Group2.OrganizationID,
-                TestData.Admin1.OrganizationID,
-                TestData.Admin2.OrganizationID,
-                TestData.User1.OrganizationID,
-                TestData.User2.OrganizationID,
-                TestData.Device1.OrganizationID,
-                TestData.Device2.OrganizationID
+                DeviceID = Guid.NewGuid().ToString(),
+                DeviceAlias = "Spare Laptop",
+                OrganizationID = TestData.OrganizationID
             };
 
-            Assert.IsTrue(orgIDs.All(x => x == TestData.OrganizationID));
+            // First call should create and return device.
+            var savedDevice = await DataService.CreateDevice(deviceOptions);
+            Assert.IsInstanceOfType(savedDevice, typeof(Device));
+
+            // Second call with same DeviceUuid should return null;
+            var secondSave = await DataService.CreateDevice(deviceOptions);
+            Assert.IsNull(secondSave);
         }
-
-
-        [TestMethod]
-        [DoNotParallelize]
-        public void UpdateOrganizationName()
-        {
-            Assert.IsTrue(string.IsNullOrWhiteSpace(TestData.Admin1.Organization.OrganizationName));
-            DataService.UpdateOrganizationName(TestData.OrganizationID, "Test Org");
-            Assert.AreEqual(TestData.Admin1.Organization.OrganizationName, "Test Org");
-        }
-
 
         [TestMethod]
         [DoNotParallelize]
@@ -102,21 +103,25 @@ namespace Remotely.Tests
             Assert.AreEqual(1, DataService.FilterDeviceIDsByUserPermission(allDevices, TestData.User2).Count());
         }
 
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            TestData.ClearData();
+        }
+
+        [TestInitialize]
+        public async Task TestInit()
+        {
+            await TestData.PopulateTestData();
+            DataService = IoCActivator.ServiceProvider.GetRequiredService<IDataService>();
+        }
         [TestMethod]
         [DoNotParallelize]
-        public async Task UpdateDevice()
+        public void UpdateOrganizationName()
         {
-            var newDevice = await DeviceInformation.Create("Device1", TestData.OrganizationID);
-            Assert.IsTrue(DataService.AddOrUpdateDevice(newDevice, out _));
-            Assert.AreEqual(TestData.Device1.OrganizationID, TestData.OrganizationID);
-            Assert.AreEqual(TestData.Device1.DeviceName, Environment.MachineName);
-            Assert.IsTrue(TestData.Device1.CpuUtilization > 0);
-            Assert.IsTrue(TestData.Device1.TotalMemory > 0);
-            Assert.IsTrue(TestData.Device1.TotalStorage > 0);
-            Assert.IsTrue(TestData.Device1.UsedMemory > 0);
-            Assert.IsTrue(TestData.Device1.UsedStorage > 0);
-            Assert.IsTrue(TestData.Device1.IsOnline);
-            Assert.AreEqual(Environment.Is64BitOperatingSystem, TestData.Device1.Is64Bit);
+            Assert.IsTrue(string.IsNullOrWhiteSpace(TestData.Admin1.Organization.OrganizationName));
+            DataService.UpdateOrganizationName(TestData.OrganizationID, "Test Org");
+            Assert.AreEqual(TestData.Admin1.Organization.OrganizationName, "Test Org");
         }
 
         [TestMethod]
@@ -145,21 +150,33 @@ namespace Remotely.Tests
 
         [TestMethod]
         [DoNotParallelize]
-        public async Task AddAlert()
+        public void VerifyInitialData()
         {
-            var options = new AlertOptions()
+            Assert.IsNotNull(DataService.GetUserByName(TestData.Admin1.UserName));
+            Assert.IsNotNull(DataService.GetUserByName(TestData.Admin2.UserName));
+            Assert.IsNotNull(DataService.GetUserByName(TestData.User1.UserName));
+            Assert.IsNotNull(DataService.GetUserByName(TestData.User2.UserName));
+            Assert.AreEqual(1, DataService.GetOrganizationCount());
+
+            var devices = DataService.GetAllDevices(TestData.OrganizationID);
+
+            Assert.AreEqual(2, devices.Count());
+            Assert.IsTrue(devices.Any(x => x.ID == "Device1"));
+            Assert.IsTrue(devices.Any(x => x.ID == "Device2"));
+
+            var orgIDs = new string[]
             {
-                AlertDeviceID = TestData.Device1.ID,
-                AlertMessage = "Test Message",
-                ShouldAlert = true
+                TestData.Group1.OrganizationID,
+                TestData.Group2.OrganizationID,
+                TestData.Admin1.OrganizationID,
+                TestData.Admin2.OrganizationID,
+                TestData.User1.OrganizationID,
+                TestData.User2.OrganizationID,
+                TestData.Device1.OrganizationID,
+                TestData.Device2.OrganizationID
             };
-            await DataService.AddAlert(options, TestData.OrganizationID);
 
-            var alerts = DataService.GetAlerts(TestData.Admin1.Id);
-
-            var json = System.Text.Json.JsonSerializer.Serialize(options);
-
-            Assert.AreEqual("Test Message", alerts.First().Message);
+            Assert.IsTrue(orgIDs.All(x => x == TestData.OrganizationID));
         }
     }
 }

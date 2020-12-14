@@ -1,26 +1,36 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Remotely.Server.Services;
 using Remotely.Shared.Models;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
+        private readonly IDataService _dataService;
         private readonly SignInManager<RemotelyUser> _signInManager;
+        private readonly UserManager<RemotelyUser> _userManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<RemotelyUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<RemotelyUser> signInManager,
+            UserManager<RemotelyUser> userManager,
+            IDataService dataService,
+            ILogger<LoginModel> logger)
         {
+            _dataService = dataService;
             _signInManager = signInManager;
+            _userManager = userManager;
             _logger = logger;
         }
 
@@ -55,7 +65,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
                 ModelState.AddModelError(string.Empty, ErrorMessage);
             }
 
-            returnUrl = returnUrl ?? Url.Content("~/");
+            returnUrl ??= Url.Content("~/");
 
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
@@ -67,7 +77,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl = returnUrl ?? Url.Content("~/");
+            returnUrl ??= Url.Content("~/");
 
             if (ModelState.IsValid)
             {
@@ -81,7 +91,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
                 }
                 if (result.RequiresTwoFactor)
                 {
-                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, Input.RememberMe });
                 }
                 if (result.IsLockedOut)
                 {
@@ -90,6 +100,19 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
                 }
                 else
                 {
+                    if (await _dataService.TempPasswordSignIn(Input.Email, Input.Password))
+                    {
+                        var user = await _userManager.FindByNameAsync(Input.Email);
+                        var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                        var callbackUrl = Url.Page(
+                            "/Account/ResetPassword",
+                            pageHandler: null,
+                            values: new { area = "Identity", code },
+                            protocol: Request.Scheme);
+
+                        return Redirect(callbackUrl);
+                    }
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                     return Page();
                 }

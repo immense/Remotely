@@ -1,20 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Remotely.Shared.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Remotely.Server.Services;
+using Remotely.Shared.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Remotely.Server.Pages
 {
     public class IndexModel : PageModel
     {
-        public IndexModel(DataService dataService, 
+        public IndexModel(IDataService dataService,
             SignInManager<RemotelyUser> signInManager,
-            ApplicationConfig appConfig)
+            IApplicationConfig appConfig)
         {
             DataService = dataService;
             SignInManager = signInManager;
@@ -24,8 +24,8 @@ namespace Remotely.Server.Pages
         public string DefaultPrompt { get; set; }
         public List<SelectListItem> DeviceGroups { get; set; } = new List<SelectListItem>();
         public List<Alert> Alerts { get; set; } = new List<Alert>();
-        private ApplicationConfig AppConfig { get; }
-        private DataService DataService { get; }
+        private IApplicationConfig AppConfig { get; }
+        private IDataService DataService { get; }
         private SignInManager<RemotelyUser> SignInManager { get; }
         public async Task<IActionResult> OnGet()
         {

@@ -1,5 +1,5 @@
-﻿@inject Remotely.Server.Services.ApplicationConfig AppConfig
-@inject Remotely.Server.Services.DataService DataService
+﻿@inject Remotely.Server.Services.IApplicationConfig AppConfig
+@inject Remotely.Server.Services.IDataService DataService
 @model IndexModel
 @{
     var organizationCount = DataService.GetOrganizationCount();
@@ -27,4 +27,15 @@
     </div>
 </div>
 
-<script type="module" src="~/scripts/Pages/IndexNotLoggedIn.js"></script>
+<script>
+    require.config({
+        waitSeconds: 30,
+        paths: {
+            "App": "out"
+        }
+    });
+    require(["App"], function (remotely) {
+        remotely.App.Pages.IndexNotLoggedIn.Init();
+    });
+
+</script>

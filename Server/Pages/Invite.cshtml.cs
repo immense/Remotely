@@ -1,18 +1,18 @@
-﻿using Remotely.Server.Services;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Remotely.Server.Services;
 
 namespace Remotely.Server.Pages
 {
     [Authorize]
     public class InviteModel : PageModel
     {
-        public InviteModel(DataService dataService)
+        public InviteModel(IDataService dataService)
         {
-            this.DataService = dataService;
+            DataService = dataService;
         }
-        private DataService DataService { get; }
+        private IDataService DataService { get; }
         public bool Success { get; set; }
 
         public class InputModel

@@ -1,9 +1,9 @@
-﻿using Remotely.Shared.Models;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Remotely.Shared.Models;
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
-using System.Collections.Concurrent;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Remotely.Agent.Services
 {
@@ -12,16 +12,20 @@ namespace Remotely.Agent.Services
         public Bash(ConfigService configService)
         {
             ConfigService = configService;
-            var psi = new ProcessStartInfo("bash");
-            psi.WindowStyle = ProcessWindowStyle.Hidden;
-            psi.Verb = "RunAs";
-            psi.UseShellExecute = false;
-            psi.RedirectStandardError = true;
-            psi.RedirectStandardInput = true;
-            psi.RedirectStandardOutput = true;
+            var psi = new ProcessStartInfo("bash")
+            {
+                WindowStyle = ProcessWindowStyle.Hidden,
+                Verb = "RunAs",
+                UseShellExecute = false,
+                RedirectStandardError = true,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true
+            };
 
-            BashProc = new Process();
-            BashProc.StartInfo = psi;
+            BashProc = new Process
+            {
+                StartInfo = psi
+            };
             BashProc.ErrorDataReceived += CMDProc_ErrorDataReceived;
             BashProc.OutputDataReceived += CMDProc_OutputDataReceived;
 
@@ -30,8 +34,10 @@ namespace Remotely.Agent.Services
             BashProc.BeginErrorReadLine();
             BashProc.BeginOutputReadLine();
 
-            ProcessIdleTimeout = new System.Timers.Timer(600_000); // 10 minutes.
-            ProcessIdleTimeout.AutoReset = false;
+            ProcessIdleTimeout = new System.Timers.Timer(600_000)
+            {
+                AutoReset = false
+            }; // 10 minutes.
             ProcessIdleTimeout.Elapsed += ProcessIdleTimeout_Elapsed;
             ProcessIdleTimeout.Start();
         }
@@ -47,19 +53,18 @@ namespace Remotely.Agent.Services
         private string StandardOut { get; set; }
         public static Bash GetCurrent(string connectionID)
         {
-            if (Sessions.ContainsKey(connectionID))
+            if (Sessions.TryGetValue(connectionID, out var session))
             {
-                var bash = Sessions[connectionID];
-                bash.ProcessIdleTimeout.Stop();
-                bash.ProcessIdleTimeout.Start();
-                return bash;
+                session.ProcessIdleTimeout.Stop();
+                session.ProcessIdleTimeout.Start();
+                return session;
             }
             else
             {
-                var bash = Program.Services.GetRequiredService<Bash>();
-                bash.ConnectionID = connectionID;
-                Sessions.AddOrUpdate(connectionID, bash, (id, b) => bash);
-                return bash;
+                session = Program.Services.GetRequiredService<Bash>();
+                session.ConnectionID = connectionID;
+                Sessions.AddOrUpdate(connectionID, session, (id, b) => session);
+                return session;
             }
         }
 

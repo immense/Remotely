@@ -15,25 +15,33 @@ namespace Remotely.Tests
         {
             UserName = "admin1@test.com",
             IsAdministrator = true,
-            IsServerAdmin = true
+            IsServerAdmin = true,
+            Organization = new Organization(),
+            UserOptions = new RemotelyUserOptions()
         };
 
         public static RemotelyUser Admin2 { get; private set; } = new RemotelyUser()
         {
             UserName = "admin2@test.com",
-            IsAdministrator = true
+            IsAdministrator = true,
+            Organization = new Organization(),
+            UserOptions = new RemotelyUserOptions()
         };
 
         public static RemotelyUser User1 { get; private set; } = new RemotelyUser()
         {
             UserName = "testuser1@test.com",
-            IsAdministrator = false
+            IsAdministrator = false,
+            Organization = new Organization(),
+            UserOptions = new RemotelyUserOptions()
         };
 
         public static RemotelyUser User2 { get; private set; } = new RemotelyUser()
         {
             UserName = "testuser2@test.com",
-            IsAdministrator = false
+            IsAdministrator = false,
+            Organization = new Organization(),
+            UserOptions = new RemotelyUserOptions()
         };
 
         public static DeviceGroup Group1 { get; private set; } = new DeviceGroup()
@@ -48,12 +56,14 @@ namespace Remotely.Tests
 
         public static Device Device1 { get; private set; } = new Device()
         {
-            ID = "Device1"
+            ID = "Device1",
+            DeviceName = "Device1Name"
         };
 
         public static Device Device2 { get; private set; } = new Device()
         {
-            ID = "Device2"
+            ID = "Device2",
+            DeviceName = "Device2Name"
         };
 
         public static string OrganizationID { get; private set; }
@@ -70,7 +80,7 @@ namespace Remotely.Tests
 
         public static async Task PopulateTestData()
         {
-            var dataService = IoCActivator.ServiceProvider.GetRequiredService<DataService>();
+            var dataService = IoCActivator.ServiceProvider.GetRequiredService<IDataService>();
             var userManager = IoCActivator.ServiceProvider.GetRequiredService<UserManager<RemotelyUser>>();
             var emailSender = IoCActivator.ServiceProvider.GetRequiredService<IEmailSenderEx>();
             var organizationModel = new OrganizationModel(dataService, userManager, emailSender);
@@ -80,17 +90,17 @@ namespace Remotely.Tests
 
             organizationModel.Input.UserEmail = Admin2.UserName;
             organizationModel.Input.IsAdmin = true;
-            await organizationModel.SendInvite(Admin1);
+            await organizationModel.AddUser(Admin1);
             Admin2 = await userManager.FindByNameAsync(Admin2.UserName);
 
             organizationModel.Input.UserEmail = User1.UserName;
             organizationModel.Input.IsAdmin = false;
-            await organizationModel.SendInvite(Admin1);
+            await organizationModel.AddUser(Admin1);
             User1 = await userManager.FindByNameAsync(User1.UserName);
 
             organizationModel.Input.UserEmail = User2.UserName;
             organizationModel.Input.IsAdmin = false;
-            await organizationModel.SendInvite(Admin1);
+            await organizationModel.AddUser(Admin1);
             User2 = await userManager.FindByNameAsync(User2.UserName);
 
             Device1.OrganizationID = Admin1.OrganizationID;

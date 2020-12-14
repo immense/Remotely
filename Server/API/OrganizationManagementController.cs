@@ -1,13 +1,13 @@
-﻿using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-using Remotely.Shared.Models;
-using Remotely.Server.Services;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Remotely.Shared.ViewModels.Organization;
-using System.Text;
 using Microsoft.AspNetCore.WebUtilities;
 using Remotely.Server.Attributes;
+using Remotely.Server.Services;
+using Remotely.Shared.Models;
+using Remotely.Shared.ViewModels.Organization;
+using System.Text;
+using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,29 +17,31 @@ namespace Remotely.Server.API
     [ApiController]
     public class OrganizationManagementController : ControllerBase
     {
-        public OrganizationManagementController(DataService dataService, UserManager<RemotelyUser> userManager, IEmailSenderEx emailSender)
+        public OrganizationManagementController(IDataService dataService, 
+            UserManager<RemotelyUser> userManager, 
+            IEmailSenderEx emailSender)
         {
-            this.DataService = dataService;
-            this.UserManager = userManager;
-            this.EmailSender = emailSender;
+            DataService = dataService;
+            UserManager = userManager;
+            EmailSender = emailSender;
         }
 
-        private DataService DataService { get; }
+        private IDataService DataService { get; }
         private IEmailSenderEx EmailSender { get; }
         private UserManager<RemotelyUser> UserManager { get; }
 
 
         [HttpPost("ChangeIsAdmin/{userID}")]
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
-        public IActionResult ChangeIsAdmin(string userID, [FromBody]bool isAdmin)
+        public IActionResult ChangeIsAdmin(string userID, [FromBody] bool isAdmin)
         {
-            if (User.Identity.IsAuthenticated && 
+            if (User.Identity.IsAuthenticated &&
                 !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
             {
                 return Unauthorized();
             }
 
-            if (User.Identity.IsAuthenticated && 
+            if (User.Identity.IsAuthenticated &&
                 DataService.GetUserByName(User.Identity.Name).Id == userID)
             {
                 return BadRequest("You can't remove administrator rights from yourself.");
@@ -89,7 +91,7 @@ namespace Remotely.Server.API
 
         [HttpDelete("DeviceGroup")]
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
-        public IActionResult DeviceGroup([FromBody]string deviceGroupID)
+        public IActionResult DeviceGroup([FromBody] string deviceGroupID)
         {
             if (User.Identity.IsAuthenticated &&
                 !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
@@ -104,7 +106,7 @@ namespace Remotely.Server.API
 
         [HttpPost("DeviceGroup")]
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
-        public IActionResult DeviceGroup([FromBody]DeviceGroup deviceGroup)
+        public IActionResult DeviceGroup([FromBody] DeviceGroup deviceGroup)
         {
             if (User.Identity.IsAuthenticated &&
                 !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
@@ -128,7 +130,7 @@ namespace Remotely.Server.API
 
         [HttpDelete("DeviceGroup/{groupID}/Users/")]
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
-        public async Task<IActionResult> DeviceGroupRemoveUser([FromBody]string userID, string groupID)
+        public async Task<IActionResult> DeviceGroupRemoveUser([FromBody] string userID, string groupID)
         {
             if (User.Identity.IsAuthenticated &&
                 !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
@@ -151,7 +153,7 @@ namespace Remotely.Server.API
 
         [HttpPost("DeviceGroup/{groupID}/Users/")]
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
-        public IActionResult DeviceGroupAddUser([FromBody]string userID, string groupID)
+        public IActionResult DeviceGroupAddUser([FromBody] string userID, string groupID)
         {
             if (User.Identity.IsAuthenticated &&
                 !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
@@ -170,7 +172,7 @@ namespace Remotely.Server.API
             {
                 return BadRequest(resultMessage);
             }
-            
+
             return Ok(resultMessage);
         }
 
@@ -207,7 +209,7 @@ namespace Remotely.Server.API
 
         [HttpPut("Name")]
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
-        public IActionResult Name([FromBody]string organizationName)
+        public IActionResult Name([FromBody] string organizationName)
         {
             if (User.Identity.IsAuthenticated &&
                 !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
@@ -225,7 +227,7 @@ namespace Remotely.Server.API
         }
         [HttpPost("SendInvite")]
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
-        public async Task<IActionResult> SendInvite([FromBody]Invite invite)
+        public async Task<IActionResult> SendInvite([FromBody] Invite invite)
         {
             if (User.Identity.IsAuthenticated &&
                 !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
@@ -278,7 +280,7 @@ namespace Remotely.Server.API
 
                 return Ok();
             }
- 
+
         }
     }
 }
