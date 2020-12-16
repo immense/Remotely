@@ -1,5 +1,6 @@
 ﻿using Remotely.Desktop.Win.ViewModels;
 using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -56,7 +57,11 @@ namespace Remotely.Desktop.Win.Views
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            await ViewModel?.Init();
+            if (!DesignerProperties.GetIsInDesignMode(this) &&
+                ViewModel != null)
+            {
+                await ViewModel?.Init();
+            }
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

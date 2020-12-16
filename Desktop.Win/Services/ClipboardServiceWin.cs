@@ -26,7 +26,7 @@ namespace Remotely.Desktop.Win.Services
             finally
             {
                 cancelTokenSource = new CancellationTokenSource();
-                _ = Task.Run(() => WatchClipboard(cancelTokenSource.Token));
+                WatchClipboard(cancelTokenSource.Token);
             }
         }
 
@@ -51,6 +51,7 @@ namespace Remotely.Desktop.Win.Services
                 }
             });
             thread.SetApartmentState(ApartmentState.STA);
+            thread.IsBackground = true;
             thread.Start();
 
             return Task.CompletedTask;
@@ -68,16 +69,16 @@ namespace Remotely.Desktop.Win.Services
 
         private void WatchClipboard(CancellationToken cancelToken)
         {
-            while (!cancelToken.IsCancellationRequested &&
-                !Environment.HasShutdownStarted)
+            var thread = new Thread(() =>
             {
-                var thread = new Thread(() =>
+
+                while (!cancelToken.IsCancellationRequested &&
+                    !Environment.HasShutdownStarted)
                 {
 
                     try
                     {
                         Win32Interop.SwitchToInputDesktop();
-
 
                         if (Clipboard.ContainsText() && Clipboard.GetText() != ClipboardText)
                         {
@@ -86,11 +87,12 @@ namespace Remotely.Desktop.Win.Services
                         }
                     }
                     catch { }
-                });
-                thread.SetApartmentState(ApartmentState.STA);
-                thread.Start();
-                Thread.Sleep(500);
-            }
+                    Thread.Sleep(500);
+                }
+            });
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.IsBackground = true;
+            thread.Start();
         }
     }
 }
