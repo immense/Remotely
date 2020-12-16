@@ -24,7 +24,9 @@ export const ViewerApp = {
     Otp: queryString["otp"] ? decodeURIComponent(queryString["otp"]) : "",
     ServiceID: queryString["serviceID"] ? decodeURIComponent(queryString["serviceID"]) : "",
     RequesterName: queryString["requesterName"] ? decodeURIComponent(queryString["requesterName"]) : "",
-    ViewOnlyMode: !!queryString["viewonly"],
+    ViewOnlyMode: queryString["viewonly"] ?
+        decodeURIComponent(queryString["viewonly"]).toLowerCase() == "true" :
+        false,
     Mode: RemoteControlMode.None,
     Settings: GetSettings(),
 
