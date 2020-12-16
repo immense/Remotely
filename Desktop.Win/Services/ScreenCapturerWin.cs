@@ -63,6 +63,7 @@ namespace Remotely.Desktop.Win.Services
             {
                 SystemEvents.DisplaySettingsChanged -= SystemEvents_DisplaySettingsChanged;
                 ClearDirectXOutputs();
+                GC.SuppressFinalize(this);
             }
             catch { }
         }

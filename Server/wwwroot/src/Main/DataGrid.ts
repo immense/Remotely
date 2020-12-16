@@ -1,10 +1,11 @@
 ﻿import { DeviceGrid, DevicesSelectedCount, OnlineDevicesCount, TotalDevicesCount, TotalPagesSpan, DeviceGridBody, CurrentPageInput } from "./UI.js";
 import { AddConsoleOutput } from "./Console.js";
 import { CreateChatWindow } from "./Chat.js";
-import * as HubConnection from "./HubConnection.js"
+import { BrowserHubConnection } from "./BrowserHubConnection.js"
 import { ShowModal } from "../Shared/UI.js";
 import { Device } from "../Shared/Models/Device.js";
 import { EncodeForHTML } from "../Shared/Utilities.js";
+import { RemoteControlTarget } from "../Shared/Models/RemoteControlTarget.js";
 
 export const DataSource: Array<Device> = new Array<Device>();
 export const FilteredDevices: Array<Device> = new Array<Device>();
@@ -26,12 +27,6 @@ export function AddOrUpdateDevices(devices: Array<Device>) {
     GridState.CurrentPage = 1;
 
     devices.sort((a, b) => {
-        //if (a.IsOnline && !b.IsOnline) {
-        //    return -1;
-        //}
-        //else if (b.IsOnline && !a.IsOnline) {
-        //    return 1;
-        //}
         return a.DeviceName && a.DeviceName.localeCompare(b.DeviceName, [], { sensitivity: "base" });
     });
 
@@ -142,27 +137,51 @@ export function RenderDeviceRows() {
                     <td>${Math.round(device.UsedMemory / device.TotalMemory * 100)}%</td>
                     <td>${EncodeForHTML(device.TotalMemory.toLocaleString())}</td>
                     <td style="white-space: nowrap">
-                        <i class="fas fa-comment device-chat-button mr-2" title="Chat" style="font-size:1.5em"></i>
-                        <i class="fas fa-mouse device-remotecontrol-button mr-2" title="Remote Control" style="font-size:1.5em"></i>
-                        <i class="fas fa-edit device-edit-button" title="Edit" style="font-size:1.5em"></i>
+                        <div class="dropdown">
+                          <button
+                                id="device-actions-dropdown-${device.ID}" 
+                                class="btn btn-primary dropdown-toggle" 
+                                type="button"
+                                data-toggle="dropdown" 
+                                aria-haspopup="true" aria-expanded="false">
+                            Actions
+                          </button>
+                          <div class="dropdown-menu" aria-labelledby="device-actions-dropdown-${device.ID}">
+                            <a class="dropdown-item device-chat-button" href="#">
+                                <i class="fas fa-comment" title="Chat"></i>
+                                Chat
+                            </a>
+                            <a class="dropdown-item device-remotecontrol-button" href="#">
+                                <i class="fas fa-mouse" title="Remote Control"></i>
+                                Remote Control
+                            </a>
+                            <a class="dropdown-item device-viewonly-button" href="#">
+                                <i class="fas fa-eye" title="View Only"></i>
+                                View Only
+                            </a>
+                            <a class="dropdown-item device-edit-button" href="#">
+                                <i class="fas fa-edit" title="Edit"></i>
+                                Edit
+                            </a>
+                          </div>
+                        </div>
                     </td>`;
 
 
         (recordRow.querySelector(".device-edit-button") as HTMLButtonElement).onclick = (ev) => {
-            ev.preventDefault();
-            ev.stopPropagation();
             window.open(`${location.origin}/EditDevice?deviceID=${device.ID}`, "_blank");
         };
         (recordRow.querySelector(".device-chat-button") as HTMLButtonElement).onclick = (ev) => {
-            ev.preventDefault();
-            ev.stopPropagation();
             CreateChatWindow(device.ID, EncodeForHTML(device.DeviceName));
         };
         (recordRow.querySelector(".device-remotecontrol-button") as HTMLButtonElement).onclick = (ev) => {
-            ev.preventDefault();
-            ev.stopPropagation();
             AddConsoleOutput("Launching remote control on client device...");
-            HubConnection.Connection.invoke("RemoteControl", device.ID);
+            BrowserHubConnection.StartRemoteControl(device.ID, false);
+        };
+        (recordRow.querySelector(".device-viewonly-button") as HTMLButtonElement).onclick = (ev) => {
+            AddConsoleOutput("Launching remote control on client device...");
+            BrowserHubConnection.StartRemoteControl(device.ID, true);
+          
         };
     }
 }

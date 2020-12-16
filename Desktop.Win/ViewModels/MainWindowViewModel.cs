@@ -134,7 +134,7 @@ namespace Remotely.Desktop.Win.ViewModels
             set
             {
                 _host = value;
-                FirePropertyChanged("Host");
+                FirePropertyChanged(nameof(Host));
             }
         }
 
@@ -166,7 +166,7 @@ namespace Remotely.Desktop.Win.ViewModels
             set
             {
                 _sessionID = value;
-                FirePropertyChanged("SessionID");
+                FirePropertyChanged(nameof(SessionID));
             }
         }
 
