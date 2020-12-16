@@ -58,7 +58,7 @@ namespace Remotely.Desktop.Win
 
                 if (Conductor.Mode == Core.Enums.AppMode.Chat)
                 {
-                    StartUiThreads(null);
+                    StartUiThreads(false);
                     await Task.Run(async () =>
                     {
                         var chatService = Services.GetRequiredService<IChatHostService>();
@@ -67,7 +67,7 @@ namespace Remotely.Desktop.Win
                 }
                 else if (Conductor.Mode == Core.Enums.AppMode.Unattended)
                 {
-                    StartUiThreads(null);
+                    StartUiThreads(false);
                     App.Current.Dispatcher.Invoke(() =>
                     {
                         App.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
@@ -76,12 +76,8 @@ namespace Remotely.Desktop.Win
                 }
                 else
                 {
-                    StartUiThreads(() => new MainWindow());
+                    StartUiThreads(true);
                 }
-
-                TaskHelper.DelayUntil(() => App.Current?.Dispatcher?.HasShutdownStarted != false,
-                    TimeSpan.MaxValue, 
-                    1000);
             }
             catch (Exception ex)
             {
@@ -177,19 +173,20 @@ namespace Remotely.Desktop.Win
             Services.GetRequiredService<IClipboardService>().BeginWatching();
         }
 
-        private static void StartUiThreads(Func<Window> createWindowFunc)
+        private static void StartUiThreads(bool createMainWindow)
         {
             var wpfUiThread = new Thread(() =>
             {
                 var app = new App();
                 app.InitializeComponent();
-                if (createWindowFunc is null)
+
+                if (createMainWindow)
                 {
-                    app.Run();
+                    app.Run(new MainWindow());
                 }
                 else
                 {
-                    app.Run(createWindowFunc());
+                    app.Run();
                 }
             });
             wpfUiThread.TrySetApartmentState(ApartmentState.STA);
@@ -202,7 +199,7 @@ namespace Remotely.Desktop.Win
             winformsThread.TrySetApartmentState(ApartmentState.STA);
             winformsThread.Start();
 
-
+            // Wait until WPF app has initialized before moving on.
             while (App.Current is null)
             {
                 Thread.Sleep(100);

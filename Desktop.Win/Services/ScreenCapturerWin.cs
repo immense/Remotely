@@ -75,8 +75,6 @@ namespace Remotely.Desktop.Win.Services
             {
                 _screenCaptureLock.Wait();
 
-                Win32Interop.SwitchToInputDesktop();
-
                 if (NeedsInit)
                 {
                     Logger.Write("Init needed in GetNextFrame.");
@@ -124,6 +122,8 @@ namespace Remotely.Desktop.Win.Services
 
         public void Init()
         {
+            Win32Interop.SwitchToInputDesktop();
+
             CaptureFullscreen = true;
             InitBitBlt();
             InitDirectX();
@@ -166,7 +166,6 @@ namespace Remotely.Desktop.Win.Services
         {
             try
             {
-                Win32Interop.SwitchToInputDesktop();
                 var currentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
                 using (var graphic = Graphics.FromImage(currentFrame))
                 {
