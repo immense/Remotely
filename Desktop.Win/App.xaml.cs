@@ -40,16 +40,5 @@ namespace Remotely.Desktop.Win
                 Environment.Exit(0);
             }
         }
-
-        private void Application_Exit(object sender, ExitEventArgs e)
-        {
-            Task.Run(async () =>
-            {
-                var casterSocket = ServiceContainer.Instance.GetRequiredService<CasterSocket>();
-                await casterSocket.DisconnectAllViewers();
-                System.Windows.Forms.Application.Exit();
-                Environment.Exit(0);
-            });
-        }
     }
 }

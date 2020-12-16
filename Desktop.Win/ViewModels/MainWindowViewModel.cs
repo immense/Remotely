@@ -31,6 +31,11 @@ namespace Remotely.Desktop.Win.ViewModels
         {
             Current = this;
 
+            if (Services is null)
+            {
+                return;
+            }
+
             Application.Current.Exit += Application_Exit;
 
             CursorIconWatcher = Services?.GetRequiredService<ICursorIconWatcher>();
@@ -185,7 +190,6 @@ namespace Remotely.Desktop.Win.ViewModels
 
         public async Task Init()
         {
-
             SessionID = "Retrieving...";
 
             Host = Config.GetConfig().Host;
