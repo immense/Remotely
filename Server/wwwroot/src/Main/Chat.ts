@@ -1,4 +1,4 @@
-﻿import * as HubConnection from "./HubConnection.js";
+﻿import { BrowserHubConnection } from "./BrowserHubConnection.js";
 import { DataSource } from "./DataGrid.js";
 import { ShowMessage } from "../Shared/UI.js";
 import { EncodeForHTML } from "../Shared/Utilities.js";
@@ -68,7 +68,8 @@ export function CreateChatWindow(deviceID: string, deviceName: string) {
                     </div>
                 `;
                 (ev.currentTarget as HTMLTextAreaElement).value = "";
-                HubConnection.Connection.invoke("Chat", inputText, [deviceID]);
+
+                BrowserHubConnection.Connection.invoke("Chat", inputText, [deviceID]);
                 var chatMessages = chatWindow.querySelector(".chat-messages") as HTMLDivElement;
                 chatMessages.scrollTo({ top: chatMessages.scrollHeight });
             }

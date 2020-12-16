@@ -133,28 +133,31 @@ namespace Remotely.Server.Hubs
             await base.OnDisconnectedAsync(exception);
         }
 
-        public Task RemoteControl(string deviceID)
+        public async Task RemoteControl(string deviceID)
         {
             var targetDevice = AgentHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == deviceID);
+
             if (targetDevice.Value is null)
             {
-                return Clients.Caller.SendAsync("DisplayMessage", $"The selected device is not online.", "Device is not online."); ;
+                await Clients.Caller.SendAsync("DisplayMessage", $"The selected device is not online.", "Device is not online.");
+                return;
             }
+
             if (DataService.DoesUserHaveAccessToDevice(deviceID, RemotelyUser))
             {
                 var currentUsers = CasterHub.SessionInfoList.Count(x => x.Value.OrganizationID == RemotelyUser.OrganizationID);
                 if (currentUsers >= AppConfig.RemoteControlSessionLimit)
                 {
-                    return Clients.Caller.SendAsync("DisplayMessage", $"There are already the maximum amount of active remote control sessions for your organization.", "Max number of concurrent sessions reached.");
+                    await Clients.Caller.SendAsync("DisplayMessage", $"There are already the maximum amount of active remote control sessions for your organization.", "Max number of concurrent sessions reached.");
+                    return;
                 }
-                Clients.Caller.SendAsync("ServiceID", targetDevice.Key);
-                return AgentHubContext.Clients.Client(targetDevice.Key).SendAsync("RemoteControl", Context.ConnectionId, targetDevice.Key);
+                await Clients.Caller.SendAsync("ServiceID", deviceID, targetDevice.Key);
+                await AgentHubContext.Clients.Client(targetDevice.Key).SendAsync("RemoteControl", Context.ConnectionId, targetDevice.Key);
             }
             else
             {
                 DataService.WriteEvent($"Remote control attempted by unauthorized user.  Device ID: {deviceID}.  User Name: {RemotelyUser.UserName}.", EventType.Warning, targetDevice.Value.OrganizationID);
             }
-            return Task.CompletedTask;
         }
 
         public Task RemoveDevices(string[] deviceIDs)

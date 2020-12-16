@@ -1,15 +1,15 @@
-﻿import * as HubConnection from "./HubConnection";
+﻿import { BrowserHubConnection } from "./BrowserHubConnection.js";
 import * as UI from "./UI.js";
-import * as CommandProcessor from "./CommandProcessor";
-import { WebCommands } from "./Commands/WebCommands";
-import { CMDCommands } from "./Commands/CMDCommands";
-import { PSCommands } from "./Commands/PSCommands";
-import * as Utilities from "../Shared/Utilities";
-import * as DataGrid from "./DataGrid";
-import { UserSettings } from "./UserSettings";
-import { ApplyInputEventHandlers } from "./InputEventHandlers";
-import { Sound } from "../Shared/Sound";
-import * as Console from "./Console";
+import * as CommandProcessor from "./CommandProcessor.js";
+import { WebCommands } from "./Commands/WebCommands.js";
+import { CMDCommands } from "./Commands/CMDCommands.js";
+import { PSCommands } from "./Commands/PSCommands.js";
+import * as Utilities from "../Shared/Utilities.js";
+import * as DataGrid from "./DataGrid.js";
+import { UserSettings } from "./UserSettings.js";
+import { ApplyInputEventHandlers } from "./InputEventHandlers.js";
+import { Sound } from "../Shared/Sound.js";
+import * as Console from "./Console.js";
 
 export const MainApp = {
     Commands: {
@@ -23,13 +23,13 @@ export const MainApp = {
     DataGrid: DataGrid,
     UI: UI,
     Utilities: Utilities,
-    HubConnection: HubConnection,
+    HubConnection: BrowserHubConnection,
     UserSettings: UserSettings,
     Sound: Sound,
     Init() {
         UI.ConsoleTextArea.focus();
         ApplyInputEventHandlers();
-        HubConnection.Connect();
+        BrowserHubConnection.Connect();
         document.querySelector(".loading-wheel").remove();
         document.querySelector(".work-area").classList.remove("hidden");
     }

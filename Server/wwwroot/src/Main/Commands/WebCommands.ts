@@ -1,13 +1,14 @@
 ﻿import { ConsoleCommand } from "../../Shared/Models/ConsoleCommand.js"
 import { Parameter } from "../../Shared/Models/Parameter.js";
 import * as UI from "../UI.js";
-import * as HubConnection from "../HubConnection.js";
+import { BrowserHubConnection } from "../BrowserHubConnection.js";
 import { CommandLineParameter } from "../../Shared/Models/CommandLineParameter.js";
 import { MainApp } from "../App.js";
 import * as DataGrid from "../DataGrid.js";
 import { AddConsoleHTML, AddConsoleOutput, AddTransferHarness } from "../Console.js";
 import { GetSelectedDevices } from "../DataGrid.js";
 import { EncodeForHTML } from "../../Shared/Utilities.js";
+import { RemoteControlTarget } from "../../Shared/Models/RemoteControlTarget.js";
 
 
 var commands: Array<ConsoleCommand> = [
@@ -26,7 +27,7 @@ var commands: Array<ConsoleCommand> = [
                 return;
             }
 
-            HubConnection.Connection.invoke("Chat", paramaterDict["message"], selectedDevices.map(x => x.ID));
+            BrowserHubConnection.Connection.invoke("Chat", paramaterDict["message"], selectedDevices.map(x => x.ID));
         }
     ),
     new ConsoleCommand(
@@ -56,7 +57,7 @@ var commands: Array<ConsoleCommand> = [
             document.body.appendChild(fileInput);
             fileInput.onchange = () => {
                 uploadFiles(fileInput.files).then(value => {
-                    HubConnection.Connection.invoke("DeployScript", value[0], parameters[0].Name, selectedDevices.map(x => x.ID));
+                    BrowserHubConnection.Connection.invoke("DeployScript", value[0], parameters[0].Name, selectedDevices.map(x => x.ID));
                     fileInput.remove();
                 });
             }
@@ -77,7 +78,7 @@ var commands: Array<ConsoleCommand> = [
                 AddConsoleOutput("No devices are selected.");
                 return;
             };
-            HubConnection.Connection.invoke("DownloadFile", paramDictionary["path"], selectedDevices[0].ID);
+            BrowserHubConnection.Connection.invoke("DownloadFile", paramDictionary["path"], selectedDevices[0].ID);
         }
     ),
     new ConsoleCommand(
@@ -93,7 +94,7 @@ var commands: Array<ConsoleCommand> = [
                 AddConsoleOutput("No devices are selected.");
                 return;
             };
-            HubConnection.Connection.invoke("ExecuteCommandOnClient", "PSCore", 'Get-Content -Path "$([System.IO.Path]::GetTempPath())\\Remotely_Logs.log"', selectedDevices.map(x => x.ID));
+            BrowserHubConnection.Connection.invoke("ExecuteCommandOnClient", "PSCore", 'Get-Content -Path "$([System.IO.Path]::GetTempPath())\\Remotely_Logs.log"', selectedDevices.map(x => x.ID));
         }
     ),
     new ConsoleCommand(
@@ -144,7 +145,7 @@ var commands: Array<ConsoleCommand> = [
         "Connect or reconnect to the server.",
         "connect",
         "",
-        (parameters, paramDictionary) => { HubConnection.Connect(); }
+        (parameters, paramDictionary) => { BrowserHubConnection.Connect(); }
     ),
     new ConsoleCommand(
         "Echo",
@@ -275,7 +276,7 @@ var commands: Array<ConsoleCommand> = [
                 AddConsoleOutput("No devices are selected.");
             }
             else {
-                HubConnection.Connection.invoke("RemoveDevices", devices.map(x=>x.ID));
+                BrowserHubConnection.Connection.invoke("RemoveDevices", devices.map(x=>x.ID));
             }
         }
     ),
@@ -429,11 +430,13 @@ var commands: Array<ConsoleCommand> = [
     ),
     new ConsoleCommand(
         "RemoteControl",
-        [],
+        [
+            new Parameter("viewonly", "Whether to start the remote session in view-only mode.", "Switch")
+        ],
         "Connect to a computer with Remotely Remote Control.",
         "remotecontrol",
         "",
-        () => {
+        (parameters, parameterDict) => {
             var selectedDevices = MainApp.DataGrid.GetSelectedDevices();
             if (selectedDevices.length == 0) {
                 AddConsoleOutput("You must select a device first.");
@@ -443,8 +446,13 @@ var commands: Array<ConsoleCommand> = [
                 AddConsoleOutput("You can only initiate remote control on one device at a time.");
                 return;
             }
+            var deviceId = selectedDevices[0].ID;
+            var viewOnly = !!parameterDict["viewonly"];
+            var target = new RemoteControlTarget();
+            target.ViewOnlyMode = viewOnly;
+            BrowserHubConnection.DeviceIdToControlTargetLookup[deviceId] = target;
             AddConsoleOutput("Launching remote control on client device...");
-            HubConnection.Connection.invoke("RemoteControl", selectedDevices[0].ID);
+            BrowserHubConnection.Connection.invoke("RemoteControl", deviceId);
         }
     ),
     new ConsoleCommand("Uninstall",
@@ -454,7 +462,7 @@ var commands: Array<ConsoleCommand> = [
         "",
         (parameters, parameterDict) => {
             var selectedDevices = DataGrid.GetSelectedDevices();
-            HubConnection.Connection.invoke("UninstallAgents", selectedDevices.map(x=>x.ID));
+            BrowserHubConnection.Connection.invoke("UninstallAgents", selectedDevices.map(x=>x.ID));
         }
     ),
     new ConsoleCommand(
@@ -478,7 +486,7 @@ var commands: Array<ConsoleCommand> = [
                     parameterDict["tags"] = x.Tags.trim() + separator + parameterDict["tags"]
                 }
                 DataGrid.DataSource.find(y => y.ID == x.ID).Tags = parameterDict["tags"];
-                HubConnection.Connection.invoke("UpdateTags", x.ID, parameterDict["tags"]);
+                BrowserHubConnection.Connection.invoke("UpdateTags", x.ID, parameterDict["tags"]);
             });
         }
     ),
@@ -504,7 +512,7 @@ var commands: Array<ConsoleCommand> = [
             document.body.appendChild(fileInput);
             fileInput.onchange = () => {
                 uploadFiles(fileInput.files).then(value => {
-                    HubConnection.Connection.invoke("UploadFiles", value, transferID, selectedDevices.map(x => x.ID));
+                    BrowserHubConnection.Connection.invoke("UploadFiles", value, transferID, selectedDevices.map(x => x.ID));
                     fileInput.remove();
                 });
             }

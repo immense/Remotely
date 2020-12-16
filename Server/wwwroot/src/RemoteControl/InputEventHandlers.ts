@@ -32,7 +32,8 @@
     FileTransferBar,
     FileUploadButtton,
     FileDownloadButton,
-    UpdateStreamingToggled
+    UpdateStreamingToggled,
+    ViewOnlyButton
 } from "./UI.js";
 import { Sound } from "../Shared/Sound.js";
 import { ViewerApp } from "./App.js";
@@ -41,7 +42,7 @@ import { UploadFiles } from "./FileTransferService.js";
 import { RemoteControlMode } from "../Shared/Enums/RemoteControlMode.js";
 import { GetDistanceBetween } from "../Shared/Utilities.js";
 import { ShowMessage } from "../Shared/UI.js";
-import { GetSettings, SetSettings } from "./SettingsService.js";
+import { SetSettings } from "./SettingsService.js";
 
 var lastPointerMove = Date.now();
 var isDragging: boolean;
@@ -75,9 +76,18 @@ export function ApplyInputHandlers() {
         closeAllHorizontalBars("clipboardTransferBar");
         ClipboardTransferBar.classList.toggle("open");
     });
+    ViewOnlyButton.addEventListener("click", () => {
+        ViewOnlyButton.classList.toggle("toggled");
+        ViewerApp.ViewOnlyMode = ViewOnlyButton.classList.contains("toggled");
+    });
     TypeClipboardButton.addEventListener("click", (ev) => {
         if (!navigator.clipboard.readText) {
             alert("Clipboard access isn't supported on this browser.");
+            return;
+        }
+
+        if (ViewerApp.ViewOnlyMode) {
+            alert("View-only mode is enabled.");
             return;
         }
 
@@ -97,6 +107,12 @@ export function ApplyInputHandlers() {
             ShowMessage("Not available for this session.");
             return;
         }
+
+        if (ViewerApp.ViewOnlyMode) {
+            alert("View-only mode is enabled.");
+            return;
+        }
+
         closeAllHorizontalBars(null);
         ViewerApp.MessageSender.SendCtrlAltDel();
     });
@@ -122,6 +138,11 @@ export function ApplyInputHandlers() {
         FileTransferInput.click();
     });
     FileDownloadButton.addEventListener("click", (ev) => {
+        if (ViewerApp.ViewOnlyMode) {
+            alert("View-only mode is enabled.");
+            return;
+        }
+
         ViewerApp.MessageSender.SendOpenFileTransferWindow();
     });
     FileTransferInput.addEventListener("change", (ev) => {
@@ -143,6 +164,10 @@ export function ApplyInputHandlers() {
         }
     });
     BlockInputButton.addEventListener("click", (ev) => {
+        if (ViewerApp.ViewOnlyMode) {
+            alert("View-only mode is enabled.");
+            return;
+        }
         BlockInputButton.classList.toggle("toggled");
         if (BlockInputButton.classList.contains("toggled")) {
             ViewerApp.MessageSender.SendToggleBlockInput(true);
@@ -235,6 +260,11 @@ export function ApplyInputHandlers() {
 
         viewer.addEventListener("mousemove", function (e: MouseEvent) {
             e.preventDefault();
+
+            if (ViewerApp.ViewOnlyMode) {
+                return;
+            }
+
             if (Date.now() - lastPointerMove < 25) {
                 return;
             }
@@ -249,7 +279,13 @@ export function ApplyInputHandlers() {
             if (currentPointerDevice == "touch") {
                 return;
             }
+
             e.preventDefault();
+
+            if (ViewerApp.ViewOnlyMode) {
+                return;
+            }
+
             var percentX = e.offsetX / viewer.clientWidth;
             var percentY = e.offsetY / viewer.clientHeight;
             ViewerApp.MessageSender.SendMouseDown(e.button, percentX, percentY);
@@ -263,6 +299,11 @@ export function ApplyInputHandlers() {
                 return;
             }
             e.preventDefault();
+
+            if (ViewerApp.ViewOnlyMode) {
+                return;
+            }
+
             var percentX = e.offsetX / viewer.clientWidth;
             var percentY = e.offsetY / viewer.clientHeight;
             ViewerApp.MessageSender.SendMouseUp(e.button, percentX, percentY);
@@ -278,6 +319,10 @@ export function ApplyInputHandlers() {
                 e.stopPropagation();
             }
             else if (currentPointerDevice == "touch" && currentTouchCount == 0) {
+                if (ViewerApp.ViewOnlyMode) {
+                    return;
+                }
+
                 var percentX = e.offsetX / viewer.clientWidth;
                 var percentY = e.offsetY / viewer.clientHeight;
                 ViewerApp.MessageSender.SendTap(percentX, percentY);
@@ -289,6 +334,10 @@ export function ApplyInputHandlers() {
 
             if (currentTouchCount == 1) {
                 startLongPressTimeout = window.setTimeout(() => {
+                    if (ViewerApp.ViewOnlyMode) {
+                        return;
+                    }
+
                     var percentX = e.touches[0].pageX / viewer.clientWidth;
                     var percentY = e.touches[0].pageY / viewer.clientHeight;
                     ViewerApp.MessageSender.SendMouseDown(2, percentX, percentY);
@@ -385,6 +434,11 @@ export function ApplyInputHandlers() {
             else if (isDragging) {
                 e.preventDefault();
                 e.stopPropagation();
+
+                if (ViewerApp.ViewOnlyMode) {
+                    return;
+                }
+
                 var screenViewerLeft = viewer.getBoundingClientRect().left;
                 var screenViewerTop = viewer.getBoundingClientRect().top;
                 var pagePercentX = (e.touches[0].pageX - screenViewerLeft) / viewer.clientWidth;
@@ -399,6 +453,10 @@ export function ApplyInputHandlers() {
             clearTimeout(startLongPressTimeout);
 
             if (e.touches.length == 1 && !isPinchZooming) {
+                if (ViewerApp.ViewOnlyMode) {
+                    return;
+                }
+
                 isDragging = true;
                 var percentX = (e.touches[0].pageX - viewer.getBoundingClientRect().left) / viewer.clientWidth;
                 var percentY = (e.touches[0].pageY - viewer.getBoundingClientRect().top) / viewer.clientHeight;
@@ -415,6 +473,10 @@ export function ApplyInputHandlers() {
             }
 
             if (isDragging) {
+                if (ViewerApp.ViewOnlyMode) {
+                    return;
+                }
+
                 var percentX = (e.changedTouches[0].pageX - viewer.getBoundingClientRect().left) / viewer.clientWidth;
                 var percentY = (e.changedTouches[0].pageY - viewer.getBoundingClientRect().top) / viewer.clientHeight;
                 ViewerApp.MessageSender.SendMouseUp(0, percentX, percentY);
@@ -430,6 +492,9 @@ export function ApplyInputHandlers() {
 
         viewer.addEventListener("wheel", function (e: WheelEvent) {
             e.preventDefault();
+            if (ViewerApp.ViewOnlyMode) {
+                return;
+            }
             ViewerApp.MessageSender.SendMouseWheel(e.deltaX, e.deltaY);
         });
 
@@ -437,6 +502,10 @@ export function ApplyInputHandlers() {
 
 
     TouchKeyboardTextArea.addEventListener("input", (ev) => {
+        if (ViewerApp.ViewOnlyMode) {
+            return;
+        }
+
         if (TouchKeyboardTextArea.value.length == 1) {
             ViewerApp.MessageSender.SendKeyPress("Backspace");
         }
@@ -495,6 +564,9 @@ export function ApplyInputHandlers() {
             return;
         }
         e.preventDefault();
+        if (ViewerApp.ViewOnlyMode) {
+            return;
+        }
         ViewerApp.MessageSender.SendKeyDown(e.key);
     });
     window.addEventListener("keyup", function (e) {
@@ -502,10 +574,16 @@ export function ApplyInputHandlers() {
             return;
         }
         e.preventDefault();
+        if (ViewerApp.ViewOnlyMode) {
+            return;
+        }
         ViewerApp.MessageSender.SendKeyUp(e.key);
     });
 
     window.addEventListener("blur", () => {
+        if (ViewerApp.ViewOnlyMode) {
+            return;
+        }
         ViewerApp.MessageSender.SendSetKeyStatesUp();
     });
 

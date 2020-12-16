@@ -10,7 +10,7 @@ import {
     GetCommandCompletions,
     CommandCompletionStore
 } from "./CommandCompletion.js";
-import { Connection } from "./HubConnection.js";
+import { BrowserHubConnection } from "./BrowserHubConnection.js";
 import { AutoSizeTextArea, AddConsoleOutput } from "./Console.js";
 
 export function EvaluateCurrentCommandText() {
@@ -140,7 +140,7 @@ export function ProcessCommand() {
                 return;
             }
             var deviceIDs = allDevices.map(value => value.ID);
-            Connection.invoke("ExecuteCommandOnClient", commandMode, commandText, deviceIDs );
+            BrowserHubConnection.Connection.invoke("ExecuteCommandOnClient", commandMode, commandText, deviceIDs );
             break;
         default:
             break;
