@@ -947,7 +947,12 @@ namespace Remotely.Server.Services
                     x.Id == targetUserID &&
                     x.OrganizationID == orgID);
 
-            if (target?.DeviceGroups?.Any() == true)
+            if (target is null)
+            {
+                return;
+            }
+
+            if (target.DeviceGroups?.Any() == true)
             {
                 foreach (var deviceGroup in target.DeviceGroups.ToList())
                 {
