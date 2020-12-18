@@ -78,12 +78,29 @@ namespace Remotely.Desktop.Win
                 {
                     StartUiThreads(true);
                 }
+
+                WaitForAppExit();
             }
             catch (Exception ex)
             {
                 Logger.Write(ex);
                 throw;
             }
+        }
+
+        private static void WaitForAppExit()
+        {
+            var appExitEvent = new ManualResetEventSlim();
+
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                App.Current.Exit += (s, a) =>
+                {
+                    appExitEvent.Set();
+                };
+            });
+
+            appExitEvent.Wait();
         }
 
         private static void BuildServices()
@@ -173,6 +190,7 @@ namespace Remotely.Desktop.Win
             Services.GetRequiredService<IdleTimer>().Start();
             CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
             Services.GetRequiredService<IClipboardService>().BeginWatching();
+            Services.GetRequiredService<IKeyboardMouseInput>().Init();
         }
 
         private static void StartUiThreads(bool createMainWindow)
@@ -192,12 +210,14 @@ namespace Remotely.Desktop.Win
                 }
             });
             wpfUiThread.TrySetApartmentState(ApartmentState.STA);
+            wpfUiThread.IsBackground = true;
             wpfUiThread.Start();
 
             var winformsThread = new Thread(() =>
             {
                 System.Windows.Forms.Application.Run(BackgroundForm);
             });
+            winformsThread.IsBackground = true;
             winformsThread.TrySetApartmentState(ApartmentState.STA);
             winformsThread.Start();
 

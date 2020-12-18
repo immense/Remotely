@@ -40,9 +40,10 @@ namespace Remotely.Desktop.Win.ViewModels
 
             CursorIconWatcher = Services?.GetRequiredService<ICursorIconWatcher>();
             CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
-            Services?.GetRequiredService<IClipboardService>().BeginWatching();
-            Conductor = Services?.GetRequiredService<Conductor>();
-            CasterSocket = Services?.GetRequiredService<CasterSocket>();
+            Services.GetRequiredService<IClipboardService>().BeginWatching();
+            Services.GetRequiredService<IKeyboardMouseInput>().Init();
+            Conductor = Services.GetRequiredService<Conductor>();
+            CasterSocket = Services.GetRequiredService<CasterSocket>();
             Conductor.SessionIDChanged += SessionIDChanged;
             Conductor.ViewerRemoved += ViewerRemoved;
             Conductor.ViewerAdded += ViewerAdded;
@@ -191,7 +192,7 @@ namespace Remotely.Desktop.Win.ViewModels
         public async Task Init()
         {
             SessionID = "Retrieving...";
-
+            
             Host = Config.GetConfig().Host;
 
             while (string.IsNullOrWhiteSpace(Host))
@@ -204,7 +205,6 @@ namespace Remotely.Desktop.Win.ViewModels
             try
             {
                 await CasterSocket.Connect(Conductor.Host);
-
 
                 CasterSocket.Connection.Closed += async (ex) =>
                 {

@@ -11,7 +11,7 @@ namespace Remotely.Desktop.Win.Services
     public class ClipboardServiceWin : IClipboardService
     {
 
-        private CancellationTokenSource cancelTokenSource;
+        private CancellationTokenSource _cancelTokenSource;
 
         public event EventHandler<string> ClipboardTextChanged;
 
@@ -19,15 +19,16 @@ namespace Remotely.Desktop.Win.Services
 
         public void BeginWatching()
         {
-            try
+            StopWatching();
+            _cancelTokenSource = new CancellationTokenSource();
+
+            App.Current.Dispatcher.Invoke(() =>
             {
-                StopWatching();
-            }
-            finally
-            {
-                cancelTokenSource = new CancellationTokenSource();
-                WatchClipboard(cancelTokenSource.Token);
-            }
+                App.Current.Exit -= App_Exit;
+                App.Current.Exit += App_Exit;
+            });
+
+            WatchClipboard(_cancelTokenSource.Token);
         }
 
         public Task SetText(string clipboardText)
@@ -61,19 +62,22 @@ namespace Remotely.Desktop.Win.Services
         {
             try
             {
-                cancelTokenSource?.Cancel();
-                cancelTokenSource?.Dispose();
+                _cancelTokenSource?.Cancel();
+                _cancelTokenSource?.Dispose();
             }
             catch { }
         }
 
+        private void App_Exit(object sender, System.Windows.ExitEventArgs e)
+        {
+            _cancelTokenSource?.Cancel();
+        }
         private void WatchClipboard(CancellationToken cancelToken)
         {
             var thread = new Thread(() =>
             {
 
-                while (!cancelToken.IsCancellationRequested &&
-                    !Environment.HasShutdownStarted)
+                while (!cancelToken.IsCancellationRequested)
                 {
 
                     try
