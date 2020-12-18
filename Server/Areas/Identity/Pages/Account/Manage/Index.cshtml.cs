@@ -160,7 +160,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             var emailResult = await _emailSender.SendEmailAsync(
                 email,
                 "Confirm your email",
-                $"<img src='https://remotely.one/media/Remotely_Logo.png'/><br><br>Please confirm your Remotely account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.",
+                $"<img src='{Request.Scheme}://{Request.Host}/images/Remotely_Logo.png'/><br><br>Please confirm your Remotely account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.",
                 user.OrganizationID);
 
             if (!emailResult)
