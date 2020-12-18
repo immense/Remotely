@@ -197,30 +197,29 @@ namespace Remotely.Server.Hubs
             return BrowserHubContext.Clients.Client(requesterID).SendAsync("DownloadFileProgress", progressPercent);
         }
 
-        public override Task OnConnectedAsync()
-        {
-            return base.OnConnectedAsync();
-        }
-
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            if (Device != null)
+            try
             {
-                DataService.DeviceDisconnected(Device.ID);
+                if (Device != null)
+                {
+                    DataService.DeviceDisconnected(Device.ID);
 
-                Device.IsOnline = false;
+                    Device.IsOnline = false;
 
-                var connectionIds = BrowserHub.ConnectionIdToUserLookup
-                                                   .Where(x => x.Value.OrganizationID == Device.OrganizationID)
-                                                   .Select(x => x.Key)
-                                                   .ToList();
+                    var connectionIds = BrowserHub.ConnectionIdToUserLookup
+                                                       .Where(x => x.Value.OrganizationID == Device.OrganizationID)
+                                                       .Select(x => x.Key)
+                                                       .ToList();
 
-                await BrowserHubContext.Clients.Clients(connectionIds).SendAsync("DeviceWentOffline", Device);
-
-                ServiceConnections.Remove(Context.ConnectionId, out _);
+                    await BrowserHubContext.Clients.Clients(connectionIds).SendAsync("DeviceWentOffline", Device);
+                }
             }
-
-            await base.OnDisconnectedAsync(exception);
+            finally
+            {
+                ServiceConnections.TryRemove(Context.ConnectionId, out _);
+                await base.OnDisconnectedAsync(exception);
+            }
         }
 
         public Task PSCoreResult(PSCoreCommandResult result)
