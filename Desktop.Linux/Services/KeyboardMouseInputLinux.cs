@@ -11,14 +11,21 @@ namespace Remotely.Desktop.Linux.Services
     {
         private IntPtr Display { get; set; }
 
+        public void Init()
+        {
+            // Nothing to do here.  The Windows implementation needs to start
+            // a processing queue to keep all input simulation on the same
+            // thread.  Linux doesn't.
+        }
+
         public void SendKeyDown(string key)
         {
             try
             {
-                Init();
+                InitDisplay();
                 key = ConvertJavaScriptKeyToX11Key(key);
                 var keySim = LibX11.XStringToKeysym(key);
-                if (keySim == null)
+                if (keySim == IntPtr.Zero)
                 {
                     Logger.Write($"Key not mapped: {key}");
                     return;
@@ -38,10 +45,10 @@ namespace Remotely.Desktop.Linux.Services
         {
             try
             {
-                Init();
+                InitDisplay();
                 key = ConvertJavaScriptKeyToX11Key(key);
                 var keySim = LibX11.XStringToKeysym(key);
-                if (keySim == null)
+                if (keySim == IntPtr.Zero)
                 {
                     Logger.Write($"Key not mapped: {key}");
                     return;
@@ -59,11 +66,30 @@ namespace Remotely.Desktop.Linux.Services
         }
 
 
+        public void SendMouseButtonAction(int button, ButtonAction buttonAction, double percentX, double percentY, Viewer viewer)
+        {
+            try
+            {
+                var isPressed = buttonAction == ButtonAction.Down;
+                // Browser buttons start at 0.  XTest starts at 1.
+                var mouseButton = (uint)(button + 1);
+
+                InitDisplay();
+                SendMouseMove(percentX, percentY, viewer);
+                LibXtst.XTestFakeButtonEvent(Display, mouseButton, isPressed, 0);
+                LibX11.XSync(Display, false);
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+            }
+        }
+
         public void SendMouseMove(double percentX, double percentY, Viewer viewer)
         {
             try
             {
-                Init();
+                InitDisplay();
                 LibXtst.XTestFakeMotionEvent(Display,
                     viewer.Capturer.GetSelectedScreenIndex(),
                     (int)(viewer.Capturer.CurrentScreenBounds.Width * percentX),
@@ -81,7 +107,7 @@ namespace Remotely.Desktop.Linux.Services
         {
             try
             {
-                Init();
+                InitDisplay();
                 if (deltaY > 0)
                 {
                     LibXtst.XTestFakeButtonEvent(Display, 4, true, 0);
@@ -104,7 +130,7 @@ namespace Remotely.Desktop.Linux.Services
         {
             try
             {
-                Init();
+                InitDisplay();
                 SendMouseMove(percentX, percentY, viewer);
                 LibXtst.XTestFakeButtonEvent(Display, 3, true, 0);
                 LibX11.XSync(Display, false);
@@ -119,7 +145,7 @@ namespace Remotely.Desktop.Linux.Services
         {
             try
             {
-                Init();
+                InitDisplay();
                 SendMouseMove(percentX, percentY, viewer);
                 LibXtst.XTestFakeButtonEvent(Display, 3, false, 0);
                 LibX11.XSync(Display, false);
@@ -129,26 +155,6 @@ namespace Remotely.Desktop.Linux.Services
                 Logger.Write(ex);
             }
         }
-
-        public void SendMouseButtonAction(int button, ButtonAction buttonAction, double percentX, double percentY, Viewer viewer)
-        {
-            try
-            {
-                var isPressed = buttonAction == ButtonAction.Down;
-                // Browser buttons start at 0.  XTest starts at 1.
-                var mouseButton = (uint)(button + 1);
-
-                Init();
-                SendMouseMove(percentX, percentY, viewer);
-                LibXtst.XTestFakeButtonEvent(Display, mouseButton, isPressed, 0);
-                LibX11.XSync(Display, false);
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
-            }
-        }
-
         public void SendText(string transferText)
         {
             foreach (var key in transferText)
@@ -228,8 +234,7 @@ namespace Remotely.Desktop.Linux.Services
             };
             return keySym;
         }
-
-        private void Init()
+        private void InitDisplay()
         {
             try 
             {
@@ -243,5 +248,6 @@ namespace Remotely.Desktop.Linux.Services
                 Logger.Write(ex);
             }
         }
+
     }
 }

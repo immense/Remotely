@@ -66,6 +66,7 @@ namespace Remotely.Desktop.Linux
                         await casterSocket.NotifyRequesterUnattendedReady(Conductor.RequesterID);
                         Services.GetRequiredService<IdleTimer>().Start();
                         Services.GetRequiredService<IClipboardService>().BeginWatching();
+                        Services.GetRequiredService<IKeyboardMouseInput>().Init();
                     });
                 }
                 else

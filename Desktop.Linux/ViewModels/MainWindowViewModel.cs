@@ -35,6 +35,9 @@ namespace Remotely.Desktop.Linux.ViewModels
                 return;
             }
 
+            Services.GetRequiredService<IClipboardService>().BeginWatching();
+            Services.GetRequiredService<IKeyboardMouseInput>().Init();
+
             Conductor = Services.GetRequiredService<Conductor>();
             CasterSocket = Services.GetRequiredService<CasterSocket>();
 

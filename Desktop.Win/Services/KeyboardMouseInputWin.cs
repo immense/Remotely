@@ -15,12 +15,8 @@ namespace Remotely.Desktop.Win.Services
     {
         private volatile bool inputBlocked;
 
-        public KeyboardMouseInputWin()
-        {
-            StartInputProcessingThread();
-        }
-
         private CancellationTokenSource CancelTokenSource { get; set; }
+
         private ConcurrentQueue<Action> InputActions { get; } = new ConcurrentQueue<Action>();
 
         public Tuple<double, double> GetAbsolutePercentFromRelativePercent(double percentX, double percentY, IScreenCapturer capturer)
@@ -35,6 +31,11 @@ namespace Remotely.Desktop.Win.Services
             var absoluteX = (capturer.CurrentScreenBounds.Width * percentX) + capturer.CurrentScreenBounds.Left;
             var absoluteY = (capturer.CurrentScreenBounds.Height * percentY) + capturer.CurrentScreenBounds.Top;
             return new Tuple<double, double>(absoluteX, absoluteY);
+        }
+
+        public void Init()
+        {
+            StartInputProcessingThread();
         }
 
         public void SendKeyDown(string key)
@@ -223,10 +224,13 @@ namespace Remotely.Desktop.Win.Services
             });
         }
 
+        private void App_Exit(object sender, System.Windows.ExitEventArgs e)
+        {
+            CancelTokenSource?.Cancel();
+        }
         private void CheckQueue(CancellationToken cancelToken)
         {
-            while (!Environment.HasShutdownStarted &&
-                    !cancelToken.IsCancellationRequested)
+            while (!cancelToken.IsCancellationRequested)
             {
                 try
                 {
@@ -293,10 +297,20 @@ namespace Remotely.Desktop.Win.Services
             CancelTokenSource?.Cancel();
             CancelTokenSource?.Dispose();
 
+            // After BlockInput is enabled, only simulated input coming from the same thread
+            // will work.  So we have to start a new thread that runs continuously and
+            // processes a queue of input events.
             var newThread = new Thread(() =>
             {
                 Logger.Write($"New input processing thread started on thread {Thread.CurrentThread.ManagedThreadId}.");
                 CancelTokenSource = new CancellationTokenSource();
+
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    App.Current.Exit -= App_Exit;
+                    App.Current.Exit += App_Exit;
+                });
+
                 if (inputBlocked)
                 {
                     ToggleBlockInput(true);
