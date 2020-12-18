@@ -40,6 +40,9 @@ namespace Remotely.Desktop.Linux.Services
                 Environment.Exit(0);
             }
 
+            // TODO: Extract cross-platform ChatHostService and move to Desktop.Core project.
+            // Inject ChatUiService that has platform-specific implementations and is responsible
+            // for showing the window.
             Dispatcher.UIThread.Post(() =>
             {
                 var chatWindow = new ChatWindow();
