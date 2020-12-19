@@ -19,10 +19,9 @@ namespace Remotely.Desktop.Win.Services
         public SessionIndicatorWin(Form backgroundForm)
         {
             BackgroundForm = backgroundForm;
-            Application.ApplicationExit += Application_ApplicationExit;
         }
 
-        private void Application_ApplicationExit(object sender, EventArgs e)
+        private void App_Exit(object sender, EventArgs e)
         {
             notifyIcon?.Dispose();
         }
@@ -37,6 +36,8 @@ namespace Remotely.Desktop.Win.Services
                 {
                     return;
                 }
+
+                App.Current.Exit += App_Exit;
 
                 BackgroundForm.Invoke(new Action(() =>
                 {

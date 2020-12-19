@@ -185,8 +185,6 @@ namespace Remotely.Desktop.Win
                 Logger.Write("Failed to set initial desktop.");
             }
 
-            Win32Interop.SetMonitorState(User32.MonitorState.MonitorStateOn);
-
             await SendReadyNotificationToViewers();
             Services.GetRequiredService<IdleTimer>().Start();
             CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
