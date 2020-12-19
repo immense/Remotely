@@ -165,7 +165,7 @@ export function ApplyInputHandlers() {
         }
     });
     FullScreenButton.addEventListener("click", () => {
-        ScreenViewerWrapper.requestFullscreen();
+        document.body.requestFullscreen();
     })
     BlockInputButton.addEventListener("click", (ev) => {
         if (ViewerApp.ViewOnlyMode) {
