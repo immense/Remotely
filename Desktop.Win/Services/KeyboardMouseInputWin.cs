@@ -6,6 +6,7 @@ using Remotely.Shared.Win32;
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using static Remotely.Shared.Win32.User32;
 
@@ -35,6 +36,12 @@ namespace Remotely.Desktop.Win.Services
 
         public void Init()
         {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                App.Current.Exit -= App_Exit;
+                App.Current.Exit += App_Exit;
+            });
+
             StartInputProcessingThread();
         }
 
@@ -297,6 +304,7 @@ namespace Remotely.Desktop.Win.Services
             CancelTokenSource?.Cancel();
             CancelTokenSource?.Dispose();
 
+
             // After BlockInput is enabled, only simulated input coming from the same thread
             // will work.  So we have to start a new thread that runs continuously and
             // processes a queue of input events.
@@ -304,12 +312,6 @@ namespace Remotely.Desktop.Win.Services
             {
                 Logger.Write($"New input processing thread started on thread {Thread.CurrentThread.ManagedThreadId}.");
                 CancelTokenSource = new CancellationTokenSource();
-
-                App.Current.Dispatcher.Invoke(() =>
-                {
-                    App.Current.Exit -= App_Exit;
-                    App.Current.Exit += App_Exit;
-                });
 
                 if (inputBlocked)
                 {

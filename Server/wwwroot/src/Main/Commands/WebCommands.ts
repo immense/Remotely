@@ -262,6 +262,16 @@ var commands: Array<ConsoleCommand> = [
             AddConsoleOutput(output);
         }
     ),
+    new ConsoleCommand("Reinstall",
+        [],
+        "Reinstalls the Remotely agent on the selected devices.",
+        "reinstall",
+        "",
+        (parameters, parameterDict) => {
+            var selectedDevices = DataGrid.GetSelectedDevices();
+            BrowserHubConnection.Connection.invoke("ReinstallAgents", selectedDevices.map(x => x.ID));
+        }
+    ),
     new ConsoleCommand(
         "Remove",
         [
@@ -457,7 +467,7 @@ var commands: Array<ConsoleCommand> = [
     ),
     new ConsoleCommand("Uninstall",
         [],
-        "Uninstalls the Remotely client from the selected devices.  Warning: This can't be undone from the web portal.  You would need to redeploy the client.",
+        "Uninstalls the Remotely agent from the selected devices.  Warning: This can't be undone from the web portal.  You would need to redeploy the agent.",
         "uninstall",
         "",
         (parameters, parameterDict) => {

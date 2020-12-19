@@ -29,9 +29,9 @@ namespace Remotely.Server.Hubs
         }
 
         public static ConcurrentDictionary<string, RemotelyUser> ConnectionIdToUserLookup { get; } = new ConcurrentDictionary<string, RemotelyUser>();
+        private IHubContext<AgentHub> AgentHubContext { get; }
         private IApplicationConfig AppConfig { get; }
         private IDataService DataService { get; }
-        private IHubContext<AgentHub> AgentHubContext { get; }
         private RemotelyUser RemotelyUser
         {
             get
@@ -133,6 +133,18 @@ namespace Remotely.Server.Hubs
             await base.OnDisconnectedAsync(exception);
         }
 
+        public Task ReinstallAgents(string[] deviceIDs)
+        {
+            deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
+            var connections = GetActiveClientConnections(deviceIDs);
+            foreach (var connection in connections)
+            {
+                AgentHubContext.Clients.Client(connection.Key).SendAsync("ReinstallAgent");
+            }
+            DataService.RemoveDevices(deviceIDs);
+            return Clients.Caller.SendAsync("RefreshDeviceList");
+        }
+
         public async Task RemoteControl(string deviceID)
         {
             var targetDevice = AgentHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == deviceID);
@@ -168,6 +180,32 @@ namespace Remotely.Server.Hubs
         }
 
 
+        public Task UninstallAgents(string[] deviceIDs)
+        {
+            deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
+            var connections = GetActiveClientConnections(deviceIDs);
+            foreach (var connection in connections)
+            {
+                AgentHubContext.Clients.Client(connection.Key).SendAsync("UninstallAgent");
+            }
+            DataService.RemoveDevices(deviceIDs);
+            return Clients.Caller.SendAsync("RefreshDeviceList");
+        }
+
+        public Task UpdateTags(string deviceID, string tags)
+        {
+            if (DataService.DoesUserHaveAccessToDevice(deviceID, RemotelyUser))
+            {
+                if (tags.Length > 200)
+                {
+                    return Clients.Caller.SendAsync("DisplayMessage", $"Tag must be 200 characters or less. Supplied length is {tags.Length}.", "Tag must be under 200 characters.");
+                }
+                DataService.UpdateTags(deviceID, tags);
+                return Clients.Caller.SendAsync("DisplayMessage", "Device updated successfully.", "Device updated.");
+            }
+            return Task.CompletedTask;
+        }
+
         public Task UploadFiles(List<string> fileIDs, string transferID, string[] deviceIDs)
         {
             DataService.WriteEvent(new EventLog()
@@ -185,31 +223,6 @@ namespace Remotely.Server.Hubs
             }
             return Task.CompletedTask;
         }
-        public Task UninstallAgents(string[] deviceIDs)
-        {
-            deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
-            var connections = GetActiveClientConnections(deviceIDs);
-            foreach (var connection in connections)
-            {
-                AgentHubContext.Clients.Client(connection.Key).SendAsync("UninstallAgent");
-            }
-            DataService.RemoveDevices(deviceIDs);
-            return Clients.Caller.SendAsync("RefreshDeviceList");
-        }
-        public Task UpdateTags(string deviceID, string tags)
-        {
-            if (DataService.DoesUserHaveAccessToDevice(deviceID, RemotelyUser))
-            {
-                if (tags.Length > 200)
-                {
-                    return Clients.Caller.SendAsync("DisplayMessage", $"Tag must be 200 characters or less. Supplied length is {tags.Length}.", "Tag must be under 200 characters.");
-                }
-                DataService.UpdateTags(deviceID, tags);
-                return Clients.Caller.SendAsync("DisplayMessage", "Device updated successfully.", "Device updated.");
-            }
-            return Task.CompletedTask;
-        }
-
         private IEnumerable<KeyValuePair<string, Device>> GetActiveClientConnections(string[] deviceIDs)
         {
             return AgentHub.ServiceConnections.Where(x =>
