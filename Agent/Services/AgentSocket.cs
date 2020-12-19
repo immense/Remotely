@@ -300,6 +300,11 @@ namespace Remotely.Agent.Services
                 User32.SendSAS(false);
             });
 
+            HubConnection.On("TriggerHeartbeat", async () =>
+            {
+                await SendHeartbeat();
+            });
+
             HubConnection.On("ServerVerificationToken", (string verificationToken) =>
             {
                 if (verificationToken == ConnectionInfo.ServerVerificationToken)
