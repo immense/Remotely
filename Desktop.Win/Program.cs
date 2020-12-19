@@ -21,7 +21,7 @@ namespace Remotely.Desktop.Win
     public class Program
     {
         public static Form BackgroundForm { get; private set; }
-        private static CasterSocket CasterSocket { get; set; }
+        private static ICasterSocket CasterSocket { get; set; }
         private static Conductor Conductor { get; set; }
         private static ICursorIconWatcher CursorIconWatcher { get; set; }
         private static IServiceProvider Services => ServiceContainer.Instance;
@@ -45,7 +45,7 @@ namespace Remotely.Desktop.Win
                 BuildServices();
 
                 Conductor = Services.GetRequiredService<Conductor>();
-                CasterSocket = Services.GetRequiredService<CasterSocket>();
+                CasterSocket = Services.GetRequiredService<ICasterSocket>();
                 Conductor.ProcessArgs(args);
 
                 SystemEvents.SessionEnding += async (s, e) =>
@@ -116,7 +116,7 @@ namespace Remotely.Desktop.Win
             serviceCollection.AddSingleton<IKeyboardMouseInput, KeyboardMouseInputWin>();
             serviceCollection.AddSingleton<IClipboardService, ClipboardServiceWin>();
             serviceCollection.AddSingleton<IAudioCapturer, AudioCapturerWin>();
-            serviceCollection.AddSingleton<CasterSocket>();
+            serviceCollection.AddSingleton<ICasterSocket, CasterSocket>();
             serviceCollection.AddSingleton<IdleTimer>();
             serviceCollection.AddSingleton<Conductor>();
             serviceCollection.AddSingleton<IChatHostService, ChatHostService>();

@@ -59,7 +59,7 @@ namespace Remotely.Desktop.Linux
                 }
                 else if (Conductor.Mode == Core.Enums.AppMode.Unattended)
                 {
-                    var casterSocket = Services.GetRequiredService<CasterSocket>();
+                    var casterSocket = Services.GetRequiredService<ICasterSocket>();
                     await casterSocket.Connect(Conductor.Host).ContinueWith(async (task) =>
                     {
                         await casterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
@@ -104,7 +104,7 @@ namespace Remotely.Desktop.Linux
             serviceCollection.AddSingleton<IKeyboardMouseInput, KeyboardMouseInputLinux>();
             serviceCollection.AddSingleton<IClipboardService, ClipboardServiceLinux>();
             serviceCollection.AddSingleton<IAudioCapturer, AudioCapturerLinux>();
-            serviceCollection.AddSingleton<CasterSocket>();
+            serviceCollection.AddSingleton<ICasterSocket, CasterSocket>();
             serviceCollection.AddSingleton<IdleTimer>();
             serviceCollection.AddSingleton<Conductor>();
             serviceCollection.AddSingleton<IChatHostService, ChatHostService>();

@@ -39,7 +39,7 @@ namespace Remotely.Desktop.Linux.ViewModels
             Services.GetRequiredService<IKeyboardMouseInput>().Init();
 
             Conductor = Services.GetRequiredService<Conductor>();
-            CasterSocket = Services.GetRequiredService<CasterSocket>();
+            CasterSocket = Services.GetRequiredService<ICasterSocket>();
 
             Conductor.SessionIDChanged += SessionIDChanged;
             Conductor.ViewerRemoved += ViewerRemoved;
@@ -125,7 +125,7 @@ namespace Remotely.Desktop.Linux.ViewModels
 
         public ObservableCollection<Viewer> Viewers { get; } = new ObservableCollection<Viewer>();
         private static IServiceProvider Services => ServiceContainer.Instance;
-        private CasterSocket CasterSocket { get; }
+        private ICasterSocket CasterSocket { get; }
         private Conductor Conductor { get; }
         public async Task GetSessionID()
         {
