@@ -15,7 +15,7 @@ namespace Remotely.Desktop.Win.Services
         public async Task Shutdown()
         {
             Logger.Debug($"Exiting process ID {Process.GetCurrentProcess().Id}.");
-            var casterSocket = ServiceContainer.Instance.GetRequiredService<CasterSocket>();
+            var casterSocket = ServiceContainer.Instance.GetRequiredService<ICasterSocket>();
             await casterSocket.DisconnectAllViewers();
             await casterSocket.Disconnect();
             Application.Current.Dispatcher.Invoke(() =>

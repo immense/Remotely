@@ -67,7 +67,7 @@ namespace Remotely.Desktop.Win.Services
 
         private async void ExitMenuItem_Click(object sender, EventArgs e)
         {
-            var casterSocket = ServiceContainer.Instance.GetRequiredService<CasterSocket>();
+            var casterSocket = ServiceContainer.Instance.GetRequiredService<ICasterSocket>();
             await casterSocket.DisconnectAllViewers();
         }
     }

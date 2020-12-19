@@ -43,7 +43,7 @@ namespace Remotely.Desktop.Win.ViewModels
             Services.GetRequiredService<IClipboardService>().BeginWatching();
             Services.GetRequiredService<IKeyboardMouseInput>().Init();
             Conductor = Services.GetRequiredService<Conductor>();
-            CasterSocket = Services.GetRequiredService<CasterSocket>();
+            CasterSocket = Services.GetRequiredService<ICasterSocket>();
             Conductor.SessionIDChanged += SessionIDChanged;
             Conductor.ViewerRemoved += ViewerRemoved;
             Conductor.ViewerAdded += ViewerAdded;
@@ -65,7 +65,7 @@ namespace Remotely.Desktop.Win.ViewModels
         }
 
         private Conductor Conductor { get; set; }
-        private CasterSocket CasterSocket { get; set; }
+        private ICasterSocket CasterSocket { get; set; }
         private ICursorIconWatcher CursorIconWatcher { get; set; }
 
         public ICommand ElevateToAdminCommand
