@@ -70,7 +70,7 @@ var commands: Array<ConsoleCommand> = [
             new Parameter("path", "The path on the remote computer of the file to download.", "String"),
         ],
         "Download a file from the remote computer.",
-        `DownloadFile -path "C:\Users\Me\Pictures\ThatFunnyPic.png"`,
+        `DownloadFile -path "C:\\Users\\Me\\Pictures\\ThatFunnyPic.png"`,
         "",
         (parameters, paramDictionary) => {
             var selectedDevices = MainApp.DataGrid.GetSelectedDevices();

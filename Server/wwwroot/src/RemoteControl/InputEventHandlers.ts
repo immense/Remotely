@@ -33,7 +33,8 @@
     FileUploadButtton,
     FileDownloadButton,
     UpdateStreamingToggled,
-    ViewOnlyButton
+    ViewOnlyButton,
+    FullScreenButton
 } from "./UI.js";
 import { Sound } from "../Shared/Sound.js";
 import { ViewerApp } from "./App.js";
@@ -163,6 +164,9 @@ export function ApplyInputHandlers() {
             VideoScreenViewer.style.maxHeight = "unset";
         }
     });
+    FullScreenButton.addEventListener("click", () => {
+        ScreenViewerWrapper.requestFullscreen();
+    })
     BlockInputButton.addEventListener("click", (ev) => {
         if (ViewerApp.ViewOnlyMode) {
             alert("View-only mode is enabled.");
@@ -585,6 +589,10 @@ export function ApplyInputHandlers() {
             return;
         }
         ViewerApp.MessageSender.SendSetKeyStatesUp();
+    });
+
+    window.addEventListener("touchstart", () => {
+        KeyboardButton.removeAttribute("hidden");
     });
 
     window.ondragover = function (e) {
