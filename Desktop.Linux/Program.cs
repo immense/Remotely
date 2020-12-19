@@ -107,7 +107,8 @@ namespace Remotely.Desktop.Linux
             serviceCollection.AddSingleton<CasterSocket>();
             serviceCollection.AddSingleton<IdleTimer>();
             serviceCollection.AddSingleton<Conductor>();
-            serviceCollection.AddSingleton<IChatHostService, ChatHostServiceLinux>();
+            serviceCollection.AddSingleton<IChatHostService, ChatHostService>();
+            serviceCollection.AddSingleton<IChatUiService, ChatUiServiceLinux>();
             serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerLinux>();
             serviceCollection.AddTransient<Viewer>();
             serviceCollection.AddScoped<IFileTransferService, FileTransferServiceLinux>();

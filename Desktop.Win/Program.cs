@@ -119,7 +119,8 @@ namespace Remotely.Desktop.Win
             serviceCollection.AddSingleton<CasterSocket>();
             serviceCollection.AddSingleton<IdleTimer>();
             serviceCollection.AddSingleton<Conductor>();
-            serviceCollection.AddSingleton<IChatHostService, ChatHostServiceWin>();
+            serviceCollection.AddSingleton<IChatHostService, ChatHostService>();
+            serviceCollection.AddSingleton<IChatUiService, ChatUiServiceWin>();
             serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerWin>();
             serviceCollection.AddTransient<Viewer>();
             serviceCollection.AddScoped<IWebRtcSessionFactory, WebRtcSessionFactory>();
