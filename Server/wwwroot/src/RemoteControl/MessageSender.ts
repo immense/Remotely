@@ -170,7 +170,7 @@ export class MessageSender {
         if (ViewerApp.RtcSession.DataChannel && ViewerApp.RtcSession.DataChannel.readyState == "open") {
             rtcSend();
         }
-        else if (ViewerApp.ViewerHubConnection.Connection.connectionStarted) {
+        else if (ViewerApp.ViewerHubConnection.Connection?.connectionStarted) {
             websocketSend();
         }
     }
