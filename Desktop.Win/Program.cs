@@ -36,7 +36,7 @@ namespace Remotely.Desktop.Win
             }
         }
         [STAThread]
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
             try
             {
