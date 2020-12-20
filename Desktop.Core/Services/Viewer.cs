@@ -316,7 +316,7 @@ namespace Remotely.Desktop.Core.Services
                 {
                     UpdateImageQuality();
 
-                    return PendingSentFrames.Count < 5 &&
+                    return PendingSentFrames.Count < 10 &&
                         (
                             !PendingSentFrames.TryPeek(out var result) || DateTimeOffset.Now - result < TimeSpan.FromSeconds(1)
                         );
