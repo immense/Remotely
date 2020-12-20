@@ -59,7 +59,7 @@ namespace Remotely.Desktop.Win
                 if (Conductor.Mode == Core.Enums.AppMode.Chat)
                 {
                     StartUiThreads(false);
-                    await Task.Run(async () =>
+                    _ = Task.Run(async () =>
                     {
                         var chatService = Services.GetRequiredService<IChatHostService>();
                         await chatService.StartChat(Conductor.RequesterID, Conductor.OrganizationName);
@@ -72,7 +72,7 @@ namespace Remotely.Desktop.Win
                     {
                         App.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
                     });
-                    await Task.Run(StartScreenCasting);
+                    _ = Task.Run(StartScreenCasting);
                 }
                 else
                 {
@@ -80,6 +80,7 @@ namespace Remotely.Desktop.Win
                 }
 
                 WaitForAppExit();
+                
             }
             catch (Exception ex)
             {
@@ -91,7 +92,6 @@ namespace Remotely.Desktop.Win
         private static void WaitForAppExit()
         {
             var appExitEvent = new ManualResetEventSlim();
-
             App.Current.Dispatcher.Invoke(() =>
             {
                 App.Current.Exit += (s, a) =>
@@ -99,7 +99,6 @@ namespace Remotely.Desktop.Win
                     appExitEvent.Set();
                 };
             });
-
             appExitEvent.Wait();
         }
 
@@ -225,6 +224,7 @@ namespace Remotely.Desktop.Win
             {
                 Thread.Sleep(100);
             }
+            Logger.Write("Background UI apps started.");
         }
     }
 }

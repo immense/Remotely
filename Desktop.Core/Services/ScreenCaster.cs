@@ -35,29 +35,29 @@ namespace Remotely.Desktop.Core.Services
 
         public async Task BeginScreenCasting(ScreenCastRequest screenCastRequest)
         {
-            var mode = AppMode.Unattended;
-
+        
             try
             {
                 Bitmap currentFrame = null;
                 Bitmap previousFrame = null;
                 byte[] encodedImageBytes;
                 var fpsQueue = new Queue<DateTimeOffset>();
-                mode = Conductor.Mode;
+
                 var viewer = ServiceContainer.Instance.GetRequiredService<Viewer>();
                 viewer.Name = screenCastRequest.RequesterName;
                 viewer.ViewerConnectionID = screenCastRequest.ViewerID;
 
-                Logger.Write($"Starting screen cast.  Requester: {viewer.Name}. Viewer ID: {viewer.ViewerConnectionID}.  App Mode: {mode}");
+                Logger.Write($"Starting screen cast.  Requester: {viewer.Name}. " +
+                    $"Viewer ID: {viewer.ViewerConnectionID}.  App Mode: {Conductor.Mode}");
 
                 Conductor.Viewers.AddOrUpdate(viewer.ViewerConnectionID, viewer, (id, v) => viewer);
 
-                if (mode == AppMode.Normal)
+                if (Conductor.Mode == AppMode.Normal)
                 {
                     Conductor.InvokeViewerAdded(viewer);
                 }
 
-                if (mode == AppMode.Unattended && screenCastRequest.NotifyUser)
+                if (Conductor.Mode == AppMode.Unattended && screenCastRequest.NotifyUser)
                 {
                     SessionIndicator.Show();
                 }
@@ -177,8 +177,9 @@ namespace Remotely.Desktop.Core.Services
             finally
             {
                 // Close if no one is viewing.
-                if (Conductor.Viewers.IsEmpty && mode == AppMode.Unattended)
+                if (Conductor.Viewers.IsEmpty && Conductor.Mode == AppMode.Unattended)
                 {
+                    Logger.Write("No more viewers.  Calling shutdown service.");
                     await ShutdownService.Shutdown();
                 }
             }
