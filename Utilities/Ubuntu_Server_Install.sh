@@ -8,9 +8,9 @@ ArgLength=${#Args[@]}
 for (( i=0; i<${ArgLength}; i+=2 ));
 do
     if [ "${Args[$i]}" = "--hostname" ]; then
-        HostName="${Args[$i+1]}"
+        HostName="remotely.rlie.ca"
     elif [ "${Args[$i]}" = "--approot" ]; then
-        AppRoot="${Args[$i+1]}"
+        AppRoot="/var/www/remotely"
     fi
 done
 
