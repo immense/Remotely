@@ -141,6 +141,9 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Allow API Login")]
             public bool AllowApiLogin { get; set; }
 
+            [Display(Name = "Allow WinLogon")]
+            public bool AllowWinLogon { get; set; }
+
             [Display(Name = "Banned Devices")]
             public string[] BannedDevices { get; set; }
 

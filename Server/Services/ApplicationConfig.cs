@@ -6,6 +6,7 @@ namespace Remotely.Server.Services
     public interface IApplicationConfig
     {
         bool AllowApiLogin { get; }
+        bool AllowWinLogon { get; }
         string[] BannedDevices { get; }
         double DataRetentionInDays { get; }
         string DBProvider { get; }
@@ -48,6 +49,7 @@ namespace Remotely.Server.Services
         }
 
         public bool AllowApiLogin => bool.Parse(Config["ApplicationOptions:AllowApiLogin"] ?? "false");
+        public bool AllowWinLogon => bool.Parse(Config["ApplicationOptions:AllowWinLogon"] ?? "false");
         public string[] BannedDevices => Config.GetSection("ApplicationOptions:BannedDevices").Get<string[]>() ?? new string[0];
         public double DataRetentionInDays => double.Parse(Config["ApplicationOptions:DataRetentionInDays"] ?? "30");
         public string DBProvider => Config["ApplicationOptions:DBProvider"] ?? "SQLite";

@@ -53,6 +53,13 @@
                     <span asp-validation-for="AppSettingsInput.AllowApiLogin" class="text-danger"></span>
                 </div>
                 <div class="form-group">
+                    <label asp-for="AppSettingsInput.AllowWinLogon"></label>
+                    <br />
+                    <input type="checkbox" asp-for="AppSettingsInput.AllowWinLogon" />
+                    <br />
+                    <span asp-validation-for="AppSettingsInput.AllowWinLogon" class="text-danger"></span>
+                </div>
+                <div class="form-group">
                     <label asp-for="AppSettingsInput.BannedDevices" class="control-label"></label>
                     <br />
                     <select id="bannedDevicesSelect"

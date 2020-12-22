@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Remotely.Desktop.Core.Interfaces;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
+using Remotely.Shared.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -172,11 +173,13 @@ namespace Remotely.Desktop.Core.Services
                 string requesterName,
                 bool notifyUser,
                 bool enforceAttendedAccess,
-                string organizationName) =>
+                string organizationName,
+                bool allowWinLogonScreen) =>
             {
                 try
                 {
-                    if (enforceAttendedAccess)
+                    Win32Interop.GetCurrentDesktop(out var currentDesktopName);
+                    if (string.IsNullOrEmpty(currentDesktopName) && enforceAttendedAccess)
                     {
                         await SendMessageToViewer(viewerID, "Asking user for permission...");
 
@@ -188,6 +191,33 @@ namespace Remotely.Desktop.Core.Services
                         {
                             await SendConnectionRequestDenied(viewerID);
                             return;
+                        }
+                    }
+                    else
+                    {
+                        var isWinLogon = currentDesktopName.Equals("Winlogon");
+                        if (isWinLogon && !allowWinLogonScreen)
+                        {
+                            await SendConnectionRequestDenied(viewerID);
+                            return;
+                        }
+                        else if (isWinLogon && allowWinLogonScreen && enforceAttendedAccess)
+                        {
+                            //allow overide of enforceAttendedAccess if computer is at logon screen
+                        }
+                        else if (enforceAttendedAccess)
+                        {
+                            await SendMessageToViewer(viewerID, "Asking user for permission...");
+
+                            IdleTimer.Stop();
+                            var result = await RemoteControlAccessService.PromptForAccess(requesterName, organizationName);
+                            IdleTimer.Start();
+
+                            if (!result)
+                            {
+                                await SendConnectionRequestDenied(viewerID);
+                                return;
+                            }
                         }
                     }
 
