@@ -5,17 +5,21 @@ using Moq;
 using Remotely.Desktop.Core;
 using Remotely.Desktop.Core.Interfaces;
 using Remotely.Desktop.Core.Services;
+using Remotely.Desktop.Core.Utilities;
 using Remotely.Desktop.Win.Services;
 using Remotely.Shared.Models;
 using Remotely.Shared.Models.RemoteControlDtos;
-using Remotely.Shared.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
-using System.Text;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace Remotely.Tests
 {
@@ -52,11 +56,9 @@ namespace Remotely.Tests
                 ViewerID = "asdf"
             };
 
-            var timeout = Debugger.IsAttached ?
-                20_000 :
-                5_000;
-
             _ = Task.Run(async () => await _screenCaster.BeginScreenCasting(request));
+
+            var timeout = 5_000;
 
             await Task.Delay(timeout);
 
@@ -66,6 +68,172 @@ namespace Remotely.Tests
             Debug.WriteLine($"KB Sent: {Math.Round(_bytesSent / 1024, 2)}");
             Assert.IsTrue(fps > 0);
             _viewer.Dispose();
+        }
+
+        [TestMethod]
+#if !DEBUG
+        [Ignore("Manual test.")]
+#endif
+        public void EncodingTests()
+        {
+            for (var i = 0; i < 2; i++)
+            {
+                var encoderParams = new EncoderParameters()
+                {
+                    Param = new EncoderParameter[]
+                    {
+                        new EncoderParameter(Encoder.Quality, 60L)
+
+                    }
+                };
+
+                using var frame1 = GetFrame("Frame1");
+                using var frame2 = GetFrame("Frame2");
+
+                var sw = Stopwatch.StartNew();
+
+
+                sw.Restart();
+                var diffs = ImageUtils.GetDiffAreas(frame1, frame2, false);
+                Debug.WriteLine($"Diff time: {sw.Elapsed.TotalMilliseconds}");
+
+                var diffSize = 0;
+                foreach (var x in diffs)
+                {
+                    using (var tempImage = (Bitmap)frame1.Clone(new Rectangle(x.X, x.Y, x.Width, x.Height), PixelFormat.Format32bppArgb))
+                    {
+                        using (var ms = new MemoryStream())
+                        {
+                            tempImage.Save(ms, ImageFormat.Jpeg);
+                            diffSize += ms.ToArray().Length;
+                        }
+                    }
+                }
+                Debug.WriteLine($"Diff size: {diffSize}");
+
+
+                sw.Restart();
+                var diff2Size = 0;
+                var diffs2 = ImageUtils.GetDiffAreas2(frame1, frame2, false);
+                Debug.WriteLine($"Diff2 time: {sw.Elapsed.TotalMilliseconds}");
+                foreach (var x in diffs2)
+                {
+                    using (var tempImage = (Bitmap)frame1.Clone(new Rectangle(x.X, x.Y, x.Width, x.Height), PixelFormat.Format32bppArgb))
+                    {
+                        using (var ms = new MemoryStream())
+                        {
+                            tempImage.Save(ms, ImageFormat.Jpeg);
+                            diff2Size += ms.ToArray().Length;
+                        }
+                    }
+                }
+                Debug.WriteLine($"Diff2 size: {diff2Size}");
+
+
+
+                sw.Restart();
+                var diffs3 = ImageUtils.GetDiffAreas3(frame1, frame2, false);
+                Debug.WriteLine($"Diff3 time: {sw.Elapsed.TotalMilliseconds}");
+                diffSize = 0;
+                foreach (var x in diffs3)
+                {
+                    using (var tempImage = (Bitmap)frame1.Clone(new Rectangle(x.X, x.Y, x.Width, x.Height), PixelFormat.Format32bppArgb))
+                    {
+                        using (var ms = new MemoryStream())
+                        {
+                            tempImage.Save(ms, ImageFormat.Jpeg);
+                            diffSize += ms.ToArray().Length;
+                        }
+                    }
+                }
+                Debug.WriteLine($"Diff3 size: {diffSize}");
+
+
+                sw.Restart();
+                var diffImage = ImageUtils.GetImageDiff(frame1, frame2, false, out var hadChanges);
+                Debug.WriteLine($"Diff Image time: {sw.Elapsed.TotalMilliseconds}");
+                sw.Restart();
+                using (var ms = new MemoryStream())
+                {
+                    diffImage.Save(ms, ImageFormat.Png);
+                    Debug.WriteLine($"Diff image size: {ms.ToArray().Length}");
+                }
+                Debug.WriteLine($"Diff Image encode time: {sw.Elapsed.TotalMilliseconds}");
+
+
+
+                sw.Restart();
+                var gifImage = (Bitmap)diffImage.Clone();
+                using (var ms = new MemoryStream())
+                {
+                    gifImage.MakeTransparent(Color.FromArgb(0, 0, 0, 0));
+                    gifImage.Save(ms, ImageFormat.Gif);
+                    gifImage.Save(@"C:\Users\trans\Desktop\Test.gif");
+                    Debug.WriteLine($"GIF image size: {ms.ToArray().Length}");
+                }
+                Debug.WriteLine($"GIF Image encode time: {sw.Elapsed.TotalMilliseconds}");
+
+                //sw.Restart();
+                //using (var ms = new MemoryStream())
+                //{
+                //    diffImage.Save(ms, ImageFormat.Jpeg);
+                //    ms.Seek(0, SeekOrigin.Begin);
+                //    var pngEncoder = new PngEncoder() { CompressionLevel = PngCompressionLevel.BestSpeed };
+                //    using (var ms2 = new MemoryStream())
+                //    {
+                //        SixLabors.ImageSharp.Image.Load(ms).Save(ms2, pngEncoder);
+                //        Debug.WriteLine($"ImageSharp size: {ms2.ToArray().Length}");
+                //    }
+                //}
+                //Debug.WriteLine($"ImageSharp encode time: {sw.Elapsed.TotalMilliseconds}");
+
+
+                //sw.Restart();
+                //using (var ms = new MemoryStream())
+                //{
+                //    diffImage.Save(ms, ImageFormat.Jpeg);
+                //    ms.Seek(0, SeekOrigin.Begin);
+                //    using (var ms2 = new MemoryStream())
+                //    {
+                //        Aspose.Imaging.Image.Load(ms).Save(ms2, new PngOptions() { CompressionLevel = 5 });
+                //        Debug.WriteLine($"Aspose size: {ms2.ToArray().Length}");
+                //    }
+                //}
+                //Debug.WriteLine($"Aspose encode time: {sw.Elapsed.TotalMilliseconds}");
+
+
+
+
+                //sw.Restart();
+                //var drawingBytes = ImageUtils.EncodeBitmap(frame1, null);
+                //Debug.WriteLine($"Drawing Encoder time: {sw.Elapsed.TotalMilliseconds}");
+                //Debug.WriteLine($"Drawing encoder size: {drawingBytes.Length}");
+
+                //sw.Restart();
+                //using (var ms = new MemoryStream())
+                //{
+                //    frame1.Clone(new Rectangle(0, 0, 500, 500), PixelFormat.Format32bppArgb)
+                //        .Save(ms, GetEncoder(ImageFormat.Jpeg), encoderParams);
+                //    Debug.WriteLine($"Jpeg encode time: {sw.Elapsed.TotalMilliseconds}");
+                //    Debug.WriteLine($"Jpeg encode size: {ms.ToArray().Length}");
+                //}
+
+                //var factory = new ImageProcessor.ImageFactory();
+                //sw.Restart();
+                //using (var ms = new MemoryStream())
+                //{
+                //    var webPFormat = new ImageProcessor.Plugins.WebP.Imaging.Formats.WebPFormat();
+                //    factory.Load(diffImage)
+                //        .Format(webPFormat)
+                //        .Quality(60)
+                //        .Save(ms);
+
+                //    Debug.WriteLine($"Webp encode time: {sw.Elapsed.TotalMilliseconds}");
+                //    Debug.WriteLine($"Webp encode size: {ms.ToArray().Length}");
+                //}
+
+                Debug.WriteLine($"\n");
+            }
         }
 
         [TestInitialize]
@@ -113,6 +281,27 @@ namespace Remotely.Tests
             serviceCollection.AddSingleton((e) => _viewer);
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
+        }
+
+        private Bitmap GetFrame(string frameFileName)
+        {
+            using (var mrs = Assembly.GetExecutingAssembly().GetManifestResourceStream($"Remotely.Tests.Resources.{frameFileName}.jpg"))
+            {
+                var resourceImage = (Bitmap)Bitmap.FromStream(mrs);
+
+                if (resourceImage.PixelFormat != PixelFormat.Format32bppArgb)
+                {
+                    return resourceImage.Clone(new Rectangle(0, 0, resourceImage.Width, resourceImage.Height), PixelFormat.Format32bppArgb);
+                }
+                return resourceImage;
+            }
+        }
+
+        private ImageCodecInfo GetEncoder(ImageFormat format)
+        {
+            var codecs = ImageCodecInfo.GetImageEncoders();
+
+            return codecs.FirstOrDefault(x => x.FormatID == format.Guid);
         }
     }
 }

@@ -46,7 +46,7 @@ export class RtcSession {
             };
             this.DataChannel.onmessage = async (ev) => {
                 var data = ev.data as ArrayBuffer;
-                ViewerApp.DtoMessageHandler.ParseBinaryMessage(data);
+                await ViewerApp.DtoMessageHandler.ParseBinaryMessage(data);
                
             };
             this.DataChannel.onopen = (ev) => {

@@ -145,11 +145,6 @@ jobs:
 
         Write-Host "Setting current version to $CurrentVersion."
 
-    # Run the Publish script to build clients and server.
-    - name: Run Publish script
-      shell: powershell
-      run: .\Utilities\Publish.ps1 -CertificatePath "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx" -CertificatePassword $env:PfxKey -Hostname $env:SiteUrl -CurrentVersion $env:CurrentVersion
-    
     # Create MSDeploy Publishing Profile
     - name: Create MSDeploy Profile
       shell: powershell
@@ -172,7 +167,7 @@ jobs:
             <MSDeployPublishMethod>WMSVC</MSDeployPublishMethod>
             <EnableMSDeployBackup>True</EnableMSDeployBackup>
             <UserName>$env:MsDeployUsername</UserName>
-            <TargetFramework>netcoreapp3.1</TargetFramework>
+            <TargetFramework>net5.0</TargetFramework>
             <SelfContained>true</SelfContained>
             <AllowUntrustedCertificate>true</AllowUntrustedCertificate>
             <RuntimeIdentifier>win-x64</RuntimeIdentifier>
@@ -182,8 +177,19 @@ jobs:
 
         New-Item -Path "$env:GITHUB_WORKSPACE\Server\Properties\PublishProfiles\" -ItemType Directory -Force
         Set-Content -Path "$env:GITHUB_WORKSPACE\Server\Properties\PublishProfiles\DeployIIS.pubxml" -Value $PublishProfile -Force
+   
+    # Run the Publish script to build clients and server.
+    - name: Run Publish script
+      shell: powershell
+      run: |
+        .\Utilities\Publish.ps1 -CertificatePath "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx" -CertificatePassword $env:PfxKey -Hostname $env:SiteUrl -CurrentVersion $env:CurrentVersion -RID win-x64 -OutDir "$env:GITHUB_WORKSPACE\publish"
+        
+    # Upload build artifact to be deployed from Ubuntu runner
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v2
+      with:
+        path: ./publish/
 
-    # Uncomment the below to enable deployment to the server.
     # Publish server to IIS
     - name: Publish
       run: | 

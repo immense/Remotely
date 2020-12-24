@@ -25,8 +25,6 @@ namespace Remotely.Desktop.Win.ViewModels
         private string _host;
         private string _sessionID;
 
-        public static MainWindowViewModel Current { get; private set; }
-
         public MainWindowViewModel()
         {
             Current = this;
@@ -50,6 +48,7 @@ namespace Remotely.Desktop.Win.ViewModels
             Conductor.ScreenCastRequested += ScreenCastRequested;
         }
 
+        public static MainWindowViewModel Current { get; private set; }
         public static IServiceProvider Services => ServiceContainer.Instance;
 
         public ICommand ChangeServerCommand
@@ -63,10 +62,6 @@ namespace Remotely.Desktop.Win.ViewModels
                 });
             }
         }
-
-        private Conductor Conductor { get; set; }
-        private ICasterSocket CasterSocket { get; set; }
-        private ICursorIconWatcher CursorIconWatcher { get; set; }
 
         public ICommand ElevateToAdminCommand
         {
@@ -178,6 +173,12 @@ namespace Remotely.Desktop.Win.ViewModels
 
         public ObservableCollection<Viewer> Viewers { get; } = new ObservableCollection<Viewer>();
 
+        private ICasterSocket CasterSocket { get; set; }
+
+        private Conductor Conductor { get; set; }
+
+        private ICursorIconWatcher CursorIconWatcher { get; set; }
+
         public void CopyLink()
         {
             Clipboard.SetText($"{Host}/RemoteControl?sessionID={SessionID?.Replace(" ", "")}");
@@ -192,7 +193,7 @@ namespace Remotely.Desktop.Win.ViewModels
         public async Task Init()
         {
             SessionID = "Retrieving...";
-            
+
             Host = Config.GetConfig().Host;
 
             while (string.IsNullOrWhiteSpace(Host))
@@ -263,6 +264,10 @@ namespace Remotely.Desktop.Win.ViewModels
             }
         }
 
+        public void ShutdownApp()
+        {
+            Services.GetRequiredService<IShutdownService>().Shutdown();
+        }
         private void Application_Exit(object sender, ExitEventArgs e)
         {
             App.Current.Dispatcher.Invoke(() =>

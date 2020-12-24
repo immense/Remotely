@@ -35,7 +35,7 @@ namespace Remotely.Desktop.Win
                 }
             }
         }
-        [STAThread]
+        
         public static void Main(string[] args)
         {
             try
@@ -87,19 +87,6 @@ namespace Remotely.Desktop.Win
                 Logger.Write(ex);
                 throw;
             }
-        }
-
-        private static void WaitForAppExit()
-        {
-            var appExitEvent = new ManualResetEventSlim();
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                App.Current.Exit += (s, a) =>
-                {
-                    appExitEvent.Set();
-                };
-            });
-            appExitEvent.Wait();
         }
 
         private static void BuildServices()
@@ -165,6 +152,7 @@ namespace Remotely.Desktop.Win
 
         private static async Task StartScreenCasting()
         {
+            
             CursorIconWatcher = Services.GetRequiredService<ICursorIconWatcher>();
 
             await CasterSocket.Connect(Conductor.Host);
@@ -225,6 +213,19 @@ namespace Remotely.Desktop.Win
                 Thread.Sleep(100);
             }
             Logger.Write("Background UI apps started.");
+        }
+
+        private static void WaitForAppExit()
+        {
+            var appExitEvent = new ManualResetEventSlim();
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                App.Current.Exit += (s, a) =>
+                {
+                    appExitEvent.Set();
+                };
+            });
+            appExitEvent.Wait();
         }
     }
 }

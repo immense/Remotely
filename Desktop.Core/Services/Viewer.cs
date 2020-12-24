@@ -1,4 +1,5 @@
 ﻿using Remotely.Desktop.Core.Interfaces;
+using Remotely.Desktop.Core.Models;
 using Remotely.Desktop.Core.ViewModels;
 using Remotely.Shared.Helpers;
 using Remotely.Shared.Models;
@@ -6,7 +7,9 @@ using Remotely.Shared.Models.RemoteControlDtos;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.Win32;
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -17,7 +20,7 @@ namespace Remotely.Desktop.Core.Services
     public class Viewer : IDisposable
     {
         private readonly int _defaultImageQuality = 60;
-        private int _imageQuality;
+        private long _imageQuality;
         private DateTimeOffset _lastQualityAdjustment;
         public Viewer(ICasterSocket casterSocket,
             IScreenCapturer screenCapturer,
@@ -43,7 +46,7 @@ namespace Remotely.Desktop.Core.Services
         public bool DisconnectRequested { get; set; }
         public EncoderParameters EncoderParams { get; private set; }
         public bool HasControl { get; set; } = true;
-        public int ImageQuality
+        public long ImageQuality
         {
             get
             {
@@ -247,39 +250,63 @@ namespace Remotely.Desktop.Core.Services
                 () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
         }
 
-        public async Task SendScreenCapture(byte[] encodedImageBytes, int left, int top, int width, int height)
+        public async Task SendScreenCapture(IEnumerable<CaptureFrame> screenFrame)
         {
             PendingSentFrames.Enqueue(DateTimeOffset.Now);
 
-            for (var i = 0; i < encodedImageBytes.Length; i += 50_000)
+            foreach (var frame in screenFrame)
             {
-                var dto = new CaptureFrameDto()
+                var left = frame.Left;
+                var top = frame.Top;
+                var width = frame.Width;
+                var height = frame.Height;
+
+                for (var i = 0; i < frame.EncodedImageBytes.Length; i += 50_000)
+                {
+                    var dto = new CaptureFrameDto()
+                    {
+                        Left = left,
+                        Top = top,
+                        Width = width,
+                        Height = height,
+                        EndOfFrame = false,
+                        ImageBytes = frame.EncodedImageBytes.Skip(i).Take(50_000).ToArray(),
+                        ImageQuality = _imageQuality,
+                        EndOfCapture = false
+                    };
+
+                    await SendToViewer(() => RtcSession.SendDto(dto),
+                        () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
+                }
+
+                var endOfFrameDto = new CaptureFrameDto()
                 {
                     Left = left,
                     Top = top,
                     Width = width,
                     Height = height,
-                    EndOfFrame = false,
-                    ImageBytes = encodedImageBytes.Skip(i).Take(50_000).ToArray(),
-                    ImageQuality = _imageQuality
+                    EndOfFrame = true,
+                    ImageQuality = _imageQuality,
+                    EndOfCapture = false
                 };
 
-                await SendToViewer(() => RtcSession.SendDto(dto),
-                    () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
+                await SendToViewer(() => RtcSession.SendDto(endOfFrameDto),
+                    () => CasterSocket.SendDtoToViewer(endOfFrameDto, ViewerConnectionID));
             }
 
-            var endOfFrameDto = new CaptureFrameDto()
+            var endofCaptureDto = new CaptureFrameDto()
             {
-                Left = left,
-                Top = top,
-                Width = width,
-                Height = height,
+                Left = 0,
+                Top = 0,
+                Width = 0,
+                Height = 0,
                 EndOfFrame = true,
-                ImageQuality = _imageQuality
+                ImageQuality = _imageQuality,
+                EndOfCapture = true
             };
 
-            await SendToViewer(() => RtcSession.SendDto(endOfFrameDto),
-                () => CasterSocket.SendDtoToViewer(endOfFrameDto, ViewerConnectionID));
+            await SendToViewer(() => RtcSession.SendDto(endofCaptureDto),
+                () => CasterSocket.SendDtoToViewer(endofCaptureDto, ViewerConnectionID));
         }
 
         public async Task SendScreenData(string selectedScreen, string[] displayNames)

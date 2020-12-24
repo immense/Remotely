@@ -47,12 +47,17 @@ namespace Remotely.Desktop.Win.Views
 
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
         {
-            this.WindowState = WindowState.Minimized;
+            WindowState = WindowState.Minimized;
         }
 
         private void OptionsButton_Click(object sender, RoutedEventArgs e)
         {
             (sender as Button).ContextMenu.IsOpen = true;
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            ViewModel?.ShutdownApp();
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)

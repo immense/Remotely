@@ -18,6 +18,7 @@ export interface AudioSampleDto extends BaseDto {
 
 export interface CaptureFrameDto extends BaseDto {
     EndOfFrame: boolean;
+    EndOfCapture: boolean;
     Left: number;
     Top: number;
     Width: number;
