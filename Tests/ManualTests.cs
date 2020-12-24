@@ -44,9 +44,7 @@ namespace Remotely.Tests
 
 
         [TestMethod]
-#if !DEBUG
         [Ignore("Manual test.")]
-#endif
         public async Task CaptureTest()
         {
             var request = new ScreenCastRequest()
@@ -71,9 +69,7 @@ namespace Remotely.Tests
         }
 
         [TestMethod]
-#if !DEBUG
         [Ignore("Manual test.")]
-#endif
         public void EncodingTests()
         {
             for (var i = 0; i < 2; i++)
