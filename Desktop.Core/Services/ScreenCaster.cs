@@ -149,7 +149,7 @@ namespace Remotely.Desktop.Core.Services
                         currentFrame?.Dispose();
                         currentFrame = viewer.Capturer.GetNextFrame();
 
-                        var diffAreas = ImageUtils.GetDiffAreas2(currentFrame, previousFrame, viewer.Capturer.CaptureFullscreen);
+                        var diffAreas = ImageUtils.GetDiffAreas3(currentFrame, previousFrame, viewer.Capturer.CaptureFullscreen);
 
                         if (!diffAreas.Any())
                         {
