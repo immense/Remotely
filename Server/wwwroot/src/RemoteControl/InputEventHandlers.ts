@@ -567,9 +567,11 @@ export function ApplyInputHandlers() {
         if (document.querySelector("input:focus") || document.querySelector("textarea:focus")) {
             return;
         }
-        e.preventDefault();
         if (ViewerApp.ViewOnlyMode) {
             return;
+        }
+        if (!e.ctrlKey || !e.shiftKey || e.key.toLowerCase() != "i") {
+            e.preventDefault();
         }
         ViewerApp.MessageSender.SendKeyDown(e.key);
     });

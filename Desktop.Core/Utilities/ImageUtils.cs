@@ -1,20 +1,33 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace Remotely.Desktop.Core.Utilities
 {
     public class ImageUtils
     {
         public static ImageCodecInfo JpegEncoder { get; } = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == ImageFormat.Jpeg.Guid);
+        public static ImageCodecInfo GifEncoder { get; } = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == ImageFormat.Gif.Guid);
+
         public static byte[] EncodeBitmap(Bitmap bitmap, EncoderParameters encoderParams)
         {
+            
             using var ms = new MemoryStream();
             bitmap.Save(ms, JpegEncoder, encoderParams);
+            return ms.ToArray();
+        }
+
+        public static byte[] EncodeGif(Bitmap diffImage)
+        {
+            diffImage.MakeTransparent(Color.FromArgb(0, 0, 0, 0));
+            using var ms = new MemoryStream();
+            diffImage.Save(ms, ImageFormat.Gif);
             return ms.ToArray();
         }
 
@@ -106,7 +119,7 @@ namespace Remotely.Desktop.Core.Utilities
                         }
                         if (!changeOnCurrentRow &&
                             changeOnPreviousRow &&
-                            left <= right && 
+                            left <= right &&
                             top <= bottom)
                         {
                             AddChangeToList(changes, left, top, right, bottom, width, height);
@@ -138,10 +151,267 @@ namespace Remotely.Desktop.Core.Utilities
             }
         }
 
-        public static Bitmap GetImageDiff(Bitmap currentFrame, Bitmap previousFrame, bool captureFullscreen)
+        public static ICollection<Rectangle> GetDiffAreas2(Bitmap currentFrame, Bitmap previousFrame, bool captureFullscreen)
         {
+            if (currentFrame == null || previousFrame == null)
+            {
+                return Array.Empty<Rectangle>();
+            }
+
             if (captureFullscreen)
             {
+                return new Rectangle[] { new Rectangle(new Point(0, 0), currentFrame.Size) };
+            }
+
+            if (currentFrame.Height != previousFrame.Height || currentFrame.Width != previousFrame.Width)
+            {
+                throw new Exception("Bitmaps are not of equal dimensions.");
+            }
+            if (currentFrame.PixelFormat != previousFrame.PixelFormat)
+            {
+                throw new Exception("Bitmaps are not the same format.");
+            }
+
+            var width = currentFrame.Width;
+            var height = currentFrame.Height;
+
+            BitmapData bd1 = null;
+            BitmapData bd2 = null;
+
+            var bytesPerPixel = Bitmap.GetPixelFormatSize(currentFrame.PixelFormat) / 8;
+            var numberOfPixels = width * height;
+            var totalSize = numberOfPixels * bytesPerPixel;
+            var changes = new ConcurrentQueue<Rectangle>();
+            try
+            {
+                bd1 = previousFrame.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, currentFrame.PixelFormat);
+                bd2 = currentFrame.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, previousFrame.PixelFormat);
+
+                unsafe
+                {
+
+                    byte* scan1 = (byte*)bd1.Scan0.ToPointer();
+                    byte* scan2 = (byte*)bd2.Scan0.ToPointer();
+
+
+                    var gridColumnWidth = width % 8 == 0 ? width / 8 :
+                        width % 2 == 0 ? width / 2 :
+                        width;
+
+
+                    var gridRowHeight = height % 9 == 0 ? height / 9 :
+                        height % 10 == 0 ? height / 10 :
+                        height % 4 == 0 ? height / 4 :
+                        height;
+
+                    var gridColumns = Enumerable.Range(0, width).Where(i => i % gridColumnWidth == 0);
+                    var gridRows = Enumerable.Range(0, height).Where(i => i % gridRowHeight == 0);
+
+                    
+                    Parallel.ForEach(gridColumns, gridColumn =>
+                    {
+                        Parallel.ForEach(gridRows, gridRow =>
+                        {
+                            int left = int.MaxValue;
+                            int top = int.MaxValue;
+                            int right = int.MinValue;
+                            int bottom = int.MinValue;
+
+                            for (var row = 0; row < gridRowHeight; row++)
+                            {
+                                for (var col = 0; col < gridColumnWidth; col++)
+                                {
+                                    var pixelLeft = gridColumn + col;
+                                    var pixelTop = gridRow + row;
+
+
+                                    var rowIndex = pixelTop * width * bytesPerPixel;
+
+                                    var columnIndex = pixelLeft * bytesPerPixel;
+
+                                    var i = rowIndex + columnIndex;
+
+                                    byte* data1 = scan1 + i;
+                                    byte* data2 = scan2 + i;
+
+                                    if (data1[0] != data2[0] ||
+                                        data1[1] != data2[1] ||
+                                        data1[2] != data2[2] ||
+                                        data1[3] != data2[3])
+                                    {
+
+                                        if (pixelTop < top)
+                                        {
+                                            top = pixelTop;
+                                        }
+                                        if (pixelTop > bottom)
+                                        {
+                                            bottom = pixelTop;
+                                        }
+                                        if (pixelLeft < left)
+                                        {
+                                            left = pixelLeft;
+                                        }
+                                        if (pixelLeft > right)
+                                        {
+                                            right = pixelLeft;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (left <= right && top <= bottom)
+                            {
+                                AddChangeToList(changes, left, top, right, bottom, width, height);
+                            }
+                        });
+                    });
+
+                    return changes.ToArray();
+                }
+            }
+            catch
+            {
+                return changes.ToArray();
+            }
+            finally
+            {
+                currentFrame.UnlockBits(bd1);
+                previousFrame.UnlockBits(bd2);
+            }
+        }
+
+        public static ICollection<Rectangle> GetDiffAreas3(Bitmap currentFrame, Bitmap previousFrame, bool captureFullscreen)
+        {
+            if (currentFrame == null || previousFrame == null)
+            {
+                return Array.Empty<Rectangle>();
+            }
+
+            if (captureFullscreen)
+            {
+                return new Rectangle[] { new Rectangle(new Point(0, 0), currentFrame.Size) };
+            }
+
+            if (currentFrame.Height != previousFrame.Height || currentFrame.Width != previousFrame.Width)
+            {
+                throw new Exception("Bitmaps are not of equal dimensions.");
+            }
+            if (currentFrame.PixelFormat != previousFrame.PixelFormat)
+            {
+                throw new Exception("Bitmaps are not the same format.");
+            }
+
+            var width = currentFrame.Width;
+            var height = currentFrame.Height;
+
+            BitmapData bd1 = null;
+            BitmapData bd2 = null;
+
+            var bytesPerPixel = Bitmap.GetPixelFormatSize(currentFrame.PixelFormat) / 8;
+            var numberOfPixels = width * height;
+            var totalSize = numberOfPixels * bytesPerPixel;
+            var changes = new ConcurrentQueue<Rectangle>();
+            try
+            {
+                bd1 = previousFrame.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, currentFrame.PixelFormat);
+                bd2 = currentFrame.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, previousFrame.PixelFormat);
+
+                unsafe
+                {
+
+                    byte* scan1 = (byte*)bd1.Scan0.ToPointer();
+                    byte* scan2 = (byte*)bd2.Scan0.ToPointer();
+
+                    var gridRowHeight = height % 9 == 0 ? height / 9 :
+                        height % 10 == 0 ? height / 10 :
+                        height % 4 == 0 ? height / 4 :
+                        height;
+
+                    var gridRows = Enumerable.Range(0, height).Where(i => i % gridRowHeight == 0);
+
+                    Parallel.ForEach(gridRows, gridRow =>
+                    {
+                        int left = int.MaxValue;
+                        int top = int.MaxValue;
+                        int right = int.MinValue;
+                        int bottom = int.MinValue;
+
+                        for (var row = 0; row < gridRowHeight; row++)
+                        {
+                            for (var col = 0; col < width; col++)
+                            {
+                                var pixelLeft = col;
+                                var pixelTop = gridRow + row;
+
+
+                                var rowIndex = pixelTop * width * bytesPerPixel;
+
+                                var columnIndex = pixelLeft * bytesPerPixel;
+
+                                var i = rowIndex + columnIndex;
+
+                                byte* data1 = scan1 + i;
+                                byte* data2 = scan2 + i;
+
+                                if (data1[0] != data2[0] ||
+                                    data1[1] != data2[1] ||
+                                    data1[2] != data2[2] ||
+                                    data1[3] != data2[3])
+                                {
+
+                                    if (pixelTop < top)
+                                    {
+                                        top = pixelTop;
+                                    }
+                                    if (pixelTop > bottom)
+                                    {
+                                        bottom = pixelTop;
+                                    }
+                                    if (pixelLeft < left)
+                                    {
+                                        left = pixelLeft;
+                                    }
+                                    if (pixelLeft > right)
+                                    {
+                                        right = pixelLeft;
+                                    }
+                                }
+                            }
+                        }
+                        if (left <= right && top <= bottom)
+                        {
+                            AddChangeToList(changes, left, top, right, bottom, width, height);
+                        }
+                    });
+
+                    return changes.ToArray();
+                }
+            }
+            catch
+            {
+                return changes.ToArray();
+            }
+            finally
+            {
+                currentFrame.UnlockBits(bd1);
+                previousFrame.UnlockBits(bd2);
+            }
+        }
+
+
+
+        public static Bitmap GetImageDiff(Bitmap currentFrame, Bitmap previousFrame, bool captureFullscreen, out bool hadChanges)
+        {
+            hadChanges = false;
+            if (currentFrame is null || previousFrame is null)
+            {
+                hadChanges = false;
+                return null;
+            }
+            if (captureFullscreen)
+            {
+                hadChanges = true;
                 return (Bitmap)currentFrame.Clone();
             }
 
@@ -185,6 +455,7 @@ namespace Remotely.Desktop.Core.Utilities
                             data1[2] != data2[2] ||
                             data1[3] != data2[3])
                         {
+                            hadChanges = true;
                             data3[0] = data2[0];
                             data3[1] = data2[1];
                             data3[2] = data2[2];
@@ -213,12 +484,24 @@ namespace Remotely.Desktop.Core.Utilities
         {
             // Bounding box is valid.  Padding is necessary to prevent artifacts from
             // moving windows.
-            left = Math.Max(left - 5, 0);
-            top = Math.Max(top - 5, 0);
-            right = Math.Min(right + 5, width);
-            bottom = Math.Min(bottom + 5, height);
+            left = Math.Max(left - 1, 0);
+            top = Math.Max(top - 1, 0);
+            right = Math.Min(right + 1, width);
+            bottom = Math.Min(bottom + 1, height);
 
             changes.Add(new Rectangle(left, top, right - left, bottom - top));
+        }
+
+        private static void AddChangeToList(ConcurrentQueue<Rectangle> changes, int left, int top, int right, int bottom, int width, int height)
+        {
+            // Bounding box is valid.  Padding is necessary to prevent artifacts from
+            // moving windows.
+            left = Math.Max(left - 1, 0);
+            top = Math.Max(top - 1, 0);
+            right = Math.Min(right + 1, width);
+            bottom = Math.Min(bottom + 1, height);
+
+            changes.Enqueue(new Rectangle(left, top, right - left, bottom - top));
         }
     }
 }
