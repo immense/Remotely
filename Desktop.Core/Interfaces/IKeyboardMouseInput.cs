@@ -5,6 +5,7 @@ namespace Remotely.Desktop.Core.Interfaces
 {
     public interface IKeyboardMouseInput
     {
+        void Init();
         void SendKeyDown(string key);
         void SendKeyUp(string key);
         void SendMouseMove(double percentX, double percentY, Services.Viewer viewer);

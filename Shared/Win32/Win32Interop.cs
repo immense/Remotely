@@ -12,6 +12,8 @@ namespace Remotely.Shared.Win32
 {
     public class Win32Interop
     {
+        private static IntPtr _lastInputDesktop;
+
         public static List<WindowsSession> GetActiveSessions()
         {
             var sessions = new List<WindowsSession>();
@@ -201,6 +203,7 @@ namespace Remotely.Shared.Win32
         {
             return (MessageBoxResult)MessageBox(owner, message, caption, (long)messageBoxType);
         }
+
         public static bool SwitchToInputDesktop()
         {
             var inputDesktop = OpenInputDesktop();
@@ -211,15 +214,14 @@ namespace Remotely.Shared.Win32
                     return false;
                 }
 
-                return SetThreadDesktop(inputDesktop) && SwitchDesktop(inputDesktop);
+                var result = SetThreadDesktop(inputDesktop) && SwitchDesktop(inputDesktop);
+                CloseDesktop(_lastInputDesktop);
+                _lastInputDesktop = inputDesktop;
+                return result;
             }
             catch
             {
                 return false;
-            }
-            finally
-            {
-                CloseDesktop(inputDesktop);
             }
         }
     }

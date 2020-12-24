@@ -31,13 +31,19 @@ namespace Remotely.Desktop.Win.ViewModels
         {
             Current = this;
 
+            if (Services is null)
+            {
+                return;
+            }
+
             Application.Current.Exit += Application_Exit;
 
             CursorIconWatcher = Services?.GetRequiredService<ICursorIconWatcher>();
             CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
-            Services?.GetRequiredService<IClipboardService>().BeginWatching();
-            Conductor = Services?.GetRequiredService<Conductor>();
-            CasterSocket = Services?.GetRequiredService<CasterSocket>();
+            Services.GetRequiredService<IClipboardService>().BeginWatching();
+            Services.GetRequiredService<IKeyboardMouseInput>().Init();
+            Conductor = Services.GetRequiredService<Conductor>();
+            CasterSocket = Services.GetRequiredService<ICasterSocket>();
             Conductor.SessionIDChanged += SessionIDChanged;
             Conductor.ViewerRemoved += ViewerRemoved;
             Conductor.ViewerAdded += ViewerAdded;
@@ -59,7 +65,7 @@ namespace Remotely.Desktop.Win.ViewModels
         }
 
         private Conductor Conductor { get; set; }
-        private CasterSocket CasterSocket { get; set; }
+        private ICasterSocket CasterSocket { get; set; }
         private ICursorIconWatcher CursorIconWatcher { get; set; }
 
         public ICommand ElevateToAdminCommand
@@ -134,7 +140,7 @@ namespace Remotely.Desktop.Win.ViewModels
             set
             {
                 _host = value;
-                FirePropertyChanged("Host");
+                FirePropertyChanged(nameof(Host));
             }
         }
 
@@ -166,7 +172,7 @@ namespace Remotely.Desktop.Win.ViewModels
             set
             {
                 _sessionID = value;
-                FirePropertyChanged("SessionID");
+                FirePropertyChanged(nameof(SessionID));
             }
         }
 
@@ -185,9 +191,8 @@ namespace Remotely.Desktop.Win.ViewModels
 
         public async Task Init()
         {
-
             SessionID = "Retrieving...";
-
+            
             Host = Config.GetConfig().Host;
 
             while (string.IsNullOrWhiteSpace(Host))
@@ -200,7 +205,6 @@ namespace Remotely.Desktop.Win.ViewModels
             try
             {
                 await CasterSocket.Connect(Conductor.Host);
-
 
                 CasterSocket.Connection.Closed += async (ex) =>
                 {

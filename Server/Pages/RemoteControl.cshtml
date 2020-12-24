@@ -83,6 +83,11 @@
         <div class="logo-subtitle">Do IT Remotely</div>
     </div>
 
+    <button id="keyboardButton" hidden="hidden" title="Invoke the mobile touch keyboard.">
+        <i class="fas fa-keyboard align-middle"></i>
+    </button>
+
+
     <button id="menuButton">
         <i class="fas fa-chevron-circle-right"></i>
     </button>
@@ -94,6 +99,10 @@
         </div>
 
         <div>
+            <button id="viewOnlyButton" class="option-button" title="If toggled, prevents sending commnads and input to the remote computer.">
+                View Only <i class="fas fa-eye"></i>
+            </button>
+
             <button id="clipboardTransferButton" class="option-button" title="Type the current clipboard text on the remote computer.">
                 Clipboard  <i class="fas fa-clipboard"></i>
             </button>
@@ -118,10 +127,6 @@
                 Ctrl+Alt+Del <i class="fas fa-sign-in-alt"></i>
             </button>
 
-            <button id="keyboardButton" hidden="hidden" class="option-button" title="Invoke the mobile touch keyboard.">
-                Keyboard  <i class="fas fa-keyboard"></i>
-            </button>
-
             <button id="disconnectButton" class="option-button" title="Disconnect from the current session.">
                 Disconnect <i class="fas fa-window-close"></i>
             </button>
@@ -140,6 +145,11 @@
             <button id="changeScreenButton" class="option-button" title="Switch monitors on remote multi-monitor setups.">
                 Monitors <i class="fas fa-desktop"></i>
             </button>
+
+            <button id="fullScreenButton" class="option-button" title="Enter fullscreen mode.">
+                Fullscreen <i class="fas fa-window-maximize"></i>
+            </button>
+
 
             <button id="fitToScreenButton" class="toggled option-button" title="If toggled, will resize image to fit in the window.">
                 Fit <i class="fas fa-expand"></i>
@@ -249,6 +259,7 @@
     <div id="toastsWrapper">
 
     </div>
+
 
     <div id="fileTransferDiv" hidden="hidden">
         <span id="fileTransferNameSpan" class="mr-1 font-weight-bold" style="vertical-align: middle;"></span>

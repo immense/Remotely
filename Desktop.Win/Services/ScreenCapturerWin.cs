@@ -63,6 +63,7 @@ namespace Remotely.Desktop.Win.Services
             {
                 SystemEvents.DisplaySettingsChanged -= SystemEvents_DisplaySettingsChanged;
                 ClearDirectXOutputs();
+                GC.SuppressFinalize(this);
             }
             catch { }
         }
@@ -73,8 +74,6 @@ namespace Remotely.Desktop.Win.Services
             try
             {
                 _screenCaptureLock.Wait();
-
-                Win32Interop.SwitchToInputDesktop();
 
                 if (NeedsInit)
                 {
@@ -123,6 +122,8 @@ namespace Remotely.Desktop.Win.Services
 
         public void Init()
         {
+            Win32Interop.SwitchToInputDesktop();
+
             CaptureFullscreen = true;
             InitBitBlt();
             InitDirectX();
@@ -165,7 +166,6 @@ namespace Remotely.Desktop.Win.Services
         {
             try
             {
-                Win32Interop.SwitchToInputDesktop();
                 var currentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
                 using (var graphic = Graphics.FromImage(currentFrame))
                 {

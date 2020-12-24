@@ -91,7 +91,8 @@ namespace Remotely.Server.Hubs
 
         public Task NotifyRequesterUnattendedReady(string browserHubConnectionID)
         {
-            return BrowserHubContext.Clients.Client(browserHubConnectionID).SendAsync("UnattendedSessionReady", Context.ConnectionId);
+            var deviceId = SessionInfoList[Context.ConnectionId].DeviceID;
+            return BrowserHubContext.Clients.Client(browserHubConnectionID).SendAsync("UnattendedSessionReady", Context.ConnectionId, deviceId);
         }
 
         public Task NotifyViewersRelaunchedScreenCasterReady(string[] viewerIDs)

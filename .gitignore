@@ -286,3 +286,4 @@ Server/wwwroot/Downloads/Win-x86/*
 .vscode/launch.json
 .vscode/tasks.json
 Server/.config/dotnet-tools.json
+/Server/Properties/ServiceDependencies/*

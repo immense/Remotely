@@ -8,16 +8,9 @@ import { ShowMessage } from "../Shared/UI.js";
 import { BaseDto } from "./Interfaces/BaseDto.js";
 import { WindowsSession } from "../Shared/Models/WindowsSession.js";
 import { BaseDtoType } from "../Shared/Enums/BaseDtoType.js";
+import { HubConnection } from "../Shared/Models/HubConnection.js";
 
 var signalR = window["signalR"];
-
-type HubConnection = {
-    start: () => Promise<any>;
-    connectionStarted: boolean;
-    closedCallbacks: any[];
-    invoke: (...rest) => any;
-    stop: () => any;
-}
 
 export class ViewerHubConnection {
     Connection: HubConnection;

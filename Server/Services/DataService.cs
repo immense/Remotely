@@ -465,6 +465,7 @@ namespace Remotely.Server.Services
                 var org = RemotelyContext.Organizations
                     .Include(x => x.RemotelyUsers)
                     .FirstOrDefault(x => x.ID == organizationID);
+                RemotelyContext.Users.Add(user);
                 org.RemotelyUsers.Add(user);
                 await RemotelyContext.SaveChangesAsync();
                 return true;
@@ -867,7 +868,7 @@ namespace Remotely.Server.Services
             }
             return RemotelyContext.Users
                 .Include(x => x.Organization)
-                .FirstOrDefault(x => x.UserName == userName);
+                .FirstOrDefault(x => x.UserName.ToLower().Trim() == userName.ToLower().Trim());
         }
 
         public RemotelyUserOptions GetUserOptions(string userName)
@@ -947,7 +948,12 @@ namespace Remotely.Server.Services
                     x.Id == targetUserID &&
                     x.OrganizationID == orgID);
 
-            if (target?.DeviceGroups?.Any() == true)
+            if (target is null)
+            {
+                return;
+            }
+
+            if (target.DeviceGroups?.Any() == true)
             {
                 foreach (var deviceGroup in target.DeviceGroups.ToList())
                 {

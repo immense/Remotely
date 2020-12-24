@@ -59,13 +59,14 @@ namespace Remotely.Desktop.Linux
                 }
                 else if (Conductor.Mode == Core.Enums.AppMode.Unattended)
                 {
-                    var casterSocket = Services.GetRequiredService<CasterSocket>();
+                    var casterSocket = Services.GetRequiredService<ICasterSocket>();
                     await casterSocket.Connect(Conductor.Host).ContinueWith(async (task) =>
                     {
                         await casterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
                         await casterSocket.NotifyRequesterUnattendedReady(Conductor.RequesterID);
                         Services.GetRequiredService<IdleTimer>().Start();
                         Services.GetRequiredService<IClipboardService>().BeginWatching();
+                        Services.GetRequiredService<IKeyboardMouseInput>().Init();
                     });
                 }
                 else
@@ -103,10 +104,11 @@ namespace Remotely.Desktop.Linux
             serviceCollection.AddSingleton<IKeyboardMouseInput, KeyboardMouseInputLinux>();
             serviceCollection.AddSingleton<IClipboardService, ClipboardServiceLinux>();
             serviceCollection.AddSingleton<IAudioCapturer, AudioCapturerLinux>();
-            serviceCollection.AddSingleton<CasterSocket>();
+            serviceCollection.AddSingleton<ICasterSocket, CasterSocket>();
             serviceCollection.AddSingleton<IdleTimer>();
             serviceCollection.AddSingleton<Conductor>();
-            serviceCollection.AddSingleton<IChatHostService, ChatHostServiceLinux>();
+            serviceCollection.AddSingleton<IChatHostService, ChatHostService>();
+            serviceCollection.AddSingleton<IChatUiService, ChatUiServiceLinux>();
             serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerLinux>();
             serviceCollection.AddTransient<Viewer>();
             serviceCollection.AddScoped<IFileTransferService, FileTransferServiceLinux>();

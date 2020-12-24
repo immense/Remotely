@@ -21,7 +21,7 @@ namespace Remotely.Desktop.Win
     public class Program
     {
         public static Form BackgroundForm { get; private set; }
-        private static CasterSocket CasterSocket { get; set; }
+        private static ICasterSocket CasterSocket { get; set; }
         private static Conductor Conductor { get; set; }
         private static ICursorIconWatcher CursorIconWatcher { get; set; }
         private static IServiceProvider Services => ServiceContainer.Instance;
@@ -36,7 +36,7 @@ namespace Remotely.Desktop.Win
             }
         }
         [STAThread]
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
             try
             {
@@ -45,7 +45,7 @@ namespace Remotely.Desktop.Win
                 BuildServices();
 
                 Conductor = Services.GetRequiredService<Conductor>();
-                CasterSocket = Services.GetRequiredService<CasterSocket>();
+                CasterSocket = Services.GetRequiredService<ICasterSocket>();
                 Conductor.ProcessArgs(args);
 
                 SystemEvents.SessionEnding += async (s, e) =>
@@ -58,8 +58,8 @@ namespace Remotely.Desktop.Win
 
                 if (Conductor.Mode == Core.Enums.AppMode.Chat)
                 {
-                    StartUiThreads(null);
-                    await Task.Run(async () =>
+                    StartUiThreads(false);
+                    _ = Task.Run(async () =>
                     {
                         var chatService = Services.GetRequiredService<IChatHostService>();
                         await chatService.StartChat(Conductor.RequesterID, Conductor.OrganizationName);
@@ -67,27 +67,39 @@ namespace Remotely.Desktop.Win
                 }
                 else if (Conductor.Mode == Core.Enums.AppMode.Unattended)
                 {
-                    StartUiThreads(null);
+                    StartUiThreads(false);
                     App.Current.Dispatcher.Invoke(() =>
                     {
                         App.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
                     });
-                    await Task.Run(StartScreenCasting);
+                    _ = Task.Run(StartScreenCasting);
                 }
                 else
                 {
-                    StartUiThreads(() => new MainWindow());
+                    StartUiThreads(true);
                 }
 
-                TaskHelper.DelayUntil(() => App.Current?.Dispatcher?.HasShutdownStarted != false,
-                    TimeSpan.MaxValue, 
-                    1000);
+                WaitForAppExit();
+                
             }
             catch (Exception ex)
             {
                 Logger.Write(ex);
                 throw;
             }
+        }
+
+        private static void WaitForAppExit()
+        {
+            var appExitEvent = new ManualResetEventSlim();
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                App.Current.Exit += (s, a) =>
+                {
+                    appExitEvent.Set();
+                };
+            });
+            appExitEvent.Wait();
         }
 
         private static void BuildServices()
@@ -103,10 +115,11 @@ namespace Remotely.Desktop.Win
             serviceCollection.AddSingleton<IKeyboardMouseInput, KeyboardMouseInputWin>();
             serviceCollection.AddSingleton<IClipboardService, ClipboardServiceWin>();
             serviceCollection.AddSingleton<IAudioCapturer, AudioCapturerWin>();
-            serviceCollection.AddSingleton<CasterSocket>();
+            serviceCollection.AddSingleton<ICasterSocket, CasterSocket>();
             serviceCollection.AddSingleton<IdleTimer>();
             serviceCollection.AddSingleton<Conductor>();
-            serviceCollection.AddSingleton<IChatHostService, ChatHostServiceWin>();
+            serviceCollection.AddSingleton<IChatHostService, ChatHostService>();
+            serviceCollection.AddSingleton<IChatUiService, ChatUiServiceWin>();
             serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerWin>();
             serviceCollection.AddTransient<Viewer>();
             serviceCollection.AddScoped<IWebRtcSessionFactory, WebRtcSessionFactory>();
@@ -175,38 +188,43 @@ namespace Remotely.Desktop.Win
             Services.GetRequiredService<IdleTimer>().Start();
             CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
             Services.GetRequiredService<IClipboardService>().BeginWatching();
+            Services.GetRequiredService<IKeyboardMouseInput>().Init();
         }
 
-        private static void StartUiThreads(Func<Window> createWindowFunc)
+        private static void StartUiThreads(bool createMainWindow)
         {
             var wpfUiThread = new Thread(() =>
             {
                 var app = new App();
                 app.InitializeComponent();
-                if (createWindowFunc is null)
+
+                if (createMainWindow)
                 {
-                    app.Run();
+                    app.Run(new MainWindow());
                 }
                 else
                 {
-                    app.Run(createWindowFunc());
+                    app.Run();
                 }
             });
             wpfUiThread.TrySetApartmentState(ApartmentState.STA);
+            wpfUiThread.IsBackground = true;
             wpfUiThread.Start();
 
             var winformsThread = new Thread(() =>
             {
                 System.Windows.Forms.Application.Run(BackgroundForm);
             });
+            winformsThread.IsBackground = true;
             winformsThread.TrySetApartmentState(ApartmentState.STA);
             winformsThread.Start();
 
-
+            // Wait until WPF app has initialized before moving on.
             while (App.Current is null)
             {
                 Thread.Sleep(100);
             }
+            Logger.Write("Background UI apps started.");
         }
     }
 }

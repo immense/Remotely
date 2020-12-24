@@ -24,12 +24,19 @@ export const ViewerApp = {
     Otp: queryString["otp"] ? decodeURIComponent(queryString["otp"]) : "",
     ServiceID: queryString["serviceID"] ? decodeURIComponent(queryString["serviceID"]) : "",
     RequesterName: queryString["requesterName"] ? decodeURIComponent(queryString["requesterName"]) : "",
+    ViewOnlyMode: queryString["viewonly"] ?
+        decodeURIComponent(queryString["viewonly"]).toLowerCase() == "true" :
+        false,
     Mode: RemoteControlMode.None,
     Settings: GetSettings(),
 
     Init: () => {
         UI.AutoQualityAdjustCheckBox.checked = ViewerApp.Settings.autoQualityEnabled;
         UI.QualitySlider.value = String(ViewerApp.Settings.qualityLevel);
+
+        if (ViewerApp.ViewOnlyMode) {
+            UI.ViewOnlyButton.classList.add("toggled");
+        }
 
         ApplyInputHandlers();
 

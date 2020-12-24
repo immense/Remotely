@@ -17,49 +17,50 @@ namespace Remotely.Desktop.Core.Services
 {
     public class ScreenCaster : IScreenCaster
     {
+        private readonly Conductor _conductor;
+        private readonly ICursorIconWatcher _cursorIconWatcher;
+        private readonly ISessionIndicator _sessionIndicator;
+        private readonly IShutdownService _shutdownService;
+
         public ScreenCaster(Conductor conductor,
             ICursorIconWatcher cursorIconWatcher,
             ISessionIndicator sessionIndicator,
             IShutdownService shutdownService)
         {
-            Conductor = conductor;
-            CursorIconWatcher = cursorIconWatcher;
-            SessionIndicator = sessionIndicator;
-            ShutdownService = shutdownService;
+            _conductor = conductor;
+            _cursorIconWatcher = cursorIconWatcher;
+            _sessionIndicator = sessionIndicator;
+            _shutdownService = shutdownService;
         }
 
-        private Conductor Conductor { get; }
-        private ICursorIconWatcher CursorIconWatcher { get; }
-        private ISessionIndicator SessionIndicator { get; }
-        private IShutdownService ShutdownService { get; }
 
         public async Task BeginScreenCasting(ScreenCastRequest screenCastRequest)
         {
-            var mode = AppMode.Unattended;
-
+        
             try
             {
+                var sendFramesLock = new SemaphoreSlim(1, 1);
                 Bitmap currentFrame = null;
                 Bitmap previousFrame = null;
-                byte[] encodedImageBytes;
                 var fpsQueue = new Queue<DateTimeOffset>();
-                mode = Conductor.Mode;
+
                 var viewer = ServiceContainer.Instance.GetRequiredService<Viewer>();
                 viewer.Name = screenCastRequest.RequesterName;
                 viewer.ViewerConnectionID = screenCastRequest.ViewerID;
 
-                Logger.Write($"Starting screen cast.  Requester: {viewer.Name}. Viewer ID: {viewer.ViewerConnectionID}.  App Mode: {mode}");
+                Logger.Write($"Starting screen cast.  Requester: {viewer.Name}. " +
+                    $"Viewer ID: {viewer.ViewerConnectionID}.  App Mode: {_conductor.Mode}");
 
-                Conductor.Viewers.AddOrUpdate(viewer.ViewerConnectionID, viewer, (id, v) => viewer);
+                _conductor.Viewers.AddOrUpdate(viewer.ViewerConnectionID, viewer, (id, v) => viewer);
 
-                if (mode == AppMode.Normal)
+                if (_conductor.Mode == AppMode.Normal)
                 {
-                    Conductor.InvokeViewerAdded(viewer);
+                    _conductor.InvokeViewerAdded(viewer);
                 }
 
-                if (mode == AppMode.Unattended && screenCastRequest.NotifyUser)
+                if (_conductor.Mode == AppMode.Unattended && screenCastRequest.NotifyUser)
                 {
-                    SessionIndicator.Show();
+                    _sessionIndicator.Show();
                 }
 
                 await viewer.SendViewerConnected();
@@ -73,7 +74,7 @@ namespace Remotely.Desktop.Core.Services
                 await viewer.SendScreenSize(viewer.Capturer.CurrentScreenBounds.Width,
                     viewer.Capturer.CurrentScreenBounds.Height);
 
-                await viewer.SendCursorChange(CursorIconWatcher.GetCurrentCursor());
+                await viewer.SendCursorChange(_cursorIconWatcher.GetCurrentCursor());
 
                 await viewer.SendWindowsSessions();
 
@@ -114,7 +115,7 @@ namespace Remotely.Desktop.Core.Services
                             // Viewer isn't responding.  Abort sending.
                             break;
                         }
-
+                        
                         if (EnvironmentHelper.IsDebug)
                         {
                             while (fpsQueue.Any() && DateTimeOffset.Now - fpsQueue.Peek() > TimeSpan.FromSeconds(1))
@@ -143,22 +144,8 @@ namespace Remotely.Desktop.Core.Services
                             continue;
                         }
 
-                        foreach (var diffArea in diffAreas)
-                        {
-                            using var newImage = currentFrame.Clone(diffArea, PixelFormat.Format32bppArgb);
-                            if (viewer.Capturer.CaptureFullscreen)
-                            {
-                                viewer.Capturer.CaptureFullscreen = false;
-                            }
-
-                            encodedImageBytes = ImageUtils.EncodeBitmap(newImage, viewer.EncoderParams);
-
-                            if (encodedImageBytes?.Length > 0)
-                            {
-                                await viewer.SendScreenCapture(encodedImageBytes, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height);
-                            }
-                        }
-                      
+                        await sendFramesLock.WaitAsync();
+                        SendFrames((Bitmap)currentFrame.Clone(), diffAreas, viewer, sendFramesLock);
                     }
                     catch (Exception ex)
                     {
@@ -167,7 +154,7 @@ namespace Remotely.Desktop.Core.Services
                 }
 
                 Logger.Write($"Ended screen cast.  Requester: {viewer.Name}. Viewer ID: {viewer.ViewerConnectionID}.");
-                Conductor.Viewers.TryRemove(viewer.ViewerConnectionID, out _);
+                _conductor.Viewers.TryRemove(viewer.ViewerConnectionID, out _);
                 viewer.Dispose();
             }
             catch (Exception ex)
@@ -177,11 +164,43 @@ namespace Remotely.Desktop.Core.Services
             finally
             {
                 // Close if no one is viewing.
-                if (Conductor.Viewers.IsEmpty && mode == AppMode.Unattended)
+                if (_conductor.Viewers.IsEmpty && _conductor.Mode == AppMode.Unattended)
                 {
-                    await ShutdownService.Shutdown();
+                    Logger.Write("No more viewers.  Calling shutdown service.");
+                    await _shutdownService.Shutdown();
                 }
             }
+        }
+
+        private void SendFrames(Bitmap currentFrame, List<Rectangle> diffAreas, Viewer viewer, SemaphoreSlim sendFramesLock)
+        {
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    foreach (var diffArea in diffAreas)
+                    {
+                        using var newImage = currentFrame.Clone(diffArea, PixelFormat.Format32bppArgb);
+
+                        if (viewer.Capturer.CaptureFullscreen)
+                        {
+                            viewer.Capturer.CaptureFullscreen = false;
+                        }
+
+                        var encodedImageBytes = ImageUtils.EncodeBitmap(newImage, viewer.EncoderParams);
+
+                        if (encodedImageBytes?.Length > 0)
+                        {
+                            await viewer.SendScreenCapture(encodedImageBytes, diffArea.Left, diffArea.Top, diffArea.Width, diffArea.Height);
+                        }
+                    }
+                }
+                finally
+                {
+                    sendFramesLock.Release();
+                    currentFrame.Dispose();
+                }
+            });
         }
     }
 }

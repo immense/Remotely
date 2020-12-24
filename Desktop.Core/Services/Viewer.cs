@@ -19,7 +19,7 @@ namespace Remotely.Desktop.Core.Services
         private readonly int _defaultImageQuality = 60;
         private int _imageQuality;
         private DateTimeOffset _lastQualityAdjustment;
-        public Viewer(CasterSocket casterSocket,
+        public Viewer(ICasterSocket casterSocket,
             IScreenCapturer screenCapturer,
             IClipboardService clipboardService,
             IWebRtcSessionFactory webRtcSessionFactory,
@@ -103,7 +103,7 @@ namespace Remotely.Desktop.Core.Services
 
         private IAudioCapturer AudioCapturer { get; }
 
-        private CasterSocket CasterSocket { get; }
+        private ICasterSocket CasterSocket { get; }
 
         private IClipboardService ClipboardService { get; }
 
@@ -126,6 +126,12 @@ namespace Remotely.Desktop.Core.Services
                 var iceServers = await CasterSocket.GetIceServers();
 
                 RtcSession = WebRtcSessionFactory.GetNewSession(this);
+
+                if (RtcSession is null)
+                {
+                    return;
+                }
+
                 RtcSession.LocalSdpReady += async (sender, sdp) =>
                 {
                     await CasterSocket.SendRtcOfferToBrowser(sdp.Content, ViewerConnectionID, iceServers);
@@ -164,6 +170,11 @@ namespace Remotely.Desktop.Core.Services
 
         public async Task SendCursorChange(CursorInfo cursorInfo)
         {
+            if (cursorInfo is null)
+            {
+                return;
+            }
+
             var dto = new CursorChangeDto(cursorInfo.ImageBytes, cursorInfo.HotSpot.X, cursorInfo.HotSpot.Y, cursorInfo.CssOverride);
             await SendToViewer(() => RtcSession.SendDto(dto),
                 () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
@@ -305,7 +316,7 @@ namespace Remotely.Desktop.Core.Services
                 {
                     UpdateImageQuality();
 
-                    return PendingSentFrames.Count < 5 &&
+                    return PendingSentFrames.Count < 7 &&
                         (
                             !PendingSentFrames.TryPeek(out var result) || DateTimeOffset.Now - result < TimeSpan.FromSeconds(1)
                         );

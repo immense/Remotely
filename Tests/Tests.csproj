@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
 
     <IsPackable>false</IsPackable>
 
@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Desktop.Core\Desktop.Core.csproj" />
+    <ProjectReference Include="..\Desktop.Win\Desktop.Win.csproj" />
     <ProjectReference Include="..\Server\Server.csproj" />
   </ItemGroup>
 

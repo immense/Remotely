@@ -6,6 +6,7 @@ using Remotely.Shared.Win32;
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using static Remotely.Shared.Win32.User32;
 
@@ -15,12 +16,8 @@ namespace Remotely.Desktop.Win.Services
     {
         private volatile bool inputBlocked;
 
-        public KeyboardMouseInputWin()
-        {
-            StartInputProcessingThread();
-        }
-
         private CancellationTokenSource CancelTokenSource { get; set; }
+
         private ConcurrentQueue<Action> InputActions { get; } = new ConcurrentQueue<Action>();
 
         public Tuple<double, double> GetAbsolutePercentFromRelativePercent(double percentX, double percentY, IScreenCapturer capturer)
@@ -35,6 +32,17 @@ namespace Remotely.Desktop.Win.Services
             var absoluteX = (capturer.CurrentScreenBounds.Width * percentX) + capturer.CurrentScreenBounds.Left;
             var absoluteY = (capturer.CurrentScreenBounds.Height * percentY) + capturer.CurrentScreenBounds.Top;
             return new Tuple<double, double>(absoluteX, absoluteY);
+        }
+
+        public void Init()
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                App.Current.Exit -= App_Exit;
+                App.Current.Exit += App_Exit;
+            });
+
+            StartInputProcessingThread();
         }
 
         public void SendKeyDown(string key)
@@ -223,10 +231,13 @@ namespace Remotely.Desktop.Win.Services
             });
         }
 
+        private void App_Exit(object sender, System.Windows.ExitEventArgs e)
+        {
+            CancelTokenSource?.Cancel();
+        }
         private void CheckQueue(CancellationToken cancelToken)
         {
-            while (!Environment.HasShutdownStarted &&
-                    !cancelToken.IsCancellationRequested)
+            while (!cancelToken.IsCancellationRequested)
             {
                 try
                 {
@@ -246,126 +257,46 @@ namespace Remotely.Desktop.Win.Services
 
         private VirtualKey ConvertJavaScriptKeyToVirtualKey(string key)
         {
-            VirtualKey keyCode;
-            switch (key)
+            var keyCode = key switch
             {
-                case "Down":
-                case "ArrowDown":
-                    keyCode = VirtualKey.DOWN;
-                    break;
-                case "Up":
-                case "ArrowUp":
-                    keyCode = VirtualKey.UP;
-                    break;
-                case "Left":
-                case "ArrowLeft":
-                    keyCode = VirtualKey.LEFT;
-                    break;
-                case "Right":
-                case "ArrowRight":
-                    keyCode = VirtualKey.RIGHT;
-                    break;
-                case "Enter":
-                    keyCode = VirtualKey.RETURN;
-                    break;
-                case "Esc":
-                case "Escape":
-                    keyCode = VirtualKey.ESCAPE;
-                    break;
-                case "Alt":
-                    keyCode = VirtualKey.MENU;
-                    break;
-                case "Control":
-                    keyCode = VirtualKey.CONTROL;
-                    break;
-                case "Shift":
-                    keyCode = VirtualKey.SHIFT;
-                    break;
-                case "PAUSE":
-                    keyCode = VirtualKey.PAUSE;
-                    break;
-                case "BREAK":
-                    keyCode = VirtualKey.PAUSE;
-                    break;
-                case "Backspace":
-                    keyCode = VirtualKey.BACK;
-                    break;
-                case "Tab":
-                    keyCode = VirtualKey.TAB;
-                    break;
-                case "CapsLock":
-                    keyCode = VirtualKey.CAPITAL;
-                    break;
-                case "Delete":
-                    keyCode = VirtualKey.DELETE;
-                    break;
-                case "Home":
-                    keyCode = VirtualKey.HOME;
-                    break;
-                case "End":
-                    keyCode = VirtualKey.END;
-                    break;
-                case "PageUp":
-                    keyCode = VirtualKey.PRIOR;
-                    break;
-                case "PageDown":
-                    keyCode = VirtualKey.NEXT;
-                    break;
-                case "NumLock":
-                    keyCode = VirtualKey.NUMLOCK;
-                    break;
-                case "Insert":
-                    keyCode = VirtualKey.INSERT;
-                    break;
-                case "ScrollLock":
-                    keyCode = VirtualKey.SCROLL;
-                    break;
-                case "F1":
-                    keyCode = VirtualKey.F1;
-                    break;
-                case "F2":
-                    keyCode = VirtualKey.F2;
-                    break;
-                case "F3":
-                    keyCode = VirtualKey.F3;
-                    break;
-                case "F4":
-                    keyCode = VirtualKey.F4;
-                    break;
-                case "F5":
-                    keyCode = VirtualKey.F5;
-                    break;
-                case "F6":
-                    keyCode = VirtualKey.F6;
-                    break;
-                case "F7":
-                    keyCode = VirtualKey.F7;
-                    break;
-                case "F8":
-                    keyCode = VirtualKey.F8;
-                    break;
-                case "F9":
-                    keyCode = VirtualKey.F9;
-                    break;
-                case "F10":
-                    keyCode = VirtualKey.F10;
-                    break;
-                case "F11":
-                    keyCode = VirtualKey.F11;
-                    break;
-                case "F12":
-                    keyCode = VirtualKey.F12;
-                    break;
-                case "Meta":
-                    keyCode = VirtualKey.LWIN;
-                    break;
-                case "ContextMenu":
-                    keyCode = VirtualKey.MENU;
-                    break;
-                default:
-                    keyCode = (VirtualKey)VkKeyScan(Convert.ToChar(key));
-                    break;
-            }
+                "Down" or "ArrowDown" => VirtualKey.DOWN,
+                "Up" or "ArrowUp" => VirtualKey.UP,
+                "Left" or "ArrowLeft" => VirtualKey.LEFT,
+                "Right" or "ArrowRight" => VirtualKey.RIGHT,
+                "Enter" => VirtualKey.RETURN,
+                "Esc" or "Escape" => VirtualKey.ESCAPE,
+                "Alt" => VirtualKey.MENU,
+                "Control" => VirtualKey.CONTROL,
+                "Shift" => VirtualKey.SHIFT,
+                "PAUSE" => VirtualKey.PAUSE,
+                "BREAK" => VirtualKey.PAUSE,
+                "Backspace" => VirtualKey.BACK,
+                "Tab" => VirtualKey.TAB,
+                "CapsLock" => VirtualKey.CAPITAL,
+                "Delete" => VirtualKey.DELETE,
+                "Home" => VirtualKey.HOME,
+                "End" => VirtualKey.END,
+                "PageUp" => VirtualKey.PRIOR,
+                "PageDown" => VirtualKey.NEXT,
+                "NumLock" => VirtualKey.NUMLOCK,
+                "Insert" => VirtualKey.INSERT,
+                "ScrollLock" => VirtualKey.SCROLL,
+                "F1" => VirtualKey.F1,
+                "F2" => VirtualKey.F2,
+                "F3" => VirtualKey.F3,
+                "F4" => VirtualKey.F4,
+                "F5" => VirtualKey.F5,
+                "F6" => VirtualKey.F6,
+                "F7" => VirtualKey.F7,
+                "F8" => VirtualKey.F8,
+                "F9" => VirtualKey.F9,
+                "F10" => VirtualKey.F10,
+                "F11" => VirtualKey.F11,
+                "F12" => VirtualKey.F12,
+                "Meta" => VirtualKey.LWIN,
+                "ContextMenu" => VirtualKey.MENU,
+                _ => (VirtualKey)VkKeyScan(Convert.ToChar(key)),
+            };
             return keyCode;
         }
         private void StartInputProcessingThread()
@@ -373,10 +304,15 @@ namespace Remotely.Desktop.Win.Services
             CancelTokenSource?.Cancel();
             CancelTokenSource?.Dispose();
 
+
+            // After BlockInput is enabled, only simulated input coming from the same thread
+            // will work.  So we have to start a new thread that runs continuously and
+            // processes a queue of input events.
             var newThread = new Thread(() =>
             {
                 Logger.Write($"New input processing thread started on thread {Thread.CurrentThread.ManagedThreadId}.");
                 CancelTokenSource = new CancellationTokenSource();
+
                 if (inputBlocked)
                 {
                     ToggleBlockInput(true);

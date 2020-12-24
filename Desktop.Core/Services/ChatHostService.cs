@@ -1,21 +1,27 @@
 ﻿using Remotely.Desktop.Core.Interfaces;
-using Remotely.Desktop.Win.ViewModels;
-using Remotely.Desktop.Win.Views;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipes;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 
-namespace Remotely.Desktop.Win.Services
+namespace Remotely.Desktop.Core.Services
 {
-    public class ChatHostServiceWin : IChatHostService
+    public class ChatHostService : IChatHostService
     {
-        private ChatWindowViewModel ChatViewModel { get; set; }
+        private readonly IChatUiService _chatUiService;
+
+        public ChatHostService(IChatUiService chatUiService)
+        {
+            _chatUiService = chatUiService;
+        }
+
         private NamedPipeServerStream NamedPipeStream { get; set; }
         private StreamReader Reader { get; set; }
         private StreamWriter Writer { get; set; }
@@ -37,20 +43,14 @@ namespace Remotely.Desktop.Win.Services
                 Environment.Exit(0);
             }
 
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                var chatWindow = new ChatWindow();
-                chatWindow.Closing += ChatWindow_Closing;
-                ChatViewModel = chatWindow.DataContext as ChatWindowViewModel;
-                ChatViewModel.PipeStreamWriter = Writer;
-                ChatViewModel.OrganizationName = organizationName;
-                chatWindow.Show();
-            });
+            _chatUiService.ChatWindowClosed += OnChatWindowClosed;
+
+            _chatUiService.ShowChatWindow(organizationName, Writer);
 
             _ = Task.Run(ReadFromStream);
         }
 
-        private void ChatWindow_Closing(object sender, EventArgs e)
+        private void OnChatWindowClosed(object sender, EventArgs e)
         {
             try
             {
@@ -70,17 +70,8 @@ namespace Remotely.Desktop.Win.Services
                     if (!string.IsNullOrWhiteSpace(messageJson))
                     {
                         var chatMessage = JsonSerializer.Deserialize<ChatMessage>(messageJson);
-                        App.Current.Dispatcher.Invoke(() =>
-                        {
-                            if (chatMessage.Disconnected)
-                            {
-                                MessageBox.Show("Your partner has disconnected.", "Partner Disconnected", MessageBoxButton.OK, MessageBoxImage.Information);
-                                App.Current.Shutdown();
-                                return;
-                            }
-                            ChatViewModel.SenderName = chatMessage.SenderName;
-                            ChatViewModel.ChatMessages.Add(chatMessage);
-                        });
+                        _chatUiService.ReceiveChat(chatMessage);
+                       
                     }
                 }
                 catch (Exception ex)

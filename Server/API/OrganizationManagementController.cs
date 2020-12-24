@@ -264,7 +264,7 @@ namespace Remotely.Server.API
 
                 var inviteURL = $"{Request.Scheme}://{Request.Host}/Invite?id={newInvite.ID}";
                 var emailResult = await EmailSender.SendEmailAsync(invite.InvitedUser, "Invitation to Organization in Remotely",
-                            $@"<img src='https://remotely.one/media/Remotely_Logo.png'/>
+                            $@"<img src='{Request.Scheme}://{Request.Host}/images/Remotely_Logo.png'/>
                             <br><br>
                             Hello!
                             <br><br>

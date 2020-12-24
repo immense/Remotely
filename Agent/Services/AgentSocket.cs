@@ -25,8 +25,9 @@ namespace Remotely.Agent.Services
             Uninstaller uninstaller,
             CommandExecutor commandExecutor,
             ScriptRunner scriptRunner,
+            ChatClientService chatService,
             IAppLauncher appLauncher,
-            ChatClientService chatService)
+            Updater updater)
         {
             ConfigService = configService;
             Uninstaller = uninstaller;
@@ -34,10 +35,12 @@ namespace Remotely.Agent.Services
             ScriptRunner = scriptRunner;
             AppLauncher = appLauncher;
             ChatService = chatService;
+            Updater = updater;
         }
         public bool IsConnected => HubConnection?.State == HubConnectionState.Connected;
         private IAppLauncher AppLauncher { get; }
         private ChatClientService ChatService { get; }
+        private Updater Updater { get; }
         private CommandExecutor CommandExecutor { get; }
         private ConfigService ConfigService { get; }
         private ConnectionInfo ConnectionInfo { get; set; }
@@ -267,6 +270,11 @@ namespace Remotely.Agent.Services
                 await ScriptRunner.RunScript(mode, fileID, commandResultID, requesterID, HubConnection);
             });
 
+            HubConnection.On("ReinstallAgent", async () =>
+            {
+                await Updater.InstallLatestVersion();
+            });
+
             HubConnection.On("UninstallAgent", () =>
             {
                 Uninstaller.UninstallAgent();
@@ -298,6 +306,11 @@ namespace Remotely.Agent.Services
                     return;
                 }
                 User32.SendSAS(false);
+            });
+
+            HubConnection.On("TriggerHeartbeat", async () =>
+            {
+                await SendHeartbeat();
             });
 
             HubConnection.On("ServerVerificationToken", (string verificationToken) =>

@@ -10,8 +10,7 @@ namespace Remotely.Desktop.Win.Services
 {
     public class ClipboardServiceWin : IClipboardService
     {
-
-        private CancellationTokenSource cancelTokenSource;
+        private CancellationTokenSource _cancelTokenSource;
 
         public event EventHandler<string> ClipboardTextChanged;
 
@@ -19,15 +18,18 @@ namespace Remotely.Desktop.Win.Services
 
         public void BeginWatching()
         {
-            try
+            App.Current.Dispatcher.Invoke(() =>
             {
-                StopWatching();
-            }
-            finally
-            {
-                cancelTokenSource = new CancellationTokenSource();
-                _ = Task.Run(() => WatchClipboard(cancelTokenSource.Token));
-            }
+                App.Current.Exit -= App_Exit;
+                App.Current.Exit += App_Exit;
+            });
+
+            StopWatching();
+
+            _cancelTokenSource = new CancellationTokenSource();
+
+
+            WatchClipboard(_cancelTokenSource.Token);
         }
 
         public Task SetText(string clipboardText)
@@ -51,6 +53,7 @@ namespace Remotely.Desktop.Win.Services
                 }
             });
             thread.SetApartmentState(ApartmentState.STA);
+            thread.IsBackground = true;
             thread.Start();
 
             return Task.CompletedTask;
@@ -60,24 +63,27 @@ namespace Remotely.Desktop.Win.Services
         {
             try
             {
-                cancelTokenSource?.Cancel();
-                cancelTokenSource?.Dispose();
+                _cancelTokenSource?.Cancel();
+                _cancelTokenSource?.Dispose();
             }
             catch { }
         }
 
+        private void App_Exit(object sender, System.Windows.ExitEventArgs e)
+        {
+            _cancelTokenSource?.Cancel();
+        }
         private void WatchClipboard(CancellationToken cancelToken)
         {
-            while (!cancelToken.IsCancellationRequested &&
-                !Environment.HasShutdownStarted)
+            var thread = new Thread(() =>
             {
-                var thread = new Thread(() =>
+
+                while (!cancelToken.IsCancellationRequested)
                 {
 
                     try
                     {
                         Win32Interop.SwitchToInputDesktop();
-
 
                         if (Clipboard.ContainsText() && Clipboard.GetText() != ClipboardText)
                         {
@@ -86,11 +92,12 @@ namespace Remotely.Desktop.Win.Services
                         }
                     }
                     catch { }
-                });
-                thread.SetApartmentState(ApartmentState.STA);
-                thread.Start();
-                Thread.Sleep(500);
-            }
+                    Thread.Sleep(500);
+                }
+            });
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.IsBackground = true;
+            thread.Start();
         }
     }
 }

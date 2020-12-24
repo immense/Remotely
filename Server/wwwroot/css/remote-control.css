@@ -15,7 +15,6 @@ button {
     border: none;
 }
 
-
 .center-aligned {
     text-align: center;
 }
@@ -39,6 +38,16 @@ button {
     margin: 20px 0 5px 0;
     font-family: monospace;
     font-size: .9em;
+}
+
+#keyboardButton {
+    position: fixed;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    font-size: 1.2em;
+    padding: 4px 7px;
 }
 
 #menuButton {

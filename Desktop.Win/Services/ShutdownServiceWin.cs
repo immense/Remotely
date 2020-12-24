@@ -14,16 +14,22 @@ namespace Remotely.Desktop.Win.Services
     {
         public async Task Shutdown()
         {
-            Logger.Debug($"Exiting process ID {Process.GetCurrentProcess().Id}.");
-            var casterSocket = ServiceContainer.Instance.GetRequiredService<CasterSocket>();
-            await casterSocket.DisconnectAllViewers();
-            await casterSocket.Disconnect();
-            Application.Current.Dispatcher.Invoke(() =>
+            try
             {
-                Application.Current.Shutdown();
-            });
-            System.Windows.Forms.Application.Exit();
-            Environment.Exit(0);
+                Logger.Write($"Exiting process ID {Process.GetCurrentProcess().Id}.");
+                var casterSocket = ServiceContainer.Instance.GetRequiredService<ICasterSocket>();
+                await casterSocket.DisconnectAllViewers();
+                await casterSocket.Disconnect();
+                System.Windows.Forms.Application.Exit();
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    App.Current.Shutdown();
+                });
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+            }
         }
     }
 }

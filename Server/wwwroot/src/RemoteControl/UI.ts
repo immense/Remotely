@@ -47,6 +47,8 @@ export var ConnectionRelayedIcon = document.getElementById("connectionRelayedIco
 export var WindowsSessionSelect = document.getElementById("windowsSessionSelect") as HTMLSelectElement;
 export var RecordSessionButton = document.getElementById("recordSessionButton") as HTMLButtonElement;
 export var DownloadRecordingButton = document.getElementById("downloadRecordingButton") as HTMLButtonElement;
+export var ViewOnlyButton = document.getElementById("viewOnlyButton") as HTMLButtonElement;
+export var FullScreenButton = document.getElementById("fullScreenButton") as HTMLButtonElement;
 
 export function GetCurrentViewer(): HTMLElement {
     if (ScreenViewer.hasAttribute("hidden")) {

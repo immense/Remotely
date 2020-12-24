@@ -276,13 +276,29 @@ namespace Remotely.Agent.Installer.Win.ViewModels
 
         private bool CheckParams()
         {
-            var result = !string.IsNullOrWhiteSpace(OrganizationID) || !string.IsNullOrWhiteSpace(ServerUrl);
-            if (!result)
+            if (string.IsNullOrWhiteSpace(OrganizationID) || string.IsNullOrWhiteSpace(ServerUrl))
             {
                 Logger.Write("ServerUrl or OrganizationID param is missing.  Unable to install.");
-                MessageBoxEx.Show("Required settings are missing.  Please enter a server URL and organization ID.", "Invalid Installer", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxEx.Show("Required settings are missing.  Please enter a server URL and organization ID.", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
             }
-            return result;
+
+            if (!Guid.TryParse(OrganizationID, out _))
+            {
+                Logger.Write("OrganizationID is not a valid GUID.");
+                MessageBoxEx.Show("Organization ID must be a valid GUID.", "Invalid Organization ID", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
+            if (!Uri.TryCreate(ServerUrl, UriKind.Absolute, out var serverUri) ||
+                (serverUri.Scheme != Uri.UriSchemeHttp && serverUri.Scheme != Uri.UriSchemeHttps))
+            {
+                Logger.Write("ServerUrl is not valid.");
+                MessageBoxEx.Show("Server URL must be a valid Uri.", "Invalid Server URL", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
+            return true;
         }
 
         private void CopyCommandLineArgs()
