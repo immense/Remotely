@@ -3,9 +3,6 @@ import { ConvertUInt8ArrayToBase64 } from "../Shared/Utilities.js";
 import { WindowsSession } from "../Shared/Models/WindowsSession.js";
 import { WindowsSessionType } from "../Shared/Enums/WindowsSessionType.js";
 
-const offscreenCanvas = document.createElement("canvas");
-var renderId: number;
-
 export var AudioButton = document.getElementById("audioButton") as HTMLButtonElement;
 export var MenuButton = document.getElementById("menuButton") as HTMLButtonElement;
 export var MenuFrame = document.getElementById("menuFrame") as HTMLDivElement;
@@ -52,8 +49,6 @@ export var RecordSessionButton = document.getElementById("recordSessionButton") 
 export var DownloadRecordingButton = document.getElementById("downloadRecordingButton") as HTMLButtonElement;
 export var ViewOnlyButton = document.getElementById("viewOnlyButton") as HTMLButtonElement;
 export var FullScreenButton = document.getElementById("fullScreenButton") as HTMLButtonElement;
-export var StagingCanvas = offscreenCanvas as HTMLCanvasElement;
-export var StagingRenderer = offscreenCanvas.getContext("2d");
 
 export function GetCurrentViewer(): HTMLElement {
     if (ScreenViewer.hasAttribute("hidden")) {
@@ -105,16 +100,12 @@ export function Prompt(promptMessage: string): Promise<string> {
 export function SetScreenSize(width: number, height: number) {
     ScreenViewer.width = width;
     ScreenViewer.height = height;
-    StagingCanvas.width = width;
-    StagingCanvas.height = height;
     Screen2DContext.clearRect(0, 0, width, height);
-    StagingRenderer.clearRect(0, 0, width, height);
 }
 
 export function ToggleConnectUI(shown: boolean) {
     if (shown) {
         Screen2DContext.clearRect(0, 0, ScreenViewer.width, ScreenViewer.height);
-        StagingRenderer.clearRect(0, 0, ScreenViewer.width, ScreenViewer.height);
         ScreenViewer.setAttribute("hidden", "hidden");
         VideoScreenViewer.setAttribute("hidden", "hidden");
         ConnectBox.style.removeProperty("display");
