@@ -5,7 +5,6 @@ import { BrowserHubConnection } from "./BrowserHubConnection.js"
 import { ShowModal } from "../Shared/UI.js";
 import { Device } from "../Shared/Models/Device.js";
 import { EncodeForHTML } from "../Shared/Utilities.js";
-import { RemoteControlTarget } from "../Shared/Models/RemoteControlTarget.js";
 
 export const DataSource: Array<Device> = new Array<Device>();
 export const FilteredDevices: Array<Device> = new Array<Device>();

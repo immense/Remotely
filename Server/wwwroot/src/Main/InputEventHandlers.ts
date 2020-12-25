@@ -3,7 +3,7 @@ import * as UI from "./UI.js";
 import * as CommandProcessor from "./CommandProcessor.js";
 import * as DataGrid from "./DataGrid.js";
 import { BrowserHubConnection } from "./BrowserHubConnection.js";
-import { AddConsoleOutput } from "./Console.js";
+import { AddConsoleHTML, AddConsoleOutput } from "./Console.js";
 import { ShowModal, ShowMessage } from "../Shared/UI.js";
 
 
@@ -201,7 +201,7 @@ function keyDownOnInputTextArea() {
                     }
                     UI.CommandCompletionDiv.classList.add("hidden");
                     UI.CommandInfoDiv.classList.add("hidden");
-                    AddConsoleOutput(`<span class="echo-input">${UI.ConsoleTextArea.value}</span>`);
+                    AddConsoleHTML("span", "echo-input", UI.ConsoleTextArea.value);
                     if (!BrowserHubConnection.Connected) {
                         AddConsoleOutput("Not connected.  Reconnecting...");
                         BrowserHubConnection.Connect();

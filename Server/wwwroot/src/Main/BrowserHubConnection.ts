@@ -6,7 +6,7 @@ import { CommandResult } from "../Shared/Models/CommandResult.js";
 import { CreateCommandHarness, AddCommandResultsHarness, AddPSCoreResultsHarness, UpdateResultsCount } from "./ResultsParser.js";
 import { UserOptions } from "../Shared/Models/UserOptions.js";
 import { MainApp } from "./App.js";
-import { AddConsoleOutput, AddConsoleHTML } from "./Console.js";
+import { AddConsoleOutput, AddConsoleHTML, AddConsoleElement } from "./Console.js";
 import { ReceiveChatText } from "./Chat.js";
 import { ShowMessage, ShowModal } from "../Shared/UI.js";
 import { EncodeForHTML } from "../Shared/Utilities.js";
@@ -55,10 +55,10 @@ export var BrowserHubConnection = new class BrowserHubConnection {
         hubConnection.on("Chat", (deviceID: string, deviceName: string, message: string, disconnected: boolean) => {
             var encodedMessage = EncodeForHTML(message);
             if (disconnected) {
-                AddConsoleHTML(`<span class="text-info font-italic">${deviceName} disconnected from chat.</span>`);
+                AddConsoleHTML("span", "text-info font-italic", `${deviceName} disconnected from chat.`);
             }
             else if (message) {
-                AddConsoleHTML(`<span class="text-info font-weight-bold">Chat from ${deviceName}</span>: ${encodedMessage}`);
+                AddConsoleHTML("span", "text-info font-weight-bold", `Chat from ${deviceName}:`, message);
             }
 
             ReceiveChatText(deviceID, deviceName, encodedMessage, disconnected);
@@ -105,9 +105,6 @@ export var BrowserHubConnection = new class BrowserHubConnection {
             if (popupMessage) {
                 ShowMessage(popupMessage);
             }
-        });
-        hubConnection.on("DisplayConsoleHTML", (message: string) => {
-            AddConsoleHTML(message);
         });
         hubConnection.on("DownloadFile", (fileID: string) => {
             location.assign(`/API/FileSharing/${fileID}`);
@@ -169,7 +166,7 @@ export var BrowserHubConnection = new class BrowserHubConnection {
             xhr.send();
         });
         hubConnection.on("CommandResultCreated", (result: CommandResult) => {
-            AddConsoleHTML(CreateCommandHarness(result).outerHTML);
+            AddConsoleElement(CreateCommandHarness(result));
         });
         hubConnection.on("ServiceID", (deviceId: string, serviceConnectionId: string) => {
             this.DeviceIdToControlTargetLookup[deviceId].ServiceConnectionId = serviceConnectionId;
