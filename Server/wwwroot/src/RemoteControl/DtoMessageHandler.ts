@@ -67,20 +67,22 @@ export class DtoMessageHandler {
         if (captureFrame.EndOfCapture) {
             ViewerApp.MessageSender.SendFrameReceived();
 
-            Object.keys(this.PartialCaptures).forEach(async x => {
+            Object.keys(this.PartialCaptures).forEach(x => {
                 let partial = this.PartialCaptures[x];
                 let firstFrame = partial[0];
                 let frameBytes = partial.map(x => x.ImageBytes);
 
-                let bitmap = await createImageBitmap(new Blob(frameBytes));
-
-                UI.Screen2DContext.drawImage(bitmap,
-                    firstFrame.Left,
-                    firstFrame.Top,
-                    firstFrame.Width,
-                    firstFrame.Height);
-
-                bitmap.close();
+                var url = window.URL.createObjectURL(new Blob(frameBytes));
+                var img = document.createElement("img");
+                img.onload = () => {
+                    UI.Screen2DContext.drawImage(img,
+                        firstFrame.Left,
+                        firstFrame.Top,
+                        firstFrame.Width,
+                        firstFrame.Height);
+                    window.URL.revokeObjectURL(url);
+                };
+                img.src = url;
             })
 
             this.PartialCaptures = {};
