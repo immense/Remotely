@@ -5,7 +5,7 @@ import { BrowserHubConnection } from "../BrowserHubConnection.js";
 import { CommandLineParameter } from "../../Shared/Models/CommandLineParameter.js";
 import { MainApp } from "../App.js";
 import * as DataGrid from "../DataGrid.js";
-import { AddConsoleHTML, AddConsoleOutput, AddTransferHarness } from "../Console.js";
+import { AddConsoleElement, AddConsoleHTML, AddConsoleLineBreak, AddConsoleOutput, AddConsoleTrustedHtml, AddTransferHarness } from "../Console.js";
 import { GetSelectedDevices } from "../DataGrid.js";
 import { EncodeForHTML } from "../../Shared/Utilities.js";
 import { RemoteControlTarget } from "../../Shared/Models/RemoteControlTarget.js";
@@ -110,23 +110,27 @@ var commands: Array<ConsoleCommand> = [
                 AddConsoleOutput("No devices are selected.");
                 return;
             };
-            var output = `<div>Version Results:</div>
-                            <table class="console-device-table table table-responsive">
-                            <thead><tr>
-                            <th>Device Name</th><th>Agent Version</th>
-                            </tr></thead>`;
+            var title = document.createElement("div");
+            title.innerText = "Version Results:";
+            var table = document.createElement("table");
+            var head = table.createTHead();
+            var body = table.createTBody();
+
+            table.className = "console-device-table table table-responsive";
+            head.innerHTML = "<tr><th>Device Name</th><th>Agent Version</th></tr>";
 
             var deviceList = selectedDevices.map(x => {
                 return `<tr>
-                        <td>${x.DeviceName}</td>
-                        <td>
-                            ${x.AgentVersion}
-                        </td>
+                        <td>${EncodeForHTML(x.DeviceName)}</td>
+                        <td>${EncodeForHTML(x.AgentVersion)}</td>
                         </tr>`
             });
-            output += deviceList.join("");
-            output += "</table>";
-            AddConsoleOutput(output);
+            body.innerHTML = deviceList.join();
+
+
+            AddConsoleElement(title);
+            AddConsoleElement(table);
+
         }
     ),
     new ConsoleCommand(
@@ -193,12 +197,12 @@ var commands: Array<ConsoleCommand> = [
         "",
         (parameters) => {
             if (parameters.length == 0) {
-                var output = `Command List:<br><div class="help-list">`;
+                var output = `<h5>Command List:</h5><div class="help-list">`;
                 WebCommands.forEach(x => {
                     output += `<div>${x.Name}</div><div>${x.Summary}</div>`;
                 })
                 output += "</div>";
-                AddConsoleOutput(output);
+                AddConsoleTrustedHtml(output);
                 return;
             }
             var suppliedCommand = parameters.find(x => x.Name.toLowerCase() == "command") || {} as CommandLineParameter;
@@ -209,14 +213,16 @@ var commands: Array<ConsoleCommand> = [
                 AddConsoleOutput("No matching commands found.");
             }
             else if (result.length == 1) {
-                AddConsoleHTML("<br>" + result[0].FullHelp);
+                AddConsoleLineBreak();
+                AddConsoleTrustedHtml(result[0].FullHelp);
             }
             else {
-                var outputText = "Multiple commands found: <br><br>";
+                AddConsoleOutput("Multiple commands found:");
+                AddConsoleLineBreak(2);
                 for (var i = 0; i < result.length; i++) {
-                    outputText += result[i].Name + "<br>";
+                    AddConsoleOutput(result[i].Name);
+                    AddConsoleLineBreak();
                 }
-                AddConsoleHTML(outputText);
             }
         }
     ),
@@ -233,11 +239,28 @@ var commands: Array<ConsoleCommand> = [
                 AddConsoleOutput("No devices are selected.");
                 return;
             }
-            var output = `<div>Selected Devices:</div>
-                            <table class="console-device-table table table-responsive">
-                            <thead><tr>
-                            <th>Online</th><th>Device Name</th><th>Alias</th><th>Current User</th><th>Last Online</th><th>Platform</th><th>OS Description</th><th>Free Storage</th><th>Total Storage (GB)</th><th>Free Memory</th><th>Total Memory (GB)</th><th>Tags</th>
-                            </tr></thead>`;
+
+            var title = document.createElement("div");
+            title.innerText = "Selected Devices:";
+
+            var table = document.createElement("table");
+            table.className = "console-device-table table table-responsive";
+
+            var head = table.createTHead();
+            head.innerHTML = `<tr>
+                    <th>Online</th>
+                    <th>Device Name</th>
+                    <th>Alias</th>
+                    <th>Current User</th > 
+                    <th>Last Online</th>
+                    <th>Platform</th> 
+                    <th>OS Description</th>
+                    <th>Free Storage</th> 
+                    <th>Total Storage(GB)</th>
+                    <th>Free Memory</th> 
+                    <th>Total Memory(GB)</th>
+                    <th>Tags</th >
+                </tr>`
             
             var deviceList = selectedDevices.map(x => {
                 return `<tr>
@@ -257,9 +280,12 @@ var commands: Array<ConsoleCommand> = [
                         <td>${EncodeForHTML(x.Tags || "")}</td>
                         </tr>`
             });
-            output += deviceList.join("");
-            output += "</table>";
-            AddConsoleOutput(output);
+
+            var body = table.createTBody();
+            body.innerHTML = deviceList.join();
+
+            AddConsoleElement(title);
+            AddConsoleElement(table);
         }
     ),
     new ConsoleCommand("Reinstall",
