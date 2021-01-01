@@ -5,7 +5,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace Remotely.Desktop.Core.Utilities
@@ -266,8 +265,24 @@ namespace Remotely.Desktop.Core.Utilities
                             }
                         });
                     });
+                    var finishedAreas = new List<Rectangle>();
+                    changes.ToList().ForEach(x =>
+                    {
+                        var neighborIndex = finishedAreas.FindIndex(y =>
+                        {
+                            return new Rectangle(y.X - 1, y.Y - 1, y.Width + 2, y.Height + 2).IntersectsWith(x);
+                        });
 
-                    return changes.ToArray();
+                        if (neighborIndex > -1 && !finishedAreas[neighborIndex].IsEmpty)
+                        {
+                            finishedAreas[neighborIndex] = Rectangle.Union(finishedAreas[neighborIndex], x);
+                        }
+                        else
+                        {
+                            finishedAreas.Add(x);
+                        }
+                    });
+                    return finishedAreas;
                 }
             }
             catch
