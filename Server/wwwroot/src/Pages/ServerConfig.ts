@@ -1,5 +1,6 @@
 ﻿var serverConfigForm = document.getElementById("serverConfigForm") as HTMLFormElement;
 var serverConfigSaveButton = document.getElementById("serverConfigSaveButton") as HTMLButtonElement;
+var sendTestEmailButton = document.getElementById("sendTestEmailButton") as HTMLButtonElement;
 
 var bannedDevicesAddButton = document.getElementById("bannedDevicesAddButton") as HTMLButtonElement;
 var bannedDevicesRemoveButton = document.getElementById("bannedDevicesRemoveButton") as HTMLButtonElement;
@@ -23,22 +24,26 @@ var serverAdminsSelect = document.getElementById("serverAdminsSelect") as HTMLSe
 
 export const ServerConfig = {
     Init() {
-        serverConfigSaveButton.addEventListener("click", e => {
-            for (var i = 0; i < bannedDevicesSelect.options.length; i++) {
-                bannedDevicesSelect.options[i].selected = true;
-            }
-            for (var i = 0; i < trustedCorsSelect.options.length; i++) {
-                trustedCorsSelect.options[i].selected = true;
-            }
-            for (var i = 0; i < knownProxiesSelect.options.length; i++) {
-                knownProxiesSelect.options[i].selected = true;
-            }
-            for (var i = 0; i < serverAdminsSelect.options.length; i++) {
-                serverAdminsSelect.options[i].selected = true;
-            }
+        [serverConfigSaveButton, sendTestEmailButton].forEach(x => {
+            x.addEventListener("click", e => {
+                for (var i = 0; i < bannedDevicesSelect.options.length; i++) {
+                    bannedDevicesSelect.options[i].selected = true;
+                }
+                for (var i = 0; i < trustedCorsSelect.options.length; i++) {
+                    trustedCorsSelect.options[i].selected = true;
+                }
+                for (var i = 0; i < knownProxiesSelect.options.length; i++) {
+                    knownProxiesSelect.options[i].selected = true;
+                }
+                for (var i = 0; i < serverAdminsSelect.options.length; i++) {
+                    serverAdminsSelect.options[i].selected = true;
+                }
 
-            serverConfigForm.submit();
+                (e.target as HTMLButtonElement).type = "submit";
+                (e.target as HTMLButtonElement).click();
+            });
         });
+
 
         bannedDevicesAddButton.addEventListener("click", ev => {
             if (bannedDevicesInput.value.length > 0) {

@@ -20,12 +20,14 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         public ServerConfigModel(IConfiguration configuration,
             IWebHostEnvironment hostEnv,
             UserManager<RemotelyUser> userManager,
-            IDataService dataService)
+            IDataService dataService,
+            IEmailSenderEx emailSender)
         {
             Configuration = configuration;
             HostEnv = hostEnv;
             UserManager = userManager;
             DataService = dataService;
+            EmailSender = emailSender;
         }
 
         public enum DBProviders
@@ -53,6 +55,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
         private IConfiguration Configuration { get; }
         private IDataService DataService { get; }
+        private IEmailSenderEx EmailSender { get; }
         private IWebHostEnvironment HostEnv { get; }
         private UserManager<RemotelyUser> UserManager { get; }
 
@@ -71,8 +74,22 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
             return Page();
         }
-
-        public async Task<IActionResult> OnPost()
+        public async Task<IActionResult> OnPostSaveAndTestSmtpAsync()
+        {
+            var result = await OnPostSaveAsync();
+            var user = DataService.GetUserByName(User.Identity.Name);
+            var success = await EmailSender.SendEmailAsync(user.Email, "Remotely Test Email", "Congratulations! Your SMTP settings are working!", user.OrganizationID);
+            if (success)
+            {
+                StatusMessage = "Test email sent.  Check your inbox (including spam folder).";
+            }
+            else
+            {
+                StatusMessage = "Error sending email.  Check the server logs for details.";
+            }
+            return result;
+        }
+        public async Task<IActionResult> OnPostSaveAsync()
         {
             IsServerAdmin = (await UserManager.GetUserAsync(User)).IsServerAdmin;
             if (!IsServerAdmin)
