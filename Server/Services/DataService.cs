@@ -78,7 +78,7 @@ namespace Remotely.Server.Services
         void SetServerVerificationToken(string deviceID, string verificationToken);
         Task<bool> TempPasswordSignIn(string email, string password);
         Task<Device> UpdateDevice(DeviceSetupOptions deviceOptions, string organizationId);
-        void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes);
+        void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes, WebRtcSetting webRtcSetting);
         void UpdateOrganizationName(string orgID, string organizationName);
         Task UpdateServerAdmins(List<string> serverAdmins, string callerUserName);
         void UpdateTags(string deviceID, string tags);
@@ -1023,7 +1023,7 @@ namespace Remotely.Server.Services
             }
         }
 
-        public void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes)
+        public void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes, WebRtcSetting webRtcSetting)
         {
             var device = RemotelyContext.Devices.Find(deviceID);
             if (device == null)
@@ -1035,6 +1035,7 @@ namespace Remotely.Server.Services
             device.DeviceGroupID = deviceGroupID;
             device.Alias = alias;
             device.Notes = notes;
+            device.WebRtcSetting = webRtcSetting;
             RemotelyContext.SaveChanges();
         }
 

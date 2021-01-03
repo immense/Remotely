@@ -168,6 +168,7 @@ namespace Remotely.Server.Hubs
 
             DataService.AddOrUpdateDevice(device, out var updatedDevice);
             Device = updatedDevice;
+            ServiceConnections.AddOrUpdate(Context.ConnectionId, Device, (id, d) => Device);
 
             var userIDs = BrowserHub.ConnectionIdToUserLookup.Values.Select(x => x.Id);
 

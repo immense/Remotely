@@ -105,7 +105,7 @@ namespace Remotely.Desktop.Core.Services
                 }
 
 
-                if (EnvironmentHelper.IsWindows)
+                if (EnvironmentHelper.IsWindows && screenCastRequest.UseWebRtc)
                 {
                     await viewer.InitializeWebRtc();
                 }
@@ -149,7 +149,7 @@ namespace Remotely.Desktop.Core.Services
                         currentFrame?.Dispose();
                         currentFrame = viewer.Capturer.GetNextFrame();
 
-                        var diffAreas = ImageUtils.GetDiffAreas(currentFrame, previousFrame, viewer.Capturer.CaptureFullscreen);
+                        var diffAreas = ImageUtils.GetDiffAreas2(currentFrame, previousFrame, viewer.Capturer.CaptureFullscreen);
 
                         if (!diffAreas.Any())
                         {

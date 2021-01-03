@@ -499,10 +499,10 @@ namespace Remotely.Desktop.Core.Utilities
         {
             // Bounding box is valid.  Padding is necessary to prevent artifacts from
             // moving windows.
-            left = Math.Max(left - 1, 0);
-            top = Math.Max(top - 1, 0);
-            right = Math.Min(right + 1, width);
-            bottom = Math.Min(bottom + 1, height);
+            left = Math.Max(left - 5, 0);
+            top = Math.Max(top - 5, 0);
+            right = Math.Min(right + 5, width);
+            bottom = Math.Min(bottom + 5, height);
 
             changes.Add(new Rectangle(left, top, right - left, bottom - top));
         }
@@ -511,10 +511,10 @@ namespace Remotely.Desktop.Core.Utilities
         {
             // Bounding box is valid.  Padding is necessary to prevent artifacts from
             // moving windows.
-            left = Math.Max(left - 1, 0);
-            top = Math.Max(top - 1, 0);
-            right = Math.Min(right + 1, width);
-            bottom = Math.Min(bottom + 1, height);
+            left = Math.Max(left - 5, 0);
+            top = Math.Max(top - 5, 0);
+            right = Math.Min(right + 5, width);
+            bottom = Math.Min(bottom + 5, height);
 
             changes.Enqueue(new Rectangle(left, top, right - left, bottom - top));
         }

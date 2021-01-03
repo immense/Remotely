@@ -2,27 +2,32 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Remotely.Server.Data;
 
-namespace Remotely.Server.Migrations.Sqlite
+namespace Remotely.Server.Migrations.PostgreSql
 {
-    [DbContext(typeof(SqliteDbContext))]
-    partial class SqliteDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(PostgreSqlDbContext))]
+    [Migration("20210103153552_WebRtcSetting")]
+    partial class WebRtcSetting
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .UseIdentityByDefaultColumns()
+                .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.1");
 
             modelBuilder.Entity("DeviceGroupRemotelyUser", b =>
                 {
                     b.Property<string>("DeviceGroupsID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("UsersId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("DeviceGroupsID", "UsersId");
 
@@ -34,19 +39,19 @@ namespace Remotely.Server.Migrations.Sqlite
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
@@ -61,17 +66,18 @@ namespace Remotely.Server.Migrations.Sqlite
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer")
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -83,58 +89,58 @@ namespace Remotely.Server.Migrations.Sqlite
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
-                    b.Property<string>("LockoutEnd")
-                        .HasColumnType("TEXT");
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
@@ -154,17 +160,18 @@ namespace Remotely.Server.Migrations.Sqlite
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer")
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -177,18 +184,18 @@ namespace Remotely.Server.Migrations.Sqlite
                 {
                     b.Property<string>("LoginProvider")
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("ProviderKey")
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -200,10 +207,10 @@ namespace Remotely.Server.Migrations.Sqlite
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -215,18 +222,18 @@ namespace Remotely.Server.Migrations.Sqlite
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("LoginProvider")
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("Name")
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("Value")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
@@ -236,23 +243,22 @@ namespace Remotely.Server.Migrations.Sqlite
             modelBuilder.Entity("Remotely.Shared.Models.Alert", b =>
                 {
                     b.Property<string>("ID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
-                    b.Property<string>("CreatedOn")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeviceID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Message")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("OrganizationID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("UserID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("ID");
 
@@ -268,23 +274,23 @@ namespace Remotely.Server.Migrations.Sqlite
             modelBuilder.Entity("Remotely.Shared.Models.ApiToken", b =>
                 {
                     b.Property<string>("ID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
-                    b.Property<string>("LastUsed")
-                        .HasColumnType("TEXT");
+                    b.Property<DateTimeOffset?>("LastUsed")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .HasMaxLength(200)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("OrganizationID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Secret")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Token")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("ID");
 
@@ -298,35 +304,34 @@ namespace Remotely.Server.Migrations.Sqlite
             modelBuilder.Entity("Remotely.Shared.Models.CommandResult", b =>
                 {
                     b.Property<string>("ID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("CommandMode")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("CommandResults")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("CommandText")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("OrganizationID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("PSCoreResults")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("SenderConnectionID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("SenderUserID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("TargetDeviceIDs")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
-                    b.Property<string>("TimeStamp")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<DateTimeOffset>("TimeStamp")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("ID");
 
@@ -338,82 +343,81 @@ namespace Remotely.Server.Migrations.Sqlite
             modelBuilder.Entity("Remotely.Shared.Models.Device", b =>
                 {
                     b.Property<string>("ID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("AgentVersion")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Alias")
                         .HasMaxLength(100)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<double>("CpuUtilization")
-                        .HasColumnType("REAL");
+                        .HasColumnType("double precision");
 
                     b.Property<string>("CurrentUser")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("DeviceGroupID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("DeviceName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Drives")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<bool>("Is64Bit")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsOnline")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
-                    b.Property<string>("LastOnline")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<DateTimeOffset>("LastOnline")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int>("OSArchitecture")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("OSDescription")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("OrganizationID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Platform")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int>("ProcessorCount")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("PublicIP")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("ServerVerificationToken")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Tags")
                         .HasMaxLength(200)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<double>("TotalMemory")
-                        .HasColumnType("REAL");
+                        .HasColumnType("double precision");
 
                     b.Property<double>("TotalStorage")
-                        .HasColumnType("REAL");
+                        .HasColumnType("double precision");
 
                     b.Property<double>("UsedMemory")
-                        .HasColumnType("REAL");
+                        .HasColumnType("double precision");
 
                     b.Property<double>("UsedStorage")
-                        .HasColumnType("REAL");
+                        .HasColumnType("double precision");
 
                     b.Property<int>("WebRtcSetting")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("ID");
 
@@ -429,14 +433,14 @@ namespace Remotely.Server.Migrations.Sqlite
             modelBuilder.Entity("Remotely.Shared.Models.DeviceGroup", b =>
                 {
                     b.Property<string>("ID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .HasMaxLength(200)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("OrganizationID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("ID");
 
@@ -448,26 +452,25 @@ namespace Remotely.Server.Migrations.Sqlite
             modelBuilder.Entity("Remotely.Shared.Models.EventLog", b =>
                 {
                     b.Property<string>("ID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int>("EventType")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Message")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("OrganizationID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Source")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("StackTrace")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
-                    b.Property<string>("TimeStamp")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<DateTimeOffset>("TimeStamp")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("ID");
 
@@ -479,23 +482,22 @@ namespace Remotely.Server.Migrations.Sqlite
             modelBuilder.Entity("Remotely.Shared.Models.InviteLink", b =>
                 {
                     b.Property<string>("ID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
-                    b.Property<string>("DateSent")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<DateTimeOffset>("DateSent")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("InvitedUser")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsAdmin")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("OrganizationID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("ResetUrl")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("ID");
 
@@ -507,11 +509,11 @@ namespace Remotely.Server.Migrations.Sqlite
             modelBuilder.Entity("Remotely.Shared.Models.Organization", b =>
                 {
                     b.Property<string>("ID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("OrganizationName")
                         .HasMaxLength(25)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(25)");
 
                     b.HasKey("ID");
 
@@ -521,23 +523,22 @@ namespace Remotely.Server.Migrations.Sqlite
             modelBuilder.Entity("Remotely.Shared.Models.SharedFile", b =>
                 {
                     b.Property<string>("ID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("ContentType")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<byte[]>("FileContents")
-                        .HasColumnType("BLOB");
+                        .HasColumnType("bytea");
 
                     b.Property<string>("FileName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("OrganizationID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
-                    b.Property<string>("Timestamp")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<DateTimeOffset>("Timestamp")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("ID");
 
@@ -552,22 +553,22 @@ namespace Remotely.Server.Migrations.Sqlite
 
                     b.Property<string>("DisplayName")
                         .HasMaxLength(100)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<bool>("IsAdministrator")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsServerAdmin")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("OrganizationID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("TempPassword")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("UserOptions")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasIndex("OrganizationID");
 
