@@ -196,6 +196,7 @@ namespace Remotely.Desktop.Core.Services
                 string requesterName,
                 bool notifyUser,
                 bool enforceAttendedAccess,
+                bool useWebRtc,
                 string organizationName) =>
             {
                 try
@@ -219,7 +220,8 @@ namespace Remotely.Desktop.Core.Services
                     {
                         NotifyUser = notifyUser,
                         ViewerID = viewerID,
-                        RequesterName = requesterName
+                        RequesterName = requesterName,
+                        UseWebRtc = useWebRtc
                     });
                 }
                 catch (Exception ex)
@@ -260,13 +262,14 @@ namespace Remotely.Desktop.Core.Services
                 }
             });
 
-            Connection.On("RequestScreenCast", (string viewerID, string requesterName, bool notifyUser) =>
+            Connection.On("RequestScreenCast", (string viewerID, string requesterName, bool notifyUser, bool useWebRtc) =>
             {
                 conductor.InvokeScreenCastRequested(new ScreenCastRequest()
                 {
                     NotifyUser = notifyUser,
                     ViewerID = viewerID,
-                    RequesterName = requesterName
+                    RequesterName = requesterName,
+                    UseWebRtc = useWebRtc
                 });
             });
 

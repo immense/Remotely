@@ -17,7 +17,7 @@ namespace Remotely.Server.Migrations.PostgreSql
             modelBuilder
                 .UseIdentityByDefaultColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.0");
+                .HasAnnotation("ProductVersion", "5.0.1");
 
             modelBuilder.Entity("DeviceGroupRemotelyUser", b =>
                 {
@@ -413,6 +413,9 @@ namespace Remotely.Server.Migrations.PostgreSql
 
                     b.Property<double>("UsedStorage")
                         .HasColumnType("double precision");
+
+                    b.Property<int>("WebRtcSetting")
+                        .HasColumnType("integer");
 
                     b.HasKey("ID");
 

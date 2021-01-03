@@ -82,7 +82,7 @@ namespace Remotely.Tests
 
             var groupID = DataService.GetDeviceGroups(TestData.Admin1.UserName).First().ID;
 
-            DataService.UpdateDevice(TestData.Device1.ID, "", "", groupID, "");
+            DataService.UpdateDevice(TestData.Device1.ID, "", "", groupID, "", Shared.Enums.WebRtcSetting.Default);
             DataService.AddUserToDeviceGroup(TestData.OrganizationID, groupID, TestData.User1.UserName, out _);
 
             Assert.IsTrue(DataService.GetDevicesForUser(TestData.Admin1.UserName).Count() == 2);

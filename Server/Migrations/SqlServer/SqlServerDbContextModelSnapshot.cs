@@ -17,7 +17,7 @@ namespace Remotely.Server.Migrations.SqlServer
             modelBuilder
                 .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.0");
+                .HasAnnotation("ProductVersion", "5.0.1");
 
             modelBuilder.Entity("DeviceGroupRemotelyUser", b =>
                 {
@@ -415,6 +415,9 @@ namespace Remotely.Server.Migrations.SqlServer
 
                     b.Property<double>("UsedStorage")
                         .HasColumnType("float");
+
+                    b.Property<int>("WebRtcSetting")
+                        .HasColumnType("int");
 
                     b.HasKey("ID");
 

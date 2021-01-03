@@ -87,7 +87,7 @@ namespace Remotely.Server.Pages
 
             AgentHubContext.Clients.Clients(onlineOrgAgents).SendAsync("TriggerHeartbeat");
 
-            DataService.UpdateDevice(deviceID, Input.Tags, Input.Alias, Input.DeviceGroupID, Input.Notes);
+            DataService.UpdateDevice(deviceID, Input.Tags, Input.Alias, Input.DeviceGroupID, Input.Notes, Input.WebRtcSetting);
 
             return RedirectToPage("EditDevice", new { deviceID, success = true });
         }
@@ -105,6 +105,7 @@ namespace Remotely.Server.Pages
                 Input.DeviceGroupID = device?.DeviceGroupID;
                 Input.Tags = device?.Tags;
                 Input.Notes = device?.Notes;
+                Input.WebRtcSetting = device?.WebRtcSetting ?? default;
 
             }
             var groups = DataService.GetDeviceGroups(User.Identity.Name);
@@ -122,6 +123,8 @@ namespace Remotely.Server.Pages
             public string Tags { get; set; }
 
             public string Notes { get; set; }
+
+            public WebRtcSetting WebRtcSetting { get; set; }
         }
     }
 }

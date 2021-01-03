@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Remotely.Shared.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
@@ -44,5 +45,6 @@ namespace Remotely.Shared.Models
         public double UsedMemory { get; set; }
 
         public double UsedStorage { get; set; }
+        public WebRtcSetting WebRtcSetting { get; set; }
     }
 }
