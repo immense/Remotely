@@ -218,6 +218,9 @@
                     <br />
                     <span asp-validation-for="AppSettingsInput.SmtpUserName" class="text-danger"></span>
                 </div>
+                <div class="form-group text-right">
+                    <button id="sendTestEmailButton" type="button" asp-page-handler="SaveAndTestSmtp" class="btn btn-secondary">Save and Test</button>
+                </div>
                 <div class="form-group">
                     <label asp-for="AppSettingsInput.Theme" class="control-label"></label>
                     <br />
@@ -313,7 +316,7 @@
 
 
                 <div class="form-group mt-3">
-                    <button id="serverConfigSaveButton" type="button" class="btn btn-primary">Save</button>
+                    <button id="serverConfigSaveButton" type="button" asp-page-handler="Save" class="btn btn-primary">Save</button>
                 </div>
             </form>
         </div>
