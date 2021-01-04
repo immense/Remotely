@@ -54,10 +54,11 @@ namespace Remotely.Server.API
                 {
                     await Task.Delay(new Random().Next(100, 10000));
 
+                    // A get operation is necessary to evaluate item eviction.
                     _downloadingAgents.TryGetValue(string.Empty, out _);
                 }
 
-                var entryExpirationTime = TimeSpan.FromMinutes(6);
+                var entryExpirationTime = TimeSpan.FromMinutes(3);
                 var tokenExpirationTime = entryExpirationTime.Add(TimeSpan.FromSeconds(15));
 
                 var expirationToken = new CancellationChangeToken(
