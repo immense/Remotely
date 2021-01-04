@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Remotely.Server.Hubs;
 using Remotely.Server.Services;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -46,6 +48,8 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         public bool IsServerAdmin { get; set; }
         public string Environment { get; set; }
 
+        public IEnumerable<string> OutdatedDevices { get; set; }
+
         [BindProperty]
         [Display(Name = "Server Admins")]
         public List<string> ServerAdmins { get; set; } = new List<string>();
@@ -62,11 +66,18 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         public async Task<IActionResult> OnGet()
         {
             IsServerAdmin = (await UserManager.GetUserAsync(User)).IsServerAdmin;
-            Environment = HostEnv.EnvironmentName;
             if (!IsServerAdmin)
             {
                 return Unauthorized();
             }
+            if (System.IO.File.Exists("Remotely_Server.dll"))
+            {
+                var serverVersion = System.Diagnostics.FileVersionInfo.GetVersionInfo("Remotely_Server.dll").FileVersion.ToString();
+                OutdatedDevices = AgentHub.ServiceConnections.Values
+                    .Where(x => x.AgentVersion != serverVersion)
+                    .Select(x => x.ID);
+            }
+            Environment = HostEnv.EnvironmentName;
 
             Configuration.Bind("ApplicationOptions", AppSettingsInput);
             Configuration.Bind("ConnectionStrings", ConnectionStrings);
