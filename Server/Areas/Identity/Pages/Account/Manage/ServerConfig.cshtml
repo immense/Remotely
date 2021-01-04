@@ -21,6 +21,11 @@
                     <span class="badge badge-primary p-2">@AgentHub.ServiceConnections.Count</span>
                 </div>
                 <div class="d-inline-block text-center mr-2">
+                    <label>Devices Outdated</label>
+                    <br />
+                    <span class="badge badge-primary p-2">@(Model.OutdatedDevices?.Count() ?? 0)</span>
+                </div>
+                <div class="d-inline-block text-center mr-2">
                     <label>Devices Total</label>
                     <br />
                     <span class="badge badge-primary p-2">@DataService.GetTotalDevices()</span>
