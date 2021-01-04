@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Remotely.Server.Services;
 using Remotely.Shared.Enums;
@@ -69,7 +70,8 @@ namespace Remotely.Server.API
                 _downloadingAgents.Set(downloadId, string.Empty, cacheOptions);
 
                 var waitTime = DateTimeOffset.Now - startWait;
-                DataService.WriteEvent($"Download started after wait time of {waitTime}.  " + "" +
+                DataService.WriteEvent($"Download started after wait time of {waitTime}.  " + 
+                    $"ID: {downloadId}. " +
                     $"Current Downloads: {_downloadingAgents.Count}.  Max Allowed: {AppConfig.MaxConcurrentUpdates}", EventType.Debug, null);
 
 
@@ -87,6 +89,9 @@ namespace Remotely.Server.API
                         filePath = Path.Combine(HostEnv.WebRootPath, "Downloads", "Remotely-Linux.zip");
                         break;
                     default:
+                        DataService.WriteEvent($"Unknown platform requested in { nameof(AgentUpdateController)}: {platform}",
+                            EventType.Warning,
+                            null);
                         return BadRequest();
                 }
 

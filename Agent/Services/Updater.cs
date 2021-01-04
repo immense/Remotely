@@ -16,9 +16,10 @@ namespace Remotely.Agent.Services
             ConfigService = configService;
         }
 
-        private ConfigService ConfigService { get; }
         private SemaphoreSlim CheckForUpdatesLock { get; } = new SemaphoreSlim(1, 1);
+        private ConfigService ConfigService { get; }
         private SemaphoreSlim InstallLatestVersionLock { get; } = new SemaphoreSlim(1, 1);
+        private bool PreviousUpdateFailed { get; set; }
         private System.Timers.Timer UpdateTimer { get; } = new System.Timers.Timer(TimeSpan.FromHours(6).TotalMilliseconds);
 
 
@@ -38,12 +39,19 @@ namespace Remotely.Agent.Services
         {
             try
             {
+                await CheckForUpdatesLock.WaitAsync();
+
                 if (EnvironmentHelper.IsDebug)
                 {
                     return;
                 }
 
-                await CheckForUpdatesLock.WaitAsync();
+                if (PreviousUpdateFailed)
+                {
+                    Logger.Write("Skipping update check due to previous failure.  Restart the service to try again, or manually install the update.");
+                    return;
+                }
+
 
                 var connectionInfo = ConfigService.GetConnectionInfo();
                 var serverUrl = ConfigService.GetConnectionInfo().Host;
@@ -168,7 +176,7 @@ namespace Remotely.Agent.Services
                            installerPath);
 
                     await wc.DownloadFileTaskAsync(
-                       serverUrl + $"/api/AgentUpdate/DownloadPackage/linux/{downloadId}",
+                       serverUrl + $"/API/AgentUpdate/DownloadPackage/linux/{downloadId}",
                        zipPath);
 
                     (await WebRequest.CreateHttp(serverUrl + $"/api/AgentUpdate/ClearDownload/{downloadId}").GetResponseAsync()).Dispose();
@@ -182,11 +190,13 @@ namespace Remotely.Agent.Services
             }
             catch (WebException ex) when (ex.Status == WebExceptionStatus.Timeout)
             {
-                Logger.Write("Timed out while waiting to downloaod update.", Shared.Enums.EventType.Warning);
+                Logger.Write("Timed out while waiting to download update.", Shared.Enums.EventType.Warning);
+                PreviousUpdateFailed = true;
             }
             catch (Exception ex)
             {
                 Logger.Write(ex);
+                PreviousUpdateFailed = true;
             }
             finally
             {
