@@ -72,6 +72,7 @@ namespace Remotely.Server.API
                 var waitTime = DateTimeOffset.Now - startWait;
                 DataService.WriteEvent($"Download started after wait time of {waitTime}.  " + 
                     $"ID: {downloadId}. " +
+                    $"IP: {Request?.HttpContext?.Connection?.RemoteIpAddress}. " +
                     $"Current Downloads: {_downloadingAgents.Count}.  Max Allowed: {AppConfig.MaxConcurrentUpdates}", EventType.Debug, null);
 
 
@@ -89,7 +90,9 @@ namespace Remotely.Server.API
                         filePath = Path.Combine(HostEnv.WebRootPath, "Downloads", "Remotely-Linux.zip");
                         break;
                     default:
-                        DataService.WriteEvent($"Unknown platform requested in { nameof(AgentUpdateController)}: {platform}",
+                        DataService.WriteEvent($"Unknown platform requested in { nameof(AgentUpdateController)}. " +
+                            $"Platform: {platform}. " +
+                            $"IP: {Request?.HttpContext?.Connection?.RemoteIpAddress}.",
                             EventType.Warning,
                             null);
                         return BadRequest();
