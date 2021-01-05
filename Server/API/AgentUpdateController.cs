@@ -59,7 +59,7 @@ namespace Remotely.Server.API
 
                 if (await CheckForDeviceBan(remoteIp))
                 {
-                    return GetImmediateUninstaller(platform);
+                    return BadRequest();
                 }
 
                 var startWait = DateTimeOffset.Now;
@@ -122,32 +122,6 @@ namespace Remotely.Server.API
                 _downloadingAgents.Remove(downloadId);
                 DataService.WriteEvent(ex, null);
                 return StatusCode((int)HttpStatusCode.InternalServerError);
-            }
-        }
-
-        private ActionResult GetImmediateUninstaller(string platform)
-        {
-            switch (platform.ToLower())
-            {
-                case "win-x64":
-                case "win-x86":
-                    {
-                        var fileContents = "sc delete Remotely_Service & taskkill /im Remotely_Agent.exe /f";
-                        return File(Encoding.UTF8.GetBytes(fileContents), "application/octet-stream");
-                    }
-                case "linux":
-                    {
-                        var fileContents = "systemctl stop remotely-agent; rm -f /etc/systemd/system/remotely-agent.service;";
-                        return File(Encoding.UTF8.GetBytes(fileContents), "application/octet-stream");
-                    }
-                    break;
-                default:
-                    DataService.WriteEvent($"Unknown platform requested in {nameof(AgentUpdateController)}. " +
-                        $"Platform: {platform}. " +
-                        $"IP: {Request?.HttpContext?.Connection?.RemoteIpAddress}.",
-                        EventType.Warning,
-                        null);
-                    return BadRequest();
             }
         }
 

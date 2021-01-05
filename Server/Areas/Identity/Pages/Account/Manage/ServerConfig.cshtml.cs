@@ -8,6 +8,7 @@ using Remotely.Server.Hubs;
 using Remotely.Server.Services;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -70,13 +71,12 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             {
                 return Unauthorized();
             }
-            if (System.IO.File.Exists("Remotely_Server.dll"))
-            {
-                var serverVersion = System.Diagnostics.FileVersionInfo.GetVersionInfo("Remotely_Server.dll").FileVersion.ToString();
-                OutdatedDevices = AgentHub.ServiceConnections.Values
-                    .Where(x => x.AgentVersion != serverVersion)
-                    .Select(x => x.ID);
-            }
+
+            var highestVersion = AgentHub.ServiceConnections.Values.Max(x => Version.TryParse(x.AgentVersion, out var result) ? result : default);
+            OutdatedDevices = AgentHub.ServiceConnections.Values
+                .Where(x => x.AgentVersion != highestVersion.ToString())
+                .Select(x => x.ID);
+
             Environment = HostEnv.EnvironmentName;
 
             Configuration.Bind("ApplicationOptions", AppSettingsInput);

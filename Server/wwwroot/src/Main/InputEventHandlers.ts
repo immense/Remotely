@@ -23,9 +23,6 @@ export function ApplyInputEventHandlers() {
     window.addEventListener("resize", ev => {
         PositionCommandCompletionWindow();
     });
-
-    setViewportWidth();
-    window.addEventListener("orientationchange", setViewportWidth);
 }
 
 function addGridPaginationHandlers() {
@@ -261,16 +258,4 @@ function keyDownOnWindow() {
             UI.ConsoleOutputDiv.innerHTML = "";
         }
     });
-}
-
-function setViewportWidth() {
-    if (window.screen?.orientation?.type?.includes("portrait")) {
-        var desiredWidth = Math.max(550, window.screen.width);
-        document.querySelector('meta[name="viewport"').setAttribute("content", `width=${desiredWidth}, user-scalable=no`);
-    }
-    else {
-        var desiredHeight = Math.max(700, window.screen.height);
-        document.querySelector('meta[name="viewport"').setAttribute("content", `width=device-width, height=${desiredHeight}, user-scalable=no`);
-    }
-    console.log(window.screen);
 }
