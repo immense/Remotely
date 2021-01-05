@@ -74,7 +74,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
             var highestVersion = AgentHub.ServiceConnections.Values.Max(x => Version.TryParse(x.AgentVersion, out var result) ? result : default);
             OutdatedDevices = AgentHub.ServiceConnections.Values
-                .Where(x => x.AgentVersion != highestVersion.ToString())
+                .Where(x => Version.TryParse(x.AgentVersion, out var result) ? result != highestVersion : false)
                 .Select(x => x.ID);
 
             Environment = HostEnv.EnvironmentName;
