@@ -67,53 +67,65 @@ export class DtoMessageHandler {
         if (captureFrame.EndOfCapture) {
             ViewerApp.MessageSender.SendFrameReceived();
 
-            Object.keys(this.PartialCaptures).forEach(x => {
-                let partial = this.PartialCaptures[x];
-                let firstFrame = partial[0];
-                let frameBytes = partial.map(x => x.ImageBytes);
+            //Object.keys(this.PartialCaptures).forEach(async x => {
+            //    let partial = this.PartialCaptures[x];
+            //    let firstFrame = partial[0];
+            //    let frameBytes = partial.map(x => x.ImageBytes);
 
-                var url = window.URL.createObjectURL(new Blob(frameBytes));
-                var img = document.createElement("img");
-                img.onload = () => {
-                    UI.Screen2DContext.drawImage(img,
-                        firstFrame.Left,
-                        firstFrame.Top,
-                        firstFrame.Width,
-                        firstFrame.Height);
-                    window.URL.revokeObjectURL(url);
-                };
-                img.src = url;
-            })
+            //    let bitmap = await createImageBitmap(new Blob(frameBytes));
 
-            this.PartialCaptures = {};
+            //    UI.Screen2DContext.drawImage(bitmap,
+            //        firstFrame.Left,
+            //        firstFrame.Top,
+            //        firstFrame.Width,
+            //        firstFrame.Height);
+
+            //    bitmap.close();
+
+            //    var url = window.URL.createObjectURL(new Blob(frameBytes));
+            //    var img = document.createElement("img");
+            //    img.onload = () => {
+            //        UI.Screen2DContext.drawImage(img,
+            //            firstFrame.Left,
+            //            firstFrame.Top,
+            //            firstFrame.Width,
+            //            firstFrame.Height);
+            //        window.URL.revokeObjectURL(url);
+            //    };
+            //    img.src = url;
+            //})
+
+            //this.PartialCaptures = {};
         }
-        //else if (captureFrame.EndOfFrame) {
-        //    let key = `${captureFrame.Left},${captureFrame.Top}`;
-        //    let frameBytes = this.PartialCaptures[key].map(x => x.ImageBytes);
+        else if (captureFrame.EndOfFrame) {
+            let key = `${captureFrame.Left},${captureFrame.Top}`;
+            let frameBytes = this.PartialCaptures[key].map(x => x.ImageBytes);
 
-        //    //var url = window.URL.createObjectURL(new Blob(frameBytes));
-        //    //var img = document.createElement("img");
-        //    //img.onload = () => {
-        //    //    UI.StagingRenderer.drawImage(img,
-        //    //        captureFrame.Left,
-        //    //        captureFrame.Top,
-        //    //        captureFrame.Width,
-        //    //        captureFrame.Height);
-        //    //    window.URL.revokeObjectURL(url);
-        //    //};
-        //    //img.src = url;
+            var url = window.URL.createObjectURL(new Blob(frameBytes));
+            var img = document.createElement("img");
+            img.onload = () => {
+                UI.Screen2DContext.drawImage(img,
+                    captureFrame.Left,
+                    captureFrame.Top,
+                    captureFrame.Width,
+                    captureFrame.Height);
+                window.URL.revokeObjectURL(url);
+
+                delete this.PartialCaptures[key];
+            };
+            img.src = url;
 
 
-        //    let bitmap = await createImageBitmap(new Blob(frameBytes));
+            //let bitmap = await createImageBitmap(new Blob(frameBytes));
 
-        //    UI.StagingRenderer.drawImage(bitmap,
-        //        captureFrame.Left,
-        //        captureFrame.Top,
-        //        captureFrame.Width,
-        //        captureFrame.Height);
+            //UI.Screen2DContext.drawImage(bitmap,
+            //    captureFrame.Left,
+            //    captureFrame.Top,
+            //    captureFrame.Width,
+            //    captureFrame.Height);
 
-        //    bitmap.close();
-        //}
+            //bitmap.close();
+        }
         else {
             let key = `${captureFrame.Left},${captureFrame.Top}`;
             if (this.PartialCaptures[key]) {
