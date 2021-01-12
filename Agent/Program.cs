@@ -50,7 +50,6 @@ namespace Remotely.Agent
             serviceCollection.AddTransient<PSCore>();
             serviceCollection.AddTransient<WindowsPS>();
             serviceCollection.AddScoped<ConfigService>();
-            serviceCollection.AddSingleton<Updater>();
             serviceCollection.AddScoped<Uninstaller>();
             serviceCollection.AddScoped<ScriptRunner>();
             serviceCollection.AddScoped<CommandExecutor>();
@@ -58,10 +57,12 @@ namespace Remotely.Agent
             if (EnvironmentHelper.IsWindows)
             {
                 serviceCollection.AddScoped<IAppLauncher, AppLauncherWin>();
+                serviceCollection.AddSingleton<IUpdater, UpdaterWin>();
             }
             else if (EnvironmentHelper.IsLinux)
             {
                 serviceCollection.AddScoped<IAppLauncher, AppLauncherLinux>();
+                serviceCollection.AddSingleton<IUpdater, UpdaterLinux>();
             }
             else if (EnvironmentHelper.IsMac)
             {
@@ -105,9 +106,13 @@ namespace Remotely.Agent
                     });
                 }
 
-                await Services.GetRequiredService<Updater>().BeginChecking();
+                await Services.GetRequiredService<IUpdater>().BeginChecking();
 
                 await Services.GetRequiredService<AgentSocket>().Connect();
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
             }
             finally
             {

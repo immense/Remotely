@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Remotely.Agent.Interfaces;
+using Remotely.Agent.Utilities;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Services;
@@ -27,7 +28,7 @@ namespace Remotely.Agent.Services
             ScriptRunner scriptRunner,
             ChatClientService chatService,
             IAppLauncher appLauncher,
-            Updater updater)
+            IUpdater updater)
         {
             ConfigService = configService;
             Uninstaller = uninstaller;
@@ -40,7 +41,6 @@ namespace Remotely.Agent.Services
         public bool IsConnected => HubConnection?.State == HubConnectionState.Connected;
         private IAppLauncher AppLauncher { get; }
         private ChatClientService ChatService { get; }
-        private Updater Updater { get; }
         private CommandExecutor CommandExecutor { get; }
         private ConfigService ConfigService { get; }
         private ConnectionInfo ConnectionInfo { get; set; }
@@ -49,6 +49,8 @@ namespace Remotely.Agent.Services
         private bool IsServerVerified { get; set; }
         private ScriptRunner ScriptRunner { get; }
         private Uninstaller Uninstaller { get; }
+        private IUpdater Updater { get; }
+
         public async Task Connect()
         {
             try
@@ -102,6 +104,14 @@ namespace Remotely.Agent.Services
                 HeartbeatTimer = new System.Timers.Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
                 HeartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
                 HeartbeatTimer.Start();
+
+                if (EnvironmentHelper.IsWindows &&
+                    !RegistryHelper.CheckNetFrameworkVersion())
+                {
+                    await SendDeviceAlert("The .NET Framework version on this device is outdated, and " +
+                        "Remotely will no longer receive updates.  Update the installed .NET Framework version " +
+                        "to fix this.");
+                }
             }
             catch (Exception ex)
             {
@@ -121,7 +131,7 @@ namespace Remotely.Agent.Services
                         Logger.Write($"Websocket closed.  Reconnecting in {waitTime / 1000} seconds...");
                         await Task.Delay(waitTime);
                         await Program.Services.GetRequiredService<AgentSocket>().Connect();
-                        await Program.Services.GetRequiredService<Updater>().CheckForUpdates();
+                        await Program.Services.GetRequiredService<IUpdater>().CheckForUpdates();
                     }
                 }
                 catch (Exception ex)
@@ -132,6 +142,10 @@ namespace Remotely.Agent.Services
             }
         }
 
+        public async Task SendDeviceAlert(string alertMessage)
+        {
+            await HubConnection.SendAsync("AddDeviceAlert", alertMessage);
+        }
         public async Task SendHeartbeat()
         {
             var currentInfo = await DeviceInformation.Create(ConnectionInfo.DeviceID, ConnectionInfo.OrganizationID);
@@ -326,5 +340,6 @@ namespace Remotely.Agent.Services
                 }
             });
         }
+
     }
 }

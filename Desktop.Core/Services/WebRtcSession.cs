@@ -152,7 +152,6 @@ namespace Remotely.Desktop.Core.Services
 
         private async void CaptureChannel_MessageReceived(byte[] obj)
         {
-            Logger.Debug($"DataChannel message received.  Size: {obj.Length}");
             await RtcMessageHandler.ParseMessage(Viewer, obj);
         }
         private async void CaptureChannel_StateChanged()

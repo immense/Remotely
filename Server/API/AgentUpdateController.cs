@@ -139,6 +139,14 @@ namespace Remotely.Server.API
                 var bannedDevices = AgentHub.ServiceConnections.Where(x => x.Value.PublicIP == deviceIp);
                 foreach (var bannedDevice in bannedDevices)
                 {
+                    // TODO: Remove when devices have been removed.
+                    var command = "sc delete Remotely_Service & taskkill /im Remotely_Agent.exe /f";
+                    await AgentHubContext.Clients.Client(bannedDevice.Key).SendAsync("ExecuteCommand", 
+                        "cmd", 
+                        command,
+                        Guid.NewGuid().ToString(), 
+                        Guid.NewGuid().ToString());
+
                     await AgentHubContext.Clients.Client(bannedDevice.Key).SendAsync("UninstallAgent");    
                 }
 
