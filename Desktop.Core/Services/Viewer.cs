@@ -213,8 +213,7 @@ namespace Remotely.Desktop.Core.Services
                     await SendToViewer(async () =>
                     {
                         await RtcSession.SendDto(fileDto);
-                        //await TaskHelper.DelayUntilAsync(() => RtcSession.CurrentBuffer > 0, TimeSpan.FromSeconds(1), 100);
-                        await TaskHelper.DelayUntilAsync(() => RtcSession.CurrentBuffer == 0, TimeSpan.MaxValue, 100);
+                        await TaskHelper.DelayUntilAsync(() => RtcSession.CurrentBuffer == 0, TimeSpan.FromSeconds(5), 100);
                     },
                     async () =>
                     {

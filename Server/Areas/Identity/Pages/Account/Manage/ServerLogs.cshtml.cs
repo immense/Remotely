@@ -62,6 +62,13 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnPostClearLogsAsync()
         {
+            var currentUser = DataService.GetUserByName(User.Identity.Name);
+
+            if (!currentUser.IsAdministrator)
+            {
+                return Unauthorized();
+            }
+
             await DataService.ClearLogs(User.Identity.Name);
             return RedirectToPage();
         }
