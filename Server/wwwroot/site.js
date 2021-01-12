@@ -1,5 +1,5 @@
 ﻿function setViewportWidth() {
-    if (window.screen?.orientation?.type?.includes("portrait")) {
+    if (window.screen.orientation.type.includes("portrait")) {
         var desiredWidth = Math.max(550, window.screen.width);
         document.querySelector('meta[name="viewport"').setAttribute("content", `width=${desiredWidth}, user-scalable=no`);
     }
@@ -9,7 +9,5 @@
     }
 }
 
-window.addEventListener("load", () => {
-    setViewportWidth();
-    window.addEventListener("orientationchange", setViewportWidth);
-});
+setViewportWidth();
+window.addEventListener("orientationchange", setViewportWidth);
