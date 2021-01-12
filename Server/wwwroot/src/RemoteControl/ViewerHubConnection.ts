@@ -73,8 +73,8 @@ export class ViewerHubConnection {
 
 
     private ApplyMessageHandlers(hubConnection) {
-        hubConnection.on("SendDtoToBrowser", async (dto: ArrayBuffer) => {
-            await ViewerApp.DtoMessageHandler.ParseBinaryMessage(dto);
+        hubConnection.on("SendDtoToBrowser", (dto: ArrayBuffer) => {
+            ViewerApp.DtoMessageHandler.ParseBinaryMessage(dto);
         });
         hubConnection.on("ClipboardTextChanged", (clipboardText: string) => {
             ViewerApp.ClipboardWatcher.SetClipboardText(clipboardText);
