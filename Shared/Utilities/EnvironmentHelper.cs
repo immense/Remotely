@@ -1,7 +1,6 @@
 ﻿using Remotely.Shared.Enums;
 using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 
 namespace Remotely.Shared.Utilities
 {
@@ -54,25 +53,25 @@ namespace Remotely.Shared.Utilities
 #endif
             }
         }
-        public static bool IsLinux => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+        public static bool IsLinux => OperatingSystem.IsLinux();
 
-        public static bool IsMac => RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+        public static bool IsMac => OperatingSystem.IsMacOS();
 
-        public static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+        public static bool IsWindows => OperatingSystem.IsWindows();
 
         public static Platform Platform
         {
             get
             {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                if (IsWindows)
                 {
                     return Platform.Windows;
                 }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                else if (IsLinux)
                 {
                     return Platform.Linux;
                 }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                else if (IsMac)
                 {
                     return Platform.OSX;
                 }

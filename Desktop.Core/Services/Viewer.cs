@@ -250,63 +250,44 @@ namespace Remotely.Desktop.Core.Services
                 () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
         }
 
-        public async Task SendScreenCapture(IEnumerable<CaptureFrame> screenFrame)
+        public async Task SendScreenCapture(CaptureFrame screenFrame)
         {
             PendingSentFrames.Enqueue(DateTimeOffset.Now);
 
-            foreach (var frame in screenFrame)
+            var left = screenFrame.Left;
+            var top = screenFrame.Top;
+            var width = screenFrame.Width;
+            var height = screenFrame.Height;
+
+            for (var i = 0; i < screenFrame.EncodedImageBytes.Length; i += 50_000)
             {
-                var left = frame.Left;
-                var top = frame.Top;
-                var width = frame.Width;
-                var height = frame.Height;
-
-                for (var i = 0; i < frame.EncodedImageBytes.Length; i += 50_000)
-                {
-                    var dto = new CaptureFrameDto()
-                    {
-                        Left = left,
-                        Top = top,
-                        Width = width,
-                        Height = height,
-                        EndOfFrame = false,
-                        ImageBytes = frame.EncodedImageBytes.Skip(i).Take(50_000).ToArray(),
-                        ImageQuality = _imageQuality,
-                        EndOfCapture = false
-                    };
-
-                    await SendToViewer(() => RtcSession.SendDto(dto),
-                        () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
-                }
-
-                var endOfFrameDto = new CaptureFrameDto()
+                var dto = new CaptureFrameDto()
                 {
                     Left = left,
                     Top = top,
                     Width = width,
                     Height = height,
-                    EndOfFrame = true,
-                    ImageQuality = _imageQuality,
-                    EndOfCapture = false
+                    EndOfFrame = false,
+                    ImageBytes = screenFrame.EncodedImageBytes.Skip(i).Take(50_000).ToArray(),
+                    ImageQuality = _imageQuality
                 };
 
-                await SendToViewer(() => RtcSession.SendDto(endOfFrameDto),
-                    () => CasterSocket.SendDtoToViewer(endOfFrameDto, ViewerConnectionID));
+                await SendToViewer(() => RtcSession.SendDto(dto),
+                    () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
             }
 
-            var endofCaptureDto = new CaptureFrameDto()
+            var endOfFrameDto = new CaptureFrameDto()
             {
-                Left = 0,
-                Top = 0,
-                Width = 0,
-                Height = 0,
+                Left = left,
+                Top = top,
+                Width = width,
+                Height = height,
                 EndOfFrame = true,
-                ImageQuality = _imageQuality,
-                EndOfCapture = true
+                ImageQuality = _imageQuality
             };
 
-            await SendToViewer(() => RtcSession.SendDto(endofCaptureDto),
-                () => CasterSocket.SendDtoToViewer(endofCaptureDto, ViewerConnectionID));
+            await SendToViewer(() => RtcSession.SendDto(endOfFrameDto),
+                () => CasterSocket.SendDtoToViewer(endOfFrameDto, ViewerConnectionID));
         }
 
         public async Task SendScreenData(string selectedScreen, string[] displayNames)

@@ -1,17 +1,21 @@
-﻿using Remotely.Shared.Utilities;
+﻿using Remotely.Agent.Interfaces;
+using Remotely.Shared.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Remotely.Agent.Services
 {
-    public class Updater
+    public class UpdaterLinux : IUpdater
     {
-        public Updater(ConfigService configService)
+        public UpdaterLinux(ConfigService configService)
         {
             ConfigService = configService;
         }
@@ -56,21 +60,7 @@ namespace Remotely.Agent.Services
                 var connectionInfo = ConfigService.GetConnectionInfo();
                 var serverUrl = ConfigService.GetConnectionInfo().Host;
 
-                string fileUrl;
-
-                if (EnvironmentHelper.IsWindows)
-                {
-                    var platform = Environment.Is64BitOperatingSystem ? "x64" : "x86";
-                    fileUrl = serverUrl + $"/Downloads/Remotely-Win10-{platform}.zip";
-                }
-                else if (EnvironmentHelper.IsLinux)
-                {
-                    fileUrl = serverUrl + $"/Downloads/Remotely-Linux.zip";
-                }
-                else
-                {
-                    throw new PlatformNotSupportedException();
-                }
+                var fileUrl = serverUrl + $"/Downloads/Remotely-Linux.zip";
 
                 var lastEtag = string.Empty;
 
@@ -127,66 +117,38 @@ namespace Remotely.Agent.Services
                 var downloadId = Guid.NewGuid().ToString();
                 var zipPath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.zip");
 
-                if (EnvironmentHelper.IsWindows)
+                var installerPath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.sh");
+
+                string platform;
+
+                if (RuntimeInformation.OSDescription.Contains("Ubuntu", StringComparison.OrdinalIgnoreCase))
                 {
-                    var installerPath = Path.Combine(Path.GetTempPath(), "Remotely_Installer.exe");
-                    var platform = Environment.Is64BitOperatingSystem ? "x64" : "x86";
-
-                    await wc.DownloadFileTaskAsync(
-                         serverUrl + $"/Downloads/Remotely_Installer.exe",
-                         installerPath);
-
-                    await wc.DownloadFileTaskAsync(
-                       serverUrl + $"/api/AgentUpdate/DownloadPackage/win-{platform}/{downloadId}",
-                       zipPath);
-
-                    (await WebRequest.CreateHttp(serverUrl + $"/api/AgentUpdate/ClearDownload/{downloadId}").GetResponseAsync()).Dispose();
-
-
-                    foreach (var proc in Process.GetProcessesByName("Remotely_Installer"))
-                    {
-                        proc.Kill();
-                    }
-
-                    Logger.Write("Launching installer to perform update.");
-
-                    Process.Start(installerPath, $"-install -quiet -path {zipPath} -serverurl {serverUrl} -organizationid {connectionInfo.OrganizationID}");
+                    platform = "Ubuntu-x64";
                 }
-                else if (EnvironmentHelper.IsLinux)
+                else if (RuntimeInformation.OSDescription.Contains("Manjaro", StringComparison.OrdinalIgnoreCase))
                 {
-                    var installerPath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.sh");
-
-                    string platform;
-
-                    if (RuntimeInformation.OSDescription.Contains("Ubuntu", StringComparison.OrdinalIgnoreCase))
-                    {
-                        platform = "Ubuntu-x64";
-                    }
-                    else if (RuntimeInformation.OSDescription.Contains("Manjaro", StringComparison.OrdinalIgnoreCase))
-                    {
-                        platform = "Manjaro-x64";
-                    }
-                    else
-                    {
-                        throw new PlatformNotSupportedException();
-                    }
-
-                    await wc.DownloadFileTaskAsync(
-                           serverUrl + $"/API/ClientDownloads/{connectionInfo.OrganizationID}/{platform}",
-                           installerPath);
-
-                    await wc.DownloadFileTaskAsync(
-                       serverUrl + $"/API/AgentUpdate/DownloadPackage/linux/{downloadId}",
-                       zipPath);
-
-                    (await WebRequest.CreateHttp(serverUrl + $"/api/AgentUpdate/ClearDownload/{downloadId}").GetResponseAsync()).Dispose();
-
-                    Logger.Write("Launching installer to perform update.");
-
-                    Process.Start("sudo", $"chmod +x {installerPath}").WaitForExit();
-
-                    Process.Start("sudo", $"{installerPath} --path {zipPath} & disown");
+                    platform = "Manjaro-x64";
                 }
+                else
+                {
+                    throw new PlatformNotSupportedException();
+                }
+
+                await wc.DownloadFileTaskAsync(
+                       serverUrl + $"/API/ClientDownloads/{connectionInfo.OrganizationID}/{platform}",
+                       installerPath);
+
+                await wc.DownloadFileTaskAsync(
+                   serverUrl + $"/API/AgentUpdate/DownloadPackage/linux/{downloadId}",
+                   zipPath);
+
+                (await WebRequest.CreateHttp(serverUrl + $"/api/AgentUpdate/ClearDownload/{downloadId}").GetResponseAsync()).Dispose();
+
+                Logger.Write("Launching installer to perform update.");
+
+                Process.Start("sudo", $"chmod +x {installerPath}").WaitForExit();
+
+                Process.Start("sudo", $"{installerPath} --path {zipPath} & disown");
             }
             catch (WebException ex) when (ex.Status == WebExceptionStatus.Timeout)
             {

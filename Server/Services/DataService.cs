@@ -26,6 +26,8 @@ namespace Remotely.Server.Services
         bool AddUserToDeviceGroup(string orgID, string groupID, string userName, out string resultMessage);
         void ChangeUserIsAdmin(string organizationID, string targetUserID, bool isAdmin);
         void CleanupOldRecords();
+        Task ClearLogs(string currentUserName);
+
         Task<ApiToken> CreateApiToken(string userName, string tokenName, string secretHash);
         Task<Device> CreateDevice(DeviceSetupOptions options);
         Task<bool> CreateUser(string userEmail, bool isAdmin, string organizationID);
@@ -185,30 +187,6 @@ namespace Remotely.Server.Services
             organization.InviteLinks.Add(newInvite);
             RemotelyContext.SaveChanges();
             return newInvite;
-        }
-
-        public async Task<bool> TempPasswordSignIn(string email, string password)
-        {
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                return false;
-            }
-
-            var user = GetUserByName(email);
-
-            if (user is null)
-            {
-                return false;
-            }
-
-            if (user.TempPassword == password)
-            {
-                user.TempPassword = string.Empty;
-                await RemotelyContext.SaveChangesAsync();
-                return true;
-            }
-
-            return false;
         }
 
         public void AddOrUpdateCommandResult(CommandResult commandResult)
@@ -387,6 +365,27 @@ namespace Remotely.Server.Services
 
                 RemotelyContext.SaveChanges();
             }
+        }
+
+        public async Task ClearLogs(string currentUserName)
+        {
+            try
+            {
+                var currentUser = await RemotelyContext.Users.FirstOrDefaultAsync(x => x.UserName == currentUserName);
+
+                var eventLogs = RemotelyContext.EventLogs.Where(x => x.OrganizationID == currentUser.OrganizationID);
+                if (currentUser.IsServerAdmin)
+                {
+                    eventLogs = eventLogs.Concat(RemotelyContext.EventLogs.Where(x => string.IsNullOrWhiteSpace(x.OrganizationID)));
+                }
+                RemotelyContext.EventLogs.RemoveRange(eventLogs);
+
+                var commandResults = RemotelyContext.CommandResults.Where(x => x.OrganizationID == currentUser.OrganizationID);
+                RemotelyContext.CommandResults.RemoveRange(commandResults);
+
+                await RemotelyContext.SaveChangesAsync();
+            }
+            catch { }
         }
 
         public async Task<ApiToken> CreateApiToken(string userName, string tokenName, string secretHash)
@@ -1004,8 +1003,6 @@ namespace Remotely.Server.Services
             RemotelyContext.SaveChanges();
         }
 
-
-
         public async Task SetDisplayName(RemotelyUser user, string displayName)
         {
             RemotelyContext.Attach(user);
@@ -1023,6 +1020,29 @@ namespace Remotely.Server.Services
             }
         }
 
+        public async Task<bool> TempPasswordSignIn(string email, string password)
+        {
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                return false;
+            }
+
+            var user = GetUserByName(email);
+
+            if (user is null)
+            {
+                return false;
+            }
+
+            if (user.TempPassword == password)
+            {
+                user.TempPassword = string.Empty;
+                await RemotelyContext.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
+        }
         public void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes, WebRtcSetting webRtcSetting)
         {
             var device = RemotelyContext.Devices.Find(deviceID);

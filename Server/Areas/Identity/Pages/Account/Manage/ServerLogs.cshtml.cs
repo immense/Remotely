@@ -5,6 +5,7 @@ using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 {
@@ -54,9 +55,15 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
         }
 
-        public void OnPost()
+        public void OnPostApplyFilter()
         {
             PopulateViewModel();
+        }
+
+        public async Task<IActionResult> OnPostClearLogsAsync()
+        {
+            await DataService.ClearLogs(User.Identity.Name);
+            return RedirectToPage();
         }
 
         public class InputModel

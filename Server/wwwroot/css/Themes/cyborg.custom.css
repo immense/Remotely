@@ -137,10 +137,6 @@ span.label.code {
     background-color: lightgray;
 }
 
-#deviceGrid .fas:hover {
-    color: #2A9FD6 !important;
-}
-
 .toast-message {
     background-color: rgb(50, 50, 50);
     color: white;

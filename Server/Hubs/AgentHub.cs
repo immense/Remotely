@@ -43,6 +43,18 @@ namespace Remotely.Server.Hubs
             }
         }
 
+        public void AddDeviceAlert(string alertMessage)
+        {
+
+            var options = new AlertOptions()
+            {
+                AlertDeviceID = Device.ID,
+                AlertMessage = alertMessage,
+                ShouldAlert = true
+            };
+            DataService.AddAlert(options, Device.OrganizationID);
+        }
+
         public Task BashResultViaAjax(string commandID)
         {
             var commandResult = DataService.GetCommandResult(commandID);

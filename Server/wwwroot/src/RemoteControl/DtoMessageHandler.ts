@@ -19,7 +19,7 @@ import { ReceiveFile } from "./FileTransferService.js";
 
 export class DtoMessageHandler {
     MessagePack: any = window['MessagePack'];
-    PartialCaptures: Record<string, CaptureFrameDto[]> = {};
+    ImagePartials: Array<Uint8Array> = [];
     async ParseBinaryMessage(data: ArrayBuffer) {
         var model = this.MessagePack.decode(data) as BaseDto;
         switch (model.DtoType) {
@@ -64,76 +64,40 @@ export class DtoMessageHandler {
             UI.QualitySlider.value = String(captureFrame.ImageQuality);
         }
 
-        if (captureFrame.EndOfCapture) {
+        if (captureFrame.EndOfFrame) {
+
+            let completedFrame = new Blob(this.ImagePartials);
+
+            this.ImagePartials = [];
+
+            //var url = window.URL.createObjectURL(completedFrame);
+            //var img = document.createElement("img");
+            //img.onload = () => {
+            //    UI.Screen2DContext.drawImage(img,
+            //        captureFrame.Left,
+            //        captureFrame.Top,
+            //        captureFrame.Width,
+            //        captureFrame.Height);
+            //    window.URL.revokeObjectURL(url);
+            //};
+            //img.src = url;
+
+
+            let bitmap = await createImageBitmap(completedFrame);
+
+            UI.Screen2DContext.drawImage(bitmap,
+                captureFrame.Left,
+                captureFrame.Top,
+                captureFrame.Width,
+                captureFrame.Height);
+
+            bitmap.close();
+
             ViewerApp.MessageSender.SendFrameReceived();
 
-            //Object.keys(this.PartialCaptures).forEach(async x => {
-            //    let partial = this.PartialCaptures[x];
-            //    let firstFrame = partial[0];
-            //    let frameBytes = partial.map(x => x.ImageBytes);
-
-            //    let bitmap = await createImageBitmap(new Blob(frameBytes));
-
-            //    UI.Screen2DContext.drawImage(bitmap,
-            //        firstFrame.Left,
-            //        firstFrame.Top,
-            //        firstFrame.Width,
-            //        firstFrame.Height);
-
-            //    bitmap.close();
-
-            //    var url = window.URL.createObjectURL(new Blob(frameBytes));
-            //    var img = document.createElement("img");
-            //    img.onload = () => {
-            //        UI.Screen2DContext.drawImage(img,
-            //            firstFrame.Left,
-            //            firstFrame.Top,
-            //            firstFrame.Width,
-            //            firstFrame.Height);
-            //        window.URL.revokeObjectURL(url);
-            //    };
-            //    img.src = url;
-            //})
-
-            //this.PartialCaptures = {};
-        }
-        else if (captureFrame.EndOfFrame) {
-            let key = `${captureFrame.Left},${captureFrame.Top}`;
-            let frameBytes = this.PartialCaptures[key].map(x => x.ImageBytes);
-
-            var url = window.URL.createObjectURL(new Blob(frameBytes));
-            var img = document.createElement("img");
-            img.onload = () => {
-                UI.Screen2DContext.drawImage(img,
-                    captureFrame.Left,
-                    captureFrame.Top,
-                    captureFrame.Width,
-                    captureFrame.Height);
-                window.URL.revokeObjectURL(url);
-
-                delete this.PartialCaptures[key];
-            };
-            img.src = url;
-
-
-            //let bitmap = await createImageBitmap(new Blob(frameBytes));
-
-            //UI.Screen2DContext.drawImage(bitmap,
-            //    captureFrame.Left,
-            //    captureFrame.Top,
-            //    captureFrame.Width,
-            //    captureFrame.Height);
-
-            //bitmap.close();
         }
         else {
-            let key = `${captureFrame.Left},${captureFrame.Top}`;
-            if (this.PartialCaptures[key]) {
-                this.PartialCaptures[key].push(captureFrame);
-            }
-            else {
-                this.PartialCaptures[key] = [captureFrame];
-            }
+            this.ImagePartials.push(captureFrame.ImageBytes);
         }
     }
 

@@ -45,7 +45,6 @@ namespace Remotely.Desktop.Core.Services
                 var sendFramesLock = new SemaphoreSlim(1, 1);
                 Bitmap currentFrame = null;
                 Bitmap previousFrame = null;
-                var fpsQueue = new Queue<DateTimeOffset>();
 
                 var viewer = ServiceContainer.Instance.GetRequiredService<Viewer>();
                 viewer.Name = screenCastRequest.RequesterName;
@@ -90,16 +89,13 @@ namespace Remotely.Desktop.Core.Services
                 {
                     if (initialFrame != null)
                     {
-                        await viewer.SendScreenCapture(new CaptureFrame[]
+                        await viewer.SendScreenCapture(new CaptureFrame()
                         {
-                            new CaptureFrame()
-                            {
-                                EncodedImageBytes = ImageUtils.EncodeBitmap(initialFrame, viewer.EncoderParams),
-                                Left = viewer.Capturer.CurrentScreenBounds.Left,
-                                Top = viewer.Capturer.CurrentScreenBounds.Top,
-                                Width = viewer.Capturer.CurrentScreenBounds.Width,
-                                Height = viewer.Capturer.CurrentScreenBounds.Height
-                            }
+                            EncodedImageBytes = ImageUtils.EncodeBitmap(initialFrame, viewer.EncoderParams),
+                            Left = viewer.Capturer.CurrentScreenBounds.Left,
+                            Top = viewer.Capturer.CurrentScreenBounds.Top,
+                            Width = viewer.Capturer.CurrentScreenBounds.Width,
+                            Height = viewer.Capturer.CurrentScreenBounds.Height
                         });
                     }
                 }
@@ -127,16 +123,6 @@ namespace Remotely.Desktop.Core.Services
                             // Viewer isn't responding.  Abort sending.
                             break;
                         }
-                        
-                        if (EnvironmentHelper.IsDebug)
-                        {
-                            while (fpsQueue.Any() && DateTimeOffset.Now - fpsQueue.Peek() > TimeSpan.FromSeconds(1))
-                            {
-                                fpsQueue.Dequeue();
-                            }
-                            fpsQueue.Enqueue(DateTimeOffset.Now);
-                            Debug.WriteLine($"Capture FPS: {fpsQueue.Count}");
-                        }
 
                         viewer.ThrottleIfNeeded();
 
@@ -149,9 +135,9 @@ namespace Remotely.Desktop.Core.Services
                         currentFrame?.Dispose();
                         currentFrame = viewer.Capturer.GetNextFrame();
 
-                        var diffAreas = ImageUtils.GetDiffAreas2(currentFrame, previousFrame, viewer.Capturer.CaptureFullscreen);
+                        var diffArea = ImageUtils.GetDiffArea(currentFrame, previousFrame, viewer.Capturer.CaptureFullscreen);
 
-                        if (!diffAreas.Any())
+                        if (diffArea.IsEmpty)
                         {
                             continue;
                         }
@@ -160,9 +146,8 @@ namespace Remotely.Desktop.Core.Services
                         viewer.Capturer.CaptureFullscreen = false;
 
                         var frameClone = (Bitmap)currentFrame.Clone();
-                        Debug.WriteLine($"Sending {diffAreas.Count} frames.");
                         await sendFramesLock.WaitAsync();
-                        SendFrames(frameClone, diffAreas, viewer, sendFramesLock);
+                        SendFrame(frameClone, diffArea, viewer, sendFramesLock);
                     }
                     catch (Exception ex)
                     {
@@ -189,7 +174,7 @@ namespace Remotely.Desktop.Core.Services
             }
         }
 
-        private void SendFrame(Bitmap diffImage, Viewer viewer, SemaphoreSlim sendFramesLock)
+        private void SendDiffFrame(Bitmap diffImage, Viewer viewer, SemaphoreSlim sendFramesLock)
         {
             _ = Task.Run(async () =>
             {
@@ -199,18 +184,14 @@ namespace Remotely.Desktop.Core.Services
 
                     if (encodedImageBytes?.Length > 0)
                     {
-                        var frames = new List<CaptureFrame>()
+                        await viewer.SendScreenCapture(new CaptureFrame()
                         {
-                            new CaptureFrame()
-                            {
-                                EncodedImageBytes = encodedImageBytes,
-                                Top = 0,
-                                Left = 0,
-                                Width = diffImage.Width,
-                                Height = diffImage.Height,
-                            }
-                        };
-                        await viewer.SendScreenCapture(frames);
+                            EncodedImageBytes = encodedImageBytes,
+                            Top = 0,
+                            Left = 0,
+                            Width = diffImage.Width,
+                            Height = diffImage.Height,
+                        });
                     }
                 }
                 finally
@@ -221,33 +202,28 @@ namespace Remotely.Desktop.Core.Services
             });
         }
 
-        private static void SendFrames(Bitmap currentFrame, ICollection<Rectangle> diffAreas, Viewer viewer, SemaphoreSlim sendFramesLock)
+        private static void SendFrame(Bitmap currentFrame, Rectangle diffArea, Viewer viewer, SemaphoreSlim sendFramesLock)
         {
             _ = Task.Run(async () =>
             {
                 try
                 {
-                    var frames = new List<CaptureFrame>();
+                    using var newImage = currentFrame.Clone(diffArea, PixelFormat.Format32bppArgb);
 
-                    foreach (var diffArea in diffAreas)
+                    var encodedImageBytes = ImageUtils.EncodeBitmap(newImage, viewer.EncoderParams);
+
+                    if (encodedImageBytes?.Length > 0)
                     {
-                        using var newImage = currentFrame.Clone(diffArea, PixelFormat.Format32bppArgb);
-
-                        var encodedImageBytes = ImageUtils.EncodeBitmap(newImage, viewer.EncoderParams);
-
-                        if (encodedImageBytes?.Length > 0)
+                        await viewer.SendScreenCapture(new CaptureFrame()
                         {
-                            frames.Add(new CaptureFrame()
-                            {
-                                EncodedImageBytes = encodedImageBytes,
-                                Top = diffArea.Top,
-                                Left = diffArea.Left,
-                                Width = diffArea.Width,
-                                Height = diffArea.Height,
-                            });
-                        }
-                    };
-                    await viewer.SendScreenCapture(frames);
+                            EncodedImageBytes = encodedImageBytes,
+                            Top = diffArea.Top,
+                            Left = diffArea.Left,
+                            Width = diffArea.Width,
+                            Height = diffArea.Height,
+                        });
+                    }
+
                 }
                 finally
                 {

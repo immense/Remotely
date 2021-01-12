@@ -90,59 +90,17 @@ namespace Remotely.Tests
 
 
                 sw.Restart();
-                var diffs = ImageUtils.GetDiffAreas(frame1, frame2, false);
+                var diff = ImageUtils.GetDiffArea(frame1, frame2, false);
                 Debug.WriteLine($"Diff time: {sw.Elapsed.TotalMilliseconds}");
 
                 var diffSize = 0;
-                foreach (var x in diffs)
+                using (var tempImage = (Bitmap)frame1.Clone(new Rectangle(diff.X, diff.Y, diff.Width, diff.Height), PixelFormat.Format32bppArgb))
                 {
-                    using (var tempImage = (Bitmap)frame1.Clone(new Rectangle(x.X, x.Y, x.Width, x.Height), PixelFormat.Format32bppArgb))
-                    {
-                        using (var ms = new MemoryStream())
-                        {
-                            tempImage.Save(ms, ImageFormat.Jpeg);
-                            diffSize += ms.ToArray().Length;
-                        }
-                    }
+                    using var ms = new MemoryStream();
+                    tempImage.Save(ms, ImageFormat.Jpeg);
+                    diffSize += ms.ToArray().Length;
                 }
                 Debug.WriteLine($"Diff size: {diffSize}");
-
-
-                sw.Restart();
-                var diff2Size = 0;
-                var diffs2 = ImageUtils.GetDiffAreas2(frame1, frame2, false);
-                Debug.WriteLine($"Diff2 time: {sw.Elapsed.TotalMilliseconds}");
-                foreach (var x in diffs2)
-                {
-                    using (var tempImage = (Bitmap)frame1.Clone(new Rectangle(x.X, x.Y, x.Width, x.Height), PixelFormat.Format32bppArgb))
-                    {
-                        using (var ms = new MemoryStream())
-                        {
-                            tempImage.Save(ms, ImageFormat.Jpeg);
-                            diff2Size += ms.ToArray().Length;
-                        }
-                    }
-                }
-                Debug.WriteLine($"Diff2 size: {diff2Size}");
-
-
-
-                sw.Restart();
-                var diffs3 = ImageUtils.GetDiffAreas3(frame1, frame2, false);
-                Debug.WriteLine($"Diff3 time: {sw.Elapsed.TotalMilliseconds}");
-                diffSize = 0;
-                foreach (var x in diffs3)
-                {
-                    using (var tempImage = (Bitmap)frame1.Clone(new Rectangle(x.X, x.Y, x.Width, x.Height), PixelFormat.Format32bppArgb))
-                    {
-                        using (var ms = new MemoryStream())
-                        {
-                            tempImage.Save(ms, ImageFormat.Jpeg);
-                            diffSize += ms.ToArray().Length;
-                        }
-                    }
-                }
-                Debug.WriteLine($"Diff3 size: {diffSize}");
 
 
                 sw.Restart();

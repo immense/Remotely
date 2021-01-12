@@ -6,18 +6,7 @@
 		senderConnectionID: string;
 		targetDeviceIDs: string[];
 		pSCoreResults: any[];
-		commandResults: any[];
+		commandResults: .genericCommandResult[];
 		timeStamp: Date;
-		organization: {
-			iD: string;
-			organizationName: string;
-			remotelyUsers: any[];
-			devices: any[];
-			commandResults: .commandResult[];
-			eventLogs: any[];
-			permissionGroups: any[];
-			inviteLinks: any[];
-			sharedFiles: any[];
-		};
 		organizationID: string;
 	}

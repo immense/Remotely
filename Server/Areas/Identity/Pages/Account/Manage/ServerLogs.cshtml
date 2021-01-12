@@ -10,7 +10,13 @@
 @if (Model.IsAdmin)
 {
     <div class="row mb-3">
-        <div class="col-sm-12 text-right">
+        <div class="col-sm-4">
+            <div class="mb-1">Delete Logs and Scripting History:</div>
+            <form method="post" asp-page-handler="ClearLogs">
+                <button class="btn btn-primary" type="submit">Delete All</button>
+            </form>
+        </div>
+        <div class="col-sm-8 text-right">
             <div style="display:inline-block; text-align: left">
                 <div class="mb-1">Download All:</div>
                 <button class="btn btn-primary mr-3"
@@ -24,7 +30,7 @@
             </div>
         </div>
     </div>
-    <form method="post">
+    <form method="post" asp-page-handler="ApplyFilter">
         <div style="display:inline-block" class="mr-1">
             <strong>Type:</strong>
             <br />
@@ -47,7 +53,7 @@
             <br />
             <input type="text" asp-for="Input.Message" />
         </div>
-        <button class="btn btn-primary" type="submit">Update</button>
+        <button class="btn btn-primary" type="submit">Apply</button>
     </form>
 
     <table class="table table-hover table-striped">
