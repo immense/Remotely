@@ -217,8 +217,7 @@ namespace Remotely.Server.Hubs
                         RequesterName, 
                         AppConfig.RemoteControlNotifyUser,
                         AppConfig.EnforceAttendedAccess,
-                        orgName,
-                        AppConfig.AllowWinLogon);
+                        orgName);
                 }
                 else
                 {
