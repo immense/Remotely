@@ -85,34 +85,35 @@ namespace Remotely.Tests
 
                 using var frame1 = GetFrame("Frame1");
                 using var frame2 = GetFrame("Frame2");
+                var jpegEncoder = GetEncoder(ImageFormat.Jpeg);
 
                 var sw = Stopwatch.StartNew();
 
 
                 sw.Restart();
                 var diff = ImageUtils.GetDiffArea(frame1, frame2, false);
-                Debug.WriteLine($"Diff time: {sw.Elapsed.TotalMilliseconds}");
 
                 var diffSize = 0;
                 using (var tempImage = (Bitmap)frame1.Clone(new Rectangle(diff.X, diff.Y, diff.Width, diff.Height), PixelFormat.Format32bppArgb))
                 {
                     using var ms = new MemoryStream();
-                    tempImage.Save(ms, ImageFormat.Jpeg);
-                    diffSize += ms.ToArray().Length;
+                    tempImage.Save(ms, jpegEncoder, encoderParams);
+                    diffSize = ms.ToArray().Length;
                 }
                 Debug.WriteLine($"Diff size: {diffSize}");
+                Debug.WriteLine($"Diff time: {sw.Elapsed.TotalMilliseconds}");
 
 
                 sw.Restart();
                 var diffImage = ImageUtils.GetImageDiff(frame1, frame2, false, out var hadChanges);
-                Debug.WriteLine($"Diff Image time: {sw.Elapsed.TotalMilliseconds}");
-                sw.Restart();
+                
+                
                 using (var ms = new MemoryStream())
                 {
                     diffImage.Save(ms, ImageFormat.Png);
                     Debug.WriteLine($"Diff image size: {ms.ToArray().Length}");
                 }
-                Debug.WriteLine($"Diff Image encode time: {sw.Elapsed.TotalMilliseconds}");
+                Debug.WriteLine($"Diff Image time: {sw.Elapsed.TotalMilliseconds}");
 
 
 
@@ -122,10 +123,9 @@ namespace Remotely.Tests
                 {
                     gifImage.MakeTransparent(Color.FromArgb(0, 0, 0, 0));
                     gifImage.Save(ms, ImageFormat.Gif);
-                    gifImage.Save(@"C:\Users\trans\Desktop\Test.gif");
                     Debug.WriteLine($"GIF image size: {ms.ToArray().Length}");
                 }
-                Debug.WriteLine($"GIF Image encode time: {sw.Elapsed.TotalMilliseconds}");
+                Debug.WriteLine($"GIF Image time: {sw.Elapsed.TotalMilliseconds}");
 
                 //sw.Restart();
                 //using (var ms = new MemoryStream())
