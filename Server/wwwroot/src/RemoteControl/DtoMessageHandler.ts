@@ -66,12 +66,12 @@ export class DtoMessageHandler {
         }
 
         if (captureFrame.EndOfFrame) {
-            let completedFrame = new Blob(this.ImagePartials);
+            let completedFrame = new Blob(this.ImagePartials, { type: "image/jpeg" });
 
             this.ImagePartials = [];
 
-            var url = window.URL.createObjectURL(completedFrame);
-            var img = document.createElement("img");
+            let url = window.URL.createObjectURL(completedFrame);
+            let img = new Image(captureFrame.Width, captureFrame.Height);
             img.onload = () => {
                 UI.Screen2DContext.drawImage(img,
                     captureFrame.Left,
