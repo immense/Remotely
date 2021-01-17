@@ -196,4 +196,4 @@ jobs:
     - name: Publish
       shell: bash
       run: | 
-        rsync -r -v -W ./artifact/ $SshUsername@$SshHostname:/var/www/remotely/
+        rsync -r -v ./artifact/ $SshUsername@$SshHostname:/var/www/remotely/
