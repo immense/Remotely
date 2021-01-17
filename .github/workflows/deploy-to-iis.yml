@@ -96,11 +96,11 @@ jobs:
 
     # Install the .NET Core workload
     - name: Install .NET Core
-      uses: actions/setup-dotnet@v1.6.0
+      uses: actions/setup-dotnet@v1.7.2
       
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@2008f912f56e61277eefaac6d1888b750582aa16
+      uses: microsoft/setup-msbuild@v1
 
     # Execute all unit tests in the solution
     - name: Execute unit tests
