@@ -1211,11 +1211,9 @@ namespace Remotely.Shared.Win32
         }
 
         [return: MarshalAs(UnmanagedType.Bool)]
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         [DllImport("user32", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern bool CloseWindowStation(IntPtr hWinsta);
 
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         [DllImport("user32", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern SafeWindowStationHandle OpenWindowStation([MarshalAs(UnmanagedType.LPTStr)] string lpszWinSta, [MarshalAs(UnmanagedType.Bool)] bool fInherit, ACCESS_MASK dwDesiredAccess);
 

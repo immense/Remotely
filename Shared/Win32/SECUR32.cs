@@ -316,7 +316,6 @@ public static class SECUR32
     }
 
     [DllImport("secur32.dll", SetLastError = true)]
-    [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
     [ResourceExposure(ResourceScope.None)]
     internal static extern int LsaDeregisterLogonProcess(IntPtr handle);
 
