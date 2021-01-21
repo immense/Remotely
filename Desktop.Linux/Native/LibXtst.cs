@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Remotely.Desktop.Linux.X11Interop
+namespace Remotely.Desktop.Linux.Native
 {
     public class LibXtst
     {

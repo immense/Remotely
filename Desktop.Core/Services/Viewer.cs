@@ -120,6 +120,7 @@ namespace Remotely.Desktop.Core.Services
                 RtcSession,
                 Capturer
             });
+            GC.SuppressFinalize(this);
         }
 
         public async Task InitializeWebRtc()

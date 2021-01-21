@@ -118,6 +118,7 @@ namespace Remotely.Desktop.Linux
             serviceCollection.AddSingleton<IShutdownService, ShutdownServiceLinux>();
             serviceCollection.AddScoped<IDtoMessageHandler, DtoMessageHandler>();
             serviceCollection.AddScoped<IRemoteControlAccessService, RemoteControlAccessServiceLinux>();
+            serviceCollection.AddScoped<IConfigService, ConfigServiceLinux>();
 
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
         }
