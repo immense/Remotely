@@ -26,7 +26,26 @@ export const MainApp = {
     HubConnection: BrowserHubConnection,
     UserSettings: UserSettings,
     Sound: Sound,
+    GetMotd() {
+        fetch("https://remotely.one/api/motd")
+            .then(async response => {
+                var content = await response.text();
+                if (localStorage["remotely-motd"] == content) {
+                    return;
+                }
+
+                UI.MotdAlert.innerHTML += content;
+                UI.MotdAlert.removeAttribute("hidden");
+                UI.MotdAlert.querySelector("button").addEventListener("click", () => {
+                    localStorage["remotely-motd"] = content;
+                });
+            })
+            .catch(reason => {
+                console.warn(`Unable to retrieve message of the day.  Error: ${reason}`);
+            })
+    },
     Init() {
+        MainApp.GetMotd();
         UI.ConsoleTextArea.focus();
         ApplyInputEventHandlers();
         BrowserHubConnection.Connect();
