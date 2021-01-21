@@ -30,7 +30,8 @@ export const MainApp = {
         fetch("https://remotely.one/api/motd")
             .then(async response => {
                 var content = await response.text();
-                if (localStorage["remotely-motd"] == content) {
+                if (content.trim().length == 0 ||
+                    localStorage["remotely-motd"] == content) {
                     return;
                 }
 
