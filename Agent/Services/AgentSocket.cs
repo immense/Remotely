@@ -144,12 +144,26 @@ namespace Remotely.Agent.Services
 
         public async Task SendDeviceAlert(string alertMessage)
         {
-            await HubConnection.SendAsync("AddDeviceAlert", alertMessage);
+            try
+            {
+                await HubConnection.SendAsync("AddDeviceAlert", alertMessage);
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex, EventType.Warning);
+            }
         }
         public async Task SendHeartbeat()
         {
-            var currentInfo = await DeviceInformation.Create(ConnectionInfo.DeviceID, ConnectionInfo.OrganizationID);
-            await HubConnection.SendAsync("DeviceHeartbeat", currentInfo);
+            try
+            {
+                var currentInfo = await DeviceInformation.Create(ConnectionInfo.DeviceID, ConnectionInfo.OrganizationID);
+                await HubConnection.SendAsync("DeviceHeartbeat", currentInfo);
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex, EventType.Warning);
+            }
         }
 
         private async void HeartbeatTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -164,153 +178,230 @@ namespace Remotely.Agent.Services
 
             HubConnection.On("Chat", async (string senderName, string message, string orgName, bool disconnected, string senderConnectionID) =>
             {
-                if (!IsServerVerified)
-                {
-                    Logger.Write("Chat attempted before server was verified.", EventType.Warning);
-                    return;
-                }
-
-                await ChatService.SendMessage(senderName, message, orgName, disconnected, senderConnectionID, HubConnection);
-            });
-            HubConnection.On("DownloadFile", async (string filePath, string senderConnectionID) =>
-            {
-                if (!IsServerVerified)
-                {
-                    Logger.Write("File download attempted before server was verified.", EventType.Warning);
-                    return;
-                }
-
-                filePath = filePath.Replace("\"", "");
-                if (!File.Exists(filePath))
-                {
-                    await HubConnection.SendAsync("DisplayMessage", "File not found on remote device.", "File not found.", senderConnectionID);
-                    return;
-                }
-
-                using var wc = new WebClient();
-                var lastProgressPercent = 0;
-                wc.UploadProgressChanged += async (sender, args) =>
-                {
-                    if (args.ProgressPercentage > lastProgressPercent)
-                    {
-                        lastProgressPercent = args.ProgressPercentage;
-                        await HubConnection.SendAsync("DownloadFileProgress", lastProgressPercent, senderConnectionID);
-                    }
-                };
-
                 try
                 {
-                    var response = await wc.UploadFileTaskAsync($"{ConnectionInfo.Host}/API/FileSharing/", filePath);
-                    var fileIDs = JsonSerializer.Deserialize<string[]>(Encoding.UTF8.GetString(response));
-                    await HubConnection.SendAsync("DownloadFile", fileIDs[0], senderConnectionID);
+                    if (!IsServerVerified)
+                    {
+                        Logger.Write("Chat attempted before server was verified.", EventType.Warning);
+                        return;
+                    }
+
+                    await ChatService.SendMessage(senderName, message, orgName, disconnected, senderConnectionID, HubConnection);
                 }
                 catch (Exception ex)
                 {
                     Logger.Write(ex);
-                    await HubConnection.SendAsync("DisplayMessage", "Error occurred while uploading file from remote computer.", "Upload error.", senderConnectionID);
+                }
+            });
+            HubConnection.On("DownloadFile", async (string filePath, string senderConnectionID) =>
+            {
+                try
+                {
+                    if (!IsServerVerified)
+                    {
+                        Logger.Write("File download attempted before server was verified.", EventType.Warning);
+                        return;
+                    }
+
+                    filePath = filePath.Replace("\"", "");
+                    if (!File.Exists(filePath))
+                    {
+                        await HubConnection.SendAsync("DisplayMessage", "File not found on remote device.", "File not found.", senderConnectionID);
+                        return;
+                    }
+
+                    using var wc = new WebClient();
+                    var lastProgressPercent = 0;
+                    wc.UploadProgressChanged += async (sender, args) =>
+                    {
+                        if (args.ProgressPercentage > lastProgressPercent)
+                        {
+                            lastProgressPercent = args.ProgressPercentage;
+                            await HubConnection.SendAsync("DownloadFileProgress", lastProgressPercent, senderConnectionID);
+                        }
+                    };
+
+                    try
+                    {
+                        var response = await wc.UploadFileTaskAsync($"{ConnectionInfo.Host}/API/FileSharing/", filePath);
+                        var fileIDs = JsonSerializer.Deserialize<string[]>(Encoding.UTF8.GetString(response));
+                        await HubConnection.SendAsync("DownloadFile", fileIDs[0], senderConnectionID);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Write(ex);
+                        await HubConnection.SendAsync("DisplayMessage", "Error occurred while uploading file from remote computer.", "Upload error.", senderConnectionID);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
                 }
             });
             HubConnection.On("ChangeWindowsSession", async (string serviceID, string viewerID, int targetSessionID) =>
             {
-                if (!IsServerVerified)
+                try
                 {
-                    Logger.Write("Session change attempted before server was verified.", EventType.Warning);
-                    return;
-                }
+                    if (!IsServerVerified)
+                    {
+                        Logger.Write("Session change attempted before server was verified.", EventType.Warning);
+                        return;
+                    }
 
-                await AppLauncher.RestartScreenCaster(new List<string>() { viewerID }, serviceID, viewerID, HubConnection, targetSessionID);
+                    await AppLauncher.RestartScreenCaster(new List<string>() { viewerID }, serviceID, viewerID, HubConnection, targetSessionID);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
             });
             HubConnection.On("ExecuteCommand", (async (string mode, string command, string commandID, string senderConnectionID) =>
             {
-                if (!IsServerVerified)
+                try
                 {
-                    Logger.Write($"Command attempted before server was verified.  Mode: {mode}.  Command: {command}.  Sender: {senderConnectionID}", EventType.Warning);
-                    return;
-                }
+                    if (!IsServerVerified)
+                    {
+                        Logger.Write($"Command attempted before server was verified.  Mode: {mode}.  Command: {command}.  Sender: {senderConnectionID}", EventType.Warning);
+                        return;
+                    }
 
-                await CommandExecutor.ExecuteCommand(mode, command, commandID, senderConnectionID, HubConnection);
+                    await CommandExecutor.ExecuteCommand(mode, command, commandID, senderConnectionID, HubConnection);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
             }));
             HubConnection.On("ExecuteCommandFromApi", (async (string mode, string requestID, string command, string commandID, string senderUserName) =>
             {
-                if (!IsServerVerified)
+                try
                 {
-                    Logger.Write($"Command attempted before server was verified.  Mode: {mode}.  Command: {command}.  Sender: {senderUserName}", EventType.Warning);
-                    return;
-                }
+                    if (!IsServerVerified)
+                    {
+                        Logger.Write($"Command attempted before server was verified.  Mode: {mode}.  Command: {command}.  Sender: {senderUserName}", EventType.Warning);
+                        return;
+                    }
 
-                await CommandExecutor.ExecuteCommandFromApi(mode, requestID, command, commandID, senderUserName, HubConnection);
+                    await CommandExecutor.ExecuteCommandFromApi(mode, requestID, command, commandID, senderUserName, HubConnection);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
             }));
             HubConnection.On("UploadFiles", async (string transferID, List<string> fileIDs, string requesterID) =>
             {
-                if (!IsServerVerified)
+                try
                 {
-                    Logger.Write("File upload attempted before server was verified.", EventType.Warning);
-                    return;
+                    if (!IsServerVerified)
+                    {
+                        Logger.Write("File upload attempted before server was verified.", EventType.Warning);
+                        return;
+                    }
+
+                    Logger.Write($"File upload started by {requesterID}.");
+                    var sharedFilePath = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "RemotelySharedFiles")).FullName;
+
+                    foreach (var fileID in fileIDs)
+                    {
+                        var url = $"{ConnectionInfo.Host}/API/FileSharing/{fileID}";
+                        var wr = WebRequest.CreateHttp(url);
+                        using var response = await wr.GetResponseAsync();
+                        var cd = response.Headers["Content-Disposition"];
+                        var filename = cd
+                                        .Split(";")
+                                        .FirstOrDefault(x => x.Trim()
+                                        .StartsWith("filename"))
+                                        .Split("=")[1];
+
+                        var legalChars = filename.ToCharArray().Where(x => !Path.GetInvalidFileNameChars().Any(y => x == y));
+
+                        filename = new string(legalChars.ToArray());
+
+                        using var rs = response.GetResponseStream();
+                        using var fs = new FileStream(Path.Combine(sharedFilePath, filename), FileMode.Create);
+                        rs.CopyTo(fs);
+                    }
+                    await HubConnection.SendAsync("TransferCompleted", transferID, requesterID);
                 }
-
-                Logger.Write($"File upload started by {requesterID}.");
-                var sharedFilePath = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "RemotelySharedFiles")).FullName;
-
-                foreach (var fileID in fileIDs)
+                catch (Exception ex)
                 {
-                    var url = $"{ConnectionInfo.Host}/API/FileSharing/{fileID}";
-                    var wr = WebRequest.CreateHttp(url);
-                    using var response = await wr.GetResponseAsync();
-                    var cd = response.Headers["Content-Disposition"];
-                    var filename = cd
-                                    .Split(";")
-                                    .FirstOrDefault(x => x.Trim()
-                                    .StartsWith("filename"))
-                                    .Split("=")[1];
-
-                    var legalChars = filename.ToCharArray().Where(x => !Path.GetInvalidFileNameChars().Any(y => x == y));
-
-                    filename = new string(legalChars.ToArray());
-
-                    using var rs = response.GetResponseStream();
-                    using var fs = new FileStream(Path.Combine(sharedFilePath, filename), FileMode.Create);
-                    rs.CopyTo(fs);
+                    Logger.Write(ex);
                 }
-                await HubConnection.SendAsync("TransferCompleted", transferID, requesterID);
             });
             HubConnection.On("DeployScript", async (string mode, string fileID, string commandResultID, string requesterID) =>
             {
-                if (!IsServerVerified)
+                try
                 {
-                    Logger.Write($"Script deploy attempted before server was verified.  Mode: {mode}.  File ID: {fileID}.  Sender: {requesterID}", EventType.Warning);
-                    return;
-                }
+                    if (!IsServerVerified)
+                    {
+                        Logger.Write($"Script deploy attempted before server was verified.  Mode: {mode}.  File ID: {fileID}.  Sender: {requesterID}", EventType.Warning);
+                        return;
+                    }
 
-                await ScriptRunner.RunScript(mode, fileID, commandResultID, requesterID, HubConnection);
+                    await ScriptRunner.RunScript(mode, fileID, commandResultID, requesterID, HubConnection);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
             });
 
             HubConnection.On("ReinstallAgent", async () =>
             {
-                await Updater.InstallLatestVersion();
+                try
+                {
+                    await Updater.InstallLatestVersion();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
             });
 
             HubConnection.On("UninstallAgent", () =>
             {
-                Uninstaller.UninstallAgent();
+                try
+                {
+                    Uninstaller.UninstallAgent();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
             });
 
             HubConnection.On("RemoteControl", async (string requesterID, string serviceID) =>
             {
-                if (!IsServerVerified)
+                try
                 {
-                    Logger.Write("Remote control attempted before server was verified.", EventType.Warning);
-                    return;
+                    if (!IsServerVerified)
+                    {
+                        Logger.Write("Remote control attempted before server was verified.", EventType.Warning);
+                        return;
+                    }
+                    await AppLauncher.LaunchRemoteControl(-1, requesterID, serviceID, HubConnection);
                 }
-                await AppLauncher.LaunchRemoteControl(-1, requesterID, serviceID, HubConnection);
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
             });
             HubConnection.On("RestartScreenCaster", async (List<string> viewerIDs, string serviceID, string requesterID) =>
             {
-                if (!IsServerVerified)
+                try
                 {
-                    Logger.Write("Remote control attempted before server was verified.", EventType.Warning);
-                    return;
+                    if (!IsServerVerified)
+                    {
+                        Logger.Write("Remote control attempted before server was verified.", EventType.Warning);
+                        return;
+                    }
+                    await AppLauncher.RestartScreenCaster(viewerIDs, serviceID, requesterID, HubConnection);
                 }
-                await AppLauncher.RestartScreenCaster(viewerIDs, serviceID, requesterID, HubConnection);
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
             });
             HubConnection.On("CtrlAltDel", () =>
             {
