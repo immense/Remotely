@@ -348,13 +348,21 @@ namespace Remotely.Desktop.Core.Services
 
         private Task SendToViewer(Func<Task> webRtcSend, Func<Task> websocketSend)
         {
-            if (IsUsingWebRtc)
+            try
             {
-                return webRtcSend();
+                if (IsUsingWebRtc)
+                {
+                    return webRtcSend();
+                }
+                else
+                {
+                    return websocketSend();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return websocketSend();
+                Logger.Write(ex);
+                return Task.CompletedTask;
             }
         }
 
