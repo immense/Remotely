@@ -210,7 +210,7 @@ namespace Remotely.Desktop.Win.ViewModels
 
                 CasterSocket.Connection.Closed += async (ex) =>
                 {
-                    await App.Current.Dispatcher.InvokeAsync(() =>
+                    await App.Current?.Dispatcher?.InvokeAsync(() =>
                     {
                         Viewers.Clear();
                         SessionID = "Disconnected";
@@ -219,7 +219,7 @@ namespace Remotely.Desktop.Win.ViewModels
 
                 CasterSocket.Connection.Reconnecting += async (ex) =>
                 {
-                    await App.Current.Dispatcher.InvokeAsync(() =>
+                    await App.Current?.Dispatcher?.InvokeAsync(() =>
                     {
                         Viewers.Clear();
                         SessionID = "Reconnecting";
