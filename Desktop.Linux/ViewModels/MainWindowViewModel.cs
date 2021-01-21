@@ -7,6 +7,7 @@ using Remotely.Desktop.Core;
 using Remotely.Desktop.Core.Interfaces;
 using Remotely.Desktop.Core.Services;
 using Remotely.Desktop.Linux.Controls;
+using Remotely.Desktop.Linux.Native;
 using Remotely.Desktop.Linux.Services;
 using Remotely.Desktop.Linux.Views;
 using Remotely.Shared.Models;
@@ -38,6 +39,7 @@ namespace Remotely.Desktop.Linux.ViewModels
             Services.GetRequiredService<IClipboardService>().BeginWatching();
             Services.GetRequiredService<IKeyboardMouseInput>().Init();
 
+            ConfigService = Services.GetRequiredService<IConfigService>();
             Conductor = Services.GetRequiredService<Conductor>();
             CasterSocket = Services.GetRequiredService<ICasterSocket>();
 
@@ -126,6 +128,7 @@ namespace Remotely.Desktop.Linux.ViewModels
         public ObservableCollection<Viewer> Viewers { get; } = new ObservableCollection<Viewer>();
         private static IServiceProvider Services => ServiceContainer.Instance;
         private ICasterSocket CasterSocket { get; }
+        private IConfigService ConfigService { get; }
         private Conductor Conductor { get; }
         public async Task GetSessionID()
         {
@@ -137,13 +140,19 @@ namespace Remotely.Desktop.Linux.ViewModels
         {
             try
             {
+                if (Libc.geteuid() != 0)
+                {
+                    await MessageBox.Show("Please run with sudo.", "Sudo Required", MessageBoxType.OK);
+                    Environment.Exit(0);
+                }
+
+                SessionID = "Initializing...";
+
+                await InstallDependencies();
 
                 SessionID = "Retrieving...";
 
-                await CheckDependencies();
-
-
-                Host = Config.GetConfig().Host;
+                Host = ConfigService.GetConfig().Host;
 
                 while (string.IsNullOrWhiteSpace(Host))
                 {
@@ -211,59 +220,34 @@ namespace Remotely.Desktop.Linux.ViewModels
             if (result != Host)
             {
                 Host = result.TrimEnd('/');
-                var config = Config.GetConfig();
+                var config = ConfigService.GetConfig();
                 config.Host = Host;
-                config.Save();
+                ConfigService.Save(config);
             }
         }
 
 
-        private async Task CheckDependencies()
+        private async Task InstallDependencies()
         {
             try
             {
-                var dependencies = new string[]
+                var psi = new ProcessStartInfo()
                 {
-                    "libx11-dev",
-                    "libc6-dev",
-                    "libgdiplus",
-                    "libxtst-dev",
-                    "xclip"
+                    FileName = "sudo",
+                    Arguments = "bash -c \"apt-get -y install libx11-dev ; " +
+                        "apt-get -y install libc6-dev ; " +
+                        "apt-get -y install libgdiplus ; " +
+                        "apt-get -y install libxtst-dev ; " +
+                        "apt-get -y install xclip\"",
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    CreateNoWindow = true
                 };
 
-                foreach (var dependency in dependencies)
-                {
-                    var proc = Process.Start("dpkg", $"-s {dependency}");
-                    proc.WaitForExit();
-                    if (proc.ExitCode != 0)
-                    {
-                        var commands = "sudo apt-get -y install libx11-dev ; " +
-                                    "sudo apt-get -y install libc6-dev ; " +
-                                    "sudo apt-get -y install libgdiplus ; " +
-                                    "sudo apt-get -y install libxtst-dev ; " +
-                                    "sudo apt-get -y install xclip";
-
-                        await App.Current.Clipboard.SetTextAsync(commands);
-
-                        var message = "The following dependencies are required.  Install commands have been copied to your clipboard." +
-                            Environment.NewLine + Environment.NewLine +
-                            "Please paste them into a terminal and run, then try opening Remotely again." +
-                            Environment.NewLine + Environment.NewLine +
-                            "libx11-dev" + Environment.NewLine +
-                            "libc6-dev" + Environment.NewLine +
-                            "libgdiplus" + Environment.NewLine +
-                            "libxtst-dev" + Environment.NewLine +
-                            "xclip";
-
-                        await MessageBox.Show(message, "Dependencies Required", MessageBoxType.OK);
-
-                        Environment.Exit(0);
-                    }
-                }
+                await Task.Run(() => Process.Start(psi).WaitForExit());
             }
             catch
             {
-                Logger.Write("Unable to check dependencies.", Shared.Enums.EventType.Warning);
+                Logger.Write("Failed to install dependencies.", Shared.Enums.EventType.Error);
             }
           
         }
@@ -303,9 +287,9 @@ namespace Remotely.Desktop.Linux.ViewModels
             });
         }
 
-        private void ViewerRemoved(object sender, string viewerID)
+        private async void ViewerRemoved(object sender, string viewerID)
         {
-            Dispatcher.UIThread.InvokeAsync(() =>
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
                 var viewer = Viewers.FirstOrDefault(x => x.ViewerConnectionID == viewerID);
                 if (viewer != null)

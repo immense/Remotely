@@ -1,7 +1,7 @@
 ﻿using Remotely.Desktop.Core.Enums;
 using Remotely.Desktop.Core.Interfaces;
 using Remotely.Desktop.Core.Services;
-using Remotely.Desktop.Linux.X11Interop;
+using Remotely.Desktop.Linux.Native;
 using Remotely.Shared.Utilities;
 using System;
 

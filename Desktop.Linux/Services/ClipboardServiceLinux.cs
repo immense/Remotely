@@ -23,7 +23,7 @@ namespace Remotely.Desktop.Linux.Services
             finally
             {
                 cancelTokenSource = new CancellationTokenSource();
-                _ = Task.Run(() => WatchClipboard(cancelTokenSource.Token));
+                _ = Task.Run(async () => await WatchClipboard(cancelTokenSource.Token));
             }
         }
 
@@ -52,16 +52,14 @@ namespace Remotely.Desktop.Linux.Services
             cancelTokenSource?.Dispose();
         }
 
-        private void WatchClipboard(CancellationToken cancelToken)
+        private async Task WatchClipboard(CancellationToken cancelToken)
         {
             while (!cancelToken.IsCancellationRequested &&
                 !Environment.HasShutdownStarted)
             {
                 try
                 {
-                    var currentText = EnvironmentHelper.StartProcessWithResults("xclip", "-o");
-                    // TODO: Switch back when fixed.
-                    //var currentText = await App.Current.Clipboard.GetTextAsync();
+                    var currentText = await App.Current.Clipboard.GetTextAsync();
                     if (!string.IsNullOrEmpty(currentText) && currentText != ClipboardText)
                     {
                         ClipboardText = currentText;

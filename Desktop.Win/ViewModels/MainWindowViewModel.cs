@@ -36,6 +36,7 @@ namespace Remotely.Desktop.Win.ViewModels
 
             Application.Current.Exit += Application_Exit;
 
+            ConfigService = Services?.GetRequiredService<IConfigService>();
             CursorIconWatcher = Services?.GetRequiredService<ICursorIconWatcher>();
             CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
             Services.GetRequiredService<IClipboardService>().BeginWatching();
@@ -176,7 +177,7 @@ namespace Remotely.Desktop.Win.ViewModels
         private ICasterSocket CasterSocket { get; set; }
 
         private Conductor Conductor { get; set; }
-
+        private IConfigService ConfigService { get; }
         private ICursorIconWatcher CursorIconWatcher { get; set; }
 
         public void CopyLink()
@@ -194,7 +195,7 @@ namespace Remotely.Desktop.Win.ViewModels
         {
             SessionID = "Retrieving...";
 
-            Host = Config.GetConfig().Host;
+            Host = ConfigService.GetConfig().Host;
 
             while (string.IsNullOrWhiteSpace(Host))
             {
@@ -258,9 +259,9 @@ namespace Remotely.Desktop.Win.ViewModels
             if (result != Host)
             {
                 Host = result.TrimEnd('/');
-                var config = Config.GetConfig();
+                var config = ConfigService.GetConfig();
                 config.Host = Host;
-                config.Save();
+                ConfigService.Save(config);
             }
         }
 

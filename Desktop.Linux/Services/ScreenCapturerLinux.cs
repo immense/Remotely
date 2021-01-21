@@ -1,5 +1,5 @@
 ﻿using Remotely.Desktop.Core.Interfaces;
-using Remotely.Desktop.Linux.X11Interop;
+using Remotely.Desktop.Linux.Native;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
@@ -31,6 +31,7 @@ namespace Remotely.Desktop.Linux.Services
         public void Dispose()
         {
             LibX11.XCloseDisplay(Display);
+            GC.SuppressFinalize(this);
         }
 
         public IEnumerable<string> GetDisplayNames() => _x11Screens.Keys;
