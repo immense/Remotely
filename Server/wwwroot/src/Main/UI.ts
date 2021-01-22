@@ -26,4 +26,3 @@ export var TabContentWrapper = document.getElementById("tabContentWrapper") as H
 export var ToastsWrapper = document.getElementById("toastsWrapper") as HTMLDivElement;
 export var TotalDevicesCount = document.querySelector("#totalDevicesSpan") as HTMLSpanElement;
 export var TotalPagesSpan = document.querySelector("#totalPagesSpan") as HTMLSpanElement;
-export var MotdAlert = document.getElementById("motdAlert") as HTMLDivElement;
