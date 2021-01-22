@@ -2,6 +2,13 @@
 
 export var ToastsWrapper = document.getElementById("toastsWrapper") as HTMLDivElement;
 
+export function AppendChild(parentElement: HTMLElement, childContent: string, childTag: string) {
+    var childElement = document.createElement(childTag);
+    childElement.innerText = childContent;
+    parentElement.appendChild(childElement);
+}
+
+
 export function ShowMessage(message: string) {
     var messageDiv = document.createElement("div");
     messageDiv.classList.add("toast-message");

@@ -10,6 +10,7 @@ import { UserSettings } from "./UserSettings.js";
 import { ApplyInputEventHandlers } from "./InputEventHandlers.js";
 import { Sound } from "../Shared/Sound.js";
 import * as Console from "./Console.js";
+import { AppendChild } from "../Shared/UI.js";
 
 export const MainApp = {
     Commands: {
@@ -35,7 +36,7 @@ export const MainApp = {
                     return;
                 }
 
-                UI.MotdAlert.innerHTML += content;
+                AppendChild(UI.MotdAlert, content, "span");
                 UI.MotdAlert.removeAttribute("hidden");
                 UI.MotdAlert.querySelector("button").addEventListener("click", () => {
                     localStorage["remotely-motd"] = content;
