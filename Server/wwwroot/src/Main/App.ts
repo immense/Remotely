@@ -10,7 +10,6 @@ import { UserSettings } from "./UserSettings.js";
 import { ApplyInputEventHandlers } from "./InputEventHandlers.js";
 import { Sound } from "../Shared/Sound.js";
 import * as Console from "./Console.js";
-import { AppendChild } from "../Shared/UI.js";
 
 export const MainApp = {
     Commands: {
@@ -27,27 +26,7 @@ export const MainApp = {
     HubConnection: BrowserHubConnection,
     UserSettings: UserSettings,
     Sound: Sound,
-    GetMotd() {
-        fetch("https://remotely.one/api/motd")
-            .then(async response => {
-                var content = await response.text();
-                if (content.trim().length == 0 ||
-                    localStorage["remotely-motd"] == content) {
-                    return;
-                }
-
-                AppendChild(UI.MotdAlert, content, "span");
-                UI.MotdAlert.removeAttribute("hidden");
-                UI.MotdAlert.querySelector("button").addEventListener("click", () => {
-                    localStorage["remotely-motd"] = content;
-                });
-            })
-            .catch(reason => {
-                console.warn(`Unable to retrieve message of the day.  Error: ${reason}`);
-            })
-    },
     Init() {
-        MainApp.GetMotd();
         UI.ConsoleTextArea.focus();
         ApplyInputEventHandlers();
         BrowserHubConnection.Connect();
