@@ -61,7 +61,7 @@ namespace Remotely.Desktop.Win
                     StartUiThreads(false);
                     _ = Task.Run(async () =>
                     {
-                        var chatService = Services.GetRequiredService<IChatHostService>();
+                        var chatService = Services.GetRequiredService<IChatClientService>();
                         await chatService.StartChat(Conductor.RequesterID, Conductor.OrganizationName);
                     });
                 }
@@ -105,7 +105,7 @@ namespace Remotely.Desktop.Win
             serviceCollection.AddSingleton<ICasterSocket, CasterSocket>();
             serviceCollection.AddSingleton<IdleTimer>();
             serviceCollection.AddSingleton<Conductor>();
-            serviceCollection.AddSingleton<IChatHostService, ChatHostService>();
+            serviceCollection.AddSingleton<IChatClientService, ChatClientService>();
             serviceCollection.AddSingleton<IChatUiService, ChatUiServiceWin>();
             serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerWin>();
             serviceCollection.AddTransient<Viewer>();

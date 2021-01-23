@@ -13,34 +13,40 @@ using System.Threading.Tasks;
 
 namespace Remotely.Desktop.Core.Services
 {
-    public class ChatHostService : IChatHostService
+    public class ChatClientService : IChatClientService
     {
         private readonly IChatUiService _chatUiService;
 
-        public ChatHostService(IChatUiService chatUiService)
+        public ChatClientService(IChatUiService chatUiService)
         {
             _chatUiService = chatUiService;
         }
 
-        private NamedPipeServerStream NamedPipeStream { get; set; }
+        private NamedPipeClientStream NamedPipeStream { get; set; }
         private StreamReader Reader { get; set; }
         private StreamWriter Writer { get; set; }
 
         public async Task StartChat(string requesterID, string organizationName)
         {
-            NamedPipeStream = new NamedPipeServerStream("Remotely_Chat" + requesterID, PipeDirection.InOut, 10, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+            NamedPipeStream = new NamedPipeClientStream(".", "Remotely_Chat" + requesterID, PipeDirection.InOut, PipeOptions.Asynchronous);
             Writer = new StreamWriter(NamedPipeStream);
             Reader = new StreamReader(NamedPipeStream);
 
-            var cts = new CancellationTokenSource(10000);
+            
             try
             {
-                await NamedPipeStream.WaitForConnectionAsync(cts.Token);
+                await NamedPipeStream.ConnectAsync(15_000);
             }
             catch (TaskCanceledException)
             {
                 Logger.Write("A chat session was attempted, but the client failed to connect in time.", Shared.Enums.EventType.Warning);
                 Environment.Exit(0);
+            }
+
+            if (!NamedPipeStream.IsConnected)
+            {
+                Logger.Write("Failed to connect to chat host.");
+                return;
             }
 
             _chatUiService.ChatWindowClosed += OnChatWindowClosed;
@@ -54,7 +60,6 @@ namespace Remotely.Desktop.Core.Services
         {
             try
             {
-                NamedPipeStream?.Disconnect();
                 NamedPipeStream?.Dispose();
             }
             catch { }

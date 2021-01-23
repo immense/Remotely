@@ -16,6 +16,7 @@ namespace Remotely.Server.Services
         string[] KnownProxies { get; }
         int MaxConcurrentUpdates { get; }
         int MaxOrganizationCount { get; }
+        string MessageOfTheDay { get; }
         bool RedirectToHttps { get; }
         bool RemoteControlNotifyUser { get; }
         bool RemoteControlRequiresAuthentication { get; }
@@ -58,6 +59,7 @@ namespace Remotely.Server.Services
         public string[] KnownProxies => Config.GetSection("ApplicationOptions:KnownProxies").Get<string[]>() ?? new string[0];
         public int MaxConcurrentUpdates => int.Parse(Config["ApplicationOptions:MaxConcurrentUpdates"] ?? "10");
         public int MaxOrganizationCount => int.Parse(Config["ApplicationOptions:MaxOrganizationCount"] ?? "1");
+        public string MessageOfTheDay => Config["ApplicationOptions:MessageOfTheDay"];
         public bool RedirectToHttps => bool.Parse(Config["ApplicationOptions:RedirectToHttps"] ?? "false");
         public bool RemoteControlNotifyUser => bool.Parse(Config["ApplicationOptions:RemoteControlNotifyUser"] ?? "true");
         public bool RemoteControlRequiresAuthentication => bool.Parse(Config["ApplicationOptions:RemoteControlRequiresAuthentication"] ?? "true");

@@ -55,7 +55,7 @@ namespace Remotely.Desktop.Linux
 
                 if (Conductor.Mode == Core.Enums.AppMode.Chat)
                 {
-                    await Services.GetRequiredService<IChatHostService>().StartChat(Conductor.RequesterID, Conductor.OrganizationName);
+                    await Services.GetRequiredService<IChatClientService>().StartChat(Conductor.RequesterID, Conductor.OrganizationName);
                 }
                 else if (Conductor.Mode == Core.Enums.AppMode.Unattended)
                 {
@@ -107,7 +107,7 @@ namespace Remotely.Desktop.Linux
             serviceCollection.AddSingleton<ICasterSocket, CasterSocket>();
             serviceCollection.AddSingleton<IdleTimer>();
             serviceCollection.AddSingleton<Conductor>();
-            serviceCollection.AddSingleton<IChatHostService, ChatHostService>();
+            serviceCollection.AddSingleton<IChatClientService, ChatClientService>();
             serviceCollection.AddSingleton<IChatUiService, ChatUiServiceLinux>();
             serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerLinux>();
             serviceCollection.AddTransient<Viewer>();
