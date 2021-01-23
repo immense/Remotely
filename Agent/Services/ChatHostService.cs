@@ -14,9 +14,9 @@ using System.Threading.Tasks;
 
 namespace Remotely.Agent.Services
 {
-    public class ChatClientService
+    public class ChatHostService
     {
-        public ChatClientService(IAppLauncher appLauncher)
+        public ChatHostService(IAppLauncher appLauncher)
         {
             AppLauncher = appLauncher;
         }
@@ -71,15 +71,20 @@ namespace Remotely.Agent.Services
                         Logger.Write($"Chat app did not start successfully.");
                         return;
                     }
+                    var serverStream = new NamedPipeServerStream("Remotely_Chat" + senderConnectionID,
+                        PipeDirection.InOut, 
+                        NamedPipeServerStream.MaxAllowedServerInstances,
+                        PipeTransmissionMode.Byte, 
+                        PipeOptions.Asynchronous);
 
-                    var clientPipe = new NamedPipeClientStream(".", "Remotely_Chat" + senderConnectionID, PipeDirection.InOut, PipeOptions.Asynchronous);
-                    clientPipe.Connect(15000);
-                    if (!clientPipe.IsConnected)
+                    var cts = new CancellationTokenSource(15000);
+                    await serverStream.WaitForConnectionAsync(cts.Token);
+                    if (!serverStream.IsConnected)
                     {
-                        Logger.Write("Failed to connect to chat host.");
+                        Logger.Write("Failed to connect to chat client.");
                         return;
                     }
-                    chatSession = new ChatSession() { PipeStream = clientPipe, ProcessID = procID };
+                    chatSession = new ChatSession() { PipeStream = serverStream, ProcessID = procID };
                     _ = Task.Run(async () => { await ReadFromStream(chatSession.PipeStream, senderConnectionID, hubConnection); });
                     ChatClients.Add(senderConnectionID, chatSession, CacheItemPolicy);
                 }
@@ -108,11 +113,11 @@ namespace Remotely.Agent.Services
             }
         }
 
-        private async Task ReadFromStream(NamedPipeClientStream clientPipe, string senderConnectionID, HubConnection hubConnection)
+        private async Task ReadFromStream(NamedPipeServerStream clientPipe, string senderConnectionID, HubConnection hubConnection)
         {
+            using var sr = new StreamReader(clientPipe, leaveOpen: true);
             while (clientPipe.IsConnected)
             {
-                using var sr = new StreamReader(clientPipe, leaveOpen: true);
                 var messageJson = await sr.ReadLineAsync();
                 if (!string.IsNullOrWhiteSpace(messageJson))
                 {

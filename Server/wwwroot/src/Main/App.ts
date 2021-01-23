@@ -26,7 +26,19 @@ export const MainApp = {
     HubConnection: BrowserHubConnection,
     UserSettings: UserSettings,
     Sound: Sound,
+    GetMotd() {
+        if (!UI.MotdContentSpan.innerHTML || localStorage["remotely-motd"] == UI.MotdContentSpan.innerHTML) {
+            return;
+        }
+
+        UI.MotdAlert.querySelector("button").addEventListener("click", () => {
+            localStorage["remotely-motd"] = UI.MotdContentSpan.innerHTML;
+        });
+
+        UI.MotdAlert.removeAttribute("hidden");
+    },
     Init() {
+        MainApp.GetMotd();
         UI.ConsoleTextArea.focus();
         ApplyInputEventHandlers();
         BrowserHubConnection.Connect();

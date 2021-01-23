@@ -199,6 +199,8 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
             [Display(Name = "Max Organizations")]
             public int MaxOrganizationCount { get; set; }
+            [Display(Name = "Message of the Day")]
+            public string MessageOfTheDay { get; set; }
 
             [Display(Name = "Redirect To HTTPS")]
             public bool RedirectToHttps { get; set; }

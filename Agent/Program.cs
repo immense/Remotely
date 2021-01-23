@@ -44,7 +44,7 @@ namespace Remotely.Agent
                 builder.AddConsole().AddDebug();
             });
             serviceCollection.AddSingleton<AgentSocket>();
-            serviceCollection.AddScoped<ChatClientService>();
+            serviceCollection.AddScoped<ChatHostService>();
             serviceCollection.AddTransient<Bash>();
             serviceCollection.AddTransient<CMD>();
             serviceCollection.AddTransient<PSCore>();
