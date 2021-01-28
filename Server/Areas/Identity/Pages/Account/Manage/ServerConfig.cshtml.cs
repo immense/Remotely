@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Remotely.Server.Hubs;
@@ -20,17 +21,26 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 {
     public class ServerConfigModel : PageModel
     {
+        private readonly IHubContext<AgentHub> _agentHubContext;
+        private readonly IConfiguration _configuration;
+        private readonly IDataService _dataService;
+        private readonly IEmailSenderEx _emailSender;
+        private readonly IWebHostEnvironment _hostEnv;
+        private readonly UserManager<RemotelyUser> _userManager;
+               
         public ServerConfigModel(IConfiguration configuration,
-            IWebHostEnvironment hostEnv,
+                                                            IWebHostEnvironment hostEnv,
             UserManager<RemotelyUser> userManager,
             IDataService dataService,
-            IEmailSenderEx emailSender)
+            IEmailSenderEx emailSender,
+            IHubContext<AgentHub> agentHubContext)
         {
-            Configuration = configuration;
-            HostEnv = hostEnv;
-            UserManager = userManager;
-            DataService = dataService;
-            EmailSender = emailSender;
+            _configuration = configuration;
+            _hostEnv = hostEnv;
+            _userManager = userManager;
+            _dataService = dataService;
+            _emailSender = emailSender;
+            _agentHubContext = agentHubContext;
         }
 
         public enum DBProviders
@@ -46,9 +56,8 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         [BindProperty]
         public ConnectionStringsModel ConnectionStrings { get; set; } = new ConnectionStringsModel();
 
-        public bool IsServerAdmin { get; set; }
         public string Environment { get; set; }
-
+        public bool IsServerAdmin { get; set; }
         public IEnumerable<string> OutdatedDevices { get; set; }
 
         [BindProperty]
@@ -57,39 +66,29 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
         [TempData]
         public string StatusMessage { get; set; }
-
-        private IConfiguration Configuration { get; }
-        private IDataService DataService { get; }
-        private IEmailSenderEx EmailSender { get; }
-        private IWebHostEnvironment HostEnv { get; }
-        private UserManager<RemotelyUser> UserManager { get; }
-
         public async Task<IActionResult> OnGet()
         {
-            IsServerAdmin = (await UserManager.GetUserAsync(User)).IsServerAdmin;
+            IsServerAdmin = (await _userManager.GetUserAsync(User)).IsServerAdmin;
             if (!IsServerAdmin)
             {
                 return Unauthorized();
             }
 
-            var highestVersion = AgentHub.ServiceConnections.Values.Max(x => Version.TryParse(x.AgentVersion, out var result) ? result : default);
-            OutdatedDevices = AgentHub.ServiceConnections.Values
-                .Where(x => Version.TryParse(x.AgentVersion, out var result) ? result != highestVersion : false)
-                .Select(x => x.ID);
+            OutdatedDevices = GetOutdatedDevices();
 
-            Environment = HostEnv.EnvironmentName;
+            Environment = _hostEnv.EnvironmentName;
 
-            Configuration.Bind("ApplicationOptions", AppSettingsInput);
-            Configuration.Bind("ConnectionStrings", ConnectionStrings);
-            ServerAdmins = DataService.GetServerAdmins();
+            _configuration.Bind("ApplicationOptions", AppSettingsInput);
+            _configuration.Bind("ConnectionStrings", ConnectionStrings);
+            ServerAdmins = _dataService.GetServerAdmins();
 
             return Page();
         }
         public async Task<IActionResult> OnPostSaveAndTestSmtpAsync()
         {
             var result = await OnPostSaveAsync();
-            var user = DataService.GetUserByName(User.Identity.Name);
-            var success = await EmailSender.SendEmailAsync(user.Email, "Remotely Test Email", "Congratulations! Your SMTP settings are working!", user.OrganizationID);
+            var user = _dataService.GetUserByName(User.Identity.Name);
+            var success = await _emailSender.SendEmailAsync(user.Email, "Remotely Test Email", "Congratulations! Your SMTP settings are working!", user.OrganizationID);
             if (success)
             {
                 StatusMessage = "Test email sent.  Check your inbox (including spam folder).";
@@ -102,7 +101,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         }
         public async Task<IActionResult> OnPostSaveAsync()
         {
-            IsServerAdmin = (await UserManager.GetUserAsync(User)).IsServerAdmin;
+            IsServerAdmin = (await _userManager.GetUserAsync(User)).IsServerAdmin;
             if (!IsServerAdmin)
             {
                 return Unauthorized();
@@ -114,7 +113,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             }
 
             var configReloaded = false;
-            Configuration.GetReloadToken().RegisterChangeCallback((e) =>
+            _configuration.GetReloadToken().RegisterChangeCallback((e) =>
             {
                 configReloaded = true;
             }, null);
@@ -131,17 +130,39 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             return RedirectToPage();
         }
 
+        public async Task<IActionResult> OnPostUpdateAllAsync()
+        {
+            var outdatedDevices = GetOutdatedDevices();
+            if (!outdatedDevices.Any())
+            {
+                StatusMessage = "No agents need updating.";
+                return RedirectToPage();
+            }
+            var agentConnections = AgentHub.ServiceConnections.Where(x => outdatedDevices.Contains(x.Value.ID));
+            await _agentHubContext.Clients.Clients(agentConnections.Select(x => x.Key)).SendAsync("ReinstallAgent");
+            StatusMessage = $"Update command sent to {agentConnections.Count()} agents.";
+            return RedirectToPage();
+        }
+
+        private IEnumerable<string> GetOutdatedDevices()
+        {
+            var highestVersion = AgentHub.ServiceConnections.Values.Max(x => Version.TryParse(x.AgentVersion, out var result) ? result : default);
+            return AgentHub.ServiceConnections.Values
+                .Where(x => Version.TryParse(x.AgentVersion, out var result) ? result != highestVersion : false)
+                .Select(x => x.ID);
+        }
+
         private async Task SaveAppSettings()
         {
             string savePath;
-            var prodSettings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.Production.json");
-            var stagingSettings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.Staging.json");
-            var settings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.json");
-            if (HostEnv.IsProduction() && prodSettings.Exists)
+            var prodSettings = _hostEnv.ContentRootFileProvider.GetFileInfo("appsettings.Production.json");
+            var stagingSettings = _hostEnv.ContentRootFileProvider.GetFileInfo("appsettings.Staging.json");
+            var settings = _hostEnv.ContentRootFileProvider.GetFileInfo("appsettings.json");
+            if (_hostEnv.IsProduction() && prodSettings.Exists)
             {
                 savePath = prodSettings.PhysicalPath;
             }
-            else if (HostEnv.IsStaging() && stagingSettings.Exists)
+            else if (_hostEnv.IsStaging() && stagingSettings.Exists)
             {
                 savePath = stagingSettings.PhysicalPath;
             }
@@ -155,13 +176,13 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             }
 
             var settingsJson = JsonSerializer.Deserialize<IDictionary<string, object>>(await System.IO.File.ReadAllTextAsync(savePath));
-            AppSettingsInput.IceServers = Configuration.GetSection("ApplicationOptions:IceServers").Get<IceServerModel[]>();
+            AppSettingsInput.IceServers = _configuration.GetSection("ApplicationOptions:IceServers").Get<IceServerModel[]>();
             settingsJson["ApplicationOptions"] = AppSettingsInput;
             settingsJson["ConnectionStrings"] = ConnectionStrings;
 
             await System.IO.File.WriteAllTextAsync(savePath, JsonSerializer.Serialize(settingsJson, new JsonSerializerOptions() { WriteIndented = true }));
 
-            await DataService.UpdateServerAdmins(ServerAdmins, User.Identity.Name);
+            await _dataService.UpdateServerAdmins(ServerAdmins, User.Identity.Name);
         }
 
         public class AppSettingsModel

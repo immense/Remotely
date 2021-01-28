@@ -69,7 +69,7 @@ The following steps will configure your Windows 10 machine for building the Remo
 * If the site will be public-facing, configure your bindings in IIS.
 * An SSL certificate for HTTPS is recommended.  You can install one for free using Let's Encrypt.
 	* Resources: https://letsencrypt.org/, https://certifytheweb.com/
-* Documentation for hosting in IIS can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/iis/index?view=aspnetcore-3.1
+* Documentation for hosting in IIS can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/iis
 * There is no default account.  You must create the first one via the Register page, which will create an account that is both a server and organization admin.
 
 ## Hosting a Server (Ubuntu)
@@ -83,13 +83,13 @@ The following steps will configure your Windows 10 machine for building the Remo
 		* More information: https://letsencrypt.org/, https://certbot.eff.org/
 	* Alternatively, you can build from source (using RuntimeIdentifier "linux-x64" for the server) and copy the server files to the site folder.
 * Change values in appsettings.json for your environment.  Make a copy named `appsettings.Production.json` (see Configuration section below).
-* Documentation for hosting behind Nginx can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx?view=aspnetcore-3.1
+* Documentation for hosting behind Nginx can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx
 * There is no default account.  You must create the first one via the Register page, which will create an account that is both a server and organization admin.
 
 
 ## Hosting Scenarios
 There are countless ways to host an ASP.NET Core app, and I can't document or automate all of them.  For hosting scenarios aside from the above two, please refer to Microsoft's documentation.
-- https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/?view=aspnetcore-3.1
+- https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/
 
 ## Admin Accounts
 The first account created will be an admin for both the server and the organization that's created for the account.
@@ -115,7 +115,7 @@ Likewise, `appsettings.Development.json` can be used while developing in Visual 
 
 Whenever there's a reference to `appsettings.json` in this document, it refers to whichever file is currently being used.
 
-For more information on configuring ASP.NET Core, see https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-3.1.
+For more information on configuring ASP.NET Core, see https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/.
 
 * AllowApiLogin: Whether to allow logging in via the API controller.  API access tokens are recommended over this approach.
 * BannedDevices: An array of device IDs, names, or IP addresses to ban.  When they try to connect, an uninstall command will immediately be sent back.
@@ -155,7 +155,7 @@ You can change database by changing `DBProvider` in `ApplicationOptions` to `SQL
 * On Windows Servers, the above logs can also be written to the Windows Event Log.
 	* This is enabled in appsettings.json by setting EnableWindowsEventLog to true.
 * You can configure logging levels and other settings in appsetttings.json.
-	* More information: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-3.1
+	* More information: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/
 
 ## Remote Control Client Requirements
 * Windows: Only the latest version of Windows 10 is tested.  Windows 7 and 8.1 should work, though performance will be reduced on Windows 7.
