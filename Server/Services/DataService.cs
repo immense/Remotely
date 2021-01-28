@@ -1187,18 +1187,7 @@ namespace Remotely.Server.Services
 
         public void WriteEvent(string message, string organizationID)
         {
-            try
-            {
-                RemotelyContext.EventLogs.Add(new EventLog()
-                {
-                    EventType = EventType.Info,
-                    Message = message,
-                    TimeStamp = DateTimeOffset.Now,
-                    OrganizationID = organizationID
-                });
-                RemotelyContext.SaveChanges();
-            }
-            catch { }
+            WriteEvent(message, EventType.Info, organizationID);
         }
 
         public void WriteEvent(string message, EventType eventType, string organizationID)
