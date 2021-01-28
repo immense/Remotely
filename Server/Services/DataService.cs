@@ -369,23 +369,35 @@ namespace Remotely.Server.Services
 
         public async Task ClearLogs(string currentUserName)
         {
+            var currentUser = await RemotelyContext.Users.FirstOrDefaultAsync(x => x.UserName == currentUserName);
+            if (currentUser is null)
+            {
+                return;
+            }
+
             try
             {
-                var currentUser = await RemotelyContext.Users.FirstOrDefaultAsync(x => x.UserName == currentUserName);
 
-                var eventLogs = RemotelyContext.EventLogs.Where(x => x.OrganizationID == currentUser.OrganizationID);
                 if (currentUser.IsServerAdmin)
                 {
-                    eventLogs = eventLogs.Concat(RemotelyContext.EventLogs.Where(x => string.IsNullOrWhiteSpace(x.OrganizationID)));
+                    RemotelyContext.EventLogs.RemoveRange(RemotelyContext.EventLogs);
+                    RemotelyContext.CommandResults.RemoveRange(RemotelyContext.CommandResults);
                 }
-                RemotelyContext.EventLogs.RemoveRange(eventLogs);
+                else
+                {
+                    var eventLogs = RemotelyContext.EventLogs.Where(x => x.OrganizationID == currentUser.OrganizationID);
+                    var commandResults = RemotelyContext.CommandResults.Where(x => x.OrganizationID == currentUser.OrganizationID);
 
-                var commandResults = RemotelyContext.CommandResults.Where(x => x.OrganizationID == currentUser.OrganizationID);
-                RemotelyContext.CommandResults.RemoveRange(commandResults);
+                    RemotelyContext.CommandResults.RemoveRange(commandResults);
+                    RemotelyContext.EventLogs.RemoveRange(eventLogs);
+                }
 
                 await RemotelyContext.SaveChangesAsync();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                WriteEvent(ex, currentUser.OrganizationID);
+            }
         }
 
         public async Task<ApiToken> CreateApiToken(string userName, string tokenName, string secretHash)
