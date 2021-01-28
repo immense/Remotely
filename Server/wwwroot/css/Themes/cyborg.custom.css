@@ -116,7 +116,7 @@ button.navbar-toggler:hover {
     color: limegreen;
 }
 
-td .fa-times {
+td > .fa-times {
     color: red;
 }
 

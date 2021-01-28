@@ -162,6 +162,10 @@ export function RenderDeviceRows() {
                                 <i class="fas fa-edit" title="Edit"></i>
                                 Edit
                             </a>
+                            <a class="dropdown-item device-remove-button" href="#">
+                                <i class="fas fa-times" title="Remove"></i>
+                                Remove
+                            </a>
                           </div>
                         </div>
                     </td>`;
@@ -180,7 +184,9 @@ export function RenderDeviceRows() {
         (recordRow.querySelector(".device-viewonly-button") as HTMLButtonElement).onclick = (ev) => {
             AddConsoleOutput("Launching remote control on client device...");
             BrowserHubConnection.StartRemoteControl(device.ID, true);
-          
+        };
+        (recordRow.querySelector(".device-remove-button") as HTMLButtonElement).onclick = (ev) => {
+            BrowserHubConnection.Connection.invoke("RemoveDevices", [ device.ID ]);
         };
     }
 }
