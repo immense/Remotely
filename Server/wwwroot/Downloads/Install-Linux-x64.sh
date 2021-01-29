@@ -17,7 +17,7 @@ do
         systemctl daemon-reload
         exit
     elif [ "${Args[$i]}" = "--path" ]; then
-        UpdatePackagePath="${Args[$i+1}"
+        UpdatePackagePath="${Args[$i+1]}"
     fi
 done
 
