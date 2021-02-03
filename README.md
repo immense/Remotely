@@ -11,8 +11,10 @@ Suggested Charities: https://www.givewell.org/charities/top-charities
 
 If you want to send a few dollars my way as well, you can with the below links.  But if you have to choose between one or the other, please pick the charity.  Your money will have a much greater impact on their lives than mine.
 
-Ongoing via GitHub: https://github.com/sponsors/lucent-sea  
-One-Time via PayPal: https://paypal.me/translucency  
+[![PayPal Link](https://img.shields.io/badge/PayPal-Donate-brightgreen)](https://www.paypal.com/donate?hosted_button_id=L8ZB3L9NCBNWW)
+
+[![GitHub Sponsors](https://img.shields.io/badge/GitHub%20Sponsors-Sponsor-brightgreen)](https://github.com/sponsors/lucent-sea)
+
 
 ## Project Links
 Demo App: https://app.remotely.one  
