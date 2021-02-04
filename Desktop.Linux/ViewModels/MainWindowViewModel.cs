@@ -206,7 +206,7 @@ namespace Remotely.Desktop.Linux.ViewModels
             }
             prompt.Owner = MainWindow.Current;
             await prompt.ShowDialog(MainWindow.Current);
-            var result = prompt.ViewModel.Host;
+            var result = prompt.ViewModel.Host?.TrimEnd('/');
 
             if (result is null)
             {
@@ -219,7 +219,7 @@ namespace Remotely.Desktop.Linux.ViewModels
             }
             if (result != Host)
             {
-                Host = result.TrimEnd('/');
+                Host = result;
                 var config = ConfigService.GetConfig();
                 config.Host = Host;
                 ConfigService.Save(config);

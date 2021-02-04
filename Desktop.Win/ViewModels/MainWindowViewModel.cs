@@ -251,14 +251,14 @@ namespace Remotely.Desktop.Win.ViewModels
             }
             prompt.Owner = App.Current?.MainWindow;
             prompt.ShowDialog();
-            var result = prompt.ViewModel.Host;
+            var result = prompt.ViewModel.Host?.TrimEnd('/');
             if (!result.StartsWith("https://") && !result.StartsWith("http://"))
             {
                 result = $"https://{result}";
             }
             if (result != Host)
             {
-                Host = result.TrimEnd('/');
+                Host = result;
                 var config = ConfigService.GetConfig();
                 config.Host = Host;
                 ConfigService.Save(config);

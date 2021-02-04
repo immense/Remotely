@@ -59,10 +59,14 @@ namespace Remotely.Desktop.Core.Services
         {
             try
             {
-                if (Connection != null)
+                if (Connection?.State == HubConnectionState.Connected)
                 {
-                    await Connection.StopAsync();
-                    await Connection.DisposeAsync();
+                    try
+                    {
+                        await Connection.StopAsync();
+                        await Connection.DisposeAsync();
+                    }
+                    catch { }
                 }
                 Connection = new HubConnectionBuilder()
                     .WithUrl($"{host}/CasterHub")
