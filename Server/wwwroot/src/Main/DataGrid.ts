@@ -186,7 +186,9 @@ export function RenderDeviceRows() {
             BrowserHubConnection.StartRemoteControl(device.ID, true);
         };
         (recordRow.querySelector(".device-remove-button") as HTMLButtonElement).onclick = (ev) => {
-            BrowserHubConnection.Connection.invoke("RemoveDevices", [ device.ID ]);
+            if (confirm("Are you sure you want to remove this device?")) {
+                BrowserHubConnection.Connection.invoke("RemoveDevices", [ device.ID ]);
+            }
         };
     }
 }
