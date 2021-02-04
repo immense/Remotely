@@ -20,10 +20,10 @@ namespace Remotely.Agent.Services
                             $WarningPreference = ""Continue"";");
             PS.Invoke();
 
-            ProcessIdleTimeout = new Timer(600_000)
+            ProcessIdleTimeout = new Timer(TimeSpan.FromMinutes(10).TotalMilliseconds)
             {
                 AutoReset = false
-            }; // 10 minutes.
+            };
             ProcessIdleTimeout.Elapsed += ProcessIdleTimeout_Elapsed;
             ProcessIdleTimeout.Start();
         }

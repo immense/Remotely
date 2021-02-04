@@ -34,10 +34,10 @@ namespace Remotely.Agent.Services
             CMDProc.BeginErrorReadLine();
             CMDProc.BeginOutputReadLine();
 
-            ProcessIdleTimeout = new System.Timers.Timer(600_000)
+            ProcessIdleTimeout = new System.Timers.Timer(TimeSpan.FromMinutes(10).TotalMilliseconds)
             {
                 AutoReset = false
-            }; // 10 minutes.
+            };
             ProcessIdleTimeout.Elapsed += ProcessIdleTimeout_Elapsed;
             ProcessIdleTimeout.Start();
         }
