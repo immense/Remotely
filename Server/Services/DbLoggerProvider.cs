@@ -6,23 +6,24 @@ namespace Remotely.Server.Services
 {
     public class DbLoggerProvider : ILoggerProvider
     {
-        private readonly IWebHostEnvironment hostEnvironment;
-        private readonly IServiceProvider serviceProvider;
+        private readonly IWebHostEnvironment _hostEnvironment;
+        private readonly IServiceProvider _serviceProvider;
 
         public DbLoggerProvider(IWebHostEnvironment hostEnvironment, IServiceProvider serviceProvider)
         {
-            this.hostEnvironment = hostEnvironment;
-            this.serviceProvider = serviceProvider;
+            _hostEnvironment = hostEnvironment;
+            _serviceProvider = serviceProvider;
         }
 
 
         public ILogger CreateLogger(string categoryName)
         {
-            return new DbLogger(categoryName, hostEnvironment, serviceProvider);
+            return new DbLogger(categoryName, _hostEnvironment, _serviceProvider);
         }
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
         }
     }
 }
