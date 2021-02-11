@@ -155,14 +155,32 @@ else {
 ##    return
 ##}
 
-if ((Get-Package -Name "*5.0.0 - Windows Server Hosting*" -ErrorAction SilentlyContinue) -eq $null){
+
+$HostingPackage = Get-Package -Name "*.NET*Windows Server Hosting*" -ErrorAction SilentlyContinue
+$Result = Invoke-WebRequest -Uri "https://dotnet.microsoft.com/download/dotnet/current/runtime" -UseBasicParsing
+$BundleLink = $Result.Links | Where-Object {$_.outerHTML -like "*Download Hosting Bundle*"}
+$Result = Invoke-WebRequest -Uri ("https://dotnet.microsoft.com$($BundleLink.href)") -UseBasicParsing
+$DownloadLink = $Result.Links | Where-Object {$_.outerHTML -like "*Click here to download manually*"}
+$Parts = $DownloadLink.href.Split("-")
+$RemoteVersionString = $Parts[$Parts.Length - 2]
+
+if ($HostingPackage -ne $null) {
+    $LocalVersion = [System.Version]::Parse($HostingPackage.Version)
+
+}
+$RemoteVersion = [System.Version]::Parse($RemoteVersionString)
+
+if ($HostingPackage -eq $null -or $RemoteVersion -gt $LocalVersion) {
     Wrap-Host "Downloading .NET Core Runtime and Hosting Bundle..."
     $ProgressPreference = "SilentlyContinue"
-    Invoke-WebRequest -Uri "https://download.visualstudio.microsoft.com/download/pr/08d642f7-8ade-4de3-9eae-b77fd05e5f01/503da91e7ea62d8be06488b014643c12/dotnet-hosting-5.0.0-win.exe" -OutFile "$env:TEMP\dotnet-hosting-5.0.0-win.exe"
+    Invoke-WebRequest -Uri $DownloadLink.href -OutFile "$env:TEMP\dotnet-hosting-win.exe" -UseBasicParsing
     $ProgressPreference = "Continue"
-    Start-Process -FilePath "$env:TEMP\dotnet-hosting-5.0.0-win.exe" -ArgumentList "/install /quiet /norestart" -Wait
+    Start-Process -FilePath "$env:TEMP\dotnet-hosting-win.exe" -ArgumentList "/install /quiet /norestart" -Wait
     Wrap-Host
     Wrap-Host ".NET Runtime installation completed."
+}
+else {
+    Wrap-Host ".NET Hosting Bundle is up-to-date."
 }
 
 #endregion
