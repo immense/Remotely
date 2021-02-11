@@ -59,7 +59,11 @@ namespace Remotely.Server.Services
         {
             using var scope = _serviceProvider.CreateScope();
             var dataService = scope.ServiceProvider.GetRequiredService<IDataService>();
-            dataService.WriteLog(logLevel, _categoryName, eventId, state.ToString(), exception, ScopeStack.ToList());
+            var scopeStack = ScopeStack.Any() ?
+                new string[] { ScopeStack.FirstOrDefault(), ScopeStack.LastOrDefault() } :
+                Array.Empty<string>();
+
+            dataService.WriteLog(logLevel, _categoryName, eventId, state.ToString(), exception, scopeStack.ToList());
         }
 
 
