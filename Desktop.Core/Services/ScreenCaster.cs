@@ -3,7 +3,7 @@ using Remotely.Desktop.Core.Enums;
 using Remotely.Desktop.Core.Interfaces;
 using Remotely.Desktop.Core.Models;
 using Remotely.Desktop.Core.Utilities;
-using Remotely.Shared.Helpers;
+using Remotely.Shared.Utilities;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;

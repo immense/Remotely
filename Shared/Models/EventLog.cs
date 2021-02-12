@@ -1,6 +1,7 @@
 ﻿using Remotely.Shared.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace Remotely.Shared.Models
@@ -8,7 +9,8 @@ namespace Remotely.Shared.Models
     public class EventLog
     {
         [Key]
-        public string ID { get; set; } = Guid.NewGuid().ToString();
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public string ID { get; set; }
         public EventType EventType { get; set; }
         public string Message { get; set; }
         public string Source { get; set; }

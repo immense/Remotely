@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Remotely.Server.Areas.Identity.Pages.Account.Manage;
 using Remotely.Server.Data;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
@@ -15,6 +16,7 @@ using System.Threading.Tasks;
 
 namespace Remotely.Server.Services
 {
+    // TODO: Separate this into domains-specific services.
     public interface IDataService
     {
         Task AddAlert(AlertOptions alertOptions, string organizationID);
@@ -30,58 +32,128 @@ namespace Remotely.Server.Services
 
         Task<ApiToken> CreateApiToken(string userName, string tokenName, string secretHash);
         Task<Device> CreateDevice(DeviceSetupOptions options);
+
         Task<bool> CreateUser(string userEmail, bool isAdmin, string organizationID);
+
         Task DeleteAlert(Alert alert);
+
         Task DeleteApiToken(string userName, string tokenId);
+
         void DeleteDeviceGroup(string orgID, string deviceGroupID);
+
         void DeleteInvite(string orgID, string inviteID);
+
         void DetachEntity(object entity);
+
         void DeviceDisconnected(string deviceID);
+
+        Task DisableSponsorship(string organizationId);
+
         bool DoesUserExist(string userName);
+
         bool DoesUserHaveAccessToDevice(string deviceID, RemotelyUser remotelyUser);
+
         bool DoesUserHaveAccessToDevice(string deviceID, string remotelyUserID);
+
         string[] FilterDeviceIDsByUserPermission(string[] deviceIDs, RemotelyUser remotelyUser);
+
         string[] FilterUsersByDevicePermission(IEnumerable<string> userIDs, string deviceID);
+
         Task<Alert> GetAlert(string alertID);
+
         IEnumerable<Alert> GetAlerts(string userID);
+
         IEnumerable<ApiToken> GetAllApiTokens(string userID);
+
         IEnumerable<CommandResult> GetAllCommandResults(string orgID);
+
         IEnumerable<Device> GetAllDevices(string orgID);
+
         IEnumerable<EventLog> GetAllEventLogs(string orgID);
+
         ICollection<InviteLink> GetAllInviteLinks(string userName);
+
         IEnumerable<RemotelyUser> GetAllUsers(string userName);
+
         ApiToken GetApiToken(string apiToken);
+
+        Task<BrandingInfo> GetBrandingInfo(string organizationId);
+
         CommandResult GetCommandResult(string commandResultID);
+
         CommandResult GetCommandResult(string commandResultID, string orgID);
+
+        Task<Organization> GetDefaultOrganization();
         string GetDefaultPrompt();
+
         string GetDefaultPrompt(string userName);
+
+        Task<string> GetDefaultRelayCode();
+
         Device GetDevice(string deviceID);
+
         Device GetDevice(string orgID, string deviceID);
+
         int GetDeviceCount();
+
         IEnumerable<DeviceGroup> GetDeviceGroups(string username);
+
         IEnumerable<Device> GetDevicesForUser(string userName);
+
         IEnumerable<EventLog> GetEventLogs(string userName, DateTimeOffset from, DateTimeOffset to, EventType? type, string message);
+
+        Organization GetOrganizationById(string organizationID);
+
+        Task<Organization> GetOrganizationByUserName(string userName);
+
         int GetOrganizationCount();
-        string GetOrganizationName(string userName);
+
         string GetOrganizationNameById(string organizationID);
+
+        string GetOrganizationNameByUserName(string userName);
+
         List<string> GetServerAdmins();
+
         SharedFile GetSharedFiled(string fileID);
+
         int GetTotalDevices();
+
         RemotelyUser GetUserByID(string userID);
+
         RemotelyUser GetUserByName(string userName);
+
         RemotelyUserOptions GetUserOptions(string userName);
+
         bool JoinViaInvitation(string userName, string inviteID);
+
         void RemoveDevices(string[] deviceIDs);
+
         Task<bool> RemoveUserFromDeviceGroup(string orgID, string groupID, string userID);
+
         Task RemoveUserFromOrganization(string orgID, string targetUserID);
+
         Task RenameApiToken(string userName, string tokenId, string tokenName);
+
         void SetAllDevicesNotOnline();
+
         Task SetDisplayName(RemotelyUser user, string displayName);
+
         void SetServerVerificationToken(string deviceID, string verificationToken);
+
         Task<bool> TempPasswordSignIn(string email, string password);
+
+        Task UpdateBrandingInfo(
+                                                                                                                                                                                                                                                    string organizationId,
+            string productName, 
+            IFormFile icon,
+            ColorPickerModel titleForeground, 
+            ColorPickerModel titleBackground, 
+            ColorPickerModel titleButtonForeground);
         Task<Device> UpdateDevice(DeviceSetupOptions deviceOptions, string organizationId);
         void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes, WebRtcSetting webRtcSetting);
         void UpdateOrganizationName(string orgID, string organizationName);
+
+        Task UpdateOrganizationSponsorInfo(SponsorInfo sponsorInfo, bool isDefaultOrganization, bool updateUnlockCode);
         Task UpdateServerAdmins(List<string> serverAdmins, string callerUserName);
         void UpdateTags(string deviceID, string tags);
         void UpdateUserOptions(string userName, RemotelyUserOptions options);
@@ -90,30 +162,30 @@ namespace Remotely.Server.Services
         void WriteEvent(Exception ex, string organizationID);
         void WriteEvent(string message, EventType eventType, string organizationID);
         void WriteEvent(string message, string organizationID);
-        void WriteLog(LogLevel logLevel, string category, EventId eventId, string state, Exception exception, List<string> scopeStack);
+        void WriteLog(LogLevel logLevel, string category, EventId eventId, string state, Exception exception, string[] scopeStack);
     }
 
     public class DataService : IDataService
     {
+        private readonly IApplicationConfig _appConfig;
+
+        private readonly ApplicationDbContext _dbContext;
+        private readonly IHostEnvironment _hostEnvironment;
+        private readonly UserManager<RemotelyUser> _userManager;
+
         public DataService(ApplicationDbContext context,
-            IApplicationConfig appConfig,
+                                            IApplicationConfig appConfig,
             IHostEnvironment hostEnvironment,
             UserManager<RemotelyUser> userManager)
         {
-            RemotelyContext = context;
-            AppConfig = appConfig;
-            HostEnvironment = hostEnvironment;
-            UserManager = userManager;
+            _dbContext = context;
+            _appConfig = appConfig;
+            _hostEnvironment = hostEnvironment;
+            _userManager = userManager;
         }
-
-        private IApplicationConfig AppConfig { get; }
-        private IHostEnvironment HostEnvironment { get; }
-        private ApplicationDbContext RemotelyContext { get; }
-        private UserManager<RemotelyUser> UserManager { get; }
-
         public async Task AddAlert(AlertOptions alertOptions, string organizationID)
         {
-            var users = RemotelyContext.Users
+            var users = _dbContext.Users
                 .Include(x => x.Alerts)
                 .Where(x => x.OrganizationID == organizationID);
 
@@ -135,7 +207,7 @@ namespace Remotely.Server.Services
                 x.Alerts.Add(alert);
             });
 
-            await RemotelyContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
         }
 
         public bool AddDeviceGroup(string orgID, DeviceGroup deviceGroup, out string deviceGroupID, out string errorMessage)
@@ -143,11 +215,11 @@ namespace Remotely.Server.Services
             deviceGroupID = null;
             errorMessage = null;
 
-            var organization = RemotelyContext.Organizations
+            var organization = _dbContext.Organizations
                 .Include(x => x.DeviceGroups)
                 .FirstOrDefault(x => x.ID == orgID);
 
-            if (RemotelyContext.DeviceGroups.Any(x =>
+            if (_dbContext.DeviceGroups.Any(x =>
                 x.OrganizationID == orgID &&
                 x.Name.ToLower() == deviceGroup.Name.ToLower()))
             {
@@ -163,7 +235,7 @@ namespace Remotely.Server.Services
             };
 
             organization.DeviceGroups.Add(newDeviceGroup);
-            RemotelyContext.SaveChanges();
+            _dbContext.SaveChanges();
             deviceGroupID = newDeviceGroup.ID;
             return true;
         }
@@ -172,7 +244,7 @@ namespace Remotely.Server.Services
         {
             invite.InvitedUser = invite.InvitedUser.ToLower();
 
-            var organization = RemotelyContext.Organizations
+            var organization = _dbContext.Organizations
                 .Include(x => x.InviteLinks)
                 .FirstOrDefault(x => x.ID == orgID);
 
@@ -185,29 +257,29 @@ namespace Remotely.Server.Services
                 OrganizationID = organization.ID
             };
             organization.InviteLinks.Add(newInvite);
-            RemotelyContext.SaveChanges();
+            _dbContext.SaveChanges();
             return newInvite;
         }
 
         public void AddOrUpdateCommandResult(CommandResult commandResult)
         {
-            var existingContext = RemotelyContext.CommandResults.Find(commandResult.ID);
+            var existingContext = _dbContext.CommandResults.Find(commandResult.ID);
             if (existingContext != null)
             {
-                var entry = RemotelyContext.Entry(existingContext);
+                var entry = _dbContext.Entry(existingContext);
                 entry.CurrentValues.SetValues(commandResult);
                 entry.State = EntityState.Modified;
             }
             else
             {
-                RemotelyContext.CommandResults.Add(commandResult);
+                _dbContext.CommandResults.Add(commandResult);
             }
-            RemotelyContext.SaveChanges();
+            _dbContext.SaveChanges();
         }
 
         public bool AddOrUpdateDevice(Device device, out Device updatedDevice)
         {
-            var existingDevice = RemotelyContext.Devices.Find(device.ID);
+            var existingDevice = _dbContext.Devices.Find(device.ID);
             if (existingDevice != null)
             {
                 existingDevice.CurrentUser = device.CurrentUser;
@@ -232,16 +304,16 @@ namespace Remotely.Server.Services
             else
             {
                 device.LastOnline = DateTimeOffset.Now;
-                if (HostEnvironment.IsDevelopment() && RemotelyContext.Organizations.Any())
+                if (_hostEnvironment.IsDevelopment() && _dbContext.Organizations.Any())
                 {
-                    var org = RemotelyContext.Organizations.FirstOrDefault();
+                    var org = _dbContext.Organizations.FirstOrDefault();
                     device.Organization = org;
                     device.OrganizationID = org?.ID;
                 }
 
                 updatedDevice = device;
 
-                if (!RemotelyContext.Organizations.Any(x => x.ID == device.OrganizationID))
+                if (!_dbContext.Organizations.Any(x => x.ID == device.OrganizationID))
                 {
                     WriteEvent(new EventLog()
                     {
@@ -252,17 +324,17 @@ namespace Remotely.Server.Services
                     });
                     return false;
                 }
-                RemotelyContext.Devices.Add(device);
+                _dbContext.Devices.Add(device);
             }
-            RemotelyContext.SaveChanges();
+            _dbContext.SaveChanges();
             return true;
         }
 
         public async Task<string> AddSharedFile(IFormFile file, string organizationID)
         {
-            var expirationDate = DateTimeOffset.Now.AddDays(-AppConfig.DataRetentionInDays);
-            var expiredFiles = RemotelyContext.SharedFiles.Where(x => x.Timestamp < expirationDate);
-            RemotelyContext.RemoveRange(expiredFiles);
+            var expirationDate = DateTimeOffset.Now.AddDays(-_appConfig.DataRetentionInDays);
+            var expiredFiles = _dbContext.SharedFiles.Where(x => x.Timestamp < expirationDate);
+            _dbContext.RemoveRange(expiredFiles);
 
             byte[] fileContents;
             using (var stream = file.OpenReadStream())
@@ -271,14 +343,14 @@ namespace Remotely.Server.Services
                 await stream.CopyToAsync(ms);
                 fileContents = ms.ToArray();
             }
-            var newEntity = RemotelyContext.Add(new SharedFile()
+            var newEntity = _dbContext.Add(new SharedFile()
             {
                 FileContents = fileContents,
                 FileName = file.FileName,
                 ContentType = file.ContentType,
                 OrganizationID = organizationID
             });
-            await RemotelyContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
             return newEntity.Entity.ID;
         }
 
@@ -286,7 +358,7 @@ namespace Remotely.Server.Services
         {
             resultMessage = string.Empty;
 
-            var deviceGroup = RemotelyContext.DeviceGroups
+            var deviceGroup = _dbContext.DeviceGroups
                 .Include(x => x.Users)
                 .FirstOrDefault(x =>
                     x.ID == groupID &&
@@ -300,7 +372,7 @@ namespace Remotely.Server.Services
 
             userName = userName.Trim().ToLower();
 
-            var user = RemotelyContext.Users
+            var user = _dbContext.Users
                 .Include(x => x.DeviceGroups)
                 .FirstOrDefault(x =>
                     x.UserName.ToLower() == userName &&
@@ -323,53 +395,53 @@ namespace Remotely.Server.Services
 
             deviceGroup.Users.Add(user);
             user.DeviceGroups.Add(deviceGroup);
-            RemotelyContext.SaveChanges();
+            _dbContext.SaveChanges();
             resultMessage = user.Id;
             return true;
         }
 
         public void ChangeUserIsAdmin(string organizationID, string targetUserID, bool isAdmin)
         {
-            var targetUser = RemotelyContext.Users.FirstOrDefault(x =>
+            var targetUser = _dbContext.Users.FirstOrDefault(x =>
                                 x.OrganizationID == organizationID &&
                                 x.Id == targetUserID);
 
             if (targetUser != null)
             {
                 targetUser.IsAdministrator = isAdmin;
-                RemotelyContext.SaveChanges();
+                _dbContext.SaveChanges();
             }
         }
 
         public void CleanupOldRecords()
         {
-            if (AppConfig.DataRetentionInDays > 0)
+            if (_appConfig.DataRetentionInDays > 0)
             {
 
-                var expirationDate = DateTimeOffset.Now - TimeSpan.FromDays(AppConfig.DataRetentionInDays);
+                var expirationDate = DateTimeOffset.Now - TimeSpan.FromDays(_appConfig.DataRetentionInDays);
 
-                var eventLogs = RemotelyContext.EventLogs
+                var eventLogs = _dbContext.EventLogs
                                     .Where(x => x.TimeStamp < expirationDate);
 
-                RemotelyContext.RemoveRange(eventLogs);
+                _dbContext.RemoveRange(eventLogs);
 
-                var commandResults = RemotelyContext.CommandResults
+                var commandResults = _dbContext.CommandResults
                                         .Where(x => x.TimeStamp < expirationDate);
 
-                RemotelyContext.RemoveRange(commandResults);
+                _dbContext.RemoveRange(commandResults);
 
-                var sharedFiles = RemotelyContext.SharedFiles
+                var sharedFiles = _dbContext.SharedFiles
                                         .Where(x => x.Timestamp < expirationDate);
 
-                RemotelyContext.RemoveRange(sharedFiles);
+                _dbContext.RemoveRange(sharedFiles);
 
-                RemotelyContext.SaveChanges();
+                _dbContext.SaveChanges();
             }
         }
 
         public async Task ClearLogs(string currentUserName)
         {
-            var currentUser = await RemotelyContext.Users.FirstOrDefaultAsync(x => x.UserName == currentUserName);
+            var currentUser = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserName == currentUserName);
             if (currentUser is null)
             {
                 return;
@@ -380,19 +452,19 @@ namespace Remotely.Server.Services
 
                 if (currentUser.IsServerAdmin)
                 {
-                    RemotelyContext.EventLogs.RemoveRange(RemotelyContext.EventLogs);
-                    RemotelyContext.CommandResults.RemoveRange(RemotelyContext.CommandResults);
+                    _dbContext.EventLogs.RemoveRange(_dbContext.EventLogs);
+                    _dbContext.CommandResults.RemoveRange(_dbContext.CommandResults);
                 }
                 else
                 {
-                    var eventLogs = RemotelyContext.EventLogs.Where(x => x.OrganizationID == currentUser.OrganizationID);
-                    var commandResults = RemotelyContext.CommandResults.Where(x => x.OrganizationID == currentUser.OrganizationID);
+                    var eventLogs = _dbContext.EventLogs.Where(x => x.OrganizationID == currentUser.OrganizationID);
+                    var commandResults = _dbContext.CommandResults.Where(x => x.OrganizationID == currentUser.OrganizationID);
 
-                    RemotelyContext.CommandResults.RemoveRange(commandResults);
-                    RemotelyContext.EventLogs.RemoveRange(eventLogs);
+                    _dbContext.CommandResults.RemoveRange(commandResults);
+                    _dbContext.EventLogs.RemoveRange(eventLogs);
                 }
 
-                await RemotelyContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -402,7 +474,7 @@ namespace Remotely.Server.Services
 
         public async Task<ApiToken> CreateApiToken(string userName, string tokenName, string secretHash)
         {
-            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);
+            var user = _dbContext.Users.FirstOrDefault(x => x.UserName == userName);
 
             var newToken = new ApiToken()
             {
@@ -411,8 +483,8 @@ namespace Remotely.Server.Services
                 Token = Guid.NewGuid().ToString(),
                 Secret = secretHash
             };
-            RemotelyContext.ApiTokens.Add(newToken);
-            await RemotelyContext.SaveChangesAsync();
+            _dbContext.ApiTokens.Add(newToken);
+            await _dbContext.SaveChangesAsync();
             return newToken;
         }
 
@@ -423,7 +495,7 @@ namespace Remotely.Server.Services
                 if (options is null ||
                     string.IsNullOrWhiteSpace(options.DeviceID) ||
                     string.IsNullOrWhiteSpace(options.OrganizationID) ||
-                    RemotelyContext.Devices.Any(x => x.ID == options.DeviceID))
+                    _dbContext.Devices.Any(x => x.ID == options.DeviceID))
                 {
                     return null;
                 }
@@ -441,15 +513,15 @@ namespace Remotely.Server.Services
 
                 if (!string.IsNullOrWhiteSpace(options.DeviceGroupName))
                 {
-                    var group = RemotelyContext.DeviceGroups.FirstOrDefault(x =>
+                    var group = _dbContext.DeviceGroups.FirstOrDefault(x =>
                         x.Name.ToLower() == options.DeviceGroupName.ToLower() &&
                         x.OrganizationID == device.OrganizationID);
                     device.DeviceGroup = group;
                 }
 
-                RemotelyContext.Devices.Add(device);
+                _dbContext.Devices.Add(device);
 
-                await RemotelyContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
 
                 return device;
             }
@@ -473,12 +545,12 @@ namespace Remotely.Server.Services
                     OrganizationID = organizationID,
                     UserOptions = new RemotelyUserOptions()
                 };
-                var org = RemotelyContext.Organizations
+                var org = _dbContext.Organizations
                     .Include(x => x.RemotelyUsers)
                     .FirstOrDefault(x => x.ID == organizationID);
-                RemotelyContext.Users.Add(user);
+                _dbContext.Users.Add(user);
                 org.RemotelyUsers.Add(user);
-                await RemotelyContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
                 return true;
             }
             catch (Exception ex)
@@ -491,24 +563,24 @@ namespace Remotely.Server.Services
 
         public async Task DeleteAlert(Alert alert)
         {
-            RemotelyContext.Alerts.Remove(alert);
-            await RemotelyContext.SaveChangesAsync();
+            _dbContext.Alerts.Remove(alert);
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task DeleteApiToken(string userName, string tokenId)
         {
-            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);
-            var token = RemotelyContext.ApiTokens.FirstOrDefault(x =>
+            var user = _dbContext.Users.FirstOrDefault(x => x.UserName == userName);
+            var token = _dbContext.ApiTokens.FirstOrDefault(x =>
                 x.OrganizationID == user.OrganizationID &&
                 x.ID == tokenId);
 
-            RemotelyContext.ApiTokens.Remove(token);
-            await RemotelyContext.SaveChangesAsync();
+            _dbContext.ApiTokens.Remove(token);
+            await _dbContext.SaveChangesAsync();
         }
 
         public void DeleteDeviceGroup(string orgID, string deviceGroupID)
         {
-            var deviceGroup = RemotelyContext.DeviceGroups
+            var deviceGroup = _dbContext.DeviceGroups
                 .Include(x => x.Devices)
                 .Include(x => x.Users)
                 .ThenInclude(x => x.DeviceGroups)
@@ -529,40 +601,56 @@ namespace Remotely.Server.Services
             deviceGroup.Devices.Clear();
             deviceGroup.Users.Clear();
 
-            RemotelyContext.DeviceGroups.Remove(deviceGroup);
+            _dbContext.DeviceGroups.Remove(deviceGroup);
 
-            RemotelyContext.SaveChanges();
+            _dbContext.SaveChanges();
         }
 
         public void DeleteInvite(string orgID, string inviteID)
         {
-            var invite = RemotelyContext.InviteLinks.FirstOrDefault(x =>
+            var invite = _dbContext.InviteLinks.FirstOrDefault(x =>
                 x.OrganizationID == orgID &&
                 x.ID == inviteID);
 
-            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == invite.InvitedUser);
+            var user = _dbContext.Users.FirstOrDefault(x => x.UserName == invite.InvitedUser);
 
             if (user != null && string.IsNullOrWhiteSpace(user.PasswordHash))
             {
-                RemotelyContext.Remove(user);
+                _dbContext.Remove(user);
             }
-            RemotelyContext.Remove(invite);
-            RemotelyContext.SaveChanges();
+            _dbContext.Remove(invite);
+            _dbContext.SaveChanges();
         }
 
         public void DetachEntity(object entity)
         {
-            RemotelyContext.Entry(entity).State = EntityState.Detached;
+            _dbContext.Entry(entity).State = EntityState.Detached;
         }
 
         public void DeviceDisconnected(string deviceID)
         {
-            var device = RemotelyContext.Devices.Find(deviceID);
+            var device = _dbContext.Devices.Find(deviceID);
             if (device != null)
             {
                 device.LastOnline = DateTimeOffset.Now;
                 device.IsOnline = false;
-                RemotelyContext.SaveChanges();
+                _dbContext.SaveChanges();
+            }
+        }
+
+        public async Task DisableSponsorship(string organizationId)
+        {
+            if (string.IsNullOrWhiteSpace(organizationId))
+            {
+                return;
+            };
+
+            var organization = await _dbContext.Organizations.FindAsync(organizationId);
+            if (organization != null)
+            {
+                organization.SponsorAmount = 0;
+                organization.RelayCode = null;
+                await _dbContext.SaveChangesAsync();
             }
         }
 
@@ -572,12 +660,12 @@ namespace Remotely.Server.Services
             {
                 return false;
             }
-            return RemotelyContext.Users.Any(x => x.UserName.Trim().ToLower() == userName.Trim().ToLower());
+            return _dbContext.Users.Any(x => x.UserName.Trim().ToLower() == userName.Trim().ToLower());
         }
 
         public bool DoesUserHaveAccessToDevice(string deviceID, RemotelyUser remotelyUser)
         {
-            return RemotelyContext.Devices
+            return _dbContext.Devices
                 .Include(x => x.DeviceGroup)
                 .ThenInclude(x => x.Users)
                 .Any(device => device.OrganizationID == remotelyUser.OrganizationID &&
@@ -592,14 +680,14 @@ namespace Remotely.Server.Services
 
         public bool DoesUserHaveAccessToDevice(string deviceID, string remotelyUserID)
         {
-            var remotelyUser = RemotelyContext.Users.Find(remotelyUserID);
+            var remotelyUser = _dbContext.Users.Find(remotelyUserID);
 
             return DoesUserHaveAccessToDevice(deviceID, remotelyUser);
         }
 
         public string[] FilterDeviceIDsByUserPermission(string[] deviceIDs, RemotelyUser remotelyUser)
         {
-            return RemotelyContext.Devices
+            return _dbContext.Devices
                 .Include(x => x.DeviceGroup)
                 .ThenInclude(x => x.Users)
                 .Where(device =>
@@ -616,12 +704,12 @@ namespace Remotely.Server.Services
 
         public string[] FilterUsersByDevicePermission(IEnumerable<string> userIDs, string deviceID)
         {
-            var device = RemotelyContext.Devices
+            var device = _dbContext.Devices
                 .Include(x => x.DeviceGroup)
                 .ThenInclude(x => x.Users)
                 .FirstOrDefault(x => x.ID == deviceID);
 
-            var orgUsers = RemotelyContext.Users
+            var orgUsers = _dbContext.Users
                 .Where(user =>
                     user.OrganizationID == device.OrganizationID &&
                     userIDs.Contains(user.Id));
@@ -647,7 +735,7 @@ namespace Remotely.Server.Services
 
         public async Task<Alert> GetAlert(string alertID)
         {
-            return await RemotelyContext.Alerts
+            return await _dbContext.Alerts
                 .Include(x => x.Device)
                 .Include(x => x.User)
                 .FirstOrDefaultAsync(x => x.ID == alertID);
@@ -655,7 +743,7 @@ namespace Remotely.Server.Services
 
         public IEnumerable<Alert> GetAlerts(string userID)
         {
-            return RemotelyContext.Alerts
+            return _dbContext.Alerts
                 .Include(x => x.Device)
                 .Include(x => x.User)
                 .Where(x => x.UserID == userID)
@@ -664,35 +752,35 @@ namespace Remotely.Server.Services
 
         public IEnumerable<ApiToken> GetAllApiTokens(string userID)
         {
-            var user = RemotelyContext.Users.FirstOrDefault(x => x.Id == userID);
+            var user = _dbContext.Users.FirstOrDefault(x => x.Id == userID);
 
-            return RemotelyContext.ApiTokens
+            return _dbContext.ApiTokens
                 .Where(x => x.OrganizationID == user.OrganizationID)
                 .OrderByDescending(x => x.LastUsed);
         }
 
         public IEnumerable<CommandResult> GetAllCommandResults(string orgID)
         {
-            return RemotelyContext.CommandResults
+            return _dbContext.CommandResults
                 .Where(x => x.OrganizationID == orgID)
                 .OrderByDescending(x => x.TimeStamp);
         }
 
         public IEnumerable<Device> GetAllDevices(string orgID)
         {
-            return RemotelyContext.Devices.Where(x => x.OrganizationID == orgID);
+            return _dbContext.Devices.Where(x => x.OrganizationID == orgID);
         }
 
         public IEnumerable<EventLog> GetAllEventLogs(string orgID)
         {
-            return RemotelyContext.EventLogs
+            return _dbContext.EventLogs
                 .Where(x => x.OrganizationID == orgID)
                 .OrderByDescending(x => x.TimeStamp);
         }
 
         public ICollection<InviteLink> GetAllInviteLinks(string userName)
         {
-            return RemotelyContext.Users
+            return _dbContext.Users
                    .Include(x => x.Organization)
                    .ThenInclude(x => x.InviteLinks)
                    .FirstOrDefault(x => x.UserName == userName)
@@ -702,18 +790,32 @@ namespace Remotely.Server.Services
 
         public IEnumerable<RemotelyUser> GetAllUsers(string userName)
         {
-            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);
-            return RemotelyContext.Users.Where(x => x.OrganizationID == user.OrganizationID);
+            var user = _dbContext.Users.FirstOrDefault(x => x.UserName == userName);
+            return _dbContext.Users.Where(x => x.OrganizationID == user.OrganizationID);
         }
 
         public ApiToken GetApiToken(string apiToken)
         {
-            return RemotelyContext.ApiTokens.FirstOrDefault(x => x.Token == apiToken);
+            return _dbContext.ApiTokens.FirstOrDefault(x => x.Token == apiToken);
+        }
+
+        public async Task<BrandingInfo> GetBrandingInfo(string organizationId)
+        {
+            var organization = await _dbContext.Organizations
+              .Include(x => x.BrandingInfo)
+              .FirstOrDefaultAsync(x => x.ID == organizationId);
+
+            if (organization.BrandingInfo is null)
+            {
+                organization.BrandingInfo = new BrandingInfo();
+                await _dbContext.SaveChangesAsync();
+            }
+            return organization.BrandingInfo;
         }
 
         public CommandResult GetCommandResult(string commandResultID, string orgID)
         {
-            return RemotelyContext.CommandResults
+            return _dbContext.CommandResults
                 .FirstOrDefault(x =>
                     x.OrganizationID == orgID &&
                     x.ID == commandResultID);
@@ -721,40 +823,55 @@ namespace Remotely.Server.Services
 
         public CommandResult GetCommandResult(string commandResultID)
         {
-            return RemotelyContext.CommandResults.Find(commandResultID);
+            return _dbContext.CommandResults.Find(commandResultID);
+        }
+
+        public async Task<Organization> GetDefaultOrganization()
+        {
+            return await _dbContext.Organizations.FirstOrDefaultAsync(x => x.IsDefaultOrganization);
         }
 
         public string GetDefaultPrompt(string userName)
         {
-            var userPrompt = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName)?.UserOptions?.ConsolePrompt;
-            return userPrompt ?? AppConfig.DefaultPrompt;
+            var userPrompt = _dbContext.Users.FirstOrDefault(x => x.UserName == userName)?.UserOptions?.ConsolePrompt;
+            return userPrompt ?? _appConfig.DefaultPrompt;
         }
 
         public string GetDefaultPrompt()
         {
-            return AppConfig.DefaultPrompt;
+            return _appConfig.DefaultPrompt;
+        }
+
+        public async Task<string> GetDefaultRelayCode()
+        {
+            var relayCode = await _dbContext.Organizations
+                .Where(x => x.IsDefaultOrganization && x.SponsorAmount >= 10)
+                .Select(x => x.RelayCode)
+                .FirstOrDefaultAsync();
+
+            return relayCode;
         }
 
         public Device GetDevice(string orgID, string deviceID)
         {
-            return RemotelyContext.Devices.FirstOrDefault(x =>
+            return _dbContext.Devices.FirstOrDefault(x =>
                             x.OrganizationID == orgID &&
                             x.ID == deviceID);
         }
 
         public Device GetDevice(string deviceID)
         {
-            return RemotelyContext.Devices.FirstOrDefault(x => x.ID == deviceID);
+            return _dbContext.Devices.FirstOrDefault(x => x.ID == deviceID);
         }
 
         public int GetDeviceCount()
         {
-            return RemotelyContext.Devices.Count();
+            return _dbContext.Devices.Count();
         }
 
         public IEnumerable<DeviceGroup> GetDeviceGroups(string username)
         {
-            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == username);
+            var user = _dbContext.Users.FirstOrDefault(x => x.UserName == username);
 
             if (user is null)
             {
@@ -762,7 +879,7 @@ namespace Remotely.Server.Services
             }
             var userId = user.Id;
 
-            return RemotelyContext.DeviceGroups
+            return _dbContext.DeviceGroups
                 .Include(x => x.Users)
                 .ThenInclude(x => x.DeviceGroups)
                 .Where(x =>
@@ -778,9 +895,9 @@ namespace Remotely.Server.Services
 
         public IEnumerable<Device> GetDevicesForUser(string userName)
         {
-            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);
+            var user = _dbContext.Users.FirstOrDefault(x => x.UserName == userName);
 
-            return RemotelyContext.Devices
+            return _dbContext.Devices
                 .Include(x => x.DeviceGroup)
                 .ThenInclude(x => x.Users)
                 .Where(x =>
@@ -795,10 +912,10 @@ namespace Remotely.Server.Services
 
         public IEnumerable<EventLog> GetEventLogs(string userName, DateTimeOffset from, DateTimeOffset to, EventType? type, string message)
         {
-            var user = RemotelyContext.Users
+            var user = _dbContext.Users
                         .FirstOrDefault(x => x.UserName == userName);
 
-            var query = RemotelyContext.EventLogs.AsQueryable();
+            var query = _dbContext.EventLogs.AsQueryable();
             var fromDate = from.Date;
             var toDate = to.Date.AddDays(1);
 
@@ -825,28 +942,42 @@ namespace Remotely.Server.Services
             return query;
         }
 
-        public int GetOrganizationCount()
+        public Organization GetOrganizationById(string organizationID)
         {
-            return RemotelyContext.Organizations.Count();
+            return _dbContext.Organizations.Find(organizationID);
         }
 
-        public string GetOrganizationName(string userName)
+        public async Task<Organization> GetOrganizationByUserName(string userName)
         {
-            return RemotelyContext.Users
+            var user = await _dbContext
+                .Users
+                .Include(x => x.Organization)
+                .FirstOrDefaultAsync(x => x.UserName.ToLower() == userName.ToLower());
+
+            return user.Organization;
+        }
+
+        public int GetOrganizationCount()
+        {
+            return _dbContext.Organizations.Count();
+        }
+
+        public string GetOrganizationNameById(string organizationID)
+        {
+            return _dbContext.Organizations.FirstOrDefault(x => x.ID == organizationID)?.OrganizationName;
+        }
+
+        public string GetOrganizationNameByUserName(string userName)
+        {
+            return _dbContext.Users
                    .Include(x => x.Organization)
                    .FirstOrDefault(x => x.UserName == userName)
                    .Organization
                    .OrganizationName;
         }
-
-        public string GetOrganizationNameById(string organizationID)
-        {
-            return RemotelyContext.Organizations.FirstOrDefault(x => x.ID == organizationID)?.OrganizationName;
-        }
-
         public List<string> GetServerAdmins()
         {
-            return RemotelyContext.Users
+            return _dbContext.Users
                 .Where(x => x.IsServerAdmin)
                 .Select(x => x.UserName)
                 .ToList();
@@ -854,12 +985,12 @@ namespace Remotely.Server.Services
 
         public SharedFile GetSharedFiled(string fileID)
         {
-            return RemotelyContext.SharedFiles.Find(fileID);
+            return _dbContext.SharedFiles.Find(fileID);
         }
 
         public int GetTotalDevices()
         {
-            return RemotelyContext.Devices.Count();
+            return _dbContext.Devices.Count();
         }
 
         public RemotelyUser GetUserByID(string userID)
@@ -868,7 +999,7 @@ namespace Remotely.Server.Services
             {
                 return null;
             }
-            return RemotelyContext.Users.FirstOrDefault(x => x.Id == userID);
+            return _dbContext.Users.FirstOrDefault(x => x.Id == userID);
         }
 
         public RemotelyUser GetUserByName(string userName)
@@ -877,21 +1008,21 @@ namespace Remotely.Server.Services
             {
                 return null;
             }
-            return RemotelyContext.Users
+            return _dbContext.Users
                 .Include(x => x.Organization)
                 .FirstOrDefault(x => x.UserName.ToLower().Trim() == userName.ToLower().Trim());
         }
 
         public RemotelyUserOptions GetUserOptions(string userName)
         {
-            return RemotelyContext.Users
+            return _dbContext.Users
                     .FirstOrDefault(x => x.UserName == userName)
                     .UserOptions;
         }
 
         public bool JoinViaInvitation(string userName, string inviteID)
         {
-            var invite = RemotelyContext.InviteLinks.FirstOrDefault(x =>
+            var invite = _dbContext.InviteLinks.FirstOrDefault(x =>
                             x.InvitedUser.ToLower() == userName.ToLower() &&
                             x.ID == inviteID);
 
@@ -900,8 +1031,8 @@ namespace Remotely.Server.Services
                 return false;
             }
 
-            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);
-            var organization = RemotelyContext.Organizations
+            var user = _dbContext.Users.FirstOrDefault(x => x.UserName == userName);
+            var organization = _dbContext.Organizations
                                 .Include(x => x.RemotelyUsers)
                                 .FirstOrDefault(x => x.ID == invite.OrganizationID);
 
@@ -910,25 +1041,25 @@ namespace Remotely.Server.Services
             user.IsAdministrator = invite.IsAdmin;
             organization.RemotelyUsers.Add(user);
 
-            RemotelyContext.SaveChanges();
+            _dbContext.SaveChanges();
 
-            RemotelyContext.InviteLinks.Remove(invite);
-            RemotelyContext.SaveChanges();
+            _dbContext.InviteLinks.Remove(invite);
+            _dbContext.SaveChanges();
             return true;
         }
 
         public void RemoveDevices(string[] deviceIDs)
         {
-            var devices = RemotelyContext.Devices
+            var devices = _dbContext.Devices
                 .Where(x => deviceIDs.Contains(x.ID));
 
-            RemotelyContext.Devices.RemoveRange(devices);
-            RemotelyContext.SaveChanges();
+            _dbContext.Devices.RemoveRange(devices);
+            _dbContext.SaveChanges();
         }
 
         public async Task<bool> RemoveUserFromDeviceGroup(string orgID, string groupID, string userID)
         {
-            var deviceGroup = RemotelyContext.DeviceGroups
+            var deviceGroup = _dbContext.DeviceGroups
                 .Include(x => x.Users)
                 .ThenInclude(x => x.DeviceGroups)
                 .FirstOrDefault(x =>
@@ -942,7 +1073,7 @@ namespace Remotely.Server.Services
                 user.DeviceGroups.Remove(deviceGroup);
                 deviceGroup.Users.Remove(user);
 
-                await RemotelyContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
                 return true;
             }
             return false;
@@ -950,7 +1081,7 @@ namespace Remotely.Server.Services
 
         public async Task RemoveUserFromOrganization(string orgID, string targetUserID)
         {
-            var target = RemotelyContext.Users
+            var target = _dbContext.Users
                 .Include(x => x.DeviceGroups)
                 .ThenInclude(x => x.Devices)
                 .Include(x => x.Organization)
@@ -974,61 +1105,61 @@ namespace Remotely.Server.Services
 
             foreach (var alert in target.Alerts)
             {
-                RemotelyContext.Alerts.Remove(alert);
+                _dbContext.Alerts.Remove(alert);
             }
 
             target.OrganizationID = null;
             target.Organization = null;
 
-            RemotelyContext
+            _dbContext
                 .Organizations
                 .Include(x => x.RemotelyUsers)
                 .FirstOrDefault(x => x.ID == orgID)
                 .RemotelyUsers.Remove(target);
 
 
-            RemotelyContext.Users.Remove(target);
+            _dbContext.Users.Remove(target);
 
-            await UserManager.DeleteAsync(target);
+            await _userManager.DeleteAsync(target);
 
-            await RemotelyContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
 
         }
 
         public async Task RenameApiToken(string userName, string tokenId, string tokenName)
         {
-            var user = RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName);
-            var token = RemotelyContext.ApiTokens.FirstOrDefault(x =>
+            var user = _dbContext.Users.FirstOrDefault(x => x.UserName == userName);
+            var token = _dbContext.ApiTokens.FirstOrDefault(x =>
                 x.OrganizationID == user.OrganizationID &&
                 x.ID == tokenId);
 
             token.Name = tokenName;
-            await RemotelyContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
         }
 
         public void SetAllDevicesNotOnline()
         {
-            RemotelyContext.Devices.ForEachAsync(x =>
+            _dbContext.Devices.ForEachAsync(x =>
             {
                 x.IsOnline = false;
             }).Wait();
-            RemotelyContext.SaveChanges();
+            _dbContext.SaveChanges();
         }
 
         public async Task SetDisplayName(RemotelyUser user, string displayName)
         {
-            RemotelyContext.Attach(user);
+            _dbContext.Attach(user);
             user.DisplayName = displayName;
-            await RemotelyContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
         }
 
         public void SetServerVerificationToken(string deviceID, string verificationToken)
         {
-            var device = RemotelyContext.Devices.Find(deviceID);
+            var device = _dbContext.Devices.Find(deviceID);
             if (device != null)
             {
                 device.ServerVerificationToken = verificationToken;
-                RemotelyContext.SaveChanges();
+                _dbContext.SaveChanges();
             }
         }
 
@@ -1049,15 +1180,61 @@ namespace Remotely.Server.Services
             if (user.TempPassword == password)
             {
                 user.TempPassword = string.Empty;
-                await RemotelyContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
                 return true;
             }
 
             return false;
         }
+        public async Task UpdateBrandingInfo(
+            string organizationId,
+            string productName,
+            IFormFile icon,
+            ColorPickerModel titleForeground,
+            ColorPickerModel titleBackground,
+            ColorPickerModel titleButtonForeground)
+        {
+            var organization = await _dbContext.Organizations
+                .Include(x => x.BrandingInfo)
+                .FirstOrDefaultAsync(x => x.ID == organizationId);
+
+            if (organization is null)
+            {
+                return;
+            }
+
+            if (organization.BrandingInfo is null)
+            {
+                organization.BrandingInfo = new BrandingInfo();
+            }
+
+            organization.BrandingInfo.Product = productName;
+
+            if (icon != null)
+            {
+                using var iconStream = icon.OpenReadStream();
+                organization.BrandingInfo.Icon = new byte[iconStream.Length];
+                iconStream.Read(organization.BrandingInfo.Icon, 0, organization.BrandingInfo.Icon.Length);
+            }
+
+            organization.BrandingInfo.TitleBackgroundRed = titleBackground.Red;
+            organization.BrandingInfo.TitleBackgroundGreen = titleBackground.Green;
+            organization.BrandingInfo.TitleBackgroundBlue = titleBackground.Blue;
+
+            organization.BrandingInfo.TitleForegroundRed = titleForeground.Red;
+            organization.BrandingInfo.TitleForegroundGreen = titleForeground.Green;
+            organization.BrandingInfo.TitleForegroundBlue = titleForeground.Blue;
+
+            organization.BrandingInfo.ButtonForegroundRed = titleButtonForeground.Red;
+            organization.BrandingInfo.ButtonForegroundGreen = titleButtonForeground.Green;
+            organization.BrandingInfo.ButtonForegroundBlue = titleButtonForeground.Blue;
+
+            await _dbContext.SaveChangesAsync();
+        }
+
         public void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes, WebRtcSetting webRtcSetting)
         {
-            var device = RemotelyContext.Devices.Find(deviceID);
+            var device = _dbContext.Devices.Find(deviceID);
             if (device == null)
             {
                 return;
@@ -1068,38 +1245,65 @@ namespace Remotely.Server.Services
             device.Alias = alias;
             device.Notes = notes;
             device.WebRtcSetting = webRtcSetting;
-            RemotelyContext.SaveChanges();
+            _dbContext.SaveChanges();
         }
 
         public async Task<Device> UpdateDevice(DeviceSetupOptions deviceOptions, string organizationId)
         {
-            var device = RemotelyContext.Devices.Find(deviceOptions.DeviceID);
+            var device = _dbContext.Devices.Find(deviceOptions.DeviceID);
             if (device == null || device.OrganizationID != organizationId)
             {
                 return null;
             }
 
-            var group = await RemotelyContext.DeviceGroups.FirstOrDefaultAsync(x =>
+            var group = await _dbContext.DeviceGroups.FirstOrDefaultAsync(x =>
               x.Name.ToLower() == deviceOptions.DeviceGroupName.ToLower() &&
               x.OrganizationID == device.OrganizationID);
             device.DeviceGroup = group;
 
             device.Alias = deviceOptions.DeviceAlias;
-            await RemotelyContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
             return device;
         }
 
         public void UpdateOrganizationName(string orgID, string organizationName)
         {
-            RemotelyContext.Organizations
+            _dbContext.Organizations
                 .FirstOrDefault(x => x.ID == orgID)
                 .OrganizationName = organizationName;
-            RemotelyContext.SaveChanges();
+            _dbContext.SaveChanges();
+        }
+
+        public async Task UpdateOrganizationSponsorInfo(SponsorInfo sponsorInfo, bool isDefaultOrganization, bool updateUnlockCode)
+        {
+            var organization = await _dbContext.Organizations.FindAsync(sponsorInfo.OrganizationId);
+            if (organization is null)
+            {
+                return;
+            }
+
+            if (updateUnlockCode)
+            {
+                // Don't wipe this out due to a failure response.
+                organization.UnlockCode = sponsorInfo.UnlockCode;
+            }
+
+            if (isDefaultOrganization)
+            {
+                await _dbContext.Organizations.ForEachAsync(x => x.IsDefaultOrganization = false);
+            }
+
+            organization.SponsorAmount = sponsorInfo.Amount;
+            organization.RelayCode = sponsorInfo.RelayCode;
+            organization.GithubUser = sponsorInfo.GithubUser;
+            organization.IsDefaultOrganization = isDefaultOrganization;
+
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task UpdateServerAdmins(List<string> serverAdmins, string callerUserName)
         {
-            var currentAdmins = RemotelyContext.Users.Where(x => x.IsServerAdmin).ToList();
+            var currentAdmins = _dbContext.Users.Where(x => x.IsServerAdmin).ToList();
 
             var removeAdmins = currentAdmins.Where(currentAdmin =>
                 !serverAdmins.Contains(currentAdmin.UserName.Trim().ToLower()) &&
@@ -1110,7 +1314,7 @@ namespace Remotely.Server.Services
                 removeAdmin.IsServerAdmin = false;
             }
 
-            var newAdmins = RemotelyContext.Users.Where(user =>
+            var newAdmins = _dbContext.Users.Where(user =>
                 serverAdmins.Contains(user.UserName.Trim().ToLower()) &&
                 !user.IsServerAdmin);
 
@@ -1119,37 +1323,37 @@ namespace Remotely.Server.Services
                 newAdmin.IsServerAdmin = true;
             }
 
-            await RemotelyContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
         }
 
         public void UpdateTags(string deviceID, string tags)
         {
-            var device = RemotelyContext.Devices.Find(deviceID);
+            var device = _dbContext.Devices.Find(deviceID);
             if (device == null)
             {
                 return;
             }
 
             device.Tags = tags;
-            RemotelyContext.SaveChanges();
+            _dbContext.SaveChanges();
         }
 
         public void UpdateUserOptions(string userName, RemotelyUserOptions options)
         {
-            RemotelyContext.Users.FirstOrDefault(x => x.UserName == userName).UserOptions = options;
-            RemotelyContext.SaveChanges();
+            _dbContext.Users.FirstOrDefault(x => x.UserName == userName).UserOptions = options;
+            _dbContext.SaveChanges();
         }
 
         public bool ValidateApiToken(string apiToken, string apiSecret, string requestPath, string remoteIP)
         {
             var hasher = new PasswordHasher<RemotelyUser>();
-            var token = RemotelyContext.ApiTokens.FirstOrDefault(x => x.Token == apiToken);
+            var token = _dbContext.ApiTokens.FirstOrDefault(x => x.Token == apiToken);
             var isValid = token != null && hasher.VerifyHashedPassword(null, token.Secret, apiSecret) == PasswordVerificationResult.Success;
 
             if (token != null)
             {
                 token.LastUsed = DateTimeOffset.Now;
-                RemotelyContext.SaveChanges();
+                _dbContext.SaveChanges();
             }
 
             WriteEvent($"API token used.  Token: {apiToken}.  Path: {requestPath}.  Validated: {isValid}.  Remote IP: {remoteIP}", EventType.Info, token?.OrganizationID);
@@ -1161,8 +1365,8 @@ namespace Remotely.Server.Services
         {
             try
             {
-                RemotelyContext.EventLogs.Add(eventLog);
-                RemotelyContext.SaveChanges();
+                _dbContext.EventLogs.Add(eventLog);
+                _dbContext.SaveChanges();
             }
             catch { }
         }
@@ -1171,7 +1375,7 @@ namespace Remotely.Server.Services
         {
             try
             {
-                RemotelyContext.EventLogs.Add(new EventLog()
+                _dbContext.EventLogs.Add(new EventLog()
                 {
                     EventType = EventType.Error,
                     Message = ex.Message,
@@ -1180,7 +1384,7 @@ namespace Remotely.Server.Services
                     TimeStamp = DateTimeOffset.Now,
                     OrganizationID = organizationID
                 });
-                RemotelyContext.SaveChanges();
+                _dbContext.SaveChanges();
             }
             catch { }
         }
@@ -1194,19 +1398,19 @@ namespace Remotely.Server.Services
         {
             try
             {
-                RemotelyContext.EventLogs.Add(new EventLog()
+                _dbContext.EventLogs.Add(new EventLog()
                 {
                     EventType = eventType,
                     Message = message,
                     TimeStamp = DateTimeOffset.Now,
                     OrganizationID = organizationID
                 });
-                RemotelyContext.SaveChanges();
+                _dbContext.SaveChanges();
             }
             catch { }
         }
 
-        public void WriteLog(LogLevel logLevel, string category, EventId eventId, string state, Exception exception, List<string> scopeStack)
+        public void WriteLog(LogLevel logLevel, string category, EventId eventId, string state, Exception exception, string[] scopeStack)
         {
             // Prevent re-entrancy.
             if (eventId.Name?.Contains("EntityFrameworkCore") == true)
@@ -1240,7 +1444,7 @@ namespace Remotely.Server.Services
                         break;
                 }
 
-                RemotelyContext.EventLogs.Add(new EventLog()
+                _dbContext.EventLogs.Add(new EventLog()
                 {
                     StackTrace = exception?.StackTrace,
                     EventType = eventType,
@@ -1248,7 +1452,7 @@ namespace Remotely.Server.Services
                     TimeStamp = DateTimeOffset.Now
                 });
 
-                RemotelyContext.SaveChanges();
+                _dbContext.SaveChanges();
             }
             catch { }
 

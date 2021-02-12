@@ -155,7 +155,6 @@ else {
 ##    return
 ##}
 
-
 $HostingPackage = Get-Package -Name "*.NET*Windows Server Hosting*" -ErrorAction SilentlyContinue
 $Result = Invoke-WebRequest -Uri "https://dotnet.microsoft.com/download/dotnet/current/runtime" -UseBasicParsing
 $BundleLink = $Result.Links | Where-Object {$_.outerHTML -like "*Download Hosting Bundle*"}
@@ -339,7 +338,7 @@ try {
     }
     Wrap-Host "Downloading server package..."
 	$ProgressPreference = "SilentlyContinue"
-    Invoke-WebRequest -Uri "https://github.com/lucent-sea/Remotely/releases/latest/download/Remotely_Server_Win-x64.zip" -OutFile "$env:TEMP\Remotely_Server_Win-x64.zip"
+    Invoke-WebRequest -Uri "https://github.com/lucent-sea/Remotely/releases/latest/download/Remotely_Server_Win-x64.zip" -OutFile "$env:TEMP\Remotely_Server_Win-x64.zip" -UseBasicParsing
     $ProgressPreference = "Continue"
     Wrap-Host "Extracting server files..."
 	[System.Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem") | Out-Null

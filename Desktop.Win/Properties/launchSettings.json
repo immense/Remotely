@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "Desktop.Win": {
+      "commandName": "Project"
+    }
+  }
+}

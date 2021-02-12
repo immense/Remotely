@@ -1,12 +1,14 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Remotely.Shared.Models
 {
     public class SharedFile
     {
         [Key]
-        public string ID { get; set; } = Guid.NewGuid().ToString();
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public string ID { get; set; }
         public string FileName { get; set; }
         public string ContentType { get; set; }
         public byte[] FileContents { get; set; }

@@ -55,9 +55,16 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
         }
 
-        public void OnPostApplyFilter()
+        public IActionResult OnPostApplyFilter()
         {
+            var currentUser = DataService.GetUserByName(User.Identity.Name);
+
+            if (!currentUser.IsAdministrator)
+            {
+                return Unauthorized();
+            }
             PopulateViewModel();
+            return Page();
         }
 
         public async Task<IActionResult> OnPostClearLogsAsync()

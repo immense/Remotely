@@ -12,8 +12,8 @@ namespace Remotely.Desktop.Core.Utilities
 {
     public class ImageUtils
     {
-        public static ImageCodecInfo JpegEncoder { get; } = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == ImageFormat.Jpeg.Guid);
         public static ImageCodecInfo GifEncoder { get; } = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == ImageFormat.Gif.Guid);
+        public static ImageCodecInfo JpegEncoder { get; } = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == ImageFormat.Jpeg.Guid);
 
         public static byte[] EncodeBitmap(Bitmap bitmap, EncoderParameters encoderParams)
         {

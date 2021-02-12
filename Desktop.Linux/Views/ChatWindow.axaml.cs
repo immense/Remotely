@@ -12,9 +12,6 @@ namespace Remotely.Desktop.Linux.Views
         public ChatWindow()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
         private ChatWindowViewModel ViewModel => DataContext as ChatWindowViewModel;

@@ -6,10 +6,10 @@
         xmlns:local="clr-namespace:Remotely.Desktop.Linux.Views;assembly=Remotely_Desktop"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Remotely.Desktop.Linux.Views.FileTransferWindow"
-        Title="Remotely File Transfer"
+        Title="File Transfer"
         Height="300" Width="400" 
         Topmost="True"
-        Icon="/Assets/favicon.ico">
+        Icon="{Binding WindowIcon}">
 
   <Window.DataContext>
     <vm:FileTransferWindowViewModel />

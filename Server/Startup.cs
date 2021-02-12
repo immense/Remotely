@@ -20,9 +20,11 @@ using Remotely.Server.Hubs;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 
 namespace Remotely.Server
 {
@@ -133,6 +135,7 @@ namespace Remotely.Server
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Remotely API", Version = "v1" });
             });
 
+            services.AddHttpClient();
             services.AddLogging();
             services.AddScoped<IEmailSenderEx, EmailSenderEx>();
             services.AddScoped<IEmailSender, EmailSender>();
@@ -141,6 +144,7 @@ namespace Remotely.Server
             services.AddScoped<ApiAuthorizationFilter>();
             services.AddHostedService<CleanupService>();
             services.AddScoped<RemoteControlFilterAttribute>();
+            services.AddScoped<IUpgradeService, UpgradeService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -171,6 +175,8 @@ namespace Remotely.Server
                 }
             }
 
+            app.UseMiddleware<ClickOnceMiddleware>();
+
             ConfigureStaticFiles(app);
 
             app.UseSwagger();
@@ -185,7 +191,7 @@ namespace Remotely.Server
             app.UseAuthentication();
 
             app.UseAuthorization();
-
+            
             app.UseCors("TrustedOriginPolicy");
 
             app.UseEndpoints(routeBuilder =>

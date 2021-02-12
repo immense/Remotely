@@ -6,12 +6,13 @@
         xmlns:local="clr-namespace:Remotely.Desktop.Win.Views"
         xmlns:ViewModels="clr-namespace:Remotely.Desktop.Win.ViewModels"
         mc:Ignorable="d"
-        Title="Remotely" Height="250" Width="350" 
+        Title="{Binding ProductName}" Height="250" Width="350" 
         WindowStyle="None" 
         ResizeMode="NoResize"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
         Closing="Window_Closing"
-        Loaded="Window_Loaded" Icon="/Assets/Remotely_Icon.png">
+        Loaded="Window_Loaded" 
+        Icon="{Binding Icon}">
     <Window.Resources>
         <DrawingBrush x:Key="GearBrush">
             <DrawingBrush.Drawing>
@@ -32,15 +33,19 @@
 
     <Grid>
         <StackPanel>
-            <Border Height="50" Background="#FF464646">
-                <DockPanel Margin="10,0,0,0">
-                    <StackPanel>
-                        <TextBlock Foreground="DeepSkyBlue" FontWeight="Bold" FontSize="20" Margin="0,2,0,0">Remotely</TextBlock>
-                        <TextBlock Foreground="White" FontSize="10"><Run Text="Do IT Remotely"/></TextBlock>
-                    </StackPanel>
-                    <Button Style="{StaticResource TitlebarButton}" Click="CloseButton_Click" Content="X" />
-                    <Button Style="{StaticResource TitlebarButton}" Click="MinimizeButton_Click" Content="_"/>
-                </DockPanel>
+            <Border Height="50" Background="{Binding TitleBackgroundColor}">
+                <Grid Margin="10,0,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Image Grid.Column="0" Height="50" Width="50"  Margin="0,0,10,0" Source="{Binding Icon}"></Image>
+                    <TextBlock Grid.Column="1" Text="{Binding ProductName}"  Foreground="{Binding TitleForegroundColor}" FontWeight="Bold" FontSize="20" VerticalAlignment="Center" />
+                    <Button Grid.Column="2" Style="{StaticResource TitlebarButton}" Click="MinimizeButton_Click" Content="____" Foreground="{Binding TitleButtonForegroundColor}" Background="{Binding TitleBackgroundColor}"/>
+                    <Button Grid.Column="3" Style="{StaticResource TitlebarButton}" Click="CloseButton_Click" Content="X" Foreground="{Binding TitleButtonForegroundColor}" Background="{Binding TitleBackgroundColor}" />
+                </Grid>
             </Border>
             <Grid Margin="10,15,10,0">
                 <Grid.ColumnDefinitions>

@@ -5,7 +5,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Copyright>Copyright ©  2020 Translucency Software</Copyright>
+    <Copyright>Copyright ©  2021 Translucency Software</Copyright>
     <Description>Background service that maintains a connection to the Remotely server.  The service is used for remote support and maintenance by this computer's administrators.</Description>
     <Authors>Jared Goodwin</Authors>
     <Product>Remotely Agent</Product>
@@ -17,10 +17,6 @@
     <RootNamespace>Remotely.Agent</RootNamespace>
     <ApplicationIcon>Assets\favicon.ico</ApplicationIcon>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Assets\favicon.ico" />
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Assets\favicon.ico" />
@@ -40,7 +36,6 @@
     <PackageReference Include="Microsoft.PowerShell.Security" Version="7.1.1" />
     <PackageReference Include="Microsoft.WSMan.Management" Version="7.1.1" />
     <PackageReference Include="Microsoft.WSMan.Runtime" Version="7.1.1" />
-    <PackageReference Include="NETStandard.Library" Version="2.0.3" />
     <PackageReference Include="System.Management.Automation" Version="7.1.1" />
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="5.0.0" />
   </ItemGroup>
@@ -52,12 +47,6 @@
 
   <ItemGroup>
     <Compile Update="Services\WindowsService.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Build.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

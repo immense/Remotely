@@ -3,10 +3,9 @@
 @inject IDataService DataService
 
 @{ 
-    RemotelyUser user = User.Identity.IsAuthenticated ?
-        DataService.GetUserByName(User.Identity.Name) :
-        null;
+    var user = DataService.GetUserByName(User?.Identity?.Name);
 }
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -41,7 +40,7 @@
     }
     else
     {
-        if (AppConfig.Theme.ToLower() == "light")
+        if (AppConfig.Theme.Equals("Light", StringComparison.OrdinalIgnoreCase))
         {
             <link rel="stylesheet" href="~/css/Themes/yeti.min.css" />
             <link rel="stylesheet" href="~/css/Themes/yeti.custom.css" asp-append-version="true" />
@@ -80,8 +79,7 @@
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-page="/Index">
                     <div>
-                        @if (user is RemotelyUser &&
-                           !string.IsNullOrWhiteSpace(user?.Organization?.OrganizationName))
+                        @if (!string.IsNullOrWhiteSpace(user?.Organization?.OrganizationName))
                         {
                             @user.Organization.OrganizationName
                         }

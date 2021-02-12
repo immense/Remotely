@@ -2,7 +2,7 @@
 using Remotely.Desktop.Core.Interfaces;
 using Remotely.Desktop.Linux.ViewModels;
 using Remotely.Desktop.Linux.Views;
-using Remotely.Shared.Helpers;
+using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

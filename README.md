@@ -9,11 +9,12 @@ If this project has benefited you in some way, or if you just want to show appre
 
 Suggested Charities: https://www.givewell.org/charities/top-charities
 
-If you want to send a few dollars my way as well, you can with the below links.  But if you have to choose between one or the other, please pick the charity.  Your money will have a much greater impact on their lives than mine.
+You can also sponsor the project to unlock additional features on your self-hosted server.
+
+[![GitHub Sponsors](https://img.shields.io/badge/GitHub%20Sponsors-Sponsor-brightgreen)](https://github.com/sponsors/lucent-sea)
 
 [![PayPal Link](https://img.shields.io/badge/PayPal-Donate-brightgreen)](https://www.paypal.me/translucency)
 
-[![GitHub Sponsors](https://img.shields.io/badge/GitHub%20Sponsors-Sponsor-brightgreen)](https://github.com/sponsors/lucent-sea)
 
 
 ## Project Links
@@ -25,6 +26,45 @@ Subreddit: https://www.reddit.com/r/remotely_app/
 Hosting a Remotely server requires building and running an ASP.NET Core web app behind IIS (Windows) or Nginx (Ubuntu).  It's expected that the person deploying and maintaining the server is familiar with this process.
 
 It's *highly* encouraged that you get comfortable building and deploying from source.  This allows you to hard-code your server's hostname into the desktop client and the installer, which makes for a better experience for the end user.  If you don't want to use any of the methods below, you can look at the GitHub Actions workflows to see how the process can be automated, using the `Publish.ps1` script.  You can use those as reference for creating an automation process that works for you.  You can also use Azure Pipelines for free (which I personally use).
+
+
+## Hosting a Server (Windows)
+* Create a site in IIS that will run Remotely.
+* Run Install-RemotelyServer.ps1 (as an administrator), which is on the [Releases page](https://github.com/lucent-sea/Remotely/releases/latest) and in the [Utilities folder in source control](https://raw.githubusercontent.com/lucent-sea/Remotely/master/Utilities/Install-RemotelyServer.ps1).
+    * Alternatively, you can build from source and copy the server files to the site folder.
+* Download and install the .NET Core Runtime (not the SDK) with the Hosting Bundle.
+	* Link: https://dotnet.microsoft.com/download/dotnet-core/current/runtime
+	* This includes the Hosting Bundle for Windows, which allows you to run ASP.NET Core in IIS.
+	* Important: If you installed .NET Core Runtime before installing all the required IIS features, you may need to run a repair on the .NET Core Runtime installation.
+* Change values in appsettings.json for your environment.  Make a copy named `appsettings.Production.json` (see Configuration section below).
+* By default, SQLite is used for the database.
+    * The "Remotely.db" database file is automatically created in the root folder of your site.
+	* You can browse and modify the contents using [DB Browser for SQLite](https://sqlitebrowser.org/).
+* If the site will be public-facing, configure your bindings in IIS.
+* An SSL certificate for HTTPS is recommended.  You can install one for free using Let's Encrypt.
+	* Resources: https://letsencrypt.org/, https://certifytheweb.com/
+* Documentation for hosting in IIS can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/iis
+* There is no default account.  You must create the first one via the Register page, which will create an account that is both a server and organization admin.
+
+## Hosting a Server (Ubuntu)
+* Ubuntu 20.04, 19.04, and 18.04 have been tested.
+* Run Ubuntu_Server_Install.sh (with sudo), which is on the [Releases page](https://github.com/lucent-sea/Remotely/releases/latest) and in the [Utilities folder in source control](https://raw.githubusercontent.com/lucent-sea/Remotely/master/Utilities/Remotely_Server_Install.sh).
+	* The script is designed to install Remotely and Nginx on the same server, running Ubuntu 18.04 or 19.04.  You'll need to manually set up other configurations.
+    * A helpful user supplied an example Apache configuration, which can be found in the Utilities folder.
+    * The script will prompt for the "App root" location, which is the above directory where the server files are located.
+	* The script installs the .NET Core runtime, as well as other dependencies.
+	* Certbot is used in this script and will install an SSL certificate for your site.  Your server needs to have a public domain name that is accessible from the internet for this to work.
+		* More information: https://letsencrypt.org/, https://certbot.eff.org/
+	* Alternatively, you can build from source (using RuntimeIdentifier "linux-x64" for the server) and copy the server files to the site folder.
+* Change values in appsettings.json for your environment.  Make a copy named `appsettings.Production.json` (see Configuration section below).
+* Documentation for hosting behind Nginx can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx
+* There is no default account.  You must create the first one via the Register page, which will create an account that is both a server and organization admin.
+
+
+## Hosting Scenarios
+There are countless ways to host an ASP.NET Core app, and I can't document or automate all of them.  For hosting scenarios aside from the above two, please refer to Microsoft's documentation.
+- https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/
+
 
 ## Build Instructions (GitHub)
 GitHub Actions allows you to build and deploy Remotely for free from their cloud servers.  The definitions for the build processes are located in `/.github/workflows/` folder.
@@ -54,44 +94,6 @@ The following steps will configure your Windows 10 machine for building the Remo
 * When debugging, the agent will use a pre-defined device ID and connect to https://localhost:5001.
 * In development environment, the server will assign all connecting agents to the first organization.
 * The above two allow you to debug the agent and server together, and see your device in the list.
-
-## Hosting a Server (Windows)
-* Build the Remotely server and clients using the above steps.
-* Create a site in IIS that will run Remotely.
-* Run Install-RemotelyServer.ps1 (as an administrator), which is in the [Utilities folder in source control](https://raw.githubusercontent.com/lucent-sea/Remotely/master/Utilities/Install-RemotelyServer.ps1) and on the Releases page.
-    * Alternatively, you can build from source and copy the server files to the site folder.
-* Download and install the .NET Core Runtime (not the SDK) with the Hosting Bundle.
-	* Link: https://dotnet.microsoft.com/download/dotnet-core/current/runtime
-	* This includes the Hosting Bundle for Windows, which allows you to run ASP.NET Core in IIS.
-	* Important: If you installed .NET Core Runtime before installing all the required IIS features, you may need to run a repair on the .NET Core Runtime installation.
-* Change values in appsettings.json for your environment.  Make a copy named `appsettings.Production.json` (see Configuration section below).
-* By default, SQLite is used for the database.
-    * The "Remotely.db" database file is automatically created in the root folder of your site.
-	* You can browse and modify the contents using [DB Browser for SQLite](https://sqlitebrowser.org/).
-* If the site will be public-facing, configure your bindings in IIS.
-* An SSL certificate for HTTPS is recommended.  You can install one for free using Let's Encrypt.
-	* Resources: https://letsencrypt.org/, https://certifytheweb.com/
-* Documentation for hosting in IIS can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/iis
-* There is no default account.  You must create the first one via the Register page, which will create an account that is both a server and organization admin.
-
-## Hosting a Server (Ubuntu)
-* Ubuntu 18.04 and 19.04 have been tested.
-* Run Ubuntu_Server_Install.sh (with sudo), which is in the [Utilities folder in source control](https://raw.githubusercontent.com/lucent-sea/Remotely/master/Utilities/Remotely_Server_Install.sh).
-	* The script is designed to install Remotely and Nginx on the same server, running Ubuntu 18.04 or 19.04.  You'll need to manually set up other configurations.
-    * A helpful user supplied an example Apache configuration, which can be found in the Utilities folder.
-    * The script will prompt for the "App root" location, which is the above directory where the server files are located.
-	* The script installs the .NET Core runtime, as well as other dependencies.
-	* Certbot is used in this script and will install an SSL certificate for your site.  Your server needs to have a public domain name that is accessible from the internet for this to work.
-		* More information: https://letsencrypt.org/, https://certbot.eff.org/
-	* Alternatively, you can build from source (using RuntimeIdentifier "linux-x64" for the server) and copy the server files to the site folder.
-* Change values in appsettings.json for your environment.  Make a copy named `appsettings.Production.json` (see Configuration section below).
-* Documentation for hosting behind Nginx can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx
-* There is no default account.  You must create the first one via the Register page, which will create an account that is both a server and organization admin.
-
-
-## Hosting Scenarios
-There are countless ways to host an ASP.NET Core app, and I can't document or automate all of them.  For hosting scenarios aside from the above two, please refer to Microsoft's documentation.
-- https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/
 
 ## Admin Accounts
 The first account created will be an admin for both the server and the organization that's created for the account.

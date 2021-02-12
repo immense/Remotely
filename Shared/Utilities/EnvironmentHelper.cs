@@ -42,6 +42,7 @@ namespace Remotely.Shared.Utilities
             }
         }
 
+
         public static bool IsDebug
         {
             get
@@ -51,8 +52,10 @@ namespace Remotely.Shared.Utilities
 #else
                 return false;
 #endif
-            }
-        }
+    }
+}
+
+
         public static bool IsLinux => OperatingSystem.IsLinux();
 
         public static bool IsMac => OperatingSystem.IsMacOS();

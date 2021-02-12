@@ -5,23 +5,28 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Remotely.Desktop.Linux.Views.MainWindow"
-        Icon="/Assets/favicon.ico"
-        Title="Remotely" Height="275" Width="350" HasSystemDecorations="False">
+        Icon="{Binding WindowIcon}"
+        Title="{Binding ProductName}" Height="275" Width="350" HasSystemDecorations="False">
     <Window.DataContext>
       <vm:MainWindowViewModel />
     </Window.DataContext>
     <Grid>
         <StackPanel>
-            <Border Name="TitleBanner" Height="50" Background="#FF464646">
-                <DockPanel Margin="10,4,0,0">
-                    <StackPanel>
-                        <TextBlock Foreground="DeepSkyBlue" FontWeight="Bold" FontSize="20">Remotely</TextBlock>
-                        <TextBlock Foreground="White" FontSize="10" Text="Do IT Remotely"></TextBlock>
-                    </StackPanel>
-                    <Button Classes="TitlebarButton" Command="{Binding CloseCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Content="X" />
-                    <Button Classes="TitlebarButton" Command="{Binding MinimizeCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Content="_"/>
-                </DockPanel>
-            </Border>
+          <Border Name="TitleBanner" Height="50" Background="{Binding TitleBackgroundColor}">
+            <Grid Margin="10,4,0,0">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+
+              <Image Grid.Column="0" Height="50" Width="50" Source="{Binding Icon}" Margin="0,0,10,0"></Image>
+              <TextBlock Grid.Column="1" Text="{Binding ProductName}" Foreground="{Binding TitleForegroundColor}" FontWeight="Bold" FontSize="20" VerticalAlignment="Center" />
+              <Button Grid.Column="2" Classes="TitlebarButton" Foreground="{Binding TitleButtonForegroundColor}" Background="{Binding TitleBackgroundColor}" Command="{Binding MinimizeCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Content="__"/>
+              <Button Grid.Column="3" Classes="TitlebarButton" Foreground="{Binding TitleButtonForegroundColor}" Background="{Binding TitleBackgroundColor}" Command="{Binding CloseCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Content="X" />
+            </Grid>
+          </Border>
             <Grid Margin="10,15,10,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />

@@ -49,7 +49,7 @@ namespace Remotely.Server.Hubs
         {
             deviceIDs = DataService.FilterDeviceIDsByUserPermission(deviceIDs, RemotelyUser);
             var connections = GetActiveClientConnections(deviceIDs);
-            var organizationName = DataService.GetOrganizationName(RemotelyUser.UserName);
+            var organizationName = DataService.GetOrganizationNameByUserName(RemotelyUser.UserName);
             return AgentHubContext.Clients.Clients(connections.Select(x => x.Key).ToList()).SendAsync("Chat",
                 RemotelyUser.DisplayName ?? RemotelyUser.UserName,
                 message,

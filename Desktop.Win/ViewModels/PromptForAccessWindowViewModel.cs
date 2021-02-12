@@ -8,7 +8,7 @@ using System.Windows.Input;
 
 namespace Remotely.Desktop.Win.ViewModels
 {
-    public class PromptForAccessWindowViewModel : ViewModelBase
+    public class PromptForAccessWindowViewModel : BrandedViewModelBase
     {
         private string _organizationName = "your IT provider";
         private string _requesterName = "a technician";
@@ -18,7 +18,7 @@ namespace Remotely.Desktop.Win.ViewModels
             set
             {
                 _organizationName = value;
-                FirePropertyChanged(nameof(OrganizationName));
+                FirePropertyChanged();
             }
         }
 
@@ -30,7 +30,7 @@ namespace Remotely.Desktop.Win.ViewModels
             set
             {
                 _requesterName = value;
-                FirePropertyChanged(nameof(RequesterName));
+                FirePropertyChanged();
             }
         }
 

@@ -18,8 +18,8 @@ namespace Remotely.Desktop.Core.ViewModels
             set
             {
                 _filePath = value;
-                FirePropertyChanged(nameof(FilePath));
-                FirePropertyChanged(nameof(DisplayName));
+                FirePropertyChanged();
+                FirePropertyChanged();
             }
         }
         public double PercentProgress
@@ -31,7 +31,7 @@ namespace Remotely.Desktop.Core.ViewModels
             set
             {
                 _percentProgress = value;
-                FirePropertyChanged(nameof(PercentProgress));
+                FirePropertyChanged();
             }
         }
     }

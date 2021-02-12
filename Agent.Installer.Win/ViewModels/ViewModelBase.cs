@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Remotely.Agent.Installer.Win.ViewModels
 {
@@ -6,7 +7,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public void FirePropertyChanged(string propertyName)
+        public void FirePropertyChanged([CallerMemberName]string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

@@ -1,4 +1,4 @@
-﻿using Remotely.Shared.Helpers;
+﻿using Remotely.Shared.Utilities;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using System;

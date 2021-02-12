@@ -162,9 +162,9 @@ export function RenderDeviceRows() {
                                 <i class="fas fa-edit" title="Edit"></i>
                                 Edit
                             </a>
-                            <a class="dropdown-item device-remove-button" href="#">
+                            <a class="dropdown-item device-uninstall-button" href="#">
                                 <i class="fas fa-times" title="Remove"></i>
-                                Remove
+                                Uninstall
                             </a>
                           </div>
                         </div>
@@ -185,9 +185,9 @@ export function RenderDeviceRows() {
             AddConsoleOutput("Launching remote control on client device...");
             BrowserHubConnection.StartRemoteControl(device.ID, true);
         };
-        (recordRow.querySelector(".device-remove-button") as HTMLButtonElement).onclick = (ev) => {
-            if (confirm("Are you sure you want to remove this device?")) {
-                BrowserHubConnection.Connection.invoke("RemoveDevices", [ device.ID ]);
+        (recordRow.querySelector(".device-uninstall-button") as HTMLButtonElement).onclick = (ev) => {
+            if (confirm("Are you sure you want to uninstall the agent from this device?")) {
+                BrowserHubConnection.Connection.invoke("UninstallAgents", [ device.ID ]);
             }
         };
     }

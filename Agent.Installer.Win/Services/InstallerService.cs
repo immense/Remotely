@@ -1,6 +1,7 @@
 ﻿using IWshRuntimeLibrary;
 using Microsoft.VisualBasic.FileIO;
 using Microsoft.Win32;
+using Remotely.Agent.Installer.Win.Utilities;
 using Remotely.Shared.Models;
 using System;
 using System.Configuration.Install;

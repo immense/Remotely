@@ -21,6 +21,13 @@
   </PropertyGroup>
   <PropertyGroup>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PackageId>Remotely Desktop</PackageId>
+    <Authors>Jared Goodwin</Authors>
+    <Company>Translucency Software</Company>
+    <Product>Remotely Desktop</Product>
+    <Description>Desktop client for allowing your IT admin to provide remote support.</Description>
+    <Copyright>Copyright ©  2021 Translucency Software</Copyright>
+    <PackageProjectUrl>https://remotely.one</PackageProjectUrl>
   </PropertyGroup>
   <ItemGroup>
     <Compile Update="**\*.xaml.cs">
@@ -36,19 +43,25 @@
     <None Remove="Models\**" />
   </ItemGroup>
   <ItemGroup>
+    <AvaloniaResource Remove="Assets\Remotely_Icon.png" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Assets\Remotely_Icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.9.12" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.9.12" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.12" />
+    <EmbeddedResource Include="Assets\Remotely_Icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="0.10.0" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.0" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Desktop.Core\Desktop.Core.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Controls\HostNamePrompt.axaml.cs">
+    <Compile Update="Views\HostNamePrompt.axaml.cs">
       <DependentUpon>HostNamePrompt.axaml</DependentUpon>
     </Compile>
     <Compile Update="Controls\MessageBox.axaml.cs">

@@ -10,7 +10,7 @@ using System.Windows.Input;
 
 namespace Remotely.Desktop.Linux.ViewModels
 {
-    public class ChatWindowViewModel : ReactiveViewModel
+    public class ChatWindowViewModel : BrandedViewModelBase
     {
         private string _inputText;
         private string _organizationName = "your IT provider";

@@ -32,6 +32,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Remotely_Icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Remotely_Icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="5.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="5.0.2" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
@@ -45,6 +53,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Shared\Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Remotely_Icon.png" />
   </ItemGroup>
 
 </Project>

@@ -6,14 +6,14 @@
         xmlns:Models="clr-namespace:Remotely.Shared.Models;assembly=Remotely_Shared"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Remotely.Desktop.Linux.Views.ChatWindow"
-        Icon="/Assets/favicon.ico"
+        Icon="{Binding WindowIcon}"
         HasSystemDecorations="False"
         BorderBrush="DimGray"
         BorderThickness="1"
         MinHeight="250"
         MinWidth="200"
         Topmost="True"
-        Title="Remotely Chat" Height="450" Width="350">
+        Title="Chat Session" Height="450" Width="450">
   
   <Window.DataContext>
     <vm:ChatWindowViewModel />
@@ -25,19 +25,23 @@
       <RowDefinition />
     </Grid.RowDefinitions>
     
-    <Border Name="TitleBanner" Height="50" Background="#FF464646">
-        <DockPanel Margin="10,4,0,0">
+    <Border Name="TitleBanner" Height="50" Background="{Binding TitleBackgroundColor}">
+        <Grid Margin="10,4,0,0">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
           
-          <DockPanel>
-            <Image Height="50" Width="50" Source="/Assets/Remotely_Icon.png" Margin="0,0,10,0"></Image>
-            <TextBlock Foreground="#FF1D90F1" FontWeight="Bold" FontSize="20" VerticalAlignment="Center">
-              Remotely Chat
-            </TextBlock>
-          </DockPanel>
-          
-          <Button Classes="TitlebarButton" Command="{Binding CloseCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Content="X" />
-          <Button Classes="TitlebarButton" Command="{Binding MinimizeCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Content="_"/>
-        </DockPanel>
+          <Image Grid.Column="0" Height="50" Width="50" Source="{Binding Icon}" Margin="0,0,10,0"></Image>
+          <TextBlock Grid.Column="1" Text="{Binding ProductName}" Foreground="{Binding TitleForegroundColor}" FontWeight="Bold" FontSize="20" VerticalAlignment="Center" />
+          <TextBlock Grid.Column="2" Text=" Chat"  Foreground="{Binding TitleForegroundColor}" FontWeight="Bold" FontSize="20" VerticalAlignment="Center" />
+          <Button Grid.Column="4" Classes="TitlebarButton" Foreground="{Binding TitleButtonForegroundColor}" Background="{Binding TitleBackgroundColor}" Command="{Binding MinimizeCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Content="__"/>
+          <Button Grid.Column="5" Classes="TitlebarButton" Foreground="{Binding TitleButtonForegroundColor}" Background="{Binding TitleBackgroundColor}" Command="{Binding CloseCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Content="X" />
+        </Grid>
     </Border>
 
     <TextBlock Grid.Row="1" 

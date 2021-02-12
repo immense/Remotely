@@ -1,4 +1,5 @@
 ﻿using Remotely.Shared.Enums;
+using Remotely.Shared.Utilities;
 using System;
 using System.Diagnostics;
 using System.IO;

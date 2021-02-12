@@ -1,22 +1,18 @@
 ﻿@inject Remotely.Server.Services.IApplicationConfig AppConfig
-@inject Remotely.Server.Services.IDataService DataService
 @model IndexModel
-@{
-    var organizationCount = DataService.GetOrganizationCount();
-    var registrationAvailable = AppConfig.MaxOrganizationCount < 0 || organizationCount < AppConfig.MaxOrganizationCount;
-}
+
 
 <div class="text-center mt-5" style="margin-bottom:150px">
     <h1 id="remotelyHeader">
     </h1>
     <div class="lead">
-        Welcome.  Please log in@(registrationAvailable ? " or register" : "").
+        Welcome.  Please log in@(Model.RegistrationAvailable ? " or register" : "").
     </div>
     <div class="mt-5">
         <a href="~/Identity/Account/Login" class="btn btn-primary btn-lg">
             Login
         </a>
-        @if (registrationAvailable)
+        @if (Model.RegistrationAvailable)
         {
             <br />
             <br />

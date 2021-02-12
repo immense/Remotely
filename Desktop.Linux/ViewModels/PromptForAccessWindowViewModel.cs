@@ -8,7 +8,7 @@ using System.Windows.Input;
 
 namespace Remotely.Desktop.Linux.ViewModels
 {
-    public class PromptForAccessWindowViewModel : ReactiveViewModel
+    public class PromptForAccessWindowViewModel : BrandedViewModelBase
     {
         private string _organizationName = "your IT provider";
         private string _requesterName = "a technician";

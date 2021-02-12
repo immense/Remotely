@@ -12,7 +12,7 @@
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
         Loaded="Window_Loaded"
         WindowStartupLocation="CenterScreen"
-        Title="Remotely Installer" Height="325" Width="500"  Icon="Assets/favicon.ico">
+        Title="Remotely Installer" Height="335" Width="500"  Icon="{Binding Icon}">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </Window.Resources>
@@ -25,19 +25,24 @@
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        
-        <Border Grid.Row="0" Height="50" Background="#FF464646" VerticalAlignment="Top">
+
+        <Border Height="50" Background="{Binding TitleBackgroundColor}">
             <DockPanel Margin="10,0,0,0">
-                <Image Height="50" Width="50" Source="Assets/Remotely_Icon.png" Margin="0,0,10,0"></Image>
-                <TextBlock Foreground="#FF1D90F1" FontWeight="Bold" FontSize="20" VerticalAlignment="Center">Remotely Installer</TextBlock>
-                <Button Style="{StaticResource TitlebarButton}" Click="CloseButton_Click" Content="X" />
-                <Button Style="{StaticResource TitlebarButton}" Click="MinimizeButton_Click" Content="_"/>
+                <DockPanel>
+                    <Image Height="50" Width="50"  Margin="0,0,10,0" Source="{Binding Icon}"></Image>
+                    <TextBlock Foreground="{Binding TitleForegroundColor}" FontWeight="Bold" FontSize="20" VerticalAlignment="Center">
+                        <Run Text="{Binding ProductName}"></Run>
+                        <Run Text="Installer"></Run>
+                    </TextBlock>
+                </DockPanel>
+                <Button Style="{StaticResource TitlebarButton}" Click="CloseButton_Click" Content="X" Foreground="{Binding TitleButtonForegroundColor}" Background="{Binding TitleBackgroundColor}" />
+                <Button Style="{StaticResource TitlebarButton}" Click="MinimizeButton_Click" Content="____" Foreground="{Binding TitleButtonForegroundColor}" Background="{Binding TitleBackgroundColor}"/>
             </DockPanel>
         </Border>
         <Grid Grid.Row="1" Margin="10,15,10,0">
 
             <StackPanel>
-                <TextBlock Style="{StaticResource SectionHeader}" Text="{Binding HeaderMessage}"></TextBlock>
+                <TextBlock Style="{StaticResource SectionHeader}" Text="{Binding HeaderMessage}" Margin="0,0,0,10"></TextBlock>
                 <Grid Margin="25,5,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -83,8 +88,8 @@
 
                 </Grid>
 
-                <TextBlock TextWrapping="Wrap" Margin="0,25,0,0" Text="{Binding StatusMessage}" FontSize="14"></TextBlock>
-                <ProgressBar Height="25" Margin="0,10,0,0" Value="{Binding Progress}" Visibility="{Binding IsProgressVisible, Converter={StaticResource BooleanToVisibilityConverter}}"></ProgressBar>
+                <TextBlock TextWrapping="Wrap" Margin="40,25,40,0" Text="{Binding StatusMessage}" FontSize="14"></TextBlock>
+                <ProgressBar Height="25" Margin="40,10,40,0" Value="{Binding Progress}" Visibility="{Binding IsProgressVisible, Converter={StaticResource BooleanToVisibilityConverter}}"></ProgressBar>
             </StackPanel>
 
         </Grid>

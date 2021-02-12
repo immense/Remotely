@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +8,16 @@ namespace Remotely.Shared.Models
 {
     public class DesktopAppConfig
     {
-        public string Host { get; set; } = "";
+        private string _host;
+
+        public string Host
+        {
+            get => _host;
+            set
+            {
+                _host = value?.TrimEnd('/');
+            }
+        }
+        public string OrganizationId { get; set; } = "";
     }
 }

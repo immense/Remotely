@@ -4,20 +4,69 @@ export const OrganizationManagement = {
     Init() {
 
 
-        document.getElementById("usersHelpButton").addEventListener("click", (ev) => {
+        document.getElementById("usersHelpButton").addEventListener("click", () => {
             ShowModal("Users", `All users for the organization are managed here.<br><br>
-        Administrators will have access to this management screen as well as all computers.`);
+                Administrators will have access to this management screen as well as all computers.`);
         });
-        document.getElementById("invitesHelpButton").addEventListener("click", (ev) => {
+        document.getElementById("invitesHelpButton").addEventListener("click", () => {
             ShowModal("Invitations", `All pending invitations will be shown here and can be revoked by deleting them.<br><br>
-        If a user does not exist, sending an invite will create their account and add them to the current organization.
-        A password reset URL can be generated from the user table.
-        <br><br>
-        The Admin checkbox determines if the new user will have administrator privileges in this organization.`);
+                If a user does not exist, sending an invite will create their account and add them to the current organization.
+                A password reset URL can be generated from the user table.
+                <br><br>
+                The Admin checkbox determines if the new user will have administrator privileges in this organization.`);
         });
 
-        document.getElementById("deviceGroupHelpButton").addEventListener("click", (ev) => {
+        document.getElementById("deviceGroupHelpButton").addEventListener("click", () => {
             ShowModal("Device Groups", `Device groups can be used to organize and filter computers on the grid.`);
+        });
+
+        document.getElementById("sponsorMainHelp").addEventListener("click", () => {
+            ShowModal("GitHub Sponsors", `Additional features can be unlocked by sponsoring $10 or more 
+                on <a href="https://github.com/sponsors/lucent-sea">GitHub Sponsors</a>. After setting up
+                your sponsorship, enter your GitHub username below to register your server.<br/><br/>
+                <strong>Sponsorship Levels:</strong><br/><br/>
+                Relay ($10):
+                <ul>
+                    <li>
+                        No need to compile from source to embed your server's URL into the EXEs.  A
+                        short "relay code" will be appended to the file names, which the apps will
+                        use to get your server URL and organization ID from a hosted web service.
+                    </li>
+                    <li>
+                        Notifications when new server versions are availble.
+                    </li>
+                    <li>
+                        Easy server upgrades via custom script.
+                    </li>
+                </ul>
+                Branding ($20):
+                <ul>
+                    <li>
+                        All of the above features.
+                    </li>
+                    <li>
+                        Apply branding to desktop apps without needing to recompile.
+                    </li>
+                </ul>`);
+        });
+
+        document.getElementById("sponsorUnlockHelp").addEventListener("click", () => {
+            ShowModal("Unlock Code", `After your server is first registered, this unlock code must be sent 
+                with all future requests that make changes to your registration status.  This is to prevent
+                others from using your GitHub username to register a different server.`);
+        });
+
+        document.getElementById("sponsorRelayHelp").addEventListener("click", () => {
+            ShowModal("Relay Code", `This relay code will be appended to EXE filenames.  The apps will
+                use it to look up your server and organization info via the central registration API,
+                which removes the need to recompile the apps to embed the info.`);
+        });
+
+        document.getElementById("defaultOrgHelp").addEventListener("click", () => {
+            ShowModal("Default Organization", `This option is only available for server administrators.  When
+                selected during registration, it sets this organization as the default for the server.  The
+                quick support downloads, which aren't normally associated with an organization, will use
+                this organization's relay code and branding.`);
         });
 
 
@@ -181,13 +230,10 @@ export const OrganizationManagement = {
                 var userID = checkbox.getAttribute("user");
                 var xhr = new XMLHttpRequest();
                 xhr.onload = () => {
-                    if (xhr.status == 200) {
-
-                    }
-                    else if (xhr.status == 400) {
+                    if (xhr.status == 400) {
                         ShowModal("Invalid Request", xhr.responseText);
                     }
-                    else {
+                    else if (xhr.status != 200) {
                         showError(xhr);
                     }
                 }

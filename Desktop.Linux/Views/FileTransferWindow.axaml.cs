@@ -10,9 +10,6 @@ namespace Remotely.Desktop.Linux.Views
         public FileTransferWindow()
         {
             this.InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
         private void InitializeComponent()

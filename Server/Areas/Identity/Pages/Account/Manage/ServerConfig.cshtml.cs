@@ -29,7 +29,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<RemotelyUser> _userManager;
                
         public ServerConfigModel(IConfiguration configuration,
-                                                            IWebHostEnvironment hostEnv,
+            IWebHostEnvironment hostEnv,
             UserManager<RemotelyUser> userManager,
             IDataService dataService,
             IEmailSenderEx emailSender,
@@ -58,6 +58,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
         public string Environment { get; set; }
         public bool IsServerAdmin { get; set; }
+        public int TotalDevices { get; set; }
         public IEnumerable<string> OutdatedDevices { get; set; }
 
         [BindProperty]
@@ -74,6 +75,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
                 return Unauthorized();
             }
 
+            TotalDevices = _dataService.GetTotalDevices();
             OutdatedDevices = GetOutdatedDevices();
 
             Environment = _hostEnv.EnvironmentName;
@@ -86,8 +88,12 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         }
         public async Task<IActionResult> OnPostSaveAndTestSmtpAsync()
         {
-            var result = await OnPostSaveAsync();
             var user = _dataService.GetUserByName(User.Identity.Name);
+            if (!user.IsServerAdmin)
+            {
+                return Unauthorized();
+            }
+            var result = await OnPostSaveAsync();
             var success = await _emailSender.SendEmailAsync(user.Email, "Remotely Test Email", "Congratulations! Your SMTP settings are working!", user.OrganizationID);
             if (success)
             {
@@ -132,6 +138,11 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnPostUpdateAllAsync()
         {
+            var user = _dataService.GetUserByName(User.Identity.Name);
+            if (!user.IsServerAdmin)
+            {
+                return Unauthorized();
+            }
             var outdatedDevices = GetOutdatedDevices();
             if (!outdatedDevices.Any())
             {

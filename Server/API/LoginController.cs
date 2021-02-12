@@ -5,15 +5,15 @@ using Remotely.Server.Hubs;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Remotely.Server.API
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Obsolete("This controller is here only for legacy purposes.  For new integrations, use API tokens.")]
     public class LoginController : ControllerBase
     {
         public LoginController(SignInManager<RemotelyUser> signInManager,

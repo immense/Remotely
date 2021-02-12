@@ -15,7 +15,7 @@ using System.Windows.Input;
 
 namespace Remotely.Desktop.Linux.ViewModels
 {
-    public class FileTransferWindowViewModel : ReactiveObject
+    public class FileTransferWindowViewModel : BrandedViewModelBase
     {
         private readonly IFileTransferService _fileTransferService;
         private readonly Viewer _viewer;

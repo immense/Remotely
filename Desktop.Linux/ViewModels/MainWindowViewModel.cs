@@ -11,6 +11,7 @@ using Remotely.Desktop.Linux.Native;
 using Remotely.Desktop.Linux.Services;
 using Remotely.Desktop.Linux.Views;
 using Remotely.Shared.Models;
+using Remotely.Shared.Services;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.ObjectModel;
@@ -21,8 +22,11 @@ using System.Windows.Input;
 
 namespace Remotely.Desktop.Linux.ViewModels
 {
-    public class MainWindowViewModel : ReactiveViewModel
+    public class MainWindowViewModel : BrandedViewModelBase
     {
+        private readonly ICasterSocket _casterSocket;
+        private readonly Conductor _conductor;
+        private readonly IConfigService _configService;
         private double _copyMessageOpacity;
         private string _host;
         private bool _isCopyMessageVisible;
@@ -31,6 +35,16 @@ namespace Remotely.Desktop.Linux.ViewModels
         public MainWindowViewModel()
         {
             Current = this;
+
+            _configService = Services.GetRequiredService<IConfigService>();
+            _conductor = Services.GetRequiredService<Conductor>();
+            _casterSocket = Services.GetRequiredService<ICasterSocket>();
+
+            _conductor.SessionIDChanged += SessionIDChanged;
+            _conductor.ViewerRemoved += ViewerRemoved;
+            _conductor.ViewerAdded += ViewerAdded;
+            _conductor.ScreenCastRequested += ScreenCastRequested;
+
             if (!EnvironmentHelper.IsLinux)
             {
                 return;
@@ -38,15 +52,6 @@ namespace Remotely.Desktop.Linux.ViewModels
 
             Services.GetRequiredService<IClipboardService>().BeginWatching();
             Services.GetRequiredService<IKeyboardMouseInput>().Init();
-
-            ConfigService = Services.GetRequiredService<IConfigService>();
-            Conductor = Services.GetRequiredService<Conductor>();
-            CasterSocket = Services.GetRequiredService<ICasterSocket>();
-
-            Conductor.SessionIDChanged += SessionIDChanged;
-            Conductor.ViewerRemoved += ViewerRemoved;
-            Conductor.ViewerAdded += ViewerAdded;
-            Conductor.ScreenCastRequested += ScreenCastRequested;
         }
 
 
@@ -115,7 +120,7 @@ namespace Remotely.Desktop.Linux.ViewModels
             var viewerList = param as AvaloniaList<object> ?? new AvaloniaList<object>();
             foreach (Viewer viewer in viewerList)
             {
-                await CasterSocket.DisconnectViewer(viewer, true);
+                await _casterSocket.DisconnectViewer(viewer, true);
             }
         });
 
@@ -127,13 +132,10 @@ namespace Remotely.Desktop.Linux.ViewModels
 
         public ObservableCollection<Viewer> Viewers { get; } = new ObservableCollection<Viewer>();
         private static IServiceProvider Services => ServiceContainer.Instance;
-        private ICasterSocket CasterSocket { get; }
-        private IConfigService ConfigService { get; }
-        private Conductor Conductor { get; }
         public async Task GetSessionID()
         {
-            await CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
-            await CasterSocket.GetSessionID();
+            await _casterSocket.SendDeviceInfo(_conductor.ServiceID, Environment.MachineName, _conductor.DeviceID);
+            await _casterSocket.GetSessionID();
         }
 
         public async Task Init()
@@ -152,18 +154,24 @@ namespace Remotely.Desktop.Linux.ViewModels
 
                 SessionID = "Retrieving...";
 
-                Host = ConfigService.GetConfig().Host;
+                Host = _configService.GetConfig().Host;
 
                 while (string.IsNullOrWhiteSpace(Host))
                 {
                     Host = "https://";
                     await PromptForHostName();
                 }
-                Conductor.ProcessArgs(new string[] { "-mode", "Normal", "-host", Host });
 
-                await CasterSocket.Connect(Conductor.Host);
+                _conductor.ProcessArgs(new string[] { "-mode", "Normal", "-host", Host });
 
-                CasterSocket.Connection.Closed += async (ex) =>
+                await _casterSocket.Connect(_conductor.Host);
+
+                if (_casterSocket.Connection is null)
+                {
+                    return;
+                }
+
+                _casterSocket.Connection.Closed += async (ex) =>
                 {
                     await Dispatcher.UIThread.InvokeAsync(() =>
                     {
@@ -171,7 +179,7 @@ namespace Remotely.Desktop.Linux.ViewModels
                     });
                 };
 
-                CasterSocket.Connection.Reconnecting += async (ex) =>
+                _casterSocket.Connection.Reconnecting += async (ex) =>
                 {
                     await Dispatcher.UIThread.InvokeAsync(() =>
                     {
@@ -179,14 +187,14 @@ namespace Remotely.Desktop.Linux.ViewModels
                     });
                 };
 
-                CasterSocket.Connection.Reconnected += async (arg) =>
+                _casterSocket.Connection.Reconnected += async (arg) =>
                 {
                     await GetSessionID();
                 };
 
 
-                await CasterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID);
-                await CasterSocket.GetSessionID();
+                await _casterSocket.SendDeviceInfo(_conductor.ServiceID, Environment.MachineName, _conductor.DeviceID);
+                await _casterSocket.GetSessionID();
             }
             catch (Exception ex)
             {
@@ -200,13 +208,14 @@ namespace Remotely.Desktop.Linux.ViewModels
         public async Task PromptForHostName()
         {
             var prompt = new HostNamePrompt();
+
             if (!string.IsNullOrWhiteSpace(Host))
             {
                 prompt.ViewModel.Host = Host;
             }
-            prompt.Owner = MainWindow.Current;
+
             await prompt.ShowDialog(MainWindow.Current);
-            var result = prompt.ViewModel.Host?.TrimEnd('/');
+            var result = prompt.ViewModel.Host?.Trim();
 
             if (result is null)
             {
@@ -220,9 +229,9 @@ namespace Remotely.Desktop.Linux.ViewModels
             if (result != Host)
             {
                 Host = result;
-                var config = ConfigService.GetConfig();
+                var config = _configService.GetConfig();
                 config.Host = Host;
-                ConfigService.Save(config);
+                _configService.Save(config);
             }
         }
 
