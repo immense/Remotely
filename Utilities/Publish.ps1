@@ -169,21 +169,21 @@ if ($SignAssemblies) {
 
 # Compress Core clients.
 $PublishDir =  "$Root\Agent\bin\Release\net5.0\win10-x64\publish"
-Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Win10-x64.zip" -CompressionLevel Optimal -Force
+Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Win10-x64.zip" -Force
 while ((Test-Path -Path "$PublishDir\Remotely-Win10-x64.zip") -eq $false){
     Start-Sleep -Seconds 1
 }
 Move-Item -Path "$PublishDir\Remotely-Win10-x64.zip" -Destination "$Root\Server\wwwroot\Downloads\Remotely-Win10-x64.zip" -Force
 
 $PublishDir =  "$Root\Agent\bin\Release\net5.0\win10-x86\publish"
-Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Win10-x86.zip" -CompressionLevel Optimal -Force
+Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Win10-x86.zip" -Force
 while ((Test-Path -Path "$PublishDir\Remotely-Win10-x86.zip") -eq $false){
     Start-Sleep -Seconds 1
 }
 Move-Item -Path "$PublishDir\Remotely-Win10-x86.zip" -Destination "$Root\Server\wwwroot\Downloads\Remotely-Win10-x86.zip" -Force
 
 $PublishDir =  "$Root\Agent\bin\Release\net5.0\linux-x64\publish"
-Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Linux.zip" -CompressionLevel Optimal -Force
+Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Linux.zip" -Force
 while ((Test-Path -Path "$PublishDir\Remotely-Linux.zip") -eq $false){
     Start-Sleep -Seconds 1
 }
