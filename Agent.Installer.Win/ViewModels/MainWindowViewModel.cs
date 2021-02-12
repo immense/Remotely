@@ -205,7 +205,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             };
 
             IsServiceInstalled = ServiceController.GetServices().Any(x => x.ServiceName == "Remotely_Service");
-            if (!IsServiceMissing)
+            if (IsServiceMissing)
             {
                 HeaderMessage = $"Install the {ProductName} service.";
             }
