@@ -33,7 +33,7 @@ export const OrganizationManagement = {
                         use to get your server URL and organization ID from a hosted web service.
                     </li>
                     <li>
-                        Notifications when new server versions are availble.
+                        Notifications when new server versions are available.
                     </li>
                     <li>
                         Easy server upgrades via custom script.
