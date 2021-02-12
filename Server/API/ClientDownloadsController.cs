@@ -133,7 +133,7 @@ namespace Remotely.Server.API
             }
             else
             {
-                return File(fs, "application/octet-stream", fileNameWithoutExtension);
+                return File(fs, "application/octet-stream", Path.GetFileName(filePath));
             }
         }
 

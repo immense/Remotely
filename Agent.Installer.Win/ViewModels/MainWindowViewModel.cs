@@ -266,33 +266,40 @@ namespace Remotely.Agent.Installer.Win.ViewModels
 
         private void ApplyBranding(BrandingInfo brandingInfo)
         {
-            ProductName = "Remotely";
-
-            if (!string.IsNullOrWhiteSpace(brandingInfo?.Product))
+            try
             {
-                ProductName = brandingInfo.Product;
+                ProductName = "Remotely";
+
+                if (!string.IsNullOrWhiteSpace(brandingInfo?.Product))
+                {
+                    ProductName = brandingInfo.Product;
+                }
+
+                TitleBackgroundColor = new SolidColorBrush(Color.FromRgb(
+                    brandingInfo?.TitleBackgroundRed ?? 70,
+                    brandingInfo?.TitleBackgroundGreen ?? 70,
+                    brandingInfo?.TitleBackgroundBlue ?? 70));
+
+                TitleForegroundColor = new SolidColorBrush(Color.FromRgb(
+                   brandingInfo?.TitleForegroundRed ?? 29,
+                   brandingInfo?.TitleForegroundGreen ?? 144,
+                   brandingInfo?.TitleForegroundBlue ?? 241));
+
+                TitleButtonForegroundColor = new SolidColorBrush(Color.FromRgb(
+                   brandingInfo?.ButtonForegroundRed ?? 255,
+                   brandingInfo?.ButtonForegroundGreen ?? 255,
+                   brandingInfo?.ButtonForegroundBlue ?? 255));
+
+                TitleBackgroundColor.Freeze();
+                TitleForegroundColor.Freeze();
+                TitleButtonForegroundColor.Freeze();
+
+                Icon = GetBitmapImageIcon(brandingInfo);
             }
-
-            TitleBackgroundColor = new SolidColorBrush(Color.FromRgb(
-                brandingInfo?.TitleBackgroundRed ?? 70,
-                brandingInfo?.TitleBackgroundGreen ?? 70,
-                brandingInfo?.TitleBackgroundBlue ?? 70));
-
-            TitleForegroundColor = new SolidColorBrush(Color.FromRgb(
-               brandingInfo?.TitleForegroundRed ?? 29,
-               brandingInfo?.TitleForegroundGreen ?? 144,
-               brandingInfo?.TitleForegroundBlue ?? 241));
-
-            TitleButtonForegroundColor = new SolidColorBrush(Color.FromRgb(
-               brandingInfo?.ButtonForegroundRed ?? 255,
-               brandingInfo?.ButtonForegroundGreen ?? 255,
-               brandingInfo?.ButtonForegroundBlue ?? 255));
-
-            TitleBackgroundColor.Freeze();
-            TitleForegroundColor.Freeze();
-            TitleButtonForegroundColor.Freeze();
-
-            Icon = GetBitmapImageIcon(brandingInfo);
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+            }
         }
 
         private bool CheckIsAdministrator()
@@ -427,11 +434,14 @@ namespace Remotely.Agent.Installer.Win.ViewModels
                         }
                     }
                 }
-                ApplyBranding(_brandingInfo);
             }
             catch (Exception ex)
             {
                 Logger.Write(ex);
+            }
+            finally
+            {
+                ApplyBranding(_brandingInfo);
             }
         }
         private BitmapImage GetBitmapImageIcon(BrandingInfo bi)

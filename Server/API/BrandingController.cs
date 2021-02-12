@@ -25,7 +25,7 @@ namespace Remotely.Server.API
         public async Task<BrandingInfo> Get(string organizationId)
         {
             var org = _dataService.GetOrganizationById(organizationId);
-            // Warning: Your GitHub account and server will be permanently banned for abusing this.
+            // We're doing the honor system here.
             if (org.SponsorLevel < Shared.Enums.SponsorLevel.Branding)
             {
                 return null;
