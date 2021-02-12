@@ -1,6 +1,6 @@
 ﻿using MessagePack;
 using Microsoft.MixedReality.WebRTC;
-using Remotely.Shared.Helpers;
+using Remotely.Shared.Utilities;
 using Remotely.Shared.Models;
 using Remotely.Shared.Models.RemoteControlDtos;
 using Remotely.Shared.Utilities;

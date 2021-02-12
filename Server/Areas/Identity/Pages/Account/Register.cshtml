@@ -1,16 +1,14 @@
 ﻿@page
 @inject Remotely.Server.Services.IApplicationConfig AppConfig
-@inject Remotely.Server.Services.IDataService DataService
 @model RegisterModel
 @{
     ViewData["Title"] = "Register";
-    var organizationCount = DataService.GetOrganizationCount();
 }
 
 <h3>@ViewData["Title"]</h3>
 
 <div class="row">
-    @if (AppConfig.MaxOrganizationCount < 0 || organizationCount < AppConfig.MaxOrganizationCount)
+    @if (AppConfig.MaxOrganizationCount < 0 || Model.OrganizationCount < AppConfig.MaxOrganizationCount)
     {
         <div class="col-md-4">
             <form asp-route-returnUrl="@Model.ReturnUrl" method="post">

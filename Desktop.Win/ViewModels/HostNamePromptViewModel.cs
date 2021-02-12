@@ -2,17 +2,17 @@
 
 namespace Remotely.Desktop.Win.ViewModels
 {
-    public class HostNamePromptViewModel : ViewModelBase
+    public class HostNamePromptViewModel : BrandedViewModelBase
     {
-        private string host;
+        private string _host = "https://";
 
         public string Host
         {
-            get => host;
+            get => _host;
             set
             {
-                host = value;
-                FirePropertyChanged("Host");
+                _host = value;
+                FirePropertyChanged();
             }
         }
     }

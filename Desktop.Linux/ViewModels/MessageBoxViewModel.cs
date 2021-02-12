@@ -6,7 +6,7 @@ using System.Windows.Input;
 
 namespace Remotely.Desktop.Linux.ViewModels
 {
-    public class MessageBoxViewModel : ReactiveViewModel
+    public class MessageBoxViewModel : BrandedViewModelBase
     {
         private bool areYesNoButtonsVisible;
         private string caption;

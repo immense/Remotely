@@ -6,13 +6,17 @@ using Remotely.Desktop.Core.Interfaces;
 using Remotely.Desktop.Core.Services;
 using Remotely.Desktop.Win.Services;
 using Remotely.Desktop.Win.Views;
-using Remotely.Shared.Helpers;
-using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
+using Remotely.Shared.Models;
+using Remotely.Shared.Services;
 using Remotely.Shared.Win32;
 using System;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using System.Windows;
 using System.Windows.Forms;
 
@@ -36,7 +40,7 @@ namespace Remotely.Desktop.Win
             }
         }
         
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             try
             {
@@ -55,6 +59,39 @@ namespace Remotely.Desktop.Win
                         await CasterSocket.DisconnectAllViewers();
                     }
                 };
+
+                var deviceInitService = Services.GetRequiredService<IDeviceInitService>();
+
+                var activationUri = Services.GetRequiredService<IClickOnceService>().GetActivationUri();
+                if (Uri.TryCreate(activationUri, UriKind.Absolute, out var result))
+                {
+                    var host = $"{result.Scheme}://{result.Authority}";
+
+                    if (!string.IsNullOrWhiteSpace(host))
+                    {
+                        Conductor.UpdateHost(host);
+                        using var httpClient = new HttpClient();
+                        try
+                        {
+                            var url = $"{host.TrimEnd('/')}/api/branding";
+                            var query = HttpUtility.ParseQueryString(result.Query);
+                            if (query?.AllKeys?.Contains("organizationid") == true)
+                            {
+                                url += $"?organizationId={query["organizationid"]}";
+                                Conductor.UpdateOrganizationId(query["organizationid"]);
+                            }
+                            var branding = await httpClient.GetFromJsonAsync<BrandingInfo>(url).ConfigureAwait(false);
+                            if (branding != null)
+                            {
+                                deviceInitService.SetBrandingInfo(branding);
+                            }
+                        }
+                        catch { }
+                    }
+                }
+
+                await deviceInitService.GetInitParams().ConfigureAwait(false);
+                
 
                 if (Conductor.Mode == Core.Enums.AppMode.Chat)
                 {
@@ -105,7 +142,7 @@ namespace Remotely.Desktop.Win
             serviceCollection.AddSingleton<ICasterSocket, CasterSocket>();
             serviceCollection.AddSingleton<IdleTimer>();
             serviceCollection.AddSingleton<Conductor>();
-            serviceCollection.AddSingleton<IChatClientService, ChatClientService>();
+            serviceCollection.AddSingleton<IChatClientService, ChatHostService>();
             serviceCollection.AddSingleton<IChatUiService, ChatUiServiceWin>();
             serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerWin>();
             serviceCollection.AddTransient<Viewer>();
@@ -116,6 +153,8 @@ namespace Remotely.Desktop.Win
             serviceCollection.AddScoped<IDtoMessageHandler, DtoMessageHandler>();
             serviceCollection.AddScoped<IRemoteControlAccessService, RemoteControlAccessServiceWin>();
             serviceCollection.AddScoped<IConfigService, ConfigServiceWin>();
+            serviceCollection.AddScoped<IDeviceInitService, DeviceInitService>();
+            serviceCollection.AddScoped<IClickOnceService, ClickOnceService>();
 
             BackgroundForm = new Form()
             {

@@ -18,13 +18,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         public static string PersonalData => "PersonalData";
 
         public static string TwoFactorAuthentication => "TwoFactorAuthentication";
-        public static string Options => "Options";
-        public static string Organization => "Organization";
-        public static string ApiTokens => "ApiTokens";
 
-        public static string ServerLogs => "ServerLogs";
-
-        public static string ServerConfig => "ServerConfig";
 
         public static string IndexNavClass(ViewContext viewContext) => PageNavClass(viewContext, Index);
 
@@ -39,12 +33,13 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         public static string PersonalDataNavClass(ViewContext viewContext) => PageNavClass(viewContext, PersonalData);
 
         public static string TwoFactorAuthenticationNavClass(ViewContext viewContext) => PageNavClass(viewContext, TwoFactorAuthentication);
-        public static string OptionsNavClass(ViewContext viewContext) => PageNavClass(viewContext, Options);
-        public static string OrganizationNavClass(ViewContext viewContext) => PageNavClass(viewContext, Organization);
-        public static string ApiTokensNavClass(ViewContext viewContext) => PageNavClass(viewContext, ApiTokens);
-        public static string ServerLogsNavClass(ViewContext viewContext) => PageNavClass(viewContext, ServerLogs);
+        public static string OptionsNavClass(ViewContext viewContext) => PageNavClass(viewContext, "Options");
+        public static string OrganizationNavClass(ViewContext viewContext) => PageNavClass(viewContext, "Organization");
+        public static string ApiTokensNavClass(ViewContext viewContext) => PageNavClass(viewContext, "ApiTokens");
+        public static string ServerLogsNavClass(ViewContext viewContext) => PageNavClass(viewContext, "ServerLogs");
 
-        public static string ServerConfigNavClass(ViewContext viewContext) => PageNavClass(viewContext, ServerConfig);
+        public static string ServerConfigNavClass(ViewContext viewContext) => PageNavClass(viewContext, "ServerConfig");
+        public static string BrandingNavClass(ViewContext viewContext) => PageNavClass(viewContext, "Branding");
 
         public static string PageNavClass(ViewContext viewContext, string page)
         {

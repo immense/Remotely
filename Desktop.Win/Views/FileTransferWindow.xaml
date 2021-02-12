@@ -6,11 +6,11 @@
         xmlns:local="clr-namespace:Remotely.Desktop.Win.Views"
         xmlns:vm="clr-namespace:Remotely.Desktop.Win.ViewModels"
         mc:Ignorable="d"
-        Title="Remotely File Transfer"
+        Title="File Transfer"
         Height="300" Width="400" 
         Topmost="True"
         ContentRendered="Window_ContentRendered"
-        Icon="/Assets/favicon.ico">
+        Icon="{Binding Icon}">
 
     <Window.DataContext>
         <vm:FileTransferWindowViewModel />

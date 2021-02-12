@@ -17,7 +17,7 @@ namespace Remotely.Server.Migrations.PostgreSql
             modelBuilder
                 .UseIdentityByDefaultColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.1");
+                .HasAnnotation("ProductVersion", "5.0.2");
 
             modelBuilder.Entity("DeviceGroupRemotelyUser", b =>
                 {
@@ -299,6 +299,50 @@ namespace Remotely.Server.Migrations.PostgreSql
                     b.ToTable("ApiTokens");
                 });
 
+            modelBuilder.Entity("Remotely.Shared.Models.BrandingInfo", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<byte>("ButtonForegroundBlue")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("ButtonForegroundGreen")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("ButtonForegroundRed")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte[]>("Icon")
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("Product")
+                        .HasMaxLength(25)
+                        .HasColumnType("character varying(25)");
+
+                    b.Property<byte>("TitleBackgroundBlue")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("TitleBackgroundGreen")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("TitleBackgroundRed")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("TitleForegroundBlue")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("TitleForegroundGreen")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("TitleForegroundRed")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BrandingInfo");
+                });
+
             modelBuilder.Entity("Remotely.Shared.Models.CommandResult", b =>
                 {
                     b.Property<string>("ID")
@@ -509,11 +553,31 @@ namespace Remotely.Server.Migrations.PostgreSql
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
+                    b.Property<string>("BrandingInfoId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("GithubUser")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDefaultOrganization")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("OrganizationName")
                         .HasMaxLength(25)
                         .HasColumnType("character varying(25)");
 
+                    b.Property<string>("RelayCode")
+                        .HasColumnType("text");
+
+                    b.Property<double>("SponsorAmount")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("UnlockCode")
+                        .HasColumnType("text");
+
                     b.HasKey("ID");
+
+                    b.HasIndex("BrandingInfoId");
 
                     b.ToTable("Organizations");
                 });
@@ -720,6 +784,15 @@ namespace Remotely.Server.Migrations.PostgreSql
                         .HasForeignKey("OrganizationID");
 
                     b.Navigation("Organization");
+                });
+
+            modelBuilder.Entity("Remotely.Shared.Models.Organization", b =>
+                {
+                    b.HasOne("Remotely.Shared.Models.BrandingInfo", "BrandingInfo")
+                        .WithMany()
+                        .HasForeignKey("BrandingInfoId");
+
+                    b.Navigation("BrandingInfo");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.SharedFile", b =>

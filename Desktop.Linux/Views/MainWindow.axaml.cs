@@ -10,12 +10,8 @@ namespace Remotely.Desktop.Linux.Views
         public MainWindow()
         {
             Current = this;
-
+            
             InitializeComponent();
-
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
         public static MainWindow Current { get; set; }

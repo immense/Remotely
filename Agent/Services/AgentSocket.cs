@@ -26,7 +26,7 @@ namespace Remotely.Agent.Services
             Uninstaller uninstaller,
             CommandExecutor commandExecutor,
             ScriptRunner scriptRunner,
-            ChatHostService chatService,
+            ChatClientService chatService,
             IAppLauncher appLauncher,
             IUpdater updater)
         {
@@ -40,7 +40,7 @@ namespace Remotely.Agent.Services
         }
         public bool IsConnected => HubConnection?.State == HubConnectionState.Connected;
         private IAppLauncher AppLauncher { get; }
-        private ChatHostService ChatService { get; }
+        private ChatClientService ChatService { get; }
         private CommandExecutor CommandExecutor { get; }
         private ConfigService ConfigService { get; }
         private ConnectionInfo ConnectionInfo { get; set; }
@@ -138,7 +138,7 @@ namespace Remotely.Agent.Services
                 {
                     Logger.Write(ex);
                 }
-                Thread.Sleep(1000);
+                await Task.Delay(1000);
             }
         }
 

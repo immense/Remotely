@@ -88,9 +88,14 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Data" />
     <Reference Include="System.IO.Compression.FileSystem" />
@@ -120,15 +125,22 @@
     <Compile Include="..\Shared\Models\ConnectionInfo.cs">
       <Link>Models\ConnectionInfo.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\Models\DeviceInitParams.cs">
+      <Link>Models\DeviceInitParams.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\Models\DeviceSetupOptions.cs">
       <Link>Models\DeviceSetupOptions.cs</Link>
     </Compile>
-    <Compile Include="Services\CommandLineParser.cs" />
-    <Compile Include="Services\MessageBoxEx.cs" />
+    <Compile Include="..\Shared\Utilities\AppConstants.cs">
+      <Link>Utilities\AppConstants.cs</Link>
+    </Compile>
+    <Compile Include="Models\BrandingInfo.cs" />
+    <Compile Include="Utilities\CommandLineParser.cs" />
+    <Compile Include="Utilities\MessageBoxEx.cs" />
     <Compile Include="Services\Executor.cs" />
     <Compile Include="Services\InstallerService.cs" />
-    <Compile Include="Services\Logger.cs" />
-    <Compile Include="Services\ProcessEx.cs" />
+    <Compile Include="Utilities\Logger.cs" />
+    <Compile Include="Utilities\ProcessEx.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Page Include="MainWindow.xaml">
@@ -175,7 +187,7 @@
     <Resource Include="Assets\favicon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Assets\Remotely_Icon.png" />
+    <EmbeddedResource Include="Assets\Remotely_Icon.png" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="IWshRuntimeLibrary">

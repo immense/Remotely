@@ -1,7 +1,7 @@
 ﻿using Remotely.Desktop.Core.Interfaces;
 using Remotely.Desktop.Core.Models;
 using Remotely.Desktop.Core.ViewModels;
-using Remotely.Shared.Helpers;
+using Remotely.Shared.Utilities;
 using Remotely.Shared.Models;
 using Remotely.Shared.Models.RemoteControlDtos;
 using Remotely.Shared.Utilities;

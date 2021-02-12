@@ -18,15 +18,17 @@ namespace Remotely.Agent
 
         public static IServiceProvider Services { get; set; }
 
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             try
             {
                 BuildServices();
 
-                Task.Run(() => { _ = Init(); });
+                await Init();
 
-                Thread.Sleep(Timeout.Infinite);
+                _ = Task.Run(Services.GetRequiredService<AgentSocket>().HandleConnection);
+
+                await Task.Delay(-1);
 
             }
             catch (Exception ex)
@@ -44,7 +46,7 @@ namespace Remotely.Agent
                 builder.AddConsole().AddDebug();
             });
             serviceCollection.AddSingleton<AgentSocket>();
-            serviceCollection.AddScoped<ChatHostService>();
+            serviceCollection.AddScoped<ChatClientService>();
             serviceCollection.AddTransient<Bash>();
             serviceCollection.AddTransient<CMD>();
             serviceCollection.AddTransient<PSCore>();
@@ -113,10 +115,6 @@ namespace Remotely.Agent
             catch (Exception ex)
             {
                 Logger.Write(ex);
-            }
-            finally
-            {
-                await Services.GetRequiredService<AgentSocket>().HandleConnection();
             }
         }
 

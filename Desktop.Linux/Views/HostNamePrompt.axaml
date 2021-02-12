@@ -1,0 +1,22 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Remotely.Desktop.Linux.Views.HostNamePrompt"
+        xmlns:ViewModels="clr-namespace:Remotely.Desktop.Linux.ViewModels;assembly=Remotely_Desktop"
+        Title="Host Name" 
+        Icon="{Binding WindowIcon}"
+        Height="150" Width="350"  
+        WindowStartupLocation="CenterScreen">
+  <Window.DataContext>
+    <ViewModels:HostNamePromptViewModel/>
+  </Window.DataContext>
+  <StackPanel Margin="10">
+    <TextBlock Margin="0,0,0,5" Text="Enter the server URL:" Classes="SectionHeader"></TextBlock>
+    <TextBox Name="HostTextBox" Height="25" Text="{Binding Host, Mode=TwoWay}"/>
+    <Button Classes="NormalButton" HorizontalAlignment="Right" Width="40" Height="30" Margin="0,5,0,0" IsDefault="True" 
+            Command="{Binding OKCommand}" 
+            CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Content="OK"/>
+  </StackPanel>
+</Window>

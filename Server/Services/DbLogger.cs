@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
@@ -59,11 +60,12 @@ namespace Remotely.Server.Services
         {
             using var scope = _serviceProvider.CreateScope();
             var dataService = scope.ServiceProvider.GetRequiredService<IDataService>();
+
             var scopeStack = ScopeStack.Any() ?
                 new string[] { ScopeStack.FirstOrDefault(), ScopeStack.LastOrDefault() } :
                 Array.Empty<string>();
 
-            dataService.WriteLog(logLevel, _categoryName, eventId, state.ToString(), exception, scopeStack.ToList());
+            dataService.WriteLog(logLevel, _categoryName, eventId, state.ToString(), exception, scopeStack);
         }
 
 

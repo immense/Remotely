@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Remotely.Desktop.Linux.ViewModels;
-using Remotely.Shared.Helpers;
+using Remotely.Shared.Utilities;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -54,9 +54,6 @@ namespace Remotely.Desktop.Linux.Controls
             // This doesn't appear to work when set in XAML.
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
 

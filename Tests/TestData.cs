@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using Remotely.Server.Areas.Identity.Pages.Account.Manage;
 using Remotely.Server.Data;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Remotely.Tests
@@ -83,7 +85,7 @@ namespace Remotely.Tests
             var dataService = IoCActivator.ServiceProvider.GetRequiredService<IDataService>();
             var userManager = IoCActivator.ServiceProvider.GetRequiredService<UserManager<RemotelyUser>>();
             var emailSender = IoCActivator.ServiceProvider.GetRequiredService<IEmailSenderEx>();
-            var organizationModel = new OrganizationModel(dataService, userManager, emailSender);
+            var organizationModel = new OrganizationModel(dataService, userManager, emailSender, Mock.Of<IHttpClientFactory>());
 
 
             await userManager.CreateAsync(Admin1);

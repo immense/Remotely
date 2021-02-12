@@ -4,17 +4,17 @@ namespace Remotely.Shared.Models
 {
     public class ConnectionInfo
     {
+        private string _host;
         public string DeviceID { get; set; } = Guid.NewGuid().ToString();
-        private string host;
         public string Host
         {
             get
             {
-                return host;
+                return _host;
             }
             set
             {
-                host = value.Trim().TrimEnd('/');
+                _host = value.Trim().TrimEnd('/');
             }
         }
         public string OrganizationID { get; set; }

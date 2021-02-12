@@ -123,11 +123,11 @@ namespace Remotely.Agent.Services
 
                 if (RuntimeInformation.OSDescription.Contains("Ubuntu", StringComparison.OrdinalIgnoreCase))
                 {
-                    platform = "Ubuntu-x64";
+                    platform = "UbuntuInstaller-x64";
                 }
                 else if (RuntimeInformation.OSDescription.Contains("Manjaro", StringComparison.OrdinalIgnoreCase))
                 {
-                    platform = "Manjaro-x64";
+                    platform = "ManjaroInstaller-x64";
                 }
                 else
                 {

@@ -17,7 +17,7 @@ namespace Remotely.Server.Migrations.SqlServer
             modelBuilder
                 .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.1");
+                .HasAnnotation("ProductVersion", "5.0.2");
 
             modelBuilder.Entity("DeviceGroupRemotelyUser", b =>
                 {
@@ -301,6 +301,50 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.ToTable("ApiTokens");
                 });
 
+            modelBuilder.Entity("Remotely.Shared.Models.BrandingInfo", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<byte>("ButtonForegroundBlue")
+                        .HasColumnType("tinyint");
+
+                    b.Property<byte>("ButtonForegroundGreen")
+                        .HasColumnType("tinyint");
+
+                    b.Property<byte>("ButtonForegroundRed")
+                        .HasColumnType("tinyint");
+
+                    b.Property<byte[]>("Icon")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("Product")
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
+
+                    b.Property<byte>("TitleBackgroundBlue")
+                        .HasColumnType("tinyint");
+
+                    b.Property<byte>("TitleBackgroundGreen")
+                        .HasColumnType("tinyint");
+
+                    b.Property<byte>("TitleBackgroundRed")
+                        .HasColumnType("tinyint");
+
+                    b.Property<byte>("TitleForegroundBlue")
+                        .HasColumnType("tinyint");
+
+                    b.Property<byte>("TitleForegroundGreen")
+                        .HasColumnType("tinyint");
+
+                    b.Property<byte>("TitleForegroundRed")
+                        .HasColumnType("tinyint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BrandingInfo");
+                });
+
             modelBuilder.Entity("Remotely.Shared.Models.CommandResult", b =>
                 {
                     b.Property<string>("ID")
@@ -511,11 +555,31 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.Property<string>("ID")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("BrandingInfoId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("GithubUser")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDefaultOrganization")
+                        .HasColumnType("bit");
+
                     b.Property<string>("OrganizationName")
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
 
+                    b.Property<string>("RelayCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("SponsorAmount")
+                        .HasColumnType("float");
+
+                    b.Property<string>("UnlockCode")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("ID");
+
+                    b.HasIndex("BrandingInfoId");
 
                     b.ToTable("Organizations");
                 });
@@ -722,6 +786,15 @@ namespace Remotely.Server.Migrations.SqlServer
                         .HasForeignKey("OrganizationID");
 
                     b.Navigation("Organization");
+                });
+
+            modelBuilder.Entity("Remotely.Shared.Models.Organization", b =>
+                {
+                    b.HasOne("Remotely.Shared.Models.BrandingInfo", "BrandingInfo")
+                        .WithMany()
+                        .HasForeignKey("BrandingInfoId");
+
+                    b.Navigation("BrandingInfo");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.SharedFile", b =>

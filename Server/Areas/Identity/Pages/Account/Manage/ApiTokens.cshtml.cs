@@ -44,6 +44,13 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnPostRenameAsync()
         {
+            var currentUser = DataService.GetUserByName(User.Identity.Name);
+
+            if (!currentUser.IsAdministrator)
+            {
+                return Unauthorized();
+            }
+
             if (ModelState.IsValid &&
                 !string.IsNullOrWhiteSpace(Input.TokenId) &&
                 !string.IsNullOrWhiteSpace(Input.TokenName))
@@ -57,6 +64,13 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnPostCreateAsync()
         {
+            var currentUser = DataService.GetUserByName(User.Identity.Name);
+
+            if (!currentUser.IsAdministrator)
+            {
+                return Unauthorized();
+            }
+
             if (ModelState.IsValid && !string.IsNullOrWhiteSpace(Input.TokenName))
             {
                 var secret = PasswordGenerator.GeneratePassword(24);
@@ -73,6 +87,13 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnPostDeleteAsync()
         {
+            var currentUser = DataService.GetUserByName(User.Identity.Name);
+
+            if (!currentUser.IsAdministrator)
+            {
+                return Unauthorized();
+            }
+
             if (ModelState.IsValid && !string.IsNullOrWhiteSpace(Input.TokenId))
             {
                 await DataService.DeleteApiToken(User.Identity.Name, Input.TokenId);

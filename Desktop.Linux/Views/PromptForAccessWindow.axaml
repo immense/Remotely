@@ -13,7 +13,7 @@
         MinWidth="250"
         Height="275" 
         Width="450"
-        Icon="/Assets/favicon.ico">
+        Icon="{Binding WindowIcon}">
   
   <Window.DataContext>
     <vm:PromptForAccessWindowViewModel />
@@ -26,19 +26,21 @@
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
 
-    <Border Name="TitleBanner" Height="50" Background="#FF464646">
-      <DockPanel Margin="10,4,0,0">
+    <Border Name="TitleBanner" Height="50" Background="{Binding TitleBackgroundColor}">
+      <Grid Margin="10,4,0,0">
 
-        <DockPanel>
-          <Image Height="50" Width="50" Source="/Assets/Remotely_Icon.png" Margin="0,0,10,0"></Image>
-          <TextBlock Foreground="#FF1D90F1" FontWeight="Bold" FontSize="20" VerticalAlignment="Center">
-            Remotely Chat
-          </TextBlock>
-        </DockPanel>
-
-        <Button Classes="TitlebarButton" Command="{Binding CloseCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Content="X" />
-        <Button Classes="TitlebarButton" Command="{Binding MinimizeCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Content="_"/>
-      </DockPanel>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        
+        <Image Grid.Column="0" Height="50" Width="50" Source="{Binding Icon}" Margin="0,0,10,0"></Image>
+        <TextBlock Grid.Column="1" Text="Remote Control Request" Foreground="{Binding TitleForegroundColor}"  FontWeight="Bold" FontSize="20" VerticalAlignment="Center" />
+        <Button Grid.Column="2" Classes="TitlebarButton" Foreground="{Binding TitleButtonForegroundColor}"  Background="{Binding TitleBackgroundColor}" Command="{Binding MinimizeCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Content="__"/>
+        <Button Grid.Column="3" Classes="TitlebarButton" Foreground="{Binding TitleButtonForegroundColor}"  Background="{Binding TitleBackgroundColor}" Command="{Binding CloseCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Content="X" />
+      </Grid>
     </Border>
 
     <StackPanel Grid.Row="1">

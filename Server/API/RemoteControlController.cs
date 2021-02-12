@@ -5,7 +5,7 @@ using Remotely.Server.Attributes;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
-using Remotely.Shared.Helpers;
+using Remotely.Shared.Utilities;
 using Remotely.Shared.Models;
 using System;
 using System.Linq;

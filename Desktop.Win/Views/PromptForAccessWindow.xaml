@@ -19,7 +19,7 @@
         MinWidth="250"
         Height="275" 
         Width="450"
-        Icon="/Assets/favicon.ico"
+        Icon="{Binding Icon}"
         ContentRendered="Window_ContentRendered">
 
     <Window.DataContext>
@@ -33,18 +33,19 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Border Height="50" Background="#FF464646">
-            <DockPanel Margin="10,0,0,0">
-                <DockPanel>
-                    <Image Height="50" Width="50" Source="/Assets/Remotely_Icon.png" Margin="0,0,10,0"></Image>
-                    <TextBlock Foreground="#FF1D90F1" FontWeight="Bold" FontSize="20" VerticalAlignment="Center">
-                            Remote Control Request
-                    </TextBlock>
-                </DockPanel>
-
-                <Button Style="{StaticResource TitlebarButton}" Click="CloseButton_Click" Content="X" />
-                <Button Style="{StaticResource TitlebarButton}" Click="MinimizeButton_Click" Content="_"/>
-            </DockPanel>
+        <Border Height="50" Background="{Binding TitleBackgroundColor}">
+            <Grid Margin="10,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Image Grid.Column="0" Height="50" Width="50"  Margin="0,0,10,0" Source="{Binding Icon}"></Image>
+                <TextBlock Grid.Column="1" Text="Remote Control Request"  Foreground="{Binding TitleForegroundColor}" FontWeight="Bold" FontSize="20" VerticalAlignment="Center" />
+                <Button Grid.Column="2" Style="{StaticResource TitlebarButton}" Click="MinimizeButton_Click" Content="____" Foreground="{Binding TitleButtonForegroundColor}" Background="{Binding TitleBackgroundColor}"/>
+                <Button Grid.Column="3" Style="{StaticResource TitlebarButton}" Click="CloseButton_Click" Content="X" Foreground="{Binding TitleButtonForegroundColor}" Background="{Binding TitleBackgroundColor}" />
+            </Grid>
         </Border>
 
         <StackPanel Grid.Row="1">

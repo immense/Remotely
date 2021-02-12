@@ -1,5 +1,6 @@
 ﻿@page
 @model IndexModel
+@using Remotely.Shared.Utilities 
 @inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment HostEnv
 @{
     ViewData["Title"] = "Home";
@@ -17,6 +18,16 @@ else
         <span id="motdContentSpan">@Model.Motd</span>
     </div>
 
+    @if (Model.IsNewVersionAvailable)
+    {
+        <div class="alert alert-info alert-dismissible mr-5" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+            <span class="mr-1">A new version is available!  Upgrade scripts:</span>
+            <a class="mr-1" href="@AppConstants.UbuntuUpgradeUrl">Ubuntu</a>
+            <a class="mr-1" href="@AppConstants.WindowsUpgradeUrl">Windows</a>
+            <a class="mr-1" href="@AppConstants.CentOsUpgradeUrl">CentOS</a>
+        </div>
+    }
 
     <partial name="_LoadingWheel" model="Model" />
     <partial name="_IndexLoggedIn" model="Model" />

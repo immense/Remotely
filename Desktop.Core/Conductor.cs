@@ -21,6 +21,7 @@ namespace Remotely.Desktop.Core
         public string DeviceID { get; private set; }
         public string Host { get; private set; }
         public AppMode Mode { get; private set; }
+        public string OrganizationId { get; private set; }
         public string OrganizationName { get; private set; }
         public string RequesterID { get; private set; }
         public string ServiceID { get; private set; }
@@ -104,6 +105,20 @@ namespace Remotely.Desktop.Core
             {
                 OrganizationName = orgName;
             }
+            if (ArgDict.TryGetValue("orgid", out var orgId))
+            {
+                OrganizationId = orgId;
+            }
+        }
+
+        public void UpdateHost(string host)
+        {
+            Host = host;
+        }
+
+        public void UpdateOrganizationId(string organizationId)
+        {
+            OrganizationId = organizationId;
         }
     }
 }

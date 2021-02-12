@@ -14,7 +14,7 @@ namespace Remotely.Server.Migrations.Sqlite
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "5.0.1");
+                .HasAnnotation("ProductVersion", "5.0.2");
 
             modelBuilder.Entity("DeviceGroupRemotelyUser", b =>
                 {
@@ -295,6 +295,50 @@ namespace Remotely.Server.Migrations.Sqlite
                     b.ToTable("ApiTokens");
                 });
 
+            modelBuilder.Entity("Remotely.Shared.Models.BrandingInfo", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte>("ButtonForegroundBlue")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("ButtonForegroundGreen")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("ButtonForegroundRed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte[]>("Icon")
+                        .HasColumnType("BLOB");
+
+                    b.Property<string>("Product")
+                        .HasMaxLength(25)
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte>("TitleBackgroundBlue")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("TitleBackgroundGreen")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("TitleBackgroundRed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("TitleForegroundBlue")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("TitleForegroundGreen")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("TitleForegroundRed")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BrandingInfo");
+                });
+
             modelBuilder.Entity("Remotely.Shared.Models.CommandResult", b =>
                 {
                     b.Property<string>("ID")
@@ -509,11 +553,31 @@ namespace Remotely.Server.Migrations.Sqlite
                     b.Property<string>("ID")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("BrandingInfoId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("GithubUser")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDefaultOrganization")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("OrganizationName")
                         .HasMaxLength(25)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("RelayCode")
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("SponsorAmount")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("UnlockCode")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("ID");
+
+                    b.HasIndex("BrandingInfoId");
 
                     b.ToTable("Organizations");
                 });
@@ -721,6 +785,15 @@ namespace Remotely.Server.Migrations.Sqlite
                         .HasForeignKey("OrganizationID");
 
                     b.Navigation("Organization");
+                });
+
+            modelBuilder.Entity("Remotely.Shared.Models.Organization", b =>
+                {
+                    b.HasOne("Remotely.Shared.Models.BrandingInfo", "BrandingInfo")
+                        .WithMany()
+                        .HasForeignKey("BrandingInfoId");
+
+                    b.Navigation("BrandingInfo");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.SharedFile", b =>

@@ -10,7 +10,8 @@ namespace Remotely.Shared.Models
     public class CommandResult
     {
         [Key]
-        public string ID { get; set; } = Guid.NewGuid().ToString();
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public string ID { get; set; }
         public string CommandMode { get; set; }
         public string CommandText { get; set; }
         public string SenderUserID { get; set; }

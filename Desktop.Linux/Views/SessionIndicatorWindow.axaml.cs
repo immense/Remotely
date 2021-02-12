@@ -14,9 +14,6 @@ namespace Remotely.Desktop.Linux.Views
         public SessionIndicatorWindow()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
         private void InitializeComponent()

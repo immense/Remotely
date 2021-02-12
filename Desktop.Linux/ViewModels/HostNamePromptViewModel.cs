@@ -5,9 +5,9 @@ using System.Windows.Input;
 
 namespace Remotely.Desktop.Linux.ViewModels
 {
-    public class HostNamePromptViewModel : ReactiveViewModel
+    public class HostNamePromptViewModel : BrandedViewModelBase
     {
-        public string _host;
+        public string _host = "https://";
 
         public string Host
         {

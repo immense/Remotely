@@ -4,17 +4,25 @@
     ViewData["Title"] = "Client Downloads";
 }
 
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="small mb-3">
+        * You are signed in.  All links will be specific to your organization and, if applicable, will be branded.
+        You can share these links directly with customers for download.
+    </div>
+}
+
 <div class="row mb-3">
-    <h4>Instant Support Clients</h4>
+    <h4>Portable Instant Support Clients</h4>
     <div class="text-info col-sm-12 pl-0 mb-2">
         Instant desktop sharing.  No account required.
     </div>
-     <div class="col-sm-6 mb-3">
+    <div class="col-sm-6 mb-3">
         <h6>Windows (64-Bit)</h6>
         <p>
             <strong>Download:</strong>
             <br />
-            <a href="~/Downloads/Win-x64/Remotely_Desktop.exe">Windows EXE</a>
+            <a href="/api/ClientDownloads/Desktop/WindowsDesktop-x64">Windows EXE</a>
         </p>
     </div>
     <div class="col-sm-6">
@@ -22,7 +30,7 @@
         <p>
             <strong>Download:</strong>
             <br />
-            <a href="~/Downloads/Win-x86/Remotely_Desktop.exe">Windows EXE</a>
+            <a href="/api/ClientDownloads/Desktop/WindowsDesktop-x86">Windows EXE</a>
         </p>
     </div>
     <div class="col-sm-6 mb-3">
@@ -30,9 +38,60 @@
         <p>
             <strong>Download:</strong>
             <br />
-            <a href="~/Downloads/Remotely_Desktop">Ubuntu Executable</a>
+            <a href="/api/ClientDownloads/Desktop/UbuntuDesktop">Ubuntu Executable</a>
         </p>
     </div>
+</div>
+
+
+<div class="row mb-3">
+    <h4>Installable Instant Support Clients</h4>
+    <div class="text-info col-sm-12 pl-0 mb-2">
+        Light-weight, self-updating quick support clients.  Once logged in, you can copy the links for distribution.
+    </div>
+
+    @if (!User.Identity.IsAuthenticated)
+    {
+
+        <div class="col-sm-6 mb-3">
+            <h6>Must be logged in to download.</h6>
+        </div>
+
+    }
+    @*Warning: Your GitHub account and server will be permanently banned for abusing this. *@
+    else if (Model.CurrentOrganization.SponsorLevel < Remotely.Shared.Enums.SponsorLevel.Branding)
+    {
+        <div class="col-sm-6 mb-3">
+            <h6>Sponsor level is not high enough for installable clients.</h6>
+        </div>
+    }
+    else
+    {
+        <div class="col-sm-6 mb-3">
+            <h6>Windows (64-Bit)</h6>
+            <p>
+                <small>Note: The installer needs to recompile in Azure.  Give it a moment to start downloading.</small>
+            </p>
+            <p>
+                <strong>Download:</strong>
+                <br />
+                <a href="/api/ClientDownloads/clickonce-setup/x64/@Model.CurrentOrganization.ID">Windows Installer</a>
+            </p>
+        </div>
+        <div class="col-sm-6">
+            <h6>Windows (32-Bit)</h6>
+            <p>
+                <small>Note: The installer needs to recompile in Azure.  Give it a moment to start downloading.</small>
+            </p>
+            <p>
+                <strong>Download:</strong>
+                <br />
+                <a href="/api/ClientDownloads/clickonce-setup/x64/@Model.CurrentOrganization.ID">Windows Installer</a>
+            </p>
+        </div>
+    }
+
+
 </div>
 
 <div class="row">
@@ -40,7 +99,15 @@
     <div class="text-info col-sm-12 pl-0 mb-2">
         Installable background agents that provide unattended access and remote scripting.
     </div>
-    @if (User.Identity.IsAuthenticated)
+
+    @if (!User.Identity.IsAuthenticated)
+    {
+        <div class="col-sm-6 mb-3">
+            <h6>Must be logged in to download.</h6>
+        </div>
+
+    }
+    else
     {
     <div class="col-sm-6 mb-3">
         <h6>Windows 10 / 8.1 / 7 (64-Bit and 32-Bit)</h6>
@@ -50,7 +117,7 @@
         <p>
             <strong>Download:</strong>
             <br />
-            <a href="/API/ClientDownloads/Windows">Windows Installer (x64/x86)</a>
+            <a href="/API/ClientDownloads/WindowsInstaller">Windows Installer (x64/x86)</a>
             <br />
             <a href="~/Downloads/Remotely-Win10-x64.zip">Windows x64 Files Only</a>
             <br />
@@ -61,10 +128,10 @@
             <strong>Quiet Install:</strong>
             <br />
             <span class="label label-default code">
-               Remotely_Installer.exe
-                -install 
+                Remotely_Installer.exe
+                -install
                 -quiet
-                -organizationid "0b3d706b-9c5d-41e6-8ae9-5720d16324e6" 
+                -organizationid "0b3d706b-9c5d-41e6-8ae9-5720d16324e6"
                 -serverurl "https://remotely.mytechshop.com"
             </span>
         </p>
@@ -79,9 +146,9 @@
             <br />
             <span class="label label-default code">
                 Remotely_Installer.exe
-                -install 
+                -install
                 -quiet
-                -organizationid "0b3d706b-9c5d-41e6-8ae9-5720d16324e6" 
+                -organizationid "0b3d706b-9c5d-41e6-8ae9-5720d16324e6"
                 -serverurl "https://remotely.mytechshop.com"
                 -path "[path]\Remotely-Win10-x64.zip"
             </span>
@@ -90,8 +157,8 @@
             <strong>Override Options:</strong>
             <br />
             <span class="label label-default code">
-                Remotely_Installer.exe -install -quiet -supportshortcut 
-                -organizationid "0b3d706b-9c5d-41e6-8ae9-5720d16324e6" 
+                Remotely_Installer.exe -install -quiet -supportshortcut
+                -organizationid "0b3d706b-9c5d-41e6-8ae9-5720d16324e6"
                 -serverurl "https://remotely.mytechshop.com"
                 -devicegroup "Customer Group 1"
                 -devicealias "Front Desk"
@@ -105,9 +172,9 @@
         <p>
             <strong>Download:</strong>
             <br />
-            <a href="/API/ClientDownloads/Ubuntu-x64">Ubuntu x64 Bash Installer</a>
+            <a href="/API/ClientDownloads/UbuntuInstaller-x64">Ubuntu x64 Bash Installer</a>
             <br />
-            <a href="/API/ClientDownloads/Manjaro-x64">Manjaro x64 Bash Installer</a>
+            <a href="/API/ClientDownloads/ManjaroInstaller-x64">Manjaro x64 Bash Installer</a>
             <br />
             <a href="~/Downloads/Remotely-Linux.zip">Linux x64 Files Only</a>
         </p>
@@ -129,13 +196,7 @@
         </p>
     </div>
     }
-    else
-    {
-        <div class="col-sm-6 mb-3">
-            <h6>Resident clients are available after logging in.</h6>
-        </div>
 
-    }
 </div>
 <div id="localInstallInfo" class="modal fade" role="dialog">
     <div class="modal-dialog">

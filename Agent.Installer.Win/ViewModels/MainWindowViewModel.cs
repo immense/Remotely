@@ -1,9 +1,13 @@
-﻿using Remotely.Agent.Installer.Win.Services;
+using Remotely.Agent.Installer.Win.Models;
+using Remotely.Agent.Installer.Win.Services;
+using Remotely.Agent.Installer.Win.Utilities;
+using Remotely.Shared.Utilities;
 using Remotely.Shared.Models;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Security.Principal;
 using System.ServiceProcess;
@@ -11,39 +15,48 @@ using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace Remotely.Agent.Installer.Win.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        private bool createSupportShortcut;
-        private string headerMessage;
+        private BrandingInfo _brandingInfo;
+        private bool _createSupportShortcut;
+        private string _headerMessage = "Install the service.";
 
-        private bool isReadyState = true;
-        private bool isServiceInstalled;
+        private bool _isReadyState = true;
+        private bool _isServiceInstalled;
 
-        private string organizationID;
+        private string _organizationID;
 
-        private int progress;
+        private int _progress;
 
-        private string serverUrl;
+        private string _serverUrl;
 
-        private string statusMessage;
+        private string _statusMessage;
         public MainWindowViewModel()
         {
             Installer = new InstallerService();
+
+            CopyCommandLineArgs();
+
+            ExtractDeviceInitInfo().Wait();
+
+            AddExistingConnectionInfo();
         }
 
         public bool CreateSupportShortcut
         {
             get
             {
-                return createSupportShortcut;
+                return _createSupportShortcut;
             }
             set
             {
-                createSupportShortcut = value;
-                FirePropertyChanged(nameof(CreateSupportShortcut));
+                _createSupportShortcut = value;
+                FirePropertyChanged();
             }
         }
 
@@ -51,15 +64,16 @@ namespace Remotely.Agent.Installer.Win.ViewModels
         {
             get
             {
-                return headerMessage;
+                return _headerMessage;
             }
             set
             {
-                headerMessage = value;
-                FirePropertyChanged(nameof(HeaderMessage));
+                _headerMessage = value;
+                FirePropertyChanged();
             }
         }
 
+        public BitmapImage Icon { get; set; }
         public string InstallButtonText => IsServiceMissing ? "Install" : "Reinstall";
 
         public ICommand InstallCommand => new Executor(async (param) => { await Install(); });
@@ -70,12 +84,12 @@ namespace Remotely.Agent.Installer.Win.ViewModels
         {
             get
             {
-                return isReadyState;
+                return _isReadyState;
             }
             set
             {
-                isReadyState = value;
-                FirePropertyChanged(nameof(IsReadyState));
+                _isReadyState = value;
+                FirePropertyChanged();
             }
         }
 
@@ -83,18 +97,18 @@ namespace Remotely.Agent.Installer.Win.ViewModels
         {
             get
             {
-                return isServiceInstalled;
+                return _isServiceInstalled;
             }
             set
             {
-                isServiceInstalled = value;
-                FirePropertyChanged(nameof(IsServiceInstalled));
+                _isServiceInstalled = value;
+                FirePropertyChanged();
                 FirePropertyChanged(nameof(IsServiceMissing));
                 FirePropertyChanged(nameof(InstallButtonText));
             }
         }
 
-        public bool IsServiceMissing => !isServiceInstalled;
+        public bool IsServiceMissing => !_isServiceInstalled;
 
         public ICommand OpenLogsCommand
         {
@@ -119,25 +133,27 @@ namespace Remotely.Agent.Installer.Win.ViewModels
         {
             get
             {
-                return organizationID;
+                return _organizationID;
             }
             set
             {
-                organizationID = value;
-                FirePropertyChanged(nameof(OrganizationID));
+                _organizationID = value;
+                FirePropertyChanged();
             }
         }
+
+        public string ProductName { get; set; }
 
         public int Progress
         {
             get
             {
-                return progress;
+                return _progress;
             }
             set
             {
-                progress = value;
-                FirePropertyChanged(nameof(Progress));
+                _progress = value;
+                FirePropertyChanged();
                 FirePropertyChanged(nameof(IsProgressVisible));
             }
         }
@@ -146,12 +162,12 @@ namespace Remotely.Agent.Installer.Win.ViewModels
         {
             get
             {
-                return serverUrl;
+                return _serverUrl;
             }
             set
             {
-                serverUrl = value;
-                FirePropertyChanged(nameof(ServerUrl));
+                _serverUrl = value;
+                FirePropertyChanged();
             }
         }
 
@@ -159,15 +175,18 @@ namespace Remotely.Agent.Installer.Win.ViewModels
         {
             get
             {
-                return statusMessage;
+                return _statusMessage;
             }
             set
             {
-                statusMessage = value;
-                FirePropertyChanged(nameof(StatusMessage));
+                _statusMessage = value;
+                FirePropertyChanged();
             }
         }
 
+        public SolidColorBrush TitleBackgroundColor { get; set; }
+        public SolidColorBrush TitleButtonForegroundColor { get; set; }
+        public SolidColorBrush TitleForegroundColor { get; set; }
         public ICommand UninstallCommand => new Executor(async (param) => { await Uninstall(); });
         private string DeviceAlias { get; set; }
         private string DeviceGroup { get; set; }
@@ -175,7 +194,6 @@ namespace Remotely.Agent.Installer.Win.ViewModels
         private InstallerService Installer { get; }
         public async Task Init()
         {
-
             Installer.ProgressMessageChanged += (sender, arg) =>
             {
                 StatusMessage = arg;
@@ -187,32 +205,16 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             };
 
             IsServiceInstalled = ServiceController.GetServices().Any(x => x.ServiceName == "Remotely_Service");
-            if (IsServiceMissing)
+            if (!IsServiceMissing)
             {
-                HeaderMessage = "Install the Remotely service.";
-                StatusMessage = "Installing the Remotely service will allow remote access by the above service provider.";
+                HeaderMessage = $"Install the {ProductName} service.";
             }
             else
             {
-                HeaderMessage = "Modify the Remotely installation.";
-                StatusMessage = "Uninstalling the Remotely service will remove all remote acess to this device.\r\n\r\n" +
-                    "Reinstalling will retain the current settings and install the service again.";
+                HeaderMessage = $"Modify the {ProductName} installation.";
             }
 
-            CopyCommandLineArgs();
-
-            var fileName = Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location);
-
-            for (var i = 0; i < fileName.Length; i++)
-            {
-                var guid = string.Join("", fileName.Skip(i).Take(36));
-                if (Guid.TryParse(guid, out _))
-                {
-                    OrganizationID = guid;
-                }
-            }
-
-            AddExistingConnectionInfo();
+            CommandLineParser.VerifyArguments();
 
             if (CommandLineParser.CommandLineArgs.ContainsKey("install"))
             {
@@ -260,6 +262,37 @@ namespace Remotely.Agent.Installer.Win.ViewModels
                 Logger.Write(ex);
             }
 
+        }
+
+        private void ApplyBranding(BrandingInfo brandingInfo)
+        {
+            ProductName = "Remotely";
+
+            if (!string.IsNullOrWhiteSpace(brandingInfo?.Product))
+            {
+                ProductName = brandingInfo.Product;
+            }
+
+            TitleBackgroundColor = new SolidColorBrush(Color.FromRgb(
+                brandingInfo?.TitleBackgroundRed ?? 70,
+                brandingInfo?.TitleBackgroundGreen ?? 70,
+                brandingInfo?.TitleBackgroundBlue ?? 70));
+
+            TitleForegroundColor = new SolidColorBrush(Color.FromRgb(
+               brandingInfo?.TitleForegroundRed ?? 29,
+               brandingInfo?.TitleForegroundGreen ?? 144,
+               brandingInfo?.TitleForegroundBlue ?? 241));
+
+            TitleButtonForegroundColor = new SolidColorBrush(Color.FromRgb(
+               brandingInfo?.ButtonForegroundRed ?? 255,
+               brandingInfo?.ButtonForegroundGreen ?? 255,
+               brandingInfo?.ButtonForegroundBlue ?? 255));
+
+            TitleBackgroundColor.Freeze();
+            TitleForegroundColor.Freeze();
+            TitleButtonForegroundColor.Freeze();
+
+            Icon = GetBitmapImageIcon(brandingInfo);
         }
 
         private bool CheckIsAdministrator()
@@ -337,6 +370,91 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             {
                 ServerUrl = ServerUrl.Substring(0, ServerUrl.LastIndexOf("/"));
             }
+        }
+
+        private async Task ExtractDeviceInitInfo()
+        {
+
+            try
+            {
+                var fileName = Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location);
+                var codeLength = AppConstants.RelayCodeLength + 2;
+
+                for (var i = 0; i < fileName.Length; i++)
+                {
+                    var guid = string.Join("", fileName.Skip(i).Take(36));
+                    if (Guid.TryParse(guid, out _))
+                    {
+                        OrganizationID = guid;
+                        return;
+                    }
+
+
+                    var codeSection = string.Join("", fileName.Skip(i).Take(codeLength));
+
+                    if (codeSection.StartsWith("[") &&
+                        codeSection.EndsWith("]"))
+                    {
+                        var relayCode = codeSection.Substring(1, 4);
+                        using (var httpClient = new HttpClient())
+                        {
+                            var response = await httpClient.GetAsync($"{AppConstants.DeviceInitUrl}/{relayCode}").ConfigureAwait(false);
+                            if (response.IsSuccessStatusCode)
+                            {
+                                var serializer = new JavaScriptSerializer();
+                                var contentString = await response.Content.ReadAsStringAsync();
+                                var deviceInitParams = serializer.Deserialize<DeviceInitParams>(contentString);
+                                OrganizationID = deviceInitParams.OrganizationId;
+                                ServerUrl = deviceInitParams.Host;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(OrganizationID) &&
+                    !string.IsNullOrWhiteSpace(ServerUrl))
+                {
+                    using (var httpClient = new HttpClient())
+                    {
+                        var serializer = new JavaScriptSerializer();
+                        var brandingUrl = $"{ServerUrl.TrimEnd('/')}/api/branding/{OrganizationID}";
+                        using (var response = await httpClient.GetAsync(brandingUrl).ConfigureAwait(false))
+                        {
+                            var responseString = await response.Content.ReadAsStringAsync();
+                            _brandingInfo = serializer.Deserialize<BrandingInfo>(responseString);
+                            
+                        }
+                    }
+                }
+                ApplyBranding(_brandingInfo);
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+            }
+        }
+        private BitmapImage GetBitmapImageIcon(BrandingInfo bi)
+        {
+            Stream imageStream;
+            if (!string.IsNullOrWhiteSpace(bi?.Icon))
+            {
+                imageStream = new MemoryStream(Convert.FromBase64String(bi.Icon));
+            }
+            else
+            {
+                imageStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Remotely.Agent.Installer.Win.Assets.Remotely_Icon.png");
+            }
+
+            var bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.StreamSource = imageStream;
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.EndInit();
+            bitmap.Freeze();
+            imageStream.Close();
+
+            return bitmap;
         }
         private async Task Install()
         {

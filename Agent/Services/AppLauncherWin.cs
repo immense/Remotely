@@ -15,6 +15,8 @@ namespace Remotely.Agent.Services
 
     public class AppLauncherWin : IAppLauncher
     {
+        private readonly string _rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Desktop", EnvironmentHelper.DesktopExecutableFileName);
+
         public AppLauncherWin(ConfigService configService)
         {
             ConnectionInfo = configService.GetConnectionInfo();
@@ -26,8 +28,7 @@ namespace Remotely.Agent.Services
         {
             try
             {
-                var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Desktop", EnvironmentHelper.DesktopExecutableFileName);
-                if (!File.Exists(rcBinaryPath))
+                if (!File.Exists(_rcBinaryPath))
                 {
                     await hubConnection.SendAsync("DisplayMessage", "Chat executable not found on target device.", "Executable not found on device.", requesterID);
                 }
@@ -37,7 +38,12 @@ namespace Remotely.Agent.Services
                 await hubConnection.SendAsync("DisplayMessage", $"Starting chat service...", "Starting chat service.", requesterID);
                 if (WindowsIdentity.GetCurrent().IsSystem)
                 {
-                    var result = Win32Interop.OpenInteractiveProcess($"{rcBinaryPath} -mode Chat -requester \"{requesterID}\" -organization \"{orgName}\"",
+                    var result = Win32Interop.OpenInteractiveProcess($"{_rcBinaryPath} " +
+                            $"-mode Chat " +
+                            $"-requester \"{requesterID}\" " +
+                            $"-organization \"{orgName}\" " +
+                            $"-host \"{ConnectionInfo.Host}\" " +
+                            $"-orgid \"{ConnectionInfo.OrganizationID}\"",
                         targetSessionId: -1,
                         forceConsoleSession: false,
                         desktopName: "default",
@@ -54,7 +60,12 @@ namespace Remotely.Agent.Services
                 }
                 else
                 {
-                    return Process.Start(rcBinaryPath, $"-mode Chat -requester \"{requesterID}\" -organization \"{orgName}\"").Id;
+                    return Process.Start(_rcBinaryPath, 
+                        $"-mode Chat " +
+                        $"-requester \"{requesterID}\" " +
+                        $"-organization \"{orgName}\" " +
+                         $"-host \"{ConnectionInfo.Host}\" " +
+                        $"-orgid \"{ConnectionInfo.OrganizationID}\"").Id;
                 }
             }
             catch (Exception ex)
@@ -69,8 +80,7 @@ namespace Remotely.Agent.Services
         {
             try
             {
-                var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Desktop", EnvironmentHelper.DesktopExecutableFileName);
-                if (!File.Exists(rcBinaryPath))
+                if (!File.Exists(_rcBinaryPath))
                 {
                     await hubConnection.SendAsync("DisplayMessage", "Remote control executable not found on target device.", "Executable not found on device.", requesterID);
                     return;
@@ -81,7 +91,13 @@ namespace Remotely.Agent.Services
                 await hubConnection.SendAsync("DisplayMessage", $"Starting remote control...", "Starting remote control.", requesterID);
                 if (WindowsIdentity.GetCurrent().IsSystem)
                 {
-                    var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester \"{requesterID}\" -serviceid \"{serviceID}\" -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host}",
+                    var result = Win32Interop.OpenInteractiveProcess(_rcBinaryPath +
+                            $" -mode Unattended" +
+                            $" -requester \"{requesterID}\"" +
+                            $" -serviceid \"{serviceID}\"" +
+                            $" -deviceid {ConnectionInfo.DeviceID}" +
+                            $" -host {ConnectionInfo.Host}" +
+                            $" -orgid \"{ConnectionInfo.OrganizationID}\"",
                         targetSessionId: targetSessionId,
                         forceConsoleSession: Shlwapi.IsOS(OsType.OS_ANYSERVER) && targetSessionId == -1,
                         desktopName: "default",
@@ -96,7 +112,12 @@ namespace Remotely.Agent.Services
                 {
                     // SignalR Connection IDs might start with a hyphen.  We surround them
                     // with quotes so the command line will be parsed correctly.
-                    Process.Start(rcBinaryPath, $"-mode Unattended -requester \"{requesterID}\" -serviceid \"{serviceID}\" -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host}");
+                    Process.Start(_rcBinaryPath, $"-mode Unattended " +
+                        $"-requester \"{requesterID}\" " +
+                        $"-serviceid \"{serviceID}\" " +
+                        $"-deviceid {ConnectionInfo.DeviceID} " +
+                        $"-host {ConnectionInfo.Host} " +
+                        $"-orgid \"{ConnectionInfo.OrganizationID}\"");
                 }
             }
             catch (Exception ex)
@@ -109,7 +130,6 @@ namespace Remotely.Agent.Services
         {
             try
             {
-                var rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Desktop", EnvironmentHelper.DesktopExecutableFileName);
                 // Start Desktop app.                 
                 Logger.Write("Restarting screen caster.");
                 if (WindowsIdentity.GetCurrent().IsSystem)
@@ -117,7 +137,16 @@ namespace Remotely.Agent.Services
                     // Give a little time for session changing, etc.
                     await Task.Delay(1000);
 
-                    var result = Win32Interop.OpenInteractiveProcess(rcBinaryPath + $" -mode Unattended -requester \"{requesterID}\" -serviceid \"{serviceID}\" -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} -relaunch true -viewers {String.Join(",", viewerIDs)}",
+                    var result = Win32Interop.OpenInteractiveProcess(_rcBinaryPath + 
+                            $" -mode Unattended" +
+                            $" -requester \"{requesterID}\"" +
+                            $" -serviceid \"{serviceID}\"" +
+                            $" -deviceid {ConnectionInfo.DeviceID}" +
+                            $" -host {ConnectionInfo.Host}" +
+                            $" -orgid \"{ConnectionInfo.OrganizationID}\"" +
+                            $" -relaunch true" +
+                            $" -viewers {String.Join(",", viewerIDs)}",
+
                         targetSessionId: targetSessionID,
                         forceConsoleSession: Shlwapi.IsOS(OsType.OS_ANYSERVER) && targetSessionID == -1,
                         desktopName: "default",
@@ -135,7 +164,15 @@ namespace Remotely.Agent.Services
                 {
                     // SignalR Connection IDs might start with a hyphen.  We surround them
                     // with quotes so the command line will be parsed correctly.
-                    Process.Start(rcBinaryPath, $"-mode Unattended -requester \"{requesterID}\" -serviceid \"{serviceID}\" -deviceid {ConnectionInfo.DeviceID} -host {ConnectionInfo.Host} -relaunch true -viewers {String.Join(",", viewerIDs)}");
+                    Process.Start(_rcBinaryPath, 
+                        $"-mode Unattended " +
+                        $"-requester \"{requesterID}\" " +
+                        $"-serviceid \"{serviceID}\" " +
+                        $"-deviceid {ConnectionInfo.DeviceID} " +
+                        $"-host {ConnectionInfo.Host} " +
+                        $" -orgid \"{ConnectionInfo.OrganizationID}\"" +
+                        $"-relaunch true " +
+                        $"-viewers {String.Join(",", viewerIDs)}");
                 }
             }
             catch (Exception ex)

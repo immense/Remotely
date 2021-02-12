@@ -1,5 +1,4 @@
-﻿using Remotely.Desktop.Core.ViewModels;
-using Remotely.Shared.Models;
+﻿using Remotely.Shared.Models;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.Json;
@@ -7,23 +6,24 @@ using System.Threading.Tasks;
 
 namespace Remotely.Desktop.Win.ViewModels
 {
-    public class ChatWindowViewModel : ViewModelBase
+    public class ChatWindowViewModel : BrandedViewModelBase
     {
-        private string inputText;
-        private string organizationName = "your IT provider";
-        private string senderName = "a technician";
+        private string _inputText;
+        private string _organizationName = "your IT provider";
+        private string _senderName = "a technician";
+
         public ObservableCollection<ChatMessage> ChatMessages { get; } = new ObservableCollection<ChatMessage>();
 
         public string InputText
         {
             get
             {
-                return inputText;
+                return _inputText;
             }
             set
             {
-                inputText = value;
-                FirePropertyChanged(nameof(InputText));
+                _inputText = value;
+                FirePropertyChanged();
             }
         }
 
@@ -31,19 +31,19 @@ namespace Remotely.Desktop.Win.ViewModels
         {
             get
             {
-                return organizationName;
+                return _organizationName;
             }
             set
             {
                 if (string.IsNullOrWhiteSpace(value) ||
-                    value == organizationName)
+                    value == _organizationName)
                 {
                     return;
                 }
 
 
-                organizationName = value;
-                FirePropertyChanged(nameof(OrganizationName));
+                _organizationName = value;
+                FirePropertyChanged();
             }
         }
 
@@ -52,17 +52,17 @@ namespace Remotely.Desktop.Win.ViewModels
         {
             get
             {
-                return senderName;
+                return _senderName;
             }
             set
             {
-                if (value == senderName)
+                if (value == _senderName)
                 {
                     return;
                 }
 
-                senderName = value;
-                FirePropertyChanged(nameof(SenderName));
+                _senderName = value;
+                FirePropertyChanged();
             }
         }
 
