@@ -47,6 +47,9 @@ export const OrganizationManagement = {
                     <li>
                         Apply branding to desktop apps without needing to recompile.
                     </li>
+                    <li>
+                        Access to a light-weight, self-updating, installable version of the quick support client.
+                    </li>
                 </ul>`);
         });
 
