@@ -362,7 +362,7 @@ var commands: Array<ConsoleCommand> = [
 
             if (typeof paramDictionary["all"] != "undefined") {
                 MainApp.DataGrid.DataSource.forEach(x => {
-                    document.getElementById(x.ID).classList.add("row-selected");
+                    document.getElementById(x.ID)?.classList.add("row-selected");
                 })
                 AddConsoleOutput(`${GetSelectedDevices().length} devices selected.`);
             }
@@ -374,7 +374,7 @@ var commands: Array<ConsoleCommand> = [
             }
             if (typeof paramDictionary["online"] != "undefined") {
                 MainApp.DataGrid.DataSource.filter(x => x.IsOnline).forEach(x => {
-                    document.getElementById(x.ID).classList.add("row-selected");
+                    document.getElementById(x.ID)?.classList.add("row-selected");
                 });
                 AddConsoleOutput(`${GetSelectedDevices().length} devices selected.`);
             }
@@ -456,7 +456,7 @@ var commands: Array<ConsoleCommand> = [
                     }
                 });
                 selectedDevices.forEach(x => {
-                    document.getElementById(x.ID).classList.add("row-selected");
+                    document.getElementById(x.ID)?.classList.add("row-selected");
                 });
                 AddConsoleOutput(`${GetSelectedDevices().length} devices selected.`);
             }
