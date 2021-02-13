@@ -43,7 +43,26 @@ namespace Remotely.Server.API
         [HttpGet("desktop/{platformID}")]
         public async Task<IActionResult> GetDesktop(string platformID)
         {
-            return await GetInstallFile(null, platformID);
+            switch (platformID)
+            {
+                case "WindowsDesktop-x64":
+                    {
+                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Win-x64", "Remotely_Desktop.exe");
+                        return await GetDesktopFile(filePath);
+                    }
+                case "WindowsDesktop-x86":
+                    {
+                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Win-x86", "Remotely_Desktop.exe");
+                        return await GetDesktopFile(filePath);
+                    }
+                case "UbuntuDesktop":
+                    {
+                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Remotely_Desktop");
+                        return await GetDesktopFile(filePath);
+                    }
+                default:
+                    return NotFound();
+            }
         }
 
         [HttpGet("clickonce-setup/{architecture}/{organizationId}")]
@@ -87,9 +106,16 @@ namespace Remotely.Server.API
             using var byteContent = new ByteArrayContent(bytes);
             formContent.Add(byteContent, "setup", "setup.exe");
 
-            using var response = await client.PostAsync($"{AppConstants.ClickOnceSetupUrl}/?host={Request.Scheme}://{Request.Host}&organizationid={organizationId}&architecture={architecture}", formContent);
-            var responseBytes = await response.Content.ReadAsByteArrayAsync();
-            return File(responseBytes, "application/octet-stream", "setup.exe");
+            try
+            {
+                using var response = await client.PostAsync($"{AppConstants.ClickOnceSetupUrl}/?host={Request.Scheme}://{Request.Host}&organizationid={organizationId}&architecture={architecture}", formContent);
+                var responseBytes = await response.Content.ReadAsByteArrayAsync();
+                return File(responseBytes, "application/octet-stream", "setup.exe");
+            }
+            catch
+            {
+                return NotFound();
+            }
         }
 
 
@@ -163,21 +189,6 @@ namespace Remotely.Server.API
                 {
                     switch (platformID)
                     {
-                        case "WindowsDesktop-x64":
-                            {
-                                var filePath = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Win-x64", "Remotely_Desktop.exe");
-                                return await GetDesktopFile(filePath);
-                            }
-                        case "WindowsDesktop-x86":
-                            {
-                                var filePath = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Win-x86", "Remotely_Desktop.exe");
-                                return await GetDesktopFile(filePath);
-                            }
-                        case "UbuntuDesktop":
-                            {
-                                var filePath = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Remotely_Desktop");
-                                return await GetDesktopFile(filePath);
-                            }
                         case "WindowsInstaller":
                             {
                                 var filePath = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Remotely_Installer.exe");

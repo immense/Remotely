@@ -7,7 +7,8 @@
 @if (User.Identity.IsAuthenticated)
 {
     <div class="small mb-3">
-        * You are signed in.  All links will be specific to your organization and, if applicable, will be branded.
+        <span class="fas fa-question-circle pointer"></span>
+        You are signed in.  All links will be specific to your organization and, if applicable, will be branded.
         You can share these links directly with customers for download.
     </div>
 }
@@ -109,92 +110,92 @@
     }
     else
     {
-    <div class="col-sm-6 mb-3">
-        <h6>Windows 10 / 8.1 / 7 (64-Bit and 32-Bit)</h6>
-        <p>
-            <small>Note: GPU-accelerated screen capture and PowerShell Core is unavailable on Windows 7.</small>
-        </p>
-        <p>
-            <strong>Download:</strong>
-            <br />
-            <a href="/API/ClientDownloads/WindowsInstaller">Windows Installer (x64/x86)</a>
-            <br />
-            <a href="~/Downloads/Remotely-Win10-x64.zip">Windows x64 Files Only</a>
-            <br />
-            <a href="~/Downloads/Remotely-Win10-x86.zip">Windows x86 Files Only</a>
-        </p>
+        <div class="col-sm-6 mb-3">
+            <h6>Windows 10 / 8.1 / 7 (64-Bit and 32-Bit)</h6>
+            <p>
+                <small>Note: GPU-accelerated screen capture and PowerShell Core is unavailable on Windows 7.</small>
+            </p>
+            <p>
+                <strong>Download:</strong>
+                <br />
+                <a href="/API/ClientDownloads/WindowsInstaller">Windows Installer (x64/x86)</a>
+                <br />
+                <a href="~/Downloads/Remotely-Win10-x64.zip">Windows x64 Files Only</a>
+                <br />
+                <a href="~/Downloads/Remotely-Win10-x86.zip">Windows x86 Files Only</a>
+            </p>
 
-        <p>
-            <strong>Quiet Install:</strong>
-            <br />
-            <span class="label label-default code">
-                Remotely_Installer.exe
-                -install
-                -quiet
-                -organizationid "0b3d706b-9c5d-41e6-8ae9-5720d16324e6"
-                -serverurl "https://remotely.mytechshop.com"
-            </span>
-        </p>
-        <p>
-            <strong>Quiet Uninstall:</strong>
-            <br />
-            <span class="label label-default code">Remotely_Installer.exe -uninstall -quiet</span>
-        </p>
-        <p>
-            <strong>Local Install:</strong>
-            <span data-toggle="modal" data-target="#localInstallInfo" class="fas fa-question-circle pointer"></span>
-            <br />
-            <span class="label label-default code">
-                Remotely_Installer.exe
-                -install
-                -quiet
-                -organizationid "0b3d706b-9c5d-41e6-8ae9-5720d16324e6"
-                -serverurl "https://remotely.mytechshop.com"
-                -path "[path]\Remotely-Win10-x64.zip"
-            </span>
-        </p>
-        <p>
-            <strong>Override Options:</strong>
-            <br />
-            <span class="label label-default code">
-                Remotely_Installer.exe -install -quiet -supportshortcut
-                -organizationid "0b3d706b-9c5d-41e6-8ae9-5720d16324e6"
-                -serverurl "https://remotely.mytechshop.com"
-                -devicegroup "Customer Group 1"
-                -devicealias "Front Desk"
-                -deviceuuid "eebb4d87-5459-4976-989e-a7876dffc69c"
-            </span>
-        </p>
-    </div>
+            <p>
+                <strong>Quiet Install:</strong>
+                <br />
+                <span class="label label-default code">
+                    Remotely_Installer.exe
+                    -install
+                    -quiet
+                    -organizationid "0b3d706b-9c5d-41e6-8ae9-5720d16324e6"
+                    -serverurl "https://remotely.mytechshop.com"
+                </span>
+            </p>
+            <p>
+                <strong>Quiet Uninstall:</strong>
+                <br />
+                <span class="label label-default code">Remotely_Installer.exe -uninstall -quiet</span>
+            </p>
+            <p>
+                <strong>Local Install:</strong>
+                <span data-toggle="modal" data-target="#localInstallInfo" class="fas fa-question-circle pointer"></span>
+                <br />
+                <span class="label label-default code">
+                    Remotely_Installer.exe
+                    -install
+                    -quiet
+                    -organizationid "0b3d706b-9c5d-41e6-8ae9-5720d16324e6"
+                    -serverurl "https://remotely.mytechshop.com"
+                    -path "[path]\Remotely-Win10-x64.zip"
+                </span>
+            </p>
+            <p>
+                <strong>Override Options:</strong>
+                <br />
+                <span class="label label-default code">
+                    Remotely_Installer.exe -install -quiet -supportshortcut
+                    -organizationid "0b3d706b-9c5d-41e6-8ae9-5720d16324e6"
+                    -serverurl "https://remotely.mytechshop.com"
+                    -devicegroup "Customer Group 1"
+                    -devicealias "Front Desk"
+                    -deviceuuid "eebb4d87-5459-4976-989e-a7876dffc69c"
+                </span>
+            </p>
+        </div>
 
-    <div class="col-sm-6 mb-3">
-        <h6>Linux 64-Bit</h6>
-        <p>
-            <strong>Download:</strong>
-            <br />
-            <a href="/API/ClientDownloads/UbuntuInstaller-x64">Ubuntu x64 Bash Installer</a>
-            <br />
-            <a href="/API/ClientDownloads/ManjaroInstaller-x64">Manjaro x64 Bash Installer</a>
-            <br />
-            <a href="~/Downloads/Remotely-Linux.zip">Linux x64 Files Only</a>
-        </p>
-        <p>
-            <strong>Install:</strong>
-            <br />
-            <span class="label label-default code">sudo [path]/Install-Linux-x64.sh</span>
-        </p>
-        <p>
-            <strong>Local Install:</strong>
-            <span data-toggle="modal" data-target="#localInstallInfo" class="fas fa-question-circle pointer"></span>
-            <br />
-            <span class="label label-default code">sudo [path]/Install-Linux-x64.sh --path [path]/Remotely-Linux.zip</span>
-        </p>
-        <p>
-            <strong>Uninstall:</strong>
-            <br />
-            <span class="label label-default code">sudo [path]/Install-Linux-x64.sh --uninstall</span>
-        </p>
-    </div>
+        <div class="col-sm-6 mb-3">
+            <h6>Linux 64-Bit</h6>
+            <p>
+                <strong>Download:</strong>
+                <br />
+                <a href="/API/ClientDownloads/UbuntuInstaller-x64">Ubuntu x64 Bash Installer</a>
+                <br />
+                <a href="/API/ClientDownloads/ManjaroInstaller-x64">Manjaro x64 Bash Installer</a>
+                <br />
+                <a href="~/Downloads/Remotely-Linux.zip">Linux x64 Files Only</a>
+            </p>
+            <p>
+                <strong>Install:</strong>
+                <br />
+                <span class="label label-default code">sudo [path]/Install-Linux-x64.sh</span>
+            </p>
+            <p>
+                <strong>Local Install:</strong>
+                <span data-toggle="modal" data-target="#localInstallInfo" class="fas fa-question-circle pointer"></span>
+                <br />
+                <span class="label label-default code">sudo [path]/Install-Linux-x64.sh --path [path]/Remotely-Linux.zip</span>
+            </p>
+            <p>
+                <strong>Uninstall:</strong>
+                <br />
+                <span class="label label-default code">sudo [path]/Install-Linux-x64.sh --uninstall</span>
+            </p>
+        </div>
     }
 
 </div>
