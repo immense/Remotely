@@ -1,7 +1,6 @@
 ﻿using Remotely.Desktop.Core.Interfaces;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.Models;
-using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

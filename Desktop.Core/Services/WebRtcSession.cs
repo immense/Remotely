@@ -3,7 +3,6 @@ using Microsoft.MixedReality.WebRTC;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.Models;
 using Remotely.Shared.Models.RemoteControlDtos;
-using Remotely.Shared.Utilities;
 using System;
 using System.Drawing;
 using System.Linq;
