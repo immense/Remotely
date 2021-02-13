@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
@@ -14,6 +15,8 @@ namespace Remotely.Server.Services
 {
     public class ClickOnceMiddleware
     {
+        public static SemaphoreSlim AppFileLock { get; } = new SemaphoreSlim(1,1);
+
         private readonly RequestDelegate _next;
 
         public ClickOnceMiddleware(RequestDelegate next)
@@ -66,7 +69,16 @@ namespace Remotely.Server.Services
                 }
 
                 var manifest = new XmlDocument();
-                manifest.Load(appFilePath);
+
+                try
+                {
+                    await AppFileLock.WaitAsync();
+                    manifest.Load(appFilePath);
+                }
+                finally
+                {
+                    AppFileLock.Release();
+                }
 
                 var deploymentProvider = manifest.GetElementsByTagName("deploymentProvider")[0];
                 var codebaseValue = $"{context.Request.Scheme}://{context.Request.Host}/Downloads/Win-{architecture}/ClickOnce/Remotely_Desktop.application";

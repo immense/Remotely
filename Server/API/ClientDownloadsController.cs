@@ -49,18 +49,36 @@ namespace Remotely.Server.API
         [HttpGet("clickonce-setup/{architecture}/{organizationId}")]
         public async Task<IActionResult> GetClickOnceSetup(string architecture, string organizationId)
         {
-            string setupFilePath;
+            string clickOnceDir;
 
             switch (architecture?.ToLower())
             {
                 case "x64":
-                    setupFilePath = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Win-x64", "ClickOnce", "setup.exe");
+                    clickOnceDir = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Win-x64", "ClickOnce");
                     break;
                 case "x86":
-                    setupFilePath = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Win-x86", "ClickOnce", "setup.exe");
+                    clickOnceDir = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Win-x86", "ClickOnce");
                     break;
                 default:
                     return BadRequest();
+            }
+
+            var setupFilePath = Path.Combine(clickOnceDir, "setup.exe");
+            string appContent;
+
+            try
+            {
+                await ClickOnceMiddleware.AppFileLock.WaitAsync();
+                appContent = await System.IO.File.ReadAllTextAsync(Path.Combine(clickOnceDir, "Remotely_Desktop.application"));
+            }
+            finally
+            {
+                ClickOnceMiddleware.AppFileLock.Release();
+            }
+
+            if (appContent.Contains($"{Request.Scheme}://{Request.Host}"))
+            {
+                return File(new FileStream(setupFilePath, FileMode.Open, FileAccess.Read, FileShare.Read), "application/octet-stream", "setup.exe");
             }
 
             using var client = _httpClientFactory.CreateClient();
