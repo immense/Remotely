@@ -5,7 +5,6 @@ using Remotely.Desktop.Core.Models;
 using Remotely.Desktop.Core.Utilities;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.Models;
-using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
