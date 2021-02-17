@@ -4,6 +4,15 @@ A remote control and remote scripting solution, built with .NET Core, SignalR Co
 [![Build Status](https://dev.azure.com/translucency/Remotely/_apis/build/status/Remotely-ReleaseBuild?branchName=master)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=17&branchName=master)
 ![GitHub Build](https://github.com/lucent-sea/Remotely/workflows/GitHub%20Build/badge.svg)
 
+
+> NOTE: Development has been suspended.  
+>  
+> I will be taking a break from Remotely during 2021 to make more time for family, self-care, and other interests.  The repo will be archived until I resume development, so that I don't get overwhelmed with issues and requests.
+>  
+>  Take care and stay safe.
+>  
+>  \- Jared
+
 ## Donations
 If this project has benefited you in some way, or if you just want to show appreciation, please consider donating to a charity.
 
@@ -14,7 +23,6 @@ You can also sponsor the project to unlock additional features on your self-host
 [![GitHub Sponsors](https://img.shields.io/badge/GitHub%20Sponsors-Sponsor-brightgreen)](https://github.com/sponsors/lucent-sea)
 
 [![PayPal Link](https://img.shields.io/badge/PayPal-Donate-brightgreen)](https://www.paypal.me/translucency)
-
 
 
 ## Project Links
@@ -109,6 +117,10 @@ An organization admin has access to the Organization page and server log entries
 * For Linux, you'll also need to restart the Remotely service in systemd after overwriting the files.
 * The only things that can't be overwritten are the database DB file (if using SQLite) and the `appsettings.Production.json`.  These files should never exist in the publish output.
 
+## Branding
+Within the Account section, there is a tab for branding, which will apply to the quick support clients and Windows installer.
+
+However, the clients will need to have been built from source with the server URL hard-coded in the apps for them to be able to retrieve the branding info.
 
 ## Configuration
 The following settings are available in appsettings.json, under the ApplicationOptions section.
