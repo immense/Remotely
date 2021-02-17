@@ -241,6 +241,7 @@ namespace Remotely.Server.Migrations.PostgreSql
             modelBuilder.Entity("Remotely.Shared.Models.Alert", b =>
                 {
                     b.Property<string>("ID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("CreatedOn")
@@ -272,6 +273,7 @@ namespace Remotely.Server.Migrations.PostgreSql
             modelBuilder.Entity("Remotely.Shared.Models.ApiToken", b =>
                 {
                     b.Property<string>("ID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
                     b.Property<DateTimeOffset?>("LastUsed")
@@ -302,6 +304,7 @@ namespace Remotely.Server.Migrations.PostgreSql
             modelBuilder.Entity("Remotely.Shared.Models.BrandingInfo", b =>
                 {
                     b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
                     b.Property<byte>("ButtonForegroundBlue")
@@ -346,6 +349,7 @@ namespace Remotely.Server.Migrations.PostgreSql
             modelBuilder.Entity("Remotely.Shared.Models.CommandResult", b =>
                 {
                     b.Property<string>("ID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
                     b.Property<string>("CommandMode")
@@ -475,6 +479,7 @@ namespace Remotely.Server.Migrations.PostgreSql
             modelBuilder.Entity("Remotely.Shared.Models.DeviceGroup", b =>
                 {
                     b.Property<string>("ID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
@@ -494,6 +499,7 @@ namespace Remotely.Server.Migrations.PostgreSql
             modelBuilder.Entity("Remotely.Shared.Models.EventLog", b =>
                 {
                     b.Property<string>("ID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
                     b.Property<int>("EventType")
@@ -524,6 +530,7 @@ namespace Remotely.Server.Migrations.PostgreSql
             modelBuilder.Entity("Remotely.Shared.Models.InviteLink", b =>
                 {
                     b.Property<string>("ID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("DateSent")
@@ -551,12 +558,10 @@ namespace Remotely.Server.Migrations.PostgreSql
             modelBuilder.Entity("Remotely.Shared.Models.Organization", b =>
                 {
                     b.Property<string>("ID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
                     b.Property<string>("BrandingInfoId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("GithubUser")
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDefaultOrganization")
@@ -569,12 +574,6 @@ namespace Remotely.Server.Migrations.PostgreSql
                     b.Property<string>("RelayCode")
                         .HasColumnType("text");
 
-                    b.Property<double>("SponsorAmount")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("UnlockCode")
-                        .HasColumnType("text");
-
                     b.HasKey("ID");
 
                     b.HasIndex("BrandingInfoId");
@@ -585,6 +584,7 @@ namespace Remotely.Server.Migrations.PostgreSql
             modelBuilder.Entity("Remotely.Shared.Models.SharedFile", b =>
                 {
                     b.Property<string>("ID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
                     b.Property<string>("ContentType")
