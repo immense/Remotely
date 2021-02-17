@@ -8,7 +8,7 @@ namespace Remotely.Shared.Models
 {
     public class DesktopAppConfig
     {
-        private string _host;
+        private string _host = "";
 
         public string Host
         {
