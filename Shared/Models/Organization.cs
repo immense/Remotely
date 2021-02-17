@@ -22,8 +22,6 @@ namespace Remotely.Shared.Models
 
         public ICollection<EventLog> EventLogs { get; set; }
 
-        public string GithubUser { get; set; }
-
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string ID { get; set; }
