@@ -50,11 +50,17 @@ namespace Remotely.Desktop.Core.Services
 
                 var config = _configService.GetConfig();
 
+                var host = _conductor?.Host;
+                if (string.IsNullOrWhiteSpace(host))
+                {
+                    host = config.Host;
+                }
+
                 var fileName = Path.GetFileNameWithoutExtension(Process.GetCurrentProcess().MainModule.FileName);
                 
                 if (fileName.Contains("[") && 
                     fileName.Contains("]") && 
-                    !string.IsNullOrWhiteSpace(_conductor?.Host))
+                    !string.IsNullOrWhiteSpace(host))
                 {
                     var codeLength = AppConstants.RelayCodeLength + 2;
 
@@ -65,11 +71,11 @@ namespace Remotely.Desktop.Core.Services
                         {
                             var relayCode = codeSection[1..5];
 
-                            using var response = await httpClient.GetAsync($"{_conductor.Host}/api/Relay/{relayCode}").ConfigureAwait(false);
+                            using var response = await httpClient.GetAsync($"{host.TrimEnd('/')}/api/Relay/{relayCode}").ConfigureAwait(false);
                             if (response.IsSuccessStatusCode)
                             {
                                 var organizationId = await response.Content.ReadAsStringAsync();
-                                config.Host = _conductor.Host;
+                                config.Host = host;
                                 config.OrganizationId = organizationId;
                                 _configService.Save(config);
 
@@ -81,12 +87,12 @@ namespace Remotely.Desktop.Core.Services
                     }
                 }
                 
-                if (!string.IsNullOrWhiteSpace(_conductor?.Host))
+                if (!string.IsNullOrWhiteSpace(host))
                 {
-                    config.Host = _conductor.Host;
+                    config.Host = host;
                     config.OrganizationId = _conductor.OrganizationId;
                     _configService.Save(config);
-                    var brandingUrl = $"{_conductor.Host.TrimEnd('/')}/api/branding/{_conductor.OrganizationId}";
+                    var brandingUrl = $"{host.TrimEnd('/')}/api/branding/{_conductor.OrganizationId}";
                     _brandingInfo = await httpClient.GetFromJsonAsync<BrandingInfo>(brandingUrl).ConfigureAwait(false);
                 }
             }

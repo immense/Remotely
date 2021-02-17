@@ -228,12 +228,14 @@ namespace Remotely.Server
             }
             catch (Exception ex)
             {
-                dataService.WriteEvent(ex, null);
+                Console.WriteLine(ex.Message);
             }
 
             loggerFactory.AddProvider(new DbLoggerProvider(env, app.ApplicationServices));
             dataService.SetAllDevicesNotOnline();
             dataService.CleanupOldRecords();
+            // TODO: Remove after a few versions.
+            dataService.PopulateRelayCodes();
         }
 
 

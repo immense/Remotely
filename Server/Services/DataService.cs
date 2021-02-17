@@ -130,6 +130,8 @@ namespace Remotely.Server.Services
 
         bool JoinViaInvitation(string userName, string inviteID);
 
+        void PopulateRelayCodes();
+
         void RemoveDevices(string[] deviceIDs);
 
         Task<bool> RemoveUserFromDeviceGroup(string orgID, string groupID, string userID);
@@ -1046,6 +1048,22 @@ namespace Remotely.Server.Services
             _dbContext.InviteLinks.Remove(invite);
             _dbContext.SaveChanges();
             return true;
+        }
+
+        public void PopulateRelayCodes()
+        {
+            foreach (var organization in _dbContext.Organizations)
+            {
+                if (string.IsNullOrWhiteSpace(organization.RelayCode))
+                {
+                    do
+                    {
+                        organization.RelayCode = new string(Guid.NewGuid().ToString().Take(4).ToArray());
+                    }
+                    while (_dbContext.Organizations.Any(x => x.ID != organization.ID && x.RelayCode == organization.RelayCode));
+                }
+            }
+            _dbContext.SaveChanges();
         }
 
         public void RemoveDevices(string[] deviceIDs)
