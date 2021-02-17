@@ -24,13 +24,6 @@ namespace Remotely.Server.API
         [HttpGet("{organizationId}")]
         public async Task<BrandingInfo> Get(string organizationId)
         {
-            var org = _dataService.GetOrganizationById(organizationId);
-            // We're doing the honor system here.
-            if (org.SponsorLevel < Shared.Enums.SponsorLevel.Branding)
-            {
-                return null;
-            }
-
             return await _dataService.GetBrandingInfo(organizationId);
         }
 
@@ -38,12 +31,7 @@ namespace Remotely.Server.API
         public async Task<BrandingInfo> GetDefault()
         {
             var defaultOrg = await _dataService.GetDefaultOrganization();
-            if (defaultOrg?.SponsorLevel >= Shared.Enums.SponsorLevel.Branding)
-            {
-                return await _dataService.GetBrandingInfo(defaultOrg.ID);
-            }
-
-            return null;
+            return await _dataService.GetBrandingInfo(defaultOrg.ID);
         }
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Remotely.Server.Areas.Identity.Pages.Account.Manage;
 using Remotely.Server.Data;
 using Remotely.Shared.Enums;
@@ -25,12 +26,17 @@ namespace Remotely.Server.Services
         void AddOrUpdateCommandResult(CommandResult commandResult);
         bool AddOrUpdateDevice(Device device, out Device updatedDevice);
         Task<string> AddSharedFile(IFormFile file, string organizationID);
+
         bool AddUserToDeviceGroup(string orgID, string groupID, string userName, out string resultMessage);
+
         void ChangeUserIsAdmin(string organizationID, string targetUserID, bool isAdmin);
+
         void CleanupOldRecords();
+
         Task ClearLogs(string currentUserName);
 
         Task<ApiToken> CreateApiToken(string userName, string tokenName, string secretHash);
+
         Task<Device> CreateDevice(DeviceSetupOptions options);
 
         Task<bool> CreateUser(string userEmail, bool isAdmin, string organizationID);
@@ -46,8 +52,6 @@ namespace Remotely.Server.Services
         void DetachEntity(object entity);
 
         void DeviceDisconnected(string deviceID);
-
-        Task DisableSponsorship(string organizationId);
 
         bool DoesUserExist(string userName);
 
@@ -84,11 +88,10 @@ namespace Remotely.Server.Services
         CommandResult GetCommandResult(string commandResultID, string orgID);
 
         Task<Organization> GetDefaultOrganization();
+
         string GetDefaultPrompt();
 
         string GetDefaultPrompt(string userName);
-
-        Task<string> GetDefaultRelayCode();
 
         Device GetDevice(string deviceID);
 
@@ -104,6 +107,7 @@ namespace Remotely.Server.Services
 
         Organization GetOrganizationById(string organizationID);
 
+        Task<Organization> GetOrganizationByRelayCode(string relayCode);
         Task<Organization> GetOrganizationByUserName(string userName);
 
         int GetOrganizationCount();
@@ -138,6 +142,8 @@ namespace Remotely.Server.Services
 
         Task SetDisplayName(RemotelyUser user, string displayName);
 
+        Task SetIsDefaultOrganization(string orgID, bool isDefault);
+
         void SetServerVerificationToken(string deviceID, string verificationToken);
 
         Task<bool> TempPasswordSignIn(string email, string password);
@@ -149,11 +155,10 @@ namespace Remotely.Server.Services
             ColorPickerModel titleForeground, 
             ColorPickerModel titleBackground, 
             ColorPickerModel titleButtonForeground);
+        Task<string> GetDefaultRelayCode();
         Task<Device> UpdateDevice(DeviceSetupOptions deviceOptions, string organizationId);
         void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes, WebRtcSetting webRtcSetting);
         void UpdateOrganizationName(string orgID, string organizationName);
-
-        Task UpdateOrganizationSponsorInfo(SponsorInfo sponsorInfo, bool isDefaultOrganization, bool updateUnlockCode);
         Task UpdateServerAdmins(List<string> serverAdmins, string callerUserName);
         void UpdateTags(string deviceID, string tags);
         void UpdateUserOptions(string userName, RemotelyUserOptions options);
@@ -638,21 +643,6 @@ namespace Remotely.Server.Services
             }
         }
 
-        public async Task DisableSponsorship(string organizationId)
-        {
-            if (string.IsNullOrWhiteSpace(organizationId))
-            {
-                return;
-            };
-
-            var organization = await _dbContext.Organizations.FindAsync(organizationId);
-            if (organization != null)
-            {
-                organization.SponsorAmount = 0;
-                organization.RelayCode = null;
-                await _dbContext.SaveChangesAsync();
-            }
-        }
 
         public bool DoesUserExist(string userName)
         {
@@ -845,7 +835,7 @@ namespace Remotely.Server.Services
         public async Task<string> GetDefaultRelayCode()
         {
             var relayCode = await _dbContext.Organizations
-                .Where(x => x.IsDefaultOrganization && x.SponsorAmount >= 10)
+                .Where(x => x.IsDefaultOrganization)
                 .Select(x => x.RelayCode)
                 .FirstOrDefaultAsync();
 
@@ -945,6 +935,16 @@ namespace Remotely.Server.Services
         public Organization GetOrganizationById(string organizationID)
         {
             return _dbContext.Organizations.Find(organizationID);
+        }
+
+        public async Task<Organization> GetOrganizationByRelayCode(string relayCode)
+        {
+            if (string.IsNullOrWhiteSpace(relayCode))
+            {
+                return null;
+            }
+
+            return await _dbContext.Organizations.FirstOrDefaultAsync(x => x.RelayCode == relayCode.ToLower());
         }
 
         public async Task<Organization> GetOrganizationByUserName(string userName)
@@ -1153,6 +1153,23 @@ namespace Remotely.Server.Services
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task SetIsDefaultOrganization(string orgID, bool isDefault)
+        {
+            var organization = await _dbContext.Organizations.FindAsync(orgID);
+            if (organization is null)
+            {
+                return;
+            }
+
+            if (isDefault)
+            {
+                await _dbContext.Organizations.ForEachAsync(x => x.IsDefaultOrganization = false);
+            }
+
+            organization.IsDefaultOrganization = isDefault;
+            await _dbContext.SaveChangesAsync();
+        }
+
         public void SetServerVerificationToken(string deviceID, string verificationToken)
         {
             var device = _dbContext.Devices.Find(deviceID);
@@ -1274,32 +1291,6 @@ namespace Remotely.Server.Services
             _dbContext.SaveChanges();
         }
 
-        public async Task UpdateOrganizationSponsorInfo(SponsorInfo sponsorInfo, bool isDefaultOrganization, bool updateUnlockCode)
-        {
-            var organization = await _dbContext.Organizations.FindAsync(sponsorInfo.OrganizationId);
-            if (organization is null)
-            {
-                return;
-            }
-
-            if (updateUnlockCode)
-            {
-                // Don't wipe this out due to a failure response.
-                organization.UnlockCode = sponsorInfo.UnlockCode;
-            }
-
-            if (isDefaultOrganization)
-            {
-                await _dbContext.Organizations.ForEachAsync(x => x.IsDefaultOrganization = false);
-            }
-
-            organization.SponsorAmount = sponsorInfo.Amount;
-            organization.RelayCode = sponsorInfo.RelayCode;
-            organization.GithubUser = sponsorInfo.GithubUser;
-            organization.IsDefaultOrganization = isDefaultOrganization;
-
-            await _dbContext.SaveChangesAsync();
-        }
 
         public async Task UpdateServerAdmins(List<string> serverAdmins, string callerUserName)
         {

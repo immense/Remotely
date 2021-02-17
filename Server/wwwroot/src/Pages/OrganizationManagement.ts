@@ -1,4 +1,4 @@
-﻿import { ShowModal } from "../Shared/UI.js";
+﻿import { ShowMessage, ShowModal } from "../Shared/UI.js";
 
 export const OrganizationManagement = {
     Init() {
@@ -20,56 +20,12 @@ export const OrganizationManagement = {
             ShowModal("Device Groups", `Device groups can be used to organize and filter computers on the grid.`);
         });
 
-        document.getElementById("sponsorMainHelp").addEventListener("click", () => {
-            ShowModal("GitHub Sponsors", `Additional features can be unlocked by sponsoring $10 or more 
-                on <a href="https://github.com/sponsors/lucent-sea">GitHub Sponsors</a>. After setting up
-                your sponsorship, enter your GitHub username below to register your server.<br/><br/>
-                <strong>Sponsorship Levels:</strong><br/><br/>
-                Relay ($10):
-                <ul>
-                    <li>
-                        No need to compile from source to embed your server's URL into the EXEs.  A
-                        short "relay code" will be appended to the file names, which the apps will
-                        use to get your server URL and organization ID from a hosted web service.
-                    </li>
-                    <li>
-                        Notifications when new server versions are available.
-                    </li>
-                    <li>
-                        Easy server upgrades via custom script.
-                    </li>
-                </ul>
-                Branding ($20):
-                <ul>
-                    <li>
-                        All of the above features.
-                    </li>
-                    <li>
-                        Apply branding to desktop apps without needing to recompile.
-                    </li>
-                    <li>
-                        Access to a light-weight, self-updating, installable version of the quick support client.
-                    </li>
-                </ul>`);
-        });
-
-        document.getElementById("sponsorUnlockHelp").addEventListener("click", () => {
-            ShowModal("Unlock Code", `After your server is first registered, this unlock code must be sent 
-                with all future requests that make changes to your registration status.  This is to prevent
-                others from using your GitHub username to register a different server.`);
-        });
-
-        document.getElementById("sponsorRelayHelp").addEventListener("click", () => {
-            ShowModal("Relay Code", `This relay code will be appended to EXE filenames.  The apps will
-                use it to look up your server and organization info via the central registration API,
-                which removes the need to recompile the apps to embed the info.`);
-        });
 
         document.getElementById("defaultOrgHelp").addEventListener("click", () => {
             ShowModal("Default Organization", `This option is only available for server administrators.  When
                 selected during registration, it sets this organization as the default for the server.  The
                 quick support downloads, which aren't normally associated with an organization, will use
-                this organization's relay code and branding.`);
+                this organization's branding.`);
         });
 
 
@@ -225,6 +181,27 @@ export const OrganizationManagement = {
             xhr.open("put", location.origin + "/api/OrganizationManagement/Name");
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.send(JSON.stringify((ev.currentTarget as HTMLInputElement).value));
+        });
+
+        document.getElementById("defaultOrgCheckbox").addEventListener("change", (ev) => {
+            var xhr = new XMLHttpRequest();
+            xhr.onload = () => {
+                if (xhr.status == 200) {
+                    ShowMessage("Default organization set.");
+                }
+                else if (xhr.status == 400) {
+                    ShowModal("Invalid Request", xhr.responseText);
+                }
+                else {
+                    showError(xhr);
+                }
+            }
+            xhr.onerror = () => {
+                showError(xhr);
+            }
+            xhr.open("put", location.origin + "/api/OrganizationManagement/SetDefault");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify((ev.currentTarget as HTMLInputElement).checked));
         });
 
 

@@ -225,6 +225,22 @@ namespace Remotely.Server.API
             DataService.UpdateOrganizationName(orgID, organizationName.Trim());
             return Ok("ok");
         }
+
+        [HttpPut("SetDefault")]
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
+        public IActionResult SetDefault([FromBody] bool isDefault)
+        {
+            if (User.Identity.IsAuthenticated &&
+                !DataService.GetUserByName(User.Identity.Name).IsServerAdmin)
+            {
+                return Unauthorized();
+            }
+
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
+            DataService.SetIsDefaultOrganization(orgID, isDefault);
+            return Ok("ok");
+        }
+
         [HttpPost("SendInvite")]
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
         public async Task<IActionResult> SendInvite([FromBody] Invite invite)

@@ -8,7 +8,7 @@
 {
     <div class="small mb-3">
         <span class="fas fa-question-circle pointer"></span>
-        You are signed in.  All links will be specific to your organization and, if applicable, will be branded.
+        You are signed in.  Instant support links will be specific to your organization and, if applicable, will be branded.
         You can share these links directly with customers for download.
     </div>
 }
@@ -58,13 +58,6 @@
             <h6>Must be logged in to download.</h6>
         </div>
 
-    }
-    @* We're doing the honor system here. *@
-    else if (Model.CurrentOrganization.SponsorLevel < Remotely.Shared.Enums.SponsorLevel.Branding)
-    {
-        <div class="col-sm-6 mb-3">
-            <h6>Sponsor level is not high enough for installable clients.</h6>
-        </div>
     }
     else
     {

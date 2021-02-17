@@ -400,19 +400,18 @@ namespace Remotely.Agent.Installer.Win.ViewModels
                     var codeSection = string.Join("", fileName.Skip(i).Take(codeLength));
 
                     if (codeSection.StartsWith("[") &&
-                        codeSection.EndsWith("]"))
+                        codeSection.EndsWith("]") && 
+                        !string.IsNullOrWhiteSpace(ServerUrl))
                     {
                         var relayCode = codeSection.Substring(1, 4);
                         using (var httpClient = new HttpClient())
                         {
-                            var response = await httpClient.GetAsync($"{AppConstants.DeviceInitUrl}/{relayCode}").ConfigureAwait(false);
+                            var response = await httpClient.GetAsync($"{ServerUrl}/api/relay/{relayCode}").ConfigureAwait(false);
                             if (response.IsSuccessStatusCode)
                             {
                                 var serializer = new JavaScriptSerializer();
-                                var contentString = await response.Content.ReadAsStringAsync();
-                                var deviceInitParams = serializer.Deserialize<DeviceInitParams>(contentString);
-                                OrganizationID = deviceInitParams.OrganizationId;
-                                ServerUrl = deviceInitParams.Host;
+                                var organizationId = await response.Content.ReadAsStringAsync();
+                                OrganizationID = organizationId;
                                 break;
                             }
                         }

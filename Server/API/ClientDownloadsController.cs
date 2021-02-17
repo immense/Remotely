@@ -66,7 +66,7 @@ namespace Remotely.Server.API
         }
 
         [HttpGet("clickonce-setup/{architecture}/{organizationId}")]
-        public async Task<IActionResult> GetClickOnceSetup(string architecture, string organizationId)
+        public IActionResult GetClickOnceSetup(string architecture, string organizationId)
         {
             string clickOnceDir;
 
@@ -83,39 +83,7 @@ namespace Remotely.Server.API
             }
 
             var setupFilePath = Path.Combine(clickOnceDir, "setup.exe");
-            string appContent;
-
-            try
-            {
-                await ClickOnceMiddleware.AppFileLock.WaitAsync();
-                appContent = await System.IO.File.ReadAllTextAsync(Path.Combine(clickOnceDir, "Remotely_Desktop.application"));
-            }
-            finally
-            {
-                ClickOnceMiddleware.AppFileLock.Release();
-            }
-
-            if (appContent.Contains($"{Request.Scheme}://{Request.Host}"))
-            {
-                return File(new FileStream(setupFilePath, FileMode.Open, FileAccess.Read, FileShare.Read), "application/octet-stream", "setup.exe");
-            }
-
-            using var client = _httpClientFactory.CreateClient();
-            var formContent = new MultipartFormDataContent();
-            var bytes = await System.IO.File.ReadAllBytesAsync(setupFilePath);
-            using var byteContent = new ByteArrayContent(bytes);
-            formContent.Add(byteContent, "setup", "setup.exe");
-
-            try
-            {
-                using var response = await client.PostAsync($"{AppConstants.ClickOnceSetupUrl}/?host={Request.Scheme}://{Request.Host}&organizationid={organizationId}&architecture={architecture}", formContent);
-                var responseBytes = await response.Content.ReadAsByteArrayAsync();
-                return File(responseBytes, "application/octet-stream", "setup.exe");
-            }
-            catch
-            {
-                return NotFound();
-            }
+            return File(new FileStream(setupFilePath, FileMode.Open, FileAccess.Read, FileShare.Read), "application/octet-stream", "setup.exe");
         }
 
 
@@ -151,15 +119,12 @@ namespace Remotely.Server.API
 
         private async Task<IActionResult> GetDesktopFile(string filePath)
         {
-            var relayCode = string.Empty;
+            string relayCode;
 
             if (User.Identity.IsAuthenticated)
             {
                 var currentOrg = await _dataService.GetOrganizationByUserName(User.Identity.Name);
-                if (currentOrg.SponsorLevel >= Shared.Enums.SponsorLevel.Relay)
-                {
-                    relayCode = currentOrg.RelayCode;
-                }
+                relayCode = currentOrg.RelayCode;
             }
             else
             {
@@ -194,17 +159,8 @@ namespace Remotely.Server.API
                                 var filePath = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Remotely_Installer.exe");
                                 var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
                                 var organization = _dataService.GetOrganizationById(organizationId);
-
-                                if (organization.SponsorLevel > Shared.Enums.SponsorLevel.None)
-                                {
-                                    var relayCode = organization.RelayCode;
-                                    return File(fs, "application/octet-stream", $"Remotely_Install-[{relayCode}].exe");
-
-                                }
-                                else
-                                {
-                                    return File(fs, "application/octet-stream", $"Remotely_Installer-[{organizationId}].exe");
-                                }
+                                var relayCode = organization.RelayCode;
+                                return File(fs, "application/octet-stream", $"Remotely_Install-[{relayCode}].exe");
                             }
                         // TODO: Remove after a few releases.
                         case "Manjaro-x64":

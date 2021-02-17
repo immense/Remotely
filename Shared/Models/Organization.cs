@@ -32,32 +32,12 @@ namespace Remotely.Shared.Models
 
         public bool IsDefaultOrganization { get; set; }
 
-        public double SponsorAmount { get; set; }
-
-        [NotMapped]
-        public SponsorLevel SponsorLevel
-        {
-            get
-            {
-                if (SponsorAmount < 10)
-                {
-                    return SponsorLevel.None;
-                }
-                if (SponsorAmount < 20)
-                {
-                    return SponsorLevel.Relay;
-                }
-
-                return SponsorLevel.Branding;
-            }
-        }
-
         [StringLength(25)]
         public string OrganizationName { get; set; }
 
         public string RelayCode { get; set; }
+
         public ICollection<RemotelyUser> RemotelyUsers { get; set; }
         public ICollection<SharedFile> SharedFiles { get; set; }
-        public string UnlockCode { get; set; }
     }
 }

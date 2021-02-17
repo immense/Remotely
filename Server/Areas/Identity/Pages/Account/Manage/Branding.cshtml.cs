@@ -86,10 +86,6 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         public async Task<IActionResult> OnPostAsync()
         {
             CurrentUser = _dataService.GetUserByName(User.Identity.Name);
-            if (!CurrentUser.IsAdministrator || CurrentUser.Organization.SponsorLevel < Shared.Enums.SponsorLevel.Branding)
-            {
-                return Unauthorized();
-            }
 
             if (!ModelState.IsValid)
             {
