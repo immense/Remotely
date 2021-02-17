@@ -66,6 +66,7 @@ namespace Remotely.Desktop.Core.Services
                 VideoSource,
                 PeerSession
             });
+            GC.SuppressFinalize(this);
         }
 
         public async Task Init(IceServerModel[] iceServers)
