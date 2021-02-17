@@ -4,15 +4,6 @@
     ViewData["Title"] = "Client Downloads";
 }
 
-@if (User.Identity.IsAuthenticated)
-{
-    <div class="small mb-3">
-        <span class="fas fa-question-circle pointer"></span>
-        You are signed in.  Instant support links will be specific to your organization and, if applicable, will be branded.
-        You can share these links directly with customers for download.
-    </div>
-}
-
 <div class="row mb-3">
     <h4>Portable Instant Support Clients</h4>
     <div class="text-info col-sm-12 pl-0 mb-2">
@@ -45,22 +36,14 @@
 </div>
 
 
-<div class="row mb-3">
-    <h4>Installable Instant Support Clients</h4>
-    <div class="text-info col-sm-12 pl-0 mb-2">
-        Light-weight, self-updating quick support clients.  Once logged in, you can copy the links for distribution.
-    </div>
-
-    @if (!User.Identity.IsAuthenticated)
-    {
-
-        <div class="col-sm-6 mb-3">
-            <h6>Must be logged in to download.</h6>
+@if (Model.IsServerUrlEmbedded)
+{
+    <div class="row mb-3">
+        <h4>Installable Instant Support Clients</h4>
+        <div class="text-info col-sm-12 pl-0 mb-2">
+            Light-weight, self-updating quick support clients.  Once logged in, you can copy the links for distribution.
         </div>
 
-    }
-    else
-    {
         <div class="col-sm-6 mb-3">
             <h6>Windows (64-Bit)</h6>
             <p>
@@ -69,7 +52,7 @@
             <p>
                 <strong>Download:</strong>
                 <br />
-                <a href="/api/ClientDownloads/clickonce-setup/x64/@Model.CurrentOrganization.ID">Windows Installer</a>
+                <a href="~/Downloads/Win-x64/ClickOnce/setup.exe">Windows Installer</a>
             </p>
         </div>
         <div class="col-sm-6">
@@ -80,13 +63,13 @@
             <p>
                 <strong>Download:</strong>
                 <br />
-                <a href="/api/ClientDownloads/clickonce-setup/x64/@Model.CurrentOrganization.ID">Windows Installer</a>
+                <a href="~/Downloads/Win-x86/ClickOnce/setup.exe">Windows Installer</a>
             </p>
         </div>
-    }
 
+    </div>
+}
 
-</div>
 
 <div class="row">
     <h4>Resident Agents</h4>

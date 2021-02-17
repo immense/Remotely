@@ -65,28 +65,6 @@ namespace Remotely.Server.API
             }
         }
 
-        [HttpGet("clickonce-setup/{architecture}/{organizationId}")]
-        public IActionResult GetClickOnceSetup(string architecture, string organizationId)
-        {
-            string clickOnceDir;
-
-            switch (architecture?.ToLower())
-            {
-                case "x64":
-                    clickOnceDir = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Win-x64", "ClickOnce");
-                    break;
-                case "x86":
-                    clickOnceDir = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Win-x86", "ClickOnce");
-                    break;
-                default:
-                    return BadRequest();
-            }
-
-            var setupFilePath = Path.Combine(clickOnceDir, "setup.exe");
-            return File(new FileStream(setupFilePath, FileMode.Open, FileAccess.Read, FileShare.Read), "application/octet-stream", "setup.exe");
-        }
-
-
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
         [HttpGet("{platformID}")]
         public async Task<IActionResult> GetInstaller(string platformID)
