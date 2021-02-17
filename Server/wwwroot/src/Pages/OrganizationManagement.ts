@@ -23,9 +23,14 @@ export const OrganizationManagement = {
 
         document.getElementById("defaultOrgHelp").addEventListener("click", () => {
             ShowModal("Default Organization", `This option is only available for server administrators.  When
-                selected during registration, it sets this organization as the default for the server.  The
-                quick support downloads, which aren't normally associated with an organization, will use
-                this organization's branding.`);
+                selected, it sets this organization as the default for the server.  If the organization can't
+                be determined in the quick support apps, they will use the default organization's branding.`);
+        });
+
+        document.getElementById("relayCodeHelp").addEventListener("click", () => {
+            ShowModal("Relay Code", `This relay code will be appended to EXE filenames.  If the clients
+                were built from source and have the server URL embedded, they will use this code to look
+                up the branding to use for your organization.`);
         });
 
 
