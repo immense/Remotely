@@ -45,20 +45,6 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
 
         public List<SelectListItem> DeviceGroupSelectItems { get; } = new List<SelectListItem>();
 
-        [BindProperty]
-        [Display(Name = "GitHub Username")]
-        [StringLength(40)]
-        [Required]
-        public string GithubUsername { get; set; }
-
-        [BindProperty]
-        [Display(Name = "Default Organization")]
-        public bool IsDefaultOrganization { get; set; }
-
-        [BindProperty]
-        [Display(Name = "Sponsor Unlock Code")]
-        [StringLength(24)]
-        public string UnlockCode { get; set; }
 
         [BindProperty]
         public InputModel Input { get; set; } = new InputModel();
@@ -67,6 +53,9 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         [Display(Name = "Invites")]
         public List<Invite> Invites { get; set; }
 
+        [Display(Name = "Default Organization")]
+        public bool IsDefaultOrganization { get; set; }
+
 
         [Display(Name = "Organization")]
         public Organization Organization { get; set; }
@@ -74,6 +63,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         [Display(Name = "Organization Name")]
         [StringLength(25)]
         public string OrganizationName { get; set; }
+
         [TempData]
         public string StatusMessage { get; set; }
 
@@ -124,64 +114,6 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             return RedirectToPage();
         }
 
-        public async Task<IActionResult> OnPostDisableAsync()
-        {
-            CurrentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-
-            if (!CurrentUser.IsAdministrator)
-            {
-                return Unauthorized();
-            }
-            await _dataService.DisableSponsorship(CurrentUser.OrganizationID);
-            StatusMessage = "Sponsor features disabled successfully.";
-            return RedirectToPage();
-        }
-
-        public async Task<IActionResult> OnPostRegisterSponsorAsync()
-        {
-
-            CurrentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-
-            if (!CurrentUser.IsAdministrator)
-            {
-                return Unauthorized();
-            }
-
-            using var client = _httpClientFactory.CreateClient();
-
-            Organization = await _dataService.GetOrganizationByUserName(User.Identity.Name);
-
-            var sponsorInfo = new SponsorInfo()
-            {
-                GithubUser = GithubUsername,
-                UnlockCode = UnlockCode,
-                HostName = $"{Request.Scheme}://{Request.Host}",
-                OrganizationId = Organization.ID,
-                Amount = Organization.SponsorAmount
-            };
-
-            var response = await client.PostAsync(AppConstants.SponsorRegistrationUrl, JsonContent.Create(sponsorInfo));
-            var responseText = await response.Content.ReadAsStringAsync();
-
-            if (response.IsSuccessStatusCode)
-            {
-                StatusMessage = "Successfully registered!  Please keep a backup copy of your unlock code in a safe place.";
-                sponsorInfo = JsonSerializer.Deserialize<SponsorInfo>(responseText, JsonSerializerHelper.CaseInsensitiveOptions);
-                var isDefaultOrg = IsDefaultOrganization && CurrentUser.IsServerAdmin;
-                await _dataService.UpdateOrganizationSponsorInfo(sponsorInfo, isDefaultOrg, true);
-            }
-            else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-            {
-                StatusMessage = $"Error: {responseText}";
-                await _dataService.UpdateOrganizationSponsorInfo(sponsorInfo, false, false);
-            }
-            else
-            {
-                StatusMessage = "There was a problem registering.  Please try again or contact support.";
-            }
-
-            return RedirectToPage();
-        }
 
         internal async Task<IActionResult> AddUser(RemotelyUser currentUser)
         {
@@ -249,8 +181,6 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
             CurrentUser = await _userManager.FindByEmailAsync(User.Identity.Name);
             Organization = _dataService.GetOrganizationById(CurrentUser.OrganizationID);
             OrganizationName = Organization.OrganizationName;
-            GithubUsername = Organization.GithubUser;
-            UnlockCode = Organization.UnlockCode;
             IsDefaultOrganization = Organization.IsDefaultOrganization;
             var deviceGroups = _dataService.GetDeviceGroups(User.Identity.Name).OrderBy(x => x.Name);
             DeviceGroups.AddRange(deviceGroups);

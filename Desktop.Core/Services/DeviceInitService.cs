@@ -50,20 +50,11 @@ namespace Remotely.Desktop.Core.Services
 
                 var config = _configService.GetConfig();
 
-                if (!string.IsNullOrWhiteSpace(_conductor.Host) &&
-                    !string.IsNullOrWhiteSpace(_conductor.OrganizationId))
-                {
-                    config.Host = _conductor.Host;
-                    config.OrganizationId = _conductor.Host;
-                    _configService.Save(config);
-                    var brandingUrl = $"{_conductor.Host.TrimEnd('/')}/api/branding/{_conductor.OrganizationId}";
-                    _brandingInfo = await httpClient.GetFromJsonAsync<BrandingInfo>(brandingUrl).ConfigureAwait(false);
-                    return;
-                }
-
                 var fileName = Path.GetFileNameWithoutExtension(Process.GetCurrentProcess().MainModule.FileName);
                 
-                if (fileName.Contains("[") && fileName.Contains("]"))
+                if (fileName.Contains("[") && 
+                    fileName.Contains("]") && 
+                    !string.IsNullOrWhiteSpace(_conductor?.Host))
                 {
                     var codeLength = AppConstants.RelayCodeLength + 2;
 
@@ -74,13 +65,12 @@ namespace Remotely.Desktop.Core.Services
                         {
                             var relayCode = codeSection[1..5];
 
-                            using var response = await httpClient.GetAsync($"{AppConstants.DeviceInitUrl}/{relayCode}").ConfigureAwait(false);
+                            using var response = await httpClient.GetAsync($"{_conductor.Host}/api/Relay/{relayCode}").ConfigureAwait(false);
                             if (response.IsSuccessStatusCode)
                             {
-                                var contentString = await response.Content.ReadAsStringAsync();
-                                var deviceInitParams = JsonSerializer.Deserialize<DeviceInitParams>(contentString, JsonSerializerHelper.CaseInsensitiveOptions);
-                                config.Host = deviceInitParams.Host;
-                                config.OrganizationId = deviceInitParams.OrganizationId;
+                                var organizationId = await response.Content.ReadAsStringAsync();
+                                config.Host = _conductor.Host;
+                                config.OrganizationId = organizationId;
                                 _configService.Save(config);
 
                                 var brandingUrl = $"{config.Host.TrimEnd('/')}/api/branding/{config.OrganizationId}";
@@ -89,8 +79,15 @@ namespace Remotely.Desktop.Core.Services
                             }
                         }
                     }
-
-
+                }
+                
+                if (!string.IsNullOrWhiteSpace(_conductor?.Host))
+                {
+                    config.Host = _conductor.Host;
+                    config.OrganizationId = _conductor.OrganizationId;
+                    _configService.Save(config);
+                    var brandingUrl = $"{_conductor.Host.TrimEnd('/')}/api/branding/{_conductor.OrganizationId}";
+                    _brandingInfo = await httpClient.GetFromJsonAsync<BrandingInfo>(brandingUrl).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)

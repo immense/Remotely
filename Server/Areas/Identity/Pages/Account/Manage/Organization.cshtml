@@ -25,63 +25,10 @@
                 <label class="mb-1">Organization ID</label>
                 <input readonly class="form-control" value="@Model.Organization.ID" />
             </div>
-        </div>
-    </div>
-
-    @* GitHub Sponsors Registration *@
-    <div class="row">
-        <div class="col-sm-8">
-            <form method="post" asp-page-handler="RegisterSponsor" autocomplete="off">
-                <div class="form-group mw">
-                    <label class="mb-1">GitHub Sponsorship Level</label>
-                    <span id="sponsorMainHelp" class="fas fa-question-circle pointer"></span>
-                    @if (Model.Organization.SponsorLevel > Shared.Enums.SponsorLevel.None)
-                    {
-                        <div class="input-group">
-                            <input readonly class="form-control" value="@Model.Organization.SponsorLevel.ToString()" />
-                            <div class="input-group-append">
-                                <div class="fa fa-check-circle  input-group-text" style="color: limegreen"></div>
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="input-group">
-                            <input readonly class="form-control" value="@Model.Organization.SponsorLevel.ToString()" />
-                            <div class="input-group-append">
-                                <div class="fa fa-times-circle input-group-text" style="color: red"></div>
-                            </div>
-                        </div>
-                    }
-                </div>
-                <div class="form-group">
-                    <label class="mb-1">Sponsor Relay Code</label>
-                    <span id="sponsorRelayHelp" class="fas fa-question-circle pointer"></span>
-                    <input readonly class="form-control" value="@Model.Organization.RelayCode" />
-                </div>
-                <div class="form-group">
-                    <label class="mb-1">Sponsor Unlock Code (keep this safe and secret)</label>
-                    <span id="sponsorUnlockHelp" class="fas fa-question-circle pointer"></span>
-                    <input class="form-control" asp-for="UnlockCode" />
-                </div>
-                <div class="form-group">
-                    <label class="mb-1">Register GitHub Username</label>
-                    <input class="form-control" asp-for="GithubUsername" />
-                </div>
-                @if (Model.CurrentUser.IsServerAdmin)
-                {
-                    <div class="form-group">
-                        <label class="mb-1">Default Organization For Server</label>
-                        <span id="defaultOrgHelp" class="fas fa-question-circle pointer"></span>
-                        <br />
-                        <input type="checkbox" asp-for="IsDefaultOrganization" />
-                    </div>
-                }
-                <div class="form-group text-right">
-                    <button class="btn btn-secondary" type="submit" asp-page-handler="Disable">Disable</button>
-                    <button class="btn btn-primary" type="submit">Register</button>
-                </div>
-            </form>
+            <div class="form-group mw">
+                <label class="mb-1">Relay Code</label>
+                <input readonly class="form-control" value="@Model.Organization.RelayCode" />
+            </div>
         </div>
     </div>
 
@@ -99,6 +46,15 @@
                     </div>
                 </div>
             </div>
+            @if (Model.CurrentUser.IsServerAdmin)
+            {
+                <div class="form-group">
+                    <label class="mb-1">Default Organization For Server</label>
+                    <span id="defaultOrgHelp" class="fas fa-question-circle pointer"></span>
+                    <br />
+                    <input id="defaultOrgCheckbox" type="checkbox" asp-for="IsDefaultOrganization" />
+                </div>                
+            }
         </div>
     </div>
 
