@@ -56,7 +56,7 @@ It's *highly* encouraged that you get comfortable building and deploying from so
 
 ## Hosting a Server (Ubuntu)
 * Ubuntu 20.04, 19.04, and 18.04 have been tested.
-* Run Ubuntu_Server_Install.sh (with sudo), which is on the [Releases page](https://github.com/lucent-sea/Remotely/releases/latest) and in the [Utilities folder in source control](https://raw.githubusercontent.com/lucent-sea/Remotely/master/Utilities/Remotely_Server_Install.sh).
+* Run Ubuntu_Server_Install.sh (with sudo), which is on the [Releases page](https://github.com/lucent-sea/Remotely/releases/latest) and in the [Utilities folder in source control](https://raw.githubusercontent.com/lucent-sea/Remotely/master/Utilities/Ubuntu_Server_Install.sh).
 	* The script is designed to install Remotely and Nginx on the same server, running Ubuntu 18.04 or 19.04.  You'll need to manually set up other configurations.
     * A helpful user supplied an example Apache configuration, which can be found in the Utilities folder.
     * The script will prompt for the "App root" location, which is the above directory where the server files are located.
