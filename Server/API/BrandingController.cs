@@ -31,6 +31,10 @@ namespace Remotely.Server.API
         public async Task<BrandingInfo> GetDefault()
         {
             var defaultOrg = await _dataService.GetDefaultOrganization();
+            if (defaultOrg is null)
+            {
+                return new BrandingInfo();
+            }
             return await _dataService.GetBrandingInfo(defaultOrg.ID);
         }
     }

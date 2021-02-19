@@ -782,20 +782,40 @@ namespace Remotely.Server.Services
 
         public IEnumerable<RemotelyUser> GetAllUsers(string userName)
         {
+            if (string.IsNullOrWhiteSpace(userName))
+            {
+                return Array.Empty<RemotelyUser>();
+            }
+
             var user = _dbContext.Users.FirstOrDefault(x => x.UserName == userName);
             return _dbContext.Users.Where(x => x.OrganizationID == user.OrganizationID);
         }
 
         public ApiToken GetApiToken(string apiToken)
         {
+            if (string.IsNullOrWhiteSpace(apiToken))
+            {
+                return null;
+            }
+
             return _dbContext.ApiTokens.FirstOrDefault(x => x.Token == apiToken);
         }
 
         public async Task<BrandingInfo> GetBrandingInfo(string organizationId)
         {
+            if (string.IsNullOrWhiteSpace(organizationId))
+            {
+                return null;
+            }
+
             var organization = await _dbContext.Organizations
               .Include(x => x.BrandingInfo)
               .FirstOrDefaultAsync(x => x.ID == organizationId);
+
+            if (organization is null)
+            {
+                return null;
+            }
 
             if (organization.BrandingInfo is null)
             {
