@@ -18,7 +18,7 @@ If this project has benefited you in some way, or if you just want to show appre
 
 Suggested Charities: https://www.givewell.org/charities/top-charities
 
-You can also sponsor the project to unlock additional features on your self-hosted server.
+You can also sponsor the project as a way of saying "thank you".  But if you have to pick between the two, please choose a charity.  Your money will have a much greater impact on their lives than it would mine.
 
 [![GitHub Sponsors](https://img.shields.io/badge/GitHub%20Sponsors-Sponsor-brightgreen)](https://github.com/sponsors/lucent-sea)
 
