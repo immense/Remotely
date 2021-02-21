@@ -25,7 +25,7 @@ namespace Remotely.Server.Pages
             _hostEnvironment = hostEnvironment;
         }
 
-        public Organization CurrentOrganization { get; private set; }
+        public string OrganizationId { get; private set; }
         public bool IsServerUrlEmbedded { get; private set; }
 
         public async Task OnGet()
@@ -33,7 +33,11 @@ namespace Remotely.Server.Pages
             if (User.Identity.IsAuthenticated)
             {
                 var currentUser = await _userManager.GetUserAsync(User);
-                CurrentOrganization = _dataService.GetOrganizationById(currentUser.OrganizationID);
+                OrganizationId = _dataService.GetOrganizationById(currentUser.OrganizationID)?.ID;
+            }
+            else
+            {
+                OrganizationId = (await _dataService.GetDefaultOrganization())?.ID;
             }
 
             var appFilePath = Path.Combine(

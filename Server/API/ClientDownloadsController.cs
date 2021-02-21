@@ -65,6 +65,32 @@ namespace Remotely.Server.API
             }
         }
 
+
+        [HttpGet("desktop/{platformId}/{organizationId}")]
+        public async Task<IActionResult> GetDesktop(string platformId, string organizationId)
+        {
+            switch (platformId)
+            {
+                case "WindowsDesktop-x64":
+                    {
+                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Win-x64", "Remotely_Desktop.exe");
+                        return await GetDesktopFile(filePath, organizationId);
+                    }
+                case "WindowsDesktop-x86":
+                    {
+                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Win-x86", "Remotely_Desktop.exe");
+                        return await GetDesktopFile(filePath, organizationId);
+                    }
+                case "UbuntuDesktop":
+                    {
+                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Remotely_Desktop");
+                        return await GetDesktopFile(filePath, organizationId);
+                    }
+                default:
+                    return NotFound();
+            }
+        }
+
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
         [HttpGet("{platformID}")]
         public async Task<IActionResult> GetInstaller(string platformID)
@@ -95,13 +121,13 @@ namespace Remotely.Server.API
             return File(fileBytes, "application/octet-stream", fileName);
         }
 
-        private async Task<IActionResult> GetDesktopFile(string filePath)
+        private async Task<IActionResult> GetDesktopFile(string filePath, string organizationId = null)
         {
             string relayCode;
 
-            if (User.Identity.IsAuthenticated)
+            if (!string.IsNullOrWhiteSpace(organizationId))
             {
-                var currentOrg = await _dataService.GetOrganizationByUserName(User.Identity.Name);
+                var currentOrg = _dataService.GetOrganizationById(organizationId);
                 relayCode = currentOrg.RelayCode;
             }
             else
