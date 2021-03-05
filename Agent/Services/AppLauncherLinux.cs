@@ -40,7 +40,7 @@ namespace Remotely.Agent.Services
                     $"-requester \"{requesterID}\" " +
                     $"-organization \"{orgName}\" " +
                     $"-host \"{ConnectionInfo.Host}\" " +
-                    $"-orgid \"{ConnectionInfo.OrganizationID}\" & disown";
+                    $"-orgid \"{ConnectionInfo.OrganizationID}\"";
                 return StartLinuxDesktopApp(args);
             }
             catch (Exception ex)
@@ -70,7 +70,7 @@ namespace Remotely.Agent.Services
                     $"-serviceid \"{serviceID}\" " +
                     $"-deviceid {ConnectionInfo.DeviceID} " +
                     $"-host \"{ConnectionInfo.Host}\" " +
-                    $"-orgid \"{ConnectionInfo.OrganizationID}\" & disown";
+                    $"-orgid \"{ConnectionInfo.OrganizationID}\"";
                 StartLinuxDesktopApp(args);
             }
             catch (Exception ex)
@@ -92,7 +92,7 @@ namespace Remotely.Agent.Services
                     $"-host \"{ConnectionInfo.Host}\" " +
                     $"-orgid \"{ConnectionInfo.OrganizationID}\" " +
                     $"-relaunch true " +
-                    $"-viewers {string.Join(",", viewerIDs)} & disown";
+                    $"-viewers {string.Join(",", viewerIDs)}";
                 StartLinuxDesktopApp(args);
             }
             catch (Exception ex)
