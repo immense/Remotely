@@ -39,8 +39,8 @@ namespace Remotely.Server.Services
     {
         private readonly IceServerModel[] fallbackIceServers = new IceServerModel[]
         {
-            new IceServerModel() { Url = "stun:stun.l.google.com:19302"},
-            new IceServerModel() { Url = "stun:stun4.l.google.com:19302"}
+            new IceServerModel() { Urls = "stun:stun.l.google.com:19302"},
+            new IceServerModel() { Urls = "stun:stun4.l.google.com:19302"}
         };
 
         public ApplicationConfig(IConfiguration config)

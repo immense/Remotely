@@ -106,7 +106,7 @@ namespace Remotely.Desktop.Core.Services
                 }
 
 
-                if (EnvironmentHelper.IsWindows && screenCastRequest.UseWebRtc)
+                if (screenCastRequest.UseWebRtc)
                 {
                     await viewer.InitializeWebRtc();
                 }
@@ -118,11 +118,6 @@ namespace Remotely.Desktop.Core.Services
                 {
                     try
                     {
-                        if (viewer.IsUsingWebRtcVideo)
-                        {
-                            Thread.Sleep(100);
-                            continue;
-                        }
                         if (viewer.IsStalled)
                         {
                             // Viewer isn't responding.  Abort sending.

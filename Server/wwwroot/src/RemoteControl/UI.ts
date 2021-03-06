@@ -20,7 +20,6 @@ export var ScreenSelectBar = document.getElementById("screenSelectBar") as HTMLD
 export var ActionsBar = document.getElementById("actionsBar") as HTMLDivElement;
 export var ViewBar = document.getElementById("viewBar") as HTMLDivElement;
 export var ChangeScreenButton = document.getElementById("changeScreenButton") as HTMLButtonElement;
-export var StreamVideoButton = document.getElementById("streamVideoButton") as HTMLButtonElement;
 export var FitToScreenButton = document.getElementById("fitToScreenButton") as HTMLButtonElement;
 export var BlockInputButton = document.getElementById("blockInputButton") as HTMLButtonElement;
 export var DisconnectButton = document.getElementById("disconnectButton") as HTMLButtonElement;
@@ -105,7 +104,6 @@ export function ToggleConnectUI(shown: boolean) {
         ScreenViewer.setAttribute("hidden", "hidden");
         VideoScreenViewer.setAttribute("hidden", "hidden");
         ConnectBox.style.removeProperty("display");
-        StreamVideoButton.classList.remove("toggled");
         BlockInputButton.classList.remove("toggled");
         AudioButton.classList.remove("toggled");
     }
@@ -149,19 +147,6 @@ export function UpdateDisplays(selectedDisplay: string, displayNames: string[]) 
             });
             (ev.currentTarget as HTMLButtonElement).classList.add("toggled");
         };
-    }
-}
-
-export function UpdateStreamingToggled(toggleOn: boolean) {
-    if (toggleOn) {
-        StreamVideoButton.classList.add("toggled");
-        VideoScreenViewer.removeAttribute("hidden");
-        ScreenViewer.setAttribute("hidden", "hidden");
-    }
-    else {
-        StreamVideoButton.classList.remove("toggled");
-        ScreenViewer.removeAttribute("hidden");
-        VideoScreenViewer.setAttribute("hidden", "hidden");
     }
 }
 

@@ -11,6 +11,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace Remotely.Desktop.Core.Services
 {
@@ -51,14 +52,6 @@ namespace Remotely.Desktop.Core.Services
             get
             {
                 return RtcSession?.IsPeerConnected == true && RtcSession?.IsDataChannelOpen == true;
-            }
-        }
-
-        public bool IsUsingWebRtcVideo
-        {
-            get
-            {
-                return RtcSession?.IsPeerConnected == true && RtcSession?.IsVideoTrackConnected == true;
             }
         }
 
@@ -104,11 +97,12 @@ namespace Remotely.Desktop.Core.Services
 
                 RtcSession.LocalSdpReady += async (sender, sdp) =>
                 {
-                    await CasterSocket.SendRtcOfferToBrowser(sdp.Content, ViewerConnectionID, iceServers);
+                    await CasterSocket.SendRtcOfferToBrowser(sdp.sdp, ViewerConnectionID, iceServers);
                 };
                 RtcSession.IceCandidateReady += async (sender, candidate) =>
                 {
-                    await CasterSocket.SendIceCandidateToBrowser(candidate.Content, candidate.SdpMlineIndex, candidate.SdpMid, ViewerConnectionID);
+                    var candidateJson = JsonSerializer.Serialize(candidate);
+                    await CasterSocket.SendIceCandidateToBrowser(candidateJson, ViewerConnectionID);
                 };
 
                 await RtcSession.Init(iceServers);
@@ -281,11 +275,6 @@ namespace Remotely.Desktop.Core.Services
             TaskHelper.DelayUntil(() =>
                 !PendingSentFrames.TryPeek(out var result) || DateTimeOffset.Now - result < TimeSpan.FromSeconds(1),
                 TimeSpan.MaxValue);
-        }
-
-        public void ToggleWebRtcVideo(bool toggleOn)
-        {
-            RtcSession.ToggleWebRtcVideo(toggleOn);
         }
 
         private async void AudioCapturer_AudioSampleReady(object sender, byte[] sample)

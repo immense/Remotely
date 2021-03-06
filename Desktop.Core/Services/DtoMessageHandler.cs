@@ -96,9 +96,6 @@ namespace Remotely.Desktop.Core.Services
                     case BaseDtoType.ToggleBlockInput:
                         ToggleBlockInput(message);
                         break;
-                    case BaseDtoType.ToggleWebRtcVideo:
-                        ToggleWebRtcVideo(message, viewer);
-                        break;
                     case BaseDtoType.ClipboardTransfer:
                         await ClipboardTransfer(message);
                         break;
@@ -246,12 +243,6 @@ namespace Remotely.Desktop.Core.Services
         {
             var dto = MessagePackSerializer.Deserialize<ToggleBlockInputDto>(message);
             KeyboardMouseInput.ToggleBlockInput(dto.ToggleOn);
-        }
-
-        private void ToggleWebRtcVideo(byte[] message, Services.Viewer viewer)
-        {
-            var dto = MessagePackSerializer.Deserialize<ToggleWebRtcVideoDto>(message);
-            viewer.ToggleWebRtcVideo(dto.ToggleOn);
         }
     }
 }
