@@ -28,7 +28,7 @@ namespace Remotely.Desktop.Core.Services
         Task SendCtrlAltDelToAgent();
         Task SendDeviceInfo(string serviceID, string machineName, string deviceID);
         Task SendDtoToViewer<T>(T baseDto, string viewerId);
-        Task SendIceCandidateToBrowser(string candidate, int sdpMlineIndex, string sdpMid, string viewerConnectionID);
+        Task SendIceCandidateToBrowser(string candidateJson, string viewerConnectionID);
         Task SendMessageToViewer(string viewerID, string message);
         Task SendRtcOfferToBrowser(string sdp, string viewerID, IceServerModel[] iceServers);
         Task SendViewerConnected(string viewerConnectionId);
@@ -164,9 +164,9 @@ namespace Remotely.Desktop.Core.Services
             var serializedDto = MessagePack.MessagePackSerializer.Serialize(baseDto);
             return Connection.SendAsync("SendDtoToBrowser", serializedDto, viewerId);
         }
-        public async Task SendIceCandidateToBrowser(string candidate, int sdpMlineIndex, string sdpMid, string viewerConnectionID)
+        public async Task SendIceCandidateToBrowser(string candidateJson, string viewerConnectionID)
         {
-            await Connection.SendAsync("SendIceCandidateToBrowser", candidate, sdpMlineIndex, sdpMid, viewerConnectionID);
+            await Connection.SendAsync("SendIceCandidateToBrowser", candidateJson, viewerConnectionID);
         }
 
         public async Task SendRtcOfferToBrowser(string sdp, string viewerID, IceServerModel[] iceServers)
@@ -237,13 +237,13 @@ namespace Remotely.Desktop.Core.Services
             });
 
 
-            Connection.On("ReceiveIceCandidate", (string candidate, int sdpMlineIndex, string sdpMid, string viewerID) =>
+            Connection.On("ReceiveIceCandidate", (string candidateJson, string viewerID) =>
             {
                 try
                 {
                     if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
                     {
-                        viewer.RtcSession.AddIceCandidate(sdpMid, sdpMlineIndex, candidate);
+                        viewer.RtcSession.AddIceCandidate(candidateJson);
                     }
                 }
                 catch (Exception ex)
