@@ -41,9 +41,9 @@ namespace Remotely.Desktop.Win.Services
 {
     public class ScreenCapturerWin : IScreenCapturer
     {
-        private readonly Dictionary<string, int> _bitBltScreens = new Dictionary<string, int>();
-        private readonly Dictionary<string, DirectXOutput> _directxScreens = new Dictionary<string, DirectXOutput>();
-        private readonly SemaphoreSlim _screenCaptureLock = new SemaphoreSlim(1);
+        private readonly Dictionary<string, int> _bitBltScreens = new();
+        private readonly Dictionary<string, DirectXOutput> _directxScreens = new();
+        private readonly SemaphoreSlim _screenCaptureLock = new(1,1);
 
         public ScreenCapturerWin()
         {

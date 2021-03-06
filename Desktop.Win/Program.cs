@@ -242,8 +242,10 @@ namespace Remotely.Desktop.Win
             var winformsThread = new Thread(() =>
             {
                 System.Windows.Forms.Application.Run(BackgroundForm);
-            });
-            winformsThread.IsBackground = true;
+            })
+            {
+                IsBackground = true
+            };
             winformsThread.TrySetApartmentState(ApartmentState.STA);
             winformsThread.Start();
 

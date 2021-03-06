@@ -25,19 +25,16 @@ namespace Remotely.Server.API
     {
         private readonly IApplicationConfig _appConfig;
         private readonly IDataService _dataService;
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly SemaphoreSlim _fileLock = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim _fileLock = new(1,1);
         private readonly IWebHostEnvironment _hostEnv;
         public ClientDownloadsController(
             IWebHostEnvironment hostEnv,
             IDataService dataService,
-            IApplicationConfig appConfig,
-            IHttpClientFactory httpClientFactory)
+            IApplicationConfig appConfig)
         {
             _hostEnv = hostEnv;
             _appConfig = appConfig;
             _dataService = dataService;
-            _httpClientFactory = httpClientFactory;
         }
 
         [HttpGet("desktop/{platformID}")]

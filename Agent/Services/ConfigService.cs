@@ -10,7 +10,7 @@ namespace Remotely.Agent.Services
 {
     public class ConfigService
     {
-        private static readonly object _fileLock = new object();
+        private static readonly object _fileLock = new();
         private ConnectionInfo _connectionInfo;
         private readonly string _debugGuid = "f2b0a595-5ea8-471b-975f-12e70e0f3497";
 

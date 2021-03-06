@@ -173,34 +173,6 @@ namespace Remotely.Desktop.Core.Services
             }
         }
 
-        private void SendDiffFrame(Bitmap diffImage, Viewer viewer, SemaphoreSlim sendFramesLock)
-        {
-            _ = Task.Run(async () =>
-            {
-                try
-                {
-                    var encodedImageBytes = ImageUtils.EncodeGif(diffImage);
-
-                    if (encodedImageBytes?.Length > 0)
-                    {
-                        await viewer.SendScreenCapture(new CaptureFrame()
-                        {
-                            EncodedImageBytes = encodedImageBytes,
-                            Top = 0,
-                            Left = 0,
-                            Width = diffImage.Width,
-                            Height = diffImage.Height,
-                        });
-                    }
-                }
-                finally
-                {
-                    sendFramesLock.Release();
-                    diffImage.Dispose();
-                }
-            });
-        }
-
         private static void SendFrame(Bitmap currentFrame, Rectangle diffArea, Viewer viewer, SemaphoreSlim sendFramesLock)
         {
             _ = Task.Run(async () =>

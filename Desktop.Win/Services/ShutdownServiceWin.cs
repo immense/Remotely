@@ -16,7 +16,7 @@ namespace Remotely.Desktop.Win.Services
         {
             try
             {
-                Logger.Write($"Exiting process ID {Process.GetCurrentProcess().Id}.");
+                Logger.Write($"Exiting process ID {Environment.ProcessId}.");
                 var casterSocket = ServiceContainer.Instance.GetRequiredService<ICasterSocket>();
                 await casterSocket.DisconnectAllViewers();
                 await casterSocket.Disconnect();

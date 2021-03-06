@@ -40,7 +40,7 @@ namespace Remotely.Desktop.Win.Services
                 {
                     if (ci.hCursor.ToString() == Cursors.IBeam.Handle.ToString())
                     {
-                        return new CursorInfo(new byte[0], Point.Empty, "text");
+                        return new CursorInfo(Array.Empty<byte>(), Point.Empty, "text");
                     }
 
                     using var icon = Icon.FromHandle(ci.hCursor);
@@ -52,12 +52,12 @@ namespace Remotely.Desktop.Win.Services
                 }
                 else
                 {
-                    return new CursorInfo(new byte[0], Point.Empty, "default");
+                    return new CursorInfo(Array.Empty<byte>(), Point.Empty, "default");
                 }
             }
             catch
             {
-                return new CursorInfo(new byte[0], Point.Empty, "default");
+                return new CursorInfo(Array.Empty<byte>(), Point.Empty, "default");
             }
         }
 
@@ -79,7 +79,7 @@ namespace Remotely.Desktop.Win.Services
                     {
                         if (currentCursor == Cursors.IBeam.Handle.ToString())
                         {
-                            OnChange?.Invoke(this, new CursorInfo(new byte[0], Point.Empty, "text"));
+                            OnChange?.Invoke(this, new CursorInfo(Array.Empty<byte>(), Point.Empty, "text"));
                         }
                         else
                         {
@@ -96,12 +96,12 @@ namespace Remotely.Desktop.Win.Services
                 else if (PreviousCursorHandle != "0")
                 {
                     PreviousCursorHandle = "0";
-                    OnChange?.Invoke(this, new CursorInfo(new byte[0], Point.Empty, "default"));
+                    OnChange?.Invoke(this, new CursorInfo(Array.Empty<byte>(), Point.Empty, "default"));
                 }
             }
             catch
             {
-                OnChange?.Invoke(this, new CursorInfo(new byte[0], Point.Empty, "default"));
+                OnChange?.Invoke(this, new CursorInfo(Array.Empty<byte>(), Point.Empty, "default"));
             }
         }
 

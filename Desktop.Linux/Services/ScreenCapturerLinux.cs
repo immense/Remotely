@@ -13,8 +13,8 @@ namespace Remotely.Desktop.Linux.Services
 {
     public class ScreenCapturerLinux : IScreenCapturer
     {
-        private readonly SemaphoreSlim _screenCaptureLock = new SemaphoreSlim(1);
-        private readonly Dictionary<string, int> _x11Screens = new Dictionary<string, int>();
+        private readonly SemaphoreSlim _screenCaptureLock = new(1,1);
+        private readonly Dictionary<string, int> _x11Screens = new();
         public ScreenCapturerLinux()
         {
             Display = LibX11.XOpenDisplay(null);
