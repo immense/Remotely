@@ -86,7 +86,15 @@ export class RtcSession {
     }
     async ReceiveCandidate(candidate: RTCIceCandidate) {
         When(() => !!this.PeerConnection).then(async () => {
-            await this.PeerConnection.addIceCandidate(candidate);
+            if (!candidate.candidate.startsWith("candidate:")) {
+                var normalizedCandidate = {} as any;
+                Object.assign(normalizedCandidate, candidate);
+                normalizedCandidate.candidate = `candidate:${candidate.candidate}`;
+                await this.PeerConnection.addIceCandidate(normalizedCandidate);
+            }
+            else {
+                await this.PeerConnection.addIceCandidate(candidate);
+            }
             console.log("Set ICE candidate.", candidate);
         });
     }
