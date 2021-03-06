@@ -1979,7 +1979,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 // Version token that will be replaced by the prepack command
 /** The version of the SignalR client. */
-var VERSION = "5.0.2";
+var VERSION = "5.0.3";
 /** @private */
 var Arg = /** @class */ (function () {
     function Arg() {
