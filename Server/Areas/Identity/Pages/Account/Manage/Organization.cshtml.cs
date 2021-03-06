@@ -24,19 +24,16 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
     {
         private readonly IDataService _dataService;
         private readonly IEmailSenderEx _emailSender;
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly UserManager<RemotelyUser> _userManager;
 
         public OrganizationModel(
             IDataService dataService,
             UserManager<RemotelyUser> userManager,
-            IEmailSenderEx emailSender,
-            IHttpClientFactory httpClientFactory)
+            IEmailSenderEx emailSender)
         {
             _dataService = dataService;
             _userManager = userManager;
             _emailSender = emailSender;
-            _httpClientFactory = httpClientFactory;
         }
 
 

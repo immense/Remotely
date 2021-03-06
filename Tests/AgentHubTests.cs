@@ -81,11 +81,12 @@ namespace Remotely.Tests
 
             var viewerHub = new Mock<IHubContext<ViewerHub>>();
 
-            appConfig.Setup(x => x.BannedDevices).Returns(new string[0]);
+            appConfig.Setup(x => x.BannedDevices).Returns(Array.Empty<string>());
 
-            var hub = new AgentHub(DataService, appConfig.Object, browserHub.Object, viewerHub.Object);
-
-            hub.Context = new CallerContext();
+            var hub = new AgentHub(DataService, appConfig.Object, browserHub.Object, viewerHub.Object)
+            {
+                Context = new CallerContext()
+            };
             //hub.Context.Items.Add("Device", TestData.Device1);
 
             var agentHubClients = new Mock<IHubCallerClients>();

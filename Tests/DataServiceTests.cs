@@ -97,10 +97,10 @@ namespace Remotely.Tests
 
             var allDevices = DataService.GetAllDevices(TestData.OrganizationID).Select(x => x.ID).ToArray();
 
-            Assert.AreEqual(2, DataService.FilterDeviceIDsByUserPermission(allDevices, TestData.Admin1).Count());
-            Assert.AreEqual(2, DataService.FilterDeviceIDsByUserPermission(allDevices, TestData.Admin2).Count());
-            Assert.AreEqual(2, DataService.FilterDeviceIDsByUserPermission(allDevices, TestData.User1).Count());
-            Assert.AreEqual(1, DataService.FilterDeviceIDsByUserPermission(allDevices, TestData.User2).Count());
+            Assert.AreEqual(2, DataService.FilterDeviceIDsByUserPermission(allDevices, TestData.Admin1).Length);
+            Assert.AreEqual(2, DataService.FilterDeviceIDsByUserPermission(allDevices, TestData.Admin2).Length);
+            Assert.AreEqual(2, DataService.FilterDeviceIDsByUserPermission(allDevices, TestData.User1).Length);
+            Assert.AreEqual(1, DataService.FilterDeviceIDsByUserPermission(allDevices, TestData.User2).Length);
         }
 
         [TestCleanup]

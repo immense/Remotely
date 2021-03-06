@@ -34,7 +34,7 @@ namespace Remotely.Desktop.Core.Services
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if (ViewerList.Count > 0)
+            if (!ViewerList.IsEmpty)
             {
                 ViewersLastSeen = DateTimeOffset.Now;
             }

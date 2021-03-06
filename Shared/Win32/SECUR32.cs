@@ -329,19 +329,19 @@ public static class SECUR32
             Password = ""
         };
         IntPtr kerbLogInfo;
-        SECUR32.LSA_STRING logonProc = new SECUR32.LSA_STRING()
+        SECUR32.LSA_STRING logonProc = new()
         {
             Buffer = Marshal.StringToHGlobalAuto("InstaLogon"),
             Length = (ushort)Marshal.SizeOf(Marshal.StringToHGlobalAuto("InstaLogon")),
             MaximumLength = (ushort)Marshal.SizeOf(Marshal.StringToHGlobalAuto("InstaLogon"))
         };
-        SECUR32.LSA_STRING originName = new SECUR32.LSA_STRING()
+        SECUR32.LSA_STRING originName = new()
         {
             Buffer = Marshal.StringToHGlobalAuto("InstaLogon"),
             Length = (ushort)Marshal.SizeOf(Marshal.StringToHGlobalAuto("InstaLogon")),
             MaximumLength = (ushort)Marshal.SizeOf(Marshal.StringToHGlobalAuto("InstaLogon"))
         };
-        SECUR32.LSA_STRING authPackage = new SECUR32.LSA_STRING()
+        SECUR32.LSA_STRING authPackage = new()
         {
             Buffer = Marshal.StringToHGlobalAuto("MICROSOFT_KERBEROS_NAME_A"),
             Length = (ushort)Marshal.SizeOf(Marshal.StringToHGlobalAuto("MICROSOFT_KERBEROS_NAME_A")),

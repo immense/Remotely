@@ -239,16 +239,14 @@ namespace Remotely.Tests
 
         private Bitmap GetFrame(string frameFileName)
         {
-            using (var mrs = Assembly.GetExecutingAssembly().GetManifestResourceStream($"Remotely.Tests.Resources.{frameFileName}.jpg"))
-            {
-                var resourceImage = (Bitmap)Bitmap.FromStream(mrs);
+            using var mrs = Assembly.GetExecutingAssembly().GetManifestResourceStream($"Remotely.Tests.Resources.{frameFileName}.jpg");
+            var resourceImage = (Bitmap)Bitmap.FromStream(mrs);
 
-                if (resourceImage.PixelFormat != PixelFormat.Format32bppArgb)
-                {
-                    return resourceImage.Clone(new Rectangle(0, 0, resourceImage.Width, resourceImage.Height), PixelFormat.Format32bppArgb);
-                }
-                return resourceImage;
+            if (resourceImage.PixelFormat != PixelFormat.Format32bppArgb)
+            {
+                return resourceImage.Clone(new Rectangle(0, 0, resourceImage.Width, resourceImage.Height), PixelFormat.Format32bppArgb);
             }
+            return resourceImage;
         }
 
         private ImageCodecInfo GetEncoder(ImageFormat format)

@@ -10,8 +10,8 @@ namespace Remotely.Desktop.Win.Services
 
     public class ConfigServiceWin : IConfigService
     {
-        private static string _configFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Remotely");
-        private static string _configFile = Path.Combine(_configFolder, "Config.json");
+        private static readonly string _configFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Remotely");
+        private static readonly string _configFile = Path.Combine(_configFolder, "Config.json");
 
         public DesktopAppConfig GetConfig()
         {

@@ -21,7 +21,7 @@ namespace Remotely.Server.API
     [ApiController]
     public class AgentUpdateController : ControllerBase
     {
-        private static readonly MemoryCache _downloadingAgents = new MemoryCache(new MemoryCacheOptions()
+        private static readonly MemoryCache _downloadingAgents = new(new MemoryCacheOptions()
         { ExpirationScanFrequency = TimeSpan.FromSeconds(10) });
 
 
