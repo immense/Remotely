@@ -101,8 +101,11 @@ namespace Remotely.Desktop.Core.Services
                 };
                 RtcSession.IceCandidateReady += async (sender, candidate) =>
                 {
-                    var candidateJson = JsonSerializer.Serialize(candidate);
-                    await CasterSocket.SendIceCandidateToBrowser(candidateJson, ViewerConnectionID);
+                    await CasterSocket.SendIceCandidateToBrowser(candidate.candidate, 
+                        candidate.sdpMid, 
+                        candidate.sdpMLineIndex,
+                        candidate.usernameFragment,
+                        ViewerConnectionID);
                 };
 
                 await RtcSession.Init(iceServers);
