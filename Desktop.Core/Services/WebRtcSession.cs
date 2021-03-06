@@ -40,10 +40,17 @@ namespace Remotely.Desktop.Core.Services
         private IDtoMessageHandler RtcMessageHandler { get; }
         private Timer DataChannelBufferMonitor { get; }
         private Viewer Viewer { get; }
-        public void AddIceCandidate(string candidateJson)
+        public void AddIceCandidate(string candidate, string sdpMid, ushort sdpMLineIndex, string usernameFragment)
         {
-            var candidate = JsonSerializer.Deserialize<RTCIceCandidateInit>(candidateJson);
-            PeerSession.addIceCandidate(candidate);
+            var rtcCandidate = new RTCIceCandidateInit()
+            {
+                candidate = candidate,
+                sdpMid = sdpMid,
+                sdpMLineIndex = sdpMLineIndex,
+                usernameFragment = usernameFragment
+            };
+
+            PeerSession.addIceCandidate(rtcCandidate);
         }
 
         public void Dispose()

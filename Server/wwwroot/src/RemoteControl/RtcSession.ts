@@ -84,17 +84,20 @@ export class RtcSession {
         await ViewerApp.ViewerHubConnection.SendRtcAnswer(this.PeerConnection.localDescription);
         console.log("Set RTC offer.");
     }
-    async ReceiveCandidate(candidate: RTCIceCandidate) {
+    async ReceiveCandidate(candidate: string, sdpMid: string, sdpMLineIndex: number, usernameFragment: string) {
         When(() => !!this.PeerConnection).then(async () => {
-            if (!candidate.candidate.startsWith("candidate:")) {
-                var normalizedCandidate = {} as any;
-                Object.assign(normalizedCandidate, candidate);
-                normalizedCandidate.candidate = `candidate:${candidate.candidate}`;
-                await this.PeerConnection.addIceCandidate(normalizedCandidate);
+            if (!candidate.startsWith("candidate:")) {
+                candidate = `candidate:${candidate}`;
             }
-            else {
-                await this.PeerConnection.addIceCandidate(candidate);
-            }
+
+            var rtcCandidate = {
+                candidate: candidate,
+                sdpMid: sdpMid,
+                sdpMLineIndex: sdpMLineIndex,
+                usernameFragment: usernameFragment
+            } as RTCIceCandidateInit;
+
+            await this.PeerConnection.addIceCandidate(rtcCandidate);
             console.log("Set ICE candidate.", candidate);
         });
     }
