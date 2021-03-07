@@ -208,15 +208,9 @@ namespace Remotely.Desktop.Core.Services
                         MessageId = messageId
                     };
 
-                    await SendToViewer(async () =>
-                    {
-                        await RtcSession.SendDto(fileDto);
-                        await TaskHelper.DelayUntilAsync(() => RtcSession.CurrentBuffer == 0, TimeSpan.FromSeconds(5), 100);
-                    },
-                    async () =>
-                    {
-                        await CasterSocket.SendDtoToViewer(fileDto, ViewerConnectionID);
-                    });
+                    await SendToViewer(
+                        () => RtcSession.SendDto(fileDto),
+                        () => CasterSocket.SendDtoToViewer(fileDto, ViewerConnectionID));
 
                     progressUpdateCallback((double)fs.Position / fs.Length);
                 }
