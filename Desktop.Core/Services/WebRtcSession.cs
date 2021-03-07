@@ -19,9 +19,6 @@ namespace Remotely.Desktop.Core.Services
         {
             Viewer = viewer;
             RtcMessageHandler = rtcMessageHandler;
-            DataChannelBufferMonitor = new Timer(500);
-            DataChannelBufferMonitor.Elapsed += DataChannelBufferMonitor_Elapsed;
-            DataChannelBufferMonitor.Start();
         }
 
 
@@ -30,7 +27,6 @@ namespace Remotely.Desktop.Core.Services
 
         public event EventHandler<RTCSessionDescriptionInit> LocalSdpReady;
 
-        public ulong CurrentBuffer { get; private set; }
         public bool IsDataChannelOpen => CaptureChannel?.readyState == RTCDataChannelState.open;
         public bool IsPeerConnected => PeerSession?.connectionState == RTCPeerConnectionState.connected;
 
@@ -38,7 +34,6 @@ namespace Remotely.Desktop.Core.Services
         private IceServerModel[] IceServers { get; set; }
         private RTCPeerConnection PeerSession { get; set; }
         private IDtoMessageHandler RtcMessageHandler { get; }
-        private Timer DataChannelBufferMonitor { get; }
         private Viewer Viewer { get; }
         public void AddIceCandidate(string candidate, string sdpMid, ushort sdpMLineIndex, string usernameFragment)
         {
@@ -59,7 +54,6 @@ namespace Remotely.Desktop.Core.Services
             {
                 PeerSession?.DataChannels?.Clear();
                 CaptureChannel?.close();
-                DataChannelBufferMonitor?.Dispose();
             }
             catch { }
 
@@ -108,6 +102,7 @@ namespace Remotely.Desktop.Core.Services
         public async Task SendDto<T>(T dto) where T : BaseDto
         {
             await CaptureChannel.sendasync(MessagePackSerializer.Serialize(dto));
+            await TaskHelper.DelayUntilAsync(() => CaptureChannel.bufferedAmount < 64, TimeSpan.FromSeconds(5));
         }
 
         public Task SetRemoteDescription(string type, string sdp)
@@ -174,14 +169,6 @@ namespace Remotely.Desktop.Core.Services
         {
             Logger.Write("Ice candidate ready to send.");
             IceCandidateReady?.Invoke(this, candidate);
-        }
-
-        private void DataChannelBufferMonitor_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            if (CaptureChannel is not null)
-            {
-                CurrentBuffer = CaptureChannel.bufferedAmount;
-            }
         }
     }
 }
