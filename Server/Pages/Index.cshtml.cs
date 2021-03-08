@@ -60,7 +60,11 @@ namespace Remotely.Server.Pages
                 RegistrationAvailable = _appConfig.MaxOrganizationCount < 0 || organizationCount < _appConfig.MaxOrganizationCount;
 
                 var org = _dataService.GetOrganizationById(user.OrganizationID);
-                IsNewVersionAvailable = await _upgradeService.IsNewVersionAvailable();
+
+                if (user.IsServerAdmin)
+                {
+                    IsNewVersionAvailable = await _upgradeService.IsNewVersionAvailable();
+                }
 
                 DefaultPrompt = _dataService.GetDefaultPrompt(User.Identity.Name);
                 var groups = _dataService.GetDeviceGroups(User.Identity.Name);
