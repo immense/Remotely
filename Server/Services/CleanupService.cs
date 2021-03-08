@@ -19,6 +19,7 @@ namespace Remotely.Server.Services
         public void Dispose()
         {
             CleanupTimer?.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         public Task StartAsync(CancellationToken cancellationToken)

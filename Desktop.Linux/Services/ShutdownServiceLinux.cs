@@ -13,7 +13,7 @@ namespace Remotely.Desktop.Linux.Services
     {
         public async Task Shutdown()
         {
-            Logger.Debug($"Exiting process ID {Process.GetCurrentProcess().Id}.");
+            Logger.Debug($"Exiting process ID {Environment.ProcessId}.");
             var casterSocket = ServiceContainer.Instance.GetRequiredService<ICasterSocket>();
             await casterSocket.DisconnectAllViewers();
             Environment.Exit(0);

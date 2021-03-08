@@ -85,7 +85,7 @@ namespace Remotely.Tests
             var dataService = IoCActivator.ServiceProvider.GetRequiredService<IDataService>();
             var userManager = IoCActivator.ServiceProvider.GetRequiredService<UserManager<RemotelyUser>>();
             var emailSender = IoCActivator.ServiceProvider.GetRequiredService<IEmailSenderEx>();
-            var organizationModel = new OrganizationModel(dataService, userManager, emailSender, Mock.Of<IHttpClientFactory>());
+            var organizationModel = new OrganizationModel(dataService, userManager, emailSender);
 
 
             await userManager.CreateAsync(Admin1);

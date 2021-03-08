@@ -91,10 +91,10 @@ namespace Remotely.Desktop.Core.Services
 
             await PeerSession.InitializeAsync(config);
 
-            PeerSession.LocalSdpReadytoSend += PeerSession_LocalSdpReadytoSend; ;
+            PeerSession.LocalSdpReadytoSend += PeerSession_LocalSdpReadytoSend;
             PeerSession.Connected += PeerConnection_Connected;
             PeerSession.IceStateChanged += PeerConnection_IceStateChanged;
-            PeerSession.IceCandidateReadytoSend += PeerSession_IceCandidateReadytoSend; ;
+            PeerSession.IceCandidateReadytoSend += PeerSession_IceCandidateReadytoSend;
 
             CaptureChannel = await PeerSession.AddDataChannelAsync("ScreenCapture", true, true);
             CaptureChannel.BufferingChanged += DataChannel_BufferingChanged;
@@ -110,7 +110,7 @@ namespace Remotely.Desktop.Core.Services
         public Task SendDto<T>(T dto) where T : BaseDto
         {
             CaptureChannel.SendMessage(MessagePackSerializer.Serialize(dto));
-            return Task.CompletedTask;
+            return TaskHelper.DelayUntilAsync(() => CurrentBuffer < 64, TimeSpan.FromSeconds(5));
         }
 
         public async Task SetRemoteDescription(string type, string sdp)

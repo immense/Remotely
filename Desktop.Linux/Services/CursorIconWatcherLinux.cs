@@ -11,6 +11,6 @@ namespace Remotely.Desktop.Linux.Services
         public event EventHandler<CursorInfo> OnChange;
 #pragma warning restore
 
-        public CursorInfo GetCurrentCursor() => new CursorInfo(null, Point.Empty, "default");
+        public CursorInfo GetCurrentCursor() => new(null, Point.Empty, "default");
     }
 }

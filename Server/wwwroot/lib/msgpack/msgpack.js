@@ -8,118 +8,67 @@
 	else
 		root["MessagePack"] = factory();
 })(this, function() {
-return /******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// define __esModule on exports
-/******/ 	__webpack_require__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
-/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__webpack_require__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __webpack_require__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__webpack_require__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-/******/
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
-/******/ })
+return /******/ (function() { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	// The require scope
+/******/ 	var __webpack_require__ = {};
+/******/ 	
 /************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	!function() {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = function(exports, definition) {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	!function() {
+/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	!function() {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = function(exports) {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
 // ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
 
 // EXPORTS
-__webpack_require__.d(__webpack_exports__, "encode", function() { return /* reexport */ encode; });
-__webpack_require__.d(__webpack_exports__, "decode", function() { return /* reexport */ decode; });
-__webpack_require__.d(__webpack_exports__, "decodeAsync", function() { return /* reexport */ decodeAsync; });
-__webpack_require__.d(__webpack_exports__, "decodeArrayStream", function() { return /* reexport */ decodeArrayStream; });
-__webpack_require__.d(__webpack_exports__, "decodeStream", function() { return /* reexport */ decodeStream; });
-__webpack_require__.d(__webpack_exports__, "Decoder", function() { return /* reexport */ Decoder_Decoder; });
-__webpack_require__.d(__webpack_exports__, "Encoder", function() { return /* reexport */ Encoder_Encoder; });
-__webpack_require__.d(__webpack_exports__, "ExtensionCodec", function() { return /* reexport */ ExtensionCodec_ExtensionCodec; });
-__webpack_require__.d(__webpack_exports__, "ExtData", function() { return /* reexport */ ExtData; });
-__webpack_require__.d(__webpack_exports__, "EXT_TIMESTAMP", function() { return /* reexport */ EXT_TIMESTAMP; });
-__webpack_require__.d(__webpack_exports__, "encodeDateToTimeSpec", function() { return /* reexport */ encodeDateToTimeSpec; });
-__webpack_require__.d(__webpack_exports__, "encodeTimeSpecToTimestamp", function() { return /* reexport */ encodeTimeSpecToTimestamp; });
-__webpack_require__.d(__webpack_exports__, "decodeTimestampToTimeSpec", function() { return /* reexport */ decodeTimestampToTimeSpec; });
-__webpack_require__.d(__webpack_exports__, "encodeTimestampExtension", function() { return /* reexport */ encodeTimestampExtension; });
-__webpack_require__.d(__webpack_exports__, "decodeTimestampExtension", function() { return /* reexport */ decodeTimestampExtension; });
+__webpack_require__.d(__webpack_exports__, {
+  "Decoder": function() { return /* reexport */ Decoder; },
+  "EXT_TIMESTAMP": function() { return /* reexport */ EXT_TIMESTAMP; },
+  "Encoder": function() { return /* reexport */ Encoder; },
+  "ExtData": function() { return /* reexport */ ExtData; },
+  "ExtensionCodec": function() { return /* reexport */ ExtensionCodec; },
+  "decode": function() { return /* reexport */ decode; },
+  "decodeArrayStream": function() { return /* reexport */ decodeArrayStream; },
+  "decodeAsync": function() { return /* reexport */ decodeAsync; },
+  "decodeMulti": function() { return /* reexport */ decodeMulti; },
+  "decodeMultiStream": function() { return /* reexport */ decodeMultiStream; },
+  "decodeStream": function() { return /* reexport */ decodeStream; },
+  "decodeTimestampExtension": function() { return /* reexport */ decodeTimestampExtension; },
+  "decodeTimestampToTimeSpec": function() { return /* reexport */ decodeTimestampToTimeSpec; },
+  "encode": function() { return /* reexport */ encode; },
+  "encodeDateToTimeSpec": function() { return /* reexport */ encodeDateToTimeSpec; },
+  "encodeTimeSpecToTimestamp": function() { return /* reexport */ encodeTimeSpecToTimestamp; },
+  "encodeTimestampExtension": function() { return /* reexport */ encodeTimestampExtension; }
+});
 
-// CONCATENATED MODULE: ./src/utils/utf8.ts
+;// CONCATENATED MODULE: ./src/utils/utf8.ts
 var __read = (undefined && undefined.__read) || function (o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
     if (!m) return o;
@@ -140,8 +89,7 @@ var __spread = (undefined && undefined.__spread) || function () {
     for (var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
     return ar;
 };
-var TEXT_ENCODING_AVAILABLE = typeof process !== "undefined" &&
-    undefined !== "never" &&
+var TEXT_ENCODING_AVAILABLE = (typeof process === "undefined" || undefined !== "never") &&
     typeof TextEncoder !== "undefined" &&
     typeof TextDecoder !== "undefined";
 var STR_SIZE_MAX = 4294967295; // uint32_max
@@ -233,11 +181,9 @@ var TEXT_ENCODER_THRESHOLD = !TEXT_ENCODING_AVAILABLE
         ? 200
         : 0;
 function utf8EncodeTEencode(str, output, outputOffset) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     output.set(sharedTextEncoder.encode(str), outputOffset);
 }
 function utf8EncodeTEencodeInto(str, output, outputOffset) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     sharedTextEncoder.encodeInto(str, output.subarray(outputOffset));
 }
 var utf8EncodeTE = (sharedTextEncoder === null || sharedTextEncoder === void 0 ? void 0 : sharedTextEncoder.encodeInto) ? utf8EncodeTEencodeInto : utf8EncodeTEencode;
@@ -298,11 +244,10 @@ var TEXT_DECODER_THRESHOLD = !TEXT_ENCODING_AVAILABLE
         : 0;
 function utf8DecodeTD(bytes, inputOffset, byteLength) {
     var stringBytes = bytes.subarray(inputOffset, inputOffset + byteLength);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return sharedTextDecoder.decode(stringBytes);
 }
 
-// CONCATENATED MODULE: ./src/ExtData.ts
+;// CONCATENATED MODULE: ./src/ExtData.ts
 /**
  * ExtData is used to handle Extension Types that are not registered to ExtensionCodec.
  */
@@ -315,7 +260,7 @@ var ExtData = /** @class */ (function () {
 }());
 
 
-// CONCATENATED MODULE: ./src/utils/int.ts
+;// CONCATENATED MODULE: ./src/utils/int.ts
 // DataView extension to handle int64 / uint64,
 // where the actual range is 53-bits integer (a.k.a. safe integer)
 function setUint64(view, offset, value) {
@@ -341,7 +286,7 @@ function getUint64(view, offset) {
     return high * 4294967296 + low;
 }
 
-// CONCATENATED MODULE: ./src/timestamp.ts
+;// CONCATENATED MODULE: ./src/timestamp.ts
 // https://github.com/msgpack/msgpack/blob/master/spec.md#timestamp-extension-type
 
 var EXT_TIMESTAMP = -1;
@@ -438,11 +383,11 @@ var timestampExtension = {
     decode: decodeTimestampExtension,
 };
 
-// CONCATENATED MODULE: ./src/ExtensionCodec.ts
+;// CONCATENATED MODULE: ./src/ExtensionCodec.ts
 // ExtensionCodec to handle MessagePack extensions
 
 
-var ExtensionCodec_ExtensionCodec = /** @class */ (function () {
+var ExtensionCodec = /** @class */ (function () {
     function ExtensionCodec() {
         // built-in extensions
         this.builtInEncoders = [];
@@ -469,9 +414,9 @@ var ExtensionCodec_ExtensionCodec = /** @class */ (function () {
     ExtensionCodec.prototype.tryToEncode = function (object, context) {
         // built-in extensions
         for (var i = 0; i < this.builtInEncoders.length; i++) {
-            var encoder = this.builtInEncoders[i];
-            if (encoder != null) {
-                var data = encoder(object, context);
+            var encodeExt = this.builtInEncoders[i];
+            if (encodeExt != null) {
+                var data = encodeExt(object, context);
                 if (data != null) {
                     var type = -1 - i;
                     return new ExtData(type, data);
@@ -480,9 +425,9 @@ var ExtensionCodec_ExtensionCodec = /** @class */ (function () {
         }
         // custom extensions
         for (var i = 0; i < this.encoders.length; i++) {
-            var encoder = this.encoders[i];
-            if (encoder != null) {
-                var data = encoder(object, context);
+            var encodeExt = this.encoders[i];
+            if (encodeExt != null) {
+                var data = encodeExt(object, context);
                 if (data != null) {
                     var type = i;
                     return new ExtData(type, data);
@@ -496,9 +441,9 @@ var ExtensionCodec_ExtensionCodec = /** @class */ (function () {
         return null;
     };
     ExtensionCodec.prototype.decode = function (data, type, context) {
-        var decoder = type < 0 ? this.builtInDecoders[-1 - type] : this.decoders[type];
-        if (decoder) {
-            return decoder(data, type, context);
+        var decodeExt = type < 0 ? this.builtInDecoders[-1 - type] : this.decoders[type];
+        if (decodeExt) {
+            return decodeExt(data, type, context);
         }
         else {
             // decode() does not fail, returns ExtData instead.
@@ -510,7 +455,7 @@ var ExtensionCodec_ExtensionCodec = /** @class */ (function () {
 }());
 
 
-// CONCATENATED MODULE: ./src/utils/typedArrays.ts
+;// CONCATENATED MODULE: ./src/utils/typedArrays.ts
 function ensureUint8Array(buffer) {
     if (buffer instanceof Uint8Array) {
         return buffer;
@@ -534,7 +479,7 @@ function createDataView(buffer) {
     return new DataView(bufferView.buffer, bufferView.byteOffset, bufferView.byteLength);
 }
 
-// CONCATENATED MODULE: ./src/Encoder.ts
+;// CONCATENATED MODULE: ./src/Encoder.ts
 var Encoder_values = (undefined && undefined.__values) || function(o) {
     var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
     if (m) return m.call(o);
@@ -552,9 +497,9 @@ var Encoder_values = (undefined && undefined.__values) || function(o) {
 
 var DEFAULT_MAX_DEPTH = 100;
 var DEFAULT_INITIAL_BUFFER_SIZE = 2048;
-var Encoder_Encoder = /** @class */ (function () {
+var Encoder = /** @class */ (function () {
     function Encoder(extensionCodec, context, maxDepth, initialBufferSize, sortKeys, forceFloat32, ignoreUndefined, forceIntegerToFloat) {
-        if (extensionCodec === void 0) { extensionCodec = ExtensionCodec_ExtensionCodec.defaultCodec; }
+        if (extensionCodec === void 0) { extensionCodec = ExtensionCodec.defaultCodec; }
         if (context === void 0) { context = undefined; }
         if (maxDepth === void 0) { maxDepth = DEFAULT_MAX_DEPTH; }
         if (initialBufferSize === void 0) { initialBufferSize = DEFAULT_INITIAL_BUFFER_SIZE; }
@@ -983,7 +928,7 @@ var Encoder_Encoder = /** @class */ (function () {
 }());
 
 
-// CONCATENATED MODULE: ./src/encode.ts
+;// CONCATENATED MODULE: ./src/encode.ts
 
 var defaultEncodeOptions = {};
 /**
@@ -994,20 +939,31 @@ var defaultEncodeOptions = {};
  */
 function encode(value, options) {
     if (options === void 0) { options = defaultEncodeOptions; }
-    var encoder = new Encoder_Encoder(options.extensionCodec, options.context, options.maxDepth, options.initialBufferSize, options.sortKeys, options.forceFloat32, options.ignoreUndefined, options.forceIntegerToFloat);
+    var encoder = new Encoder(options.extensionCodec, options.context, options.maxDepth, options.initialBufferSize, options.sortKeys, options.forceFloat32, options.ignoreUndefined, options.forceIntegerToFloat);
     return encoder.encode(value);
 }
 
-// CONCATENATED MODULE: ./src/utils/prettyByte.ts
+;// CONCATENATED MODULE: ./src/utils/prettyByte.ts
 function prettyByte(byte) {
     return (byte < 0 ? "-" : "") + "0x" + Math.abs(byte).toString(16).padStart(2, "0");
 }
 
-// CONCATENATED MODULE: ./src/CachedKeyDecoder.ts
+;// CONCATENATED MODULE: ./src/CachedKeyDecoder.ts
+var CachedKeyDecoder_values = (undefined && undefined.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+};
 
 var DEFAULT_MAX_KEY_LENGTH = 16;
 var DEFAULT_MAX_LENGTH_PER_KEY = 16;
-var CachedKeyDecoder_CachedKeyDecoder = /** @class */ (function () {
+var CachedKeyDecoder = /** @class */ (function () {
     function CachedKeyDecoder(maxKeyLength, maxLengthPerKey) {
         if (maxKeyLength === void 0) { maxKeyLength = DEFAULT_MAX_KEY_LENGTH; }
         if (maxLengthPerKey === void 0) { maxLengthPerKey = DEFAULT_MAX_LENGTH_PER_KEY; }
@@ -1025,17 +981,26 @@ var CachedKeyDecoder_CachedKeyDecoder = /** @class */ (function () {
         return byteLength > 0 && byteLength <= this.maxKeyLength;
     };
     CachedKeyDecoder.prototype.get = function (bytes, inputOffset, byteLength) {
+        var e_1, _a;
         var records = this.caches[byteLength - 1];
-        var recordsLength = records.length;
-        FIND_CHUNK: for (var i = 0; i < recordsLength; i++) {
-            var record = records[i];
-            var recordBytes = record.bytes;
-            for (var j = 0; j < byteLength; j++) {
-                if (recordBytes[j] !== bytes[inputOffset + j]) {
-                    continue FIND_CHUNK;
+        try {
+            FIND_CHUNK: for (var records_1 = CachedKeyDecoder_values(records), records_1_1 = records_1.next(); !records_1_1.done; records_1_1 = records_1.next()) {
+                var record = records_1_1.value;
+                var recordBytes = record.bytes;
+                for (var j = 0; j < byteLength; j++) {
+                    if (recordBytes[j] !== bytes[inputOffset + j]) {
+                        continue FIND_CHUNK;
+                    }
                 }
+                return record.value;
             }
-            return record.value;
+        }
+        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        finally {
+            try {
+                if (records_1_1 && !records_1_1.done && (_a = records_1.return)) _a.call(records_1);
+            }
+            finally { if (e_1) throw e_1.error; }
         }
         return null;
     };
@@ -1068,7 +1033,7 @@ var CachedKeyDecoder_CachedKeyDecoder = /** @class */ (function () {
 }());
 
 
-// CONCATENATED MODULE: ./src/Decoder.ts
+;// CONCATENATED MODULE: ./src/Decoder.ts
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -1152,10 +1117,10 @@ var DataViewIndexOutOfBoundsError = (function () {
 })();
 var MORE_DATA = new DataViewIndexOutOfBoundsError("Insufficient data");
 var DEFAULT_MAX_LENGTH = 4294967295; // uint32_max
-var sharedCachedKeyDecoder = new CachedKeyDecoder_CachedKeyDecoder();
-var Decoder_Decoder = /** @class */ (function () {
+var sharedCachedKeyDecoder = new CachedKeyDecoder();
+var Decoder = /** @class */ (function () {
     function Decoder(extensionCodec, context, maxStrLength, maxBinLength, maxArrayLength, maxMapLength, maxExtLength, keyDecoder) {
-        if (extensionCodec === void 0) { extensionCodec = ExtensionCodec_ExtensionCodec.defaultCodec; }
+        if (extensionCodec === void 0) { extensionCodec = ExtensionCodec.defaultCodec; }
         if (context === void 0) { context = undefined; }
         if (maxStrLength === void 0) { maxStrLength = DEFAULT_MAX_LENGTH; }
         if (maxBinLength === void 0) { maxBinLength = DEFAULT_MAX_LENGTH; }
@@ -1217,6 +1182,23 @@ var Decoder_Decoder = /** @class */ (function () {
             throw this.createExtraByteError(this.pos);
         }
         return object;
+    };
+    Decoder.prototype.decodeMulti = function (buffer) {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    this.reinitializeState();
+                    this.setBuffer(buffer);
+                    _a.label = 1;
+                case 1:
+                    if (!this.hasRemaining()) return [3 /*break*/, 3];
+                    return [4 /*yield*/, this.doDecodeSync()];
+                case 2:
+                    _a.sent();
+                    return [3 /*break*/, 1];
+                case 3: return [2 /*return*/];
+            }
+        });
     };
     Decoder.prototype.decodeAsync = function (stream) {
         var stream_1, stream_1_1;
@@ -1600,7 +1582,6 @@ var Decoder_Decoder = /** @class */ (function () {
                 }
                 else {
                     // it must be `state.type === State.MAP_VALUE` here
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     state.map[state.key] = object;
                     state.readCount++;
                     if (state.readCount === state.size) {
@@ -1779,21 +1760,31 @@ var Decoder_Decoder = /** @class */ (function () {
 }());
 
 
-// CONCATENATED MODULE: ./src/decode.ts
+;// CONCATENATED MODULE: ./src/decode.ts
 
 var defaultDecodeOptions = {};
 /**
- * It decodes a MessagePack-encoded buffer.
+ * It decodes a single MessagePack object in a buffer.
  *
- * This is a synchronous decoding function. See other variants for asynchronous decoding: `decodeAsync()`, `decodeStream()`, `decodeArrayStream()`.
+ * This is a synchronous decoding function.
+ * See other variants for asynchronous decoding: {@link decodeAsync()}, {@link decodeStream()}, or {@link decodeArrayStream()}.
  */
 function decode(buffer, options) {
     if (options === void 0) { options = defaultDecodeOptions; }
-    var decoder = new Decoder_Decoder(options.extensionCodec, options.context, options.maxStrLength, options.maxBinLength, options.maxArrayLength, options.maxMapLength, options.maxExtLength);
+    var decoder = new Decoder(options.extensionCodec, options.context, options.maxStrLength, options.maxBinLength, options.maxArrayLength, options.maxMapLength, options.maxExtLength);
     return decoder.decode(buffer);
 }
+/**
+ * It decodes multiple MessagePack objects in a buffer.
+ * This is corresponding to {@link decodeMultiStream()}.
+ */
+function decodeMulti(buffer, options) {
+    if (options === void 0) { options = defaultDecodeOptions; }
+    var decoder = new Decoder(options.extensionCodec, options.context, options.maxStrLength, options.maxBinLength, options.maxArrayLength, options.maxMapLength, options.maxExtLength);
+    return decoder.decodeMulti(buffer);
+}
 
-// CONCATENATED MODULE: ./src/utils/stream.ts
+;// CONCATENATED MODULE: ./src/utils/stream.ts
 // utility for whatwg streams
 var stream_generator = (undefined && undefined.__generator) || function (thisArg, body) {
     var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
@@ -1877,7 +1868,7 @@ function asyncIterableFromStream(stream) {
         });
     });
 }
-function ensureAsyncIterabe(streamLike) {
+function ensureAsyncIterable(streamLike) {
     if (isAsyncIterable(streamLike)) {
         return streamLike;
     }
@@ -1886,7 +1877,7 @@ function ensureAsyncIterabe(streamLike) {
     }
 }
 
-// CONCATENATED MODULE: ./src/decodeAsync.ts
+;// CONCATENATED MODULE: ./src/decodeAsync.ts
 var decodeAsync_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -1931,26 +1922,33 @@ function decodeAsync(streamLike, options) {
     return decodeAsync_awaiter(this, void 0, void 0, function () {
         var stream, decoder;
         return decodeAsync_generator(this, function (_a) {
-            stream = ensureAsyncIterabe(streamLike);
-            decoder = new Decoder_Decoder(options.extensionCodec, options.context, options.maxStrLength, options.maxBinLength, options.maxArrayLength, options.maxMapLength, options.maxExtLength);
+            stream = ensureAsyncIterable(streamLike);
+            decoder = new Decoder(options.extensionCodec, options.context, options.maxStrLength, options.maxBinLength, options.maxArrayLength, options.maxMapLength, options.maxExtLength);
             return [2 /*return*/, decoder.decodeAsync(stream)];
         });
     });
 }
 function decodeArrayStream(streamLike, options) {
     if (options === void 0) { options = defaultDecodeOptions; }
-    var stream = ensureAsyncIterabe(streamLike);
-    var decoder = new Decoder_Decoder(options.extensionCodec, options.context, options.maxStrLength, options.maxBinLength, options.maxArrayLength, options.maxMapLength, options.maxExtLength);
+    var stream = ensureAsyncIterable(streamLike);
+    var decoder = new Decoder(options.extensionCodec, options.context, options.maxStrLength, options.maxBinLength, options.maxArrayLength, options.maxMapLength, options.maxExtLength);
     return decoder.decodeArrayStream(stream);
 }
-function decodeStream(streamLike, options) {
+function decodeMultiStream(streamLike, options) {
     if (options === void 0) { options = defaultDecodeOptions; }
-    var stream = ensureAsyncIterabe(streamLike);
-    var decoder = new Decoder_Decoder(options.extensionCodec, options.context, options.maxStrLength, options.maxBinLength, options.maxArrayLength, options.maxMapLength, options.maxExtLength);
+    var stream = ensureAsyncIterable(streamLike);
+    var decoder = new Decoder(options.extensionCodec, options.context, options.maxStrLength, options.maxBinLength, options.maxArrayLength, options.maxMapLength, options.maxExtLength);
     return decoder.decodeStream(stream);
 }
+/**
+ * @deprecated Use {@link decodeMultiStream()} instead.
+ */
+function decodeStream(streamLike, options) {
+    if (options === void 0) { options = defaultDecodeOptions; }
+    return decodeMultiStream(streamLike, options);
+}
 
-// CONCATENATED MODULE: ./src/index.ts
+;// CONCATENATED MODULE: ./src/index.ts
 // Main Functions:
 
 
@@ -1970,8 +1968,8 @@ function decodeStream(streamLike, options) {
 
 
 
-
-/***/ })
-/******/ ]);
+/******/ 	return __webpack_exports__;
+/******/ })()
+;
 });
 //# sourceMappingURL=msgpack.js.map

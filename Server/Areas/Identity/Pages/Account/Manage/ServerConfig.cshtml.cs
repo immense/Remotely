@@ -159,7 +159,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
         {
             var highestVersion = AgentHub.ServiceConnections.Values.Max(x => Version.TryParse(x.AgentVersion, out var result) ? result : default);
             return AgentHub.ServiceConnections.Values
-                .Where(x => Version.TryParse(x.AgentVersion, out var result) ? result != highestVersion : false)
+                .Where(x => Version.TryParse(x.AgentVersion, out var result) && result != highestVersion)
                 .Select(x => x.ID);
         }
 

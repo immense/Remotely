@@ -20,12 +20,12 @@ namespace Remotely.Desktop.Win.Services
     public class FileTransferServiceWin : IFileTransferService
     {
         private static readonly ConcurrentDictionary<string, FileStream> _partialTransfers =
-            new ConcurrentDictionary<string, FileStream>();
+            new();
 
         private static readonly ConcurrentDictionary<string, FileTransferWindow> _fileTransferWindows =
-            new ConcurrentDictionary<string, FileTransferWindow>();
+            new();
 
-        private static readonly SemaphoreSlim _writeLock = new SemaphoreSlim(1);
+        private static readonly SemaphoreSlim _writeLock = new(1,1);
         private static MessageBoxResult? _result;
 
         public string GetBaseDirectory()

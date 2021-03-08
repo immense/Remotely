@@ -46,7 +46,7 @@ namespace Remotely.Desktop.Linux.Services
             Dispatcher.UIThread.Post(() =>
             {
                 var chatWindow = new ChatWindow();
-                chatWindow.Closing += ChatWindow_Closing; ;
+                chatWindow.Closing += ChatWindow_Closing;
                 ChatViewModel = chatWindow.DataContext as ChatWindowViewModel;
                 ChatViewModel.PipeStreamWriter = writer;
                 ChatViewModel.OrganizationName = organizationName;

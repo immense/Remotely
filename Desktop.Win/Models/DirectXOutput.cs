@@ -32,6 +32,7 @@ namespace Remotely.Desktop.Win.Models
                 OutputDuplication,
                 Texture2D
             });
+            GC.SuppressFinalize(this);
         }
     }
 }

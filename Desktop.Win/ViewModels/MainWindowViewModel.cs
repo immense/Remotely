@@ -25,7 +25,6 @@ namespace Remotely.Desktop.Win.ViewModels
         private readonly Conductor _conductor;
         private readonly IConfigService _configService;
         private readonly ICursorIconWatcher _cursorIconWatcher;
-        private readonly IDeviceInitService _deviceInitService;
         private string _host;
         private string _sessionID;
 
@@ -45,7 +44,6 @@ namespace Remotely.Desktop.Win.ViewModels
             _cursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
             _conductor = Services.GetRequiredService<Conductor>();
             _casterSocket = Services.GetRequiredService<ICasterSocket>();
-            _deviceInitService = Services.GetRequiredService<IDeviceInitService>();
 
             Services.GetRequiredService<IClipboardService>().BeginWatching();
             Services.GetRequiredService<IKeyboardMouseInput>().Init();

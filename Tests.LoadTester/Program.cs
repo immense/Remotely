@@ -9,11 +9,10 @@ namespace Remotely.Tests.LoadTester
 {
     internal class Program
     {
-        private static SemaphoreSlim _lock = new SemaphoreSlim(10, 10);
+        private static readonly SemaphoreSlim _lock = new(10, 10);
         private static int _agentCount;
         private static string _organizationId;
         private static string _serverurl;
-        private static Dictionary<string, HubConnection> _connections;
 
         private static void Main(string[] args)
         {
@@ -46,7 +45,6 @@ namespace Remotely.Tests.LoadTester
                 _agentCount = int.Parse(CommandLineParser.CommandLineArgs["agentcount"]);
                 _organizationId = CommandLineParser.CommandLineArgs["organizationid"];
                 _serverurl = CommandLineParser.CommandLineArgs["serverurl"];
-                _connections = new Dictionary<string, HubConnection>();
 
                 for (var i = 0; i < _agentCount; i++)
                 {

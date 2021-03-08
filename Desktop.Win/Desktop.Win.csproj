@@ -34,18 +34,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <TrimmerRootAssembly Include="System.Runtime"/>
-    <TrimmerRootAssembly Include="System.Runtime.Extensions"/>
-    <TrimmerRootAssembly Include="System.Diagnostics.Debug"/>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.MixedReality.WebRTC" Version="2.0.2" />
-    <PackageReference Include="NAudio" Version="1.10.0" />
+    <PackageReference Include="NAudio" Version="2.0.0" />
     <PackageReference Include="SharpDX" Version="4.2.0" />
     <PackageReference Include="SharpDX.Direct3D11" Version="4.2.0" />
     <PackageReference Include="SharpDX.DXGI" Version="4.2.0" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.1" />
   </ItemGroup>
 
   <ItemGroup>
