@@ -5,9 +5,9 @@ A remote control and remote scripting solution, built with .NET Core, SignalR Co
 ![GitHub Build](https://github.com/lucent-sea/Remotely/workflows/GitHub%20Build/badge.svg)
 
 
-> NOTE: Development has been suspended.  
+> NOTE: Active development has been suspended.  
 >  
-> I will be taking a break from Remotely during 2021 to make more time for family, self-care, and other interests.  The repo will be archived until I resume development, so that I don't get overwhelmed with issues and requests.
+> I will be (mostly) taking a break from Remotely during 2021 to make more time for family, self-care, and other interests.
 >  
 >  Take care and stay safe.
 >  
