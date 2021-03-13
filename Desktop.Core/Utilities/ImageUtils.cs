@@ -15,11 +15,18 @@ namespace Remotely.Desktop.Core.Utilities
         public static ImageCodecInfo GifEncoder { get; } = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == ImageFormat.Gif.Guid);
         public static ImageCodecInfo JpegEncoder { get; } = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == ImageFormat.Jpeg.Guid);
 
-        public static byte[] EncodeBitmap(Bitmap bitmap, EncoderParameters encoderParams)
+        public static byte[] EncodeJpg(Bitmap bitmap, EncoderParameters encoderParams)
         {
             
             using var ms = new MemoryStream();
             bitmap.Save(ms, JpegEncoder, encoderParams);
+            return ms.ToArray();
+        }
+
+        public static byte[] EncodePng(Bitmap bitmap)
+        {
+            using var ms = new MemoryStream();
+            bitmap.Save(ms, ImageFormat.Png);
             return ms.ToArray();
         }
 
@@ -84,8 +91,7 @@ namespace Remotely.Desktop.Core.Utilities
 
                             if (data1[0] != data2[0] ||
                                 data1[1] != data2[1] ||
-                                data1[2] != data2[2] ||
-                                data1[3] != data2[3])
+                                data1[2] != data2[2])
                             {
 
                                 if (row < top)
