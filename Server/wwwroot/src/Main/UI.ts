@@ -1,7 +1,9 @@
 ﻿export var AlertsButton = document.getElementById("alertsButton") as HTMLButtonElement;
 export var AlertsCount = document.getElementById("alertsCount") as HTMLSpanElement;
 export var AlertsFrame = document.getElementById("alertsFrame") as HTMLDivElement;
+export var AlertsBody = document.getElementById("alertsBody") as HTMLDivElement;
 export var CloseAlertsButton = document.getElementById("closeAlertsFrameButton") as HTMLButtonElement;
+export var ClearAllAlertsButton = document.getElementById("clearAllAlertsButton") as HTMLButtonElement;
 export var CommandCompletionDiv = document.querySelector("#commandCompletionDiv") as HTMLDivElement;
 export var CommandInfoDiv = document.querySelector("#commandInfoDiv") as HTMLDivElement;
 export var CommandModeSelect = document.querySelector("#commandModeSelect") as HTMLSelectElement;

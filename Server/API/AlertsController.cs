@@ -104,5 +104,22 @@ namespace Remotely.Server.API
 
             return Unauthorized();
         }
+
+        [HttpDelete("DeleteAll")]
+        public async Task<IActionResult> DeleteAll()
+        {
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
+
+            if (User.Identity.IsAuthenticated)
+            {
+                await DataService.DeleteAllAlerts(orgID, User.Identity.Name);
+            }
+            else
+            {
+                await DataService.DeleteAllAlerts(orgID);
+            }
+
+            return Ok();
+        }
     }
 }

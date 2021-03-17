@@ -20,22 +20,22 @@ export function ApplyInputEventHandlers() {
     hideOfflineDevicesCheckboxChanged();
     addGridPaginationHandlers();
 
-    window.addEventListener("resize", ev => {
+    window.addEventListener("resize", () => {
         PositionCommandCompletionWindow();
     });
 }
 
 function addGridPaginationHandlers() {
-    UI.LeftPaginationButton.addEventListener("click", (ev) => {
+    UI.LeftPaginationButton.addEventListener("click", () => {
         DataGrid.PageDown();
     });
 
-    UI.RightPaginationButton.addEventListener("click", (ev) => {
+    UI.RightPaginationButton.addEventListener("click", () => {
         DataGrid.PageUp();
     });
 
     var changePageTimeout = -1;
-    UI.CurrentPageInput.addEventListener("input", (ev) => {
+    UI.CurrentPageInput.addEventListener("input", () => {
         if (changePageTimeout > 0) {
             window.clearTimeout(changePageTimeout);
         }
@@ -47,11 +47,29 @@ function addGridPaginationHandlers() {
 }
 
 function addAlertHandlers() {
-    UI.AlertsButton.addEventListener("click", ev => {
+    UI.AlertsButton.addEventListener("click", () => {
         UI.AlertsFrame.classList.toggle("open");
     });
-    UI.CloseAlertsButton.addEventListener("click", ev => {
+    UI.CloseAlertsButton.addEventListener("click", () => {
         UI.AlertsFrame.classList.toggle("open");
+    });
+
+    UI.ClearAllAlertsButton.addEventListener("click", () => {
+        var result = confirm("Are you sure you want to delete all alerts?");
+        if (result) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("delete", location.origin + "/api/Alerts/DeleteAll/");
+            xhr.onload = function () {
+                if (xhr.status == 200) {
+                    UI.AlertsBody.innerHTML = "";
+                    UI.AlertsCount.innerText = "0";
+                }
+                else {
+                    ShowModal("API Error", "There was an error deleting the alerts.");
+                }
+            };
+            xhr.send();
+        }
     });
 
     document.querySelectorAll(".alert-dismiss-button").forEach(element => {
@@ -119,13 +137,13 @@ function arrowUpOrDownOnTextArea(e: KeyboardEvent) {
 }
 
 function clickToggleAllDevices() {
-    document.getElementById("toggleAllDevices").addEventListener("click", function (e) {
+    document.getElementById("toggleAllDevices").addEventListener("click", function () {
         DataGrid.ToggleSelectAll();
     })
 }
 
 function clickStartRemoteControlButton() {
-    document.getElementById("startRemoteControlButton").addEventListener("click", function (e) {
+    document.getElementById("startRemoteControlButton").addEventListener("click", function () {
         var selectedDevices = DataGrid.GetSelectedDevices();
         if (selectedDevices.length == 0) {
             ShowMessage("You must select a device first.");
@@ -148,7 +166,7 @@ function consoleTabSelected() {
 }
 
 function deviceGroupSelectChanged() {
-    UI.DeviceGroupSelect.addEventListener("change", (ev) => {
+    UI.DeviceGroupSelect.addEventListener("change", () => {
         DataGrid.GridState.GroupFilter = UI.DeviceGroupSelect.value;
         if (UI.DeviceGroupSelect.selectedIndex == 0) {
             DataGrid.GridState.ShowAllGroups = true;
@@ -161,14 +179,14 @@ function deviceGroupSelectChanged() {
 }
 
 function hideOfflineDevicesCheckboxChanged() {
-    UI.HideOfflineDevicesCheckbox.addEventListener("change", ev => {
+    UI.HideOfflineDevicesCheckbox.addEventListener("change", () => {
         DataGrid.GridState.HideOffline = UI.HideOfflineDevicesCheckbox.checked;
         DataGrid.ApplyFilterToAll();
     });
 }
 
 function inputOnCommandTextArea() {
-    UI.ConsoleTextArea.addEventListener("input", (e: KeyboardEvent) => {
+    UI.ConsoleTextArea.addEventListener("input", () => {
         var commandMode = CommandProcessor.GetCommandModeShortcut();
         if (commandMode) {
             UI.CommandModeSelect.value = commandMode;

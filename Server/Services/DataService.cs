@@ -43,6 +43,8 @@ namespace Remotely.Server.Services
 
         Task DeleteAlert(Alert alert);
 
+        Task DeleteAllAlerts(string orgID, string userName = null);
+
         Task DeleteApiToken(string userName, string tokenId);
 
         void DeleteDeviceGroup(string orgID, string deviceGroupID);
@@ -93,6 +95,8 @@ namespace Remotely.Server.Services
 
         string GetDefaultPrompt(string userName);
 
+        Task<string> GetDefaultRelayCode();
+
         Device GetDevice(string deviceID);
 
         Device GetDevice(string orgID, string deviceID);
@@ -104,7 +108,6 @@ namespace Remotely.Server.Services
         IEnumerable<Device> GetDevicesForUser(string userName);
 
         IEnumerable<EventLog> GetEventLogs(string userName, DateTimeOffset from, DateTimeOffset to, EventType? type, string message);
-
         Organization GetOrganizationById(string organizationID);
 
         Task<Organization> GetOrganizationByRelayCode(string relayCode);
@@ -157,7 +160,6 @@ namespace Remotely.Server.Services
             ColorPickerModel titleForeground, 
             ColorPickerModel titleBackground, 
             ColorPickerModel titleButtonForeground);
-        Task<string> GetDefaultRelayCode();
         Task<Device> UpdateDevice(DeviceSetupOptions deviceOptions, string organizationId);
         void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes, WebRtcSetting webRtcSetting);
         void UpdateOrganizationName(string orgID, string organizationName);
@@ -571,6 +573,21 @@ namespace Remotely.Server.Services
         public async Task DeleteAlert(Alert alert)
         {
             _dbContext.Alerts.Remove(alert);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteAllAlerts(string orgID, string userName = null)
+        {
+            var alerts = _dbContext.Alerts.Where(x => x.OrganizationID == orgID);
+
+            if (!string.IsNullOrWhiteSpace(userName))
+            {
+                var userId = GetUserByName(userName)?.Id;
+
+                alerts = alerts.Where(x => x.UserID == userId);
+            }
+
+            _dbContext.Alerts.RemoveRange(alerts);
             await _dbContext.SaveChangesAsync();
         }
 
