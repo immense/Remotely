@@ -42,7 +42,7 @@ namespace Remotely.Desktop.Core.Services
         {
             get
             {
-                return PendingSentFrames.TryPeek(out var result) && DateTimeOffset.Now - result > TimeSpan.FromSeconds(15);
+                return PendingSentFrames.TryPeek(out var result) && DateTimeOffset.Now - result.Timestamp > TimeSpan.FromSeconds(15);
             }
         }
 
@@ -64,12 +64,12 @@ namespace Remotely.Desktop.Core.Services
 
         public string Name { get; set; }
 
-        public ConcurrentQueue<DateTimeOffset> PendingSentFrames { get; } = new ConcurrentQueue<DateTimeOffset>();
+        public double PeakBytesPerSecond { get; set; }
+        public ConcurrentQueue<SentFrame> PendingSentFrames { get; } = new();
 
         public WebRtcSession RtcSession { get; set; }
 
         public string ViewerConnectionID { get; set; }
-
         private IAudioCapturer AudioCapturer { get; }
 
         private ICasterSocket CasterSocket { get; }
@@ -212,7 +212,7 @@ namespace Remotely.Desktop.Core.Services
 
         public async Task SendScreenCapture(CaptureFrame screenFrame)
         {
-            PendingSentFrames.Enqueue(DateTimeOffset.Now);
+            PendingSentFrames.Enqueue(new SentFrame(DateTimeOffset.Now, screenFrame.EncodedImageBytes.Length));
 
             var left = screenFrame.Left;
             var top = screenFrame.Top;
@@ -279,7 +279,7 @@ namespace Remotely.Desktop.Core.Services
         public void ThrottleIfNeeded()
         {
             TaskHelper.DelayUntil(() =>
-                !PendingSentFrames.TryPeek(out var result) || DateTimeOffset.Now - result < TimeSpan.FromSeconds(1),
+                !PendingSentFrames.TryPeek(out var result) || DateTimeOffset.Now - result.Timestamp < TimeSpan.FromSeconds(1),
                 TimeSpan.MaxValue);
         }
 

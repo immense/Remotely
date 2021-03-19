@@ -5,6 +5,7 @@ using Remotely.Shared.Enums;
 using Remotely.Shared.Models.RemoteControlDtos;
 using Remotely.Shared.Utilities;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Remotely.Desktop.Core.Services
@@ -162,8 +163,16 @@ namespace Remotely.Desktop.Core.Services
         {
             for (int i = 0; i < 5; i++)
             {
-                if (viewer.PendingSentFrames.TryDequeue(out _))
+                if (viewer.PendingSentFrames.TryDequeue(out var frame))
                 {
+                    var roundtrip = (DateTimeOffset.Now - frame.Timestamp).TotalSeconds;
+                    var bps = frame.FrameSize / (roundtrip / 2);
+
+                    if (bps > viewer.PeakBytesPerSecond)
+                    {
+                        viewer.PeakBytesPerSecond = bps;
+                        Debug.WriteLine($"Peak Mbps: {bps / 1024 / 1024 * 8}");
+                    }
                     break;
                 }
             }

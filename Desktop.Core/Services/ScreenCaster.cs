@@ -145,7 +145,8 @@ namespace Remotely.Desktop.Core.Services
                             continue;
                         }
 
-                        if (refreshNeeded && refreshTimer.Elapsed.TotalSeconds > 3)
+                        if (refreshTimer.Elapsed.TotalSeconds > 10 ||
+                            refreshNeeded && refreshTimer.Elapsed.TotalSeconds > 3)
                         {
                             viewer.Capturer.CaptureFullscreen = true;
                         }
@@ -155,44 +156,31 @@ namespace Remotely.Desktop.Core.Services
 
                         if (diffArea.IsEmpty)
                         {
-                            if (currentQuality < _maxQuality)
-                            {
-                                currentQuality++;
-                            }
                             continue;
                         }
 
                         
                         if (viewer.Capturer.CaptureFullscreen)
                         {
-                            currentQuality = _maxQuality;
                             refreshTimer.Restart();
                             refreshNeeded = false;
                         }
 
-                        if (viewer.PendingSentFrames.Count > 1)
-                        {
-                            refreshNeeded = true;
-                            currentQuality = Math.Max(_minQuality, currentQuality - viewer.PendingSentFrames.Count);
-                        }
-
-                        if (viewer.PendingSentFrames.TryPeek(out var oldestFrame) &&
-                            DateTimeOffset.Now - oldestFrame > TimeSpan.FromMilliseconds(100))
-                        {
-                            refreshNeeded = true;
-                            currentQuality = Math.Max(_minQuality, currentQuality - 10);
-                        }
-                        else
-                        {
-                            currentQuality = Math.Min(_maxQuality, currentQuality + 5);
-                        }
-
                         using var clone = currentFrame.Clone(diffArea, currentFrame.PixelFormat);
+
+                        if (viewer.PeakBytesPerSecond > 0)
+                        {
+                            var expectedSize = clone.Height * clone.Width * 4 * .1;
+                            var timeToSend = expectedSize / viewer.PeakBytesPerSecond;
+                            currentQuality = Math.Max(_minQuality, Math.Min(_maxQuality, (int)((.1 / timeToSend) * _maxQuality)));
+                            Debug.WriteLine($"Current Quality: {currentQuality}");
+                        }
 
                         byte[] encodedImageBytes;
                         if (viewer.Capturer.CaptureFullscreen)
                         {
-                            encodedImageBytes = ImageUtils.EncodeWithSkia(clone, SKEncodedImageFormat.Webp, currentQuality);
+                            viewer.PeakBytesPerSecond = 0;
+                            encodedImageBytes = ImageUtils.EncodeWithSkia(clone, SKEncodedImageFormat.Webp, _maxQuality);
                         }
                         else
                         {
