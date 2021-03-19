@@ -62,7 +62,7 @@ export class DtoMessageHandler {
     HandleCaptureFrame(captureFrame: CaptureFrameDto) {
 
         if (captureFrame.EndOfFrame) {
-            let completedFrame = new Blob(this.ImagePartials, { type: "image/jpeg" });
+            let completedFrame = new Blob(this.ImagePartials);
 
             this.ImagePartials = [];
 

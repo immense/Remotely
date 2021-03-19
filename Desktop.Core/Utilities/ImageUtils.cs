@@ -14,7 +14,7 @@ namespace Remotely.Desktop.Core.Utilities
 {
     public class ImageUtils
     {
-        public static byte[] EncodeJpg(Bitmap bitmap, int quality)
+        public static byte[] EncodeWithSkia(Bitmap bitmap, SKEncodedImageFormat format, int quality)
         {
             using var ms = new MemoryStream();
             var info = new SKImageInfo(bitmap.Width, bitmap.Height);
@@ -24,7 +24,7 @@ namespace Remotely.Desktop.Core.Utilities
                 bitmap.ToSKPixmap(pixmap);
             }
 
-            skBitmap.Encode(ms, SKEncodedImageFormat.Jpeg, quality);
+            skBitmap.Encode(ms, format, quality);
 
             return ms.ToArray();
         }
