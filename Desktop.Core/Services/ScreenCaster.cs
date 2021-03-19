@@ -14,6 +14,7 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SkiaSharp;
 
 namespace Remotely.Desktop.Core.Services
 {
@@ -94,7 +95,7 @@ namespace Remotely.Desktop.Core.Services
                     {
                         await viewer.SendScreenCapture(new CaptureFrame()
                         {
-                            EncodedImageBytes = ImageUtils.EncodeJpg(initialFrame, _maxQuality),
+                            EncodedImageBytes = ImageUtils.EncodeWithSkia(initialFrame, SKEncodedImageFormat.Webp, _maxQuality),
                             Left = viewer.Capturer.CurrentScreenBounds.Left,
                             Top = viewer.Capturer.CurrentScreenBounds.Top,
                             Width = viewer.Capturer.CurrentScreenBounds.Width,
@@ -143,7 +144,7 @@ namespace Remotely.Desktop.Core.Services
                             continue;
                         }
 
-                        if (DateTimeOffset.Now - lastFullscreen > TimeSpan.FromSeconds(5))
+                        if (DateTimeOffset.Now - lastFullscreen > TimeSpan.FromSeconds(3))
                         {
                             viewer.Capturer.CaptureFullscreen = true;
                         }
@@ -182,10 +183,20 @@ namespace Remotely.Desktop.Core.Services
                             currentQuality = Math.Min(_maxQuality, currentQuality + 5);
                         }
 
+                        using var clone = currentFrame.Clone(diffArea, currentFrame.PixelFormat);
+
+                        byte[] encodedImageBytes;
+                        if (viewer.Capturer.CaptureFullscreen)
+                        {
+                            encodedImageBytes = ImageUtils.EncodeWithSkia(clone, SKEncodedImageFormat.Webp, currentQuality);
+                        }
+                        else
+                        {
+                            encodedImageBytes = ImageUtils.EncodeWithSkia(clone, SKEncodedImageFormat.Jpeg, currentQuality);
+                        }
+
                         viewer.Capturer.CaptureFullscreen = false;
 
-                        using var clone = currentFrame.Clone(diffArea, currentFrame.PixelFormat);
-                        var encodedImageBytes = ImageUtils.EncodeJpg(clone, currentQuality);
                         await sendFramesLock.WaitAsync();
                         SendFrame(encodedImageBytes, diffArea, viewer, sendFramesLock);
                     }
