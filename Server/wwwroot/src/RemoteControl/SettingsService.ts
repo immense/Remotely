@@ -1,10 +1,6 @@
-﻿import { ViewerApp } from "./App.js";
-import { Settings } from "./Interfaces/Settings.js";
-import { AutoQualityAdjustCheckBox, QualitySlider, UpdateStreamingToggled } from "./UI.js";
+﻿import { Settings } from "./Interfaces/Settings.js";
 
 const defaultSettings = {
-    autoQualityEnabled: true,
-    qualityLevel: 60,
     streamModeEnabled: false
 };
 

@@ -31,7 +31,6 @@ export class RtcSession {
 
                 UI.StreamVideoButton.setAttribute("hidden", "hidden");
                 UI.ScreenViewer.removeAttribute("hidden");
-                UI.QualityButton.removeAttribute("hidden");
                 UI.VideoScreenViewer.setAttribute("hidden", "hidden");
             };
             this.DataChannel.onerror = (ev) => {
@@ -41,7 +40,6 @@ export class RtcSession {
 
                 UI.StreamVideoButton.setAttribute("hidden", "hidden");
                 UI.ScreenViewer.removeAttribute("hidden");
-                UI.QualityButton.removeAttribute("hidden");
                 UI.VideoScreenViewer.setAttribute("hidden", "hidden");
             };
             this.DataChannel.onmessage = (ev) => {

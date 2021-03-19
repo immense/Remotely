@@ -18,9 +18,6 @@ namespace Remotely.Shared.Models.RemoteControlDtos
         [DataMember(Name = "ImageBytes")]
         public byte[] ImageBytes { get; set; }
 
-        [DataMember(Name = "ImageQuality")]
-        public long ImageQuality { get; set; }
-
         [DataMember(Name = "Left")]
         public int Left { get; set; }
         [DataMember(Name = "Top")]

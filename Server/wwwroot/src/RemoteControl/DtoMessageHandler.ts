@@ -60,10 +60,6 @@ export class DtoMessageHandler {
     }
     
     HandleCaptureFrame(captureFrame: CaptureFrameDto) {
-        if (UI.AutoQualityAdjustCheckBox.checked &&
-            Number(UI.QualitySlider.value) != captureFrame.ImageQuality) {
-            UI.QualitySlider.value = String(captureFrame.ImageQuality);
-        }
 
         if (captureFrame.EndOfFrame) {
             let completedFrame = new Blob(this.ImagePartials, { type: "image/jpeg" });
@@ -114,8 +110,6 @@ export class DtoMessageHandler {
     }
     HandleScreenData(screenDataDto: ScreenDataDto) {
         UI.UpdateDisplays(screenDataDto.SelectedScreen, screenDataDto.DisplayNames);
-        ViewerApp.MessageSender.SendAutoQualityAdjust(ViewerApp.Settings.autoQualityEnabled);
-        ViewerApp.MessageSender.SendQualityChange(ViewerApp.Settings.qualityLevel);
     }
 
     HandleScreenSize(screenSizeDto: ScreenSizeDto) {

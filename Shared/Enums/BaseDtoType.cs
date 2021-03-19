@@ -37,8 +37,6 @@ namespace Remotely.Shared.Enums
         KeyUp = 14,
         [EnumMember(Value = "CtrlAltDel")]
         CtrlAltDel = 15,
-        [EnumMember(Value = "AutoQualityAdjust")]
-        AutoQualityAdjust = 16,
         [EnumMember(Value = "ToggleAudio")]
         ToggleAudio = 17,
         [EnumMember(Value = "ToggleBlockInput")]
@@ -47,8 +45,6 @@ namespace Remotely.Shared.Enums
         ClipboardTransfer = 19,
         [EnumMember(Value = "KeyPress")]
         KeyPress = 20,
-        [EnumMember(Value = "QualityChange")]
-        QualityChange = 21,
         [EnumMember(Value = "File")]
         File = 22,
         [EnumMember(Value = "WindowsSessions")]

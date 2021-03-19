@@ -90,9 +90,6 @@ namespace Remotely.Desktop.Core.Services
                     case BaseDtoType.CtrlAltDel:
                         await viewer.SendCtrlAltDel();
                         break;
-                    case BaseDtoType.AutoQualityAdjust:
-                        SetAutoQualityAdjust(message, viewer);
-                        break;
                     case BaseDtoType.ToggleAudio:
                         ToggleAudio(message);
                         break;
@@ -107,9 +104,6 @@ namespace Remotely.Desktop.Core.Services
                         break;
                     case BaseDtoType.KeyPress:
                         await KeyPress(message);
-                        break;
-                    case BaseDtoType.QualityChange:
-                        QualityChange(message, viewer);
                         break;
                     case BaseDtoType.File:
                         await DownloadFile(message);
@@ -223,22 +217,11 @@ namespace Remotely.Desktop.Core.Services
         {
             FileTransferService.OpenFileTransferWindow(viewer);
         }
-        private void QualityChange(byte[] message, Services.Viewer viewer)
-        {
-            var dto = MessagePackSerializer.Deserialize<QualityChangeDto>(message);
-            viewer.ImageQuality = dto.QualityLevel;
-        }
 
         private void SelectScreen(byte[] message, Services.Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<SelectScreenDto>(message);
             viewer.Capturer.SetSelectedScreen(dto.DisplayName);
-        }
-
-        private void SetAutoQualityAdjust(byte[] message, Services.Viewer viewer)
-        {
-            var dto = MessagePackSerializer.Deserialize<AutoQualityAdjustDto>(message);
-            viewer.AutoAdjustQuality = dto.IsOn;
         }
 
         private void SetKeyStatesUp()

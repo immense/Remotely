@@ -8,10 +8,8 @@ import {
     MouseMoveDto,
     MouseUpDto,
     MouseWheelDto,
-    QualityChangeDto,
     SelectScreenDto,
     TapDto,
-    AutoQualityAdjustDto,
     ToggleAudioDto,
     ToggleBlockInputDto,
     ClipboardTransferDto,
@@ -131,16 +129,6 @@ export class MessageSender {
             () => ViewerApp.ViewerHubConnection.SendDtoToClient(dto));
     }
 
-    SendQualityChange(qualityLevel: number) {
-        var dto = new QualityChangeDto(qualityLevel);
-        this.SendToAgent(() => ViewerApp.RtcSession.SendDto(dto),
-            () => ViewerApp.ViewerHubConnection.SendDtoToClient(dto));
-    }
-    SendAutoQualityAdjust(isOn: boolean) {
-        var dto = new AutoQualityAdjustDto(isOn);
-        this.SendToAgent(() => ViewerApp.RtcSession.SendDto(dto),
-            () => ViewerApp.ViewerHubConnection.SendDtoToClient(dto));
-    }
     SendToggleAudio(toggleOn: boolean) {
         var dto = new ToggleAudioDto(toggleOn);
         this.SendToAgent(() => ViewerApp.RtcSession.SendDto(dto),

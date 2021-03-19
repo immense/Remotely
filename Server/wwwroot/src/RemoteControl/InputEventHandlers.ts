@@ -19,10 +19,6 @@
     TouchKeyboardTextArea,
     MenuFrame,
     MenuButton,
-    QualityButton,
-    QualityBar,
-    QualitySlider,
-    AutoQualityAdjustCheckBox,
     ScreenViewerWrapper,
     WindowsSessionSelect,
     RecordSessionButton,
@@ -219,18 +215,6 @@ export function ApplyInputHandlers() {
         ev.stopPropagation();
         MenuButton.style.top = `${ev.touches[0].clientY}px`;
     });
-    QualityButton.addEventListener("click", (ev) => {
-        closeAllHorizontalBars("qualityBar");
-        QualityBar.classList.toggle("open");
-    })
-    QualitySlider.addEventListener("change", (ev) => {
-        var value = Number(QualitySlider.value);
-
-        ViewerApp.Settings.qualityLevel = value;
-        SetSettings(ViewerApp.Settings);
-
-        ViewerApp.MessageSender.SendQualityChange(value);
-    });
     StreamVideoButton.addEventListener("click", (ev) => {
         var toggleOn = !StreamVideoButton.classList.contains("toggled");
 
@@ -239,14 +223,6 @@ export function ApplyInputHandlers() {
 
         UpdateStreamingToggled(toggleOn);
         ViewerApp.MessageSender.SendToggleWebRtcVideo(toggleOn);
-    });
-    AutoQualityAdjustCheckBox.addEventListener("change", ev => {
-        var checked = AutoQualityAdjustCheckBox.checked;
-
-        ViewerApp.Settings.autoQualityEnabled = checked;
-        SetSettings(ViewerApp.Settings);
-
-        ViewerApp.MessageSender.SendAutoQualityAdjust(checked);
     });
 
     [ ScreenViewer, VideoScreenViewer ].forEach(viewer => {
