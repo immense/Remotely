@@ -45,7 +45,8 @@ namespace Remotely.Desktop.Core.Services
             try
             {
                 var sendFramesLock = new SemaphoreSlim(1, 1);
-                var lastFullscreen = DateTimeOffset.Now;
+                var refreshTimer = Stopwatch.StartNew();
+                var refreshNeeded = false;
                 var currentQuality = _maxQuality;
                 Bitmap currentFrame = null;
                 Bitmap previousFrame = null;
@@ -144,7 +145,7 @@ namespace Remotely.Desktop.Core.Services
                             continue;
                         }
 
-                        if (DateTimeOffset.Now - lastFullscreen > TimeSpan.FromSeconds(3))
+                        if (refreshNeeded && refreshTimer.Elapsed.TotalSeconds > 3)
                         {
                             viewer.Capturer.CaptureFullscreen = true;
                         }
@@ -165,17 +166,20 @@ namespace Remotely.Desktop.Core.Services
                         if (viewer.Capturer.CaptureFullscreen)
                         {
                             currentQuality = _maxQuality;
-                            lastFullscreen = DateTimeOffset.Now;
+                            refreshTimer.Restart();
+                            refreshNeeded = false;
                         }
 
-                        if (viewer.PendingSentFrames.Any())
+                        if (viewer.PendingSentFrames.Count > 1)
                         {
-                            currentQuality = Math.Min(_minQuality, currentQuality - viewer.PendingSentFrames.Count);
+                            refreshNeeded = true;
+                            currentQuality = Math.Max(_minQuality, currentQuality - viewer.PendingSentFrames.Count);
                         }
 
                         if (viewer.PendingSentFrames.TryPeek(out var oldestFrame) &&
                             DateTimeOffset.Now - oldestFrame > TimeSpan.FromMilliseconds(100))
                         {
+                            refreshNeeded = true;
                             currentQuality = Math.Max(_minQuality, currentQuality - 10);
                         }
                         else

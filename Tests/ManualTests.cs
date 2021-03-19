@@ -70,6 +70,18 @@ namespace Remotely.Tests
 
         [TestMethod]
         [Ignore("Manual test.")]
+        public async Task EncodingSizeTests()
+        {
+            await Task.Delay(5000);
+            var screen = _capturer.GetNextFrame();
+            var a = ImageUtils.EncodeWithSkia(screen, SkiaSharp.SKEncodedImageFormat.Jpeg, 70);
+            Debug.WriteLine("JPEG Size: " + a.Length.ToString("N0"));
+            var b = ImageUtils.EncodeWithSkia(screen, SkiaSharp.SKEncodedImageFormat.Webp, 70);
+            Debug.WriteLine("WEBP Size: " + b.Length.ToString("N0"));
+        }
+
+        [TestMethod]
+        [Ignore("Manual test.")]
         public void EncodingTests()
         {
             for (var i = 0; i < 2; i++)
