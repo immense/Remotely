@@ -21,6 +21,8 @@ namespace Remotely.Desktop.Core.Services
     {
         private readonly Conductor _conductor;
         private readonly ICursorIconWatcher _cursorIconWatcher;
+        private readonly int _maxQuality = 75;
+        private readonly int _minQuality = 10;
         private readonly ISessionIndicator _sessionIndicator;
         private readonly IShutdownService _shutdownService;
 
@@ -42,6 +44,8 @@ namespace Remotely.Desktop.Core.Services
             try
             {
                 var sendFramesLock = new SemaphoreSlim(1, 1);
+                var lastFullscreen = DateTimeOffset.Now;
+                var currentQuality = _maxQuality;
                 Bitmap currentFrame = null;
                 Bitmap previousFrame = null;
 
@@ -90,7 +94,7 @@ namespace Remotely.Desktop.Core.Services
                     {
                         await viewer.SendScreenCapture(new CaptureFrame()
                         {
-                            EncodedImageBytes = ImageUtils.EncodeJpg(initialFrame, viewer.EncoderParams),
+                            EncodedImageBytes = ImageUtils.EncodeJpg(initialFrame, _maxQuality),
                             Left = viewer.Capturer.CurrentScreenBounds.Left,
                             Top = viewer.Capturer.CurrentScreenBounds.Top,
                             Width = viewer.Capturer.CurrentScreenBounds.Width,
@@ -134,18 +138,56 @@ namespace Remotely.Desktop.Core.Services
                         currentFrame?.Dispose();
                         currentFrame = viewer.Capturer.GetNextFrame();
 
-                        var diffArea = ImageUtils.GetDiffArea(currentFrame, previousFrame, viewer.Capturer.CaptureFullscreen);
-
-                        if (diffArea.IsEmpty)
+                        if (currentFrame is null)
                         {
                             continue;
                         }
 
+                        if (DateTimeOffset.Now - lastFullscreen > TimeSpan.FromSeconds(5))
+                        {
+                            viewer.Capturer.CaptureFullscreen = true;
+                        }
+
+
+                        var diffArea = ImageUtils.GetDiffArea(currentFrame, previousFrame, viewer.Capturer.CaptureFullscreen);
+
+                        if (diffArea.IsEmpty)
+                        {
+                            if (currentQuality < _maxQuality)
+                            {
+                                currentQuality++;
+                            }
+                            continue;
+                        }
+
+                        
+                        if (viewer.Capturer.CaptureFullscreen)
+                        {
+                            currentQuality = _maxQuality;
+                            lastFullscreen = DateTimeOffset.Now;
+                        }
+
+                        if (viewer.PendingSentFrames.Any())
+                        {
+                            currentQuality = Math.Min(_minQuality, currentQuality - viewer.PendingSentFrames.Count);
+                        }
+
+                        if (viewer.PendingSentFrames.TryPeek(out var oldestFrame) &&
+                            DateTimeOffset.Now - oldestFrame > TimeSpan.FromMilliseconds(100))
+                        {
+                            currentQuality = Math.Max(_minQuality, currentQuality - 10);
+                        }
+                        else
+                        {
+                            currentQuality = Math.Min(_maxQuality, currentQuality + 5);
+                        }
+
                         viewer.Capturer.CaptureFullscreen = false;
 
-                        var clone = currentFrame.Clone(diffArea, currentFrame.PixelFormat);
+                        using var clone = currentFrame.Clone(diffArea, currentFrame.PixelFormat);
+                        var encodedImageBytes = ImageUtils.EncodeJpg(clone, currentQuality);
                         await sendFramesLock.WaitAsync();
-                        SendFrame(clone, diffArea, viewer, sendFramesLock);
+                        SendFrame(encodedImageBytes, diffArea, viewer, sendFramesLock);
                     }
                     catch (Exception ex)
                     {
@@ -172,14 +214,13 @@ namespace Remotely.Desktop.Core.Services
             }
         }
 
-        private static void SendFrame(Bitmap clone, Rectangle diffArea, Viewer viewer, SemaphoreSlim sendFramesLock)
+        private static void SendFrame(byte[] encodedImageBytes, Rectangle diffArea, Viewer viewer, SemaphoreSlim sendFramesLock)
         {
             _ = Task.Run(async () =>
             {
                 try
                 {
-                    var encodedImageBytes = ImageUtils.EncodeJpg(clone, viewer.EncoderParams);
-                    
+
                     if (encodedImageBytes.Length == 0)
                     {
                         return;
@@ -198,7 +239,6 @@ namespace Remotely.Desktop.Core.Services
                 finally
                 {
                     sendFramesLock.Release();
-                    clone.Dispose();
                 }
             });
         }

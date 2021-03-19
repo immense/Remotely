@@ -17,13 +17,9 @@ export var Screen2DContext = ScreenViewer ? ScreenViewer.getContext("2d") : null
 export var HorizontalBars = document.querySelectorAll(".horizontal-button-bar");
 export var ConnectBox = document.getElementById("connectBox") as HTMLDivElement;
 export var ScreenSelectBar = document.getElementById("screenSelectBar") as HTMLDivElement;
-export var QualityBar = document.getElementById("qualityBar") as HTMLDivElement;
-export var QualitySlider = document.getElementById("qualityRangeInput") as HTMLInputElement;
-export var AutoQualityAdjustCheckBox = document.getElementById("autoAdjustQualityCheckBox") as HTMLInputElement;
 export var ActionsBar = document.getElementById("actionsBar") as HTMLDivElement;
 export var ViewBar = document.getElementById("viewBar") as HTMLDivElement;
 export var ChangeScreenButton = document.getElementById("changeScreenButton") as HTMLButtonElement;
-export var QualityButton = document.getElementById("qualityButton") as HTMLButtonElement;
 export var StreamVideoButton = document.getElementById("streamVideoButton") as HTMLButtonElement;
 export var FitToScreenButton = document.getElementById("fitToScreenButton") as HTMLButtonElement;
 export var BlockInputButton = document.getElementById("blockInputButton") as HTMLButtonElement;
@@ -161,12 +157,10 @@ export function UpdateStreamingToggled(toggleOn: boolean) {
         StreamVideoButton.classList.add("toggled");
         VideoScreenViewer.removeAttribute("hidden");
         ScreenViewer.setAttribute("hidden", "hidden");
-        QualityButton.setAttribute("hidden", "hidden");
     }
     else {
         StreamVideoButton.classList.remove("toggled");
         ScreenViewer.removeAttribute("hidden");
-        QualityButton.removeAttribute("hidden");
         VideoScreenViewer.setAttribute("hidden", "hidden");
     }
 }

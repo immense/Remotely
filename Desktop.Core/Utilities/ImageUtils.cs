@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SkiaSharp;
+using SkiaSharp.Views.Desktop;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
@@ -12,29 +14,18 @@ namespace Remotely.Desktop.Core.Utilities
 {
     public class ImageUtils
     {
-        public static ImageCodecInfo GifEncoder { get; } = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == ImageFormat.Gif.Guid);
-        public static ImageCodecInfo JpegEncoder { get; } = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == ImageFormat.Jpeg.Guid);
-
-        public static byte[] EncodeJpg(Bitmap bitmap, EncoderParameters encoderParams)
-        {
-            
-            using var ms = new MemoryStream();
-            bitmap.Save(ms, JpegEncoder, encoderParams);
-            return ms.ToArray();
-        }
-
-        public static byte[] EncodePng(Bitmap bitmap)
+        public static byte[] EncodeJpg(Bitmap bitmap, int quality)
         {
             using var ms = new MemoryStream();
-            bitmap.Save(ms, ImageFormat.Png);
-            return ms.ToArray();
-        }
+            var info = new SKImageInfo(bitmap.Width, bitmap.Height);
+            var skBitmap = new SKBitmap(info);
+            using (var pixmap = skBitmap.PeekPixels())
+            {
+                bitmap.ToSKPixmap(pixmap);
+            }
 
-        public static byte[] EncodeGif(Bitmap diffImage)
-        {
-            diffImage.MakeTransparent(Color.FromArgb(0, 0, 0, 0));
-            using var ms = new MemoryStream();
-            diffImage.Save(ms, ImageFormat.Gif);
+            skBitmap.Encode(ms, SKEncodedImageFormat.Jpeg, quality);
+
             return ms.ToArray();
         }
 

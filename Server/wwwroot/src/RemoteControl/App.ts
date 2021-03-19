@@ -31,9 +31,6 @@ export const ViewerApp = {
     Settings: GetSettings(),
 
     Init: () => {
-        UI.AutoQualityAdjustCheckBox.checked = ViewerApp.Settings.autoQualityEnabled;
-        UI.QualitySlider.value = String(ViewerApp.Settings.qualityLevel);
-
         if (ViewerApp.ViewOnlyMode) {
             UI.ViewOnlyButton.classList.add("toggled");
         }
