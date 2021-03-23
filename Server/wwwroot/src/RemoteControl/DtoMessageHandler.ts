@@ -66,27 +66,28 @@ export class DtoMessageHandler {
 
             this.ImagePartials = [];
 
-            let url = window.URL.createObjectURL(completedFrame);
-            let img = new Image(captureFrame.Width, captureFrame.Height);
-            img.onload = () => {
-                UI.Screen2DContext.drawImage(img,
-                    captureFrame.Left,
-                    captureFrame.Top,
-                    captureFrame.Width,
-                    captureFrame.Height);
-                window.URL.revokeObjectURL(url);
-            };
-            img.src = url;
-
-            //createImageBitmap(completedFrame).then(bitmap => {
-            //    UI.Screen2DContext.drawImage(bitmap,
+            //let url = window.URL.createObjectURL(completedFrame);
+            //let img = new Image(captureFrame.Width, captureFrame.Height);
+            //img.onload = () => {
+            //    UI.Screen2DContext.drawImage(img,
             //        captureFrame.Left,
             //        captureFrame.Top,
             //        captureFrame.Width,
             //        captureFrame.Height);
+            //    window.URL.revokeObjectURL(url);
+            //    console.log(`Render time: ${Date.now() - start}ms`);
+            //};
+            //img.src = url;
 
-            //    bitmap.close();
-            //})
+            createImageBitmap(completedFrame).then(bitmap => {
+                UI.Screen2DContext.drawImage(bitmap,
+                    captureFrame.Left,
+                    captureFrame.Top,
+                    captureFrame.Width,
+                    captureFrame.Height);
+
+                bitmap.close();
+            })
 
             ViewerApp.MessageSender.SendFrameReceived();
         }
