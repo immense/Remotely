@@ -109,8 +109,7 @@ namespace Remotely.Desktop.Core.Services
 
         public Task SendDto<T>(T dto) where T : BaseDto
         {
-            CaptureChannel.SendMessage(MessagePackSerializer.Serialize(dto));
-            return Task.CompletedTask;
+            return Task.Run(() => CaptureChannel.SendMessage(MessagePackSerializer.Serialize(dto)));
         }
 
         public async Task SetRemoteDescription(string type, string sdp)
