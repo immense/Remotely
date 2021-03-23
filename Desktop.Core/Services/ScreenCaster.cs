@@ -168,14 +168,6 @@ namespace Remotely.Desktop.Core.Services
 
                         using var clone = currentFrame.Clone(diffArea, currentFrame.PixelFormat);
 
-                        if (viewer.PeakBytesPerSecond > 0)
-                        {
-                            var expectedSize = clone.Height * clone.Width * 4 * .1;
-                            var timeToSend = expectedSize / viewer.PeakBytesPerSecond;
-                            currentQuality = Math.Max(_minQuality, Math.Min(_maxQuality, (int)((.1 / timeToSend) * _maxQuality)));
-                            Debug.WriteLine($"Current Quality: {currentQuality}");
-                        }
-
                         byte[] encodedImageBytes;
                         if (viewer.Capturer.CaptureFullscreen)
                         {
@@ -184,6 +176,17 @@ namespace Remotely.Desktop.Core.Services
                         }
                         else
                         {
+                            if (viewer.PeakBytesPerSecond > 0)
+                            {
+                                var expectedSize = clone.Height * clone.Width * 4 * .1;
+                                var timeToSend = expectedSize / viewer.PeakBytesPerSecond;
+                                currentQuality = Math.Max(_minQuality, Math.Min(_maxQuality, (int)((.1 / timeToSend) * _maxQuality)));
+                                if (currentQuality < _maxQuality)
+                                {
+                                    refreshNeeded = true;
+                                }
+                                Debug.WriteLine($"Current Quality: {currentQuality}");
+                            }
                             encodedImageBytes = ImageUtils.EncodeWithSkia(clone, SKEncodedImageFormat.Jpeg, currentQuality);
                         }
 
