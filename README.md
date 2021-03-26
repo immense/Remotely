@@ -5,14 +5,6 @@ A remote control and remote scripting solution, built with .NET Core, SignalR Co
 ![GitHub Build](https://github.com/lucent-sea/Remotely/workflows/GitHub%20Build/badge.svg)
 
 
-> NOTE: Active development has been suspended.  
->  
-> I will be (mostly) taking a break from Remotely during 2021 to make more time for family, self-care, and other interests.
->  
->  Take care and stay safe.
->  
->  \- Jared
-
 ## Donations
 If this project has benefited you in some way, or if you just want to show appreciation, please consider donating to a charity.
 
@@ -35,6 +27,10 @@ Hosting a Remotely server requires building and running an ASP.NET Core web app 
 
 It's *highly* encouraged that you get comfortable building and deploying from source.  This allows you to hard-code your server's hostname into the desktop client and the installer, which makes for a better experience for the end user.  If you don't want to use any of the methods below, you can look at the GitHub Actions workflows to see how the process can be automated, using the `Publish.ps1` script.  You can use those as reference for creating an automation process that works for you.  You can also use Azure Pipelines for free (which I personally use).
 
+## Build Instructions (GitHub)
+GitHub Actions allows you to build and deploy Remotely for free from their cloud servers.  The definitions for the build processes are located in `/.github/workflows/` folder.
+
+After forking the repo, follow the instructions in the workflow YML file.  The easiest workflow to use is the Build.yml worfklow.  It doesn't require setting any GitHub secrets and is the easiest to use.  I'd recommend starting with that one.  It will produce a build artifact (ZIP package) identical to what is on the Releases page, only the clients will have your server URL hard-coded.
 
 ## Hosting a Server (Windows)
 * Create a site in IIS that will run Remotely.
@@ -73,11 +69,6 @@ It's *highly* encouraged that you get comfortable building and deploying from so
 There are countless ways to host an ASP.NET Core app, and I can't document or automate all of them.  For hosting scenarios aside from the above two, please refer to Microsoft's documentation.
 - https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/
 
-
-## Build Instructions (GitHub)
-GitHub Actions allows you to build and deploy Remotely for free from their cloud servers.  The definitions for the build processes are located in `/.github/workflows/` folder.
-
-After forking the repo, follow the instructions in the workflow YML file for configuring GitHub Secrets, then run the workflow.
 
 ## Build Instructions (Windows 10)  
 The following steps will configure your Windows 10 machine for building the Remotely server and clients.
