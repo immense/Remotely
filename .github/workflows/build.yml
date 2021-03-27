@@ -51,6 +51,15 @@ jobs:
       with:
         fetch-depth: 0
 
+    # Decode the base 64 encoded pfx and save the Signing_Certificate
+    - name: Check Server URL Format
+      run: |
+        $Result = ""
+        if (![System.Uri]::TryCreate($env:SiteUrl, [System.UriKind]::Absolute, [ref] $Result)) {
+            throw "Server URL is not in the correct format.  It should be fully qualified with scheme and host (e.g. https://app.remotely.one)."
+        }
+        
+        
     # Install the .NET Core workload
     - name: Install .NET Core
       uses: actions/setup-dotnet@v1.7.2
