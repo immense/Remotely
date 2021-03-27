@@ -51,6 +51,15 @@ jobs:
       with:
         fetch-depth: 0
 
+    # Decode the base 64 encoded pfx and save the Signing_Certificate
+    - name: Check Server URL Format
+      run: |
+        $Result = ""
+        if (![System.Uri]::TryCreate($env:SiteUrl, [System.UriKind]::Absolute, [ref] $Result)) {
+            throw "Server URL is not in the correct format.  It should be fully qualified with scheme and host (e.g. https://app.remotely.one)."
+        }
+        
+        
     # Install the .NET Core workload
     - name: Install .NET Core
       uses: actions/setup-dotnet@v1.7.2
@@ -96,9 +105,7 @@ jobs:
         $Minute = $VersionDate.Minute.ToString().PadLeft(2, "0")
         $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
         
-        echo "::set-env name=CurrentVersion::$CurrentVersion"
-        # This was needed in Azure Pipelines.
-        #[System.Console]::WriteLine("##vso[task.setvariable variable=CurrentVersion]$CurrentVersion")
+        echo "CurrentVersion=$CurrentVersion" >> $GITHUB_ENV
 
         Write-Host "Setting current version to $CurrentVersion."
 
@@ -118,31 +125,3 @@ jobs:
     # Remove the pfx
     - name: Remove the pfx
       run: Remove-Item -path "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx"
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    env:
-      SshUsername: ${{ secrets.SSH_USERNAME }}
-      SshPrivateKey: ${{ secrets.SSH_PRIVATE_KEY }}
-      SshHostname: ${{ secrets.SSH_HOSTNAME }}
-    
-    steps:
-
-    # Install SSH Key
-    - name: Install SSH Key
-      uses: shimataro/ssh-key-action@v2.1.0
-      with:
-        # SSH private key
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        # public keys of SSH servers
-        known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
-
-    # Download Build Artifact
-    - name: Download build artifact
-      uses: actions/download-artifact@v2
-
-    - name: Publish
-      shell: bash
-      run: | 
-        rsync -r -v ./artifact/ $SshUsername@$SshHostname:/var/www/remotely/
