@@ -139,7 +139,7 @@ button {
     touch-action: pan-x pan-y;
 }
 
-#connectBox {
+.center-connection-box {
     position: fixed;
     top: 40%;
     left: 50%;
@@ -151,11 +151,11 @@ button {
     padding: 0 20px 20px 20px;
 }
 
-    #connectBox button {
+    .center-connection-box button {
         height: 30px;
     }
 
-    #connectBox input {
+    .center-connection-box input {
         width: 100%;
     }
 
@@ -194,10 +194,7 @@ footer {
     z-index: -1;
 }
 
-
-.footer-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+footer {
     font-size: .9em;
 }
 

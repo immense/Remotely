@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Remotely.Server.Attributes;
+using Remotely.Server.Auth;
 
 namespace Remotely.Server.Pages
 {
@@ -9,7 +9,6 @@ namespace Remotely.Server.Pages
     {
         public void OnGet()
         {
-
         }
     }
 }

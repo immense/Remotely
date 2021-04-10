@@ -1,0 +1,20 @@
+﻿@typeparam T 
+
+<div style="@WrapperStyle" class="tree-view-wrapper">
+    <CascadingValue Value="this">
+        @foreach (var item in DataSource)
+        {
+            <TreeViewItem 
+                @key="KeySelector.Invoke(item)"
+                KeySelector="KeySelector"
+                Source="item" 
+                Style="@ChildItemStyle" 
+                HeaderSelector="ItemHeaderSelector"
+                ChildItemSelector="ChildItemSelector"
+                ItemIconCssSelector="ItemIconCssSelector"
+                ItemSelected="ItemSelected"
+                ItemTypeSelector="ItemTypeSelector"
+                IndentLevel="0" />
+        }
+    </CascadingValue>
+</div>

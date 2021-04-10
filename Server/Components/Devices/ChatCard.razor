@@ -1,0 +1,71 @@
+﻿@attribute [Authorize]
+@inherits AuthComponentBase
+
+<div class="chat-card border border-secondary bg-secondary @Session.ExpandedClass">
+    <div class="chat-header bg-primary text-white p-2" @onclick="HeaderClicked">
+        <h6 class="mt-3">
+            <i class="oi oi-chat mr-1"></i>
+            <span class="badge badge-info badge-pill mr-1">
+                @Session?.MissedChats
+            </span>
+            @Session?.DeviceName
+        </h6>
+        <div class="text-right">
+            <button class="btn btn-sm btn-secondary" title="Close" @onclick="CloseChatCard" @onclick:stopPropagation="true">
+                <i class="oi oi-x pointer"></i>
+            </button>
+        </div>
+    </div>
+    <div @ref="_chatMessagesWindow" class="chat-messages-window">
+        @foreach (var item in Session.ChatHistory)
+        {
+            @if (item.Origin == ChatHistoryItemOrigin.System)
+            {
+                <div @key="item" class="mt-1">
+                    <div class="chat-bubble d-inline-block text-white bg-warning">
+                        <div class="small">
+                            @item.Timestamp
+                        </div>
+                        <div class="font-weight-bold">
+                            @item.Message
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (item.Origin == ChatHistoryItemOrigin.Self)
+            {
+                <div @key="item" class="text-right mt-1">
+                    <div class="chat-bubble d-inline-block bg-dark text-white">
+                        <div class="small">
+                            You
+                            <span class="mx-1">@@</span>
+                            @item.Timestamp
+                        </div>
+                        <div class="font-weight-bold">
+                            @item.Message
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (item.Origin == ChatHistoryItemOrigin.Device)
+            {
+                <div @key="item" class="mt-1">
+                    <div class="chat-bubble d-inline-block bg-primary text-white">
+                        <div class="small">
+                            @Session.DeviceName
+                            <span class="mx-1">@@</span>
+                            @item.Timestamp
+                        </div>
+                        <div class="font-weight-bold">
+                            @item.Message
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    <textarea class="chat-input"
+              @bind="_inputText"
+              @bind:event="oninput"
+              @onkeypress="(ev) => EvaluateInputKeypress(ev)"></textarea>
+</div>

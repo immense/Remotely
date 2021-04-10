@@ -1,19 +1,12 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Remotely.Server.Attributes;
+using Remotely.Server.Auth;
 using Remotely.Server.Services;
-using Remotely.Shared.Utilities;
-using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Security.Permissions;
 using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -44,17 +37,17 @@ namespace Remotely.Server.API
             {
                 case "WindowsDesktop-x64":
                     {
-                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Win-x64", "Remotely_Desktop.exe");
+                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Win-x64", "Remotely_Desktop.exe");
                         return await GetDesktopFile(filePath);
                     }
                 case "WindowsDesktop-x86":
                     {
-                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Win-x86", "Remotely_Desktop.exe");
+                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Win-x86", "Remotely_Desktop.exe");
                         return await GetDesktopFile(filePath);
                     }
                 case "UbuntuDesktop":
                     {
-                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Remotely_Desktop");
+                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Remotely_Desktop");
                         return await GetDesktopFile(filePath);
                     }
                 default:
@@ -70,17 +63,17 @@ namespace Remotely.Server.API
             {
                 case "WindowsDesktop-x64":
                     {
-                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Win-x64", "Remotely_Desktop.exe");
+                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Win-x64", "Remotely_Desktop.exe");
                         return await GetDesktopFile(filePath, organizationId);
                     }
                 case "WindowsDesktop-x86":
                     {
-                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Win-x86", "Remotely_Desktop.exe");
+                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Win-x86", "Remotely_Desktop.exe");
                         return await GetDesktopFile(filePath, organizationId);
                     }
                 case "UbuntuDesktop":
                     {
-                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Remotely_Desktop");
+                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Remotely_Desktop");
                         return await GetDesktopFile(filePath, organizationId);
                     }
                 default:
@@ -107,7 +100,7 @@ namespace Remotely.Server.API
             var scheme = _appConfig.RedirectToHttps ? "https" : Request.Scheme;
 
             var fileContents = new List<string>();
-            fileContents.AddRange(await System.IO.File.ReadAllLinesAsync(Path.Combine(_hostEnv.WebRootPath, "Downloads", fileName)));
+            fileContents.AddRange(await System.IO.File.ReadAllLinesAsync(Path.Combine(_hostEnv.WebRootPath, "Content", fileName)));
 
             var hostIndex = fileContents.IndexOf("HostName=");
             var orgIndex = fileContents.IndexOf("Organization=");
@@ -157,7 +150,7 @@ namespace Remotely.Server.API
                     {
                         case "WindowsInstaller":
                             {
-                                var filePath = Path.Combine(_hostEnv.WebRootPath, "Downloads", "Remotely_Installer.exe");
+                                var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Remotely_Installer.exe");
                                 var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
                                 var organization = _dataService.GetOrganizationById(organizationId);
                                 var relayCode = organization.RelayCode;

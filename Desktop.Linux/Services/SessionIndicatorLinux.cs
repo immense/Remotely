@@ -12,7 +12,7 @@ namespace Remotely.Desktop.Linux.Services
             Dispatcher.UIThread.Post(() =>
             {
                 var indicatorWindow = new SessionIndicatorWindow();
-                App.Current.Run(indicatorWindow);
+                indicatorWindow.Show();
             });
         }
     }

@@ -17,7 +17,7 @@
     <Product>Remotely Desktop</Product>
     <PackageProjectUrl>https://remotely.one</PackageProjectUrl>
     <Platforms>AnyCPU;x86;x64</Platforms>
-    <StartupObject>Remotely.Desktop.Win.Program</StartupObject>
+    <StartupObject>Remotely.Desktop.Win.App</StartupObject>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

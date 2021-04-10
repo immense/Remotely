@@ -1,25 +1,30 @@
-﻿@using Remotely.Shared.Models
-@inject IApplicationConfig AppConfig
-@inject IDataService DataService
+﻿@using Microsoft.AspNetCore.Hosting
+@using Microsoft.AspNetCore.Mvc.ViewEngines
+@using Remotely.Server.Services 
+@using Remotely.Shared.Models
+@inject IApplicationConfig AppConfig 
+@inject IWebHostEnvironment Environment
+@inject ICompositeViewEngine Engine
+@inject IDataService DataService  
 
-@{ 
-    var user = DataService.GetUserByName(User?.Identity?.Name);
+@{
+    var user = DataService.GetUserByNameWithOrg(User?.Identity?.Name);
 }
+
 
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=550, user-scalable=no" />
-    <link rel="icon" href="~/favicon.ico" />
     <title>@ViewData["Title"] - Remotely</title>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="description" content="Remote access tools designed to get things done quickly." />
     <link href="~/manifest.json" rel="manifest" />
+    <link rel="stylesheet" href="~/Identity/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Identity/css/site.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link href="~/lib/fontawesome/css/all.min.css" rel="stylesheet" />
 
     @if (user is RemotelyUser)
     {
@@ -31,8 +36,8 @@
                 <link rel="stylesheet" href="~/css/Themes/yeti.custom.css" asp-append-version="true" />
                 break;
             case Remotely.Shared.Enums.Theme.Dark:
-                <link rel="stylesheet" href="~/css/Themes/cyborg.min.css" />
-                <link rel="stylesheet" href="~/css/Themes/cyborg.custom.css" asp-append-version="true" />
+                <link rel="stylesheet" href="~/css/Themes/darkly.min.css" />
+                <link rel="stylesheet" href="~/css/Themes/darkly.custom.css" asp-append-version="true" />
                 break;
             default:
                 break;
@@ -40,44 +45,23 @@
     }
     else
     {
-        if (AppConfig.Theme.Equals("Light", StringComparison.OrdinalIgnoreCase))
+        if (AppConfig.Theme == Remotely.Shared.Enums.Theme.Light)
         {
             <link rel="stylesheet" href="~/css/Themes/yeti.min.css" />
             <link rel="stylesheet" href="~/css/Themes/yeti.custom.css" asp-append-version="true" />
         }
         else
         {
-            <link rel="stylesheet" href="~/css/Themes/cyborg.min.css" />
-            <link rel="stylesheet" href="~/css/Themes/cyborg.custom.css" asp-append-version="true" />
+            <link rel="stylesheet" href="~/css/Themes/darkly.min.css" />
+            <link rel="stylesheet" href="~/css/Themes/darkly.custom.css" asp-append-version="true" />
         }
     }
-
-
-    <environment include="Development">
-        <script src="~/lib/jquery/dist/jquery.js"></script>
-        <script src="~/lib/popper.js/popper.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
-        <script src="~/lib/signalr/signalr.js"></script>
-        <script src="~/lib/signalr/msgpack5.js"></script>
-        <script src="~/lib/signalr/signalr-protocol-msgpack.js"></script>
-    </environment>
-    <environment exclude="Development">
-        <script src="~/lib/jquery/dist/jquery.min.js"></script>
-        <script src="~/lib/popper.js/popper.min.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
-        <script src="~/lib/signalr/signalr.min.js"></script>
-        <script src="~/lib/signalr/msgpack5.min.js"></script>
-        <script src="~/lib/signalr/signalr-protocol-msgpack.min.js"></script>
-    </environment>
-
-    <script src="~/lib/require.js"></script>
-
 </head>
 <body>
     <header>
         <nav class="navbar navbar-dark bg-primary navbar-expand-sm navbar-toggleable-sm mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">
+                <a class="navbar-brand text-left" href="~/">
                     <div>
                         @if (!string.IsNullOrWhiteSpace(user?.Organization?.OrganizationName))
                         {
@@ -95,47 +79,37 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <partial name="_LoginPartial" />
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Agents">Downloads</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/RemoteControl">Remote Control</a>
-                        </li>
-                    </ul>
+                    @{
+                        var result = Engine.FindView(ViewContext, "_LoginPartial", isMainPage: false);
+                    }
+                    @if (result.Success)
+                    {
+                        await Html.RenderPartialAsync("_LoginPartial");
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("The default Identity UI layout requires a partial view '_LoginPartial' " +
+                            "usually located at '/Pages/_LoginPartial' or at '/Views/Shared/_LoginPartial' to work. Based on your configuration " +
+                            $"we have looked at it in the following locations: {System.Environment.NewLine}{string.Join(System.Environment.NewLine, result.SearchedLocations)}.");
+                    }
                 </div>
             </div>
         </nav>
     </header>
 
     <div class="container">
-        <main role="main">
+        <main role="main" class="pb-3">
             @RenderBody()
-
-
-            <div id="toastsWrapper">
-
-            </div>
         </main>
     </div>
-    <footer class="footer text-muted">
+    <footer class="footer border-top text-muted mt-4">
         <div class="container">
-            <hr />
-            <div class="footer-wrapper">
-                <p>&copy; @DateTimeOffset.Now.Year - Translucency Software</p>
-                <p class="text-right">
-                    <a asp-page="/About">About Remotely</a> - <a asp-area="" asp-page="/Privacy">Privacy</a>
-                </p>
-            </div>
+            &copy; @DateTimeOffset.Now.Year - <a href="https://lucency.co">Translucency Software</a>
         </div>
     </footer>
-
-
-    <script src="~/site.js"></script>
+    <script src="~/Identity/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/Identity/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Identity/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

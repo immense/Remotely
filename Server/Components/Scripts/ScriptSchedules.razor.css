@@ -1,0 +1,7 @@
+﻿.item-list-border {
+    border: 1px solid gray;
+    padding: .5em;
+    height: 300px;
+    border-radius: 5px;
+    overflow-y: auto;
+}

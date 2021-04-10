@@ -289,7 +289,7 @@ else
 
 Clear-Host
 ### Create IIS Site ##
-[System.IO.Directory]::CreateDirectory($SitePath)
+$SitePath = (Get-Item -Path $MyInvocation.InvocationName).DirectoryName
 
 if ((Get-IISAppPool -Name $AppPoolName) -eq $null) {
     New-WebAppPool -Name $AppPoolName
@@ -327,28 +327,6 @@ while ($Success -eq $false) {
     catch {
         Start-Sleep -Seconds 1
     }
-}
-
-
-
-### Download Server Package ###
-try {
-    if ((Test-Path -Path "$env:TEMP\Remotely_Server_Win-x64.zip")){
-        Remove-Item -Path "$env:TEMP\Remotely_Server_Win-x64.zip" -Force
-    }
-    Wrap-Host "Downloading server package..."
-	$ProgressPreference = "SilentlyContinue"
-    Invoke-WebRequest -Uri "https://github.com/lucent-sea/Remotely/releases/latest/download/Remotely_Server_Win-x64.zip" -OutFile "$env:TEMP\Remotely_Server_Win-x64.zip" -UseBasicParsing
-    $ProgressPreference = "Continue"
-    Wrap-Host "Extracting server files..."
-	[System.Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem") | Out-Null
-	[System.IO.Compression.ZipFile]::ExtractToDirectory("$env:TEMP\Remotely_Server_Win-x64.zip", $SitePath)
-}
-catch {
-    Wrap-Host
-    Wrap-Host "Error: Unable to download or extract client files." -ForegroundColor Red
-    Do-Pause
-    return
 }
 
 ### Set ACL on website folders and files ###

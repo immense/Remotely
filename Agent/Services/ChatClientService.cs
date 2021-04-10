@@ -89,7 +89,7 @@ namespace Remotely.Agent.Services
                 if (!chatSession.PipeStream.IsConnected)
                 {
                     ChatClients.Remove(senderConnectionID);
-                    await hubConnection.SendAsync("DisplayMessage", "Chat disconnected.  Please try again.", "Chat disconnected.", senderConnectionID);
+                    await hubConnection.SendAsync("DisplayMessage", "Chat disconnected.  Please try again.", "Chat disconnected.", "bg-warning", senderConnectionID);
                     return;
                 }
 

@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Remotely.Server
 {
@@ -10,27 +14,30 @@ namespace Remotely.Server
     {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .CaptureStartupErrors(true)
-                .ConfigureLogging((hostingContext, logging) =>
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    logging.ClearProviders();
-                    logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-                    logging.AddConsole();
-                    logging.AddDebug();
-
-                    if (bool.TryParse(hostingContext.Configuration["ApplicationOptions:EnableWindowsEventLog"], out var enableEventLog))
+                    webBuilder.UseStartup<Startup>();
+                    webBuilder.CaptureStartupErrors(true);
+                    webBuilder.ConfigureLogging((hostingContext, logging) =>
                     {
-                        if (EnvironmentHelper.IsWindows && enableEventLog)
+                        logging.ClearProviders();
+                        logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                        logging.AddConsole();
+                        logging.AddDebug();
+
+                        if (bool.TryParse(hostingContext.Configuration["ApplicationOptions:EnableWindowsEventLog"], out var enableEventLog))
                         {
-                            logging.AddEventLog();
+                            if (EnvironmentHelper.IsWindows && enableEventLog)
+                            {
+                                logging.AddEventLog();
+                            }
                         }
-                    }
+                    });
                 });
     }
 }

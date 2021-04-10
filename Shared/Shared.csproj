@@ -9,27 +9,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ConcurrentList" Version="1.4.0" />
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="5.0.4" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
     <PackageReference Include="System.Text.Json" Version="5.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Models\CommandResult.cs">
-      <LastGenOutput>CommandResult.cs.d.ts</LastGenOutput>
+    <Compile Update="Models\ScriptResult.cs">
+      <LastGenOutput>ScriptResult.cs.d.ts</LastGenOutput>
       <Generator>DtsGenerator</Generator>
     </Compile>
     <Compile Update="Models\CursorInfo.cs">
       <Generator></Generator>
     </Compile>
     <Compile Update="Models\Device.cs">
-      <Generator></Generator>
-    </Compile>
-    <Compile Update="Models\GenericCommandResult.cs">
-      <LastGenOutput>GenericCommandResult.cs.d.ts</LastGenOutput>
-      <Generator>DtsGenerator</Generator>
-    </Compile>
-    <Compile Update="Models\PSCoreCommandResult.cs">
       <Generator></Generator>
     </Compile>
     <Compile Update="Models\RemotelyUserOptions.cs">
@@ -39,16 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Models\CommandResult.cs.d.ts">
-      <DependentUpon>CommandResult.cs</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </None>
-    <None Update="Models\GenericCommandResult.cs.d.ts">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>GenericCommandResult.cs</DependentUpon>
-    </None>
     <None Update="Models\RemotelyUserOptions.cs.d.ts">
       <DependentUpon>RemotelyUserOptions.cs</DependentUpon>
       <DesignTime>True</DesignTime>

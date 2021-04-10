@@ -1,0 +1,31 @@
+﻿.outer-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-column-gap: 2.5em;
+}
+
+.left-outer-grid {
+    display: grid;
+    grid-template-rows: auto 1fr;
+}
+
+.scripts-tree-view {
+    border-radius: 5px;
+    padding: .5em;
+
+}
+
+.tree-view-wrapper-grid {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    overflow-y: auto;
+}
+
+
+@media (max-width: 641px) {
+    .controls-section {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+}

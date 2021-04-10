@@ -14,7 +14,12 @@ namespace Remotely.Shared.Models
 
         public BrandingInfo BrandingInfo { get; set; }
 
-        public ICollection<CommandResult> CommandResults { get; set; }
+        public ICollection<ScriptResult> ScriptResults { get; set; }
+
+        public ICollection<ScriptRun> ScriptRuns { get; set; }
+        public ICollection<SavedScript> SavedScripts { get; set; }
+
+        public ICollection<ScriptSchedule> ScriptSchedules { get; set; }
 
         public ICollection<DeviceGroup> DeviceGroups { get; set; }
 

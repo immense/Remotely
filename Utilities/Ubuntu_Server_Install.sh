@@ -2,28 +2,10 @@
 echo "Thanks for trying Remotely!"
 echo
 
-Args=( "$@" )
-ArgLength=${#Args[@]}
+AppRoot=$(dirname $(readlink -f $0))
+HostName=""
 
-for (( i=0; i<${ArgLength}; i+=2 ));
-do
-    if [ "${Args[$i]}" = "--hostname" ]; then
-        HostName="${Args[$i+1]}"
-    elif [ "${Args[$i]}" = "--approot" ]; then
-        AppRoot="${Args[$i+1]}"
-    fi
-done
-
-if [ -z "$AppRoot" ]; then
-    read -p "Enter path where the Remotely server files should be installed (typically /var/www/remotely): " AppRoot
-    if [ -z "$AppRoot" ]; then
-        AppRoot="/var/www/remotely"
-    fi
-fi
-
-if [ -z "$HostName" ]; then
-    read -p "Enter server host (e.g. remotely.yourdomainname.com): " HostName
-fi
+echo "Using $AppRoot as the Remotely website's content directory."
 
 UbuntuVersion=$(lsb_release -r -s)
 
@@ -45,95 +27,25 @@ apt-get -y install libc6-dev
 apt-get -y install libgdiplus
 
 
-# Download and install Remotely files.
-mkdir -p $AppRoot
-wget "https://github.com/lucent-sea/Remotely/releases/latest/download/Remotely_Server_Linux-x64.zip"
-unzip -o Remotely_Server_Linux-x64.zip -d $AppRoot
-rm Remotely_Server_Linux-x64.zip
-setfacl -R -m u:www-data:rwx $AppRoot
-chown -R "$USER":www-data $AppRoot
+# Install Caddy
+apt install -y debian-keyring debian-archive-keyring apt-transport-https
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo apt-key add -
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee -a /etc/apt/sources.list.d/caddy-stable.list
+apt update
+apt install caddy
 
 
-# Install Nginx
-apt-get update
-apt-get -y install nginx
-
-systemctl start nginx
-
-
-# Configure Nginx
-nginxConfig="
-
-server {
-    listen        80;
-    server_name   $HostName *.$HostName;
-    location / {
-        proxy_pass         http://localhost:5000;
-        proxy_http_version 1.1;
-        proxy_set_header   Upgrade \$http_upgrade;
-        proxy_set_header   Connection keep-alive;
-        proxy_set_header   Host \$host;
-        proxy_cache_bypass \$http_upgrade;
-        proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header   X-Forwarded-Proto \$scheme;
+# Configure Caddy
+caddyConfig="
+    $HostName {
+        reverse_proxy 127.0.0.1:5000
     }
+"
 
-    location /BrowserHub {	
-        proxy_pass http://localhost:5000;	
-        proxy_http_version 1.1;	
-        proxy_set_header Upgrade \$http_upgrade;	
-        proxy_set_header Connection \"upgrade\";	
-        proxy_set_header Host \$host;	
-        proxy_cache_bypass \$http_upgrade;	
-        proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;	
-        proxy_set_header   X-Forwarded-Proto \$scheme;	
-    }	
-    location /AgentHub {	
-        proxy_pass http://localhost:5000;	
-        proxy_http_version 1.1;	
-        proxy_set_header Upgrade \$http_upgrade;	
-        proxy_set_header Connection \"upgrade\";	
-        proxy_set_header Host \$host;	
-        proxy_cache_bypass \$http_upgrade;	
-        proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;	
-        proxy_set_header   X-Forwarded-Proto \$scheme;	
-    }	
-    location /ViewerHub {	
-        proxy_pass http://localhost:5000;	
-        proxy_http_version 1.1;	
-        proxy_set_header Upgrade \$http_upgrade;	
-        proxy_set_header Connection \"upgrade\";	
-        proxy_set_header Host \$host;	
-        proxy_cache_bypass \$http_upgrade;	
-        proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;	
-        proxy_set_header   X-Forwarded-Proto \$scheme;	
-    }	
-    location /CasterHub {	
-        proxy_pass http://localhost:5000;	
-        proxy_http_version 1.1;	
-        proxy_set_header Upgrade \$http_upgrade;	
-        proxy_set_header Connection \"upgrade\";	
-        proxy_set_header Host \$host;	
-        proxy_cache_bypass \$http_upgrade;	
-        proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;	
-        proxy_set_header   X-Forwarded-Proto \$scheme;	
-    }
-}"
-
-echo "$nginxConfig" > /etc/nginx/sites-available/remotely
-
-ln -s /etc/nginx/sites-available/remotely /etc/nginx/sites-enabled/remotely
-
-# Test config.
-nginx -t
-
-# Reload.
-nginx -s reload
+echo "$caddyConfig" > /etc/caddy/Caddyfile
 
 
-
-
-# Create service.
+# Create Remotely service.
 
 serviceConfig="[Unit]
 Description=Remotely Server
@@ -161,7 +73,7 @@ systemctl enable remotely.service
 systemctl restart remotely.service
 
 
-# Install Certbot and get SSL cert.
-apt-get -y install certbot python3-certbot-nginx
+# Restart caddy
+systemctl restart caddy
 
-certbot --nginx
+echo "Installation completed."

@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
+using System;
 
 namespace Remotely.Server.Services
 {
@@ -9,7 +11,6 @@ namespace Remotely.Server.Services
         string[] BannedDevices { get; }
         double DataRetentionInDays { get; }
         string DBProvider { get; }
-        string DefaultPrompt { get; }
         bool EnableWindowsEventLog { get; }
         bool EnforceAttendedAccess { get; }
         IceServerModel[] IceServers { get; }
@@ -29,7 +30,7 @@ namespace Remotely.Server.Services
         string SmtpPassword { get; }
         int SmtpPort { get; }
         string SmtpUserName { get; }
-        string Theme { get; }
+        Theme Theme { get; }
         string[] TrustedCorsOrigins { get; }
         bool UseHsts { get; }
         bool UseWebRtc { get; }
@@ -52,7 +53,6 @@ namespace Remotely.Server.Services
         public string[] BannedDevices => Config.GetSection("ApplicationOptions:BannedDevices").Get<string[]>() ?? System.Array.Empty<string>();
         public double DataRetentionInDays => double.Parse(Config["ApplicationOptions:DataRetentionInDays"] ?? "30");
         public string DBProvider => Config["ApplicationOptions:DBProvider"] ?? "SQLite";
-        public string DefaultPrompt => Config["ApplicationOptions:DefaultPrompt"] ?? "~>";
         public bool EnableWindowsEventLog => bool.Parse(Config["ApplicationOptions:EnableWindowsEventLog"]);
         public bool EnforceAttendedAccess => bool.Parse(Config["ApplicationOptions:EnforceAttendedAccess"] ?? "false");
         public IceServerModel[] IceServers => Config.GetSection("ApplicationOptions:IceServers").Get<IceServerModel[]>() ?? fallbackIceServers;
@@ -72,7 +72,7 @@ namespace Remotely.Server.Services
         public string SmtpPassword => Config["ApplicationOptions:SmtpPassword"];
         public int SmtpPort => int.Parse(Config["ApplicationOptions:SmtpPort"] ?? "25");
         public string SmtpUserName => Config["ApplicationOptions:SmtpUserName"];
-        public string Theme => Config["ApplicationOptions:Theme"];
+        public Theme Theme => Enum.Parse<Theme>(Config["ApplicationOptions:Theme"] ?? "Dark", true);
         public string[] TrustedCorsOrigins => Config.GetSection("ApplicationOptions:TrustedCorsOrigins").Get<string[]>() ?? System.Array.Empty<string>();
         public bool UseHsts => bool.Parse(Config["ApplicationOptions:UseHsts"] ?? "false");
         public bool UseWebRtc => bool.Parse(Config["ApplicationOptions:UseWebRtc"] ?? "true");

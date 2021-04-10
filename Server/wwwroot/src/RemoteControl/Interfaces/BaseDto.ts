@@ -1,4 +1,4 @@
-﻿import { BaseDtoType } from "../../Shared/Enums/BaseDtoType.js";
+﻿import { BaseDtoType } from "../Enums/BaseDtoType.js";
 
 export interface BaseDto {
     DtoType: BaseDtoType;

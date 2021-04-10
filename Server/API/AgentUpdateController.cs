@@ -96,13 +96,13 @@ namespace Remotely.Server.API
                 switch (platform.ToLower())
                 {
                     case "win-x64":
-                        filePath = Path.Combine(HostEnv.WebRootPath, "Downloads", "Remotely-Win10-x64.zip");
+                        filePath = Path.Combine(HostEnv.WebRootPath, "Content", "Remotely-Win10-x64.zip");
                         break;
                     case "win-x86":
-                        filePath = Path.Combine(HostEnv.WebRootPath, "Downloads", "Remotely-Win10-x86.zip");
+                        filePath = Path.Combine(HostEnv.WebRootPath, "Content", "Remotely-Win10-x86.zip");
                         break;
                     case "linux":
-                        filePath = Path.Combine(HostEnv.WebRootPath, "Downloads", "Remotely-Linux.zip");
+                        filePath = Path.Combine(HostEnv.WebRootPath, "Content", "Remotely-Linux.zip");
                         break;
                     default:
                         DataService.WriteEvent($"Unknown platform requested in { nameof(AgentUpdateController)}. " +

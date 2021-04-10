@@ -1,5 +1,5 @@
 ﻿body {
-    background-color: rgb(25,25,25);
+    background-color: #222;
     color: #888888;
 }
 
@@ -62,7 +62,7 @@ button[disabled] {
 }
 
 
-#connectBox {
+.center-connection-box {
     background-color: rgb(60, 60, 60);
     color: white;
 }

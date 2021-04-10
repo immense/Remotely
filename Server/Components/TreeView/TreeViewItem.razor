@@ -1,0 +1,30 @@
+﻿@typeparam T
+
+<div>
+
+    <div class="@GetActiveClass() pointer tree-view-item" 
+         style="padding-left: @($"{IndentLevel * .5}em"); @Style"
+         @onclick="OnItemClick"
+         @onclick:stopPropagation="true">
+
+        <span class="@ItemIconCssSelector.Invoke(Source) mx-2" />
+        <span>@HeaderSelector.Invoke(Source)</span>
+    </div>
+
+    @if (IsExpanded)
+    {
+        foreach (var item in ChildItemSelector.Invoke(Source))
+        {
+            <TreeViewItem Source="item"
+                          @key="KeySelector.Invoke(item)"
+                          KeySelector="KeySelector"
+                          Style="@Style"
+                          HeaderSelector="HeaderSelector"
+                          IndentLevel="(IndentLevel + 1)"
+                          ItemTypeSelector="ItemTypeSelector"
+                          ItemIconCssSelector="ItemIconCssSelector"
+                          ChildItemSelector="ChildItemSelector"
+                          ItemSelected="ItemSelected" />
+        }
+    }
+</div>

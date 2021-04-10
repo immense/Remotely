@@ -43,7 +43,7 @@ namespace Remotely.Server.API
                 return NotFound();
             }
 
-            var orgId = DataService.GetUserByName(login.Email)?.OrganizationID;
+            var orgId = DataService.GetUserByNameWithOrg(login.Email)?.OrganizationID;
 
             var result = await SignInManager.PasswordSignInAsync(login.Email, login.Password, false, true);
             if (result.Succeeded)
@@ -72,7 +72,7 @@ namespace Remotely.Server.API
 
             if (HttpContext?.User?.Identity?.IsAuthenticated == true)
             {
-                orgId = DataService.GetUserByName(HttpContext.User.Identity.Name)?.OrganizationID;
+                orgId = DataService.GetUserByNameWithOrg(HttpContext.User.Identity.Name)?.OrganizationID;
                 var activeSessions = CasterHub.SessionInfoList.Where(x => x.Value.RequesterUserName == HttpContext.User.Identity.Name);
                 foreach (var session in activeSessions.ToList())
                 {

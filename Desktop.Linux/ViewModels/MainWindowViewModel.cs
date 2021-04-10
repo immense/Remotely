@@ -11,7 +11,6 @@ using Remotely.Desktop.Linux.Native;
 using Remotely.Desktop.Linux.Services;
 using Remotely.Desktop.Linux.Views;
 using Remotely.Shared.Models;
-using Remotely.Shared.Services;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.ObjectModel;

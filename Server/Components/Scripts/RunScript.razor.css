@@ -1,0 +1,22 @@
+﻿.main-grid {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    grid-row-gap: 1em;
+    grid-template-columns: auto 1fr 1fr;
+    grid-column-gap: 2em;
+}
+
+.column-wrapper {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    overflow-y: auto;
+}
+
+
+.item-list-border {
+    border: 1px solid gray;
+    padding: .5em;
+    height: 100%;
+    border-radius: 5px;
+    overflow-y: auto;
+}

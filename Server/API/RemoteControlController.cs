@@ -10,6 +10,7 @@ using Remotely.Shared.Models;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Remotely.Server.Auth;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -51,11 +52,11 @@ namespace Remotely.Server.API
                 return NotFound();
             }
 
-            var orgId = DataService.GetUserByName(rcRequest.Email)?.OrganizationID;
+            var orgId = DataService.GetUserByNameWithOrg(rcRequest.Email)?.OrganizationID;
 
             var result = await SignInManager.PasswordSignInAsync(rcRequest.Email, rcRequest.Password, false, true);
             if (result.Succeeded &&
-                DataService.DoesUserHaveAccessToDevice(rcRequest.DeviceID, DataService.GetUserByName(rcRequest.Email)))
+                DataService.DoesUserHaveAccessToDevice(rcRequest.DeviceID, DataService.GetUserByNameWithOrg(rcRequest.Email)))
             {
                 DataService.WriteEvent($"API login successful for {rcRequest.Email}.", orgId);
                 return await InitiateRemoteControl(rcRequest.DeviceID, orgId);
@@ -76,14 +77,14 @@ namespace Remotely.Server.API
 
         private async Task<IActionResult> InitiateRemoteControl(string deviceID, string orgID)
         {
-            var targetDevice = Hubs.AgentHub.ServiceConnections.FirstOrDefault(x =>
+            var targetDevice = AgentHub.ServiceConnections.FirstOrDefault(x =>
                                     x.Value.OrganizationID == orgID &&
                                     x.Value.ID.ToLower() == deviceID.ToLower());
 
             if (targetDevice.Value != null)
             {
                 if (User.Identity.IsAuthenticated &&
-                   !DataService.DoesUserHaveAccessToDevice(targetDevice.Value.ID, DataService.GetUserByName(User.Identity.Name)))
+                   !DataService.DoesUserHaveAccessToDevice(targetDevice.Value.ID, DataService.GetUserByNameWithOrg(User.Identity.Name)))
                 {
                     return Unauthorized();
                 }
@@ -117,7 +118,7 @@ namespace Remotely.Server.API
                 {
                     var rcSession = CasterHub.SessionInfoList.Values.LastOrDefault(x => x.DeviceID == targetDevice.Value.ID && !existingSessions.Contains(x.CasterSocketID));
                     var otp = RemoteControlFilterAttribute.GetOtp(targetDevice.Value.ID);
-                    return Ok($"{HttpContext.Request.Scheme}://{Request.Host}/RemoteControl?clientID={rcSession.CasterSocketID}&serviceID={targetDevice.Key}&fromApi=true&otp={Uri.EscapeDataString(otp)}");
+                    return Ok($"{HttpContext.Request.Scheme}://{Request.Host}/RemoteControl?casterID={rcSession.CasterSocketID}&serviceID={targetDevice.Key}&fromApi=true&otp={Uri.EscapeDataString(otp)}");
                 }
             }
             else

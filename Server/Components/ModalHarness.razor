@@ -1,0 +1,76 @@
+﻿@inject IModalService ModalService
+@inject IJsInterop JsInterop
+
+<div class="modal fade @_showClass" style="display: @_displayStyle; background-color: rgba(0,0,0,0.35)" @onclick="CloseModal">
+    <div class="modal-dialog modal-dialog-scrollable" role="document" @onclick:stopPropagation="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@ModalService.Title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="CloseModal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" >
+                @if (ModalService?.RenderBody is not null)
+                {
+                    @ModalService.RenderBody
+                }
+                else
+                {
+                    @foreach (var line in ModalService?.Body ?? Array.Empty<string>())
+                    {
+                        <p @key="line">
+                            @line
+                        </p>
+                    }
+                }
+
+            </div>
+            <div class="modal-footer">
+                @foreach (var button in ModalService.Buttons)
+                {
+                    <button @key="button" type="button" class="@button.Class" @onclick="() => ExecuteButtonAction(button.OnClick)">@button.Text</button>
+                }
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="CloseModal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string _showClass;
+    private string _displayStyle;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            ModalService.ModalShown += async (sender, args) =>
+            {
+                _displayStyle = "block";
+                await InvokeAsync(StateHasChanged);
+            // The fade animation won't work without a delay here.
+            await Task.Delay(100);
+                _showClass = "show";
+                await InvokeAsync(StateHasChanged);
+            };
+        }
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+
+    private async Task CloseModal()
+    {
+        _showClass = null;
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(100);
+        _displayStyle = null;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ExecuteButtonAction(Action onclick)
+    {
+        onclick.Invoke();
+        await CloseModal();
+    }
+}

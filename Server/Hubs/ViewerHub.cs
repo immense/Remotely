@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Remotely.Server.Attributes;
+using Remotely.Server.Auth;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
 using Remotely.Shared.Enums;
@@ -168,7 +168,7 @@ namespace Remotely.Server.Hubs
                 var user = DataService.GetUserByID(Context.UserIdentifier);
                 if (string.IsNullOrWhiteSpace(RequesterName))
                 {
-                    RequesterName = user.DisplayName ?? user.UserName;
+                    RequesterName = user.UserOptions.DisplayName ?? user.UserName;
                 }
                 orgId = user.OrganizationID;
                 var currentUsers = CasterHub.SessionInfoList.Count(x =>

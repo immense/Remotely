@@ -1,0 +1,72 @@
+﻿@attribute [Authorize]
+@inherits AuthComponentBase
+@inject IDataService DataService
+@inject IToastService ToastService  
+
+<h5 class="text-info">
+    Editing @User?.UserName
+</h5>
+
+@foreach (var group in _deviceGroups)
+{
+    <div @key="group.ID">
+        <input id="@group.ID" type="checkbox" class="align-middle mr-2" checked="@(DoesGroupContainUser(group))" @onchange="ev => GroupCheckChanged(ev, group)" />
+        <label class="align-middle mb-0" for="@group.ID">@group.Name</label>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public RemotelyUser EditUser { get; set; }
+
+    public static string EditUserPropName => nameof(EditUser);
+
+    public readonly List<DeviceGroup> _deviceGroups = new();
+
+
+    protected override void OnInitialized()
+    {
+        if (!User.IsAdministrator)
+        {
+            return;
+        }
+
+        _deviceGroups.AddRange(DataService.GetDeviceGroupsForOrganization(User.OrganizationID));
+
+        base.OnInitialized();
+    }
+
+    private bool DoesGroupContainUser(DeviceGroup group)
+    {
+        return group.Users.Any(x => x.Id == EditUser.Id);
+    }
+
+    private async Task GroupCheckChanged(ChangeEventArgs args, DeviceGroup group)
+    {
+        if ((bool)args.Value)
+        {
+            if (!DataService.AddUserToDeviceGroup(EditUser.OrganizationID, group.ID, EditUser.UserName, out var result))
+            {
+                ToastService.ShowToast(result, classString: "bg-warning");
+            }
+            else
+            {
+                ToastService.ShowToast("User added to group.");
+            }
+
+        }
+        else
+        {
+            var result = await DataService.RemoveUserFromDeviceGroup(EditUser.OrganizationID, group.ID, EditUser.Id);
+            if (!result)
+            {
+                ToastService.ShowToast("Failed to remove from group.", classString: "bg-warning");
+            }
+            else
+            {
+                ToastService.ShowToast("Removed user from group.");
+            }
+        }
+    }
+}

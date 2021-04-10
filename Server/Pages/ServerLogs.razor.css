@@ -1,0 +1,27 @@
+﻿.buttons-row {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    grid-column-gap: 2em;
+}
+
+
+.filters-row {
+    display: grid;
+    grid-template-columns: auto auto auto 1fr;
+    grid-column-gap: 1em;
+}
+
+
+@media (max-width: 641px) {
+    .buttons-row {
+        grid-template-columns: 1fr;
+        text-align: center;
+        grid-row-gap: 1em;
+    }
+
+    .filters-row {
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        grid-row-gap: 0.5em;
+    }
+}

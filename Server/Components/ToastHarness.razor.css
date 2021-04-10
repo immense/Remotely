@@ -1,0 +1,39 @@
+﻿.toast-harness {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 5;
+    user-select: none;
+    pointer-events: none;
+}
+
+
+.toast-message {
+    background-color: rgb(25,25,25);
+    color: white;
+    transform: translate(0, 0);
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    opacity: 1;
+    color: white;
+    border-radius: 5px;
+    user-select: none;
+    pointer-events: none;
+    animation-name: toast-message;
+    animation-duration: .5s;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease-in;
+}
+
+@keyframes toast-message {
+    from {
+        transform: translate(0, 0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translate(calc(100% + 50px), 0);
+        opacity: 0;
+    }
+}

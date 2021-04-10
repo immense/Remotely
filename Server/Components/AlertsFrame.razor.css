@@ -1,0 +1,40 @@
+﻿#alertsButton {
+    position: absolute;
+    top: 75px;
+    right: 5px;
+    z-index: 4;
+    transition: .5s ease left;
+    user-select: none;
+}
+
+
+#alertsFrame {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    transform: translateX(100%);
+    width: 350px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    text-align: center;
+    opacity: 0;
+    z-index: 4;
+    transition: .25s ease all;
+}
+
+    #alertsFrame.open {
+        opacity: 1;
+        transition: .25s ease all;
+        pointer-events: unset;
+        transform: translateX(0);
+    }
+
+
+@media (min-width: 641px) {
+    #alertsButton {
+        top: 5px;
+    }
+
+}

@@ -56,35 +56,63 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Column="0" Grid.Row="0" Margin="0,0,15,0" FontSize="14">
-                        <Run>Server URL:</Run>
-                        <Run Text="&#xE897;" 
+                    <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="0">
+                        <TextBlock FontSize="14">Server URL:</TextBlock>
+                        
+                        <Button Grid.Column="1" Grid.Row="0" 
+                                Background="White"
+                                FontSize="14" 
+                                Margin="5,0"
+                                BorderThickness="0" 
+                                Padding="3"
+                                Cursor="Hand"
+                                Click="ShowServerUrlHelp">
+                            <TextBlock Text="&#xE897;" 
                              FontWeight="Bold"
                              FontFamily="Segoe MDL2 Assets" 
-                             Cursor="Hand" 
-                             ToolTip="This is the URL of the server that your device will connect to after Remotely is installed."></Run>
-                    </TextBlock>
+                             PreviewMouseUp="ShowServerUrlHelp"></TextBlock>
+                        </Button>
+                    </StackPanel>
+                    
+                    
                     <TextBox Grid.Column="1" Grid.Row="0" TextWrapping="Wrap" Text="{Binding ServerUrl}" FontSize="14" />
 
-                    <TextBlock Grid.Column="0" Grid.Row="2" Margin="0,0,15,0" FontSize="14">
-                        <Run>Organization ID:</Run>
-                        <Run Text="&#xE897;" 
+                    <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="2">
+                        <TextBlock FontSize="14">Organization ID</TextBlock>
+
+                        <Button Grid.Column="1" Grid.Row="0" 
+                                Background="White"
+                                FontSize="14"
+                                Margin="5,0"
+                                BorderThickness="0"
+                                Padding="3"
+                                Cursor="Hand"
+                                Click="ShowOrganizationIdHelp">
+                            <TextBlock Text="&#xE897;" 
                              FontWeight="Bold"
-                             FontFamily="Segoe MDL2 Assets" 
-                             Cursor="Hand" 
-                             ToolTip="Enter the organization ID that will have access to this device."></Run>
-                    </TextBlock>
+                             FontFamily="Segoe MDL2 Assets"></TextBlock>
+                        </Button>
+                    </StackPanel>
+                    
                     <TextBox  Grid.Column="1" Grid.Row="2" TextWrapping="Wrap" Text="{Binding OrganizationID}" FontSize="14" />
 
-                    <TextBlock Grid.Column="0" Grid.Row="4" Margin="0,0,15,0" FontSize="14">
-                        <Run>Support Shortcut:</Run>
-                        <Run Text="&#xE897;" 
+                    <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="4">
+                        <TextBlock FontSize="14">Support Shortcut</TextBlock>
+
+                        <Button Grid.Column="1" Grid.Row="0" 
+                                Background="White"
+                                FontSize="14"
+                                Margin="5,0" 
+                                BorderThickness="0" 
+                                Padding="3"
+                                Cursor="Hand"
+                                Click="ShowSupportShortcutHelp">
+                            <TextBlock Text="&#xE897;" 
                              FontWeight="Bold"
-                             FontFamily="Segoe MDL2 Assets" 
-                             Cursor="Hand" 
-                             ToolTip="Create a desktop shortcut to the Get Support page for this device."></Run>
-                    </TextBlock>
-                    <CheckBox  Grid.Column="1" Grid.Row="4" IsChecked="{Binding CreateSupportShortcut}" />
+                             FontFamily="Segoe MDL2 Assets"></TextBlock>
+                        </Button>
+                    </StackPanel>
+                    <CheckBox  Grid.Column="1" Grid.Row="4" VerticalAlignment="Center" IsChecked="{Binding CreateSupportShortcut}" />
 
                 </Grid>
 

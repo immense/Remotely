@@ -1,0 +1,66 @@
+﻿@using Remotely.Server.Models
+ 
+<div>
+    <label>Color Sample:</label>
+    <div class="color-sample mb-1" style="background-color:@($"rgb({Red},{Green},{Blue})")"></div>
+
+    <label>Red</label>
+    <input type="range" min="0" max="255" class="form-control red-picker" @bind="Red" />
+
+    <label>Green</label>
+    <input type="range" min="0" max="255" class="form-control green-picker" @bind="Green" />
+
+    <label>Blue</label>
+    <input type="range" min="0" max="255" class="form-control blue-picker" @bind="Blue" />
+</div>
+
+
+@code {
+
+    private ColorPickerModel _color;
+
+    [Parameter]
+    public ColorPickerModel Color
+    {
+        get
+        {
+            return _color;
+        }
+        set
+        {
+            _color = value;
+
+        }
+    }
+
+    [Parameter]
+    public EventCallback<ColorPickerModel> ColorChanged { get; set; }
+
+    public byte Blue
+    {
+        get => Color.Blue;
+        set
+        {
+            Color.Blue = value;
+            ColorChanged.InvokeAsync(_color);
+        }
+    }
+    public byte Green
+    {
+        get => Color.Green;
+        set
+        {
+            Color.Green = value;
+            ColorChanged.InvokeAsync(_color);
+        }
+    }
+    public byte Red
+    {
+        get => Color.Red;
+        set
+        {
+            Color.Red = value;
+            ColorChanged.InvokeAsync(_color);
+        }
+    }
+}

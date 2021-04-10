@@ -98,8 +98,8 @@ if ($Hostname) {
 
     Replace-LineInFile -FilePath "$Root\Shared\Models\DesktopAppConfig.cs" -MatchPattern "private string _host" -ReplaceLineWith "private string _host = `"$($Hostname)`";" -MaxCount 1
     Replace-LineInFile -FilePath "$Root\Agent.Installer.Win\ViewModels\MainWindowViewModel.cs" -MatchPattern "private string _serverUrl" -ReplaceLineWith "private string _serverUrl = `"$($Hostname)`";" -MaxCount 1
-    Replace-LineInFile -FilePath "$Root\Desktop.Win\Properties\PublishProfiles\ClickOnce-x64.pubxml" -MatchPattern "<InstallUrl>" -ReplaceLineWith "    <InstallUrl>$Hostname/Downloads/Win-x64/ClickOnce/</InstallUrl>"
-    Replace-LineInFile -FilePath "$Root\Desktop.Win\Properties\PublishProfiles\ClickOnce-x86.pubxml" -MatchPattern "<InstallUrl>" -ReplaceLineWith "    <InstallUrl>$Hostname/Downloads/Win-x86/ClickOnce/</InstallUrl>"
+    Replace-LineInFile -FilePath "$Root\Desktop.Win\Properties\PublishProfiles\ClickOnce-x64.pubxml" -MatchPattern "<InstallUrl>" -ReplaceLineWith "    <InstallUrl>$Hostname/Content/Win-x64/ClickOnce/</InstallUrl>"
+    Replace-LineInFile -FilePath "$Root\Desktop.Win\Properties\PublishProfiles\ClickOnce-x86.pubxml" -MatchPattern "<InstallUrl>" -ReplaceLineWith "    <InstallUrl>$Hostname/Content/Win-x86/ClickOnce/</InstallUrl>"
 }
 else {
     Write-Warning "`nNo hostname parameter was specified.  The server name will need to be entered manually in the desktop client.`n"
@@ -144,27 +144,27 @@ dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:Publ
 
 # Publish Windows GUI App (64-bit)
 dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=desktop-win-x64 --configuration Release "$Root\Desktop.Win"
-&"$MSBuildPath" "$Root\Desktop.Win" -t:Restore -t:Publish -p:PublishProfile="ClickOnce-x64.pubxml" -p:Configuration=Release -p:Platform=x64 -p:ApplicationVersion=$CurrentVersion -p:Version=$CurrentVersion -p:FileVersion=$CurrentVersion -p:PublishDir="$Root\Server\wwwroot\Downloads\Win-x64\ClickOnce\"
+&"$MSBuildPath" "$Root\Desktop.Win" -t:Restore -t:Publish -p:PublishProfile="ClickOnce-x64.pubxml" -p:Configuration=Release -p:Platform=x64 -p:ApplicationVersion=$CurrentVersion -p:Version=$CurrentVersion -p:FileVersion=$CurrentVersion -p:PublishDir="$Root\Server\wwwroot\Content\Win-x64\ClickOnce\"
 
 if ($SignAssemblies) {
-    &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Downloads\Win-x64\Remotely_Desktop.exe"
+    &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Content\Win-x64\Remotely_Desktop.exe"
 }
 
 
 # Publish Windows GUI App (32-bit)
 dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=desktop-win-x86 --configuration Release "$Root\Desktop.Win"
-&"$MSBuildPath" "$Root\Desktop.Win" -t:Restore -t:Publish -p:PublishProfile="ClickOnce-x86.pubxml" -p:Configuration=Release -p:Platform=x86 -p:ApplicationVersion=$CurrentVersion -p:Version=$CurrentVersion -p:FileVersion=$CurrentVersion -p:PublishDir="$Root\Server\wwwroot\Downloads\Win-x86\ClickOnce\"
+&"$MSBuildPath" "$Root\Desktop.Win" -t:Restore -t:Publish -p:PublishProfile="ClickOnce-x86.pubxml" -p:Configuration=Release -p:Platform=x86 -p:ApplicationVersion=$CurrentVersion -p:Version=$CurrentVersion -p:FileVersion=$CurrentVersion -p:PublishDir="$Root\Server\wwwroot\Content\Win-x86\ClickOnce\"
 
 if ($SignAssemblies) {
-    &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Downloads\Win-x86\Remotely_Desktop.exe"
+    &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Content\Win-x86\Remotely_Desktop.exe"
 }
 
 # Build installer.
 &"$MSBuildPath" "$Root\Agent.Installer.Win" /t:Restore 
 &"$MSBuildPath" "$Root\Agent.Installer.Win" /t:Build /p:Configuration=Release /p:Platform=AnyCPU /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion
-Copy-Item -Path "$Root\Agent.Installer.Win\bin\Release\Remotely_Installer.exe" -Destination "$Root\Server\wwwroot\Downloads\Remotely_Installer.exe" -Force
+Copy-Item -Path "$Root\Agent.Installer.Win\bin\Release\Remotely_Installer.exe" -Destination "$Root\Server\wwwroot\Content\Remotely_Installer.exe" -Force
 if ($SignAssemblies) {
-    &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Downloads\Remotely_Installer.exe"
+    &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Content\Remotely_Installer.exe"
 }
 
 # Compress Core clients.
@@ -173,21 +173,21 @@ Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Wi
 while ((Test-Path -Path "$PublishDir\Remotely-Win10-x64.zip") -eq $false){
     Start-Sleep -Seconds 1
 }
-Move-Item -Path "$PublishDir\Remotely-Win10-x64.zip" -Destination "$Root\Server\wwwroot\Downloads\Remotely-Win10-x64.zip" -Force
+Move-Item -Path "$PublishDir\Remotely-Win10-x64.zip" -Destination "$Root\Server\wwwroot\Content\Remotely-Win10-x64.zip" -Force
 
 $PublishDir =  "$Root\Agent\bin\Release\net5.0\win10-x86\publish"
 Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Win10-x86.zip" -Force
 while ((Test-Path -Path "$PublishDir\Remotely-Win10-x86.zip") -eq $false){
     Start-Sleep -Seconds 1
 }
-Move-Item -Path "$PublishDir\Remotely-Win10-x86.zip" -Destination "$Root\Server\wwwroot\Downloads\Remotely-Win10-x86.zip" -Force
+Move-Item -Path "$PublishDir\Remotely-Win10-x86.zip" -Destination "$Root\Server\wwwroot\Content\Remotely-Win10-x86.zip" -Force
 
 $PublishDir =  "$Root\Agent\bin\Release\net5.0\linux-x64\publish"
 Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Linux.zip" -Force
 while ((Test-Path -Path "$PublishDir\Remotely-Linux.zip") -eq $false){
     Start-Sleep -Seconds 1
 }
-Move-Item -Path "$PublishDir\Remotely-Linux.zip" -Destination "$Root\Server\wwwroot\Downloads\Remotely-Linux.zip" -Force
+Move-Item -Path "$PublishDir\Remotely-Linux.zip" -Destination "$Root\Server\wwwroot\Content\Remotely-Linux.zip" -Force
 
 
 

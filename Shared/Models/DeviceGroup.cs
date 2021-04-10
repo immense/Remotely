@@ -25,5 +25,8 @@ namespace Remotely.Shared.Models
 
         [JsonIgnore]
         public List<RemotelyUser> Users { get; set; }
+
+        [JsonIgnore]
+        public List<ScriptSchedule> ScriptSchedules { get; set; }
     }
 }

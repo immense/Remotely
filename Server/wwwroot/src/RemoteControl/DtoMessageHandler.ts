@@ -1,9 +1,9 @@
 ﻿import * as UI from "./UI.js";
-import { BaseDtoType } from "../Shared/Enums/BaseDtoType.js";
+import { BaseDtoType } from "./Enums/BaseDtoType.js";
 import { BaseDto } from "./Interfaces/BaseDto.js";
 import { ViewerApp } from "./App.js";
-import { ShowMessage } from "../Shared/UI.js";
-import { Sound } from "../Shared/Sound.js";
+import { ShowMessage } from "./UI.js";
+import { Sound } from "./Sound.js";
 import {
     AudioSampleDto,
     CaptureFrameDto,

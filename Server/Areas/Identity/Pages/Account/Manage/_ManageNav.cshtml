@@ -1,27 +1,11 @@
 ﻿@inject SignInManager<RemotelyUser> SignInManager
-@inject UserManager<RemotelyUser> UserManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
-    var user = await UserManager.GetUserAsync(User);
 }
-
 <ul class="nav nav-pills flex-column">
     <li class="nav-item"><a class="nav-link @ManageNavPages.IndexNavClass(ViewContext)" id="profile" asp-page="./Index">Profile</a></li>
+    <li class="nav-item"><a class="nav-link @ManageNavPages.EmailNavClass(ViewContext)" id="email" asp-page="./Email">Email</a></li>
     <li class="nav-item"><a class="nav-link @ManageNavPages.ChangePasswordNavClass(ViewContext)" id="change-password" asp-page="./ChangePassword">Password</a></li>
-    <li class="nav-item"><a id="options" class="nav-link @ManageNavPages.OptionsNavClass(ViewContext)" asp-page="./Options">Options</a></li>
-    @if (user.IsAdministrator)
-    {
-        <li class="nav-item"><a id="options" class="nav-link @ManageNavPages.OrganizationNavClass(ViewContext)" asp-page="./Organization">Organization</a></li>
-        <li class="nav-item"><a id="options" class="nav-link @ManageNavPages.BrandingNavClass(ViewContext)" asp-page="./Branding">Agent Branding</a></li>
-        <li class="nav-item"><a id="options" class="nav-link @ManageNavPages.ApiTokensNavClass(ViewContext)" asp-page="./ApiTokens">API Access</a></li>
-        <li class="nav-item"><a id="options" class="nav-link @ManageNavPages.ServerLogsNavClass(ViewContext)" asp-page="./ServerLogs">Server Logs</a></li>
-    }
-
-    @if (user.IsServerAdmin)
-    {
-        <li class="nav-item"><a id="options" class="nav-link @ManageNavPages.ServerConfigNavClass(ViewContext)" asp-page="./ServerConfig">Server Config</a></li>
-    }
-
     @if (hasExternalLogins)
     {
         <li id="external-logins" class="nav-item"><a id="external-login" class="nav-link @ManageNavPages.ExternalLoginsNavClass(ViewContext)" asp-page="./ExternalLogins">External logins</a></li>

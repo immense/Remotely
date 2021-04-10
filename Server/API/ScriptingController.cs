@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Remotely.Server.Attributes;
 using Remotely.Server.Hubs;
 using Remotely.Server.Services;
 using Remotely.Shared.Utilities;
@@ -11,6 +10,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Remotely.Shared.Enums;
+using Remotely.Server.Auth;
 
 namespace Remotely.Server.API
 {
@@ -18,23 +19,34 @@ namespace Remotely.Server.API
     [Route("api/[controller]")]
     public class ScriptingController : ControllerBase
     {
-        public ScriptingController(IDataService dataService,
-            UserManager<RemotelyUser> userManager,
+        private readonly IHubContext<AgentHub> _agentHubContext;
+
+        private readonly IDataService _dataService;
+
+        private readonly IExpiringTokenService _expiringTokenService;
+
+        private readonly UserManager<RemotelyUser> _userManager;
+
+        public ScriptingController(UserManager<RemotelyUser> userManager,
+                                            IDataService dataService,
+            IExpiringTokenService expiringTokenService,
             IHubContext<AgentHub> agentHub)
         {
-            DataService = dataService;
-            UserManager = userManager;
-            AgentHubContext = agentHub;
+            _dataService = dataService;
+            _expiringTokenService = expiringTokenService;
+            _userManager = userManager;
+            _agentHubContext = agentHub;
         }
-
-        private IDataService DataService { get; }
-        private IHubContext<AgentHub> AgentHubContext { get; }
-        private UserManager<RemotelyUser> UserManager { get; }
 
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
         [HttpPost("[action]/{mode}/{deviceID}")]
-        public async Task<ActionResult<CommandResult>> ExecuteCommand(string mode, string deviceID)
+        public async Task<ActionResult<ScriptResult>> ExecuteCommand(string mode, string deviceID)
         {
+            if (!Enum.TryParse<ScriptingShell>(mode, true, out var shell))
+            {
+                return BadRequest("Unable to parse shell type.  Use either PSCore, WinPS, Bash, or CMD.");
+            }
+
             var command = string.Empty;
             using (var sr = new StreamReader(Request.Body))
             {
@@ -45,9 +57,9 @@ namespace Remotely.Server.API
             if (Request.HttpContext.User.Identity.IsAuthenticated)
             {
                 var username = Request.HttpContext.User.Identity.Name;
-                var user = await UserManager.FindByNameAsync(username);
+                var user = await _userManager.FindByNameAsync(username);
                 userID = user.Id;
-                if (!DataService.DoesUserHaveAccessToDevice(deviceID, user))
+                if (!_dataService.DoesUserHaveAccessToDevice(deviceID, user))
                 {
                     return Unauthorized();
                 }
@@ -65,27 +77,19 @@ namespace Remotely.Server.API
                 return NotFound();
             }
 
-            var commandResult = new CommandResult()
-            {
-                CommandMode = "PSCore",
-                CommandText = command,
-                SenderConnectionID = string.Empty,
-                SenderUserID = userID,
-                TargetDeviceIDs = new string[] { deviceID },
-                OrganizationID = orgID
-            };
-            DataService.AddOrUpdateCommandResult(commandResult);
             var requestID = Guid.NewGuid().ToString();
-            await AgentHubContext.Clients.Client(connection.Key).SendAsync("ExecuteCommandFromApi", mode, requestID, command, commandResult.ID, Guid.NewGuid().ToString());
+            var authToken = _expiringTokenService.GetToken(Time.Now.AddMinutes(AppConstants.ScriptRunExpirationMinutes));
+
+            await _agentHubContext.Clients.Client(connection.Key).SendAsync("ExecuteCommandFromApi", shell, authToken, requestID, command, User?.Identity?.Name);
+
             var success = await TaskHelper.DelayUntilAsync(() => AgentHub.ApiScriptResults.TryGetValue(requestID, out _), TimeSpan.FromSeconds(30));
             if (!success)
             {
-                return commandResult;
+                return NotFound();
             }
             AgentHub.ApiScriptResults.TryGetValue(requestID, out var commandID);
             AgentHub.ApiScriptResults.Remove(requestID);
-            DataService.DetachEntity(commandResult);
-            var result = DataService.GetCommandResult(commandID.ToString(), orgID);
+            var result = _dataService.GetScriptResult(commandID.ToString(), orgID);
             return result;
         }
     }

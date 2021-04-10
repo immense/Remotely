@@ -1,0 +1,124 @@
+﻿@page "/scripts"
+@inherits AuthComponentBase
+@using System.Collections
+@inject IDataService DataService 
+
+<CascadingValue Value="this">
+    <TabControl InitialActiveTab="saved-scripts">
+        <TabHeaders>
+            <TabHeader Name="saved-scripts">
+                Saved Scripts
+            </TabHeader>
+            <TabHeader Name="run-script">
+                Run Script
+            </TabHeader>
+            <TabHeader Name="script-schedules">
+                Script Schedules
+            </TabHeader>
+        </TabHeaders>
+        <TabContents>
+            <TabContent Name="saved-scripts">
+                <SavedScripts />
+            </TabContent>
+            <TabContent Name="run-script">
+                <RunScript />
+            </TabContent>
+            <TabContent Name="script-schedules">
+                <ScriptSchedules />
+            </TabContent>
+        </TabContents>
+    </TabControl>
+</CascadingValue>
+
+
+@code {
+
+    public bool ShowOnlyMyScripts { get; set; } = true;
+
+    public readonly List<ScriptTreeNode> TreeNodes = new();
+
+
+    public string GetItemIconCss(ScriptTreeNode viewModel)
+    {
+        if (viewModel.ItemType == TreeItemType.Folder)
+        {
+            return "oi oi-folder text-warning";
+        }
+        return "oi oi-script text-success";
+    }
+
+    public async Task RefreshScripts()
+    {
+        TreeNodes.Clear();
+
+        var allScripts = await DataService.GetSavedScriptsWithoutContent(User.Id, User.OrganizationID);
+
+        foreach (var script in allScripts)
+        {
+            if (ShowOnlyMyScripts &&
+                script.CreatorId != User.Id &&
+                !script.IsPublic)
+            {
+                continue;
+            }
+
+            var root = BuildFolderPath(script.FolderPath);
+            root.Add(new ScriptTreeNode()
+            {
+                Name = script.Name,
+                Script = script,
+                ItemType = TreeItemType.Item
+            });
+        }
+
+        TreeNodes.Sort((a, b) =>
+        {
+            if (a.ItemType != b.ItemType)
+            {
+                return Comparer.Default.Compare(a.ItemType, b.ItemType);
+            }
+
+            return Comparer.Default.Compare(a.Name, b.Name);
+        });
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshScripts();
+        await base.OnInitializedAsync();
+    }
+
+
+    private List<ScriptTreeNode> BuildFolderPath(string folderPath)
+    {
+        var root = TreeNodes;
+
+        if (!string.IsNullOrWhiteSpace(folderPath))
+        {
+            var paths = folderPath.Split("/", StringSplitOptions.RemoveEmptyEntries);
+            for (var i = 0; i < paths.Length; i++)
+            {
+                var existingParent = root.Find(x => x.Name == paths[i]);
+
+                var newItem = new ScriptTreeNode()
+                {
+                    ItemType = TreeItemType.Folder,
+                    Name = paths[i]
+                };
+
+                if (existingParent is not null)
+                {
+                    existingParent.ChildItems.Add(newItem);
+                }
+                else
+                {
+                    root.Add(newItem);
+                }
+
+                root = newItem.ChildItems;
+            }
+        }
+
+        return root;
+    }
+}

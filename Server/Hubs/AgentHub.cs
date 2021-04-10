@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Remotely.Server.Models;
 using Remotely.Server.Services;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
+using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,23 +17,27 @@ namespace Remotely.Server.Hubs
 {
     public class AgentHub : Hub
     {
+        private readonly IApplicationConfig _appConfig;
+        private readonly ICircuitManager _circuitManager;
+        private readonly IExpiringTokenService _expiringTokenService;
+        private readonly IDataService _dataService;
+        private readonly IHubContext<ViewerHub> _viewerHubContext;
+
         public AgentHub(IDataService dataService,
             IApplicationConfig appConfig,
-            IHubContext<BrowserHub> browserHubContext,
-            IHubContext<ViewerHub> viewerHubContext)
+            IHubContext<ViewerHub> viewerHubContext,
+            ICircuitManager circuitManager,
+            IExpiringTokenService expiringTokenService)
         {
-            DataService = dataService;
-            BrowserHubContext = browserHubContext;
-            ViewerHubContext = viewerHubContext;
-            AppConfig = appConfig;
+            _dataService = dataService;
+            _viewerHubContext = viewerHubContext;
+            _appConfig = appConfig;
+            _circuitManager = circuitManager;
+            _expiringTokenService = expiringTokenService;
         }
 
         public static IMemoryCache ApiScriptResults { get; } = new MemoryCache(new MemoryCacheOptions());
         public static ConcurrentDictionary<string, Device> ServiceConnections { get; } = new ConcurrentDictionary<string, Device>();
-        public IApplicationConfig AppConfig { get; }
-        public IHubContext<ViewerHub> ViewerHubContext { get; }
-        private IHubContext<BrowserHub> BrowserHubContext { get; }
-        private IDataService DataService { get; }
         private Device Device
         {
             get
@@ -43,54 +50,37 @@ namespace Remotely.Server.Hubs
             }
         }
 
-        public void AddDeviceAlert(string alertMessage)
+        public static Device GetDevice(string deviceId)
         {
-
-            var options = new AlertOptions()
-            {
-                AlertDeviceID = Device.ID,
-                AlertMessage = alertMessage,
-                ShouldAlert = true
-            };
-            DataService.AddAlert(options, Device.OrganizationID);
+            return ServiceConnections.Values.FirstOrDefault(x => x.ID == deviceId);
         }
 
-        public Task BashResultViaAjax(string commandID)
+        public Task Chat(string message, bool disconnected, string browserConnectionId)
         {
-            var commandResult = DataService.GetCommandResult(commandID);
-            return BrowserHubContext.Clients.Client(commandResult.SenderConnectionID).SendAsync("BashResultViaAjax", commandID, Device.ID);
-        }
-
-        public Task Chat(string message, bool disconnected, string senderConnectionID)
-        {
-            if (BrowserHub.ConnectionIdToUserLookup.ContainsKey(senderConnectionID))
+            if (_circuitManager.TryGetConnection(browserConnectionId, out var connection))
             {
-                return BrowserHubContext.Clients.Client(senderConnectionID).SendAsync("Chat", Device.ID, Device.DeviceName, message, disconnected);
+                return connection.InvokeCircuitEvent(CircuitEventName.ChatReceived, Device.ID, Device.DeviceName, message, disconnected);
             }
             else
             {
-                return Clients.Caller.SendAsync("Chat", string.Empty, string.Empty, string.Empty, true, senderConnectionID);
+                return Clients.Caller.SendAsync("Chat", string.Empty, string.Empty, string.Empty, true, browserConnectionId);
             }
         }
 
-        public Task CMDResultViaAjax(string commandID)
-        {
-            var commandResult = DataService.GetCommandResult(commandID);
-            return BrowserHubContext.Clients.Client(commandResult.SenderConnectionID).SendAsync("CMDResultViaAjax", commandID, Device.ID);
-        }
 
-        public Task CommandResult(GenericCommandResult result)
+        public async Task CheckForPendingSriptRuns()
         {
-            result.DeviceID = Device.ID;
-            var commandResult = DataService.GetCommandResult(result.CommandResultID);
-            commandResult.CommandResults.Add(result);
-            DataService.AddOrUpdateCommandResult(commandResult);
-            return BrowserHubContext.Clients.Client(commandResult.SenderConnectionID).SendAsync("CommandResult", result);
-        }
-
-        public void CommandResultViaApi(string commandID, string requestID)
-        {
-            ApiScriptResults.Set(requestID, commandID, DateTimeOffset.Now.AddHours(1));
+            var authToken = _expiringTokenService.GetToken(Time.Now.AddMinutes(AppConstants.ScriptRunExpirationMinutes));
+            var scriptRuns = await _dataService.GetPendingScriptRuns(Device.ID);
+            foreach (var run in scriptRuns)
+            {
+                await Clients.Caller.SendAsync("RunScript",
+                    run.SavedScriptId,
+                    run.Id,
+                    run.Initiator,
+                    run.InputType,
+                    authToken);
+            }
         }
 
         public Task<bool> DeviceCameOnline(Device device)
@@ -104,7 +94,7 @@ namespace Remotely.Server.Hubs
 
                 if (ServiceConnections.Any(x => x.Value.ID == device.ID))
                 {
-                    DataService.WriteEvent(new EventLog()
+                    _dataService.WriteEvent(new EventLog()
                     {
                         EventType = EventType.Info,
                         OrganizationID = device.OrganizationID,
@@ -125,22 +115,23 @@ namespace Remotely.Server.Hubs
                     return Task.FromResult(false);
                 }
 
-                if (DataService.AddOrUpdateDevice(device, out var updatedDevice))
+                if (_dataService.AddOrUpdateDevice(device, out var updatedDevice))
                 {
                     Device = updatedDevice;
                     ServiceConnections.AddOrUpdate(Context.ConnectionId, Device, (id, d) => Device);
 
-                    var userIDs = BrowserHub.ConnectionIdToUserLookup.Values.Select(x => x.Id);
+                    var userIDs = _circuitManager.Connections.Select(x => x.User.Id);
 
-                    var filteredUserIDs = DataService.FilterUsersByDevicePermission(userIDs, Device.ID);
+                    var filteredUserIDs = _dataService.FilterUsersByDevicePermission(userIDs, Device.ID);
 
-                    var connectionIds = BrowserHub.ConnectionIdToUserLookup
-                                                   .Where(x => x.Value.OrganizationID == Device.OrganizationID &&
-                                                                filteredUserIDs.Contains(x.Value.Id))
-                                                   .Select(x => x.Key)
-                                                   .ToList();
+                    var connections = _circuitManager.Connections
+                        .Where(x => x.User.OrganizationID == Device.OrganizationID &&
+                            filteredUserIDs.Contains(x.User.Id));
 
-                    BrowserHubContext.Clients.Clients(connectionIds).SendAsync("DeviceCameOnline", Device);
+                    foreach (var connection in connections)
+                    {
+                        connection.InvokeCircuitEvent(CircuitEventName.DeviceUpdate, Device);
+                    }
                     return Task.FromResult(true);
                 }
                 else
@@ -151,18 +142,18 @@ namespace Remotely.Server.Hubs
             }
             catch (Exception ex)
             {
-                DataService.WriteEvent(ex, device?.OrganizationID);
+                _dataService.WriteEvent(ex, device?.OrganizationID);
             }
 
             Context.Abort();
             return Task.FromResult(false);
         }
 
-        public Task DeviceHeartbeat(Device device)
+        public async Task DeviceHeartbeat(Device device)
         {
             if (CheckForDeviceBan(device.ID, device.DeviceName))
             {
-                return Task.CompletedTask;
+                return;
             }
 
             var ip = Context.GetHttpContext()?.Connection?.RemoteIpAddress;
@@ -174,85 +165,103 @@ namespace Remotely.Server.Hubs
 
             if (CheckForDeviceBan(device.PublicIP))
             {
-                return Task.CompletedTask;
+                return;
             }
 
 
-            DataService.AddOrUpdateDevice(device, out var updatedDevice);
+            _dataService.AddOrUpdateDevice(device, out var updatedDevice);
             Device = updatedDevice;
             ServiceConnections.AddOrUpdate(Context.ConnectionId, Device, (id, d) => Device);
 
-            var userIDs = BrowserHub.ConnectionIdToUserLookup.Values.Select(x => x.Id);
+            var userIDs = _circuitManager.Connections.Select(x => x.User.Id);
 
-            var filteredUserIDs = DataService.FilterUsersByDevicePermission(userIDs, Device.ID);
+            var filteredUserIDs = _dataService.FilterUsersByDevicePermission(userIDs, Device.ID);
 
-            var connectionIds = BrowserHub.ConnectionIdToUserLookup
-                                           .Where(x => x.Value.OrganizationID == Device.OrganizationID &&
-                                                        filteredUserIDs.Contains(x.Value.Id))
-                                           .Select(x => x.Key)
-                                           .ToList();
+            var connections = _circuitManager.Connections
+                .Where(x => x.User.OrganizationID == Device.OrganizationID &&
+                    filteredUserIDs.Contains(x.User.Id));
 
-            return BrowserHubContext.Clients.Clients(connectionIds).SendAsync("DeviceHeartbeat", Device);
+            foreach (var connection in connections)
+            {
+                _ = connection.InvokeCircuitEvent(CircuitEventName.DeviceUpdate, Device);
+            }
+
+
+            await CheckForPendingSriptRuns();
         }
 
-        public Task DisplayMessage(string consoleMessage, string popupMessage, string requesterID)
+
+        public Task<bool> DisplayMessage(string consoleMessage, string popupMessage, string className, string requesterID)
         {
-            return BrowserHubContext.Clients.Client(requesterID).SendAsync("DisplayMessage", consoleMessage, popupMessage);
+            return _circuitManager.InvokeOnConnection(requesterID, CircuitEventName.DisplayMessage, consoleMessage, popupMessage, className);
         }
 
-        public Task DownloadFile(string fileID, string requesterID)
+        public Task<bool> DownloadFile(string fileID, string requesterID)
         {
-            return BrowserHubContext.Clients.Client(requesterID).SendAsync("DownloadFile", fileID);
+            return _circuitManager.InvokeOnConnection(requesterID, CircuitEventName.DownloadFile, fileID);
         }
 
-        public Task DownloadFileProgress(int progressPercent, string requesterID)
+        public Task<bool> DownloadFileProgress(int progressPercent, string requesterID)
         {
-            return BrowserHubContext.Clients.Client(requesterID).SendAsync("DownloadFileProgress", progressPercent);
+            return _circuitManager.InvokeOnConnection(requesterID, CircuitEventName.DownloadFileProgress, progressPercent);
         }
 
-        public override async Task OnDisconnectedAsync(Exception exception)
+        public override Task OnDisconnectedAsync(Exception exception)
         {
             try
             {
                 if (Device != null)
                 {
-                    DataService.DeviceDisconnected(Device.ID);
+                    _dataService.DeviceDisconnected(Device.ID);
 
                     Device.IsOnline = false;
 
-                    var connectionIds = BrowserHub.ConnectionIdToUserLookup
-                                                       .Where(x => x.Value.OrganizationID == Device.OrganizationID)
-                                                       .Select(x => x.Key)
-                                                       .ToList();
+                    var userIDs = _circuitManager.Connections.Select(x => x.User.Id);
 
-                    await BrowserHubContext.Clients.Clients(connectionIds).SendAsync("DeviceWentOffline", Device);
+                    var filteredUserIDs = _dataService.FilterUsersByDevicePermission(userIDs, Device.ID);
+
+                    var connections = _circuitManager.Connections
+                        .Where(x => x.User.OrganizationID == Device.OrganizationID &&
+                            filteredUserIDs.Contains(x.User.Id));
+
+                    foreach (var connection in connections)
+                    {
+                        connection.InvokeCircuitEvent(CircuitEventName.DeviceWentOffline, Device);
+                    }
                 }
+                return base.OnDisconnectedAsync(exception);
             }
             finally
             {
                 ServiceConnections.TryRemove(Context.ConnectionId, out _);
-                await base.OnDisconnectedAsync(exception);
             }
         }
 
-        public Task PSCoreResult(PSCoreCommandResult result)
+        public Task ReturnPowerShellCompletions(PwshCommandCompletion completion, CompletionIntent intent, string senderConnectionId)
         {
-            result.DeviceID = Device.ID;
-            var commandResult = DataService.GetCommandResult(result.CommandResultID);
-            commandResult.PSCoreResults.Add(result);
-            DataService.AddOrUpdateCommandResult(commandResult);
-            return BrowserHubContext.Clients.Client(commandResult.SenderConnectionID).SendAsync("PSCoreResult", result);
+            return _circuitManager.InvokeOnConnection(senderConnectionId, CircuitEventName.PowerShellCompletions, completion, intent);
         }
 
-        public async void PSCoreResultViaAjax(string commandID)
+        public Task ScriptResult(string scriptResultId)
         {
-            var commandResult = DataService.GetCommandResult(commandID);
-            await BrowserHubContext.Clients.Client(commandResult.SenderConnectionID).SendAsync("PSCoreResultViaAjax", commandID, Device.ID);
+            var result = _dataService.GetScriptResult(scriptResultId);
+            return _circuitManager.InvokeOnConnection(result.SenderConnectionID,
+                CircuitEventName.ScriptResult,
+                result);
         }
 
+        public void ScriptResultViaApi(string commandID, string requestID)
+        {
+            ApiScriptResults.Set(requestID, commandID, DateTimeOffset.Now.AddHours(1));
+        }
         public Task SendConnectionFailedToViewers(List<string> viewerIDs)
         {
-            return ViewerHubContext.Clients.Clients(viewerIDs).SendAsync("ConnectionFailed");
+            return _viewerHubContext.Clients.Clients(viewerIDs).SendAsync("ConnectionFailed");
+        }
+
+        public Task SendLogs(string logChunk, string requesterConnectionId)
+        {
+            return _circuitManager.InvokeOnConnection(requesterConnectionId, CircuitEventName.RemoteLogsReceived, logChunk);
         }
 
         public Task SendServerVerificationToken()
@@ -263,20 +272,13 @@ namespace Remotely.Server.Hubs
         public void SetServerVerificationToken(string verificationToken)
         {
             Device.ServerVerificationToken = verificationToken;
-            DataService.SetServerVerificationToken(Device.ID, verificationToken);
+            _dataService.SetServerVerificationToken(Device.ID, verificationToken);
         }
 
         public Task TransferCompleted(string transferID, string requesterID)
         {
-            return BrowserHubContext.Clients.Client(requesterID).SendAsync("TransferCompleted", transferID);
+            return _circuitManager.InvokeOnConnection(requesterID, CircuitEventName.TransferCompleted, transferID);
         }
-
-        public Task WinPSResultViaAjax(string commandID)
-        {
-            var commandResult = DataService.GetCommandResult(commandID);
-            return BrowserHubContext.Clients.Client(commandResult.SenderConnectionID).SendAsync("WinPSResultViaAjax", commandID, Device.ID);
-        }
-
         private bool CheckForDeviceBan(params string[] deviceIdNameOrIPs)
         {
             foreach (var device in deviceIdNameOrIPs)
@@ -286,10 +288,10 @@ namespace Remotely.Server.Hubs
                     continue;
                 }
 
-                if (AppConfig.BannedDevices.Any(x => !string.IsNullOrWhiteSpace(x) &&
+                if (_appConfig.BannedDevices.Any(x => !string.IsNullOrWhiteSpace(x) &&
                     x.Equals(device, StringComparison.OrdinalIgnoreCase)))
                 {
-                    DataService.WriteEvent($"Device ID/name/IP ({device}) is banned.  Sending uninstall command.", null);
+                    _dataService.WriteEvent($"Device ID/name/IP ({device}) is banned.  Sending uninstall command.", null);
 
                     _ = Clients.Caller.SendAsync("UninstallAgent");
                     return true;

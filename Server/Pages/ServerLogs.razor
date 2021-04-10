@@ -1,0 +1,122 @@
+﻿@page "/server-logs"
+@attribute [Authorize]
+@inherits AuthComponentBase
+
+@inject IDataService DataService
+@inject IToastService ToastService
+@inject IJsInterop JsInterop
+
+<h3 class="mb-3">Server Logs</h3>
+
+
+@if (User.IsAdministrator)
+{
+    <div class="buttons-row mb-3">
+        <div>
+            <button class="btn btn-danger" type="button" @onclick="ClearAllLogs">
+                Delete Logs
+            </button>
+        </div>
+        <div>
+            <button class="btn btn-primary"
+                    onclick="location.assign('/API/ServerLogs/Download')">
+                Download Logs
+            </button>
+        </div>
+        <div>
+            <button class="btn btn-primary"
+                    onclick="location.assign('/API/ScriptResults')">
+                Download Script History
+            </button>
+        </div>
+    </div>
+    <div class="filters-row mb-3">
+        <div style="display:inline-block">
+            <strong>Type:</strong>
+            <br />
+            <select @bind="_eventType">
+                <option value="">All</option>
+                @foreach (var eventType in Enum.GetValues(typeof(EventType)))
+                {
+                    <option @key="eventType" value="@eventType">@eventType</option>
+                }
+            </select>
+        </div>
+        <div style="display:inline-block">
+            <strong>Filter:</strong>
+            <br />
+            <input type="text" @bind="_messageFilter" />
+        </div>
+        <div style="display:inline-block">
+            <strong>From:</strong>
+            <br />
+            <input type="date" @bind="_fromDate" />
+        </div>
+        <div style="display:inline-block">
+            <strong>To:</strong>
+            <br />
+            <input type="date" @bind-value="_toDate" />
+        </div>
+    </div>
+
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Timestamp</th>
+                <th>Message</th>
+                <th>Source</th>
+                <th>Stack Trace</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var eventLog in FilteredLogs)
+            {
+                <tr @key="eventLog">
+                    <td>@eventLog.EventType</td>
+                    <td>@eventLog.TimeStamp</td>
+                    <td>@eventLog.Message</td>
+                    <td>@eventLog.Source</td>
+                    <td>@eventLog.StackTrace</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <h5 class="text-muted">Only organization administrators can view this page.</h5>
+}
+
+@code {
+    private readonly List<EventLog> _filteredLogs = new();
+    private EventType? _eventType;
+    private string _messageFilter;
+    private DateTimeOffset _fromDate = DateTimeOffset.Now.AddDays(-7);
+    private DateTimeOffset _toDate = DateTimeOffset.Now;
+
+
+
+    private IEnumerable<EventLog> FilteredLogs
+    {
+        get
+        {
+            return DataService.GetEventLogs(User.UserName,
+                   _fromDate,
+                   _toDate,
+                   _eventType,
+                   _messageFilter);
+        }
+    }
+
+    private async Task ClearAllLogs()
+    {
+        var result = await JsInterop.Confirm("Are you sure you want to delete all logs?");
+        if (result)
+        {
+            await DataService.ClearLogs(User.UserName);
+            ToastService.ShowToast("Logs deleted.");
+        }
+    }
+
+}

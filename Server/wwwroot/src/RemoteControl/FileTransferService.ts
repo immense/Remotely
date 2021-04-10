@@ -1,6 +1,6 @@
 ﻿import { FileTransferProgress, FileTransferInput, FileTransferNameSpan } from "./UI.js";
 import { ViewerApp } from "./App.js";
-import { ShowMessage } from "../Shared/UI.js";
+import { ShowMessage } from "./UI.js";
 import { FileDto } from "./Interfaces/Dtos.js";
 
 const PartialDownloads: Record<string, Array<Uint8Array>> = {};

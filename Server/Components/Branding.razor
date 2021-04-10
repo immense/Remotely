@@ -1,0 +1,153 @@
+﻿@page "/branding"
+@inherits AuthComponentBase
+@inject IDataService DataService  
+@inject IToastService ToastService 
+@using Remotely.Server.Models
+@using System.ComponentModel.DataAnnotations 
+
+<h3 class="mb-3">Branding</h3>
+
+
+@if (User.IsAdministrator != true)
+{
+    <h5 class="text-muted">Only organization administrators can view this page.</h5>
+}
+else
+{
+    <AlertBanner Message="@_alertMessage" />
+
+    <div class="row">
+        <div class="col-sm-8 col-lg-6 col-xl-5">
+            <div class="form-group">
+                <label class="mb-1">Branding Areas</label>
+                <br />
+                <img class="img-fluid" src="/images/Remotely_Desktop.png" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-8 col-lg-6 col-xl-5">
+            <EditForm OnValidSubmit="HandleValidSubmit" Model="_inputModel">
+                <DataAnnotationsValidator />
+
+                <div class="form-group mb-4">
+                    <label class="font-weight-bold">Product Name</label>
+                    <InputText class="form-control" @bind-Value="_inputModel.ProductName" />
+                    <ValidationMessage For="() => _inputModel.ProductName" />
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(_base64Icon))
+                {
+                    <div class="form-group mb-4">
+                        <label class="font-weight-bold">Current Icon</label>
+                        <br />
+                        <img class="img-fluid" src="data:image/png;base64,@_base64Icon" />
+                    </div>
+                }
+
+                <div class="form-group mb-4">
+                    <label class="font-weight-bold"></label>
+                    <InputFile type="file" accept="image/png" class="form-control" OnChange="IconUploadInputChanged" />
+                </div>
+                <div class="form-group mb-4">
+                    <label class="font-weight-bold">Title Foreground</label>
+                    <ColorPicker @bind-Color="_inputModel.TitleForegroundColor" />
+                </div>
+                <div class="form-group mb-4">
+                    <label class="font-weight-bold">Title Background</label>
+                    <ColorPicker @bind-Color="_inputModel.TitleBackgroundColor" />
+                </div>
+                <div class="form-group mb-2">
+                    <label class="font-weight-bold">Button Color</label>
+                    <ColorPicker @bind-Color="_inputModel.TitleButtonColor" />
+                </div>
+                <div class="form-group text-right">
+                    <button class="btn btn-primary" type="submit">Submit</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    private string _alertMessage;
+    private string _base64Icon;
+    private InputModel _inputModel = new();
+
+    private class InputModel
+    {
+        [StringLength(25)]
+        [Required]
+        [Display(Name = "Product Name")]
+        public string ProductName { get; set; }
+
+        public ColorPickerModel TitleForegroundColor { get; set; } = new();
+        public ColorPickerModel TitleBackgroundColor { get; set; } = new();
+        public ColorPickerModel TitleButtonColor { get; set; } = new();
+
+        public byte[] IconBytes { get; set; }
+    }
+
+    private async Task IconUploadInputChanged(InputFileChangeEventArgs args)
+    {
+        if (args.File is null)
+        {
+            return;
+        }
+
+        if (args.File.Size > 1_024_000)
+        {
+            ToastService.ShowToast("File size must be under 1 MB.", classString: "bg-warning");
+            return;
+        }
+
+        using var rs = args.File.OpenReadStream(1_024_000);
+        _inputModel.IconBytes = new byte[args.File.Size];
+        await rs.ReadAsync(_inputModel.IconBytes, 0, (int)args.File.Size);
+    }
+
+    private async Task HandleValidSubmit(EditContext context)
+    {
+        await DataService.UpdateBrandingInfo(
+            User.OrganizationID,
+            _inputModel.ProductName,
+            _inputModel.IconBytes,
+            _inputModel.TitleForegroundColor,
+            _inputModel.TitleBackgroundColor,
+            _inputModel.TitleButtonColor);
+
+        _base64Icon = Convert.ToBase64String(_inputModel.IconBytes);
+
+        _alertMessage = "Branding saved.";
+        ToastService.ShowToast("Branding saved.");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var organization = await DataService.GetOrganizationByUserName(User.UserName);
+
+        var brandingInfo = await DataService.GetBrandingInfo(organization.ID);
+
+
+        _inputModel.ProductName = brandingInfo.Product;
+
+        if (brandingInfo?.Icon?.Any() == true)
+        {
+            _base64Icon = Convert.ToBase64String(brandingInfo.Icon);
+        }
+
+        _inputModel.TitleForegroundColor.Red = brandingInfo.TitleForegroundRed;
+        _inputModel.TitleForegroundColor.Green = brandingInfo.TitleForegroundGreen;
+        _inputModel.TitleForegroundColor.Blue = brandingInfo.TitleForegroundBlue;
+
+        _inputModel.TitleBackgroundColor.Red = brandingInfo.TitleBackgroundRed;
+        _inputModel.TitleBackgroundColor.Green = brandingInfo.TitleBackgroundGreen;
+        _inputModel.TitleBackgroundColor.Blue = brandingInfo.TitleBackgroundBlue;
+
+        _inputModel.TitleButtonColor.Red = brandingInfo.ButtonForegroundRed;
+        _inputModel.TitleButtonColor.Green = brandingInfo.ButtonForegroundGreen;
+        _inputModel.TitleButtonColor.Blue = brandingInfo.ButtonForegroundBlue;
+    }
+}

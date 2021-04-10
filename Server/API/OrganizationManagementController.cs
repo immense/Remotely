@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using Remotely.Server.Attributes;
+using Remotely.Server.Auth;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
-using Remotely.Shared.ViewModels.Organization;
+using Remotely.Shared.ViewModels;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -36,13 +36,13 @@ namespace Remotely.Server.API
         public IActionResult ChangeIsAdmin(string userID, [FromBody] bool isAdmin)
         {
             if (User.Identity.IsAuthenticated &&
-                !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+                !DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
             {
                 return Unauthorized();
             }
 
             if (User.Identity.IsAuthenticated &&
-                DataService.GetUserByName(User.Identity.Name).Id == userID)
+                DataService.GetUserByNameWithOrg(User.Identity.Name).Id == userID)
             {
                 return BadRequest("You can't remove administrator rights from yourself.");
             }
@@ -58,7 +58,7 @@ namespace Remotely.Server.API
         public IActionResult DeleteInvite(string inviteID)
         {
             if (User.Identity.IsAuthenticated &&
-                !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+                !DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
             {
                 return Unauthorized();
             }
@@ -73,19 +73,19 @@ namespace Remotely.Server.API
         public async Task<IActionResult> DeleteUser(string userID)
         {
             if (User.Identity.IsAuthenticated &&
-                !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+                !DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
             {
                 return Unauthorized();
             }
 
             if (User.Identity.IsAuthenticated &&
-              DataService.GetUserByName(User.Identity.Name).Id == userID)
+              DataService.GetUserByNameWithOrg(User.Identity.Name).Id == userID)
             {
                 return BadRequest("You can't delete yourself here.  You must go to the Personal Data page to delete your own account.");
             }
 
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
-            await DataService.RemoveUserFromOrganization(orgID, userID);
+            await DataService.DeleteUser(orgID, userID);
             return Ok("ok");
         }
 
@@ -94,7 +94,7 @@ namespace Remotely.Server.API
         public IActionResult DeviceGroup([FromBody] string deviceGroupID)
         {
             if (User.Identity.IsAuthenticated &&
-                !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+                !DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
             {
                 return Unauthorized();
             }
@@ -109,7 +109,7 @@ namespace Remotely.Server.API
         public IActionResult DeviceGroup([FromBody] DeviceGroup deviceGroup)
         {
             if (User.Identity.IsAuthenticated &&
-                !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+                !DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
             {
                 return Unauthorized();
             }
@@ -133,7 +133,7 @@ namespace Remotely.Server.API
         public async Task<IActionResult> DeviceGroupRemoveUser([FromBody] string userID, string groupID)
         {
             if (User.Identity.IsAuthenticated &&
-                !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+                !DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
             {
                 return Unauthorized();
             }
@@ -156,7 +156,7 @@ namespace Remotely.Server.API
         public IActionResult DeviceGroupAddUser([FromBody] string userID, string groupID)
         {
             if (User.Identity.IsAuthenticated &&
-                !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+                !DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
             {
                 return Unauthorized();
             }
@@ -181,7 +181,7 @@ namespace Remotely.Server.API
         public async Task<IActionResult> GenerateResetUrl(string userID)
         {
             if (User.Identity.IsAuthenticated &&
-              !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+              !DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
             {
                 return Unauthorized();
             }
@@ -212,7 +212,7 @@ namespace Remotely.Server.API
         public IActionResult Name([FromBody] string organizationName)
         {
             if (User.Identity.IsAuthenticated &&
-                !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+                !DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
             {
                 return Unauthorized();
             }
@@ -231,7 +231,7 @@ namespace Remotely.Server.API
         public IActionResult SetDefault([FromBody] bool isDefault)
         {
             if (User.Identity.IsAuthenticated &&
-                !DataService.GetUserByName(User.Identity.Name).IsServerAdmin)
+                !DataService.GetUserByNameWithOrg(User.Identity.Name).IsServerAdmin)
             {
                 return Unauthorized();
             }
@@ -243,10 +243,10 @@ namespace Remotely.Server.API
 
         [HttpPost("SendInvite")]
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
-        public async Task<IActionResult> SendInvite([FromBody] Invite invite)
+        public async Task<IActionResult> SendInvite([FromBody] InviteViewModel invite)
         {
             if (User.Identity.IsAuthenticated &&
-                !DataService.GetUserByName(User.Identity.Name).IsAdministrator)
+                !DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
             {
                 return Unauthorized();
             }
