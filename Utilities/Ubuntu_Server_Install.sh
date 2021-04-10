@@ -57,7 +57,6 @@ Restart=always
 # Restart service after 10 seconds if the dotnet service crashes:
 RestartSec=10
 SyslogIdentifier=remotely
-User=www-data
 Environment=ASPNETCORE_ENVIRONMENT=Production
 Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
 
