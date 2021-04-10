@@ -65,7 +65,7 @@ namespace Remotely.Server.Components.Scripts
             }
 
             await DataService.AddOrUpdateSavedScript(_selectedScript, User.Id);
-            ParentPage.RefreshScripts();
+            await ParentPage.RefreshScripts();
             ToastService.ShowToast("Script saved.");
             _alertMessage = "Script saved.";
         }
@@ -89,7 +89,7 @@ namespace Remotely.Server.Components.Scripts
                 await DataService.DeleteSavedScript(_selectedScript.Id);
                 ToastService.ShowToast("Script deleted.");
                 _alertMessage = "Script deleted.";
-                ParentPage.RefreshScripts();
+                await ParentPage.RefreshScripts();
                 _selectedScript = new();
             }
         }
