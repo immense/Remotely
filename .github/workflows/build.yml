@@ -114,13 +114,6 @@ jobs:
       shell: powershell
       run: |
         .\Utilities\Publish.ps1 -CertificatePath "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx" -CertificatePassword $env:PfxKey -Hostname $env:SiteUrl -CurrentVersion $env:CurrentVersion -RID linux-x64 -OutDir "$env:GITHUB_WORKSPACE\publish"
-
-    - name: Copy server install scripts
-      shell: powershell
-      run: |
-        Copy-Item -Path ".\Utilities\Ubuntu_Server_Install.sh" -Destination ".\publish\Ubuntu_Server_Install.sh" -Force
-        Copy-Item -Path ".\Utilities\CentOS_Server_Install.sh" -Destination ".\publish\CentOS_Server_Install.sh" -Force
-        Copy-Item -Path ".\Utilities\Install-RemotelyServer.ps1" -Destination ".\publish\Install-RemotelyServer.ps1" -Force
         
     # Upload build artifact to be deployed from Ubuntu runner
     - name: Upload build artifact
