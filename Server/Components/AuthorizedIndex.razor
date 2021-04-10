@@ -1,0 +1,40 @@
+﻿@attribute [Authorize]
+@inherits AuthComponentBase
+
+@inject NavigationManager NavManager
+@inject IApplicationConfig AppConfig
+@inject SignInManager<RemotelyUser> SignInManager
+
+@if (!string.IsNullOrWhiteSpace(AppConfig.MessageOfTheDay))
+{
+    <div class="mr-5">
+        <AlertBanner Message="@AppConfig.MessageOfTheDay" StatusClass="info" />
+    </div>
+}
+
+<AlertsFrame />
+<DevicesFrame />
+<ChatFrame />
+
+@code { 
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (AppConfig.Require2FA && !User.TwoFactorEnabled)
+        {
+            NavManager.NavigateTo("/TwoFactorRequired");
+        }
+        base.OnAfterRender(firstRender);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        if (IsAuthenticated == true && User is null)
+        {
+            await SignInManager.SignOutAsync();
+            NavManager.NavigateTo("/");
+        }
+        await base.OnInitializedAsync();
+    }
+}

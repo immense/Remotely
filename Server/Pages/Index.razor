@@ -1,0 +1,26 @@
+﻿@page "/"
+@inject IApplicationConfig AppConfig
+@inject IDataService DataService
+ 
+<AuthorizeView>
+    <NotAuthorized>
+        <div class="jumbotron">
+            <h3 class="display-4">Remotely</h3>
+            <p class="lead">
+                An open-source remote support solution.
+            </p>
+            <hr class="my-4">
+            <p class="lead">
+                <a class="btn btn-primary btn-lg mr-2" href="Identity/Account/Login" role="button">Log In</a>
+
+                @if (AppConfig.MaxOrganizationCount < 0 || DataService.GetOrganizationCount() < AppConfig.MaxOrganizationCount)
+                {
+                    <a class="btn btn-primary btn-lg" href="Identity/Account/Register" role="button">Register</a>
+                }
+            </p>
+        </div>
+    </NotAuthorized>
+    <Authorized>
+        <AuthorizedIndex />
+    </Authorized>
+</AuthorizeView>

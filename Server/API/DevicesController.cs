@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Remotely.Server.Attributes;
+using Remotely.Server.Auth;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
 using System.Collections.Generic;
@@ -45,7 +45,7 @@ namespace Remotely.Server.API
             var device = DataService.GetDevice(orgID, id);
 
             if (User.Identity.IsAuthenticated &&
-                !DataService.DoesUserHaveAccessToDevice(id, DataService.GetUserByName(User.Identity.Name)))
+                !DataService.DoesUserHaveAccessToDevice(id, DataService.GetUserByNameWithOrg(User.Identity.Name)))
             {
                 return null;
             }
@@ -65,7 +65,7 @@ namespace Remotely.Server.API
             }
 
             if (User.Identity.IsAuthenticated &&
-                !DataService.DoesUserHaveAccessToDevice(deviceOptions.DeviceID, DataService.GetUserByName(User.Identity.Name)))
+                !DataService.DoesUserHaveAccessToDevice(deviceOptions.DeviceID, DataService.GetUserByNameWithOrg(User.Identity.Name)))
             {
                 return Unauthorized();
             }

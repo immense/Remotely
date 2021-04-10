@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Remotely.Server.Auth;
 using Remotely.Server.Services;
+using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Remotely.Server.API
 {
@@ -12,18 +12,19 @@ namespace Remotely.Server.API
     [ApiController]
     public class FileSharingController : ControllerBase
     {
+        private readonly IDataService _dataService;
+
         public FileSharingController(IDataService dataService)
         {
-            DataService = dataService;
+            _dataService = dataService;
         }
-        public IDataService DataService { get; set; }
 
         [HttpGet("{id}")]
+        [ServiceFilter(typeof(ExpiringTokenFilter))]
         public ActionResult Get(string id)
         {
-            var sharedFile = DataService.GetSharedFiled(id);
-            // Shared files expire after a minute and become locked.
-            if (sharedFile != null && sharedFile.Timestamp.AddMinutes(1) > DateTimeOffset.Now)
+            var sharedFile = _dataService.GetSharedFiled(id);
+            if (sharedFile != null)
             {
                 return File(sharedFile.FileContents, sharedFile.ContentType, sharedFile.FileName);
             }
@@ -31,14 +32,20 @@ namespace Remotely.Server.API
         }
 
         [HttpPost]
-        [RequestSizeLimit(500_000_000)]
-        public async Task<List<string>> Post()
+        [ServiceFilter(typeof(ExpiringTokenFilter))]
+        [RequestSizeLimit(AppConstants.MaxUploadFileSize)]
+        public async Task<IEnumerable<string>> Post()
         {
+            if (Request?.Form?.Files?.Count !> 0)
+            {
+                return Array.Empty<string>();
+            }
+
             var fileIDs = new List<string>();
             foreach (var file in Request.Form.Files)
             {
-                var orgID = User.Identity.IsAuthenticated ? DataService.GetUserByName(User.Identity.Name).OrganizationID : null;
-                var id = await DataService.AddSharedFile(file, orgID);
+                var orgID = User.Identity.IsAuthenticated ? _dataService.GetUserByNameWithOrg(User.Identity.Name).OrganizationID : null;
+                var id = await _dataService.AddSharedFile(file, orgID);
                 fileIDs.Add(id);
             }
             return fileIDs;

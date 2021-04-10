@@ -1,10 +1,26 @@
 ﻿@page
-@model LogoutModel
-@{
-    ViewData["Title"] = "Log out";
-}
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.SignalR
+@using Remotely.Server.Hubs
+@attribute [IgnoreAntiforgeryToken]
+@inject SignInManager<RemotelyUser> SignInManager
+@inject IHubContext<CasterHub> CasterHubContext
+@inject IHubContext<ViewerHub> ViewerHubContext
+@functions {
+    public async Task<IActionResult> OnPost()
+    {
+        if (SignInManager.IsSignedIn(User))
+        {
+            var activeSessions = CasterHub.SessionInfoList.Where(x => x.Value.RequesterUserName == HttpContext.User.Identity.Name);
+            foreach (var session in activeSessions)
+            {
+                await CasterHubContext.Clients.Client(session.Value.CasterSocketID).SendAsync("Disconnect", "User logged out.");
+                await ViewerHubContext.Clients.Client(session.Value.RequesterSocketID).SendAsync("ConnectionFailed");
+            }
 
-<header>
-    <h1>@ViewData["Title"]</h1>
-    <p>You have successfully logged out of the application.</p>
-</header>
+            await SignInManager.SignOutAsync();
+        }
+
+        return Redirect("~/");
+    }
+}

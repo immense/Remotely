@@ -1,0 +1,92 @@
+﻿@attribute [Authorize]
+@inherits AuthComponentBase
+
+<h3>Devices</h3>
+
+<div @onclick="ClearSelectedCard">
+    <div id="deviceControlsWrapper">
+        <div>
+            <div>
+                <div>Device Group</div>
+                <select class="form-control" style="width: 200px" @bind="_selectedGroupId">
+                    <option value="@_deviceGroupAll">All</option>
+                    <option value="@_deviceGroupNone">None</option>
+                    @foreach (var group in _deviceGroups)
+                    {
+                        <option @key="group.ID" value="@group.ID">@group.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div>
+                <div class="mt-1">Sort</div>
+                <select class="form-control d-inline" style="width: 150px" @bind="_selectedSortProperty">
+                    <option value=""></option>
+                    @foreach (var prop in _sortableProperties)
+                    {
+                        <option value="@prop.Name">@GetDisplayName(prop)</option>
+                    }
+                </select>
+                <button class="btn btn-sm btn-secondary" title="Sort Direction" style="width: 40px; margin-left: 5px;" @onclick="ToggleSortDirection">
+                    <span class="oi @GetSortIcon()"></span>
+                </button>
+            </div>
+
+            <div class="custom-control custom-checkbox mt-2">
+                <input id="hideOfflineDevicesCheckbox" type="checkbox" class="custom-control-input" @bind="_hideOfflineDevices" />
+                <label class="custom-control-label" for="hideOfflineDevicesCheckbox">Hide offline devices</label>
+            </div>
+            <div class="mt-2">
+                <button class="btn btn-sm btn-secondary" @onclick="SelectAllCards">Select All</button>
+            </div>
+        </div>
+         
+        <div>
+            <div class="d-inline-block text-left">
+                <div>
+                    <div>Search</div>
+                    <input class="form-control d-inline"
+                           style="width: 200px"
+                           placeholder="Search device properties"
+                           @bind="_filter"
+                           @bind:event="oninput" />
+                </div>
+
+                <div class="mt-2" style="white-space: nowrap">
+                    <button class="btn btn-sm btn-secondary" @onclick="PageDown">
+                        <i class="oi oi-chevron-left"></i>
+                    </button>
+                    <span class="small">Page</span>
+                    <input id="currentPageInput" style="width:75px; text-align: center" pattern="[0-9]" @bind="_currentPage" @bind:event="oninput" />
+                    <span class="small">of</span>
+                    <span>@TotalPages</span>
+                    <button class="btn btn-sm btn-secondary" @onclick="PageUp">
+                        <i class="oi oi-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div class="mt-2">
+                    <select class="form-control d-inline" style="width:100px" @bind="_devicesPerPage">
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                        <option value="500">500</option>
+                    </select>
+                    <span class="ml-1 small">per page</span>
+                </div>
+            </div>
+           
+
+        </div>
+    </div>
+    <div id="deviceListDiv" class="p-2 mb-5">
+        @foreach (var device in DevicesForPage)
+        {
+            <CascadingValue Value="this">
+                <DeviceCard @key="device.ID" Device="device" RemoteControlTargetLookup="_remoteControlTargetLookup" />
+            </CascadingValue>
+        }
+    </div>
+
+    <Terminal />
+</div>

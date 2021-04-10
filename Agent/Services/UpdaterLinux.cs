@@ -23,7 +23,7 @@ namespace Remotely.Agent.Services
         private SemaphoreSlim CheckForUpdatesLock { get; } = new SemaphoreSlim(1, 1);
         private ConfigService ConfigService { get; }
         private SemaphoreSlim InstallLatestVersionLock { get; } = new SemaphoreSlim(1, 1);
-        private bool PreviousUpdateFailed { get; set; }
+        private DateTimeOffset LastUpdateFailure { get; set; }
         private System.Timers.Timer UpdateTimer { get; } = new System.Timers.Timer(TimeSpan.FromHours(6).TotalMilliseconds);
 
 
@@ -50,7 +50,7 @@ namespace Remotely.Agent.Services
                     return;
                 }
 
-                if (PreviousUpdateFailed)
+                if (LastUpdateFailure.AddDays(1) > DateTimeOffset.Now)
                 {
                     Logger.Write("Skipping update check due to previous failure.  Restart the service to try again, or manually install the update.");
                     return;
@@ -60,7 +60,7 @@ namespace Remotely.Agent.Services
                 var connectionInfo = ConfigService.GetConnectionInfo();
                 var serverUrl = ConfigService.GetConnectionInfo().Host;
 
-                var fileUrl = serverUrl + $"/Downloads/Remotely-Linux.zip";
+                var fileUrl = serverUrl + $"/Content/Remotely-Linux.zip";
 
                 var lastEtag = string.Empty;
 
@@ -148,17 +148,17 @@ namespace Remotely.Agent.Services
 
                 Process.Start("sudo", $"chmod +x {installerPath}").WaitForExit();
 
-                Process.Start("sudo", $"{installerPath} --path {zipPath} & disown");
+                Process.Start("sudo", $"{installerPath} --path {zipPath}");
             }
             catch (WebException ex) when (ex.Status == WebExceptionStatus.Timeout)
             {
                 Logger.Write("Timed out while waiting to download update.", Shared.Enums.EventType.Warning);
-                PreviousUpdateFailed = true;
+                LastUpdateFailure = DateTimeOffset.Now;
             }
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                PreviousUpdateFailed = true;
+                LastUpdateFailure = DateTimeOffset.Now;
             }
             finally
             {

@@ -1,14 +1,17 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Encodings.Web;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using Remotely.Server.Services;
 using Remotely.Shared.Models;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
+using Remotely.Server.Services;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account
 {
@@ -17,8 +20,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
     {
         private readonly UserManager<RemotelyUser> _userManager;
         private readonly IEmailSenderEx _emailSender;
-
-        private IDataService DataService { get; }
+        private readonly IDataService _dataService;
 
         public ForgotPasswordModel(UserManager<RemotelyUser> userManager,
             IEmailSenderEx emailSender,
@@ -26,7 +28,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
         {
             _userManager = userManager;
             _emailSender = emailSender;
-            DataService = dataService;
+            _dataService = dataService;
         }
 
         [BindProperty]
@@ -60,7 +62,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
                     values: new { area = "Identity", code },
                     protocol: Request.Scheme);
 
-                DataService.WriteEvent($"Sending password reset for user {user.UserName}. Reset URL: {callbackUrl}", user.OrganizationID);
+                _dataService.WriteEvent($"Sending password reset for user {user.UserName}. Reset URL: {callbackUrl}", user.OrganizationID);
 
                 var emailResult = await _emailSender.SendEmailAsync(
                     Input.Email,
@@ -72,7 +74,6 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
                     ModelState.AddModelError("EmailError", "Error sending email.");
                     return Page();
                 }
-
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }

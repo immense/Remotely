@@ -21,6 +21,5 @@ namespace Remotely.Shared.Models
 
         public string OrganizationID { get; set; }
         public string Secret { get; set; }
-        public string Token { get; set; }
     }
 }

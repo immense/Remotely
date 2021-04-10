@@ -1,0 +1,151 @@
+﻿@inject IAuthService AuthService 
+@inject IApplicationConfig AppConfig
+@inject IDataService DataService
+
+<div class="pl-4 pb-1 pr-0 pt-0 navbar navbar-dark" style="background-color: rgba(0,0,0,0.3)">
+    <a class="navbar-brand text-left" href="">
+        <div class="logo-title">
+            @if (!string.IsNullOrWhiteSpace(_user?.Organization?.OrganizationName))
+            {
+                @_user.Organization.OrganizationName
+            }
+            else
+            {
+                <span>Remotely</span>
+            }
+        </div>
+        <div class="logo-subtitle">Support Portal</div>
+    </a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </li>
+
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="/RemoteControl" target="_blank">
+                <span class="oi oi-monitor" aria-hidden="true"></span> Remote Control
+            </NavLink>
+
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="downloads">
+                <span class="oi oi-cloud-download" aria-hidden="true"></span> Downloads
+            </NavLink>
+        </li>
+
+        <AuthorizeView>
+            <Authorized>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="scripts">
+                        <span class="oi oi-script" aria-hidden="true"></span> Scripts
+                    </NavLink>
+                </li>
+
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="user-options">
+                        <span class="oi oi-pencil" aria-hidden="true"></span> User Options
+                    </NavLink>
+                </li>
+
+            </Authorized>
+        </AuthorizeView>
+
+        @if (_user?.IsAdministrator == true)
+        {
+            <li class="nav-item px-3 pt-3 small text-muted">
+                Admin
+            </li>
+
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="manage-organization">
+                    <span class="oi oi-briefcase" aria-hidden="true"></span> Organization
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="branding">
+                    <span class="oi oi-brush" aria-hidden="true"></span> Branding
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="api-keys">
+                    <span class="oi oi-key" aria-hidden="true"></span> API Keys
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="server-logs">
+                    <span class="oi oi-document" aria-hidden="true"></span> Server Logs
+                </NavLink>
+            </li>
+
+            @if (_user?.IsServerAdmin == true)
+            {
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="server-config">
+                        <span class="oi oi-wrench" aria-hidden="true"></span> Server Config
+                    </NavLink>
+                </li>
+            }
+        }
+
+        <AuthorizeView>
+            <Authorized>
+                <li class="px-3 mt-3">
+                    <a class="btn btn-link text-light" href="Identity/Account/Manage">
+                        Account
+                    </a>
+                </li>
+                <li class="px-3">
+                    <form method="post" action="Identity/Account/LogOut">
+                        <button type="submit" class="btn btn-link text-light">Log out</button>
+                    </form>
+                </li>
+            </Authorized>
+            <NotAuthorized>
+                <li class="px-3">
+                    <a class="btn btn-link text-light" href="Identity/Account/Login">Log in</a>
+                </li>
+                @if (AppConfig.MaxOrganizationCount < 0 || DataService.GetOrganizationCount() < AppConfig.MaxOrganizationCount)
+                {
+                    <li class="px-3 mt-3">
+                        <a class="btn btn-link text-light" href="Identity/Account/Register">Register</a>
+                    </li>
+                }
+            </NotAuthorized>
+        </AuthorizeView>
+
+        <li class="px-3 mt-3">
+            <a class="btn btn-link text-light" href="/about">About</a>
+        </li>
+    </ul>
+</div>
+
+@code {       
+    private RemotelyUser _user;
+    private bool collapseNavMenu = true;
+    private Dictionary<string, object> _remoteControlAttributes
+        = new() { ["target"] = "blank", ["href"] = "/RemoteControl" };
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthService.IsAuthenticated)
+        {
+            _user = DataService.GetUserByNameWithOrg(AuthService.Principal.Identity.Name);
+        }
+        await base.OnInitializedAsync();
+    }
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

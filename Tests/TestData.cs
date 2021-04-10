@@ -5,6 +5,7 @@ using Remotely.Server.Areas.Identity.Pages.Account.Manage;
 using Remotely.Server.Data;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
+using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -13,7 +14,12 @@ namespace Remotely.Tests
 {
     public class TestData
     {
-        public static RemotelyUser Admin1 { get; } = new RemotelyUser()
+        public TestData()
+        {
+            Init().Wait();
+        }
+
+        public RemotelyUser Admin1 { get; } = new RemotelyUser()
         {
             UserName = "admin1@test.com",
             IsAdministrator = true,
@@ -22,88 +28,65 @@ namespace Remotely.Tests
             UserOptions = new RemotelyUserOptions()
         };
 
-        public static RemotelyUser Admin2 { get; private set; } = new RemotelyUser()
-        {
-            UserName = "admin2@test.com",
-            IsAdministrator = true,
-            Organization = new Organization(),
-            UserOptions = new RemotelyUserOptions()
-        };
+        public RemotelyUser Admin2 { get; private set; } 
 
-        public static RemotelyUser User1 { get; private set; } = new RemotelyUser()
-        {
-            UserName = "testuser1@test.com",
-            IsAdministrator = false,
-            Organization = new Organization(),
-            UserOptions = new RemotelyUserOptions()
-        };
-
-        public static RemotelyUser User2 { get; private set; } = new RemotelyUser()
-        {
-            UserName = "testuser2@test.com",
-            IsAdministrator = false,
-            Organization = new Organization(),
-            UserOptions = new RemotelyUserOptions()
-        };
-
-        public static DeviceGroup Group1 { get; private set; } = new DeviceGroup()
-        {
-            Name = "Group1"
-        };
-
-        public static DeviceGroup Group2 { get; private set; } = new DeviceGroup()
-        {
-            Name = "Group2"
-        };
-
-        public static Device Device1 { get; private set; } = new Device()
+        public Device Device1 { get; private set; } = new Device()
         {
             ID = "Device1",
             DeviceName = "Device1Name"
         };
 
-        public static Device Device2 { get; private set; } = new Device()
+        public Device Device2 { get; private set; } = new Device()
         {
             ID = "Device2",
             DeviceName = "Device2Name"
         };
 
-        public static string OrganizationID { get; private set; }
-
-        public static void ClearData()
+        public DeviceGroup Group1 { get; private set; } = new DeviceGroup()
         {
-            var dbContext = IoCActivator.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            Name = "Group1"
+        };
+
+        public DeviceGroup Group2 { get; private set; } = new DeviceGroup()
+        {
+            Name = "Group2"
+        };
+
+        public string OrganizationID { get; private set; }
+
+        public RemotelyUser User1 { get; private set; }
+
+        public RemotelyUser User2 { get; private set; }
+
+        public void ClearData()
+        {
+            var dbContext = IoCActivator.ServiceProvider.GetRequiredService<AppDb>();
             dbContext.Devices.RemoveRange(dbContext.Devices.ToList());
             dbContext.DeviceGroups.RemoveRange(dbContext.DeviceGroups.ToList());
             dbContext.Users.RemoveRange(dbContext.Users.ToList());
+            dbContext.Organizations.RemoveRange(dbContext.Organizations.ToList());
             dbContext.SaveChanges();
 
         }
 
-        public static async Task PopulateTestData()
+        private async Task Init()
         {
+            ClearData();
+
             var dataService = IoCActivator.ServiceProvider.GetRequiredService<IDataService>();
             var userManager = IoCActivator.ServiceProvider.GetRequiredService<UserManager<RemotelyUser>>();
             var emailSender = IoCActivator.ServiceProvider.GetRequiredService<IEmailSenderEx>();
-            var organizationModel = new OrganizationModel(dataService, userManager, emailSender);
-
 
             await userManager.CreateAsync(Admin1);
 
-            organizationModel.Input.UserEmail = Admin2.UserName;
-            organizationModel.Input.IsAdmin = true;
-            await organizationModel.AddUser(Admin1);
-            Admin2 = await userManager.FindByNameAsync(Admin2.UserName);
+            await dataService.CreateUser("admin2@test.com", true, Admin1.OrganizationID);
+            Admin2 = dataService.GetUserByNameWithOrg("admin2@test.com");
 
-            organizationModel.Input.UserEmail = User1.UserName;
-            organizationModel.Input.IsAdmin = false;
-            await organizationModel.AddUser(Admin1);
-            User1 = await userManager.FindByNameAsync(User1.UserName);
+            await dataService.CreateUser("testuser1@test.com", false, Admin1.OrganizationID);
+            User1 = dataService.GetUserByNameWithOrg("testuser1@test.com");
 
-            organizationModel.Input.UserEmail = User2.UserName;
-            organizationModel.Input.IsAdmin = false;
-            await organizationModel.AddUser(Admin1);
-            User2 = await userManager.FindByNameAsync(User2.UserName);
+            await dataService.CreateUser("testuser2@test.com", false, Admin1.OrganizationID);
+            User2 = dataService.GetUserByNameWithOrg("testuser2@test.com");
 
             Device1.OrganizationID = Admin1.OrganizationID;
             dataService.AddOrUpdateDevice(Device1, out _);

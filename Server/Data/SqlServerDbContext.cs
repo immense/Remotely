@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Remotely.Server.Data
 {
-    public class SqlServerDbContext : ApplicationDbContext
+    public class SqlServerDbContext : AppDb
     {
         private readonly IConfiguration _configuration;
 
@@ -23,6 +23,7 @@ namespace Remotely.Server.Data
         {
             options.UseSqlServer(_configuration.GetConnectionString("SQLServer"));
             options.ConfigureWarnings(x => x.Ignore(RelationalEventId.MultipleCollectionIncludeWarning));
+            options.LogTo((message) => System.Diagnostics.Debug.Write(message));
         }
     }
 }

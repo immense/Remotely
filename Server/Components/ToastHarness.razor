@@ -1,0 +1,27 @@
+﻿@using Remotely.Server.Services
+@inject IToastService ToastService
+
+<div class="toast-harness">
+    @foreach (var toast in ToastService?.Toasts)
+    {
+        <div @key="toast.Guid" class="toast-message @toast.ClassString" style="animation-delay: @(toast.Expiration.TotalMilliseconds.ToString() + "ms"); @toast.StyleOverrides">
+            @toast.Message
+        </div>
+    }
+</div>
+
+@code {
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            ToastService.OnToastsChanged += (s, e) =>
+            {
+                InvokeAsync(StateHasChanged);
+            };
+        }
+        return base.OnInitializedAsync();
+
+    }
+}

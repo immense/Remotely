@@ -2,7 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Remotely.Desktop.Win"
-             DispatcherUnhandledException="Application_DispatcherUnhandledException" Startup="Application_Startup">
+             DispatcherUnhandledException="Application_DispatcherUnhandledException"
+             Startup="Application_Startup">
     <Application.Resources>
         <Style x:Key="TitlebarButton" TargetType="Button">
             <Setter Property="Background" Value="#FF464646"></Setter>

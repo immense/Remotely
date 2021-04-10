@@ -1,0 +1,20 @@
+﻿hr {
+    border-top: 1px solid #282828;
+}
+
+.console-prompt {
+    color: royalblue;
+}
+
+.console-output {
+    color: limegreen;
+}
+
+.navbar-brand {
+    font-size: 1.5rem !important;
+}
+
+.logo-subtitle {
+    font-size: .5em;
+    color: deepskyblue;
+}

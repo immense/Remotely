@@ -1,0 +1,35 @@
+﻿<ul class="nav nav-tabs">
+    <CascadingValue Value="this">
+        @TabHeaders
+    </CascadingValue>
+</ul>
+<div class="tab-content">
+    <CascadingValue Value="this">
+        @TabContents
+    </CascadingValue>
+</div>
+
+
+@code {
+    [Parameter]
+    public RenderFragment TabHeaders { get; set; }
+
+    [Parameter]
+    public RenderFragment TabContents { get; set; }
+
+    [Parameter]
+    public string InitialActiveTab { get; set; }
+
+    public string ActiveTab { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ActiveTab = InitialActiveTab;
+    }
+
+    public void SetActiveTab(TabHeader header)
+    {
+        ActiveTab = header.Name;
+        StateHasChanged();
+    }
+}

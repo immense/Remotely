@@ -1,0 +1,30 @@
+﻿@if (IsActive)
+{
+    <div class="tab-pane fade show active">
+        @ChildContent
+    </div>
+}
+
+
+@code {
+    [CascadingParameter]
+    public TabControl Parent { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public string Name { get; set; }
+
+    private bool IsActive => Parent.ActiveTab == Name;
+
+    protected override void OnInitialized()
+    {
+        if (Parent is null)
+        {
+            throw new Exception("TabContent must be contained in a TabControl.");
+        }
+
+        base.OnInitialized();
+    }
+}

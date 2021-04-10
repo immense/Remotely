@@ -1,0 +1,24 @@
+﻿@page "/about"
+
+<h3>About Remotely</h3>
+
+<p>
+    Website: <a href="https://remotely.one">https://remotely.one</a>
+</p>
+<p>
+    Contact:  <a href="https://remotely.one/Contact">https://remotely.one/Contact</a>
+</p>
+<p>
+    Open-Source Licenses: <a href="/credits">Credits</a>
+</p>
+<p>
+    Version: @if (System.IO.File.Exists("Remotely_Server.dll"))
+    {
+        <span>@System.Diagnostics.FileVersionInfo.GetVersionInfo("Remotely_Server.dll").FileVersion.ToString()</span>
+    }
+    else
+    {
+        <span>1.0.0.0</span>
+    }
+
+</p>

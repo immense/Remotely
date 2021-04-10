@@ -47,24 +47,23 @@ namespace Remotely.Agent
             });
             serviceCollection.AddSingleton<AgentSocket>();
             serviceCollection.AddScoped<ChatClientService>();
-            serviceCollection.AddTransient<Bash>();
-            serviceCollection.AddTransient<CMD>();
             serviceCollection.AddTransient<PSCore>();
-            serviceCollection.AddTransient<WindowsPS>();
+            serviceCollection.AddTransient<ExternalScriptingShell>();
             serviceCollection.AddScoped<ConfigService>();
             serviceCollection.AddScoped<Uninstaller>();
-            serviceCollection.AddScoped<ScriptRunner>();
-            serviceCollection.AddScoped<CommandExecutor>();
+            serviceCollection.AddScoped<ScriptExecutor>();
 
             if (EnvironmentHelper.IsWindows)
             {
                 serviceCollection.AddScoped<IAppLauncher, AppLauncherWin>();
                 serviceCollection.AddSingleton<IUpdater, UpdaterWin>();
+                serviceCollection.AddSingleton<IDeviceInformationService, DeviceInformationServiceWin>();
             }
             else if (EnvironmentHelper.IsLinux)
             {
                 serviceCollection.AddScoped<IAppLauncher, AppLauncherLinux>();
                 serviceCollection.AddSingleton<IUpdater, UpdaterLinux>();
+                serviceCollection.AddSingleton<IDeviceInformationService, DeviceInformationServiceLinux>();
             }
             else if (EnvironmentHelper.IsMac)
             {

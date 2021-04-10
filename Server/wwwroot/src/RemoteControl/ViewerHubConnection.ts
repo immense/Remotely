@@ -1,14 +1,14 @@
 ﻿import * as UI from "./UI.js";
 import { ViewerApp } from "./App.js";
-import { CursorInfo } from "../Shared/Models/CursorInfo.js";
-import { IceServerModel } from "../Shared/Models/IceServerModel.js";
-import { RemoteControlMode } from "../Shared/Enums/RemoteControlMode.js";
+import { CursorInfo } from "./Models/CursorInfo.js";
+import { IceServerModel } from "./Models/IceServerModel.js";
+import { RemoteControlMode } from "./Enums/RemoteControlMode.js";
 import { GenericDto } from "./Interfaces/Dtos.js";
-import { ShowMessage } from "../Shared/UI.js";
+import { ShowMessage } from "./UI.js";
 import { BaseDto } from "./Interfaces/BaseDto.js";
-import { WindowsSession } from "../Shared/Models/WindowsSession.js";
-import { BaseDtoType } from "../Shared/Enums/BaseDtoType.js";
-import { HubConnection } from "../Shared/Models/HubConnection.js";
+import { WindowsSession } from "./Models/WindowsSession.js";
+import { BaseDtoType } from "./Enums/BaseDtoType.js";
+import { HubConnection } from "./Models/HubConnection.js";
 
 var signalR = window["signalR"];
 
@@ -67,7 +67,7 @@ export class ViewerHubConnection {
 
 
     SendScreenCastRequestToDevice() {
-        this.Connection.invoke("SendScreenCastRequestToDevice", ViewerApp.ClientID, ViewerApp.RequesterName, ViewerApp.Mode, ViewerApp.Otp);
+        this.Connection.invoke("SendScreenCastRequestToDevice", ViewerApp.CasterID, ViewerApp.RequesterName, ViewerApp.Mode, ViewerApp.Otp);
     }
 
 
@@ -123,7 +123,7 @@ export class ViewerHubConnection {
             document.title = `${machineName} - Remotely Session`;
         });
         hubConnection.on("RelaunchedScreenCasterReady", (newClientID: string) => {
-            ViewerApp.ClientID = newClientID;
+            ViewerApp.CasterID = newClientID;
             this.Connection.stop();
             this.Connect();
         });

@@ -1,0 +1,43 @@
+﻿@if (!string.IsNullOrEmpty(Message))
+{
+    <div class="alert alert-@GetStatusClass() alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close" @onclick="Close"><span aria-hidden="true">&times;</span></button>
+        @Message
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public string Message { get; set; }
+
+    [Parameter]
+    public string StatusClass { get; set; }
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+
+    public async Task Close(MouseEventArgs ev)
+    {
+        Message = null;
+        await OnClose.InvokeAsync();
+    }
+
+    private string GetStatusClass()
+    {
+        if (Message?.StartsWith("Error") == true)
+        {
+            return "danger";
+        }
+        else if (!string.IsNullOrWhiteSpace(StatusClass))
+        {
+            return StatusClass;
+        }
+        else
+        {
+            return "success";
+        }
+    }
+
+}

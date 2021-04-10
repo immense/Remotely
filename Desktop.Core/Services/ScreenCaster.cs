@@ -146,7 +146,7 @@ namespace Remotely.Desktop.Core.Services
                         }
 
                         if (refreshTimer.Elapsed.TotalSeconds > 10 ||
-                            refreshNeeded && refreshTimer.Elapsed.TotalSeconds > 3)
+                            refreshNeeded && refreshTimer.Elapsed.TotalSeconds > 5)
                         {
                             viewer.Capturer.CaptureFullscreen = true;
                         }
@@ -171,6 +171,7 @@ namespace Remotely.Desktop.Core.Services
                         byte[] encodedImageBytes;
                         if (viewer.Capturer.CaptureFullscreen)
                         {
+                            // Recalculate Bps.
                             viewer.PeakBytesPerSecond = 0;
                             encodedImageBytes = ImageUtils.EncodeWithSkia(clone, SKEncodedImageFormat.Jpeg, _maxQuality);
                         }
@@ -181,7 +182,7 @@ namespace Remotely.Desktop.Core.Services
                                 var expectedSize = clone.Height * clone.Width * 4 * .1;
                                 var timeToSend = expectedSize / viewer.PeakBytesPerSecond;
                                 currentQuality = Math.Max(_minQuality, Math.Min(_maxQuality, (int)(.1 / timeToSend * _maxQuality)));
-                                if (currentQuality < _maxQuality)
+                                if (currentQuality < _maxQuality - 10)
                                 {
                                     refreshNeeded = true;
                                 }

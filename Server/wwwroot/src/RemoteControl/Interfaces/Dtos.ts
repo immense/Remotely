@@ -1,6 +1,6 @@
 import { BaseDto } from "./BaseDto.js";
-import { BaseDtoType } from "../../Shared/Enums/BaseDtoType.js";
-import { WindowsSession } from "../../Shared/Models/WindowsSession.js";
+import { BaseDtoType } from "../Enums/BaseDtoType.js";
+import { WindowsSession } from "../Models/WindowsSession.js";
 
 
 export interface AudioSampleDto extends BaseDto {

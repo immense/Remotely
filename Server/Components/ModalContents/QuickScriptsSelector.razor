@@ -1,0 +1,29 @@
+﻿<select class="form-control mb-3" @bind="_selectedScriptId">
+    @foreach (var script in QuickScripts)
+    {
+        <option @key="script.Id" value="@script.Id">@script.Name</option>
+    }
+</select>
+
+<div class="text-right">
+    <button class="btn btn-primary" @onclick="RunScriptClicked">Run</button>
+</div>
+
+@code {
+    private Guid _selectedScriptId;
+
+    [Parameter]
+    public List<SavedScript> QuickScripts { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<SavedScript> OnRunClicked { get; set; }
+
+    private async Task RunScriptClicked()
+    {
+        var script = QuickScripts.Find(x => x.Id == _selectedScriptId);
+        if (script is not null)
+        {
+            await OnRunClicked.InvokeAsync(script);
+        }
+    }
+}

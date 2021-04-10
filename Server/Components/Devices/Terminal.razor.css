@@ -1,0 +1,69 @@
+﻿
+.terminal-frame {
+    position: fixed;
+    bottom: 0;
+    left: 260px;
+    right: 10px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+    .terminal-frame.open{
+        z-index: 4;
+    }
+
+    .terminal-header {
+        pointer-events: none;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+.terminal-header .terminal-button {
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    pointer-events: all;
+}
+
+.terminal-body {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+    border-radius: 5px;
+    transition: .25s ease all;
+    pointer-events: all;
+}
+
+.terminal-frame.open .terminal-body {
+        height: 25rem;
+        max-height: 80vh;
+        overflow: auto;
+        opacity: 1;
+        transition: .25s ease all;
+    }
+
+.terminal-window {
+    font-family: Consolas, 'Lucida Console', Courier New, Courier, monospace;
+    overflow-wrap: break-word;
+    overflow-y: auto;
+    white-space: pre;
+}
+
+.terminal-line {
+    min-height: 1.3em;
+}
+
+.terminal-input-area{
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    grid-column-gap: .5em;
+}
+
+@media (max-width: 641px) {
+    .terminal-frame {
+        left: 10px;
+    }
+}

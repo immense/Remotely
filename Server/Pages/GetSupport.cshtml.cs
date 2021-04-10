@@ -36,15 +36,12 @@ namespace Remotely.Server.Pages
 
             var orgID = DataService.GetDevice(deviceID)?.OrganizationID;
 
-            await DataService.AddAlert(new Remotely.Shared.Models.AlertOptions()
-            {
-                AlertDeviceID = deviceID,
-                AlertMessage = $"{Input.Name} is requesting support.  " +
+            var alertMessage = $"{Input.Name} is requesting support.  " +
                     $"Email: {Input.Email}.  " +
                     $"Phone: {Input.Phone}.  " +
-                    $"Chat OK: {Input.ChatResponseOk}.",
-                ShouldAlert = true
-            }, orgID);
+                    $"Chat OK: {Input.ChatResponseOk}.";
+
+            await DataService.AddAlert(deviceID, orgID, alertMessage);
 
             StatusMessage = "We got it!  Someone will contact you soon.";
 

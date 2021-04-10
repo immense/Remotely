@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Remotely.Server.Data
 {
-    public class PostgreSqlDbContext : ApplicationDbContext
+    public class PostgreSqlDbContext : AppDb
     {
         private readonly IConfiguration _configuration;
 
@@ -37,6 +37,8 @@ namespace Remotely.Server.Data
                 options.UseNpgsql(_configuration.GetConnectionString("PostgreSQL"));
             }
             options.ConfigureWarnings(x => x.Ignore(RelationalEventId.MultipleCollectionIncludeWarning));
+
+            options.LogTo((message) => System.Diagnostics.Debug.Write(message));
         }
     }
 }

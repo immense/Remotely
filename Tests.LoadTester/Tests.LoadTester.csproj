@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Agent\Agent.csproj" />
     <ProjectReference Include="..\Desktop.Win\Desktop.Win.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>

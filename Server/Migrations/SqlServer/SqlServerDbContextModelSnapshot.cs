@@ -15,9 +15,9 @@ namespace Remotely.Server.Migrations.SqlServer
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.2");
+                .HasAnnotation("ProductVersion", "5.0.4")
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("DeviceGroupRemotelyUser", b =>
                 {
@@ -32,6 +32,66 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.HasIndex("UsersId");
 
                     b.ToTable("DeviceGroupRemotelyUser");
+                });
+
+            modelBuilder.Entity("DeviceGroupScriptSchedule", b =>
+                {
+                    b.Property<string>("DeviceGroupsID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("ScriptSchedulesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DeviceGroupsID", "ScriptSchedulesId");
+
+                    b.HasIndex("ScriptSchedulesId");
+
+                    b.ToTable("DeviceGroupScriptSchedule");
+                });
+
+            modelBuilder.Entity("DeviceScriptRun", b =>
+                {
+                    b.Property<string>("DevicesID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("ScriptRunsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DevicesID", "ScriptRunsId");
+
+                    b.HasIndex("ScriptRunsId");
+
+                    b.ToTable("DeviceScriptRun");
+                });
+
+            modelBuilder.Entity("DeviceScriptRun1", b =>
+                {
+                    b.Property<string>("DevicesCompletedID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("ScriptRunsCompletedId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DevicesCompletedID", "ScriptRunsCompletedId");
+
+                    b.HasIndex("ScriptRunsCompletedId");
+
+                    b.ToTable("DeviceScriptRun1");
+                });
+
+            modelBuilder.Entity("DeviceScriptSchedule", b =>
+                {
+                    b.Property<string>("DevicesID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("ScriptSchedulesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DevicesID", "ScriptSchedulesId");
+
+                    b.HasIndex("ScriptSchedulesId");
+
+                    b.ToTable("DeviceScriptSchedule");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -66,7 +126,7 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -161,7 +221,7 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -291,14 +351,9 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.Property<string>("Secret")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Token")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("ID");
 
                     b.HasIndex("OrganizationID");
-
-                    b.HasIndex("Token");
 
                     b.ToTable("ApiTokens");
                 });
@@ -348,46 +403,6 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.ToTable("BrandingInfo");
                 });
 
-            modelBuilder.Entity("Remotely.Shared.Models.CommandResult", b =>
-                {
-                    b.Property<string>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("CommandMode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CommandResults")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CommandText")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OrganizationID")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("PSCoreResults")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SenderConnectionID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SenderUserID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TargetDeviceIDs")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("TimeStamp")
-                        .HasColumnType("datetimeoffset");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("OrganizationID");
-
-                    b.ToTable("CommandResults");
-                });
-
             modelBuilder.Entity("Remotely.Shared.Models.Device", b =>
                 {
                     b.Property<string>("ID")
@@ -425,6 +440,7 @@ namespace Remotely.Server.Migrations.SqlServer
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Notes")
+                        .HasMaxLength(5000)
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("OSArchitecture")
@@ -583,6 +599,208 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.ToTable("Organizations");
                 });
 
+            modelBuilder.Entity("Remotely.Shared.Models.SavedScript", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatorId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FolderPath")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("GenerateAlertOnError")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsQuickScript")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("OrganizationID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("SendEmailOnError")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SendErrorEmailTo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Shell")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("OrganizationID");
+
+                    b.ToTable("SavedScripts");
+                });
+
+            modelBuilder.Entity("Remotely.Shared.Models.ScriptResult", b =>
+                {
+                    b.Property<string>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("DeviceID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ErrorOutput")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("HadErrors")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("InputType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OrganizationID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<TimeSpan>("RunTime")
+                        .HasColumnType("time");
+
+                    b.Property<Guid?>("SavedScriptId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("ScheduleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ScriptInput")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ScriptRunId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SenderConnectionID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SenderUserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Shell")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StandardOutput")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("TimeStamp")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DeviceID");
+
+                    b.HasIndex("OrganizationID");
+
+                    b.HasIndex("ScheduleId");
+
+                    b.HasIndex("ScriptRunId");
+
+                    b.ToTable("ScriptResults");
+                });
+
+            modelBuilder.Entity("Remotely.Shared.Models.ScriptRun", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Initiator")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InputType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OrganizationID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset>("RunAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("RunOnNextConnect")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("SavedScriptId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("ScheduleId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ScriptScheduleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrganizationID");
+
+                    b.HasIndex("ScriptScheduleId");
+
+                    b.ToTable("ScriptRuns");
+                });
+
+            modelBuilder.Entity("Remotely.Shared.Models.ScriptSchedule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatorId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Interval")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("LastRun")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("NextRun")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("OrganizationID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("RunOnNextConnect")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("SavedScriptId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("StartAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("OrganizationID");
+
+                    b.ToTable("ScriptSchedules");
+                });
+
             modelBuilder.Entity("Remotely.Shared.Models.SharedFile", b =>
                 {
                     b.Property<string>("ID")
@@ -614,10 +832,6 @@ namespace Remotely.Server.Migrations.SqlServer
             modelBuilder.Entity("Remotely.Shared.Models.RemotelyUser", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
-
-                    b.Property<string>("DisplayName")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("IsAdministrator")
                         .HasColumnType("bit");
@@ -652,6 +866,66 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.HasOne("Remotely.Shared.Models.RemotelyUser", null)
                         .WithMany()
                         .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DeviceGroupScriptSchedule", b =>
+                {
+                    b.HasOne("Remotely.Shared.Models.DeviceGroup", null)
+                        .WithMany()
+                        .HasForeignKey("DeviceGroupsID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Remotely.Shared.Models.ScriptSchedule", null)
+                        .WithMany()
+                        .HasForeignKey("ScriptSchedulesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DeviceScriptRun", b =>
+                {
+                    b.HasOne("Remotely.Shared.Models.Device", null)
+                        .WithMany()
+                        .HasForeignKey("DevicesID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Remotely.Shared.Models.ScriptRun", null)
+                        .WithMany()
+                        .HasForeignKey("ScriptRunsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DeviceScriptRun1", b =>
+                {
+                    b.HasOne("Remotely.Shared.Models.Device", null)
+                        .WithMany()
+                        .HasForeignKey("DevicesCompletedID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Remotely.Shared.Models.ScriptRun", null)
+                        .WithMany()
+                        .HasForeignKey("ScriptRunsCompletedId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DeviceScriptSchedule", b =>
+                {
+                    b.HasOne("Remotely.Shared.Models.Device", null)
+                        .WithMany()
+                        .HasForeignKey("DevicesID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Remotely.Shared.Models.ScriptSchedule", null)
+                        .WithMany()
+                        .HasForeignKey("ScriptSchedulesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -737,15 +1011,6 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.Navigation("Organization");
                 });
 
-            modelBuilder.Entity("Remotely.Shared.Models.CommandResult", b =>
-                {
-                    b.HasOne("Remotely.Shared.Models.Organization", "Organization")
-                        .WithMany("CommandResults")
-                        .HasForeignKey("OrganizationID");
-
-                    b.Navigation("Organization");
-                });
-
             modelBuilder.Entity("Remotely.Shared.Models.Device", b =>
                 {
                     b.HasOne("Remotely.Shared.Models.DeviceGroup", "DeviceGroup")
@@ -797,6 +1062,74 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.Navigation("BrandingInfo");
                 });
 
+            modelBuilder.Entity("Remotely.Shared.Models.SavedScript", b =>
+                {
+                    b.HasOne("Remotely.Shared.Models.RemotelyUser", "Creator")
+                        .WithMany("SavedScripts")
+                        .HasForeignKey("CreatorId");
+
+                    b.HasOne("Remotely.Shared.Models.Organization", "Organization")
+                        .WithMany("SavedScripts")
+                        .HasForeignKey("OrganizationID");
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("Organization");
+                });
+
+            modelBuilder.Entity("Remotely.Shared.Models.ScriptResult", b =>
+                {
+                    b.HasOne("Remotely.Shared.Models.Device", "Device")
+                        .WithMany("ScriptResults")
+                        .HasForeignKey("DeviceID");
+
+                    b.HasOne("Remotely.Shared.Models.Organization", "Organization")
+                        .WithMany("ScriptResults")
+                        .HasForeignKey("OrganizationID");
+
+                    b.HasOne("Remotely.Shared.Models.ScriptSchedule", "Schedule")
+                        .WithMany()
+                        .HasForeignKey("ScheduleId");
+
+                    b.HasOne("Remotely.Shared.Models.ScriptRun", null)
+                        .WithMany("Results")
+                        .HasForeignKey("ScriptRunId");
+
+                    b.Navigation("Device");
+
+                    b.Navigation("Organization");
+
+                    b.Navigation("Schedule");
+                });
+
+            modelBuilder.Entity("Remotely.Shared.Models.ScriptRun", b =>
+                {
+                    b.HasOne("Remotely.Shared.Models.Organization", "Organization")
+                        .WithMany("ScriptRuns")
+                        .HasForeignKey("OrganizationID");
+
+                    b.HasOne("Remotely.Shared.Models.ScriptSchedule", null)
+                        .WithMany("ScriptRuns")
+                        .HasForeignKey("ScriptScheduleId");
+
+                    b.Navigation("Organization");
+                });
+
+            modelBuilder.Entity("Remotely.Shared.Models.ScriptSchedule", b =>
+                {
+                    b.HasOne("Remotely.Shared.Models.RemotelyUser", "Creator")
+                        .WithMany("ScriptSchedules")
+                        .HasForeignKey("CreatorId");
+
+                    b.HasOne("Remotely.Shared.Models.Organization", "Organization")
+                        .WithMany("ScriptSchedules")
+                        .HasForeignKey("OrganizationID");
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("Organization");
+                });
+
             modelBuilder.Entity("Remotely.Shared.Models.SharedFile", b =>
                 {
                     b.HasOne("Remotely.Shared.Models.Organization", "Organization")
@@ -818,6 +1151,8 @@ namespace Remotely.Server.Migrations.SqlServer
             modelBuilder.Entity("Remotely.Shared.Models.Device", b =>
                 {
                     b.Navigation("Alerts");
+
+                    b.Navigation("ScriptResults");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.DeviceGroup", b =>
@@ -831,8 +1166,6 @@ namespace Remotely.Server.Migrations.SqlServer
 
                     b.Navigation("ApiTokens");
 
-                    b.Navigation("CommandResults");
-
                     b.Navigation("DeviceGroups");
 
                     b.Navigation("Devices");
@@ -843,12 +1176,34 @@ namespace Remotely.Server.Migrations.SqlServer
 
                     b.Navigation("RemotelyUsers");
 
+                    b.Navigation("SavedScripts");
+
+                    b.Navigation("ScriptResults");
+
+                    b.Navigation("ScriptRuns");
+
+                    b.Navigation("ScriptSchedules");
+
                     b.Navigation("SharedFiles");
+                });
+
+            modelBuilder.Entity("Remotely.Shared.Models.ScriptRun", b =>
+                {
+                    b.Navigation("Results");
+                });
+
+            modelBuilder.Entity("Remotely.Shared.Models.ScriptSchedule", b =>
+                {
+                    b.Navigation("ScriptRuns");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.RemotelyUser", b =>
                 {
                     b.Navigation("Alerts");
+
+                    b.Navigation("SavedScripts");
+
+                    b.Navigation("ScriptSchedules");
                 });
 #pragma warning restore 612, 618
         }

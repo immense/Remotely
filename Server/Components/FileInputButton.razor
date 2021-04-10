@@ -1,0 +1,38 @@
+﻿@inject IJsInterop JsInterop
+
+<InputFile id="@_hiddenInputId" type="file" style="display: none" multiple="@Multiple" OnChange="OnFileChanged" />
+
+<button class="@ClassNames" @onclick="OpenFilePicker">
+    @ButtonContent
+</button>
+
+@code {
+    [Parameter]
+    public string ClassNames { get; set; }
+
+    [Parameter]
+    public RenderFragment ButtonContent { get; set; }
+
+
+    [Parameter]
+    public Func<InputFileChangeEventArgs, Task> OnChanged { get; set; }
+
+    [Parameter]
+    public bool Multiple { get; set; }
+
+    private readonly string _hiddenInputId = $"input-{Guid.NewGuid()}";
+
+
+    private async Task OnFileChanged(InputFileChangeEventArgs args)
+    {
+        if (OnChanged is not null)
+        {
+            await OnChanged.Invoke(args);
+        }
+    }
+
+    private void OpenFilePicker()
+    {
+        JsInterop.InvokeClick(_hiddenInputId);
+    }
+}

@@ -2,96 +2,114 @@
 using Remotely.Shared.Models;
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Linq;
 using System.Management.Automation;
+using System.Management.Automation.Runspaces;
 using System.Timers;
 
 namespace Remotely.Agent.Services
 {
     public class PSCore
     {
+        private readonly ConfigService _configService;
+        private readonly ConnectionInfo _connectionInfo;
+        private CommandCompletion _lastCompletion;
+        private string _lastInputText;
+        private readonly PowerShell _powershell;
+
         public PSCore(ConfigService configService)
         {
-            ConfigService = configService;
-            PS = PowerShell.Create();
-            PS.AddScript(@"$VerbosePreference = ""Continue"";
+            _configService = configService;
+            _connectionInfo = _configService.GetConnectionInfo();
+            
+            _powershell = PowerShell.Create();
+
+            _powershell.AddScript($@"$VerbosePreference = ""Continue"";
                             $DebugPreference = ""Continue"";
                             $InformationPreference = ""Continue"";
-                            $WarningPreference = ""Continue"";");
-            PS.Invoke();
+                            $WarningPreference = ""Continue"";
+                            $env:DeviceId = ""{_connectionInfo.DeviceID}"";
+                            $env:ServerUrl = ""{_connectionInfo.Host}""");
 
-            ProcessIdleTimeout = new Timer(TimeSpan.FromMinutes(10).TotalMilliseconds)
-            {
-                AutoReset = false
-            };
-            ProcessIdleTimeout.Elapsed += ProcessIdleTimeout_Elapsed;
-            ProcessIdleTimeout.Start();
+            _powershell.Invoke();
         }
 
-        public string ConnectionID { get; private set; }
+        public string SenderConnectionId { get; private set; }
 
         private static ConcurrentDictionary<string, PSCore> Sessions { get; set; } = new ConcurrentDictionary<string, PSCore>();
 
-        private ConfigService ConfigService { get; }
-
-        private Timer ProcessIdleTimeout { get; set; }
-
-        private PowerShell PS { get; set; }
-
-        public static PSCore GetCurrent(string connectionID)
+        public static PSCore GetCurrent(string senderConnectionId)
         {
-            if (Sessions.TryGetValue(connectionID, out var session))
+            if (Sessions.TryGetValue(senderConnectionId, out var session))
             {
-                session.ProcessIdleTimeout.Stop();
-                session.ProcessIdleTimeout.Start();
                 return session;
             }
             else
             {
                 session = Program.Services.GetRequiredService<PSCore>();
-                session.ConnectionID = connectionID;
-                Sessions.AddOrUpdate(connectionID, session, (id, b) => session);
+                session.SenderConnectionId = senderConnectionId;
+                Sessions.AddOrUpdate(senderConnectionId, session, (id, b) => session);
                 return session;
             }
         }
 
-        public PSCoreCommandResult WriteInput(string input, string commandID)
+        public CommandCompletion GetCompletions(string inputText, int currentIndex, bool? forward)
         {
-            PS.Commands.Clear();
-            PS.AddScript(input);
-            var results = PS.Invoke();
+            if (_lastCompletion is null ||
+                inputText != _lastInputText)
+            {
+                _lastInputText = inputText;
+                _lastCompletion = CommandCompletion.CompleteInput(inputText, currentIndex, new(), _powershell);
+            }
+
+            if (forward.HasValue)
+            {
+                _lastCompletion.GetNextResult(forward.Value);
+            }
+
+            return _lastCompletion;
+        }
+
+        public ScriptResult WriteInput(string input)
+        {
+            var sw = Stopwatch.StartNew();
+
+            _powershell.Commands.Clear();
+            _powershell.AddScript(input);
+            var results = _powershell.Invoke();
 
             using var ps = PowerShell.Create();
             ps.AddScript("$args[0] | Out-String");
             ps.AddArgument(results);
             var hostOutput = (ps.Invoke()[0].BaseObject as string);
 
-            var verboseOut = PS.Streams.Verbose.ReadAll().Select(x => x.Message).ToList();
-            var debugOut = PS.Streams.Debug.ReadAll().Select(x => x.Message).ToList();
-            var errorOut = PS.Streams.Error.ReadAll().Select(x => x.Exception.ToString() + Environment.NewLine + x.ScriptStackTrace).ToList();
-            var infoOut = PS.Streams.Information.Select(x => x.MessageData.ToString()).ToList();
-            var warningOut = PS.Streams.Warning.Select(x => x.Message).ToList();
+            var verboseOut = _powershell.Streams.Verbose.ReadAll().Select(x => x.Message);
+            var debugOut = _powershell.Streams.Debug.ReadAll().Select(x => x.Message);
+            var errorOut = _powershell.Streams.Error.ReadAll().Select(x => x.Exception.ToString() + Environment.NewLine + x.ScriptStackTrace);
+            var infoOut = _powershell.Streams.Information.Select(x => x.MessageData.ToString());
+            var warningOut = _powershell.Streams.Warning.Select(x => x.Message);
 
-            PS.Streams.ClearStreams();
-            PS.Commands.Clear();
+            var standardOut = hostOutput.Split(Environment.NewLine)
+                .Concat(infoOut)
+                .Concat(debugOut)
+                .Concat(verboseOut)
+                .Concat(warningOut);
 
-            return new PSCoreCommandResult()
+            _powershell.Streams.ClearStreams();
+            _powershell.Commands.Clear();
+
+            return new ScriptResult()
             {
-                CommandResultID = commandID,
-                DeviceID = ConfigService.GetConnectionInfo().DeviceID,
-                DebugOutput = debugOut,
-                ErrorOutput = errorOut,
-                VerboseOutput = verboseOut,
-                HostOutput = hostOutput,
-                InformationOutput = infoOut,
-                WarningOutput = warningOut
+                DeviceID = _configService.GetConnectionInfo().DeviceID,
+                SenderConnectionID = SenderConnectionId,
+                ScriptInput = input,
+                Shell = Shared.Enums.ScriptingShell.PSCore,
+                StandardOutput = standardOut.ToArray(),
+                ErrorOutput = errorOut.ToArray(),
+                RunTime = sw.Elapsed,
+                HadErrors = _powershell.HadErrors
             };
-        }
-
-        private void ProcessIdleTimeout_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            Sessions.TryRemove(ConnectionID, out _);
-            PS?.Dispose();
         }
     }
 }

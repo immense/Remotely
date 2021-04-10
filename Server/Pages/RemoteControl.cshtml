@@ -18,10 +18,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <link href="~/manifest-rc.json" rel="manifest" />
-    <meta name="description" content="Remote access tools designed to get things done quickly." />
+    <meta name="description" content="Remote support tools designed to get things done quickly." />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link href="~/css/remote-control.css" rel="stylesheet" asp-append-version="true" />
-    @if (AppConfig.Theme.ToLower() == "light")
+    @if (AppConfig.Theme == Remotely.Shared.Enums.Theme.Light)
     {
         <link href="~/css/remote-control-light.css" rel="stylesheet" asp-append-version="true" />
     }
@@ -47,7 +47,7 @@
     }
     else
     {
-        if (AppConfig.Theme.ToLower() == "light")
+        if (AppConfig.Theme == Remotely.Shared.Enums.Theme.Light)
         {
             <link href="~/css/remote-control-light.css" rel="stylesheet" asp-append-version="true" />
         }
@@ -61,14 +61,12 @@
     <link href="~/lib/fontawesome/css/all.min.css" rel="stylesheet" />
 
     <environment include="Development">
-        <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/signalr/signalr.js"></script>
         <script src="~/lib/signalr/msgpack5.js"></script>
         <script src="~/lib/signalr/signalr-protocol-msgpack.js"></script>
         <script src="~/lib/msgpack/msgpack.js"></script>
     </environment>
     <environment exclude="Development">
-        <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/signalr/signalr.min.js"></script>
         <script src="~/lib/signalr/msgpack5.min.js"></script>
         <script src="~/lib/signalr/signalr-protocol-msgpack.min.js"></script>
@@ -80,7 +78,7 @@
         <div class="logo-title">
             Remotely
         </div>
-        <div class="logo-subtitle">Do IT Remotely</div>
+        <div class="logo-subtitle">Support Portal</div>
     </div>
 
     <button id="keyboardButton" hidden="hidden" title="Invoke the mobile touch keyboard.">
@@ -211,7 +209,7 @@
             <button id="fileDownloadButton" class="horizontal-bar-button">Download File</button>
         </div>
     </div>
-    <div id="connectBox">
+    <div id="connectBox" class="center-connection-box" style="display: none">
         <h3>Connect to a client:</h3>
         <div class="form-block">
             <label>Your Name (shown to client): </label>
@@ -229,6 +227,10 @@
         <div id="statusMessage" class="status-message">
 
         </div>
+    </div>
+
+    <div id="disconnectedBox" class="center-connection-box" style="text-align: center; display: none;">
+        <h3>Disconnected from client.</h3>
     </div>
 
 
@@ -251,22 +253,15 @@
 
     <footer>
         <div class="footer-wrapper">
-            <p>&copy; @DateTimeOffset.Now.Year - Translucency Software</p>
+            &copy; 2021 - <a href="https://lucency.co">Translucency Software</a>
         </div>
     </footer>
 
-    <script src="~/lib/require.js"></script>
+    <script src="~/src/RemoteControl/App.js" type="module"></script>
     <script>
-        require.config({
-            waitSeconds: 30,
-            paths: {
-                "App": "out"
-            }
-        });
-        require(["App"], function (remotely) {
-            remotely.App.Viewer.Init();
-        });
-
+        window.addEventListener("load", () => {
+            ViewerApp.Init();
+        })
     </script>
 </body>
 </html>

@@ -2,7 +2,7 @@
   "profiles": {
     "Tests.LoadTester": {
       "commandName": "Project",
-      "commandLineArgs": "-serverurl https://localhost:5001 -organizationid 6b8ff6b6-a5ac-4e38-a022-3b64f2e6b486 -agentcount 1000"
+      "commandLineArgs": "-serverurl https://localhost:5001 -organizationid 0fea8f8b-6ca0-41c7-b6e6-458caca343ec -agentcount 1000"
     }
   }
 }

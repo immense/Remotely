@@ -203,7 +203,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Debug (
-    xcopy "$(TargetPath)" "$(SolutionDir)Server\wwwroot\Downloads\" /y /e /i
+    xcopy "$(TargetPath)" "$(SolutionDir)Server\wwwroot\Content\" /y /e /i
 )</PostBuildEvent>
   </PropertyGroup>
 </Project>

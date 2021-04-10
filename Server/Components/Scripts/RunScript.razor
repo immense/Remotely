@@ -1,0 +1,59 @@
+﻿@inherits AuthComponentBase
+@attribute [Authorize]
+
+<div class="main-grid mt-3 auto-height">
+    <div style="grid-column: span 3">
+        <button class="btn btn-primary align-middle mr-4" @onclick="ExecuteScript">Run</button>
+        <input type="checkbox" class="mr-1 align-middle" @bind="_runOnNextConnect" />
+        <span class="align-middle">If offline, run immediately when next connected</span>
+    </div>
+    <div class="column-wrapper h-100 pb-3">
+        <div>
+            <h5>Saved Scripts</h5>
+            <div>
+                <input type="checkbox" @bind="ParentPage.ShowOnlyMyScripts" />
+                <span class="align-top">Show only mine</span>
+            </div>
+        </div>
+        <TreeView DataSource="ParentPage.TreeNodes"
+                  ItemTypeSelector="x => x.ItemType"
+                  ItemHeaderSelector="x => x.Name"
+                  ItemSelected="ScriptSelected"
+                  ChildItemSelector="x => x.ChildItems"
+                  ItemIconCssSelector="ParentPage.GetItemIconCss"
+                  KeySelector="x => x.Id"
+                  WrapperStyle="border: 1px solid gray; padding: .5em; height: 100%; border-radius: 5px;"
+                  T="ScriptTreeNode" />
+    </div>
+    <div class="column-wrapper h-100 pb-3">
+        <h5>Device Groups</h5>
+        <div class="item-list-border h-100">
+            @foreach (var deviceGroup in _deviceGroups)
+            {
+                <div @key="@deviceGroup.ID">
+                    <input class="mr-1" type="checkbox" 
+                           checked="@(_selectedDeviceGroups.Contains(deviceGroup.ID))"
+                           @onchange="ev => DeviceGroupSelectedChanged(ev, deviceGroup)" />
+
+                    <span class="align-top">@deviceGroup.Name</span>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="column-wrapper h-100 pb-3">
+        <h5>Devices</h5>
+        <div class="item-list-border h-100">
+            @foreach (var device in _devices)
+            {
+                <div @key="@device.ID">
+                    <input class="mr-1" type="checkbox"
+                           checked="@(_selectedDeviceGroups.Contains(device.ID))"
+                           @onchange="ev => DeviceSelectedChanged(ev, device)" />
+
+                    <span class="align-top">@device.DeviceName</span>
+                </div>
+            }
+        </div>
+    </div>
+</div>

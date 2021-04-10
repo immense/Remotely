@@ -1,296 +1,81 @@
-/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-for details on configuring this project to bundle and minify static web assets. */
+@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
-a.navbar-brand {
-    white-space: normal;
-    word-break: break-all;
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    overscroll-behavior-y: contain;
 }
 
-.hidden {
-    display:none !important;
+a, .btn-link {
+    color: #0366d6;
 }
+
+/*.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}*/
+
+.content {
+    padding-top: 1.1rem;
+}
+
+.valid.modified:not([type=checkbox]) {
+    outline: 1px solid #26b050;
+}
+
+.invalid {
+    outline: 1px solid red;
+}
+
+.validation-message {
+    color: red;
+}
+
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
+
 
 /* QR code generator */
 #qrCode {
     margin: 15px;
 }
-
-h6 {
-    font-size: 1rem !important;
-}
-
-.container {
-    max-width: 95vw !important;
-}
-
-.work-area {
-    display: grid;
-    grid-template-rows: min-content auto;
-    grid-row-gap: 15px;
-    height: calc(100vh - 160px);
-    overflow-y: hidden;
-}
-
-
-#deviceGridInnerWrapper {
-    display: grid;
-    grid-auto-rows: auto 1fr;
-    height: 100%;
-}
-
-.record-row {
-    cursor: pointer;
-}
-
-.table tbody tr td {
-    padding: .5rem;
-}
-
-#tabContentWrapper {
-    overflow: auto;
-}
-
-#gridControlsWrapper {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    grid-column-gap: 20px;
-    grid-row-gap: 10px;
-    margin-bottom: 5px;
-    margin-right: 5px;
-    padding-top: 3px;
-}
-
-#gridControlsWrapper > :last-child {
-    text-align: right;
-}
-
-@media only screen and (max-width: 520px) {
-    #gridControlsWrapper {
-        grid-template-columns: 1fr;
+    #qrCode img {
+        border-width: 3px;
+        border-style: solid;
+        border-color: white;
     }
 
-    #gridControlsWrapper > :last-child {
-        text-align: left;
-    }
-}
-
-#consoleFrame.show {
-    display: grid;
-    grid-template-rows: auto min-content;
-    grid-row-gap: 10px;
-    height: 100%;
-}
-
-.console {
-    font-family: Consolas, 'Lucida Console', Courier New, Courier, monospace;
-    overflow-y: auto;
-}
-
-#consoleStatusDiv select {
-    border: none;
-}
-
-.console-block {
-    display: grid;
-    width: 100%;
-    grid-column-gap: 7px;
-    grid-template-columns: min-content auto;
-}
-
-#qrCode img {
-    border-width: 3px;
-    border-style: solid;
-}
-.help-wrapper {
-    font-size: .9em;
-}
 
 
-.help-syntax-text {
-    font-style: italic;
+footer {
+    overflow: hidden !important;
 }
 
-.console-prompt {
-    text-align: right;
+input[type="checkbox"] {
+    height: 1.3em;
+    width: 1.3em;
 }
 
-.console-input-prompt {
-    text-align: right;
-}
-
-.console-input-prompt select {
-    border: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-}
-
-.console-input-prompt select::-ms-expand {
-    display: none;
-}
-
-.console-block textarea {
-    border: none;
-    width: calc(100% - 5px);
-    height: 22px;
-    resize: none;
-}
-
-#commandCompletionWrapper {
-    position: absolute;
-    z-index: 1;
-}
-#commandCompletionDiv {
-    display: inline-block;
-    overflow-y: auto;
-    overflow-x: hidden;
-    max-height: 200px;
-    max-width: 400px;
-    vertical-align: top;
-}
-#commandInfoDiv {
-    display: inline-block;
-    overflow-y: auto;
-    max-height: 200px;
-    margin-left: 5px;
-    vertical-align: top;
-    padding: 5px 10px;
-    max-width: 500px;
-}
-
-.command-completion-item {
-    cursor: pointer;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    -webkit-user-select: none;
-    user-select: none;
-    padding: 5px 10px;
-    padding: 3px 20px 3px 10px;
-}
-
-.command-completion-item:hover {
-    transition: .3s all linear;
-}
-
-span.label.code {
-    font-weight: normal;
-    font-size: .9em;
-    white-space: normal;
-    padding: 5px 10px;
-    border-radius: 3px;
-}
-
-.command-result-output {
-    margin-left: 30px;
-}
-
-.footer-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    font-size: .9em;
-}
-
-.help-list {
-    display: grid;
-    grid-template-columns: min-content 1fr;
-    grid-column-gap: 20px;
+input[disabled], input[readonly], select[disabled] {
+    background-color: #adadad !important;
 }
 
 .pointer {
     cursor: pointer;
-}
-
-.middle-aligned {
-    vertical-align: middle !important;
-}
-
-.chat-window {
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
-    width: 350px;
-}
-
-.chat-header {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    user-select: none;
-    cursor: move;
-    padding: 5px 10px;
-}
-
-.chat-messages {
-    overflow-y: auto;
-    height: 250px;
-    padding: 5px 10px;
-}
-
-.chat-input {
-    width: 100%;
-    resize: none;
-    margin-bottom: -5px;
-}
-
-
-#alertsButton {
-    position: absolute;
-    top: 75px;
-    right: 5px;
-    z-index: 2;
-    transition: .5s ease left;
-    user-select: none;
-}
-
-
-#alertsFrame {
-    position: absolute;
-    right: 0;
-    top: 0;
-    height: 100%;
-    width: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
-    text-align: center;
-    opacity: 0;
-    z-index: 2;
-    transition: .5s ease all;
-}
-
-#alertsFrame.open {
-    width: 350px;
-    opacity: 1;
-    transition: .5s ease all;
-}
-
-.toast-message {
-    transform: translate(0, 0);
-    padding: 10px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    opacity: 1;
-    color: white;
-    border-radius: 5px;
-    user-select: none;
-    pointer-events: none;
-    animation-name: toast-message;
-    animation-delay: 2s;
-    animation-duration: .5s;
-    animation-fill-mode: forwards;
-    animation-timing-function: ease-in;
-}
-
-@keyframes toast-message {
-    from {
-        transform: translate(0, 0);
-    }
-
-    to {
-        transform: translate(calc(100% + 50px), 0);
-    }
-}
-
-#toastsWrapper {
-    position: fixed;
-    bottom: 25px;
-    right: 25px;
-    z-index: 4;
 }
