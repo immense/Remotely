@@ -25,7 +25,7 @@ namespace Remotely.Shared.Utilities
                 {
                     CheckLogFileExists();
 
-                    File.AppendAllText(LogPath, $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}\t[Debug]\t-[{callerName}]\t{message}{Environment.NewLine}");
+                    File.AppendAllText(LogPath, $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}\t[Debug]\t[{callerName}]\t{message}{Environment.NewLine}");
                 }
 
                 System.Diagnostics.Debug.WriteLine(message);
@@ -62,7 +62,7 @@ namespace Remotely.Shared.Utilities
                 WriteLock.Wait();
 
                 CheckLogFileExists();
-                File.AppendAllText(LogPath, $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}\t[{eventType}]\t-[{callerName}]\t{message}{Environment.NewLine}");
+                File.AppendAllText(LogPath, $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}\t[{eventType}]\t[{callerName}]\t{message}{Environment.NewLine}");
                 Console.WriteLine(message);
             }
             catch { }
@@ -84,7 +84,7 @@ namespace Remotely.Shared.Utilities
 
                 while (exception != null)
                 {
-                    File.AppendAllText(LogPath, $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}\t[{eventType}]\t-[{callerName}]\t{exception?.Message}\t{exception?.StackTrace}\t{exception?.Source}{Environment.NewLine}");
+                    File.AppendAllText(LogPath, $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}\t[{eventType}]\t[{callerName}]\t{exception?.Message}\t{exception?.StackTrace}\t{exception?.Source}{Environment.NewLine}");
                     Console.WriteLine(exception.Message);
                     exception = exception.InnerException;
                 }

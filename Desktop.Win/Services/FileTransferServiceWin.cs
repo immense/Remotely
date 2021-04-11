@@ -118,11 +118,11 @@ namespace Remotely.Desktop.Win.Services
             }
         }
 
-        public async Task UploadFile(FileUpload fileUpload, Viewer viewer, Action<double> progressUpdateCallback)
+        public async Task UploadFile(FileUpload fileUpload, Viewer viewer, CancellationToken cancelToken, Action<double> progressUpdateCallback)
         {
             try
             {
-                await viewer.SendFile(fileUpload, progressUpdateCallback);
+                await viewer.SendFile(fileUpload, cancelToken, progressUpdateCallback);
             }
             catch (Exception ex)
             {

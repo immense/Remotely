@@ -89,7 +89,7 @@ namespace Remotely.Desktop.Linux.ViewModels
                 FileUploads.Add(fileUpload);
             });
 
-            await _fileTransferService.UploadFile(fileUpload, _viewer, async progress =>
+            await _fileTransferService.UploadFile(fileUpload, _viewer, fileUpload.CancellationTokenSource.Token, async progress =>
             {
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
@@ -103,6 +103,7 @@ namespace Remotely.Desktop.Linux.ViewModels
             if (param is FileUpload fileUpload)
             {
                 FileUploads.Remove(fileUpload);
+                fileUpload.CancellationTokenSource.Cancel();
             }
         });
     }
