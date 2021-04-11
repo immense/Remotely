@@ -33,7 +33,7 @@ It's *highly* encouraged that you get comfortable building and deploying from so
 ## Build Instructions (GitHub)
 GitHub Actions allows you to build and deploy Remotely for free from their cloud servers.  The definitions for the build processes are located in `/.github/workflows/` folder.
 
-After forking the repo, follow the instructions in the workflow YML file.  The easiest workflow to use is the Build.yml worfklow, and I'd recommend starting with that one.  It will produce a build artifact (ZIP package) identical to what is on the Releases page, only the clients will have your server URL hard-coded.
+After forking the repo, follow the instructions in the workflow YML file.  The easiest workflow to use is the Build.yml worfklow, and I'd recommend starting with that one.  It will produce a build artifact (ZIP package) identical to what was on the Releases page, only the clients will have your server URL hard-coded.
 
 ### Instructions for using the Build workflow:
 - Fork the repo if you haven't already.
@@ -49,18 +49,17 @@ After forking the repo, follow the instructions in the workflow YML file.  The e
 - If you're going to host on Windows, change the Server Runtime Identifier to `win-x64`.
 - Click "Run workflow".
 - When it's finished, there will be a build artifact for download that contains the server and clients.
-- Download the ZIP file and extract the files to the location where your site will be hosted (e.g. `/var/www/remotely`).
-- Run the install script located in the folder (e.g. `Ubuntu_Server_Install.sh`).
+
 
 ## Hosting a Server (Windows)
-* Create a site in IIS that will run Remotely.
-* Run Install-RemotelyServer.ps1 (as an administrator), which is on the [Releases page](https://github.com/lucent-sea/Remotely/releases/latest) and in the [Utilities folder in source control](https://raw.githubusercontent.com/lucent-sea/Remotely/master/Utilities/Install-RemotelyServer.ps1).
-    * Alternatively, you can build from source and copy the server files to the site folder.
+- Download the ZIP file and extract the files to the location where your site will be hosted (e.g. `/var/www/remotely`).
+- Run the install script located in the folder (e.g. `Ubuntu_Server_Install.sh`).
+- In the site's content directory, make a copy of the `appsettings.json` file and name it `appsettings.Production.json`.
+  - The server will use this new file for reading/writing its settings, and it won't be overwritten by future ugprades.
 * Download and install the latest .NET Runtime (not the SDK) with the Hosting Bundle.
 	* Link: https://dotnet.microsoft.com/download/dotnet-core/current/runtime
 	* This includes the Hosting Bundle for Windows, which allows you to run ASP.NET Core in IIS.
 	* Important: If you installed .NET Runtime before installing all the required IIS features, you may need to run a repair on the .NET Runtime installation.
-* Change values in appsettings.json for your environment.  Make a copy named `appsettings.Production.json` (see Configuration section below).
 * By default, SQLite is used for the database.
     * The "Remotely.db" database file is automatically created in the root folder of your site.
 	* You can browse and modify the contents using [DB Browser for SQLite](https://sqlitebrowser.org/).
@@ -73,18 +72,19 @@ After forking the repo, follow the instructions in the workflow YML file.  The e
 ## Hosting a Server (Ubuntu)
 * **IMPORTANT**: Recently, the default web server was switched from Nginx to Caddy Server.  They cannot both be used on the same box.  If you want to continue using Nginx, you'll need to set up the configuration manually.  See the `Example_Nginx_Config.txt` file in the `Utilities` folder for an example.
 * Ubuntu 20.04, 19.04, and 18.04 have been tested.
-* Run Ubuntu_Server_Install.sh (with sudo), which is on the [Releases page](https://github.com/lucent-sea/Remotely/releases/latest) and in the [Utilities folder in source control](https://raw.githubusercontent.com/lucent-sea/Remotely/master/Utilities/Ubuntu_Server_Install.sh).
-	* The script is designed to install Remotely and Caddy on the same server, running Ubuntu 20.04.  You'll need to manually set up other configurations.
-    * A helpful user supplied an example Apache configuration, which can be found in the Utilities folder.
-    * The script will prompt for the "App root" location, which is the above directory where the server files are located.
-	* The script installs the .NET runtime, as well as other dependencies.
-	* Certbot is used in this script and will install an SSL certificate for your site.  Your server needs to have a public domain name that is accessible from the internet for this to work.
-		* More information: https://letsencrypt.org/, https://certbot.eff.org/
-	* Alternatively, you can build from source (using RuntimeIdentifier "linux-x64" for the server) and copy the server files to the site folder.
 * Change values in appsettings.json for your environment.  Make a copy named `appsettings.Production.json` (see Configuration section below).
 * Documentation for hosting behind Nginx can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx
 * There is no default account.  You must create the first one via the Register page, which will create an account that is both a server and organization admin.
 
+## Upgrading
+* To upgrade a server, do any of the below to copy the new Server application files.
+	* Run one of the GitHub Actions workflows, then copy the ZIP contents to the site's content folder.
+	* Build from source as described above and `rsync`/`robocopy` the output files to the server directory.
+	* Build from source and deploy to IIS (e.g. `dotnet publish /p:PublishProfile=MyProfile`)
+* For Linux, you'll need to restart the Remotely service in systemd after overwriting the files.
+* For Windows, you'll need to shut down the site's Application Pool in IIS before copying the files.
+	* Windows won't let you overwrite files that are in use.
+* The only things that shouldn't be overwritten are the database DB file (if using SQLite) and the `appsettings.Production.json`.  These files should never exist in the publish output.
 
 ## Hosting Scenarios
 There are countless ways to host an ASP.NET Core app, and I can't document or automate all of them.  For hosting scenarios aside from the above two, please refer to Microsoft's documentation.
@@ -113,13 +113,6 @@ The first account created will be an admin for both the server and the organizat
 
 An organization admin has access to the Organization page and server log entries specific to his/her organization.  A server admin has access to the Server Config page and can see server log entries that don't belong to an organization. 
 
-## Upgrading
-* To upgrade a server, do any of the below to copy the new Server application files.
-	* Run one of the GitHub Actions workflows.
-	* Build from source as described above and `rsync`/`robocopy` the output files to the server directory.
-	* Build from source and deploy to IIS (e.g. `dotnet publish /p:PublishProfile=MyProfile`)
-* For Linux, you'll also need to restart the Remotely service in systemd after overwriting the files.
-* The only things that can't be overwritten are the database DB file (if using SQLite) and the `appsettings.Production.json`.  These files should never exist in the publish output.
 
 ## Branding
 Within the Account section, there is a tab for branding, which will apply to the quick support clients and Windows installer.
@@ -182,6 +175,7 @@ You can change database by changing `DBProvider` in `ApplicationOptions` to `SQL
 * Linux: Only Ubuntu 18.04+ is tested.
 * For the Ubuntu's "quick support" client, you must first install the following dependencies:
     * libx11-dev
+	* libxrandr-dev
     * libc6-dev
     * libgdiplus
     * libxtst-dev
