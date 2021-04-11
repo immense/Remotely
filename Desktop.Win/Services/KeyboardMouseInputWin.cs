@@ -14,7 +14,8 @@ namespace Remotely.Desktop.Win.Services
 {
     public class KeyboardMouseInputWin : IKeyboardMouseInput
     {
-        private volatile bool inputBlocked;
+        private volatile bool _inputBlocked;
+        private Thread _inputProcessingThread;
 
         private CancellationTokenSource CancelTokenSource { get; set; }
 
@@ -22,15 +23,19 @@ namespace Remotely.Desktop.Win.Services
 
         public Tuple<double, double> GetAbsolutePercentFromRelativePercent(double percentX, double percentY, IScreenCapturer capturer)
         {
-            var absoluteX = (capturer.CurrentScreenBounds.Width * percentX) + capturer.CurrentScreenBounds.Left - capturer.GetVirtualScreenBounds().Left;
-            var absoluteY = (capturer.CurrentScreenBounds.Height * percentY) + capturer.CurrentScreenBounds.Top - capturer.GetVirtualScreenBounds().Top;
+            var screenBounds = capturer.CurrentScreenBounds;
+
+            var absoluteX = (screenBounds.Width * percentX) + screenBounds.Left - capturer.GetVirtualScreenBounds().Left;
+            var absoluteY = (screenBounds.Height * percentY) + screenBounds.Top - capturer.GetVirtualScreenBounds().Top;
             return new Tuple<double, double>(absoluteX / capturer.GetVirtualScreenBounds().Width, absoluteY / capturer.GetVirtualScreenBounds().Height);
         }
 
         public Tuple<double, double> GetAbsolutePointFromRelativePercent(double percentX, double percentY, IScreenCapturer capturer)
         {
-            var absoluteX = (capturer.CurrentScreenBounds.Width * percentX) + capturer.CurrentScreenBounds.Left;
-            var absoluteY = (capturer.CurrentScreenBounds.Height * percentY) + capturer.CurrentScreenBounds.Top;
+            var screenBounds = capturer.CurrentScreenBounds;
+
+            var absoluteX = (screenBounds.Width * percentX) + screenBounds.Left;
+            var absoluteY = (screenBounds.Height * percentY) + screenBounds.Top;
             return new Tuple<double, double>(absoluteX, absoluteY);
         }
 
@@ -41,8 +46,6 @@ namespace Remotely.Desktop.Win.Services
                 App.Current.Exit -= App_Exit;
                 App.Current.Exit += App_Exit;
             });
-
-            StartInputProcessingThread();
         }
 
         public void SendKeyDown(string key)
@@ -225,10 +228,20 @@ namespace Remotely.Desktop.Win.Services
         {
             InputActions.Enqueue(() =>
             {
-                inputBlocked = toggleOn;
+                _inputBlocked = toggleOn;
                 var result = BlockInput(toggleOn);
                 Logger.Write($"Result of ToggleBlockInput set to {toggleOn}: {result}");
+
+                if (!toggleOn)
+                {
+                    CancelTokenSource.Cancel();
+                }
             });
+
+            if (toggleOn)
+            {
+                StartInputProcessingThread();
+            }
         }
 
         private void App_Exit(object sender, System.Windows.ExitEventArgs e)
@@ -301,51 +314,65 @@ namespace Remotely.Desktop.Win.Services
         }
         private void StartInputProcessingThread()
         {
-            CancelTokenSource?.Cancel();
-            CancelTokenSource?.Dispose();
-
+            try
+            {
+                CancelTokenSource?.Cancel();
+                CancelTokenSource?.Dispose();
+            }
+            catch { }
 
             // After BlockInput is enabled, only simulated input coming from the same thread
             // will work.  So we have to start a new thread that runs continuously and
             // processes a queue of input events.
-            var newThread = new Thread(() =>
+            _inputProcessingThread  = new Thread(() =>
             {
                 Logger.Write($"New input processing thread started on thread {Thread.CurrentThread.ManagedThreadId}.");
                 CancelTokenSource = new CancellationTokenSource();
 
-                if (inputBlocked)
+                if (_inputBlocked)
                 {
                     ToggleBlockInput(true);
                 }
                 CheckQueue(CancelTokenSource.Token);
             });
 
-            newThread.SetApartmentState(ApartmentState.STA);
-            newThread.Start();
+            _inputProcessingThread.SetApartmentState(ApartmentState.STA);
+            _inputProcessingThread.Start();
         }
 
         private void TryOnInputDesktop(Action inputAction)
         {
-            InputActions.Enqueue(() =>
+            if (!_inputBlocked)
             {
-                try
+                if (!Win32Interop.SwitchToInputDesktop())
                 {
-                    if (!Win32Interop.SwitchToInputDesktop())
+                    Logger.Write("Desktop switch failed while sending input.");
+                }
+                inputAction();
+            }
+            else
+            {
+                InputActions.Enqueue(() =>
+                {
+                    try
                     {
-                        Logger.Write("Desktop switch failed during input processing.");
+                        if (!Win32Interop.SwitchToInputDesktop())
+                        {
+                            Logger.Write("Desktop switch failed during input processing.");
 
-                        // Thread likely has hooks in current desktop.  SendKeys will create one with no way to unhook it.
-                        // Start a new thread for processing input.
-                        StartInputProcessingThread();
-                        return;
+                            // Thread likely has hooks in current desktop.  SendKeys will create one with no way to unhook it.
+                            // Start a new thread for processing input.
+                            StartInputProcessingThread();
+                            return;
+                        }
+                        inputAction();
                     }
-                    inputAction();
-                }
-                catch (Exception ex)
-                {
-                    Logger.Write(ex);
-                }
-            });
+                    catch (Exception ex)
+                    {
+                        Logger.Write(ex);
+                    }
+                });
+            }
         }
     }
 }

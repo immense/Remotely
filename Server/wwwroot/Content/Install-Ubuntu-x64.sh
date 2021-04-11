@@ -32,6 +32,7 @@ apt-get -y install dotnet-runtime-5.0
 rm packages-microsoft-prod.deb
 
 apt-get -y install libx11-dev
+apt-get -y install libxrandr-dev
 apt-get -y install unzip
 apt-get -y install libc6-dev
 apt-get -y install libgdiplus

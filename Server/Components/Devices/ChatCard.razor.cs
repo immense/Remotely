@@ -34,6 +34,11 @@ namespace Remotely.Server.Components.Devices
             GC.SuppressFinalize(this);
         }
 
+        protected override void OnAfterRender(bool firstRender)
+        {
+            JsInterop.ScrollToEnd(_chatMessagesWindow);
+            base.OnAfterRender(firstRender);
+        }
         protected override Task OnInitializedAsync()
         {
             AppState.PropertyChanged += AppState_PropertyChanged;
@@ -85,9 +90,9 @@ namespace Remotely.Server.Components.Devices
                         session.MissedChats++;
                     }
 
-                    JsInterop.ScrollToEnd(_chatMessagesWindow);
-
                     InvokeAsync(StateHasChanged);
+
+                    JsInterop.ScrollToEnd(_chatMessagesWindow);
                 }
             }
         }

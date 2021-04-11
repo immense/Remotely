@@ -34,7 +34,7 @@
         <div style="display:inline-block">
             <strong>Type:</strong>
             <br />
-            <select @bind="_eventType">
+            <select class="form-control-sm" @bind="_eventType">
                 <option value="">All</option>
                 @foreach (var eventType in Enum.GetValues(typeof(EventType)))
                 {
