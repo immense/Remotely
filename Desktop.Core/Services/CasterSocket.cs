@@ -220,12 +220,14 @@ namespace Remotely.Desktop.Core.Services
                         }
                     }
 
-                    _ = ScreenCaster.BeginScreenCasting(new ScreenCastRequest()
-                    {
-                        NotifyUser = notifyUser,
-                        ViewerID = viewerID,
-                        RequesterName = requesterName,
-                        UseWebRtc = useWebRtc
+                    _ = Task.Run(() => {
+                        ScreenCaster.BeginScreenCasting(new ScreenCastRequest()
+                        {
+                            NotifyUser = notifyUser,
+                            ViewerID = viewerID,
+                            RequesterName = requesterName,
+                            UseWebRtc = useWebRtc
+                        });
                     });
                 }
                 catch (Exception ex)
