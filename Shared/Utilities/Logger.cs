@@ -47,12 +47,15 @@ namespace Remotely.Shared.Utilities
 
                 return await File.ReadAllBytesAsync(LogPath);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Write(ex);
+                return Array.Empty<byte>();
+            }
             finally
             {
                 WriteLock.Release();
             }
-            return Array.Empty<byte>();
         }
 
         public static void Write(string message, EventType eventType = EventType.Info, [CallerMemberName] string callerName = "")

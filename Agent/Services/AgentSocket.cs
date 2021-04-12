@@ -315,6 +315,14 @@ namespace Remotely.Agent.Services
             {
                 var logBytes = await Logger.ReadAllLogs();
 
+                if (!logBytes.Any())
+                {
+                    var message = "There are no log entries written.";
+
+                    await _hubConnection.InvokeAsync("SendLogs", message, senderConnectionId);
+                    return;
+                }
+
                 for (var i = 0; i < logBytes.Length; i += 100_000)
                 {
                     var chunk = Encoding.UTF8.GetString(logBytes.Skip(i).Take(100_000).ToArray());
