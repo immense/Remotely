@@ -45,6 +45,17 @@
             <div class="form-group">
                 <label class="control-label">Server Admins</label>
                 <br />
+
+                <div class="small">
+                    <input class="align-middle mr-1" type="checkbox" @bind="_showMyOrgAdminsOnly" />
+                    <span class="align-middle">Show my organization only</span>
+                </div>
+                <div class="small">
+                    <input class="align-middle mr-1" type="checkbox" @bind="_showAdminsOnly" />
+                    <span class="align-middle">Show current admins only</span>
+                </div>
+
+                <br />
                 <div class="list-box">
                     @foreach (var user in UserList)
                     {
@@ -52,7 +63,7 @@
                             <input type="checkbox" disabled="@(user.Id == User.Id)" checked="@user.IsServerAdmin" @onchange="ev => SetIsServerAdmin(ev, user)" />
                             <span class="ml-2 align-top" style="line-height:1.3em">@user.UserName</span>
                         </div>
-                    } 
+                    }
                 </div>
             </div>
         </div>

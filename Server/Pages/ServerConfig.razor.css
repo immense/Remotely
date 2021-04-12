@@ -1,8 +1,9 @@
 ﻿.list-box {
-    padding: 1.5em;
+    padding: 1;
     border: 2px solid gray;
     height: 8em;
     overflow-y: scroll;
     overflow-x: hidden;
     white-space: nowrap;
+    border-radius: 5px;
 }
