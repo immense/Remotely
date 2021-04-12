@@ -129,8 +129,13 @@ namespace Remotely.Server.Pages
         private string _knownProxySelected;
         private string _knownProxyToAdd;
 
+        private bool _showMyOrgAdminsOnly = true;
+        private bool _showAdminsOnly;
+
         private string _trustedCorsOriginSelected;
         private string _trustedCorsOriginToAdd;
+
+        private readonly List<RemotelyUser> _userList = new();
 
 
         [Inject]
@@ -160,7 +165,15 @@ namespace Remotely.Server.Pages
         [Inject]
         private IToastService ToastService { get; set; }
         private int TotalDevices => DataService.GetTotalDevices();
-        private List<RemotelyUser> UserList { get; } = new();
+        private IEnumerable<RemotelyUser> UserList
+        {
+            get
+            {
+                return _userList.Where(x =>
+                    (!_showAdminsOnly || x.IsServerAdmin) &&
+                    (!_showMyOrgAdminsOnly || x.OrganizationID == User.OrganizationID));
+            }
+        }
 
 
 
@@ -173,7 +186,7 @@ namespace Remotely.Server.Pages
 
             Configuration.Bind("ApplicationOptions", Input);
             Configuration.Bind("ConnectionStrings", ConnectionStrings);
-            UserList.AddRange(DataService.GetAllUsersForServer().OrderBy(x=>x.UserName));
+            _userList.AddRange(DataService.GetAllUsersForServer().OrderBy(x=>x.UserName));
             base.OnInitialized();
         }
 
