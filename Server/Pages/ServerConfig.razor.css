@@ -1,5 +1,5 @@
 ﻿.list-box {
-    padding: 1;
+    padding: 1em;
     border: 2px solid gray;
     height: 8em;
     overflow-y: scroll;
