@@ -1,0 +1,11 @@
+﻿@inject IClientAppState AppState
+
+
+@if (AppState.EffectiveTheme == Theme.Dark)
+{
+    <div class="signal" style="border-color: whitesmoke"></div>
+}
+else if (AppState.EffectiveTheme == Theme.Light)
+{
+    <div class="signal" style="border-color: #333"></div>
+}
