@@ -18,7 +18,7 @@ You can also sponsor the project as a way of saying "thank you".  But if you hav
 
 
 ## Project Links
-Demo App: https://app.remotely.one  
+Public Server: https://app.remotely.one  
 Website: https://remotely.one  
 Subreddit: https://www.reddit.com/r/remotely_app/  
 
