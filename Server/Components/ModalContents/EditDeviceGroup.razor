@@ -7,7 +7,7 @@
     Editing @EditUser?.UserName
 </h5>
 
-@foreach (var group in _deviceGroups)
+@foreach (var group in DeviceGroups ?? Array.Empty<DeviceGroup>())
 {
     <div @key="group.ID">
         <input id="@group.ID" type="checkbox" class="align-middle mr-2" checked="@(DoesGroupContainUser(group))" @onchange="ev => GroupCheckChanged(ev, group)" />
@@ -17,25 +17,15 @@
 
 
 @code {
+    public static string EditUserPropName => nameof(EditUser);
+    public static string DeviceGroupsPropName => nameof(DeviceGroups);
+
     [Parameter]
     public RemotelyUser EditUser { get; set; }
 
-    public static string EditUserPropName => nameof(EditUser);
+    [Parameter]
+    public DeviceGroup[] DeviceGroups { get; set; }
 
-    public readonly List<DeviceGroup> _deviceGroups = new();
-
-
-    protected override void OnInitialized()
-    {
-        if (!User.IsAdministrator)
-        {
-            return;
-        }
-
-        _deviceGroups.AddRange(DataService.GetDeviceGroupsForOrganization(User.OrganizationID));
-
-        base.OnInitialized();
-    }
 
     private bool DoesGroupContainUser(DeviceGroup group)
     {
