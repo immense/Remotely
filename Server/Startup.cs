@@ -26,6 +26,7 @@ using System.Net;
 using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.AspNetCore.Authorization;
 using Remotely.Server.Auth;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace Remotely.Server
 {
@@ -282,6 +283,20 @@ namespace Remotely.Server
 
         private static void ConfigureStaticFiles(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // TODO: This redirects downloads from the old location to the new one.
+            // Remove after a few releases.
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Path.HasValue &&
+                    context.Request.Path.Value.Contains("/Downloads/R", StringComparison.OrdinalIgnoreCase))
+                {
+                    var redirectUrl = context.Request.GetDisplayUrl().Replace("/Downloads/", "/Content/");
+                    context.Response.Redirect(redirectUrl);
+                    return;
+                }
+                await next();
+            });
+
             var provider = new FileExtensionContentTypeProvider();
             // Add new mappings
             provider.Mappings[".ps1"] = "application/octet-stream";
