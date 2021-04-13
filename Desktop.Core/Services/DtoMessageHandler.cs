@@ -12,7 +12,7 @@ namespace Remotely.Desktop.Core.Services
 {
     public interface IDtoMessageHandler
     {
-        Task ParseMessage(Services.Viewer viewer, byte[] message);
+        Task ParseMessage(Viewer viewer, byte[] message);
     }
     public class DtoMessageHandler : IDtoMessageHandler
     {
@@ -31,7 +31,7 @@ namespace Remotely.Desktop.Core.Services
         private IClipboardService ClipboardService { get; }
         private IFileTransferService FileTransferService { get; }
         private IKeyboardMouseInput KeyboardMouseInput { get; }
-        public async Task ParseMessage(Services.Viewer viewer, byte[] message)
+        public async Task ParseMessage(Viewer viewer, byte[] message)
         {
             try
             {
@@ -154,25 +154,19 @@ namespace Remotely.Desktop.Core.Services
                 dto.StartOfFile);
         }
 
-        private async Task GetWindowsSessions(Services.Viewer viewer)
+        private async Task GetWindowsSessions(Viewer viewer)
         {
             await viewer.SendWindowsSessions();
         }
 
-        private void HandleFrameReceived(Services.Viewer viewer)
+        private void HandleFrameReceived(Viewer viewer)
         {
-            for (int i = 0; i < 5; i++)
+            while (viewer.PendingSentFrames.Count > 0 &&
+                !viewer.IsStalled &&
+                viewer.IsConnected)
             {
-                if (viewer.PendingSentFrames.TryDequeue(out var frame))
+                if (viewer.PendingSentFrames.TryDequeue(out _))
                 {
-                    var roundtrip = (DateTimeOffset.Now - frame.Timestamp).TotalSeconds;
-                    var bps = frame.FrameSize / (roundtrip / 2);
-
-                    if (bps > viewer.PeakBytesPerSecond)
-                    {
-                        viewer.PeakBytesPerSecond = bps;
-                        Debug.WriteLine($"Peak Mbps: {bps / 1024 / 1024 * 8}");
-                    }
                     break;
                 }
             }
@@ -198,19 +192,19 @@ namespace Remotely.Desktop.Core.Services
             KeyboardMouseInput.SendKeyUp(dto.Key);
         }
 
-        private void MouseDown(byte[] message, Services.Viewer viewer)
+        private void MouseDown(byte[] message, Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<MouseDownDto>(message);
             KeyboardMouseInput.SendMouseButtonAction(dto.Button, ButtonAction.Down, dto.PercentX, dto.PercentY, viewer);
         }
 
-        private void MouseMove(byte[] message, Services.Viewer viewer)
+        private void MouseMove(byte[] message, Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<MouseMoveDto>(message);
             KeyboardMouseInput.SendMouseMove(dto.PercentX, dto.PercentY, viewer);
         }
 
-        private void MouseUp(byte[] message, Services.Viewer viewer)
+        private void MouseUp(byte[] message, Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<MouseUpDto>(message);
             KeyboardMouseInput.SendMouseButtonAction(dto.Button, ButtonAction.Up, dto.PercentX, dto.PercentY, viewer);
@@ -222,12 +216,12 @@ namespace Remotely.Desktop.Core.Services
             KeyboardMouseInput.SendMouseWheel(-(int)dto.DeltaY);
         }
 
-        private void OpenFileTransferWindow(Services.Viewer viewer)
+        private void OpenFileTransferWindow(Viewer viewer)
         {
             FileTransferService.OpenFileTransferWindow(viewer);
         }
 
-        private void SelectScreen(byte[] message, Services.Viewer viewer)
+        private void SelectScreen(byte[] message, Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<SelectScreenDto>(message);
             viewer.Capturer.SetSelectedScreen(dto.DisplayName);
@@ -238,7 +232,7 @@ namespace Remotely.Desktop.Core.Services
             KeyboardMouseInput.SetKeyStatesUp();
         }
 
-        private void Tap(byte[] message, Services.Viewer viewer)
+        private void Tap(byte[] message, Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<TapDto>(message);
             KeyboardMouseInput.SendMouseButtonAction(0, ButtonAction.Down, dto.PercentX, dto.PercentY, viewer);
@@ -257,7 +251,7 @@ namespace Remotely.Desktop.Core.Services
             KeyboardMouseInput.ToggleBlockInput(dto.ToggleOn);
         }
 
-        private void ToggleWebRtcVideo(byte[] message, Services.Viewer viewer)
+        private void ToggleWebRtcVideo(byte[] message, Viewer viewer)
         {
             var dto = MessagePackSerializer.Deserialize<ToggleWebRtcVideoDto>(message);
             viewer.ToggleWebRtcVideo(dto.ToggleOn);

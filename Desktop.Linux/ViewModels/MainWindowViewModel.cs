@@ -243,6 +243,7 @@ namespace Remotely.Desktop.Linux.ViewModels
                 {
                     FileName = "sudo",
                     Arguments = "bash -c \"apt-get -y install libx11-dev ; " +
+                        "apt-get -y install libxrandr-dev ; " +
                         "apt-get -y install libc6-dev ; " +
                         "apt-get -y install libgdiplus ; " +
                         "apt-get -y install libxtst-dev ; " +

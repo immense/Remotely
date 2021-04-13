@@ -5,7 +5,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         xmlns:vm="clr-namespace:Remotely.Desktop.Linux.ViewModels;assembly=Remotely_Desktop"
         x:Class="Remotely.Desktop.Linux.Controls.MessageBox"
-        Icon="{Binding Icon}"
+        Icon="{Binding WindowIcon}"
         Title="{Binding Caption}" 
         SizeToContent="WidthAndHeight" MinWidth="300" MinHeight="100" 
         WindowStartupLocation="CenterScreen">

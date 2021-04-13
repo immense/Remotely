@@ -120,7 +120,9 @@ namespace Remotely.Desktop.Linux
             }
             else
             {
-                this.RunWithMainWindow<MainWindow>();
+                await Dispatcher.UIThread.InvokeAsync(() => {
+                    this.RunWithMainWindow<MainWindow>();
+                });
             }
         }
 

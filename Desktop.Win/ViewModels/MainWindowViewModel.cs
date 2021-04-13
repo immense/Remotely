@@ -39,8 +39,8 @@ namespace Remotely.Desktop.Win.ViewModels
 
             Application.Current.Exit += Application_Exit;
 
-            _configService = Services?.GetRequiredService<IConfigService>();
-            _cursorIconWatcher = Services?.GetRequiredService<ICursorIconWatcher>();
+            _configService = Services.GetRequiredService<IConfigService>();
+            _cursorIconWatcher = Services.GetRequiredService<ICursorIconWatcher>();
             _cursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
             _conductor = Services.GetRequiredService<Conductor>();
             _casterSocket = Services.GetRequiredService<ICasterSocket>();
