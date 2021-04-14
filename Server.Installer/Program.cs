@@ -201,6 +201,15 @@ namespace Server.Installer
                                 }
                                 return false;
                             }
+                        case "--web-server":
+                        case "-w":
+                            {
+                                if (int.TryParse(value, out var webServerResult))
+                                {
+                                    cliParams.WebServer = (WebServerType)webServerResult;
+                                }
+                                return false;
+                            }
                         default:
                             return false;
                     }
@@ -242,8 +251,8 @@ namespace Server.Installer
             
             ConsoleHelper.WriteLine("\t--create-new, -c    True/false.  Whether to run a new build.  If false, the latest existing build artifact will be used.", 1);
             
-            ConsoleHelper.WriteLine("\t--reverse-proxy, -r    Number.  The reverse proxy that will be used to forward requests to the Remotely server.  " +
-                "Select the appropriate option for your operating system and web server.  " +
+            ConsoleHelper.WriteLine("\t--web-server, -w    Number.  The web server that will be used as a reverse proxy to forward " +
+                "requests to the Remotely server.  Select the appropriate option for your operating system and web server.  " +
                 "0 = Caddy on Ubuntu.  1 = Nginx on Ubuntu.  2 = Caddy on CentOS.  3 = Nginx on CentOS.  4 = IIS on Windows Server 2016+.", 1);
             
             ConsoleHelper.WriteLine("Example: sudo ./Remotely_Server_Installer -u lucent-sea -p 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 -s https://app.remotely.one -i /var/www/remotely/ -r master -c true -r 0");
