@@ -55,7 +55,7 @@ namespace Server.Installer
                 "GitHub credentials to build a customized Remotely package and install it on this server.");
 
             ConsoleHelper.WriteLine("You will need to enter a GitHub Personal Access Token, which will " +
-                "allow this app to access fork of the Remotely repo.  You can generate a PAT at " +
+                "allow this app to access your fork of the Remotely repo.  You can generate a PAT at " +
                 "https://github.com/settings/tokens.  You need to give it the \"repo\" scope.");
 
             ConsoleHelper.WriteLine("Be sure to retain your GitHub Personal Access Token if you want to re-use it " +
