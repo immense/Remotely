@@ -184,6 +184,7 @@ namespace Server.Installer
                                     cliParams.ServerUrl = result;
                                     continue;
                                 }
+                                ConsoleHelper.WriteError("--server-url parameter is invalid.  Must be a valid URL (e.g. https://app.remotely.one).");
                                 return false;
                             }
                         case "--install-directory":
@@ -202,6 +203,7 @@ namespace Server.Installer
                                     cliParams.CreateNew = result;
                                     continue;
                                 }
+                                ConsoleHelper.WriteError("--create-new parameter is invalid.  Must be true or false.");
                                 return false;
                             }
                         case "--web-server":
@@ -212,6 +214,8 @@ namespace Server.Installer
                                     cliParams.WebServer = (WebServerType)webServerResult;
                                     continue;
                                 }
+                                ConsoleHelper.WriteError($"--web-server parameter is invalid.  Must be a " +
+                                    $"number (0 - {Enum.GetValues<WebServerType>().Length}).");
                                 return false;
                             }
                         default:
