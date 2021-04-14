@@ -43,7 +43,7 @@ jobs:
       Configuration: Release
       PfxBase64: ${{ secrets.BASE64_ENCODED_PFX }}
       PfxKey: ${{ secrets.PFX_KEY }}
-      SiteUrl: ${{ github.event.inputs.serverUrl }}
+      ServerUrl: ${{ github.event.inputs.serverUrl }}
 
     steps:
     - name: Checkout
@@ -51,11 +51,11 @@ jobs:
       with:
         fetch-depth: 0
 
-    # Decode the base 64 encoded pfx and save the Signing_Certificate
+    # Test the Server URL to make sure it's valid
     - name: Check Server URL Format
       run: |
         $Result = ""
-        if (![System.Uri]::TryCreate($env:SiteUrl, [System.UriKind]::Absolute, [ref] $Result)) {
+        if (![System.Uri]::TryCreate($env:ServerUrl, [System.UriKind]::Absolute, [ref] $Result)) {
             throw "Server URL is not in the correct format.  It should be fully qualified with scheme and host (e.g. https://app.remotely.one)."
         }
         
@@ -113,7 +113,7 @@ jobs:
     - name: Run Publish script
       shell: powershell
       run: |
-        .\Utilities\Publish.ps1 -CertificatePath "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx" -CertificatePassword $env:PfxKey -Hostname $env:SiteUrl -CurrentVersion $env:CurrentVersion -RID linux-x64 -OutDir "$env:GITHUB_WORKSPACE\publish"
+        .\Utilities\Publish.ps1 -CertificatePath "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx" -CertificatePassword $env:PfxKey -Hostname $env:ServerUrl -CurrentVersion $env:CurrentVersion -RID linux-x64 -OutDir "$env:GITHUB_WORKSPACE\publish"
         
     # Upload build artifact to be deployed from Ubuntu runner
     - name: Upload build artifact
@@ -124,4 +124,7 @@ jobs:
 
     # Remove the pfx
     - name: Remove the pfx
-      run: Remove-Item -path "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx"
+      run: |
+        if (Test-Path "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx") {
+          Remove-Item -path "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx"
+        }
