@@ -166,6 +166,13 @@ namespace Server.Installer
                 try
                 {
                     var key = args[i].Trim();
+
+                    if (i == args.Length - 1)
+                    {
+                        ConsoleHelper.WriteError("An argument is missing a value.");
+                        return false;
+                    }
+
                     var value = args[i + 1].Trim();
 
                     switch (key)
