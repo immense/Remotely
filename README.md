@@ -1,5 +1,5 @@
 # Remotely
-A remote control and remote scripting solution, built with .NET Core, SignalR Core, and WebRTC.
+A remote control and remote scripting solution, built with .NET 5, Blazor, SignalR Core, and WebRTC.
 
 [![Build Status](https://dev.azure.com/translucency/Remotely/_apis/build/status/Remotely-ReleaseBuild?branchName=master)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=17&branchName=master)
 ![GitHub Build](https://github.com/lucent-sea/Remotely/workflows/GitHub%20Build/badge.svg)
@@ -26,29 +26,29 @@ Subreddit: https://www.reddit.com/r/remotely_app/
 
 
 ## Disclaimer
-Hosting a Remotely server requires building and running an ASP.NET Core web app behind IIS (Windows), Nginx (Ubuntu), or Caddy Server (any OS).  It's expected that the person deploying and maintaining the server is familiar with this process.
+Hosting a Remotely server requires running an ASP.NET Core web app behind IIS (Windows), Nginx (Ubuntu), or Caddy Server (any OS).  It's expected that the person deploying and maintaining the server is familiar with this process.  Since this is a hobby project that I develop in between working full time and raising a family, there simply isn't time available to provide support in this capacity.
 
-It's *highly* encouraged that you get comfortable building and deploying from source.  This allows you to hard-code your server's hostname into the desktop client and the installer, which makes for a better experience for the end user.  I've tried to make this as easy as possible using the GitHub Actions workflows mentioned below.  You can begin using these immediately, or use them as a reference for creating your own customized build process.  You can also use Azure Pipelines for free (which I personally use).
+## Build Instructions
+GitHub Actions allows you to build and deploy Remotely for free from their cloud servers.  Since the Windows agent can only be built on Windows, and the Mac agent can only be built on Mac, using a build platform like GitHub Actions or Azure Pipelines is the only reasonable way to build the whole project.  The definitions for the build processes are located in `/.github/workflows/` folder.
 
-## Build Instructions (GitHub)
-GitHub Actions allows you to build and deploy Remotely for free from their cloud servers.  The definitions for the build processes are located in `/.github/workflows/` folder.
+I've created a cross-platform command line tool that will leverage the GitHub Actions REST API to build the project and install it on your private server.  This process will also embed your server's URL into the clients, so that they won't need to prompt the end user to enter it.
 
-After forking the repo, follow the instructions in the workflow YML file.  The easiest workflow to use is the Build.yml worfklow, and I'd recommend starting with that one.  It will produce a build artifact (ZIP package) identical to what was on the Releases page, only the clients will have your server URL hard-coded.
-
-### Instructions for using the Build workflow:
+### Instructions for using the Remotely_Server_Installer CLI tool:
 - Fork the repo if you haven't already.
 - If you've already forked the repo, you need to keep your repo updated with mine.  This doesn't happen automatically.
+  - This can be done via the command line if you've cloned your repo locally.  Refer to [GitHub's docs](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) on how to do this.  Otherwise, see below for how to do it completely through the GitHub website.
   - On the GitHub page for your repo, you'll see a message that says, "This branch is ## commits behind lucent-sea:master".
   - Click the "Pull request" link next to it.
   - On the next page, click the "switching the base" link.  Now it's pulling from my repo into yours.
   - Create and complete the pull request to update your repo.
-- Now go to the Actions tab.
-- Click the "Build" workflow.
-- Click "Run workflow".
-- Enter the Server URL where your Remotely app will be running (e.g. https://app.remotely.one).
-- If you're going to host on Windows, change the Server Runtime Identifier to `win-x64`.
-- Click "Run workflow".
-- When it's finished, there will be a build artifact for download that contains the server and clients.
+- Create a Personal Access Token that the installer will use to authenticate with GitHub.
+  - Located here: https://github.com/settings/tokens
+  - Save the PAT when it's displayed.  It will only be shown once.
+- On your server, download the latest server installer executable (Linux or Windows) from [my releases page](https://github.com/lucent-sea/Remotely/releases).
+- Run the app with elevation (e.g. sudo or "Run as admin").
+- Follow the prompts to build and install the server.
+- Use `--help` argument to see all the command line arguments.
+  - If values are provided for all arguments, it will run non-interactive.
 
 
 ## Hosting a Server (Windows)
