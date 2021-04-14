@@ -45,7 +45,7 @@ namespace Server.Installer
 
             if (!elevationDetector.IsElevated())
             {
-                ConsoleHelper.WriteError("The installer process be elevated.  On Linux, run with sudo.  " +
+                ConsoleHelper.WriteError("The installer process must be elevated.  On Linux, run with sudo.  " +
                     "On Windows, run from a command that was opened with \"Run as admin\".");
                 ConsoleHelper.ReadLine("Press any key to exit.");
                 return;
