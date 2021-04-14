@@ -38,7 +38,9 @@ namespace Server.Installer.Services
 
                 if (!dispatchResult)
                 {
-                    ConsoleHelper.WriteError("GitHub API call to trigger build action failed.  Please check your input parameters.");
+                    ConsoleHelper.WriteError("GitHub API call to trigger build action failed.  Do you have " +
+                        "Actions enabled on your forked Remotely repo on the Actions tab?  If not, enable them and try again. " +
+                        "Otherwise, please check your input parameters.");
                     return;
                 }
 

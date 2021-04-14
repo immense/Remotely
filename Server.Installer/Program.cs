@@ -61,6 +61,9 @@ namespace Server.Installer
             ConsoleHelper.WriteLine("Be sure to retain your GitHub Personal Access Token if you want to re-use it " +
                 "for upgrading in the future.  The installer does not save it locally.");
 
+            ConsoleHelper.WriteLine("If you haven't already, please go to the Actions tab in your Remotely repo " +
+                "and enable them.  If not, this process will fail.");
+
 
             while (string.IsNullOrWhiteSpace(cliParams.GitHubUsername))
             {
@@ -107,7 +110,7 @@ namespace Server.Installer
 
             while (cliParams.WebServer is null)
             {
-                ConsoleHelper.WriteLine("Which reverse proxy will be used?");
+                ConsoleHelper.WriteLine("Which web server will be used?");
                 ConsoleHelper.WriteLine("    [0] - Caddy on Ubuntu");
                 ConsoleHelper.WriteLine("    [1] - Nginx on Ubuntu");
                 ConsoleHelper.WriteLine("    [2] - Caddy on CentOS");

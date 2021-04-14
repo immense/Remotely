@@ -15,15 +15,16 @@ namespace Server.Installer.Services
 {
     public interface IGitHubApi : IDisposable
     {
-        Task<bool> TriggerDispatch(CliParams cliParams);
-        Task<Artifact> GetLatestBuildArtifact(CliParams cliParams);
         Task<bool> DownloadArtifact(CliParams cliParams, string artifactDownloadUrl, string downloadToPath);
+
+        Task<Artifact> GetLatestBuildArtifact(CliParams cliParams);
+
+        Task<bool> TriggerDispatch(CliParams cliParams);
     }
     public class GitHubApi : IGitHubApi
     {
-        private readonly HttpClient _httpClient;
         private readonly string _apiHost = "https://api.github.com";
-
+        private readonly HttpClient _httpClient;
         public GitHubApi()
         {
             _httpClient = new HttpClient();
