@@ -7,15 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Agent", "Agent\Agent.csproj
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{2CAC9A2B-1402-465F-83F8-958B4E081CA3}"
 	ProjectSection(SolutionItems) = preProject
-		Utilities\CentOS_Server_Install.sh = Utilities\CentOS_Server_Install.sh
 		Utilities\Example_Apache_Config.txt = Utilities\Example_Apache_Config.txt
 		Example_Nginx_Config.txt = Example_Nginx_Config.txt
 		Utilities\Get-PSCommands.ps1 = Utilities\Get-PSCommands.ps1
 		Utilities\Get-WindowsCommands.ps1 = Utilities\Get-WindowsCommands.ps1
-		Utilities\Install-RemotelyServer.ps1 = Utilities\Install-RemotelyServer.ps1
 		Utilities\Publish.ps1 = Utilities\Publish.ps1
 		Utilities\signtool.exe = Utilities\signtool.exe
-		Utilities\Ubuntu_Server_Install.sh = Utilities\Ubuntu_Server_Install.sh
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{D96B47F6-EF3E-4AF6-A1BE-006D531DDBA4}"
@@ -48,6 +45,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csproj", "{75EC5DCD-DC76-4799-8623-206B1F73CA95}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server.Installer", "Server.Installer\Server.Installer.csproj", "{BE7799D6-204C-4D35-83E7-7FB24DEBAE94}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -167,6 +166,18 @@ Global
 		{75EC5DCD-DC76-4799-8623-206B1F73CA95}.Release|x64.Build.0 = Release|Any CPU
 		{75EC5DCD-DC76-4799-8623-206B1F73CA95}.Release|x86.ActiveCfg = Release|Any CPU
 		{75EC5DCD-DC76-4799-8623-206B1F73CA95}.Release|x86.Build.0 = Release|Any CPU
+		{BE7799D6-204C-4D35-83E7-7FB24DEBAE94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE7799D6-204C-4D35-83E7-7FB24DEBAE94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE7799D6-204C-4D35-83E7-7FB24DEBAE94}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BE7799D6-204C-4D35-83E7-7FB24DEBAE94}.Debug|x64.Build.0 = Debug|Any CPU
+		{BE7799D6-204C-4D35-83E7-7FB24DEBAE94}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BE7799D6-204C-4D35-83E7-7FB24DEBAE94}.Debug|x86.Build.0 = Debug|Any CPU
+		{BE7799D6-204C-4D35-83E7-7FB24DEBAE94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE7799D6-204C-4D35-83E7-7FB24DEBAE94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE7799D6-204C-4D35-83E7-7FB24DEBAE94}.Release|x64.ActiveCfg = Release|Any CPU
+		{BE7799D6-204C-4D35-83E7-7FB24DEBAE94}.Release|x64.Build.0 = Release|Any CPU
+		{BE7799D6-204C-4D35-83E7-7FB24DEBAE94}.Release|x86.ActiveCfg = Release|Any CPU
+		{BE7799D6-204C-4D35-83E7-7FB24DEBAE94}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

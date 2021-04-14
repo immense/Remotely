@@ -10,6 +10,7 @@ using static Remotely.Shared.Win32.User32;
 
 namespace Remotely.Shared.Win32
 {
+    // TODO: Use https://github.com/dotnet/pinvoke for all p/invokes.  Remove signatures from this project.
     public class Win32Interop
     {
         private static IntPtr _lastInputDesktop;

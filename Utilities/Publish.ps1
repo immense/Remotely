@@ -196,15 +196,6 @@ if ($RID.Length -gt 0 -and $OutDir.Length -gt 0) {
     }
 
     dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime $RID --configuration Release --output $OutDir "$Root\Server\"
-
-    Copy-Item -Path "$Root\Utilities\Ubuntu_Server_Install.sh" -Destination "$OutDir\Ubuntu_Server_Install.sh" -Force
-    Replace-LineInFile -FilePath "$OutDir\Ubuntu_Server_Install.sh" -MatchPattern "HostName=`"`"" -ReplaceLineWith "HostName=`"$($HostNameUri.Host)`""
-
-    Copy-Item -Path "$Root\Utilities\CentOS_Server_Install.sh" -Destination "$OutDir\CentOS_Server_Install.sh" -Force
-    Replace-LineInFile -FilePath "$OutDir\CentOS_Server_Install.sh" -MatchPattern "HostName=`"`"" -ReplaceLineWith "HostName=`"$($HostNameUri.Host)`""
-
-    Copy-Item -Path "$Root\Utilities\Install-RemotelyServer.ps1" -Destination "$OutDir\Install-RemotelyServer.ps1" -Force
-    Replace-LineInFile -FilePath "$OutDir\CentOS_Server_Install.sh" -MatchPattern "`$BindingHostname = `"`"" -ReplaceLineWith "`$BindingHostname = `"$($HostNameUri.Host)`""
 }
 else {
     Write-Host "`nSkipping server deployment.  Params -outdir and -rid not specified." -ForegroundColor DarkYellow

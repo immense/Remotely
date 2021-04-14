@@ -141,7 +141,7 @@ namespace Remotely.Desktop.Linux.ViewModels
         {
             try
             {
-                if (Libc.geteuid() != 0)
+                if (!EnvironmentHelper.IsDebug && Libc.geteuid() != 0)
                 {
                     await MessageBox.Show("Please run with sudo.", "Sudo Required", MessageBoxType.OK);
                     Environment.Exit(0);
