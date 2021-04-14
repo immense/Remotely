@@ -102,16 +102,17 @@
 
                 var newItem = new ScriptTreeNode()
                 {
-                    ItemType = TreeItemType.Folder,
                     Name = paths[i]
                 };
 
                 if (existingParent is not null)
                 {
+                    newItem.ItemType = TreeItemType.Item;
                     existingParent.ChildItems.Add(newItem);
                 }
                 else
                 {
+                    newItem.ItemType = TreeItemType.Folder;
                     root.Add(newItem);
                 }
 
