@@ -344,11 +344,13 @@ namespace Remotely.Desktop.Win.Services
         {
             if (!_inputBlocked)
             {
-                if (!Win32Interop.SwitchToInputDesktop())
+                var inputThread = new Thread(() =>
                 {
-                    Logger.Write("Desktop switch failed while sending input.");
-                }
-                inputAction();
+                    Win32Interop.SwitchToInputDesktop();
+                    inputAction();
+                });
+                inputThread.SetApartmentState(ApartmentState.STA);
+                inputThread.Start();
             }
             else
             {
