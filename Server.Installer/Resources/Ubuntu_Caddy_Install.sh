@@ -96,5 +96,3 @@ systemctl restart remotely.service
 
 # Restart caddy
 systemctl restart caddy
-
-echo "Installation completed."
