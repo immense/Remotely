@@ -31,11 +31,17 @@ namespace Remotely.Shared.Utilities
             for (var i = 0; i < message.Length;)
             {
                 var lineCount = 0;
+                var trimLine = i > 0;
 
                 var line = new string(message.Skip(i).TakeWhile(x => {
                     i++;
                     return lineCount++ < 50 || !char.IsWhiteSpace(x);
                 }).ToArray());
+
+                if (trimLine)
+                {
+                    line = line.Trim();
+                }
 
                 Console.WriteLine(line);
             }
