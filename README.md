@@ -41,8 +41,9 @@ I've created a cross-platform command line tool that will leverage the GitHub Ac
   - Click the "Pull request" link next to it.
   - On the next page, click the "switching the base" link.  Now it's pulling from my repo into yours.
   - Create and complete the pull request to update your repo.
-- Create a Personal Access Token that the installer will use to authenticate with GitHub.
+- Create a Personal Access Token that the installer will use to authorize with GitHub.
   - Located here: https://github.com/settings/tokens
+  - It needs to have the `repo` scope.
   - Save the PAT when it's displayed.  It will only be shown once.
 - On your server, download the latest server installer executable (Linux or Windows) from [my releases page](https://github.com/lucent-sea/Remotely/releases).
 - Run the app with elevation (e.g. sudo or "Run as admin").
