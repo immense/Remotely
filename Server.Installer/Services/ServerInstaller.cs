@@ -30,7 +30,7 @@ namespace Server.Installer.Services
         public async Task PerformInstall(CliParams cliParams)
         {
             var latestBuild = await _githubApi.GetLatestBuildArtifact(cliParams);
-            var existingBuildTimestamp = latestBuild?.created_at;
+            var latestBuildId = latestBuild?.id;
 
             if (cliParams.CreateNew == true)
             {
@@ -46,8 +46,7 @@ namespace Server.Installer.Services
 
                 ConsoleHelper.WriteLine("Build action triggered successfully.  Waiting for build completion.");
 
-                while (latestBuild is null ||
-                    latestBuild.created_at <= existingBuildTimestamp.Value)
+                while (latestBuild?.id == latestBuildId)
                 {
                     await Task.Delay(TimeSpan.FromMinutes(1));
                     ConsoleHelper.WriteLine("Waiting for GitHub build completion.");

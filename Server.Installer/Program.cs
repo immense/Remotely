@@ -124,7 +124,9 @@ namespace Server.Installer
             }
 
             ConsoleHelper.WriteLine($"Performing server install.  GitHub User: {cliParams.GitHubUsername}.  " +
-                $"Server URL: {cliParams.ServerUrl}.  Installation Directory: {cliParams.InstallDirectory}");
+                $"Server URL: {cliParams.ServerUrl}.  Installation Directory: {cliParams.InstallDirectory}.  " +
+                $"Web Server: {cliParams.WebServer}.  Create New Build: {cliParams.CreateNew}.  " +
+                $"Git Reference: {cliParams.Reference}");
 
             var serverInstaller = Services.GetRequiredService<IServerInstaller>();
             await serverInstaller.PerformInstall(cliParams);
