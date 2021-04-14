@@ -35,6 +35,8 @@ I've created a cross-platform command line tool that will leverage the GitHub Ac
 
 ### Instructions for using the Remotely_Server_Installer CLI tool:
 - Fork the repo if you haven't already.
+- Go to the Actions tab in your forked repo and make sure you can see the Build workflows.
+  - Before you can use Actions for the first time, there will be prompt that you must accept on this page.
 - If you've already forked the repo, you need to keep your repo updated with mine.  This doesn't happen automatically.
   - This can be done via the command line if you've cloned your repo locally.  Refer to [GitHub's docs](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) on how to do this.  Otherwise, see below for how to do it completely through the GitHub website.
   - On the GitHub page for your repo, you'll see a message that says, "This branch is ## commits behind lucent-sea:master".
