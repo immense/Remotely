@@ -75,7 +75,9 @@ namespace Remotely.Agent.Services
         {
             var sw = Stopwatch.StartNew();
 
+            _powershell.Streams.ClearStreams();
             _powershell.Commands.Clear();
+
             _powershell.AddScript(input);
             var results = _powershell.Invoke();
 
@@ -96,8 +98,6 @@ namespace Remotely.Agent.Services
                 .Concat(verboseOut)
                 .Concat(warningOut);
 
-            _powershell.Streams.ClearStreams();
-            _powershell.Commands.Clear();
 
             return new ScriptResult()
             {

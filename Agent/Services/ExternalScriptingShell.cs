@@ -66,6 +66,14 @@ namespace Remotely.Agent.Services
             };
             ProcessIdleTimeout.Elapsed += ProcessIdleTimeout_Elapsed;
             ProcessIdleTimeout.Start();
+
+            if (shell == ScriptingShell.WinPS)
+            {
+                WriteInput("$VerbosePreference = \"Continue\";", TimeSpan.FromSeconds(5));
+                WriteInput("$DebugPreference = \"Continue\";", TimeSpan.FromSeconds(5));
+                WriteInput("$InformationPreference = \"Continue\";", TimeSpan.FromSeconds(5));
+                WriteInput("$WarningPreference = \"Continue\";", TimeSpan.FromSeconds(5));
+            }
         }
 
         private Process ShellProcess { get; set; }
