@@ -36,7 +36,7 @@ GitHub Actions allows you to build and deploy Remotely for free from their cloud
 I've created a cross-platform command line tool that can leverage the GitHub Actions REST API to build the project and install it on your private server.  This process will also embed your server's URL into the desktop clients, so that they won't need to prompt the end user to enter it.
 
 ## Installation Instructions:
-- You can find the `Remotely_Server_Installer` CLI tool on the [Releases page](https://github.com/lucent-sea/Remotely/releases).
+- You can find the `Remotely_Server_Installer[.exe]` CLI tool on the [Releases page](https://github.com/lucent-sea/Remotely/releases).
   - You will download and run it on the server where you'll be hosting Remotely.
   - You can choose between installing the pre-built release package, or entering GitHub credentials to build and install a customized server.
   - The pre-built package will not have your server's URL embedded in the clients.  End users will need to enter it manually.
@@ -44,12 +44,6 @@ I've created a cross-platform command line tool that can leverage the GitHub Act
 - Fork the repo if you haven't already.
 - Go to the Actions tab in your forked repo and make sure you can see the Build workflows.
   - Before you can use Actions for the first time, there will be prompt that you must accept on this page.
-- If you've already forked the repo, you need to keep your repo updated with mine.  This doesn't happen automatically.
-  - This can be done via the command line if you've cloned your repo locally.  Refer to [GitHub's docs](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) on how to do this.  Otherwise, see below for how to do it completely through the GitHub website.
-  - On the GitHub page for your repo, you'll see a message that says, "This branch is ## commits behind lucent-sea:master".
-  - Click the "Pull request" link next to it.
-  - On the next page, click the "switching the base" link.  Now it's pulling from my repo into yours.
-  - Create and complete the pull request to update your repo.
 - Create a Personal Access Token that the installer will use to authorize with GitHub.
   - Located here: https://github.com/settings/tokens
   - It needs to have the `repo` scope.
