@@ -24,16 +24,23 @@ Subreddit: https://www.reddit.com/r/remotely_app/
 
 ![image](https://user-images.githubusercontent.com/20995508/113913261-f7002a00-9790-11eb-81b3-c36fb8aa536d.png)
 
+## WARNING:
+Remotely is undergoing a major overhaul for its server installation process.  There will be some instability for a short time, and the documentation below may not reflect the current state.  It's recommended that you use the installation scripts from the latest full release if you don't wish to participate in testing.
 
 ## Disclaimer
 Hosting a Remotely server requires running an ASP.NET Core web app behind IIS (Windows), Nginx (Ubuntu), or Caddy Server (any OS).  It's expected that the person deploying and maintaining the server is familiar with this process.  Since this is a hobby project that I develop in between working full time and raising a family, there simply isn't time available to provide support in this capacity.
 
-## Build Instructions
+## GitHub Actions
 GitHub Actions allows you to build and deploy Remotely for free from their cloud servers.  Since the Windows agent can only be built on Windows, and the Mac agent can only be built on Mac, using a build platform like GitHub Actions or Azure Pipelines is the only reasonable way to build the whole project.  The definitions for the build processes are located in `/.github/workflows/` folder.
 
-I've created a cross-platform command line tool that will leverage the GitHub Actions REST API to build the project and install it on your private server.  This process will also embed your server's URL into the clients, so that they won't need to prompt the end user to enter it.
+I've created a cross-platform command line tool that can leverage the GitHub Actions REST API to build the project and install it on your private server.  This process will also embed your server's URL into the desktop clients, so that they won't need to prompt the end user to enter it.
 
-### Instructions for using the Remotely_Server_Installer CLI tool:
+## Installation Instructions:
+- You can find the `Remotely_Server_Installer` CLI tool on the [Releases page](https://github.com/lucent-sea/Remotely/releases).
+  - You will download and run it on the server where you'll be hosting Remotely.
+  - You can choose between installing the pre-built release package, or entering GitHub credentials to build and install a customized server.
+  - The pre-built package will not have your server's URL embedded in the clients.  End users will need to enter it manually.
+- If you use the pre-built package, you're done!  Otherwise, follow the below steps for using the GitHub Actions integration.
 - Fork the repo if you haven't already.
 - Go to the Actions tab in your forked repo and make sure you can see the Build workflows.
   - Before you can use Actions for the first time, there will be prompt that you must accept on this page.
