@@ -49,6 +49,8 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
+        # Comment out the below 'repository' line if you want to build fro
+        # your fork instead of the author's.
         repository: lucent-sea/Remotely
         fetch-depth: 0
 

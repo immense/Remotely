@@ -48,6 +48,8 @@ I've created a cross-platform command line tool that can leverage the GitHub Act
   - Located here: https://github.com/settings/tokens
   - It needs to have the `repo` scope.
   - Save the PAT when it's displayed.  It will only be shown once.
+- By default, the server will be built from the author's repo.
+  - If you want to build from your fork, comment out the `repository` line in `Build.yml` (in your repo).  There's a comment in the file that points out the line.
 - On your server, download the latest server installer executable (Linux or Windows) from [my releases page](https://github.com/lucent-sea/Remotely/releases).
 - Run the app with elevation (e.g. sudo or "Run as admin").
 - Follow the prompts to build and install the server.
