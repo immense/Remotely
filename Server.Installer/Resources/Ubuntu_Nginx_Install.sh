@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 echo "Thanks for trying Remotely!"
 echo
 

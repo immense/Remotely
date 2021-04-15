@@ -77,39 +77,39 @@ nginxConfig="server {
         proxy_set_header   X-Forwarded-Proto \$scheme;
     }
 
-	location /_blazor {
-		proxy_pass http://localhost:5000;
-		proxy_http_version 1.1;
-		proxy_set_header Upgrade \$http_upgrade;
-		proxy_set_header Connection \"Upgrade\";
-		proxy_set_header Host \$host;
-		proxy_cache_bypass \$http_upgrade;
-	}
-	location /AgentHub {
-		proxy_pass http://localhost:5000;
-		proxy_http_version 1.1;
-		proxy_set_header Upgrade \$http_upgrade;
-		proxy_set_header Connection \"Upgrade\";
-		proxy_set_header Host \$host;
-		proxy_cache_bypass \$http_upgrade;
-	}
+    location /_blazor {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection \"Upgrade\";
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
+    }
+    location /AgentHub {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection \"Upgrade\";
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
+    }
 
-	location /ViewerHub {
-		proxy_pass http://localhost:5000;
-		proxy_http_version 1.1;
-		proxy_set_header Upgrade \$http_upgrade;
-		proxy_set_header Connection \"Upgrade\";
-		proxy_set_header Host \$host;
-		proxy_cache_bypass \$http_upgrade;
-	}
-	location /CasterHub {
-		proxy_pass http://localhost:5000;
-		proxy_http_version 1.1;
-		proxy_set_header Upgrade \$http_upgrade;
-		proxy_set_header Connection \"Upgrade\";
-		proxy_set_header Host \$host;
-		proxy_cache_bypass \$http_upgrade;
-	}
+    location /ViewerHub {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection \"Upgrade\";
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
+    }
+    location /CasterHub {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection \"Upgrade\";
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
+    }
 }"
 
 echo "$nginxConfig" > /etc/nginx/conf.d/remotely.conf
