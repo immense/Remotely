@@ -125,14 +125,6 @@ namespace Server.Installer
                     cliParams.GitHubPat = ConsoleHelper.ReadLine("Enter your GitHub Personal Access Token").Trim();
                 }
 
-                while (string.IsNullOrWhiteSpace(cliParams.Reference))
-                {
-                    ConsoleHelper.WriteLine("Enter the GitHub branch or tag name from which to build.  For example, you can enter " +
-                        " \"master\" to build the latest changes from the default branch.  Or you can enter a release tag like \"v2021.04.13.1604\".");
-                    cliParams.Reference = ConsoleHelper.ReadLine("Input Reference").Trim();
-                }
-
-
                 while (cliParams.CreateNew is null)
                 {
                     ConsoleHelper.WriteLine("Create new build?  True/false.  If false, the latest existing build artifact on GitHub will be used.");
@@ -142,6 +134,17 @@ namespace Server.Installer
                     {
                         cliParams.CreateNew = result;
                     }
+                }
+
+                if (cliParams.CreateNew == true)
+                {
+                    while (string.IsNullOrWhiteSpace(cliParams.Reference))
+                    {
+                        ConsoleHelper.WriteLine("Enter the GitHub branch or tag name from which to build.  For example, you can enter " +
+                            " \"master\" to build the latest changes from the default branch.  Or you can enter a release tag like \"v2021.04.13.1604\".");
+                        cliParams.Reference = ConsoleHelper.ReadLine("Input Reference").Trim();
+                    }
+
                 }
 
                 ConsoleHelper.WriteLine($"Performing server install.  GitHub User: {cliParams.GitHubUsername}.  " +
