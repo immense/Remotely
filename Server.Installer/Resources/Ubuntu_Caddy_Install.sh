@@ -62,12 +62,12 @@ apt install caddy
 
 # Configure Caddy
 caddyConfig="
-    $HostName {
-        reverse_proxy 127.0.0.1:5000
-    }
+$HostName {
+    reverse_proxy 127.0.0.1:5000
+}
 "
 
-echo "$caddyConfig" >> /etc/caddy/Caddyfile
+echo "$caddyConfig" > /etc/caddy/Caddyfile
 
 
 # Create Remotely service.
