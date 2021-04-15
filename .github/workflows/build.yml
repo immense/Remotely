@@ -49,6 +49,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
+        repository: lucent-sea/Remotely
         fetch-depth: 0
 
     # Test the Server URL to make sure it's valid

@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="publish\**" />
+    <EmbeddedResource Remove="publish\**" />
+    <None Remove="publish\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Resources\CentOS_Caddy_Install.sh" />
     <None Remove="Resources\CentOS_Nginx_Install.sh" />
     <None Remove="Resources\IIS_Windows_Install.ps1" />
