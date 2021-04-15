@@ -75,10 +75,10 @@ namespace Server.Installer
                 ConsoleHelper.WriteLine("Download pre-built package?  If false, a customized server package will be created " +
                     "through GitHub Actions.");
 
-                var createNew = ConsoleHelper.ReadLine("Selection (true/false)").Trim();
-                if (bool.TryParse(createNew, out var result))
+                var usePrebuiltPackage = ConsoleHelper.ReadLine("Selection (true/false)").Trim();
+                if (bool.TryParse(usePrebuiltPackage, out var result))
                 {
-                    cliParams.CreateNew = result;
+                    cliParams.UsePrebuiltPackage = result;
                 }
             }
 
