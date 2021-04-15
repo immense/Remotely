@@ -67,7 +67,7 @@ caddyConfig="
     }
 "
 
-echo "$caddyConfig" > /etc/caddy/Caddyfile
+echo "$caddyConfig" >> /etc/caddy/Caddyfile
 
 
 # Create Remotely service.
@@ -77,7 +77,7 @@ Description=Remotely Server
 
 [Service]
 WorkingDirectory=$AppRoot
-ExecStart=/usr/bin/dotnet $AppRoot/Remotely_Server.dll
+ExecStart=$AppRoot/Remotely_Server
 Restart=always
 # Restart service after 10 seconds if the dotnet service crashes:
 RestartSec=10

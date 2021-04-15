@@ -207,12 +207,22 @@ A shortcut to this page is placed in the `\Program Files\Remotely\` folder.  You
 
 ## Shortcut Keys
 There are a few shortcut keys available when using the console.
-* / : Slash will open the autocomplete for selecting the current command mode.  The names are configurable in the Account - Options page.
+* / : Slash will allow you to switch between shells.  The names are configurable in the Options page.
 * Up/Down: Use arrow up/down to cycle through input history.
-* Ctrl + Up/Down: Scroll the console output window.
 * Ctrl + Q: Clear the output window.
-* Esc: Close the autocomplete window.
 
+## Port Configuration
+You can change the local port that the Remotely .NET server listens on by adding the below to `appsettings.Production.json`:
+
+```
+"Kestrel": {
+    "Endpoints": {
+      "Http": {
+        "Url": "http://127.0.0.1:{port-number}"
+      }
+    }
+  }
+```
 
 ## API and Integrations
 Remotely has a basic API, which can be browsed at https://app.remotely.one/swagger (or your own server instance).  Most endpoints require authentication via an API access token, which can be created by going to Account - API Access.

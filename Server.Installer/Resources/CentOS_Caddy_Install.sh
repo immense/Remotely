@@ -66,7 +66,7 @@ caddyConfig="
     }
 "
 
-echo "$caddyConfig" > /etc/caddy/Caddyfile
+echo "$caddyConfig" >> /etc/caddy/Caddyfile
 
 
 # Create service.
