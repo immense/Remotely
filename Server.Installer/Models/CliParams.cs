@@ -14,6 +14,7 @@ namespace Server.Installer.Models
         public string InstallDirectory { get; set; }
         public string Reference { get; set; }
         public Uri ServerUrl { get; set; }
+        public bool? UsePrebuiltPackage { get; set; }
         public WebServerType? WebServer { get; set; }
     }
 }

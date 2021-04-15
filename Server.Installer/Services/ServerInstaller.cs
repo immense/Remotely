@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Text;
@@ -29,48 +30,70 @@ namespace Server.Installer.Services
 
         public async Task PerformInstall(CliParams cliParams)
         {
-            var latestBuild = await _githubApi.GetLatestBuildArtifact(cliParams);
-            var latestBuildId = latestBuild?.id;
+            var filePath = Path.Combine(Path.GetTempPath(), "Remotely_Server.zip");
 
-            if (cliParams.CreateNew == true)
+            if (cliParams.UsePrebuiltPackage == true)
             {
-                var dispatchResult = await _githubApi.TriggerDispatch(cliParams);
+                ConsoleHelper.WriteLine("Downloading pre-built server package.");
 
-                if (!dispatchResult)
+                var progress = 0;
+                var releaseFile = "https://github.com/lucent-sea/Remotely/releases/latest/download/Remotely_Server_Linux-x64.zip";
+                using var webClient = new WebClient();
+                webClient.DownloadProgressChanged += (sender, arg) =>
                 {
-                    ConsoleHelper.WriteError("GitHub API call to trigger build action failed.  Do you have " +
-                        "Actions enabled on your forked Remotely repo on the Actions tab?  If not, enable them and try again. " +
-                        "Otherwise, please check your input parameters.");
+                    var newProgress = arg.ProgressPercentage / 5 * 5;
+                    if (newProgress != progress)
+                    {
+                        progress = newProgress;
+                        ConsoleHelper.WriteLine($"Progress: {progress}%");
+                    }
+                };
+                await webClient.DownloadFileTaskAsync(releaseFile, filePath);
+            }
+            else
+            {
+                var latestBuild = await _githubApi.GetLatestBuildArtifact(cliParams);
+                var latestBuildId = latestBuild?.id;
+
+                if (cliParams.CreateNew == true)
+                {
+                    var dispatchResult = await _githubApi.TriggerDispatch(cliParams);
+
+                    if (!dispatchResult)
+                    {
+                        ConsoleHelper.WriteError("GitHub API call to trigger build action failed.  Do you have " +
+                            "Actions enabled on your forked Remotely repo on the Actions tab?  If not, enable them and try again. " +
+                            "Otherwise, please check your input parameters.");
+                        return;
+                    }
+
+                    ConsoleHelper.WriteLine("Build action triggered successfully.  Waiting for build completion.");
+
+                    while (latestBuild?.id == latestBuildId)
+                    {
+                        await Task.Delay(TimeSpan.FromMinutes(1));
+                        ConsoleHelper.WriteLine("Waiting for GitHub build completion.");
+                        latestBuild = await _githubApi.GetLatestBuildArtifact(cliParams);
+                    }
+                }
+                else if (latestBuild is null)
+                {
+                    ConsoleHelper.WriteError("There are no existing build artifacts, and --create-new was not specified.  Exiting.");
                     return;
                 }
 
-                ConsoleHelper.WriteLine("Build action triggered successfully.  Waiting for build completion.");
+                var downloadResult = await _githubApi.DownloadArtifact(cliParams, latestBuild.archive_download_url, filePath);
 
-                while (latestBuild?.id == latestBuildId)
+                if (!downloadResult)
                 {
-                    await Task.Delay(TimeSpan.FromMinutes(1));
-                    ConsoleHelper.WriteLine("Waiting for GitHub build completion.");
-                    latestBuild = await _githubApi.GetLatestBuildArtifact(cliParams);
+                    ConsoleHelper.WriteError("Downloading the build artifact was not successful.");
+                    return;
                 }
-            }
-            else if (latestBuild is null)
-            {
-                ConsoleHelper.WriteError("There are no existing build artifacts, and --create-new was not specified.  Exiting.");
-                return;
-            }
 
-            var filePath = Path.Combine(Path.GetTempPath(), "Remotely_Artifact.zip");
-
-            var downloadResult = await _githubApi.DownloadArtifact(cliParams, latestBuild.archive_download_url, filePath);
-
-            if (!downloadResult)
-            {
-                ConsoleHelper.WriteError("Downloading the build artifact was not successful.");
-                return;
             }
 
 
-            ConsoleHelper.WriteLine("Extracting artifact files.");
+            ConsoleHelper.WriteLine("Extracting files.");
             if (Directory.Exists(cliParams.InstallDirectory))
             {
                 Directory.Delete(cliParams.InstallDirectory, true);
@@ -84,9 +107,9 @@ namespace Server.Installer.Services
         private async Task LaunchExternalInstaller(CliParams cliParams)
         {
             ConsoleHelper.WriteLine("Launching install script for selected reverse proxy type.");
-            var resourcePath = "Remotely.Server.Installer.Resources.";
+            var resourcesPath = "Remotely.Server.Installer.Resources.";
 
-            resourcePath += cliParams.WebServer.Value switch
+            var fileName = cliParams.WebServer.Value switch
             {
                 WebServerType.UbuntuCaddy => "Ubuntu_Caddy_Install.sh",
                 WebServerType.UbuntuNginx => "Ubuntu_Nginx_Install.sh",
@@ -95,10 +118,11 @@ namespace Server.Installer.Services
                 WebServerType.IisWindows => "IIS_Windows_Install.ps1",
                 _ => throw new Exception("Unrecognized reverse proxy type."),
             };
-            var fileName = resourcePath.Split(".").Last();
+
+            var resourcesFile = resourcesPath + fileName;
             var filePath = Path.Combine(Path.GetTempPath(), fileName);
 
-            using (var mrs = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourcePath))
+            using (var mrs = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourcesFile))
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
                 await mrs.CopyToAsync(fileStream);

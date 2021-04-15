@@ -42,6 +42,7 @@ namespace Server.Installer
             BuildServices();
 
             var elevationDetector = Services.GetRequiredService<IElevationDetector>();
+            var serverInstaller = Services.GetRequiredService<IServerInstaller>();
 
             if (!elevationDetector.IsElevated())
             {
@@ -50,11 +51,16 @@ namespace Server.Installer
                 return;
             }
 
-            ConsoleHelper.WriteLine("Thank you for trying Remotely!  This installer will use your " +
-                "GitHub credentials to build a customized Remotely package and install it on this server.");
+            ConsoleHelper.WriteLine("Thank you for trying Remotely!  This installer will guide you " +
+                "through deploying the Remotely server onto this machine.");
 
-            ConsoleHelper.WriteLine("You will need to enter a GitHub Personal Access Token, which will " +
-                "allow this app to access your fork of the Remotely repo.  You can generate a PAT at " +
+            ConsoleHelper.WriteLine("There are two ways to create the server files.  You can download the pre-built package " +
+                "from the latest public release, or you can use your GitHub credentials to build a customized package through " +
+                "an integration with GitHub Actions.  The pre-built packages will not have your server's URL embedded in the " +
+                "desktop clients, and end users will need to type it in manually.");
+
+            ConsoleHelper.WriteLine("If using GitHub Actions, you will need to enter a GitHub Personal Access Token, " +
+                "which will allow this app to access your fork of the Remotely repo.  You can generate a PAT at " +
                 "https://github.com/settings/tokens.  You need to give it the \"repo\" scope.");
 
             ConsoleHelper.WriteLine("Be sure to retain your GitHub Personal Access Token if you want to re-use it " +
@@ -64,21 +70,16 @@ namespace Server.Installer
                 "and enable them.  If not, this process will fail.");
 
 
-            while (string.IsNullOrWhiteSpace(cliParams.GitHubUsername))
+            while (cliParams.UsePrebuiltPackage is null)
             {
-                cliParams.GitHubUsername = ConsoleHelper.ReadLine("Enter your GitHub username").Trim();
-            }
+                ConsoleHelper.WriteLine("Download pre-built package?  If false, a customized server package will be created " +
+                    "through GitHub Actions.");
 
-            while (string.IsNullOrWhiteSpace(cliParams.GitHubPat))
-            {
-                cliParams.GitHubPat = ConsoleHelper.ReadLine("Enter your GitHub Personal Access Token").Trim();
-            }
-
-            while (string.IsNullOrWhiteSpace(cliParams.Reference))
-            {
-                ConsoleHelper.WriteLine("Enter the GitHub branch or tag name from which to build.  For example, you can enter " +
-                    " \"master\" to build the latest changes from the default branch.  Or you can enter a release tag like \"v2021.04.13.1604\".");
-                cliParams.Reference = ConsoleHelper.ReadLine("Input Reference").Trim();
+                var createNew = ConsoleHelper.ReadLine("Selection (true/false)").Trim();
+                if (bool.TryParse(createNew, out var result))
+                {
+                    cliParams.CreateNew = result;
+                }
             }
 
             while (string.IsNullOrWhiteSpace(cliParams.InstallDirectory))
@@ -92,18 +93,6 @@ namespace Server.Installer
                 if (Uri.TryCreate(url, UriKind.Absolute, out var serverUrl))
                 {
                     cliParams.ServerUrl = serverUrl;
-                }
-
-            }
-
-            while (cliParams.CreateNew is null)
-            {
-                ConsoleHelper.WriteLine("Create new build?  True/false.  If false, the latest existing build artifact on GitHub will be used.");
-
-                var createNew = ConsoleHelper.ReadLine("Selection").Trim();
-                if (bool.TryParse(createNew, out var result))
-                {
-                    cliParams.CreateNew = result;
                 }
             }
 
@@ -123,12 +112,49 @@ namespace Server.Installer
                 }
             }
 
-            ConsoleHelper.WriteLine($"Performing server install.  GitHub User: {cliParams.GitHubUsername}.  " +
-                $"Server URL: {cliParams.ServerUrl}.  Installation Directory: {cliParams.InstallDirectory}.  " +
-                $"Web Server: {cliParams.WebServer}.  Create New Build: {cliParams.CreateNew}.  " +
-                $"Git Reference: {cliParams.Reference}");
 
-            var serverInstaller = Services.GetRequiredService<IServerInstaller>();
+            if (cliParams.UsePrebuiltPackage == false)
+            {
+                while (string.IsNullOrWhiteSpace(cliParams.GitHubUsername))
+                {
+                    cliParams.GitHubUsername = ConsoleHelper.ReadLine("Enter your GitHub username").Trim();
+                }
+
+                while (string.IsNullOrWhiteSpace(cliParams.GitHubPat))
+                {
+                    cliParams.GitHubPat = ConsoleHelper.ReadLine("Enter your GitHub Personal Access Token").Trim();
+                }
+
+                while (string.IsNullOrWhiteSpace(cliParams.Reference))
+                {
+                    ConsoleHelper.WriteLine("Enter the GitHub branch or tag name from which to build.  For example, you can enter " +
+                        " \"master\" to build the latest changes from the default branch.  Or you can enter a release tag like \"v2021.04.13.1604\".");
+                    cliParams.Reference = ConsoleHelper.ReadLine("Input Reference").Trim();
+                }
+
+
+                while (cliParams.CreateNew is null)
+                {
+                    ConsoleHelper.WriteLine("Create new build?  True/false.  If false, the latest existing build artifact on GitHub will be used.");
+
+                    var createNew = ConsoleHelper.ReadLine("Selection").Trim();
+                    if (bool.TryParse(createNew, out var result))
+                    {
+                        cliParams.CreateNew = result;
+                    }
+                }
+
+                ConsoleHelper.WriteLine($"Performing server install.  GitHub User: {cliParams.GitHubUsername}.  " +
+                    $"Server URL: {cliParams.ServerUrl}.  Installation Directory: {cliParams.InstallDirectory}.  " +
+                    $"Web Server: {cliParams.WebServer}.  Create New Build: {cliParams.CreateNew}.  " +
+                    $"Git Reference: {cliParams.Reference}");
+            }
+            else
+            {
+                ConsoleHelper.WriteLine($"Server URL: {cliParams.ServerUrl}.  " +
+                    $"Installation Directory: {cliParams.InstallDirectory}. Web Server: {cliParams.WebServer}.");
+            }
+
             await serverInstaller.PerformInstall(cliParams);
 
             ConsoleHelper.WriteLine("Installation completed.");
@@ -177,14 +203,29 @@ namespace Server.Installer
 
                     switch (key)
                     {
-                        case "--github-username":
-                        case "-u":
-                            cliParams.GitHubUsername = value;
-                            continue;
-                        case "--github-pat":
-                        case "-p":
-                            cliParams.GitHubPat = value;
-                            continue;
+                        case "--use-prebuilt":
+                        case "-b":
+                            {
+                                if (bool.TryParse(value, out var result))
+                                {
+                                    cliParams.UsePrebuiltPackage = result;
+                                    continue;
+                                }
+                                ConsoleHelper.WriteError("--use-prebuilt parameter is invalid.  Must be true or false.");
+                                return false;
+                            }
+                        case "--web-server":
+                        case "-w":
+                            {
+                                if (int.TryParse(value, out var webServerResult))
+                                {
+                                    cliParams.WebServer = (WebServerType)webServerResult;
+                                    continue;
+                                }
+                                ConsoleHelper.WriteError($"--web-server parameter is invalid.  Must be a " +
+                                    $"number (0 - {Enum.GetValues<WebServerType>().Length}).");
+                                return false;
+                            }
                         case "--server-url":
                         case "-s":
                             {
@@ -200,6 +241,14 @@ namespace Server.Installer
                         case "-i":
                             cliParams.InstallDirectory = value;
                             continue;
+                        case "--github-username":
+                        case "-u":
+                            cliParams.GitHubUsername = value;
+                            continue;
+                        case "--github-pat":
+                        case "-p":
+                            cliParams.GitHubPat = value;
+                            continue;
                         case "--reference":
                         case "-r":
                             cliParams.Reference = value;
@@ -213,18 +262,6 @@ namespace Server.Installer
                                     continue;
                                 }
                                 ConsoleHelper.WriteError("--create-new parameter is invalid.  Must be true or false.");
-                                return false;
-                            }
-                        case "--web-server":
-                        case "-w":
-                            {
-                                if (int.TryParse(value, out var webServerResult))
-                                {
-                                    cliParams.WebServer = (WebServerType)webServerResult;
-                                    continue;
-                                }
-                                ConsoleHelper.WriteError($"--web-server parameter is invalid.  Must be a " +
-                                    $"number (0 - {Enum.GetValues<WebServerType>().Length}).");
                                 return false;
                             }
                         default:
@@ -251,6 +288,10 @@ namespace Server.Installer
 
             ConsoleHelper.WriteLine("\tNo Parameters - Run the installer interactively.", 2);
 
+            ConsoleHelper.WriteLine("\t--use-prebuilt, -b    True/false.  Whether to use the pre-built server package from the " +
+                "latest public release, or to create a customized package through GitHub Actions.  The pre-built package " +
+                "will not contain your server's URL in the desktop clients, and end users will need to type it in manually.", 1);
+
             ConsoleHelper.WriteLine("\t--github-username, -u    Your GitHub username, where the forked Remotely repo exists.", 1);
             
             ConsoleHelper.WriteLine("\t--github-pat, -p    The GitHub Personal Access Token to use for authentication.  " +
@@ -272,7 +313,8 @@ namespace Server.Installer
                 "requests to the Remotely server.  Select the appropriate option for your operating system and web server.  " +
                 "0 = Caddy on Ubuntu.  1 = Nginx on Ubuntu.  2 = Caddy on CentOS.  3 = Nginx on CentOS.  4 = IIS on Windows Server 2016+.", 1);
             
-            ConsoleHelper.WriteLine("Example: sudo ./Remotely_Server_Installer -u lucent-sea -p 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 -s https://app.remotely.one -i /var/www/remotely/ -r master -c true -w 0");
+            ConsoleHelper.WriteLine("Example: sudo ./Remotely_Server_Installer -b false -u lucent-sea -p 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 -s https://app.remotely.one -i /var/www/remotely/ -r master -c true -w 0");
+            ConsoleHelper.WriteLine("Example: sudo ./Remotely_Server_Installer -b true -s https://app.remotely.one -i /var/www/remotely/ -w 0");
         }
     }
 }
