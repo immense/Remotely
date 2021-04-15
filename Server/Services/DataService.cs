@@ -1584,6 +1584,12 @@ namespace Remotely.Server.Services
             using var dbContext = _dbFactory.CreateDbContext();
 
             var devices = dbContext.Devices
+                .Include(x => x.ScriptResults)
+                .Include(x => x.ScriptRuns)
+                .Include(x => x.ScriptSchedules)
+                .Include(x => x.ScriptRunsCompleted)
+                .Include(x => x.DeviceGroup)
+                .Include(x => x.Alerts)
                 .Where(x => deviceIDs.Contains(x.ID));
 
             dbContext.Devices.RemoveRange(devices);
