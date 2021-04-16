@@ -214,24 +214,20 @@ namespace Remotely.Desktop.Linux.ViewModels
             }
 
             await prompt.ShowDialog(MainWindow.Current);
-            var result = prompt.ViewModel.Host?.Trim();
+            var result = prompt.ViewModel.Host?.Trim()?.TrimEnd('/');
 
-            if (result is null)
+            if (!Uri.TryCreate(result, UriKind.Absolute, out var serverUri) ||
+                (serverUri.Scheme != Uri.UriSchemeHttp && serverUri.Scheme != Uri.UriSchemeHttps))
             {
+                Logger.Write("Server URL is not valid.");
+                await MessageBox.Show("Server URL must be a valid Uri (e.g. https://app.remotely.one).", "Invalid Server URL", MessageBoxType.OK);
                 return;
             }
 
-            if (!result.StartsWith("https://") && !result.StartsWith("http://"))
-            {
-                result = $"https://{result}";
-            }
-            if (result != Host)
-            {
-                Host = result;
-                var config = _configService.GetConfig();
-                config.Host = Host;
-                _configService.Save(config);
-            }
+            Host = result;
+            var config = _configService.GetConfig();
+            config.Host = Host;
+            _configService.Save(config);
         }
 
 
