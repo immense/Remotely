@@ -263,16 +263,9 @@ namespace Remotely.Server
                 endpoints.MapFallbackToPage("/_Host");
             });
 
-            try
+            if (context.Database.IsRelational())
             {
-                if (context.Database.IsRelational())
-                {
-                    context.Database.Migrate();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
+                context.Database.Migrate();
             }
 
             loggerFactory.AddProvider(new DbLoggerProvider(env, app.ApplicationServices));
