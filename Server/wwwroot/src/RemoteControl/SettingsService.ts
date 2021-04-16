@@ -1,7 +1,8 @@
 ﻿import { Settings } from "./Interfaces/Settings.js";
 
 const defaultSettings = {
-    streamModeEnabled: false
+    streamModeEnabled: false,
+    displayName: ""
 };
 
 
