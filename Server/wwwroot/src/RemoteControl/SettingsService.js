@@ -1,5 +1,6 @@
 const defaultSettings = {
-    streamModeEnabled: false
+    streamModeEnabled: false,
+    displayName: ""
 };
 export function GetSettings() {
     try {

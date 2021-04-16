@@ -8,7 +8,7 @@ import { MessageSender } from "./MessageSender.js";
 import { SessionRecorder } from "./SessionRecorder.js";
 import { ApplyInputHandlers } from "./InputEventHandlers.js";
 import { ViewerHubConnection } from "./ViewerHubConnection.js";
-import { GetSettings } from "./SettingsService.js";
+import { GetSettings, SetSettings } from "./SettingsService.js";
 var queryString = Utilities.ParseSearchString();
 export const ViewerApp = {
     ClipboardWatcher: new ClipboardWatcher(),
@@ -31,6 +31,13 @@ export const ViewerApp = {
             UI.ViewOnlyButton.classList.add("toggled");
         }
         ApplyInputHandlers();
+        if (UI.RequesterNameInput.value) {
+            ViewerApp.RequesterName = UI.RequesterNameInput.value;
+        }
+        else if (ViewerApp.Settings.displayName) {
+            UI.RequesterNameInput.value = ViewerApp.Settings.displayName;
+            ViewerApp.RequesterName = ViewerApp.Settings.displayName;
+        }
         if (ViewerApp.CasterID) {
             ViewerApp.Mode = RemoteControlMode.Unattended;
             ViewerApp.ViewerHubConnection.Connect();
@@ -53,6 +60,8 @@ export const ViewerApp = {
         ViewerApp.Mode = RemoteControlMode.Normal;
         ViewerApp.ViewerHubConnection.Connect();
         UI.StatusMessage.innerHTML = "Sending connection request...";
+        ViewerApp.Settings.displayName = ViewerApp.RequesterName;
+        SetSettings(ViewerApp.Settings);
     }
 };
 window["ViewerApp"] = ViewerApp;
