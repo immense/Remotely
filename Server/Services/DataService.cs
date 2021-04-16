@@ -848,6 +848,8 @@ namespace Remotely.Server.Services
                 .ThenInclude(x => x.Devices)
                 .Include(x => x.Organization)
                 .Include(x => x.Alerts)
+                .Include(x => x.SavedScripts)
+                .Include(x => x.ScriptSchedules)
                 .FirstOrDefault(x =>
                     x.Id == targetUserID &&
                     x.OrganizationID == orgID);
