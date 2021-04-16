@@ -2,8 +2,11 @@
 @inherits AuthComponentBase
 
 <div @ref="_card" class="card border-secondary my-3 mr-3 device-card @Theme @GetCardStateClass(Device)"
-     @onclick="() => ExpandCard()"
-     @onclick:stopPropagation="true">
+     @onclick="ExpandCard"
+     @onclick:stopPropagation="true"
+     @oncontextmenu="ContextMenuOpening"
+     @oncontextmenu:preventDefault="GetCardState() == DeviceCardState.Normal"
+     @oncontextmenu:stopPropagation="GetCardState() == DeviceCardState.Normal">
 
     <div class="card-header">
         <div>

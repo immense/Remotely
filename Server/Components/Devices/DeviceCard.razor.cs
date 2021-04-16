@@ -89,7 +89,7 @@ namespace Remotely.Server.Components.Devices
             return string.Empty;
         }
 
-        private void ExpandCard()
+        private void ExpandCard(MouseEventArgs args)
         {
             if (AppState.DevicesFrameFocusedDevice == Device.ID)
             {
@@ -103,6 +103,14 @@ namespace Remotely.Server.Components.Devices
             AppState.DevicesFrameFocusedDevice = Device.ID;
             AppState.DevicesFrameFocusedCardState = DeviceCardState.Expanded;
             JsInterop.ScrollToElement(_card);
+        }
+
+        private void ContextMenuOpening(MouseEventArgs args)
+        {
+            if (GetCardState() == DeviceCardState.Normal)
+            {
+                JsInterop.OpenWindow($"/device-details/{Device.ID}", "_blank");
+            }
         }
 
         private DeviceCardState GetCardState()
@@ -173,7 +181,7 @@ namespace Remotely.Server.Components.Devices
 
         private void OpenDeviceDetails()
         {
-            JsInterop.OpenWindow($"/DeviceDetails/{Device.ID}", "_blank");
+            JsInterop.OpenWindow($"/device-details/{Device.ID}", "_blank");
         }
 
         private void SetCardStateNormal()

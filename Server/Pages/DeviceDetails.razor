@@ -1,10 +1,35 @@
-﻿@page "/DeviceDetails/{deviceId}"
+﻿@page "/device-details/{deviceId?}"
 
 @attribute [Authorize]
 @inherits AuthComponentBase
 
 
-@if (Device is null)
+@if (string.IsNullOrWhiteSpace(DeviceId))
+{
+    <div class="row mt-5">
+        <div class="col-sm-6 offset-2">
+
+            <h3>Device ID:</h3>
+            <div class="input-group mb-2">
+                <input type="text" class="form-control" placeholder="Enter a device ID to see its details"
+                       @bind="_inputDeviceId"
+                       @bind:event="oninput"
+                       @onkeydown="EvaluateDeviceIdInputKeyDown">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" @onclick="NavigateToDeviceId">Go</button>
+                </div>
+            </div>
+            <div class="text-muted">
+                You can also go directly to a device's details by:
+                <ul>
+                    <li>Right-clicking a device card on the main page while it's collapsed</li>
+                    <li>Clicking the "Open in New Tab" button in a device card's header while it's expanded</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+}
+else if (Device is null)
 {
     <h3>Device not found.</h3>
 }
@@ -121,9 +146,9 @@ else
                             <div class="col-sm-10">
                                 <InputSelect @bind-Value="Device.WebRtcSetting" class="form-control">
                                     @foreach (var setting in Enum.GetValues(typeof(WebRtcSetting)))
-                                    {
+                                        {
                                         <option @key="setting" value="@setting">@setting</option>
-                                    }
+                                        }
                                 </InputSelect>
                                 <ValidationMessage For="() => Device.WebRtcSetting" />
                             </div>
@@ -136,9 +161,9 @@ else
                                     <option value="">None</option>
 
                                     @foreach (var group in DataService.GetDeviceGroups(Username))
-                                    {
+                                        {
                                         <option @key="group.ID" value="@group.ID">@group.Name</option>
-                                    }
+                                        }
                                 </InputSelect>
                                 <ValidationMessage For="() => Device.DeviceGroupID" />
                             </div>
@@ -163,7 +188,7 @@ else
                     </EditForm>
                 </div>
             </TabContent>
-            
+
             <TabContent Name="remote-logs">
                 <div class="py-3">
                     @if (!Device.IsOnline)
@@ -190,7 +215,7 @@ else
                 </div>
 
             </TabContent>
-            
+
             <TabContent Name="script-history">
 
                 <h3 class="mb-3 mt-3">
@@ -212,19 +237,19 @@ else
                     <tbody>
                         @foreach (var scriptResult in _scriptResults)
                         {
-                        <tr>
-                            <td>@scriptResult.Shell</td>
-                            <td>@scriptResult.TimeStamp</td>
-                            <td>@scriptResult.SenderUserName</td>
-                            <td>@scriptResult.RunTime</td>
-                            <td>@GetTrimmedText(scriptResult.ScriptInput, 25)</td>
-                            <td>@GetTrimmedText(scriptResult.StandardOutput, 25)</td>
-                            <td>@GetTrimmedText(scriptResult.ErrorOutput, 25)</td>
-                            <td>
-                                <button class="btn btn-sm btn-primary" @onclick="() => ShowFullScriptOutput(scriptResult)">Show Full</button>
-                            </td>
-                        </tr>
-                        } 
+                            <tr>
+                                <td>@scriptResult.Shell</td>
+                                <td>@scriptResult.TimeStamp</td>
+                                <td>@scriptResult.SenderUserName</td>
+                                <td>@scriptResult.RunTime</td>
+                                <td>@GetTrimmedText(scriptResult.ScriptInput, 25)</td>
+                                <td>@GetTrimmedText(scriptResult.StandardOutput, 25)</td>
+                                <td>@GetTrimmedText(scriptResult.ErrorOutput, 25)</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" @onclick="() => ShowFullScriptOutput(scriptResult)">Show Full</button>
+                                </td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
 
