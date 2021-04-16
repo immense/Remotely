@@ -36,7 +36,9 @@ GitHub Actions allows you to build and deploy Remotely for free from their cloud
 I've created a cross-platform command line tool that can leverage the GitHub Actions REST API to build the project and install it on your private server.  This process will also embed your server's URL into the desktop clients, so that they won't need to prompt the end user to enter it.
 
 ## Installation Instructions:
-- You can find the `Remotely_Server_Installer[.exe]` CLI tool on the [Releases page](https://github.com/lucent-sea/Remotely/releases).
+- Before attempting installation, verify that your domain name is resolving to your server's IP address.
+  - For example, I can use the command `ping app.remotely.one` and see the IP address to which it resolves.
+- Find the `Remotely_Server_Installer[.exe]` CLI tool for the latest release on the [Releases page](https://github.com/lucent-sea/Remotely/releases).
   - You will download and run it on the server where you'll be hosting Remotely.
   - You can choose between installing the pre-built release package, or entering GitHub credentials to build and install a customized server.
   - The pre-built package will not have your server's URL embedded in the clients.  End users will need to enter it manually.
@@ -56,31 +58,16 @@ I've created a cross-platform command line tool that can leverage the GitHub Act
 - Use `--help` argument to see all the command line arguments.
   - If values are provided for all arguments, it will run non-interactive.
 
-
-## Hosting a Server (Windows)
-- Download the ZIP file and extract the files to the location where your site will be hosted (e.g. `/var/www/remotely`).
-- Run the install script located in the folder (e.g. `Ubuntu_Server_Install.sh`).
+## After Installation
 - In the site's content directory, make a copy of the `appsettings.json` file and name it `appsettings.Production.json`.
   - The server will use this new file for reading/writing its settings, and it won't be overwritten by future ugprades.
-* Download and install the latest .NET Runtime (not the SDK) with the Hosting Bundle.
-	* Link: https://dotnet.microsoft.com/download/dotnet-core/current/runtime
-	* This includes the Hosting Bundle for Windows, which allows you to run ASP.NET Core in IIS.
-	* Important: If you installed .NET Runtime before installing all the required IIS features, you may need to run a repair on the .NET Runtime installation.
-* By default, SQLite is used for the database.
-    * The "Remotely.db" database file is automatically created in the root folder of your site.
-	* You can browse and modify the contents using [DB Browser for SQLite](https://sqlitebrowser.org/).
-* If the site will be public-facing, configure your bindings in IIS.
-* An SSL certificate for HTTPS is recommended.  You can install one for free using Let's Encrypt.
-	* Resources: https://letsencrypt.org/, https://certifytheweb.com/
-* Documentation for hosting in IIS can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/iis
-* There is no default account.  You must create the first one via the Register page, which will create an account that is both a server and organization admin.
-
-## Hosting a Server (Ubuntu)
-* **IMPORTANT**: Recently, the default web server was switched from Nginx to Caddy Server.  They cannot both be used on the same box.  If you want to continue using Nginx, you'll need to set up the configuration manually.  See the `Example_Nginx_Config.txt` file in the `Utilities` folder for an example.
-* Ubuntu 20.04, 19.04, and 18.04 have been tested.
-* Change values in appsettings.json for your environment.  Make a copy named `appsettings.Production.json` (see Configuration section below).
-* Documentation for hosting behind Nginx can be found here: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx
-* There is no default account.  You must create the first one via the Register page, which will create an account that is both a server and organization admin.
+- If using Caddy, a TLS cert will be installed automatically.
+  - When installling on Nginx, the script will use Certbot and prompt you to install a cert.
+  - For Windows IIS, you'll need to use a separate program that integrates with Let's Encrypt.
+    - Resources: https://letsencrypt.org/docs/client-options/#clients-windows-/-iis
+- By default, SQLite is used for the database.
+    - The "Remotely.db" database file is automatically created in the root folder of your site.
+	- You can browse and modify the contents using [DB Browser for SQLite](https://sqlitebrowser.org/).
 
 ## Upgrading
 * To upgrade a server, do any of the below to copy the new Server application files.
