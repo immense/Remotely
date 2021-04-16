@@ -10,11 +10,11 @@ namespace Remotely.Shared.Models
         {
             get
             {
-                return _host;
+                return _host?.Trim()?.TrimEnd('/');
             }
             set
             {
-                _host = value.Trim().TrimEnd('/');
+                _host = value?.Trim()?.TrimEnd('/');
             }
         }
         public string OrganizationID { get; set; }
