@@ -21,11 +21,128 @@ namespace Remotely.Agent.Services
     {
         private static readonly ConcurrentDictionary<string, ExternalScriptingShell> _sessions = new();
         private readonly ConfigService _configService;
+        private string _lineEnding;
         private ScriptingShell _shell;
 
         public ExternalScriptingShell(ConfigService configService)
         {
             _configService = configService;
+        }
+
+        private string ErrorOut { get; set; }
+
+        private string LastInputID { get; set; }
+
+        private ManualResetEvent OutputDone { get; } = new(false);
+
+        private System.Timers.Timer ProcessIdleTimeout { get; set; }
+
+        private string SenderConnectionId { get; set; }
+
+        private Process ShellProcess { get; set; }
+
+        private string StandardOut { get; set; }
+
+        private Stopwatch Stopwatch { get; set; }
+
+        public static ExternalScriptingShell GetCurrent(ScriptingShell shell, string senderConnectionId)
+        {
+            if (_sessions.TryGetValue($"{shell}-{senderConnectionId}", out var session))
+            {
+                session.ProcessIdleTimeout.Stop();
+                session.ProcessIdleTimeout.Start();
+                return session;
+            }
+            else
+            {
+                session = Program.Services.GetRequiredService<ExternalScriptingShell>();
+
+                switch (shell)
+                {
+                    case ScriptingShell.WinPS:
+                        session.Init(shell, "powershell.exe", "\r\n", senderConnectionId);
+                        break;
+                    case ScriptingShell.Bash:
+                        session.Init(shell, "bash", "\n", senderConnectionId);
+                        break;
+                    case ScriptingShell.CMD:
+                        session.Init(shell, "cmd.exe", "\r\n", senderConnectionId);
+                        break;
+                    default:
+                        throw new ArgumentException($"Unknown external scripting shell type: {shell}");
+                }
+                _sessions.AddOrUpdate($"{shell}-{senderConnectionId}", session, (id, b) => session);
+                return session;
+            }
+        }
+
+        public ScriptResult WriteInput(string input, TimeSpan timeout)
+        {
+            StandardOut = "";
+            ErrorOut = "";
+            Stopwatch = Stopwatch.StartNew();
+            lock (ShellProcess)
+            {
+                LastInputID = Guid.NewGuid().ToString();
+                OutputDone.Reset();
+                ShellProcess.StandardInput.Write(input + _lineEnding);
+                ShellProcess.StandardInput.Write("echo " + LastInputID + _lineEnding);
+
+                var result = Task.WhenAny(
+                    Task.Run(() =>
+                    {
+                        return ShellProcess.WaitForExit((int)timeout.TotalMilliseconds);
+                    }),
+                    Task.Run(() =>
+                    {
+                        return OutputDone.WaitOne();
+
+                    })).ConfigureAwait(false).GetAwaiter().GetResult();
+
+                if (!result.Result)
+                {
+                    return GeneratePartialResult(input);
+                }
+            }
+            return GenerateCompletedResult(input);
+        }
+
+        private ScriptResult GenerateCompletedResult(string input)
+        {
+            return new ScriptResult()
+            {
+                Shell = _shell,
+                RunTime = Stopwatch.Elapsed,
+                ScriptInput = input,
+                SenderConnectionID = SenderConnectionId,
+                DeviceID = _configService.GetConnectionInfo().DeviceID,
+                StandardOutput = StandardOut.Split(Environment.NewLine),
+                ErrorOutput = ErrorOut.Split(Environment.NewLine),
+                HadErrors = !string.IsNullOrWhiteSpace(ErrorOut) ||
+                    (ShellProcess.HasExited && ShellProcess.ExitCode != 0)
+            };
+        }
+
+        private ScriptResult GeneratePartialResult(string input)
+        {
+            var partialResult = new ScriptResult()
+            {
+                Shell = _shell,
+                RunTime = Stopwatch.Elapsed,
+                ScriptInput = input,
+                SenderConnectionID = SenderConnectionId,
+                DeviceID = _configService.GetConnectionInfo().DeviceID,
+                StandardOutput = StandardOut.Split(Environment.NewLine),
+                ErrorOutput = (new[] { "WARNING: The command execution timed out and was forced to return before finishing.  " +
+                    "The results may be partial, and the terminal process has been reset.  " +
+                    "Please note that interactive commands aren't supported."})
+                    .Concat(ErrorOut.Split(Environment.NewLine))
+                    .ToArray(),
+                HadErrors = !string.IsNullOrWhiteSpace(ErrorOut) ||
+                    (ShellProcess.HasExited && ShellProcess.ExitCode != 0)
+            };
+            ProcessIdleTimeout_Elapsed(this, null);
+            return partialResult;
         }
 
         private void Init(ScriptingShell shell, string shellProcessName, string lineEnding, string connectionId)
@@ -75,19 +192,11 @@ namespace Remotely.Agent.Services
                 WriteInput("$WarningPreference = \"Continue\";", TimeSpan.FromSeconds(5));
             }
         }
-
-        private Process ShellProcess { get; set; }
-        private string SenderConnectionId { get; set; }
-
-        private string _lineEnding;
-
-        private string ErrorOut { get; set; }
-        private Stopwatch Stopwatch { get; set; }
-        private string LastInputID { get; set; }
-        private ManualResetEvent OutputDone { get; } = new(false);
-        private System.Timers.Timer ProcessIdleTimeout { get; set; }
-        private string StandardOut { get; set; }
-
+        private void ProcessIdleTimeout_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            ShellProcess?.Kill();
+            _sessions.TryRemove(SenderConnectionId, out _);
+        }
 
         private void ShellProcess_ErrorDataReceived(object sender, DataReceivedEventArgs e)
         {
@@ -109,115 +218,5 @@ namespace Remotely.Agent.Services
             }
 
         }
-
-        private void ProcessIdleTimeout_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            ShellProcess?.Kill();
-            _sessions.TryRemove(SenderConnectionId, out _);
-        }
-
-
-
-        public static ExternalScriptingShell GetCurrent(ScriptingShell shell, string senderConnectionId)
-        {
-            if (_sessions.TryGetValue($"{shell}-{senderConnectionId}", out var session))
-            {
-                session.ProcessIdleTimeout.Stop();
-                session.ProcessIdleTimeout.Start();
-                return session;
-            }
-            else
-            {
-                session = Program.Services.GetRequiredService<ExternalScriptingShell>();
-
-                switch (shell)
-                {
-                    case ScriptingShell.WinPS:
-                        session.Init(shell, "powershell.exe", "\r\n", senderConnectionId);
-                        break;
-                    case ScriptingShell.Bash:
-                        session.Init(shell, "bash", "\n", senderConnectionId);
-                        break;
-                    case ScriptingShell.CMD:
-                        session.Init(shell, "cmd.exe", "\r\n", senderConnectionId);
-                        break;
-                    default:
-                        throw new ArgumentException($"Unknown external scripting shell type: {shell}");
-                }
-                _sessions.AddOrUpdate($"{shell}-{senderConnectionId}", session, (id, b) => session);
-                return session;
-            }
-        }
-
-        public ScriptResult WriteInput(string input, TimeSpan timeout)
-        {
-            StandardOut = "";
-            ErrorOut = "";
-            Stopwatch = Stopwatch.StartNew();
-            lock (ShellProcess)
-            {
-                LastInputID = Guid.NewGuid().ToString();
-                OutputDone.Reset();
-                ShellProcess.StandardInput.Write(input + _lineEnding);
-                ShellProcess.StandardInput.Write("echo " + LastInputID + _lineEnding);
-
-                var result = Task.WhenAny(
-                    Task.Run(() => 
-                    {
-                        return ShellProcess.WaitForExit((int)timeout.TotalMilliseconds);
-                    }),
-                    Task.Run(() => 
-                    {
-                        return OutputDone.WaitOne();
-                    
-                    })).ConfigureAwait(false).GetAwaiter().GetResult();
-
-                if (!result.Result)
-                {
-                    return GeneratePartialResult(input);
-                }
-            }
-            return GenerateCompletedResult(input);
-        }
-
-
-        private ScriptResult GenerateCompletedResult(string input)
-        {
-            return new ScriptResult()
-            {
-                Shell = _shell,
-                RunTime = Stopwatch.Elapsed,
-                ScriptInput = input,
-                SenderConnectionID = SenderConnectionId,
-                DeviceID = _configService.GetConnectionInfo().DeviceID,
-                StandardOutput = StandardOut.Split(Environment.NewLine),
-                ErrorOutput = ErrorOut.Split(Environment.NewLine),
-                HadErrors = !string.IsNullOrWhiteSpace(ErrorOut) || 
-                    (ShellProcess.HasExited && ShellProcess.ExitCode != 0)
-            };
-        }
-
-        private ScriptResult GeneratePartialResult(string input)
-        {
-            var partialResult = new ScriptResult()
-            {
-                Shell = _shell,
-                RunTime = Stopwatch.Elapsed,
-                ScriptInput = input,
-                SenderConnectionID = SenderConnectionId,
-                DeviceID = _configService.GetConnectionInfo().DeviceID,
-                StandardOutput = StandardOut.Split(Environment.NewLine),
-                ErrorOutput = (new[] { "WARNING: The command execution timed out and was forced to return before finishing.  " +
-                    "The results may be partial, and the terminal process has been reset.  " +
-                    "Please note that interactive commands aren't supported."})
-                    .Concat(ErrorOut.Split(Environment.NewLine))
-                    .ToArray(),
-                HadErrors = !string.IsNullOrWhiteSpace(ErrorOut) ||
-                    (ShellProcess.HasExited && ShellProcess.ExitCode != 0)
-            };
-            ProcessIdleTimeout_Elapsed(this, null);
-            return partialResult;
-        }
-
     }
 }
