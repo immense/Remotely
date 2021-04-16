@@ -75,7 +75,7 @@ namespace Remotely.Server.Components.Scripts
         {
             if (User.Id != _selectedSchedule.CreatorId)
             {
-                ToastService.ShowToast("You can't delete other people's scripts.", classString: "bg-warning");
+                ToastService.ShowToast("You can't delete other people's script schedules.", classString: "bg-warning");
                 return;
             }
 
