@@ -88,11 +88,12 @@ namespace Remotely.Server.Services
         {
             if (await _authService.IsAuthenticated())
             {
-                var user = await _authService.GetUser(); 
-                return user.UserOptions.Theme;
+                var user = await _authService.GetUser();
+                return user?.UserOptions?.Theme ?? _appConfig.Theme;
             }
             return _appConfig.Theme;
         }
+
         public string GetTerminalHistory(bool forward)
         {
             if (!_terminalHistory.Any())

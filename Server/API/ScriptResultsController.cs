@@ -60,7 +60,8 @@ namespace Remotely.Server.API
                 {
                     await _dataService.AddAlert(result.DeviceID,
                         result.OrganizationID,
-                        $"Alert triggered while running script {savedScript.Name}.");
+                        $"Alert triggered while running script {savedScript.Name}.",
+                        string.Join("\n", result.ErrorOutput));
                 }
 
                 if (savedScript.SendEmailOnError)
