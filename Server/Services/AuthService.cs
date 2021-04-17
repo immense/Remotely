@@ -21,14 +21,14 @@ namespace Remotely.Server.Services
     public class AuthService : IAuthService
     {
         private readonly AuthenticationStateProvider _authProvider;
-        private readonly UserManager<RemotelyUser> _userManager;
+        private readonly IDataService _dataService;
 
         public AuthService(
             AuthenticationStateProvider authProvider,
-            UserManager<RemotelyUser> userManager)
+            IDataService dataService)
         {
             _authProvider = authProvider;
-            _userManager = userManager;
+            _dataService = dataService;
         }
 
         public ClaimsPrincipal Principal => _authProvider.GetAuthenticationStateAsync()
@@ -37,6 +37,8 @@ namespace Remotely.Server.Services
 
         public bool IsAuthenticated => Principal?.Identity?.IsAuthenticated ?? false;
 
-        public RemotelyUser User => Principal is not null ? _userManager.GetUserAsync(Principal).ToResult() : null;
+        public RemotelyUser User => Principal is not null ?
+            _dataService.GetUserByNameWithOrg(Principal.Identity.Name) :
+            null;
     }
 }
