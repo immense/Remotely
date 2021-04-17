@@ -167,9 +167,9 @@ namespace Remotely.Server.Hubs
 
         public override async Task OnCircuitOpenedAsync(Circuit circuit, CancellationToken cancellationToken)
         {
-            if (_authService.IsAuthenticated)
+            if (await _authService.IsAuthenticated())
             {
-                User = _authService.User;
+                User = await _authService.GetUser();
                 ConnectionId = Guid.NewGuid().ToString();
                 _circuitManager.TryAddConnection(ConnectionId, this);
             }

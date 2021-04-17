@@ -50,13 +50,14 @@
 
     private string FrameClass => _isOpen ? "open" : null;
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
+
         if (IsAuthenticated)
         {
             GetAlerts();
         }
-        return base.OnInitializedAsync();
     }
 
     private async Task ClearAlert(Alert alert)

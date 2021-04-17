@@ -132,21 +132,20 @@
 </div>
 
 @code {       
-    private RemotelyUser _user;
     private bool collapseNavMenu = true;
     private Dictionary<string, object> _remoteControlAttributes
         = new() { ["target"] = "blank", ["href"] = "/RemoteControl" };
 
-    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private RemotelyUser _user;
 
     protected override async Task OnInitializedAsync()
     {
-        if (AuthService.IsAuthenticated)
-        {
-            _user = DataService.GetUserByNameWithOrg(AuthService.Principal.Identity.Name);
-        }
         await base.OnInitializedAsync();
+        _user = await AuthService.GetUser();
     }
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
 
     private void ToggleNavMenu()
     {

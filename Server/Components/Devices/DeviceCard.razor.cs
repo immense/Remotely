@@ -8,6 +8,7 @@ using Remotely.Server.Enums;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
+using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.ViewModels;
@@ -24,6 +25,7 @@ namespace Remotely.Server.Components.Devices
     {
         private ElementReference _card;
         private ConcurrentDictionary<string, double> _fileUploadProgressLookup = new();
+        private Theme _theme;
 
         [Parameter]
         public Device Device { get; set; }
@@ -52,7 +54,6 @@ namespace Remotely.Server.Components.Devices
 
         [Inject]
         private IJsInterop JsInterop { get; set; }
-        private string Theme => AppState.EffectiveTheme.ToString().ToLower();
 
         [Inject]
         private IToastService ToastService { get; set; }
@@ -63,10 +64,11 @@ namespace Remotely.Server.Components.Devices
             GC.SuppressFinalize(this);
         }
 
-        protected override Task OnInitializedAsync()
+        protected override async Task OnInitializedAsync()
         {
+            await base.OnInitializedAsync();
+            _theme = await AppState.GetEffectiveTheme();
             AppState.PropertyChanged += AppState_PropertyChanged;
-            return base.OnInitializedAsync();
         }
 
         private void AppState_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

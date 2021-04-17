@@ -53,6 +53,7 @@ namespace Remotely.Server.Components.Scripts
 
         protected override async Task OnInitializedAsync()
         {
+            await base.OnInitializedAsync();
             _deviceGroups = DataService.GetDeviceGroups(User.UserName);
             _devices = DataService
                 .GetDevicesForUser(User.UserName)
@@ -60,7 +61,6 @@ namespace Remotely.Server.Components.Scripts
                 .ToArray();
 
             await RefreshSchedules();
-            await base.OnInitializedAsync();
         }
 
         private void CreateNew()

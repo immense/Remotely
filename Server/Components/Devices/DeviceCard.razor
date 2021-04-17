@@ -1,7 +1,7 @@
 ﻿@attribute [Authorize]
 @inherits AuthComponentBase
 
-<div @ref="_card" class="card border-secondary my-3 mr-3 device-card @Theme @GetCardStateClass(Device)"
+<div @ref="_card" class="card border-secondary my-3 mr-3 device-card @_theme @GetCardStateClass(Device)"
      @onclick="ExpandCard"
      @onclick:stopPropagation="true"
      @oncontextmenu="ContextMenuOpening"

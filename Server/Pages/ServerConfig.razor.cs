@@ -175,10 +175,10 @@ namespace Remotely.Server.Pages
             }
         }
 
-
-
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
+            await base.OnInitializedAsync();
+
             if (!User.IsServerAdmin)
             {
                 return;
@@ -186,8 +186,7 @@ namespace Remotely.Server.Pages
 
             Configuration.Bind("ApplicationOptions", Input);
             Configuration.Bind("ConnectionStrings", ConnectionStrings);
-            _userList.AddRange(DataService.GetAllUsersForServer().OrderBy(x=>x.UserName));
-            base.OnInitialized();
+            _userList.AddRange(DataService.GetAllUsersForServer().OrderBy(x => x.UserName));
         }
 
         private void AddBannedDevice()

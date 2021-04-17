@@ -42,16 +42,16 @@ namespace Remotely.Server.Pages
         [Inject]
         private IToastService ToastService { get; set; }
 
-        protected override Task OnInitializedAsync()
+        protected override async Task OnInitializedAsync()
         {
+            await base.OnInitializedAsync();
+
             if (!string.IsNullOrWhiteSpace(DeviceId))
             {
                 Device = DataService.GetDevice(DeviceId);
             }
 
             CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
-
-            return base.OnInitializedAsync();
         }
 
         private void CircuitConnection_MessageReceived(object sender, Models.CircuitEvent e)

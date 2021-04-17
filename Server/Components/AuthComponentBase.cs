@@ -2,18 +2,26 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Remotely.Server.Services;
-using Remotely.Shared.Extensions;
 using Remotely.Shared.Models;
+using System.Threading.Tasks;
 
 namespace Remotely.Server.Components
 {
     public class AuthComponentBase : ComponentBase
     {
-        public bool IsAuthenticated => AuthService?.IsAuthenticated ?? false;
+        protected override async Task OnInitializedAsync()
+        {
+            IsAuthenticated = await AuthService.IsAuthenticated();
+            User = await AuthService.GetUser();
+            Username = User?.UserName;
+            await base.OnInitializedAsync();
+        }
 
-        public RemotelyUser User => AuthService?.User;
+        public bool IsAuthenticated { get; private set; }
 
-        public string Username => AuthService?.Principal?.Identity?.Name;
+        public RemotelyUser User { get; private set; }
+
+        public string Username { get; private set; }
 
         [Inject]
         protected IAuthService AuthService { get; set; }
