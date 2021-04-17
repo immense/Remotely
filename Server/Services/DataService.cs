@@ -926,6 +926,11 @@ namespace Remotely.Server.Services
 
         public bool DoesUserHaveAccessToDevice(string deviceID, RemotelyUser remotelyUser)
         {
+            if (remotelyUser is null)
+            {
+                return false;
+            }
+
             using var dbContext = _dbFactory.CreateDbContext();
 
             return dbContext.Devices
