@@ -169,6 +169,8 @@ namespace Remotely.Server.Services
 
         int GetTotalDevices();
 
+        Task<RemotelyUser> GetUserAsync(string username);
+
         RemotelyUser GetUserByID(string userID);
 
         RemotelyUser GetUserByNameWithOrg(string userName);
@@ -1499,9 +1501,20 @@ namespace Remotely.Server.Services
             return dbContext.Devices.Count();
         }
 
+        public Task<RemotelyUser> GetUserAsync(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return null;
+            }
+            using var dbContext = _dbFactory.CreateDbContext();
+
+            return dbContext.Users.FirstOrDefaultAsync(x => x.UserName == username);
+        }
+
         public RemotelyUser GetUserByID(string userID)
         {
-            if (userID == null)
+            if (string.IsNullOrWhiteSpace(userID))
             {
                 return null;
             }
