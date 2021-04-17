@@ -14,7 +14,7 @@ namespace Remotely.Server.Migrations.Sqlite
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "5.0.4");
+                .HasAnnotation("ProductVersion", "5.0.5");
 
             modelBuilder.Entity("DeviceGroupRemotelyUser", b =>
                 {
@@ -301,6 +301,9 @@ namespace Remotely.Server.Migrations.Sqlite
 
                     b.Property<string>("CreatedOn")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Details")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("DeviceID")

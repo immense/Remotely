@@ -22,7 +22,7 @@ namespace Remotely.Server.Services
     // TODO: Separate this into domains-specific services.
     public interface IDataService
     {
-        Task AddAlert(string deviceID, string organizationID, string alertMessage);
+        Task AddAlert(string deviceID, string organizationID, string alertMessage, string details = null);
         bool AddDeviceGroup(string orgID, DeviceGroup deviceGroup, out string deviceGroupID, out string errorMessage);
 
         InviteLink AddInvite(string orgID, InviteViewModel invite);
@@ -233,7 +233,8 @@ namespace Remotely.Server.Services
             _appConfig = appConfig;
             _hostEnvironment = hostEnvironment;
         }
-        public async Task AddAlert(string deviceId, string organizationID, string alertMessage)
+
+        public async Task AddAlert(string deviceId, string organizationID, string alertMessage, string details = null)
         {
             using var dbContext = _dbFactory.CreateDbContext();
 
@@ -258,7 +259,8 @@ namespace Remotely.Server.Services
                     CreatedOn = DateTimeOffset.Now,
                     DeviceID = deviceId,
                     Message = alertMessage,
-                    OrganizationID = organizationID
+                    OrganizationID = organizationID,
+                    Details = details
                 };
                 x.Alerts.Add(alert);
             });
