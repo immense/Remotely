@@ -91,13 +91,13 @@
 
 
 @code {
-    private RemotelyUserOptions _options;
+    private RemotelyUserOptions _options = new();
     private string _alertMessage;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        _options = User.UserOptions;
-        base.OnInitialized();
+        await base.OnInitializedAsync();
+        _options = User.UserOptions ?? new();
     }
 
     private Task HandleValidSubmit()

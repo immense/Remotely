@@ -1247,7 +1247,18 @@ namespace Remotely.Server.Services
         public Device[] GetDevicesForUser(string userName)
         {
             using var dbContext = _dbFactory.CreateDbContext();
+
+            if (string.IsNullOrWhiteSpace(userName))
+            {
+                return Array.Empty<Device>();
+            }
+
             var user = dbContext.Users.FirstOrDefault(x => x.UserName == userName);
+
+            if (user is null)
+            {
+                return Array.Empty<Device>();
+            }
 
             return dbContext.Devices
                 .Include(x => x.DeviceGroup)
@@ -1501,7 +1512,7 @@ namespace Remotely.Server.Services
             return dbContext.Devices.Count();
         }
 
-        public Task<RemotelyUser> GetUserAsync(string username)
+        public async Task<RemotelyUser> GetUserAsync(string username)
         {
             if (string.IsNullOrWhiteSpace(username))
             {
@@ -1509,7 +1520,7 @@ namespace Remotely.Server.Services
             }
             using var dbContext = _dbFactory.CreateDbContext();
 
-            return dbContext.Users.FirstOrDefaultAsync(x => x.UserName == username);
+            return await dbContext.Users.FirstOrDefaultAsync(x => x.UserName == username);
         }
 
         public RemotelyUser GetUserByID(string userID)

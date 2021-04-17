@@ -39,11 +39,11 @@ namespace Remotely.Server.Components.Devices
             JsInterop.ScrollToEnd(_chatMessagesWindow);
             base.OnAfterRender(firstRender);
         }
-        protected override Task OnInitializedAsync()
+        protected override async Task OnInitializedAsync()
         {
+            await base.OnInitializedAsync();
             AppState.PropertyChanged += AppState_PropertyChanged;
             CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
-            return base.OnInitializedAsync();
         }
 
         private void AppState_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

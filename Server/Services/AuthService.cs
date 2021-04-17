@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Remotely.Shared.Extensions;
 using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;
@@ -13,9 +12,8 @@ namespace Remotely.Server.Services
 {
     public interface IAuthService
     {
-        bool IsAuthenticated { get; }
-        ClaimsPrincipal Principal { get; }
-        RemotelyUser User { get; }
+        Task<bool> IsAuthenticated();
+        Task<RemotelyUser> GetUser();
     }
 
     public class AuthService : IAuthService
@@ -31,14 +29,22 @@ namespace Remotely.Server.Services
             _dataService = dataService;
         }
 
-        public ClaimsPrincipal Principal => _authProvider.GetAuthenticationStateAsync()
-            .ToResult()?
-            .User;
+        public async Task<bool> IsAuthenticated()
+        {
+            var principal = await _authProvider.GetAuthenticationStateAsync();
+            return principal?.User?.Identity?.IsAuthenticated ?? false;
+        }
 
-        public bool IsAuthenticated => Principal?.Identity?.IsAuthenticated ?? false;
+        public async Task<RemotelyUser> GetUser()
+        {
+            var principal = await _authProvider.GetAuthenticationStateAsync();
 
-        public RemotelyUser User => Principal is not null ?
-            _dataService.GetUserByNameWithOrg(Principal.Identity.Name) :
-            null;
+            if (principal?.User?.Identity?.IsAuthenticated == true)
+            {
+                return await _dataService.GetUserAsync(principal.User.Identity.Name);
+            }
+
+            return null;
+        }
     }
 }

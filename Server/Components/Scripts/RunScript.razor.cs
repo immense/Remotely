@@ -56,16 +56,17 @@ namespace Remotely.Server.Components.Scripts
             base.OnAfterRender(firstRender);
         }
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
+            await base.OnInitializedAsync();
+
             _deviceGroups = DataService.GetDeviceGroups(User.UserName);
             _devices = DataService
                 .GetDevicesForUser(User.UserName)
-                .OrderBy(x=>x.DeviceName)
+                .OrderBy(x => x.DeviceName)
                 .ToArray();
-
-            base.OnInitialized();
         }
+
         private void DeviceGroupSelectedChanged(ChangeEventArgs args, DeviceGroup deviceGroup)
         {
             var isSelected = (bool)args.Value;

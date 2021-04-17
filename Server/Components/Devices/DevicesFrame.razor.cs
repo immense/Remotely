@@ -154,8 +154,10 @@ namespace Remotely.Server.Components.Devices
             InvokeAsync(StateHasChanged);
         }
 
-        protected override Task OnInitializedAsync()
+        protected override async Task OnInitializedAsync()
         {
+            await base.OnInitializedAsync();
+
             CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
             AppState.PropertyChanged += AppState_PropertyChanged;
 
@@ -170,8 +172,6 @@ namespace Remotely.Server.Components.Devices
                 .Where(x => x.CustomAttributes.Any(x => x.AttributeType == typeof(SortableAttribute)));
 
             _sortableProperties.AddRange(sortableProperties);
-
-            return base.OnInitializedAsync();
         }
 
         protected override bool ShouldRender()
