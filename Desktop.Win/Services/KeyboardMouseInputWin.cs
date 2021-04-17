@@ -14,28 +14,22 @@ namespace Remotely.Desktop.Win.Services
 {
     public class KeyboardMouseInputWin : IKeyboardMouseInput
     {
+        private readonly ConcurrentQueue<Action> _inputActions = new();
+        private CancellationTokenSource _cancelTokenSource;
         private volatile bool _inputBlocked;
         private Thread _inputProcessingThread;
 
-        private CancellationTokenSource CancelTokenSource { get; set; }
-
-        private ConcurrentQueue<Action> InputActions { get; } = new ConcurrentQueue<Action>();
-
         public Tuple<double, double> GetAbsolutePercentFromRelativePercent(double percentX, double percentY, IScreenCapturer capturer)
         {
-            var screenBounds = capturer.CurrentScreenBounds;
-
-            var absoluteX = (screenBounds.Width * percentX) + screenBounds.Left - capturer.GetVirtualScreenBounds().Left;
-            var absoluteY = (screenBounds.Height * percentY) + screenBounds.Top - capturer.GetVirtualScreenBounds().Top;
+            var absoluteX = (capturer.CurrentScreenBounds.Width * percentX) + capturer.CurrentScreenBounds.Left - capturer.GetVirtualScreenBounds().Left;
+            var absoluteY = (capturer.CurrentScreenBounds.Height * percentY) + capturer.CurrentScreenBounds.Top - capturer.GetVirtualScreenBounds().Top;
             return new Tuple<double, double>(absoluteX / capturer.GetVirtualScreenBounds().Width, absoluteY / capturer.GetVirtualScreenBounds().Height);
         }
 
         public Tuple<double, double> GetAbsolutePointFromRelativePercent(double percentX, double percentY, IScreenCapturer capturer)
         {
-            var screenBounds = capturer.CurrentScreenBounds;
-
-            var absoluteX = (screenBounds.Width * percentX) + screenBounds.Left;
-            var absoluteY = (screenBounds.Height * percentY) + screenBounds.Top;
+            var absoluteX = (capturer.CurrentScreenBounds.Width * percentX) + capturer.CurrentScreenBounds.Left;
+            var absoluteY = (capturer.CurrentScreenBounds.Height * percentY) + capturer.CurrentScreenBounds.Top;
             return new Tuple<double, double>(absoluteX, absoluteY);
         }
 
@@ -46,6 +40,8 @@ namespace Remotely.Desktop.Win.Services
                 App.Current.Exit -= App_Exit;
                 App.Current.Exit += App_Exit;
             });
+
+            StartInputProcessingThread();
         }
 
         public void SendKeyDown(string key)
@@ -226,27 +222,17 @@ namespace Remotely.Desktop.Win.Services
 
         public void ToggleBlockInput(bool toggleOn)
         {
-            InputActions.Enqueue(() =>
+            _inputActions.Enqueue(() =>
             {
                 _inputBlocked = toggleOn;
                 var result = BlockInput(toggleOn);
                 Logger.Write($"Result of ToggleBlockInput set to {toggleOn}: {result}");
-
-                if (!toggleOn)
-                {
-                    CancelTokenSource.Cancel();
-                }
             });
-
-            if (toggleOn)
-            {
-                StartInputProcessingThread();
-            }
         }
 
         private void App_Exit(object sender, System.Windows.ExitEventArgs e)
         {
-            CancelTokenSource?.Cancel();
+            _cancelTokenSource?.Cancel();
         }
         private void CheckQueue(CancellationToken cancelToken)
         {
@@ -254,7 +240,7 @@ namespace Remotely.Desktop.Win.Services
             {
                 try
                 {
-                    if (InputActions.TryDequeue(out var action))
+                    if (_inputActions.TryDequeue(out var action))
                     {
                         action();
                     }
@@ -314,26 +300,23 @@ namespace Remotely.Desktop.Win.Services
         }
         private void StartInputProcessingThread()
         {
-            try
-            {
-                CancelTokenSource?.Cancel();
-                CancelTokenSource?.Dispose();
-            }
-            catch { }
+            _cancelTokenSource?.Cancel();
+            _cancelTokenSource?.Dispose();
+
 
             // After BlockInput is enabled, only simulated input coming from the same thread
             // will work.  So we have to start a new thread that runs continuously and
             // processes a queue of input events.
-            _inputProcessingThread  = new Thread(() =>
+            _inputProcessingThread = new Thread(() =>
             {
                 Logger.Write($"New input processing thread started on thread {Thread.CurrentThread.ManagedThreadId}.");
-                CancelTokenSource = new CancellationTokenSource();
+                _cancelTokenSource = new CancellationTokenSource();
 
                 if (_inputBlocked)
                 {
                     ToggleBlockInput(true);
                 }
-                CheckQueue(CancelTokenSource.Token);
+                CheckQueue(_cancelTokenSource.Token);
             });
 
             _inputProcessingThread.SetApartmentState(ApartmentState.STA);
@@ -342,39 +325,26 @@ namespace Remotely.Desktop.Win.Services
 
         private void TryOnInputDesktop(Action inputAction)
         {
-            if (!_inputBlocked)
+            _inputActions.Enqueue(() =>
             {
-                var inputThread = new Thread(() =>
+                try
                 {
-                    Win32Interop.SwitchToInputDesktop();
-                    inputAction();
-                });
-                inputThread.SetApartmentState(ApartmentState.STA);
-                inputThread.Start();
-            }
-            else
-            {
-                InputActions.Enqueue(() =>
-                {
-                    try
+                    if (!Win32Interop.SwitchToInputDesktop())
                     {
-                        if (!Win32Interop.SwitchToInputDesktop())
-                        {
-                            Logger.Write("Desktop switch failed during input processing.");
+                        Logger.Write("Desktop switch failed during input processing.");
 
-                            // Thread likely has hooks in current desktop.  SendKeys will create one with no way to unhook it.
-                            // Start a new thread for processing input.
-                            StartInputProcessingThread();
-                            return;
-                        }
-                        inputAction();
+                        // Thread likely has hooks in current desktop.  SendKeys will create one with no way to unhook it.
+                        // Start a new thread for processing input.
+                        StartInputProcessingThread();
+                        return;
                     }
-                    catch (Exception ex)
-                    {
-                        Logger.Write(ex);
-                    }
-                });
-            }
+                    inputAction();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
+            });
         }
     }
 }
