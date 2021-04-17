@@ -25,6 +25,9 @@ namespace Remotely.Server.Pages
         [Parameter]
         public string DeviceId { get; set; }
 
+        [Parameter]
+        public string ActiveTab { get; set; }
+
         [Inject]
         private ICircuitConnection CircuitConnection { get; set; }
 

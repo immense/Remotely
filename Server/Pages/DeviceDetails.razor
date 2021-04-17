@@ -1,4 +1,4 @@
-﻿@page "/device-details/{deviceId?}"
+﻿@page "/device-details/{deviceId?}/{activeTab?}"
 
 @attribute [Authorize]
 @inherits AuthComponentBase
@@ -39,15 +39,15 @@ else if (!DataService.DoesUserHaveAccessToDevice(Device.ID, User))
 }
 else
 {
-    <TabControl InitialActiveTab="device">
+    <TabControl InitialActiveTab="@(ActiveTab ?? "device")">
         <TabHeaders>
-            <TabHeader Name="device">
+            <TabHeader Name="device" NavigationUri="@($"/device-details/{DeviceId}/device")">
                 Details
             </TabHeader>
-            <TabHeader Name="remote-logs" OnActivated="GetRemoteLogs">
+            <TabHeader Name="remote-logs" OnActivated="GetRemoteLogs" NavigationUri="@($"/device-details/{DeviceId}/remote-logs")">
                 Remote Logs
             </TabHeader>
-            <TabHeader Name="script-history" OnActivated="GetScriptHistory">
+            <TabHeader Name="script-history" OnActivated="GetScriptHistory" NavigationUri="@($"/device-details/{DeviceId}/script-history")">
                 Script History
             </TabHeader>
         </TabHeaders>
