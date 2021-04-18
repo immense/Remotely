@@ -41,9 +41,6 @@ export class ViewerHubConnection {
         if (candidate) {
             this.Connection.invoke("SendIceCandidateToAgent", candidate.candidate, candidate.sdpMid, candidate.sdpMLineIndex, candidate.usernameFragment);
         }
-        else {
-            this.Connection.invoke("SendIceCandidateToAgent", "{}");
-        }
     }
     SendRtcAnswer(sessionDescription) {
         this.Connection.invoke("SendRtcAnswerToAgent", sessionDescription.sdp);
