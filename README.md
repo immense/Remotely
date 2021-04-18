@@ -207,11 +207,15 @@ You can change the local port that the Remotely .NET server listens on by adding
 "Kestrel": {
     "Endpoints": {
       "Http": {
-        "Url": "http://127.0.0.1:{port-number}"
+        "Url": "http://localhost:{port-number}"
       }
     }
   }
 ```
+
+Alternatively, you can use a command-line argument for the `Remotely_Server` process or set an environment variable.
+  - `--urls http://localhost:{port-number}`
+  - `ASPNETCORE_URLS=http://localhost:{port-number}`
 
 ## API and Integrations
 Remotely has a basic API, which can be browsed at https://app.remotely.one/swagger (or your own server instance).  Most endpoints require authentication via an API access token, which can be created by going to Account - API Access.
