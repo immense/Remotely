@@ -48,6 +48,7 @@ namespace Remotely.Server.Hubs
         Task UninstallAgents(string[] deviceIDs);
         Task UpdateTags(string deviceID, string tags);
         Task UploadFiles(List<string> fileIDs, string transferID, string[] deviceIDs);
+        Task TriggerHeartbeat(string deviceId);
     }
 
     public class CircuitConnection : CircuitHandler, ICircuitConnection
@@ -309,6 +310,18 @@ namespace Remotely.Server.Hubs
                 authToken);
 
             return true;
+        }
+
+        public async Task TriggerHeartbeat(string deviceId)
+        {
+            var (canAccess, connectionId) = CanAccessDevice(deviceId);
+
+            if (!canAccess)
+            {
+                return;
+            }
+
+            await _agentHubContext.Clients.Client(connectionId).SendAsync("TriggerHeartbeat");
         }
 
         public Task UninstallAgents(string[] deviceIDs)

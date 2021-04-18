@@ -105,7 +105,6 @@ export function ToggleConnectUI(shown) {
         else {
             DisconnectedBox.style.removeProperty("display");
         }
-        ConnectBox.style.removeProperty("display");
         BlockInputButton.classList.remove("toggled");
         AudioButton.classList.remove("toggled");
     }
