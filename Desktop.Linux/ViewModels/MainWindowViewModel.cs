@@ -191,6 +191,9 @@ namespace Remotely.Desktop.Linux.ViewModels
                     await GetSessionID();
                 };
 
+                await DeviceInitService.GetInitParams();
+
+                ApplyBranding();
 
                 await _casterSocket.SendDeviceInfo(_conductor.ServiceID, Environment.MachineName, _conductor.DeviceID);
                 await _casterSocket.GetSessionID();
