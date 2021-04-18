@@ -24,7 +24,6 @@ export var BaseDtoType;
     BaseDtoType[BaseDtoType["WindowsSessions"] = 23] = "WindowsSessions";
     BaseDtoType[BaseDtoType["SetKeyStatesUp"] = 24] = "SetKeyStatesUp";
     BaseDtoType[BaseDtoType["FrameReceived"] = 25] = "FrameReceived";
-    BaseDtoType[BaseDtoType["ToggleWebRtcVideo"] = 26] = "ToggleWebRtcVideo";
     BaseDtoType[BaseDtoType["OpenFileTransferWindow"] = 27] = "OpenFileTransferWindow";
 })(BaseDtoType || (BaseDtoType = {}));
 //# sourceMappingURL=BaseDtoType.js.map

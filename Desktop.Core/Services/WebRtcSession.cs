@@ -61,7 +61,7 @@ namespace Remotely.Desktop.Core.Services
             GC.SuppressFinalize(this);
         }
 
-        public Task Init(IceServerModel[] iceServers)
+        public async Task Init(IceServerModel[] iceServers)
         {
             Logger.Write("Starting WebRTC connection.");
 
@@ -85,24 +85,22 @@ namespace Remotely.Desktop.Core.Services
             PeerSession.onicecandidate += PeerSession_onicecandidate;
 
             var dataChannelInit = new RTCDataChannelInit();
-            CaptureChannel = PeerSession.createDataChannel("RemoteControl", dataChannelInit);
+            CaptureChannel = await PeerSession.createDataChannel("RemoteControl", dataChannelInit);
 
-            CaptureChannel.onDatamessage += CaptureChannel_onDatamessage;
+            CaptureChannel.onmessage += CaptureChannel_onmessage; ;
             CaptureChannel.onclose += CaptureChannel_onclose;
             CaptureChannel.onopen += CaptureChannel_onopen;
             CaptureChannel.onerror += CaptureChannel_onerror;
 
             var offer = PeerSession.createOffer(new RTCOfferOptions());
             LocalSdpReady?.Invoke(this, offer);
-
-            return Task.CompletedTask;
         }
 
 
-        public async Task SendDto<T>(T dto) where T : BaseDto
+
+        public Task SendDto<T>(T dto) where T : BaseDto
         {
-            await CaptureChannel.sendasync(MessagePackSerializer.Serialize(dto));
-            await TaskHelper.DelayUntilAsync(() => CaptureChannel.bufferedAmount < 64, TimeSpan.FromSeconds(5));
+            return Task.Run(() => CaptureChannel.send(MessagePackSerializer.Serialize(dto)));
         }
 
         public Task SetRemoteDescription(string type, string sdp)
@@ -128,12 +126,10 @@ namespace Remotely.Desktop.Core.Services
             return Task.CompletedTask;
         }
 
-        private async void CaptureChannel_onDatamessage(byte[] obj)
+        private async void CaptureChannel_onmessage(RTCDataChannel dc, DataChannelPayloadProtocols protocol, byte[] data)
         {
-            await RtcMessageHandler.ParseMessage(Viewer, obj);
+            await RtcMessageHandler.ParseMessage(Viewer, data);
         }
-
-
 
         private async void CaptureChannel_onerror(string obj)
         {

@@ -1,5 +1,5 @@
 import { ViewerApp } from "./App.js";
-import { CtrlAltDelDto, KeyDownDto, KeyPressDto, KeyUpDto, MouseDownDto, MouseMoveDto, MouseUpDto, MouseWheelDto, SelectScreenDto, TapDto, ToggleAudioDto, ToggleBlockInputDto, ClipboardTransferDto, FileDto, WindowsSessionsDto, GenericDto, ToggleWebRtcVideoDto } from "./Interfaces/Dtos.js";
+import { CtrlAltDelDto, KeyDownDto, KeyPressDto, KeyUpDto, MouseDownDto, MouseMoveDto, MouseUpDto, MouseWheelDto, SelectScreenDto, TapDto, ToggleAudioDto, ToggleBlockInputDto, ClipboardTransferDto, FileDto, WindowsSessionsDto, GenericDto } from "./Interfaces/Dtos.js";
 import { CreateGUID, When } from "./Utilities.js";
 import { FileTransferProgress } from "./UI.js";
 import { BaseDtoType } from "./Enums/BaseDtoType.js";
@@ -92,10 +92,6 @@ export class MessageSender {
     ;
     SendToggleBlockInput(toggleOn) {
         var dto = new ToggleBlockInputDto(toggleOn);
-        this.SendToAgent(() => ViewerApp.RtcSession.SendDto(dto), () => ViewerApp.ViewerHubConnection.SendDtoToClient(dto));
-    }
-    SendToggleWebRtcVideo(toggleOn) {
-        var dto = new ToggleWebRtcVideoDto(toggleOn);
         this.SendToAgent(() => ViewerApp.RtcSession.SendDto(dto), () => ViewerApp.ViewerHubConnection.SendDtoToClient(dto));
     }
     SendClipboardTransfer(text, typeText) {
