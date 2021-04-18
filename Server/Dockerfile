@@ -17,6 +17,12 @@ RUN \
   libssl1.0
 
 RUN \
+  wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb && \
+  dpkg -i packages-microsoft-prod.deb && \
+  apt-get -y update && \
+  apt-get -y install aspnetcore-runtime-5.0
+
+RUN \
   mkdir -p /var/www/remotely && \
   mkdir /config && \
   wget -q https://github.com/lucent-sea/Remotely/releases/latest/download/Remotely_Server_Linux-x64.zip && \
@@ -26,4 +32,4 @@ RUN \
   chown -R www-data:www-data /var/www/remotely
 
 WORKDIR /var/www/remotely
-ENTRYPOINT ["Remotely_Server"]
+ENTRYPOINT ["usr/bin/dotnet", "/var/www/remotely/Remotely_Server.dll"]
