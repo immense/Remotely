@@ -117,7 +117,12 @@ export function ToggleConnectUI(shown: boolean) {
         Screen2DContext.clearRect(0, 0, ScreenViewer.width, ScreenViewer.height);
         ScreenViewer.setAttribute("hidden", "hidden");
         VideoScreenViewer.setAttribute("hidden", "hidden");
-        ConnectBox.style.removeProperty("display");
+        if (ViewerApp.Mode == RemoteControlMode.Normal) {
+            ConnectBox.style.removeProperty("display");
+        }
+        else {
+            DisconnectedBox.style.removeProperty("display");
+        }
         BlockInputButton.classList.remove("toggled");
         AudioButton.classList.remove("toggled");
     }

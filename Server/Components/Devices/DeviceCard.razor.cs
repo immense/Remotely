@@ -91,8 +91,8 @@ namespace Remotely.Server.Components.Devices
             return string.Empty;
         }
 
-        private void ExpandCard(MouseEventArgs args)
-        {
+        private async Task ExpandCard(MouseEventArgs args)
+        {  
             if (AppState.DevicesFrameFocusedDevice == Device.ID)
             {
                 if (AppState.DevicesFrameFocusedCardState == DeviceCardState.Normal)
@@ -105,6 +105,8 @@ namespace Remotely.Server.Components.Devices
             AppState.DevicesFrameFocusedDevice = Device.ID;
             AppState.DevicesFrameFocusedCardState = DeviceCardState.Expanded;
             JsInterop.ScrollToElement(_card);
+
+            await CircuitConnection.TriggerHeartbeat(Device.ID);
         }
 
         private void ContextMenuOpening(MouseEventArgs args)
@@ -168,7 +170,7 @@ namespace Remotely.Server.Components.Devices
             InvokeAsync(StateHasChanged);
         }
 
-        private Task HandleValidSubmit()
+        private async Task HandleValidSubmit()
         {
             DataService.UpdateDevice(Device.ID,
                   Device.Tags,
@@ -178,7 +180,8 @@ namespace Remotely.Server.Components.Devices
                   Device.WebRtcSetting);
 
             ToastService.ShowToast("Device settings saved.");
-            return Task.CompletedTask;
+
+            await CircuitConnection.TriggerHeartbeat(Device.ID);
         }
 
         private void OpenDeviceDetails()
