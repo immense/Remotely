@@ -1,7 +1,7 @@
 ﻿import * as UI from "./UI.js";
 import { ViewerApp } from "./App.js";
-import { IceServerModel } from "../Shared/Models/IceServerModel.js";
-import { When } from "../Shared/Utilities.js";
+import { IceServerModel } from "./Models/IceServerModel.js";
+import { When } from "./Utilities.js";
 
 export class RtcSession {
     PeerConnection: RTCPeerConnection;

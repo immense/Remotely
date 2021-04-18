@@ -47,7 +47,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="5.0.0" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
-    <PackageReference Include="SIPSorcery" Version="5.1.1" />
+    <PackageReference Include="SIPSorcery" Version="5.1.8-pre" />
     <PackageReference Include="System.IO.FileSystem.AccessControl" Version="5.0.0" />
   </ItemGroup>
 
