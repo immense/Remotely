@@ -32,4 +32,4 @@ RUN \
   chown -R www-data:www-data /var/www/remotely
 
 WORKDIR /var/www/remotely
-ENTRYPOINT ["usr/bin/dotnet", "/var/www/remotely/Remotely_Server.dll"]
+ENTRYPOINT ["/usr/bin/dotnet", "/var/www/remotely/Remotely_Server.dll"]
