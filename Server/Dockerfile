@@ -7,15 +7,13 @@ ENV ASPNETCORE_URLS="http://*:5000"
 
 
 RUN \
- apt-get -y update && \
- apt-get -y install \
+  apt-get -y update && \
+  apt-get -y install \
   apt-utils \
   wget \
   apt-transport-https \
   unzip \
   acl \
-  libc6-dev \
-  libgdiplus \
   libssl1.0
 
 RUN \
@@ -35,4 +33,4 @@ RUN \
   chown -R www-data:www-data /var/www/remotely
 
 WORKDIR /var/www/remotely
-ENTRYPOINT ["dotnet", "Remotely_Server.dll"]
+ENTRYPOINT ["Remotely_Server"]
