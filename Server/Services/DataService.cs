@@ -1383,10 +1383,11 @@ namespace Remotely.Server.Services
             var scriptRunGroups = dbContext.ScriptRuns
                 .Include(x => x.Devices)
                 .Include(x => x.DevicesCompleted)
-                .Where(x =>
-                    x.Devices.Any(x => x.ID == deviceId) &&
-                    !x.DevicesCompleted.Any(x => x.ID == deviceId) &&
-                    x.RunAt < now)
+                .Where(scriptRun =>
+                    dbContext.SavedScripts.Any(savedScript => savedScript.Id == scriptRun.SavedScriptId) &&
+                    scriptRun.Devices.Any(device => device.ID == deviceId) &&
+                    !scriptRun.DevicesCompleted.Any(deviceCompleted => deviceCompleted.ID == deviceId) &&
+                    scriptRun.RunAt < now)
                 .AsEnumerable()
                 .GroupBy(x => x.SavedScriptId);
 

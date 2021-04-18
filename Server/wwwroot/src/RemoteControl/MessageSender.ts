@@ -15,8 +15,7 @@ import {
     ClipboardTransferDto,
     FileDto,
     WindowsSessionsDto,
-    GenericDto,
-    ToggleWebRtcVideoDto
+    GenericDto
 } from "./Interfaces/Dtos.js";
 import { CreateGUID, When } from "./Utilities.js";
 import { FileTransferProgress } from "./UI.js";
@@ -136,11 +135,6 @@ export class MessageSender {
     };
     SendToggleBlockInput(toggleOn: boolean) {
         var dto = new ToggleBlockInputDto(toggleOn);
-        this.SendToAgent(() => ViewerApp.RtcSession.SendDto(dto),
-            () => ViewerApp.ViewerHubConnection.SendDtoToClient(dto));
-    }
-    SendToggleWebRtcVideo(toggleOn: boolean) {
-        var dto = new ToggleWebRtcVideoDto(toggleOn);
         this.SendToAgent(() => ViewerApp.RtcSession.SendDto(dto),
             () => ViewerApp.ViewerHubConnection.SendDtoToClient(dto));
     }
