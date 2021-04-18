@@ -2,8 +2,8 @@
 {
     public class IceServerModel
     {
-        public string Url { get; set; }
-        public string TurnPassword { get; set; }
-        public string TurnUsername { get; set; }
+        public string Urls { get; set; }
+        public string Credential { get; set; }
+        public string Username { get; set; }
     }
 }
