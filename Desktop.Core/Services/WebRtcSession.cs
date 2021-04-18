@@ -98,11 +98,13 @@ namespace Remotely.Desktop.Core.Services
 
 
 
-        public async Task SendDto<T>(T dto) where T : BaseDto
+        public Task SendDto<T>(T dto) where T : BaseDto
         {
             CaptureChannel.send(MessagePackSerializer.Serialize(dto));
 
-            await TaskHelper.DelayUntilAsync(() => CaptureChannel.bufferedAmount < 64_000, TimeSpan.FromSeconds(5));
+            TaskHelper.DelayUntil(() => CaptureChannel.bufferedAmount < 64_000, TimeSpan.FromSeconds(5));
+
+            return Task.CompletedTask;
         }
 
         public Task SetRemoteDescription(string type, string sdp)
