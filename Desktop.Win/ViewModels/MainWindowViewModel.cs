@@ -236,6 +236,9 @@ namespace Remotely.Desktop.Win.ViewModels
                     await GetSessionID();
                 };
 
+                await DeviceInitService.GetInitParams();
+                ApplyBranding();
+
                 await GetSessionID();
             }
             catch (Exception ex)

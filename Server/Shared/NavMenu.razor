@@ -48,7 +48,11 @@
                         <span class="oi oi-script" aria-hidden="true"></span> Scripts
                     </NavLink>
                 </li>
-
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="device-details">
+                        <span class="oi oi-info" aria-hidden="true"></span> Device Details
+                    </NavLink>
+                </li>
                 <li class="nav-item px-3">
                     <NavLink class="nav-link" href="user-options">
                         <span class="oi oi-pencil" aria-hidden="true"></span> User Options
@@ -128,21 +132,20 @@
 </div>
 
 @code {       
-    private RemotelyUser _user;
     private bool collapseNavMenu = true;
     private Dictionary<string, object> _remoteControlAttributes
         = new() { ["target"] = "blank", ["href"] = "/RemoteControl" };
 
-    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private RemotelyUser _user;
 
     protected override async Task OnInitializedAsync()
     {
-        if (AuthService.IsAuthenticated)
-        {
-            _user = DataService.GetUserByNameWithOrg(AuthService.Principal.Identity.Name);
-        }
         await base.OnInitializedAsync();
+        _user = await AuthService.GetUser();
     }
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
 
     private void ToggleNavMenu()
     {

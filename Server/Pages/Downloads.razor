@@ -216,13 +216,15 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
+
         var authState = await AuthProvider.GetAuthenticationStateAsync();
         _isAuthenticated = authState.User.Identity.IsAuthenticated;
 
         if (_isAuthenticated)
         {
-            var currentUser = await UserManager.GetUserAsync(authState.User);
-            _organizationId = DataService.GetOrganizationById(currentUser.OrganizationID)?.ID;
+            var currentUser = await DataService.GetUserAsync(authState.User.Identity.Name);
+            _organizationId = currentUser.OrganizationID;
         }
         else
         {
@@ -250,6 +252,5 @@
         {
             ClickOnceMiddleware.AppFileLock.Release();
         }
-        await base.OnInitializedAsync();
     }
 }

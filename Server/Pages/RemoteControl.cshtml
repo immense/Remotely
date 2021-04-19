@@ -1,7 +1,6 @@
 ﻿@page
 @using Remotely.Shared.Models
 @inject Remotely.Server.Services.IApplicationConfig AppConfig
-@inject UserManager<RemotelyUser> UserManager
 @model Remotely.Server.Pages.RemoteControlModel
 @{
     Layout = null;
@@ -30,10 +29,9 @@
         <link href="~/css/remote-control-dark.css" rel="stylesheet" asp-append-version="true" />
     }
 
-    @if (User.Identity.IsAuthenticated)
+    @if (Model.RemotelyUser is not null)
     {
-        var user = await UserManager.GetUserAsync(User);
-        switch (user.UserOptions.Theme)
+        switch (Model.RemotelyUser.UserOptions.Theme)
         {
             case Remotely.Shared.Enums.Theme.Light:
                 <link href="~/css/remote-control-light.css" rel="stylesheet" asp-append-version="true" />
@@ -214,7 +212,7 @@
         <div class="form-block">
             <label>Your Name (shown to client): </label>
             <br />
-            <input id="nameInput" type="text" />
+            <input id="nameInput" type="text" value="@Model.RemotelyUser?.UserOptions?.DisplayName" />
         </div>
         <div class="form-block">
             <label>Session ID: </label>

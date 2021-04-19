@@ -91,18 +91,13 @@
 
 
 @code {
-    private RemotelyUser _user;
-    private RemotelyUserOptions _options;
+    private RemotelyUserOptions _options = new();
     private string _alertMessage;
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthProvider.GetAuthenticationStateAsync();
-        _user = await UserManager.GetUserAsync(authState.User);
-        _options = _user.UserOptions;
-
-
         await base.OnInitializedAsync();
+        _options = User.UserOptions ?? new();
     }
 
     private Task HandleValidSubmit()
@@ -124,7 +119,7 @@
             _options.CommandModeShortcutWinPS = "/" + _options.CommandModeShortcutWinPS;
         }
 
-        DataService.UpdateUserOptions(_user.UserName, _options);
+        DataService.UpdateUserOptions(User.UserName, _options);
 
         _alertMessage = "Options saved";
 

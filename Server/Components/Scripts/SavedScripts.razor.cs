@@ -137,8 +137,12 @@ namespace Remotely.Server.Components.Scripts
                 "For CMD, WinPS, and Bash, an exit code of anything other than 0 will also trigger an error. " +
                 "(The integrated PowerShell Core shell does not use exit codes.)",
 
-                "To manually generate an error based on some logic in your script, simply use " +
-                "'Write-Error' anywhere in your PowerShell Core or Windows PowerShell script. " +
+                "For PowerShell Core, any text written Warning or Error output will trigger an alert." +
+                "To manually generate an error based on some logic in your script, use " +
+                "'Write-Error' or 'Write-Warning' anywhere in your PowerShell Core script. ",
+
+                "For Windows PowerShell, you can manually trigger an alert by using 'Write-Error'.",
+
                 "For Bash and CMD, you can exit with any non-zero number."
             });
         }

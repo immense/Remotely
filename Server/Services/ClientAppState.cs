@@ -5,6 +5,7 @@ using Remotely.Shared.ViewModels;
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Remotely.Server.Services
 {
@@ -14,13 +15,13 @@ namespace Remotely.Server.Services
         DeviceCardState DevicesFrameFocusedCardState { get; set; }
         string DevicesFrameFocusedDevice { get; set; }
         ConcurrentList<string> DevicesFrameSelectedDevices { get; }
-        Theme EffectiveTheme { get; }
         ConcurrentQueue<TerminalLineItem> TerminalLines { get; }
 
         void AddTerminalHistory(string content);
 
         void AddTerminalLine(string content, string className = "", string title = "");
 
+        Task<Theme> GetEffectiveTheme();
         string GetTerminalHistory(bool forward);
     }
 
@@ -55,18 +56,6 @@ namespace Remotely.Server.Services
 
         public ConcurrentList<string> DevicesFrameSelectedDevices { get; } = new();
 
-        public Theme EffectiveTheme
-        {
-            get
-            {
-                if (_authService.IsAuthenticated)
-                {
-                    return _authService.User.UserOptions.Theme;
-                }
-                return _appConfig.Theme;
-            }
-        }
-
         public ConcurrentQueue<TerminalLineItem> TerminalLines { get; } = new();
 
         public void AddTerminalHistory(string content)
@@ -93,6 +82,16 @@ namespace Remotely.Server.Services
                 ClassName = className,
                 Title = title
             });
+        }
+
+        public async Task<Theme> GetEffectiveTheme()
+        {
+            if (await _authService.IsAuthenticated())
+            {
+                var user = await _authService.GetUser();
+                return user?.UserOptions?.Theme ?? _appConfig.Theme;
+            }
+            return _appConfig.Theme;
         }
 
         public string GetTerminalHistory(bool forward)

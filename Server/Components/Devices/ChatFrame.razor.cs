@@ -27,11 +27,11 @@ namespace Remotely.Server.Components.Devices
             GC.SuppressFinalize(this);
         }
 
-        protected override Task OnInitializedAsync()
+        protected override async Task OnInitializedAsync()
         {
+            await base.OnInitializedAsync();
             AppState.PropertyChanged += AppState_PropertyChanged;
             CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
-            return base.OnInitializedAsync();
         }
 
         private void CircuitConnection_MessageReceived(object sender, Models.CircuitEvent e)

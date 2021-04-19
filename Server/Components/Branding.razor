@@ -8,7 +8,7 @@
 <h3 class="mb-3">Branding</h3>
 
 
-@if (User.IsAdministrator != true)
+@if (User?.IsAdministrator != true)
 {
     <h5 class="text-muted">Only organization administrators can view this page.</h5>
 }
@@ -125,6 +125,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
 
         var organization = await DataService.GetOrganizationByUserName(User.UserName);
 

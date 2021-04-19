@@ -1,18 +1,18 @@
-﻿@page "/scripts"
+﻿@page "/scripts/{activeTab?}"
 @inherits AuthComponentBase
 @using System.Collections
 @inject IDataService DataService 
 
 <CascadingValue Value="this">
-    <TabControl InitialActiveTab="saved-scripts">
+    <TabControl InitialActiveTab="@(ActiveTab ?? "saved-scripts")">
         <TabHeaders>
-            <TabHeader Name="saved-scripts">
+            <TabHeader Name="saved-scripts" NavigationUri="/scripts/saved-scripts">
                 Saved Scripts
             </TabHeader>
-            <TabHeader Name="run-script">
+            <TabHeader Name="run-script" NavigationUri="/scripts/run-script">
                 Run Script
             </TabHeader>
-            <TabHeader Name="script-schedules">
+            <TabHeader Name="script-schedules" NavigationUri="/scripts/script-schedules">
                 Script Schedules
             </TabHeader>
         </TabHeaders>
@@ -32,6 +32,9 @@
 
 
 @code {
+
+    [Parameter]
+    public string ActiveTab { get; set; }
 
     public bool ShowOnlyMyScripts { get; set; } = true;
 
@@ -84,8 +87,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await RefreshScripts();
         await base.OnInitializedAsync();
+        await RefreshScripts();
     }
 
 

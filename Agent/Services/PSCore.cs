@@ -97,6 +97,8 @@ namespace Remotely.Agent.Services
                 .Concat(debugOut)
                 .Concat(verboseOut);
 
+            var errorAndWarningOut = errorOut.Concat(warningOut).ToArray();
+
 
             return new ScriptResult()
             {
@@ -105,9 +107,9 @@ namespace Remotely.Agent.Services
                 ScriptInput = input,
                 Shell = Shared.Enums.ScriptingShell.PSCore,
                 StandardOutput = standardOut.ToArray(),
-                ErrorOutput = errorOut.Concat(warningOut).ToArray(),
+                ErrorOutput = errorAndWarningOut,
                 RunTime = sw.Elapsed,
-                HadErrors = _powershell.HadErrors
+                HadErrors = _powershell.HadErrors || errorAndWarningOut.Any()
             };
         }
     }

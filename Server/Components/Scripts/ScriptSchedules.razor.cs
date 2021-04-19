@@ -53,6 +53,7 @@ namespace Remotely.Server.Components.Scripts
 
         protected override async Task OnInitializedAsync()
         {
+            await base.OnInitializedAsync();
             _deviceGroups = DataService.GetDeviceGroups(User.UserName);
             _devices = DataService
                 .GetDevicesForUser(User.UserName)
@@ -60,7 +61,6 @@ namespace Remotely.Server.Components.Scripts
                 .ToArray();
 
             await RefreshSchedules();
-            await base.OnInitializedAsync();
         }
 
         private void CreateNew()
@@ -75,7 +75,7 @@ namespace Remotely.Server.Components.Scripts
         {
             if (User.Id != _selectedSchedule.CreatorId)
             {
-                ToastService.ShowToast("You can't delete other people's scripts.", classString: "bg-warning");
+                ToastService.ShowToast("You can't delete other people's script schedules.", classString: "bg-warning");
                 return;
             }
 

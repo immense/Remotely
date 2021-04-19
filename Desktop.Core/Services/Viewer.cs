@@ -11,8 +11,9 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Diagnostics;
+using System.Text.Json;
 using System.Threading;
+using System.Diagnostics;
 
 namespace Remotely.Desktop.Core.Services
 {

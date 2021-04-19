@@ -4,7 +4,7 @@
 @inherits AuthComponentBase
 
 
-@if (User.IsServerAdmin)
+@if (User?.IsServerAdmin == true)
 {
     <AlertBanner Message="@_alertMessage" />
 

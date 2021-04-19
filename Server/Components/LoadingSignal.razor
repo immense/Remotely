@@ -1,11 +1,21 @@
 ﻿@inject IClientAppState AppState
 
 
-@if (AppState.EffectiveTheme == Theme.Dark)
+@if (_theme == Theme.Dark)
 {
     <div class="signal" style="border-color: whitesmoke"></div>
 }
-else if (AppState.EffectiveTheme == Theme.Light)
+else if (_theme == Theme.Light)
 {
     <div class="signal" style="border-color: #333"></div>
+}
+
+@code {
+    private Theme _theme;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        _theme = await AppState.GetEffectiveTheme();
+    }
 }

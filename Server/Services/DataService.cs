@@ -22,7 +22,7 @@ namespace Remotely.Server.Services
     // TODO: Separate this into domains-specific services.
     public interface IDataService
     {
-        Task AddAlert(string deviceID, string organizationID, string alertMessage);
+        Task AddAlert(string deviceID, string organizationID, string alertMessage, string details = null);
         bool AddDeviceGroup(string orgID, DeviceGroup deviceGroup, out string deviceGroupID, out string errorMessage);
 
         InviteLink AddInvite(string orgID, InviteViewModel invite);
@@ -169,6 +169,8 @@ namespace Remotely.Server.Services
 
         int GetTotalDevices();
 
+        Task<RemotelyUser> GetUserAsync(string username);
+
         RemotelyUser GetUserByID(string userID);
 
         RemotelyUser GetUserByNameWithOrg(string userName);
@@ -231,7 +233,8 @@ namespace Remotely.Server.Services
             _appConfig = appConfig;
             _hostEnvironment = hostEnvironment;
         }
-        public async Task AddAlert(string deviceId, string organizationID, string alertMessage)
+
+        public async Task AddAlert(string deviceId, string organizationID, string alertMessage, string details = null)
         {
             using var dbContext = _dbFactory.CreateDbContext();
 
@@ -256,7 +259,8 @@ namespace Remotely.Server.Services
                     CreatedOn = DateTimeOffset.Now,
                     DeviceID = deviceId,
                     Message = alertMessage,
-                    OrganizationID = organizationID
+                    OrganizationID = organizationID,
+                    Details = details
                 };
                 x.Alerts.Add(alert);
             });
@@ -848,6 +852,8 @@ namespace Remotely.Server.Services
                 .ThenInclude(x => x.Devices)
                 .Include(x => x.Organization)
                 .Include(x => x.Alerts)
+                .Include(x => x.SavedScripts)
+                .Include(x => x.ScriptSchedules)
                 .FirstOrDefault(x =>
                     x.Id == targetUserID &&
                     x.OrganizationID == orgID);
@@ -920,6 +926,11 @@ namespace Remotely.Server.Services
 
         public bool DoesUserHaveAccessToDevice(string deviceID, RemotelyUser remotelyUser)
         {
+            if (remotelyUser is null)
+            {
+                return false;
+            }
+
             using var dbContext = _dbFactory.CreateDbContext();
 
             return dbContext.Devices
@@ -1243,7 +1254,18 @@ namespace Remotely.Server.Services
         public Device[] GetDevicesForUser(string userName)
         {
             using var dbContext = _dbFactory.CreateDbContext();
+
+            if (string.IsNullOrWhiteSpace(userName))
+            {
+                return Array.Empty<Device>();
+            }
+
             var user = dbContext.Users.FirstOrDefault(x => x.UserName == userName);
+
+            if (user is null)
+            {
+                return Array.Empty<Device>();
+            }
 
             return dbContext.Devices
                 .Include(x => x.DeviceGroup)
@@ -1361,10 +1383,11 @@ namespace Remotely.Server.Services
             var scriptRunGroups = dbContext.ScriptRuns
                 .Include(x => x.Devices)
                 .Include(x => x.DevicesCompleted)
-                .Where(x =>
-                    x.Devices.Any(x => x.ID == deviceId) &&
-                    !x.DevicesCompleted.Any(x => x.ID == deviceId) &&
-                    x.RunAt < now)
+                .Where(scriptRun =>
+                    dbContext.SavedScripts.Any(savedScript => savedScript.Id == scriptRun.SavedScriptId) &&
+                    scriptRun.Devices.Any(device => device.ID == deviceId) &&
+                    !scriptRun.DevicesCompleted.Any(deviceCompleted => deviceCompleted.ID == deviceId) &&
+                    scriptRun.RunAt < now)
                 .AsEnumerable()
                 .GroupBy(x => x.SavedScriptId);
 
@@ -1497,9 +1520,20 @@ namespace Remotely.Server.Services
             return dbContext.Devices.Count();
         }
 
+        public async Task<RemotelyUser> GetUserAsync(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return null;
+            }
+            using var dbContext = _dbFactory.CreateDbContext();
+
+            return await dbContext.Users.FirstOrDefaultAsync(x => x.UserName == username);
+        }
+
         public RemotelyUser GetUserByID(string userID)
         {
-            if (userID == null)
+            if (string.IsNullOrWhiteSpace(userID))
             {
                 return null;
             }

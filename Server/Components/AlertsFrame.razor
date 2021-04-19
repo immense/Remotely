@@ -1,6 +1,7 @@
 ﻿@inherits AuthComponentBase
 @attribute [Authorize]
 @inject IDataService DataService 
+@inject IModalService ModalService 
 
 <button id="alertsButton" class="btn btn-info" @onclick="ToggleOpen">
     <span class="oi oi-bell"></span>
@@ -25,13 +26,21 @@
             <div @key="alert.ID" id="@alert.ID" class="card border-primary mb-3 mr-2 ml-2">
                 <div class="card-header">@alert.CreatedOn.ToString()</div>
                 <div class="card-body">
-                    @if (!string.IsNullOrWhiteSpace(alert.Device?.DeviceName))
-                    {
-                        <h6 class="card-title">@alert.Device.DeviceName</h6>
-                    }
+                    <h6 class="card-title">@alert.Device?.DeviceName</h6>
+
                     <p class="card-text">@alert.Message</p>
+
+                    @if (!string.IsNullOrWhiteSpace(alert.Details))
+                    {
+                        <div class="small">
+                            <button class="btn btn-link" @onclick="() => ShowAlertDetails(alert)">
+                                View Details
+                            </button>
+                        </div>
+                    }
+
                     <div class="text-right">
-                        <button alert="@alert.ID" 
+                        <button alert="@alert.ID"
                                 class="btn btn-sm btn-secondary alert-dismiss-button"
                                 type="button"
                                 @onclick="()=> { _ = ClearAlert(alert); }">
@@ -50,13 +59,14 @@
 
     private string FrameClass => _isOpen ? "open" : null;
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
+
         if (IsAuthenticated)
         {
             GetAlerts();
         }
-        return base.OnInitializedAsync();
     }
 
     private async Task ClearAlert(Alert alert)
@@ -79,6 +89,11 @@
         {
             _alerts.AddRange(alerts);
         }
+    }
+
+    private void ShowAlertDetails(Alert alert)
+    {
+        ModalService.ShowModal($"Alert Details for {alert.Device?.DeviceName}", alert.Details.Split('\n'));
     }
 
     private void ToggleOpen()

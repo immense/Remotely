@@ -52,9 +52,9 @@ namespace Remotely.Server.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            await RefreshData();
-
             await base.OnInitializedAsync();
+
+            await RefreshData();
         }
 
         private void CreateNewDeviceGroup()

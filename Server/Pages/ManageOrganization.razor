@@ -5,15 +5,14 @@
 <h3 class="mb-3">Manage Organization</h3>
 
 
-@if (User.IsAdministrator)
+@if (User?.IsAdministrator == true)
 {
-
     <div class="row">
         <div class="col-sm-8">
             @* Organization ID *@
             <div class="form-group mw">
                 <label class="mb-1">Organization ID</label>
-                <input readonly class="form-control" value="@_organization.ID" />
+                <input readonly class="form-control" value="@_organization?.ID" />
             </div>
             <div class="form-group mw">
                 <label class="mb-1">Relay Code</label>
@@ -21,7 +20,7 @@
                     <span id="relayCodeHelp" class="oi oi-question-mark"></span>
                 </button>
                 <br />
-                <input readonly class="form-control" value="@_organization.RelayCode" />
+                <input readonly class="form-control" value="@_organization?.RelayCode" />
             </div>
         </div>
     </div>
@@ -35,7 +34,7 @@
 
                 <div class="input-group">
                     <input @onchange="OrganizationNameChanged"
-                           value="@_organization.OrganizationName"
+                           value="@_organization?.OrganizationName"
                            maxlength="25"
                            placeholder="Enter a name for your organization" 
                            class="form-control" 
@@ -53,7 +52,7 @@
                         <span id="relayCodeHelp" class="oi oi-question-mark"></span>
                     </button>
                     <br />
-                    <input type="checkbox" checked="@_organization.IsDefaultOrganization" @onchange="DefaultOrgCheckChanged" />
+                    <input type="checkbox" checked="@_organization?.IsDefaultOrganization" @onchange="DefaultOrgCheckChanged" />
                 </div>
             }
         </div>

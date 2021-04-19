@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.AspNetCore.Components.Web;
 using Remotely.Server.Components;
 using Remotely.Server.Hubs;
 using Remotely.Server.Services;
@@ -7,9 +8,7 @@ using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -21,9 +20,13 @@ namespace Remotely.Server.Pages
         private readonly ConcurrentQueue<ScriptResult> _scriptResults = new();
 
         private string _alertMessage;
+        private string _inputDeviceId;
 
         [Parameter]
         public string DeviceId { get; set; }
+
+        [Parameter]
+        public string ActiveTab { get; set; }
 
         [Inject]
         private ICircuitConnection CircuitConnection { get; set; }
@@ -37,17 +40,21 @@ namespace Remotely.Server.Pages
         private IModalService ModalService { get; set; }
 
         [Inject]
+        private NavigationManager NavManager { get; set; }
+
+        [Inject]
         private IToastService ToastService { get; set; }
-        protected override Task OnInitializedAsync()
+
+        protected override async Task OnInitializedAsync()
         {
+            await base.OnInitializedAsync();
+
             if (!string.IsNullOrWhiteSpace(DeviceId))
             {
                 Device = DataService.GetDevice(DeviceId);
             }
 
             CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
-
-            return base.OnInitializedAsync();
         }
 
         private void CircuitConnection_MessageReceived(object sender, Models.CircuitEvent e)
@@ -63,6 +70,14 @@ namespace Remotely.Server.Pages
         private void EditFormKeyDown()
         {
             _alertMessage = string.Empty;
+        }
+
+        private void EvaluateDeviceIdInputKeyDown(KeyboardEventArgs args)
+        {
+            if (args.Key.Equals("Enter", StringComparison.OrdinalIgnoreCase))
+            {
+                NavManager.NavigateTo($"/device-details/{_inputDeviceId}");
+            }
         }
 
         private void GetRemoteLogs()
@@ -84,7 +99,7 @@ namespace Remotely.Server.Pages
                 var results = DataService
                     .GetAllScriptResults(User.OrganizationID, Device.ID)
                     .OrderByDescending(x => x.TimeStamp);
-                
+
                 foreach (var result in results)
                 {
                     _scriptResults.Enqueue(result);
@@ -117,6 +132,7 @@ namespace Remotely.Server.Pages
 
             return source[0..25] + "...";
         }
+
         private string GetTrimmedText(string[] source, int stringLength)
         {
             return GetTrimmedText(string.Join("", source), stringLength);
@@ -135,6 +151,11 @@ namespace Remotely.Server.Pages
             ToastService.ShowToast("Device details saved.");
 
             return Task.CompletedTask;
+        }
+
+        private void NavigateToDeviceId()
+        {
+            NavManager.NavigateTo($"/device-details/{_inputDeviceId}");
         }
 
         private void ShowAllDisks()

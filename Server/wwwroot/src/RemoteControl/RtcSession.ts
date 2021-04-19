@@ -68,6 +68,7 @@ export class RtcSession {
             console.log("ICE connection state changed to " + this.iceConnectionState);
         }
         this.PeerConnection.onicecandidate = async (ev) => {
+            console.log("ICE candidate ready: ", ev.candidate);
             await ViewerApp.ViewerHubConnection.SendIceCandidate(ev.candidate);
         };
 
