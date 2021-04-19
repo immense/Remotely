@@ -29,8 +29,8 @@ RUN \
   unzip -o Remotely_Server_Linux-x64.zip -d /var/www/remotely && \
   rm Remotely_Server_Linux-x64.zip && \
   setfacl -R -m u:www-data:rwx /var/www/remotely && \
-  chown -R www-data:www-data /var/www/remotely \
-  touch /var/www/remotely/Remotely.db \
+  chown -R www-data:www-data /var/www/remotely && \
+  touch /var/www/remotely/Remotely.db && \
   cp /var/www/remotely/appsettings.json /var/www/remotely/appsettings.Production.json
 
 WORKDIR /var/www/remotely

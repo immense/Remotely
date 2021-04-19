@@ -52,6 +52,7 @@ export class RtcSession {
             console.log("ICE connection state changed to " + this.iceConnectionState);
         };
         this.PeerConnection.onicecandidate = async (ev) => {
+            console.log("ICE candidate ready: ", ev.candidate);
             await ViewerApp.ViewerHubConnection.SendIceCandidate(ev.candidate);
         };
         UI.VideoScreenViewer.onloadedmetadata = (ev) => {
@@ -72,19 +73,11 @@ export class RtcSession {
         await ViewerApp.ViewerHubConnection.SendRtcAnswer(this.PeerConnection.localDescription);
         console.log("Set RTC offer.");
     }
-    async ReceiveCandidate(candidate, sdpMid, sdpMLineIndex, usernameFragment) {
+    async ReceiveCandidate(candidateJson) {
         When(() => !!this.PeerConnection).then(async () => {
-            if (!candidate.startsWith("candidate:")) {
-                candidate = `candidate:${candidate}`;
-            }
-            var rtcCandidate = {
-                candidate: candidate,
-                sdpMid: sdpMid,
-                sdpMLineIndex: sdpMLineIndex,
-                usernameFragment: usernameFragment
-            };
+            var rtcCandidate = JSON.parse(candidateJson);
             await this.PeerConnection.addIceCandidate(rtcCandidate);
-            console.log("Set ICE candidate.", candidate);
+            console.log("Set ICE candidate.", rtcCandidate);
         });
     }
     SendDto(dto) {

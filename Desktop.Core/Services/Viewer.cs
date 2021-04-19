@@ -106,11 +106,13 @@ namespace Remotely.Desktop.Core.Services
                 };
                 RtcSession.IceCandidateReady += async (sender, candidate) =>
                 {
-                    await CasterSocket.SendIceCandidateToBrowser(candidate.candidate, 
-                        candidate.sdpMid, 
-                        candidate.sdpMLineIndex,
-                        candidate.usernameFragment,
-                        ViewerConnectionID);
+                    if (candidate is null)
+                    {
+                        Logger.Write("Candidate is null.  Aborting send.");
+                        return;
+                    }
+                    
+                    await CasterSocket.SendIceCandidateToBrowser(candidate.toJSON(), ViewerConnectionID);
                 };
 
                 await RtcSession.Init(iceServers);
