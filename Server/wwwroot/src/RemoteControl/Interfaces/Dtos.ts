@@ -201,6 +201,16 @@ export class ToggleBlockInputDto implements BaseDto {
     DtoType: BaseDtoType = BaseDtoType.ToggleBlockInput;
 }
 
+export class ToggleWebRtcVideoDto implements BaseDto {
+    constructor(toggleOn: boolean) {
+        this.ToggleOn = toggleOn;
+    }
+
+    ToggleOn: boolean;
+    DtoType: BaseDtoType = BaseDtoType.ToggleWebRtcVideo;
+}
+
+
 export class WindowsSessionsDto implements BaseDto {
     
     WindowsSessions: Array<WindowsSession>;

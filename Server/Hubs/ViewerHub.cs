@@ -122,9 +122,9 @@ namespace Remotely.Server.Hubs
             return base.OnDisconnectedAsync(exception);
         }
 
-        public Task SendIceCandidateToAgent(string candidateJson)
+        public Task SendIceCandidateToAgent(string candidate, int sdpMlineIndex, string sdpMid)
         {
-            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("ReceiveIceCandidate", candidateJson, Context.ConnectionId);
+            return CasterHubContext.Clients.Client(ScreenCasterID).SendAsync("ReceiveIceCandidate", candidate, sdpMlineIndex, sdpMid, Context.ConnectionId);
         }
 
         public Task SendRtcAnswerToAgent(string sdp)

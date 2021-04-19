@@ -1,5 +1,5 @@
 ﻿export class IceServerModel {
-    Urls: string;
-    Credential: string;
-    Username: string;
+    Url: string;
+    TurnPassword: string;
+    TurnUsername: string;
 }

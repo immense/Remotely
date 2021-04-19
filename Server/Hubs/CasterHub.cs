@@ -168,11 +168,11 @@ namespace Remotely.Server.Hubs
             return ViewerHubContext.Clients.Client(viewerId).SendAsync("SendDtoToBrowser", dto);
         }
 
-        public Task SendIceCandidateToBrowser(string candidateJson, string viewerID)
+        public Task SendIceCandidateToBrowser(string candidate, int sdpMlineIndex, string sdpMid, string viewerID)
         {
             if (_appConfig.UseWebRtc)
             {
-                return ViewerHubContext.Clients.Client(viewerID).SendAsync("ReceiveIceCandidate", candidateJson);
+                return ViewerHubContext.Clients.Client(viewerID).SendAsync("ReceiveIceCandidate", candidate, sdpMlineIndex, sdpMid);
             }
 
             return Task.CompletedTask;
