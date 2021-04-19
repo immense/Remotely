@@ -35,17 +35,18 @@ namespace Remotely.Desktop.Core.Services
         private RTCPeerConnection PeerSession { get; set; }
         private IDtoMessageHandler RtcMessageHandler { get; }
         private Viewer Viewer { get; }
-        public void AddIceCandidate(string candidate, string sdpMid, ushort sdpMLineIndex, string usernameFragment)
-        {
-            var rtcCandidate = new RTCIceCandidateInit()
-            {
-                candidate = candidate,
-                sdpMid = sdpMid,
-                sdpMLineIndex = sdpMLineIndex,
-                usernameFragment = usernameFragment
-            };
 
-            PeerSession.addIceCandidate(rtcCandidate);
+        public void AddIceCandidate(string candidateJson)
+        {
+            if (RTCIceCandidateInit.TryParse(candidateJson, out var rtcCandidate))
+            {
+                PeerSession.addIceCandidate(rtcCandidate);
+            }
+            else
+            {
+                Logger.Write("End of ICE candidates.  Adding null candidate.");
+                PeerSession.addIceCandidate(rtcCandidate);
+            }
         }
 
         public void Dispose()

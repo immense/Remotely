@@ -55,7 +55,12 @@ export class ViewerHubConnection {
 
     SendIceCandidate(candidate: RTCIceCandidate) {
         if (candidate) {
-            this.Connection.invoke("SendIceCandidateToAgent", candidate.candidate, candidate.sdpMid, candidate.sdpMLineIndex, candidate.usernameFragment);
+            console.log(candidate.toJSON);
+            this.Connection.invoke("SendIceCandidateToAgent", JSON.stringify(candidate.toJSON()));
+        }
+        else {
+            console.log("Sending null candidate.");
+            this.Connection.invoke("SendIceCandidateToAgent", "{}");
         }
     }
     SendRtcAnswer(sessionDescription: RTCSessionDescription) {
@@ -144,9 +149,9 @@ export class ViewerHubConnection {
             await ViewerApp.RtcSession.ReceiveRtcOffer(sdp);
             
         });
-        hubConnection.on("ReceiveIceCandidate", async (candidate: string, sdpMid: string, sdpMLineIndex: number, usernameFragment: string) => {
-            console.log("Ice candidate received.", candidate);
-            await ViewerApp.RtcSession.ReceiveCandidate(candidate, sdpMid, sdpMLineIndex, usernameFragment);
+        hubConnection.on("ReceiveIceCandidate", async (candidateJson: string) => {
+            console.log("Ice candidate received.", candidateJson);
+            await ViewerApp.RtcSession.ReceiveCandidate(candidateJson);
         });
         hubConnection.on("ShowMessage", (message: string) => {
             ShowMessage(message);
