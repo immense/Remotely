@@ -125,7 +125,7 @@ __webpack_require__.r(__webpack_exports__);
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 // Version token that will be replaced by the prepack command
 /** The version of the SignalR Message Pack protocol library. */
-var VERSION = "5.0.3";
+var VERSION = "5.0.5";
 
 
 
