@@ -24,9 +24,11 @@
     RecordSessionButton,
     DownloadRecordingButton,
     VideoScreenViewer,
+    StreamVideoButton,
     FileTransferBar,
     FileUploadButtton,
     FileDownloadButton,
+    UpdateStreamingToggled,
     ViewOnlyButton,
     FullScreenButton
 } from "./UI.js";
@@ -212,6 +214,15 @@ export function ApplyInputHandlers() {
         ev.preventDefault();
         ev.stopPropagation();
         MenuButton.style.top = `${ev.touches[0].clientY}px`;
+    });
+    StreamVideoButton.addEventListener("click", (ev) => {
+        var toggleOn = !StreamVideoButton.classList.contains("toggled");
+
+        ViewerApp.Settings.streamModeEnabled = toggleOn;
+        SetSettings(ViewerApp.Settings);
+
+        UpdateStreamingToggled(toggleOn);
+        ViewerApp.MessageSender.SendToggleWebRtcVideo(toggleOn);
     });
 
     [ ScreenViewer, VideoScreenViewer ].forEach(viewer => {

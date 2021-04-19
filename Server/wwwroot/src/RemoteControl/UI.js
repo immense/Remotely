@@ -20,6 +20,7 @@ export var ScreenSelectBar = document.getElementById("screenSelectBar");
 export var ActionsBar = document.getElementById("actionsBar");
 export var ViewBar = document.getElementById("viewBar");
 export var ChangeScreenButton = document.getElementById("changeScreenButton");
+export var StreamVideoButton = document.getElementById("streamVideoButton");
 export var FitToScreenButton = document.getElementById("fitToScreenButton");
 export var BlockInputButton = document.getElementById("blockInputButton");
 export var DisconnectButton = document.getElementById("disconnectButton");
@@ -105,6 +106,7 @@ export function ToggleConnectUI(shown) {
         else {
             DisconnectedBox.style.removeProperty("display");
         }
+        StreamVideoButton.classList.remove("toggled");
         BlockInputButton.classList.remove("toggled");
         AudioButton.classList.remove("toggled");
     }
@@ -146,6 +148,18 @@ export function UpdateDisplays(selectedDisplay, displayNames) {
             });
             ev.currentTarget.classList.add("toggled");
         };
+    }
+}
+export function UpdateStreamingToggled(toggleOn) {
+    if (toggleOn) {
+        StreamVideoButton.classList.add("toggled");
+        VideoScreenViewer.removeAttribute("hidden");
+        ScreenViewer.setAttribute("hidden", "hidden");
+    }
+    else {
+        StreamVideoButton.classList.remove("toggled");
+        ScreenViewer.removeAttribute("hidden");
+        VideoScreenViewer.setAttribute("hidden", "hidden");
     }
 }
 export function UpdateWindowsSessions(windowsSessions) {

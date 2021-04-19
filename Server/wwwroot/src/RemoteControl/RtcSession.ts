@@ -1,26 +1,23 @@
 ﻿import * as UI from "./UI.js";
+import * as Utilities from "./Utilities.js";
 import { ViewerApp } from "./App.js";
 import { IceServerModel } from "./Models/IceServerModel.js";
-import { When } from "./Utilities.js";
 
 export class RtcSession {
     PeerConnection: RTCPeerConnection;
     DataChannel: RTCDataChannel;
     MessagePack: any = window['MessagePack'];
     Init(iceServers: IceServerModel[]) {
-
-        var servers = iceServers.map(x => {
-            return {
-                urls: x.Urls,
-                username: x.Username,
-                credential: x.Credential,
-                credentialType: "password"
-                
-            } as RTCIceServer
-        });
-
+       
         this.PeerConnection = new RTCPeerConnection({
-            iceServers: servers
+            iceServers: iceServers.map(x => {
+                return {
+                    urls: x.Url,
+                    username: x.TurnUsername,
+                    credential: x.TurnPassword,
+                    credentialType: "password"
+                }
+            })
         });
         
         this.PeerConnection.ondatachannel = (ev) => {
@@ -32,6 +29,7 @@ export class RtcSession {
                 UI.ConnectionP2PIcon.style.display = "none";
                 UI.ConnectionRelayedIcon.style.display = "unset";
 
+                UI.StreamVideoButton.setAttribute("hidden", "hidden");
                 UI.ScreenViewer.removeAttribute("hidden");
                 UI.VideoScreenViewer.setAttribute("hidden", "hidden");
             };
@@ -40,6 +38,7 @@ export class RtcSession {
                 UI.ConnectionP2PIcon.style.display = "none";
                 UI.ConnectionRelayedIcon.style.display = "unset";
 
+                UI.StreamVideoButton.setAttribute("hidden", "hidden");
                 UI.ScreenViewer.removeAttribute("hidden");
                 UI.VideoScreenViewer.setAttribute("hidden", "hidden");
             };
@@ -52,6 +51,13 @@ export class RtcSession {
                 console.log("Data channel opened.");
                 UI.ConnectionP2PIcon.style.display = "unset";
                 UI.ConnectionRelayedIcon.style.display = "none";
+
+                UI.StreamVideoButton.removeAttribute("hidden");
+
+                if (ViewerApp.Settings.streamModeEnabled) {
+                    UI.UpdateStreamingToggled(true);
+                    ViewerApp.MessageSender.SendToggleWebRtcVideo(true);
+                }
             };
         };
         this.PeerConnection.onconnectionstatechange = function (ev) {
@@ -85,14 +91,9 @@ export class RtcSession {
         await ViewerApp.ViewerHubConnection.SendRtcAnswer(this.PeerConnection.localDescription);
         console.log("Set RTC offer.");
     }
-    async ReceiveCandidate(candidateJson: string) {
-        When(() => !!this.PeerConnection).then(async () => {
-
-            var rtcCandidate = JSON.parse(candidateJson) as RTCIceCandidate;
-
-            await this.PeerConnection.addIceCandidate(rtcCandidate);
-            console.log("Set ICE candidate.", rtcCandidate);
-        });
+    async ReceiveCandidate(candidate: RTCIceCandidate) {
+        await this.PeerConnection.addIceCandidate(candidate);
+        console.log("Set ICE candidate.");
     }
 
     SendDto(dto: any) {
