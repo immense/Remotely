@@ -85,7 +85,10 @@ namespace Remotely.Desktop.Core.Services
             PeerSession.oniceconnectionstatechange += PeerSession_oniceconnectionstatechange;
             PeerSession.onicecandidate += PeerSession_onicecandidate;
 
-            var dataChannelInit = new RTCDataChannelInit();
+            var dataChannelInit = new RTCDataChannelInit()
+            {
+                ordered = true
+            };
             CaptureChannel = await PeerSession.createDataChannel("RemoteControl", dataChannelInit);
 
             CaptureChannel.onmessage += CaptureChannel_onmessage; ;

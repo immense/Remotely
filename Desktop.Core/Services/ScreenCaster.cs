@@ -121,6 +121,7 @@ namespace Remotely.Desktop.Core.Services
                         if (viewer.IsStalled)
                         {
                             // Viewer isn't responding.  Abort sending.
+                            Logger.Write("Viewer stalled.  Ending send loop.");
                             break;
                         }
 
@@ -197,7 +198,13 @@ namespace Remotely.Desktop.Core.Services
                     }
                 }
 
-                Logger.Write($"Ended screen cast.  Requester: {viewer.Name}. Viewer ID: {viewer.ViewerConnectionID}.");
+                Logger.Write($"Ended screen cast.  " +
+                    $"Requester: {viewer.Name}. " +
+                    $"Viewer ID: {viewer.ViewerConnectionID}. " +
+                    $"Viewer WS Connected: {viewer.IsConnected}.  " +
+                    $"Viewer Stalled: {viewer.IsStalled}.  " +
+                    $"Viewer Disconnected Requested: {viewer.DisconnectRequested}");
+
                 _conductor.Viewers.TryRemove(viewer.ViewerConnectionID, out _);
                 viewer.Dispose();
             }
