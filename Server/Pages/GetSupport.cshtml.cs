@@ -28,25 +28,26 @@ namespace Remotely.Server.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPost(string deviceID)
+        public async Task<IActionResult> OnPost(string deviceId)
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            var orgID = _dataService.GetDevice(deviceID)?.OrganizationID;
+            var orgID = _dataService.GetDevice(deviceId)?.OrganizationID;
 
             var alertParts = new string[]
             {
                 $"{Input.Name} is requesting support.",
+                $"Device ID: {deviceId}",
                 $"Email: {Input.Email}.",
                 $"Phone: {Input.Phone}.",
                 $"Chat OK: {Input.ChatResponseOk}."
             };
 
             var alertMessage = string.Join("  ", alertParts);
-            await _dataService.AddAlert(deviceID, orgID, alertMessage);
+            await _dataService.AddAlert(deviceId, orgID, alertMessage);
 
             var orgUsers = await _dataService.GetAllUsersInOrganization(orgID);
             var emailMessage = string.Join("<br />", alertParts);
@@ -57,7 +58,7 @@ namespace Remotely.Server.Pages
 
             StatusMessage = "We got it!  Someone will contact you soon.";
 
-            return RedirectToPage("GetSupport", new { deviceID });
+            return RedirectToPage("GetSupport", new { deviceId });
         }
 
         public class InputModel
