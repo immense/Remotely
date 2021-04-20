@@ -237,29 +237,11 @@
                     <ValidationMessage For="() => Input.SmtpEmail" />
                 </div>
                 <div class="form-group">
-                    <label>
-                        SMTP StartTls
-                        <br />
-                        <span class="text-muted small">Note: SSL is deprecated and no longer supported.</span>
-                    </label>
-                    <br />
-                    <InputCheckbox @bind-Value="Input.SmtpEnableSsl" autocomplete="off" />
-                    <br />
-                    <ValidationMessage For="() => Input.SmtpEnableSsl" />
-                </div>
-                <div class="form-group">
                     <label class="control-label">SMTP Host</label>
                     <br />
                     <InputText @bind-Value="Input.SmtpHost" class="form-control" autocomplete="off" />
                     <br />
                     <ValidationMessage For="() => Input.SmtpHost" />
-                </div>
-                <div class="form-group">
-                    <label class="control-label">SMTP Password</label>
-                    <br />
-                    <InputText type="password" @bind-Value="Input.SmtpPassword" class="form-control" autocomplete="new-password" />
-                    <br />
-                    <ValidationMessage For="() => Input.SmtpPassword" />
                 </div>
                 <div class="form-group">
                     <label class="control-label">SMTP Port</label>
@@ -269,11 +251,25 @@
                     <ValidationMessage For="() => Input.SmtpPort" />
                 </div>
                 <div class="form-group">
+                    <label class="control-label">SMTP Local Domain</label>
+                    <br />
+                    <InputText @bind-Value="Input.SmtpLocalDomain" class="form-control" autocomplete="off" />
+                    <br />
+                    <ValidationMessage For="() => Input.SmtpLocalDomain" />
+                </div>
+                <div class="form-group">
                     <label class="control-label">SMTP Username</label>
                     <br />
                     <InputText @bind-Value="Input.SmtpUserName" class="form-control" autocomplete="new-password" />
                     <br />
                     <ValidationMessage For="() => Input.SmtpUserName" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">SMTP Password</label>
+                    <br />
+                    <InputText type="password" @bind-Value="Input.SmtpPassword" class="form-control" autocomplete="new-password" />
+                    <br />
+                    <ValidationMessage For="() => Input.SmtpPassword" />
                 </div>
                 <div class="form-group text-right">
                     <button id="sendTestEmailButton" type="button" class="btn btn-secondary" @onclick="SaveAndTestSmtpSettings">Test</button>

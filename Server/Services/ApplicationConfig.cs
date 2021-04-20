@@ -25,8 +25,8 @@ namespace Remotely.Server.Services
         bool Require2FA { get; }
         string SmtpDisplayName { get; }
         string SmtpEmail { get; }
-        bool SmtpEnableSsl { get; }
         string SmtpHost { get; }
+        string SmtpLocalDomain { get; }
         string SmtpPassword { get; }
         int SmtpPort { get; }
         string SmtpUserName { get; }
@@ -67,8 +67,8 @@ namespace Remotely.Server.Services
         public bool Require2FA => bool.Parse(Config["ApplicationOptions:Require2FA"] ?? "false");
         public string SmtpDisplayName => Config["ApplicationOptions:SmtpDisplayName"];
         public string SmtpEmail => Config["ApplicationOptions:SmtpEmail"];
-        public bool SmtpEnableSsl => bool.Parse(Config["ApplicationOptions:SmtpEnableSsl"] ?? "true");
         public string SmtpHost => Config["ApplicationOptions:SmtpHost"];
+        public string SmtpLocalDomain => Config["ApplicationOptions:SmtpLocalDomain"];
         public string SmtpPassword => Config["ApplicationOptions:SmtpPassword"];
         public int SmtpPort => int.Parse(Config["ApplicationOptions:SmtpPort"] ?? "25");
         public string SmtpUserName => Config["ApplicationOptions:SmtpUserName"];
@@ -76,6 +76,8 @@ namespace Remotely.Server.Services
         public string[] TrustedCorsOrigins => Config.GetSection("ApplicationOptions:TrustedCorsOrigins").Get<string[]>() ?? System.Array.Empty<string>();
         public bool UseHsts => bool.Parse(Config["ApplicationOptions:UseHsts"] ?? "false");
         public bool UseWebRtc => bool.Parse(Config["ApplicationOptions:UseWebRtc"] ?? "true");
+
+
         private IConfiguration Config { get; set; }
     }
 }

@@ -1,7 +1,10 @@
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using MimeKit;
+using MimeKit.Text;
 using System;
 using System.Net;
-using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace Remotely.Server.Services
@@ -23,37 +26,38 @@ namespace Remotely.Server.Services
         private IApplicationConfig AppConfig { get; }
         private IDataService DataService { get; }
 
-        public Task<bool> SendEmailAsync(string email, string replyTo, string subject, string htmlMessage, string organizationID = null)
+        public async Task<bool> SendEmailAsync(string toEmail, string replyTo, string subject, string htmlMessage, string organizationID = null)
         {
             try
             {
-                var mailClient = new SmtpClient
+                var message = new MimeMessage();
+                message.From.Add(new MailboxAddress(AppConfig.SmtpDisplayName, AppConfig.SmtpEmail));
+                message.To.Add(MailboxAddress.Parse(toEmail));
+                message.ReplyTo.Add(MailboxAddress.Parse(replyTo));
+                message.Subject = subject;
+                message.Body = new TextPart(TextFormat.Html)
                 {
-                    Host = AppConfig.SmtpHost,
-                    Port = AppConfig.SmtpPort,
-                    EnableSsl = AppConfig.SmtpEnableSsl,
-                    Credentials = new NetworkCredential(AppConfig.SmtpUserName, AppConfig.SmtpPassword),
-                    DeliveryMethod = SmtpDeliveryMethod.Network
+                    Text = htmlMessage
                 };
 
-                var from = new MailAddress(AppConfig.SmtpEmail, AppConfig.SmtpDisplayName, System.Text.Encoding.UTF8);
-                var to = new MailAddress(email);
+                using var client = new SmtpClient();
 
-                var mailMessage = new MailMessage(from, to)
-                {
-                    IsBodyHtml = true,
-                    Subject = subject,
-                    Body = htmlMessage
-                };
-                mailMessage.ReplyToList.Add(new MailAddress(replyTo));
-                mailClient.Send(mailMessage);
-                DataService.WriteEvent($"Email successfully sent to {email}.  Subject: \"{subject}\".", organizationID);
-                return Task.FromResult(true);
+                client.LocalDomain = AppConfig.SmtpLocalDomain;
+                client.Connect(AppConfig.SmtpHost, AppConfig.SmtpPort, SecureSocketOptions.StartTlsWhenAvailable);
+
+                client.Authenticate(AppConfig.SmtpUserName, AppConfig.SmtpPassword);
+
+                await client.SendAsync(message);
+                client.Disconnect(true);
+
+                DataService.WriteEvent($"Email successfully sent to {toEmail}.  Subject: \"{subject}\".", organizationID);
+
+                return true;
             }
             catch (Exception ex)
             {
                 DataService.WriteEvent(ex, organizationID);
-                return Task.FromResult(false);
+                return false;
             }
         }
 
