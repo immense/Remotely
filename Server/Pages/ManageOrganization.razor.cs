@@ -227,7 +227,8 @@ namespace Remotely.Server.Pages
 
             _invites.AddRange(DataService.GetAllInviteLinks(Username).OrderBy(x => x.InvitedUser));
             _deviceGroups.AddRange(DataService.GetDeviceGroups(Username).OrderBy(x => x.Name));
-            _orgUsers.AddRange(DataService.GetAllUsersInOrganization(Username).OrderBy(x => x.UserName));
+            var orgUsers = await DataService.GetAllUsersInOrganization(User.OrganizationID);
+            _orgUsers.AddRange(orgUsers.OrderBy(x => x.UserName));
         }
         private async Task ResetPassword(RemotelyUser user)
         {
