@@ -244,8 +244,8 @@ namespace Remotely.Desktop.Core.Services
                     ImageBytes = screenFrame.EncodedImageBytes.Skip(i).Take(50_000).ToArray()
                 };
 
-                await SendToViewer(async () => await RtcSession.SendDto(dto),
-                    async () => await CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
+                await SendToViewer(() => RtcSession.SendDto(dto),
+                    () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
             }
 
             var endOfFrameDto = new CaptureFrameDto()
@@ -258,8 +258,8 @@ namespace Remotely.Desktop.Core.Services
             };
 
             await SendToViewer(
-                async () => await RtcSession.SendDto(endOfFrameDto),
-                async () => await CasterSocket.SendDtoToViewer(endOfFrameDto, ViewerConnectionID));
+                () => RtcSession.SendDto(endOfFrameDto),
+                () => CasterSocket.SendDtoToViewer(endOfFrameDto, ViewerConnectionID));
 
             sw.Stop();
 
