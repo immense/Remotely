@@ -41,14 +41,17 @@ namespace Remotely.Server.Services
                 };
 
                 using var client = new SmtpClient();
+                
+                if (!string.IsNullOrWhiteSpace(AppConfig.SmtpLocalDomain))
+                {
+                    client.LocalDomain = AppConfig.SmtpLocalDomain;
+                }
+                await client.ConnectAsync(AppConfig.SmtpHost, AppConfig.SmtpPort);
 
-                client.LocalDomain = AppConfig.SmtpLocalDomain;
-                client.Connect(AppConfig.SmtpHost, AppConfig.SmtpPort, SecureSocketOptions.StartTlsWhenAvailable);
-
-                client.Authenticate(AppConfig.SmtpUserName, AppConfig.SmtpPassword);
+                await client.AuthenticateAsync(AppConfig.SmtpUserName, AppConfig.SmtpPassword);
 
                 await client.SendAsync(message);
-                client.Disconnect(true);
+                await client.DisconnectAsync(true);
 
                 DataService.WriteEvent($"Email successfully sent to {toEmail}.  Subject: \"{subject}\".", organizationID);
 
