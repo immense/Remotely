@@ -106,7 +106,7 @@ namespace Remotely.Server.Services
 
         RemotelyUser[] GetAllUsersForServer();
 
-        RemotelyUser[] GetAllUsersInOrganization(string userName);
+        Task<RemotelyUser[]> GetAllUsersInOrganization(string orgId);
 
         ApiToken GetApiKey(string keyId);
 
@@ -1093,17 +1093,20 @@ namespace Remotely.Server.Services
             return dbContext.Users.ToArray();
         }
 
-        public RemotelyUser[] GetAllUsersInOrganization(string userName)
+        public async Task<RemotelyUser[]> GetAllUsersInOrganization(string orgId)
         {
-            if (string.IsNullOrWhiteSpace(userName))
+            if (string.IsNullOrWhiteSpace(orgId))
             {
                 return Array.Empty<RemotelyUser>();
             }
 
             using var dbContext = _dbFactory.CreateDbContext();
 
-            var user = dbContext.Users.FirstOrDefault(x => x.UserName == userName);
-            return dbContext.Users.Where(x => x.OrganizationID == user.OrganizationID).ToArray();
+            var organization = await dbContext.Organizations
+                .Include(x => x.RemotelyUsers)
+                .FirstOrDefaultAsync(x => x.ID == orgId);
+
+            return organization.RemotelyUsers.ToArray();
         }
 
         public ApiToken GetApiKey(string keyId)

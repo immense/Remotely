@@ -48,7 +48,7 @@ namespace Remotely.Server.Pages
             var alertMessage = string.Join("  ", alertParts);
             await _dataService.AddAlert(deviceID, orgID, alertMessage);
 
-            var orgUsers = _dataService.GetAllUsersInOrganization(orgID);
+            var orgUsers = await _dataService.GetAllUsersInOrganization(orgID);
             var emailMessage = string.Join("<br />", alertParts);
             foreach (var user in orgUsers)
             {
