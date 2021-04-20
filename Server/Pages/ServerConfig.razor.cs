@@ -79,11 +79,10 @@ namespace Remotely.Server.Pages
         [EmailAddress]
         public string SmtpEmail { get; set; }
 
-        [Display(Name = "SMTP Enable SSL")]
-        public bool SmtpEnableSsl { get; set; }
-
         [Display(Name = "SMTP Host")]
         public string SmtpHost { get; set; }
+        [Display(Name = "SMTP Local Domain")]
+        public string SmtpLocalDomain { get; set; }
 
         [Display(Name = "SMTP Password")]
         public string SmtpPassword { get; set; }
@@ -316,8 +315,8 @@ namespace Remotely.Server.Pages
             var success = await EmailSender.SendEmailAsync(User.Email, "Remotely Test Email", "Congratulations! Your SMTP settings are working!", User.OrganizationID);
             if (success)
             {
-                ToastService.ShowToast("Test email sent.  Check your inbox (including spam folder).");
-                _alertMessage = "Test email sent.  Check your inbox (including spam folder).";
+                ToastService.ShowToast($"Test email sent to {User.Email}.  Check your inbox (or spam folder).");
+                _alertMessage = $"Test email sent to {User.Email}.  Check your inbox (or spam folder).";
             }
             else
             {
