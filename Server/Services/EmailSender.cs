@@ -46,6 +46,9 @@ namespace Remotely.Server.Services
                 {
                     client.LocalDomain = AppConfig.SmtpLocalDomain;
                 }
+
+                client.CheckCertificateRevocation = AppConfig.SmtpCheckCertificateRevocation;
+
                 await client.ConnectAsync(AppConfig.SmtpHost, AppConfig.SmtpPort);
 
                 await client.AuthenticateAsync(AppConfig.SmtpUserName, AppConfig.SmtpPassword);
