@@ -40,6 +40,11 @@ namespace Remotely.Desktop.Win.Services
         {
             try
             {
+                if (args.Buffer.All(x => x == 0))
+                {
+                    return;
+                }
+
                 if (args.BytesRecorded > 0)
                 {
                     lock (_tempBuffer)
@@ -51,8 +56,8 @@ namespace Remotely.Desktop.Win.Services
 
                         _tempBuffer.AddRange(args.Buffer.Take(args.BytesRecorded));
 
-                        if (_tempBuffer.Count > 5_000 ||
-                            _sendTimer.Elapsed.TotalMilliseconds > 100)
+                        if (_tempBuffer.Count > 50_000 ||
+                            _sendTimer.Elapsed.TotalMilliseconds > 1000)
                         {
                             _sendTimer.Reset();
                             SendTempBuffer();
