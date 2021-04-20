@@ -1384,6 +1384,7 @@ namespace Remotely.Server.Services
                 .Include(x => x.Devices)
                 .Include(x => x.DevicesCompleted)
                 .Where(scriptRun =>
+                    scriptRun.RunOnNextConnect &&
                     dbContext.SavedScripts.Any(savedScript => savedScript.Id == scriptRun.SavedScriptId) &&
                     scriptRun.Devices.Any(device => device.ID == deviceId) &&
                     !scriptRun.DevicesCompleted.Any(deviceCompleted => deviceCompleted.ID == deviceId) &&
