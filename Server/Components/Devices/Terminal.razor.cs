@@ -308,7 +308,9 @@ namespace Remotely.Server.Components.Devices
                     OrganizationID = User.OrganizationID,
                     RunAt = Time.Now,
                     SavedScriptId = script.Id,
-                    RunOnNextConnect = false
+                    RunOnNextConnect = false,
+                    Initiator = User.UserName,
+                    InputType = ScriptInputType.OneTimeScript
                 };
 
                 scriptRun.Devices = DataService.GetDevices(AppState.DevicesFrameSelectedDevices);
