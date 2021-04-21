@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Remotely.Agent.Interfaces;
 using Remotely.Shared.Models;
+using Remotely.Shared.Services;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
@@ -15,13 +16,15 @@ namespace Remotely.Agent.Services
     public class AppLauncherLinux : IAppLauncher
     {
         private readonly string _rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Desktop", EnvironmentHelper.DesktopExecutableFileName);
+        private readonly IProcessInvoker _processInvoker;
+        private readonly ConnectionInfo _connectionInfo;
 
-        public AppLauncherLinux(ConfigService configService)
+        public AppLauncherLinux(ConfigService configService, IProcessInvoker processInvoker)
         {
-            ConnectionInfo = configService.GetConnectionInfo();
+            _processInvoker = processInvoker;
+            _connectionInfo = configService.GetConnectionInfo();
         }
 
-        private ConnectionInfo ConnectionInfo { get; }
 
         public async Task<int> LaunchChatService(string orgName, string requesterID, HubConnection hubConnection)
         {
@@ -43,8 +46,8 @@ namespace Remotely.Agent.Services
                     $"-mode Chat " +
                     $"-requester \"{requesterID}\" " +
                     $"-organization \"{orgName}\" " +
-                    $"-host \"{ConnectionInfo.Host}\" " +
-                    $"-orgid \"{ConnectionInfo.OrganizationID}\"";
+                    $"-host \"{_connectionInfo.Host}\" " +
+                    $"-orgid \"{_connectionInfo.OrganizationID}\"";
                 return StartLinuxDesktopApp(args);
             }
             catch (Exception ex)
@@ -76,9 +79,9 @@ namespace Remotely.Agent.Services
                     $"-mode Unattended " +
                     $"-requester \"{requesterID}\" " +
                     $"-serviceid \"{serviceID}\" " +
-                    $"-deviceid {ConnectionInfo.DeviceID} " +
-                    $"-host \"{ConnectionInfo.Host}\" " +
-                    $"-orgid \"{ConnectionInfo.OrganizationID}\"";
+                    $"-deviceid {_connectionInfo.DeviceID} " +
+                    $"-host \"{_connectionInfo.Host}\" " +
+                    $"-orgid \"{_connectionInfo.OrganizationID}\"";
                 StartLinuxDesktopApp(args);
             }
             catch (Exception ex)
@@ -96,9 +99,9 @@ namespace Remotely.Agent.Services
                     $"-mode Unattended " +
                     $"-requester \"{requesterID}\" " +
                     $"-serviceid \"{serviceID}\" " +
-                    $"-deviceid {ConnectionInfo.DeviceID} " +
-                    $"-host \"{ConnectionInfo.Host}\" " +
-                    $"-orgid \"{ConnectionInfo.OrganizationID}\" " +
+                    $"-deviceid {_connectionInfo.DeviceID} " +
+                    $"-host \"{_connectionInfo.Host}\" " +
+                    $"-orgid \"{_connectionInfo.OrganizationID}\" " +
                     $"-relaunch true " +
                     $"-viewers {string.Join(",", viewerIDs)}";
                 StartLinuxDesktopApp(args);
@@ -116,7 +119,7 @@ namespace Remotely.Agent.Services
             var xauthority = GetXorgAuth();
 
             var display = ":0";
-            var whoString = EnvironmentHelper.StartProcessWithResults("who", "")?.Trim();
+            var whoString = _processInvoker.InvokeProcessOutput("who", "")?.Trim();
             var username = "";
 
             if (!string.IsNullOrWhiteSpace(whoString))
@@ -155,7 +158,7 @@ namespace Remotely.Agent.Services
         {
             try
             {
-                var processes = EnvironmentHelper.StartProcessWithResults("ps", "-eaf")?.Split(Environment.NewLine);
+                var processes = _processInvoker.InvokeProcessOutput("ps", "-eaf")?.Split(Environment.NewLine);
                 if (processes?.Length > 0)
                 {
                     var xorgLine = processes.FirstOrDefault(x => x.Contains("xorg", StringComparison.OrdinalIgnoreCase));

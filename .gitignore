@@ -291,3 +291,4 @@ Server/wwwroot/Content/Win-x86/*
 Server/.config/dotnet-tools.json
 /Server/Properties/ServiceDependencies/*
 Server.Installer/Properties/launchSettings.json
+.DS_Store

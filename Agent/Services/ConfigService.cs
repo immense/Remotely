@@ -62,7 +62,7 @@ namespace Remotely.Agent.Services
                 return new ConnectionInfo()
                 {
                     DeviceID = _debugGuid,
-                    Host = "https://localhost:5001",
+                    Host = "http://localhost:5000",
                     OrganizationID = orgID
                 };
             }

@@ -1,5 +1,6 @@
 ﻿using Remotely.Agent.Interfaces;
 using Remotely.Shared.Models;
+using Remotely.Shared.Services;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,12 @@ namespace Remotely.Agent.Services
 {
     public class DeviceInformationServiceLinux : DeviceInformationServiceBase, IDeviceInformationService
     {
+        private readonly IProcessInvoker _processInvoker;
+
+        public DeviceInformationServiceLinux(IProcessInvoker processInvoker)
+        {
+            _processInvoker = processInvoker;
+        }
         public async Task<Device> CreateDevice(string deviceId, string orgId)
         {
             var device = GetDeviceBase(deviceId, orgId);
@@ -40,7 +47,7 @@ namespace Remotely.Agent.Services
 
         private string GetCurrentUser()
         {
-            var users = EnvironmentHelper.StartProcessWithResults("users", "");
+            var users = _processInvoker.InvokeProcessOutput("users", "");
             return users?.Split()?.FirstOrDefault()?.Trim();
         }
 
@@ -48,7 +55,7 @@ namespace Remotely.Agent.Services
         {
             try
             {
-                var results = EnvironmentHelper.StartProcessWithResults("cat", "/proc/meminfo");
+                var results = _processInvoker.InvokeProcessOutput("cat", "/proc/meminfo");
                 var resultsArr = results.Split("\n".ToCharArray());
                 var freeKB = resultsArr
                             .FirstOrDefault(x => x.Trim().StartsWith("MemAvailable"))
