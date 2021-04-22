@@ -1,5 +1,4 @@
 ﻿using Remotely.Agent.Interfaces;
-using Remotely.Agent.Utilities;
 using Remotely.Shared.Utilities;
 using System;
 using System.Diagnostics;
