@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Win32;
-using Remotely.Agent.Interfaces;
-using Remotely.Agent.Utilities;
+﻿using Remotely.Agent.Interfaces;
 using Remotely.Shared.Utilities;
 using System;
 using System.Diagnostics;

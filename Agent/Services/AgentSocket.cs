@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Remotely.Agent.Extensions;
 using Remotely.Agent.Interfaces;
-using Remotely.Agent.Utilities;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
