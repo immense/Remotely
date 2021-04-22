@@ -22,8 +22,7 @@ namespace Remotely.Server.Data
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             options.UseSqlServer(_configuration.GetConnectionString("SQLServer"));
-            options.ConfigureWarnings(x => x.Ignore(RelationalEventId.MultipleCollectionIncludeWarning));
-            options.LogTo((message) => System.Diagnostics.Debug.Write(message));
+            base.OnConfiguring(options);
         }
     }
 }

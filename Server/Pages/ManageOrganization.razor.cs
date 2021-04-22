@@ -225,7 +225,7 @@ namespace Remotely.Server.Pages
             _invites.Clear();
             _deviceGroups.Clear();
 
-            _invites.AddRange(DataService.GetAllInviteLinks(Username).OrderBy(x => x.InvitedUser));
+            _invites.AddRange(DataService.GetAllInviteLinks(User.OrganizationID).OrderBy(x => x.InvitedUser));
             _deviceGroups.AddRange(DataService.GetDeviceGroups(Username).OrderBy(x => x.Name));
             var orgUsers = await DataService.GetAllUsersInOrganization(User.OrganizationID);
             _orgUsers.AddRange(orgUsers.OrderBy(x => x.UserName));
