@@ -34,11 +34,6 @@ namespace Remotely.Agent.Services
                 return;
             }
 
-            if (!RegistryHelper.CheckNetFrameworkVersion())
-            {
-                return;
-            }
-
             await CheckForUpdates();
             _updateTimer.Elapsed += UpdateTimer_Elapsed;
             _updateTimer.Start();
