@@ -14,8 +14,6 @@ namespace Remotely.Server.Hubs
     [ServiceFilter(typeof(RemoteControlFilterAttribute))]
     public class ViewerHub : Hub
     {
-        public static int RemoteControlSessionCount { get; private set; }
-
         public ViewerHub(IDataService dataService,
             IHubContext<CasterHub> casterHubContext,
             IHubContext<AgentHub> agentHub,
