@@ -6,6 +6,7 @@
     <AssemblyName>Remotely_Server_Installer</AssemblyName>
     <ApplicationIcon>Remotely_Icon.ico</ApplicationIcon>
     <RootNamespace>Remotely.Server.Installer</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>
