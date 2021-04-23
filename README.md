@@ -89,7 +89,11 @@ There are countless ways to host an ASP.NET Core app, and I can't document or au
 The following steps will configure your Windows 10 machine for building the Remotely server and clients.
 * Install Visual Studio 2019.
     * Link: https://visualstudio.microsoft.com/downloads/
-	* You only need the below Individual Components for building:
+	* You should have the following Workloads selected:
+	    * ASP.NET and web development
+		* .NET desktop development
+		* .NET Core corss-platform development
+	* You should have the following Individual Components selected:
 	    * .NET SDK (latest version).
 		* MSBuild (which auto-selects Roslyn compilers).
 		* NuGet targets and build tasks.
@@ -97,6 +101,8 @@ The following steps will configure your Windows 10 machine for building the Remo
 	    * For debugging and development, you'll need all relevant workloads.
 * Install Git for Windows.
     * Link: https://git-scm.com/downloads
+* Install the latest LTS Node:
+	* Link: https://nodejs.org/
 * Clone the git repository: `git clone https://github.com/lucent-sea/remotely`
 * When debugging, the agent will use a pre-defined device ID and connect to https://localhost:5001.
 * In development environment, the server will assign all connecting agents to the first organization.
