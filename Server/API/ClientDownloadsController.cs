@@ -83,7 +83,7 @@ namespace Remotely.Server.API
                     }
                 case "MacOS":
                     {
-                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Remotely_Desktop");
+                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "MacOS", "Remotely_Desktop");
                         return await GetDesktopFile(filePath);
                     }
                 default:

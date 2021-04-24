@@ -119,45 +119,44 @@
             </p>
 
             <p>
-                <strong>Quiet Install:</strong>
-                <br />
-                <span class="label label-default code">
+                <div class="small">Example Quiet Install:</div>
+                
+                <code class="label label-default small">
                     Remotely_Installer.exe
                     -install
                     -quiet
                     -organizationid "0b3d706b-9c5d-41e6-8ae9-5720d16324e6"
                     -serverurl "https://remotely.mytechshop.com"
-                </span>
+                </code>
             </p>
             <p>
-                <strong>Quiet Uninstall:</strong>
+                <div class="small">Example Quiet Uninstall:</div>
                 <br />
-                <span class="label label-default code">Remotely_Installer.exe -uninstall -quiet</span>
+                <code class="label label-default small">Remotely_Installer.exe -uninstall -quiet</code>
             </p>
             <p>
-                <strong>Local Install:</strong>
-                <span data-toggle="modal" data-target="#localInstallInfo" class="fas fa-question-circle pointer"></span>
-                <br />
-                <span class="label label-default code">
+                <div class="small">Example Local Install:</div>
+               
+                <code class="label label-default small">
                     Remotely_Installer.exe
                     -install
                     -quiet
                     -organizationid "0b3d706b-9c5d-41e6-8ae9-5720d16324e6"
                     -serverurl "https://remotely.mytechshop.com"
                     -path "[path]\Remotely-Win10-x64.zip"
-                </span>
+                </code>
             </p>
             <p>
-                <strong>Override Options:</strong>
-                <br />
-                <span class="label label-default code">
+                <div class="small">All Override Options:</div>
+                
+                <code class="label label-default small">
                     Remotely_Installer.exe -install -quiet -supportshortcut
                     -organizationid "0b3d706b-9c5d-41e6-8ae9-5720d16324e6"
                     -serverurl "https://remotely.mytechshop.com"
                     -devicegroup "Customer Group 1"
                     -devicealias "Front Desk"
                     -deviceuuid "eebb4d87-5459-4976-989e-a7876dffc69c"
-                </span>
+                </code>
             </p>
         </div>
 
@@ -165,7 +164,6 @@
             <h6>Linux 64-Bit</h6>
             <p>
                 <strong>Download:</strong>
-                <br />
                 <a target="_blank" href="/API/ClientDownloads/UbuntuInstaller-x64">Ubuntu x64 Bash Installer</a>
                 <br />
                 <a target="_blank" href="/API/ClientDownloads/ManjaroInstaller-x64">Manjaro x64 Bash Installer</a>
@@ -173,48 +171,49 @@
                 <a target="_blank" href="/Content/Remotely-Linux.zip">Linux x64 Files Only</a>
             </p>
             <p>
-                <strong>Install:</strong>
-                <br />
-                <span class="label label-default code">sudo [path]/Install-Ubuntu-x64.sh</span>
+                <div class="small">Example Install:</div>
+                
+                <code class="label label-default small">sudo [path]/Install-Ubuntu-x64.sh</code>
             </p>
             <p>
-                <strong>Local Install:</strong>
-                <span data-toggle="modal" data-target="#localInstallInfo" class="fas fa-question-circle pointer"></span>
-                <br />
-                <span class="label label-default code">sudo [path]/Install-Ubuntu-x64.sh --path [path]/Remotely-Linux.zip</span>
+                <div class="small">Example Local Install:</div>
+              
+                <code class="label label-default small">sudo [path]/Install-Ubuntu-x64.sh --path [path]/Remotely-Linux.zip</code>
             </p>
             <p>
-                <strong>Uninstall:</strong>
+                <div class="small">Uninstall:</div>
+
+                <code class="label label-default small">sudo [path]/Install-Ubuntu-x64.sh --uninstall</code>
+            </p>
+        </div>
+
+        <div class="col-sm-6 mb-3">
+            <h6>macOS (10.5+)</h6>
+            <p>
+                <strong>Download:</strong>
                 <br />
-                <span class="label label-default code">sudo [path]/Install-Ubuntu-x64.sh --uninstall</span>
+                <a target="_blank" href="/API/ClientDownloads/MacOS">macOS ZSH Installer</a>
+                <br />
+                <a target="_blank" href="/Content/Remotely-Linux.zip">macOS Files Only</a>
+            </p>
+            <p>
+                <div class="small">Example Install:</div>
+                
+                <code class="label label-default small">sudo [path]/Install-Ubuntu-x64.sh</code>
+            </p>
+            <p>
+                <div class="small">Example Local Install:</div>
+               
+                <code class="label label-default small">sudo [path]/Install-MacOS.sh --path [path]/Remotely-MacOS.zip</code>
+            </p>
+            <p>
+                <div class="small">Example Uninstall:</div>
+                
+                <code class="label label-default small">sudo [path]/Install-MacOS.sh --uninstall</code>
             </p>
         </div>
     }
 
-</div>
-<div id="localInstallInfo" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Local Installs</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>
-                    By default, the installer will download the client files from the server before installing them.
-                    This is fine for one or two devices, but it wouldn't be ideal to have a large number of computers
-                    downloading over the WAN simultaneously.
-                    <br /><br />
-                    To reduce bandwidth usage, you can download separately the ZIP file containing the client files and put
-                    them on a network share. Then you can use the -path argument to have the script copy the files from
-                    that location.
-                </p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
 </div>
 
 @code {
