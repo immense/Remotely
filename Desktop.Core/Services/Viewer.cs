@@ -236,6 +236,7 @@ namespace Remotely.Desktop.Core.Services
             {
                 var dto = new CaptureFrameDto()
                 {
+                    Id = screenFrame.Id,
                     Left = left,
                     Top = top,
                     Width = width,
@@ -250,6 +251,7 @@ namespace Remotely.Desktop.Core.Services
 
             var endOfFrameDto = new CaptureFrameDto()
             {
+                Id = screenFrame.Id,
                 Left = left,
                 Top = top,
                 Width = width,
