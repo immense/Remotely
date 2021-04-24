@@ -49,15 +49,15 @@ cd /Applications/Remotely/
 
 if [ -z "$UpdatePackagePath" ]; then
     echo  "Downloading client..." >> /tmp/Remotely_Install.log
-    wget $HostName/Content/Remotely-MacOSX.zip
+    wget $HostName/Content/Remotely-MacOS.zip
 else
     echo  "Copying install files..." >> /tmp/Remotely_Install.log
-    cp "$UpdatePackagePath" /Applications/Remotely/Remotely-MacOSX.zip
+    cp "$UpdatePackagePath" /Applications/Remotely/Remotely-MacOS.zip
     rm -f "$UpdatePackagePath"
 fi
 
-unzip ./Remotely-MacOSX.zip
-rm -f ./Remotely-MacOSX.zip
+unzip ./Remotely-MacOS.zip
+rm -f ./Remotely-MacOS.zip
 
 
 connectionInfo="{
@@ -69,7 +69,7 @@ connectionInfo="{
 
 echo "$connectionInfo" > ./ConnectionInfo.json
 
-curl --head $HostName/Content/Remotely-MacOSX.zip | grep -i "etag" | cut -d' ' -f 2 > ./etag.txt
+curl --head $HostName/Content/Remotely-MacOS.zip | grep -i "etag" | cut -d' ' -f 2 > ./etag.txt
 
 
 plistFile="

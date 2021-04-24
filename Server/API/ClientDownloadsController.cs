@@ -50,6 +50,11 @@ namespace Remotely.Server.API
                         var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Remotely_Desktop");
                         return await GetDesktopFile(filePath);
                     }
+                case "MacOS":
+                    {
+                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "MacOS", "Remotely_Desktop");
+                        return await GetDesktopFile(filePath);
+                    }
                 default:
                     return NotFound();
             }
@@ -75,6 +80,11 @@ namespace Remotely.Server.API
                     {
                         var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Remotely_Desktop");
                         return await GetDesktopFile(filePath, organizationId);
+                    }
+                case "MacOS":
+                    {
+                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Remotely_Desktop");
+                        return await GetDesktopFile(filePath);
                     }
                 default:
                     return NotFound();
@@ -172,7 +182,12 @@ namespace Remotely.Server.API
 
                                 return await GetBashInstaller(fileName, organizationId);
                             }
+                        case "MacOS":
+                            {
+                                var fileName = "Install-MacOS.sh";
 
+                                return await GetBashInstaller(fileName, organizationId);
+                            }
                         default:
                             return BadRequest();
                     }

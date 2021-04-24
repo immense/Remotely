@@ -78,7 +78,7 @@ namespace Remotely.Desktop.Linux
                         serviceCollection.AddScoped<IConfigService, ConfigServiceLinux>();
                     }
                     break;
-                case Shared.Enums.Platform.OSX:
+                case Shared.Enums.Platform.MacOS:
                     {
 
                     }

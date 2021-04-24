@@ -4,7 +4,7 @@
     {
         Windows,
         Linux,
-        OSX,
+        MacOS,
         Unknown
     }
 }
