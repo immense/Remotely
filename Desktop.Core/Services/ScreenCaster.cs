@@ -189,10 +189,10 @@ namespace Remotely.Desktop.Core.Services
                             }
 
                             using var clone = currentFrame.Clone(diffArea, currentFrame.PixelFormat);
-                            var resizeW = diffArea.Width * currentQuality / 100;
-                            var resizeH = diffArea.Height * currentQuality / 100;
-                            using var resized = new Bitmap(clone, new Size(resizeW, resizeH));
-                            encodedImageBytes = ImageUtils.EncodeJpeg(resized, currentQuality);
+                            //var resizeW = diffArea.Width * currentQuality / _maxQuality;
+                            //var resizeH = diffArea.Height * currentQuality / _maxQuality;
+                            //using var resized = new Bitmap(clone, new Size(resizeW, resizeH));
+                            encodedImageBytes = ImageUtils.EncodeJpeg(clone, currentQuality);
                         }
 
                         viewer.Capturer.CaptureFullscreen = false;
