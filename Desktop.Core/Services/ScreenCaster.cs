@@ -167,20 +167,18 @@ namespace Remotely.Desktop.Core.Services
                             refreshNeeded = false;
                         }
 
-                        using var clone = currentFrame.Clone(diffArea, currentFrame.PixelFormat);
-
                         byte[] encodedImageBytes;
                         if (viewer.Capturer.CaptureFullscreen)
                         {
                             // Recalculate Bps.
                             viewer.AverageBytesPerSecond = 0;
-                            encodedImageBytes = ImageUtils.EncodeJpeg(clone, _maxQuality);
+                            encodedImageBytes = ImageUtils.EncodeJpeg(currentFrame, _maxQuality);
                         }
                         else
                         {
                             if (viewer.AverageBytesPerSecond > 0)
                             {
-                                var expectedSize = clone.Height * clone.Width * 4 * .1;
+                                var expectedSize = diffArea.Height * diffArea.Width * 4 * .1;
                                 var timeToSend = expectedSize / viewer.AverageBytesPerSecond;
                                 currentQuality = Math.Max(_minQuality, Math.Min(_maxQuality, (int)(.1 / timeToSend * _maxQuality)));
                                 if (currentQuality < _maxQuality - 10)
@@ -189,7 +187,12 @@ namespace Remotely.Desktop.Core.Services
                                     Debug.WriteLine($"Quality Reduced: {currentQuality}");
                                 }
                             }
-                            encodedImageBytes = ImageUtils.EncodeJpeg(clone, currentQuality);
+
+                            using var clone = currentFrame.Clone(diffArea, currentFrame.PixelFormat);
+                            var resizeW = diffArea.Width * currentQuality / 100;
+                            var resizeH = diffArea.Height * currentQuality / 100;
+                            using var resized = new Bitmap(clone, new Size(resizeW, resizeH));
+                            encodedImageBytes = ImageUtils.EncodeJpeg(resized, currentQuality);
                         }
 
                         viewer.Capturer.CaptureFullscreen = false;
