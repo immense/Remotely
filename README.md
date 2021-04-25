@@ -36,6 +36,8 @@ GitHub Actions allows you to build and deploy Remotely for free from their cloud
 
 I've created a cross-platform command line tool that can leverage the GitHub Actions REST API to build the project and install it on your private server.  This process will also embed your server's URL into the desktop clients, so that they won't need to prompt the end user to enter it.
 
+However, you can also choose to install the pre-built packages that do not have any server URLs embedded.  These don't require you to fork the repository on GitHub.
+
 ## Installation Instructions:
 - Before attempting installation, verify that your domain name is resolving to your server's IP address.
   - For example, I can use the command `ping app.remotely.one` and see the IP address to which it resolves.
@@ -45,6 +47,15 @@ I've created a cross-platform command line tool that can leverage the GitHub Act
   - The pre-built package will not have your server's URL embedded in the clients.  End users will need to enter it manually.
 - If you use the pre-built package, you're done!  Otherwise, follow the below steps for using the GitHub Actions integration.
 - Fork the repo if you haven't already.
+  - If you've already forked the repo and haven't updated your fork since the new installer was created, you'll need to do so first.
+  - You can use the following commands to pull the latest changes, merge them, and push them back up to your repo ([git](https://git-scm.com/downloads) required).  Make sure to replace `{your-username}` with your GitHub username.
+	```
+	git clone https://github.com/{your-username}/remotely
+	cd ./remotely
+	git remote add upstream https://github.com/lucent-sea/remotely
+	git pull upstream master
+	git push origin master
+	```
 - Go to the Actions tab in your forked repo and make sure you can see the Build workflows.
   - Before you can use Actions for the first time, there will be prompt that you must accept on this page.
 - Create a Personal Access Token that the installer will use to authorize with GitHub.
