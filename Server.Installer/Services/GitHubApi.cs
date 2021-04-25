@@ -1,4 +1,5 @@
-﻿using Remotely.Shared.Utilities;
+﻿using Remotely.Server.Installer.Models;
+using Remotely.Shared.Utilities;
 using Server.Installer.Models;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ namespace Server.Installer.Services
         Task<Artifact> GetLatestBuildArtifact(CliParams cliParams);
 
         Task<bool> TriggerDispatch(CliParams cliParams);
+        Task<string> GetLatestReleaseTag();
     }
     public class GitHubApi : IGitHubApi
     {
@@ -102,6 +104,22 @@ namespace Server.Installer.Services
             }
 
             return null;
+        }
+
+        public async Task<string> GetLatestReleaseTag()
+        {
+            try
+            {
+                var response = await _httpClient.GetFromJsonAsync<GitHubReleasesResponsePayload>("https://api.github.com/repos/lucent-sea/Remotely/releases/latest");
+                return response.tag_name;
+            }
+            catch (Exception ex)
+            {
+                ConsoleHelper.WriteError("Error while trying to retrieve release info." +
+                  $"Error: {ex.Message}");
+                Environment.Exit(1);
+            }
+            return string.Empty;
         }
 
         public async Task<bool> TriggerDispatch(CliParams cliParams)

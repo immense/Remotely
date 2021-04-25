@@ -71,8 +71,8 @@ namespace Remotely.Server.API
                     await _emailSender.SendEmailAsync(savedScript.SendErrorEmailTo,
                         "Script Run Alert",
                         $"An alert was triggered while running script {savedScript.Name} on device {device.DeviceName}. <br /><br />" +
-                            $"Error Output: <br /><br /> " +
-                            $"{string.Join("<br /><br />", result.ErrorOutput)}");
+                            $"Error Output: <br /> <br /> " +
+                            $"{string.Join("<br /> <br />", result.ErrorOutput)}");
                 }
             }
 
