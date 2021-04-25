@@ -79,7 +79,7 @@ namespace Remotely.Server.Services
         bool DoesUserHaveAccessToDevice(string deviceID, RemotelyUser remotelyUser);
 
         bool DoesUserHaveAccessToDevice(string deviceID, string remotelyUserID);
-
+        Task<DeviceGroup> GetDeviceGroup(string deviceGroupID);
         string[] FilterDeviceIDsByUserPermission(string[] deviceIDs, RemotelyUser remotelyUser);
         Task AddScriptResultToScriptRun(string scriptResultId, int scriptRunId);
         string[] FilterUsersByDevicePermission(IEnumerable<string> userIDs, string deviceID);
@@ -1221,6 +1221,12 @@ namespace Remotely.Server.Services
                         !x.DeviceGroup.Users.Any() ||
                         x.DeviceGroup.Users.Any(deviceUser => deviceUser.Id == user.Id)
                     ));
+        }
+
+        public async Task<DeviceGroup> GetDeviceGroup(string deviceGroupID)
+        {
+            using var dbContext = _dbFactory.CreateDbContext();
+            return await dbContext.DeviceGroups.FindAsync(deviceGroupID);
         }
 
         public DeviceGroup[] GetDeviceGroups(string username)
