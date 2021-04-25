@@ -1,0 +1,73 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Remotely.Desktop.XPlat.ViewModels;assembly=Remotely_Desktop"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Remotely.Desktop.XPlat.Views.PromptForAccessWindow"
+        HasSystemDecorations="False"
+        BorderBrush="DimGray"
+        BorderThickness="1"
+        Title="Remote Control Request" 
+        MinHeight="200"
+        MinWidth="250"
+        Height="275" 
+        Width="450"
+        Icon="{Binding WindowIcon}">
+  
+  <Window.DataContext>
+    <vm:PromptForAccessWindowViewModel />
+  </Window.DataContext>
+
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <Border Name="TitleBanner" Height="50" Background="{Binding TitleBackgroundColor}">
+      <Grid Margin="10,4,0,0">
+
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        
+        <Image Grid.Column="0" Height="50" Width="50" Source="{Binding Icon}" Margin="0,0,10,0"></Image>
+        <TextBlock Grid.Column="1" Text="Remote Control Request" Foreground="{Binding TitleForegroundColor}"  FontWeight="Bold" FontSize="20" VerticalAlignment="Center" />
+        <Button Grid.Column="2" Classes="TitlebarButton" Foreground="{Binding TitleButtonForegroundColor}"  Background="{Binding TitleBackgroundColor}" Command="{Binding MinimizeCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Content="__"/>
+        <Button Grid.Column="3" Classes="TitlebarButton" Foreground="{Binding TitleButtonForegroundColor}"  Background="{Binding TitleBackgroundColor}" Command="{Binding CloseCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Content="X" />
+      </Grid>
+    </Border>
+
+    <StackPanel Grid.Row="1">
+      <TextBlock Classes="SectionHeader"  FontWeight="Bold" FontSize="18" Foreground="DimGray" Margin="10" TextWrapping="Wrap">
+        A remote control session has been requested.
+      </TextBlock>
+
+      <TextBlock Classes="SectionHeader"
+                 FontWeight="Bold"
+                 FontSize="18"
+                 Foreground="DimGray"
+                 Margin="10"
+                 TextWrapping="Wrap"
+                 Text="{Binding RequestMessage}"></TextBlock>
+
+    </StackPanel>
+
+    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+      <Button Width="60" Height="40" Content="Yes" Margin="10"
+              Classes="NormalButton"
+              Command="{Binding SetResultYes}"
+              CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"></Button>
+      <Button Width="60" Height="40" Content="No" Margin="10"
+              Classes="NormalButton"
+              Command="{Binding SetResultNo}"
+              CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"></Button>
+    </StackPanel>
+
+  </Grid>
+</Window>

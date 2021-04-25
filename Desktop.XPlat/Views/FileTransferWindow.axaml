@@ -1,0 +1,71 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Remotely.Desktop.XPlat.ViewModels;assembly=Remotely_Desktop"
+        xmlns:local="clr-namespace:Remotely.Desktop.XPlat.Views;assembly=Remotely_Desktop"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Remotely.Desktop.XPlat.Views.FileTransferWindow"
+        Title="File Transfer"
+        Height="300" Width="400" 
+        Topmost="True"
+        Icon="{Binding WindowIcon}">
+
+  <Window.DataContext>
+    <vm:FileTransferWindowViewModel />
+  </Window.DataContext>
+
+  <Grid Margin="10">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <StackPanel Grid.Row="0" Orientation="Horizontal">
+      <TextBlock FontWeight="Bold" FontSize="16" Text="Upload files to "></TextBlock>
+      <TextBlock FontWeight="Bold" FontSize="16" Text="{Binding ViewerName}"></TextBlock>
+    </StackPanel>
+
+    <TextBlock Grid.Row="1" Margin="0,10,0,0">
+      Current Uploads:
+    </TextBlock>
+
+    <Border Grid.Row="2" Margin="0,5,0,0" BorderBrush="LightGray" BorderThickness="1">
+      <ScrollViewer >
+        <ItemsControl Items="{Binding FileUploads}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <StackPanel HorizontalAlignment="Stretch" Margin="0,0,5,0">
+                <TextBlock Text="{Binding DisplayName, StringFormat={}{0}:}" Margin="0,0,0,2"></TextBlock>
+                <Grid Margin="0,0,0,10">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                  </Grid.ColumnDefinitions>
+                  <ProgressBar Value="{Binding PercentProgress}" Maximum="1" LargeChange="0.01" Height="18"></ProgressBar>
+                  <Button Grid.Column="1"
+                          VerticalAlignment="Top"
+                          Command="{Binding DataContext.RemoveFileUpload, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:FileTransferWindow}}}"
+                          CommandParameter="{Binding}"
+                          Content="x"
+                          Classes="NormalButton"
+                          BorderThickness="0" />
+                </Grid>
+              </StackPanel>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+    </Border>
+
+    <Button Grid.Row="3" Margin="0,10,0,0" Height="60" 
+            Classes="NormalButton"
+            Command="{Binding OpenFileUploadDialog}"
+            CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:FileTransferWindow}}}">
+      Click here to upload files.
+    </Button>
+  </Grid>
+    
+</Window>

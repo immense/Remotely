@@ -1,0 +1,40 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:vm="clr-namespace:Remotely.Desktop.XPlat.ViewModels;assembly=Remotely_Desktop"
+        x:Class="Remotely.Desktop.XPlat.Controls.MessageBox"
+        Icon="{Binding WindowIcon}"
+        Title="{Binding Caption}" 
+        SizeToContent="WidthAndHeight" MinWidth="300" MinHeight="100" 
+        WindowStartupLocation="CenterScreen">
+  <Window.DataContext>
+    <vm:MessageBoxViewModel></vm:MessageBoxViewModel>
+  </Window.DataContext>
+  <StackPanel Margin="10, 20">
+    <TextBlock Text="{Binding Message}"></TextBlock>
+
+    <Grid Margin="0,20,0,0">
+      <Button Classes="NormalButton" HorizontalAlignment="Right" IsVisible="{Binding IsOkButtonVisible}"
+              Command="{Binding OKCommand}"
+              CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"
+              Content="OK">
+      </Button>
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        <Button Classes="NormalButton" HorizontalAlignment="Right" IsVisible="{Binding AreYesNoButtonsVisible}" Margin="5,0,5,0"
+                Command="{Binding YesCommand}"
+                CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"
+                Content="Yes">
+        </Button>
+        <Button Classes="NormalButton" HorizontalAlignment="Right" IsVisible="{Binding AreYesNoButtonsVisible}" Margin="5,0,5,0"
+                Command="{Binding NoCommand}"
+                CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"
+                Content="No">
+        </Button>
+      </StackPanel>
+      
+    </Grid>
+
+  </StackPanel>
+</Window>
