@@ -9,16 +9,81 @@ namespace Remotely.Shared.Utilities
 {
     public static class ConsoleHelper
     {
-        public static string ReadLine(string prompt, ConsoleColor promptColor = ConsoleColor.Cyan)
+        public static string GetSelection(string promptMessage, params string[] options)
         {
-            Console.ForegroundColor = promptColor;
-            Console.Write($"{prompt.TrimEnd(':')}: ");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"{promptMessage.Trim()}");
             Console.ForegroundColor = ConsoleColor.Gray;
 
+            Console.WriteLine();
+
+            for (var i = 0; i < options.Length; i++)
+            {
+                Console.WriteLine($"    [{i}] - {options[i]}");
+            }
+
+            Console.WriteLine();
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write("Enter Response: ");
+            Console.ForegroundColor = ConsoleColor.Gray;
+
+            return Console.ReadLine().Trim();
+        }
+
+        public static string ReadLine(string prompt, ConsoleColor promptColor = ConsoleColor.Cyan, string subprompt = "")
+        {
+            Console.ForegroundColor = promptColor;
+            Console.WriteLine($"{prompt.Trim()}");
+            Console.ForegroundColor = ConsoleColor.Gray;
+
+            if (!string.IsNullOrWhiteSpace(subprompt))
+            {
+                Console.WriteLine(subprompt);
+            }
+
+            Console.WriteLine();
+
+            Console.ForegroundColor = promptColor;
+            Console.Write("Enter Response: ");
+            Console.ForegroundColor = ConsoleColor.Gray;
             var response = Console.ReadLine();
             Console.WriteLine();
 
             return response;
+        }
+
+        public static bool TryParseBoolLike(string value, out bool result)
+        {
+            result = false;
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return false;
+            }
+
+            if (bool.TryParse(value.Trim(), out result))
+            {
+                return true;
+            }
+
+            if (value.Contains("yes", StringComparison.OrdinalIgnoreCase))
+            {
+                result = true;
+                return true;
+            }
+
+            if (value.Contains("no", StringComparison.OrdinalIgnoreCase))
+            {
+                result = false;
+                return true;
+            }
+
+            return false;
+        }
+        public static void WriteError(string message, int extraEmptyLines = 0, [CallerMemberName] string callerName = "")
+        {
+            WriteLine(message, extraEmptyLines, ConsoleColor.Red, callerName);
         }
 
         public static void WriteLine(string message, int extraEmptyLines = 0, ConsoleColor foreground = ConsoleColor.Gray, string callerName = "")
@@ -51,11 +116,6 @@ namespace Remotely.Shared.Utilities
             {
                 Console.WriteLine();
             }
-        }
-
-        public static void WriteError(string message, int extraEmptyLines = 0, [CallerMemberName] string callerName = "")
-        {
-            WriteLine(message, extraEmptyLines, ConsoleColor.Red, callerName);
         }
     }
 }
