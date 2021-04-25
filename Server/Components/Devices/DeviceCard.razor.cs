@@ -258,6 +258,8 @@ namespace Remotely.Server.Components.Devices
             if (result)
             {
                 await CircuitConnection.UninstallAgents(new[] { Device.ID });
+                AppState.DevicesFrameFocusedDevice = null;
+                AppState.DevicesFrameFocusedCardState = DeviceCardState.Normal;
                 ParentFrame.Refresh();
             }
         }
