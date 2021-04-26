@@ -4,7 +4,7 @@ namespace Remotely.Shared.Utilities
 {
     public static class Disposer
     {
-        public static void TryDisposeAll(IDisposable[] disposables)
+        public static void TryDisposeAll(params IDisposable[] disposables)
         {
             if (disposables is null)
             {
