@@ -42,6 +42,8 @@ namespace Remotely.Server.Components.Devices
         private string _selectedSortProperty = "DeviceName";
         private ListSortDirection _sortDirection;
 
+        public Version HighestVersion { get; private set; }
+
         [Inject]
         private IClientAppState AppState { get; set; }
 
@@ -221,6 +223,8 @@ namespace Remotely.Server.Components.Devices
                 .ToList();
 
             _allDevices.AddRange(devices);
+
+            HighestVersion = _allDevices.Max(x => Version.TryParse(x.AgentVersion, out var result) ? result : default);
 
             FilterDevices();
         }
