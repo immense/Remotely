@@ -30,7 +30,7 @@ namespace Server.Installer.Services
 
         public async Task PerformInstall(CliParams cliParams)
         {
-            var filePath = Path.Combine(Path.GetTempPath(), "Remotely_Server.zip");
+            var zipPath = Path.Combine(Path.GetTempPath(), "Remotely_Server.zip");
 
             if (cliParams.UsePrebuiltPackage == true)
             {
@@ -52,7 +52,7 @@ namespace Server.Installer.Services
                         ConsoleHelper.WriteLine($"Progress: {progress}%");
                     }
                 };
-                await webClient.DownloadFileTaskAsync(releaseFile, filePath);
+                await webClient.DownloadFileTaskAsync(releaseFile, zipPath);
             }
             else
             {
@@ -86,7 +86,7 @@ namespace Server.Installer.Services
                     return;
                 }
 
-                var downloadResult = await _githubApi.DownloadArtifact(cliParams, latestBuild.archive_download_url, filePath);
+                var downloadResult = await _githubApi.DownloadArtifact(cliParams, latestBuild.archive_download_url, zipPath);
 
                 if (!downloadResult)
                 {
@@ -96,17 +96,24 @@ namespace Server.Installer.Services
 
             }
 
+            // Files in use can't be overwritten in Windows.  Stop the
+            // website process first.
+            if (cliParams.WebServer == WebServerType.IisWindows)
+            {
+                var initialW3wpCount = Process.GetProcessesByName("w3wp").Length;
+                Process.Start("powershell.exe", "-Command & \"{ Stop-WebAppPool -Name Remotely -ErrorAction SilentlyContinue }\"").WaitForExit();
+                Process.Start("powershell.exe", "-Command & \"{ Stop-Website -Name Remotely -ErrorAction SilentlyContinue }\"").WaitForExit();
+                ConsoleHelper.WriteLine("Waiting for w3wp processes to close...");
+                TaskHelper.DelayUntil(() => Process.GetProcessesByName("w3wp").Length < initialW3wpCount, TimeSpan.FromMinutes(5), 100);
+            }
 
             ConsoleHelper.WriteLine("Extracting files.");
-            if (Directory.Exists(cliParams.InstallDirectory))
-            {
-                Directory.Delete(cliParams.InstallDirectory, true);
-            }
             Directory.CreateDirectory(cliParams.InstallDirectory);
-            ZipFile.ExtractToDirectory(filePath, cliParams.InstallDirectory);
+            ZipFile.ExtractToDirectory(zipPath, cliParams.InstallDirectory, true);
 
             await LaunchExternalInstaller(cliParams);
         }
+
 
         private async Task LaunchExternalInstaller(CliParams cliParams)
         {
@@ -140,7 +147,7 @@ namespace Server.Installer.Services
                 psi = new ProcessStartInfo("powershell.exe")
                 {
                     Arguments = $"-f \"{filePath}\" -AppPoolName Remotely -SiteName Remotely " +
-                        $"-SitePath \"{cliParams.InstallDirectory}\" -Quiet",
+                        $"-SitePath \"{cliParams.InstallDirectory}\" -HostName {cliParams.ServerUrl.Authority} -Quiet",
                     WorkingDirectory = cliParams.InstallDirectory
                 };
             }
