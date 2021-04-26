@@ -87,11 +87,7 @@ namespace Remotely.Desktop.Core.Services
         public void Dispose()
         {
             DisconnectRequested = true;
-            Disposer.TryDisposeAll(new IDisposable[]
-            {
-                RtcSession,
-                Capturer
-            });
+            Disposer.TryDisposeAll(RtcSession, Capturer);
             GC.SuppressFinalize(this);
         }
 

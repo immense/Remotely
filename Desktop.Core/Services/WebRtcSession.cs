@@ -61,12 +61,7 @@ namespace Remotely.Desktop.Core.Services
             }
             catch { }
             PeerSession.Transceivers.RemoveAll(x => true);
-            Disposer.TryDisposeAll(new IDisposable[]
-            {
-                Transceiver?.LocalVideoTrack,
-                VideoSource,
-                PeerSession
-            });
+            Disposer.TryDisposeAll(Transceiver?.LocalVideoTrack, VideoSource, PeerSession);
             GC.SuppressFinalize(this);
         }
 
