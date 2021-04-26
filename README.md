@@ -41,11 +41,15 @@ However, you can also choose to install the pre-built packages that do not have 
 ## Installation Instructions:
 - Before attempting installation, verify that your domain name is resolving to your server's IP address.
   - For example, I can use the command `ping app.remotely.one` and see the IP address to which it resolves.
-- Find the `Remotely_Server_Installer[.exe]` CLI tool for the latest release on the [Releases page](https://github.com/lucent-sea/Remotely/releases).
-  - You will download and run it on the server where you'll be hosting Remotely.
+- Find and download the `Remotely_Server_Installer[.exe]` CLI tool for the latest release on the [Releases page](https://github.com/lucent-sea/Remotely/releases).
+  - You will run it on the server where you'll be hosting Remotely.
+  - You need to run it with elevation (e.g. sudo or "Run as admin").
+  - Use `--help` argument to see all the command line arguments.
+    - If values are provided for all arguments, it will run non-interactive.
   - You can choose between installing the pre-built release package, or entering GitHub credentials to build and install a customized server.
   - The pre-built package will not have your server's URL embedded in the clients.  End users will need to enter it manually.
-- If you use the pre-built package, you're done!  Otherwise, follow the below steps for using the GitHub Actions integration.
+- If you want to use the pre-built package, run the installer now, and you're done!
+  - Otherwise, follow the below steps for setting up the GitHub Actions integration, then run the installer afterward.
 - Fork the repo if you haven't already.
   - If you've already forked the repo and haven't updated your fork since the new installer was created, you'll need to do so first.
   - You can use the following commands to pull the latest changes, merge them, and push them back up to your repo ([git](https://git-scm.com/downloads) required).  Make sure to replace `{your-username}` with your GitHub username.
@@ -64,11 +68,7 @@ However, you can also choose to install the pre-built packages that do not have 
   - Save the PAT when it's displayed.  It will only be shown once.
 - By default, the server will be built from the author's repo.
   - If you want to build from your fork, comment out the `repository` line in `Build.yml` (in your repo).  There's a comment in the file that points out the line.
-- On your server, download the latest server installer executable (Linux or Windows) from [my releases page](https://github.com/lucent-sea/Remotely/releases).
-- Run the app with elevation (e.g. sudo or "Run as admin").
-- Follow the prompts to build and install the server.
-- Use `--help` argument to see all the command line arguments.
-  - If values are provided for all arguments, it will run non-interactive.
+- Now run the installer, as described above.
 
 ## After Installation
 - In the site's content directory, make a copy of the `appsettings.json` file and name it `appsettings.Production.json`.
