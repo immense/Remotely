@@ -45,7 +45,6 @@ export class RtcSession {
                 UI.ConnectionRelayedIcon.style.display = "none";
                 UI.StreamVideoButton.removeAttribute("hidden");
                 if (ViewerApp.Settings.streamModeEnabled) {
-                    UI.UpdateStreamingToggled(true);
                     ViewerApp.MessageSender.SendToggleWebRtcVideo(true);
                 }
             };
@@ -61,6 +60,7 @@ export class RtcSession {
             await ViewerApp.ViewerHubConnection.SendIceCandidate(ev.candidate);
         };
         UI.VideoScreenViewer.onloadedmetadata = (ev) => {
+            UI.UpdateStreamingToggled(true);
             UI.VideoScreenViewer.play();
         };
         this.PeerConnection.ontrack = (event) => {
