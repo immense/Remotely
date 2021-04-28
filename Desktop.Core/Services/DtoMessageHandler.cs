@@ -175,12 +175,24 @@ namespace Remotely.Desktop.Core.Services
         private void KeyDown(byte[] message)
         {
             var dto = MessagePackSerializer.Deserialize<KeyDownDto>(message);
+            if (string.IsNullOrWhiteSpace(dto?.Key))
+            {
+                Logger.Write("Key input is empty.", EventType.Warning);
+                return;
+            }
             KeyboardMouseInput.SendKeyDown(dto.Key);
         }
 
         private async Task KeyPress(byte[] message)
         {
             var dto = MessagePackSerializer.Deserialize<KeyPressDto>(message);
+
+            if (string.IsNullOrWhiteSpace(dto?.Key))
+            {
+                Logger.Write("Key input is empty.", EventType.Warning);
+                return;
+            }
+
             KeyboardMouseInput.SendKeyDown(dto.Key);
             await Task.Delay(1);
             KeyboardMouseInput.SendKeyUp(dto.Key);
@@ -189,6 +201,11 @@ namespace Remotely.Desktop.Core.Services
         private void KeyUp(byte[] message)
         {
             var dto = MessagePackSerializer.Deserialize<KeyUpDto>(message);
+            if (string.IsNullOrWhiteSpace(dto?.Key))
+            {
+                Logger.Write("Key input is empty.", EventType.Warning);
+                return;
+            }
             KeyboardMouseInput.SendKeyUp(dto.Key);
         }
 
