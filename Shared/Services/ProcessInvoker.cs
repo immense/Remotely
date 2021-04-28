@@ -8,7 +8,8 @@ namespace Remotely.Shared.Services
     {
         string InvokeProcessOutput(string command, string arguments);
     }
-    public class ProcessLauncher : IProcessInvoker
+
+    public class ProcessInvoker : IProcessInvoker
     {
         public string InvokeProcessOutput(string command, string arguments)
         {

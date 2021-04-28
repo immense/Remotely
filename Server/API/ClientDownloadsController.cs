@@ -182,7 +182,7 @@ namespace Remotely.Server.API
 
                                 return await GetBashInstaller(fileName, organizationId);
                             }
-                        case "MacOS-x64":
+                        case "MacOSInstaller-x64":
                             {
                                 var fileName = "Install-MacOS-x64.sh";
 
