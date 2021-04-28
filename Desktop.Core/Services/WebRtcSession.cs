@@ -106,6 +106,7 @@ namespace Remotely.Desktop.Core.Services
         public Task SendDto<T>(T dto) where T : BaseDto
         {
             CaptureChannel.SendMessage(MessagePackSerializer.Serialize(dto));
+            TaskHelper.DelayUntil(() => CurrentBuffer < 128_000, TimeSpan.FromSeconds(5));
             return Task.CompletedTask;
         }
 
