@@ -48,19 +48,31 @@ namespace Remotely.Desktop.Win.Services
         {
             TryOnInputDesktop(() =>
             {
-                var keyCode = ConvertJavaScriptKeyToVirtualKey(key);
-                var union = new InputUnion()
+                try
                 {
-                    ki = new KEYBDINPUT()
+                    if (!ConvertJavaScriptKeyToVirtualKey(key, out var keyCode) || keyCode is null)
                     {
-                        wVk = keyCode,
-                        wScan = (ScanCodeShort)MapVirtualKeyEx((uint)keyCode, VkMapType.MAPVK_VK_TO_VSC, GetKeyboardLayout()),
-                        time = 0,
-                        dwExtraInfo = GetMessageExtraInfo()
+                        return;
                     }
-                };
-                var input = new INPUT() { type = InputType.KEYBOARD, U = union };
-                SendInput(1, new INPUT[] { input }, INPUT.Size);
+
+                    var union = new InputUnion()
+                    {
+                        ki = new KEYBDINPUT()
+                        {
+                            wVk = keyCode.Value,
+                            wScan = (ScanCodeShort)MapVirtualKeyEx((uint)keyCode.Value, VkMapType.MAPVK_VK_TO_VSC, GetKeyboardLayout()),
+                            time = 0,
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    };
+                    var input = new INPUT() { type = InputType.KEYBOARD, U = union };
+                    SendInput(1, new INPUT[] { input }, INPUT.Size);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
+
             });
         }
 
@@ -68,20 +80,32 @@ namespace Remotely.Desktop.Win.Services
         {
             TryOnInputDesktop(() =>
             {
-                var keyCode = ConvertJavaScriptKeyToVirtualKey(key);
-                var union = new InputUnion()
+                try
                 {
-                    ki = new KEYBDINPUT()
+                    if (!ConvertJavaScriptKeyToVirtualKey(key, out var keyCode) || keyCode is null)
                     {
-                        wVk = keyCode,
-                        wScan = (ScanCodeShort)MapVirtualKeyEx((uint)keyCode, VkMapType.MAPVK_VK_TO_VSC, GetKeyboardLayout()),
-                        time = 0,
-                        dwFlags = KEYEVENTF.KEYUP,
-                        dwExtraInfo = GetMessageExtraInfo()
+                        return;
                     }
-                };
-                var input = new INPUT() { type = InputType.KEYBOARD, U = union };
-                SendInput(1, new INPUT[] { input }, INPUT.Size);
+
+                    var union = new InputUnion()
+                    {
+                        ki = new KEYBDINPUT()
+                        {
+                            wVk = keyCode.Value,
+                            wScan = (ScanCodeShort)MapVirtualKeyEx((uint)keyCode.Value, VkMapType.MAPVK_VK_TO_VSC, GetKeyboardLayout()),
+                            time = 0,
+                            dwFlags = KEYEVENTF.KEYUP,
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    };
+                    var input = new INPUT() { type = InputType.KEYBOARD, U = union };
+                    SendInput(1, new INPUT[] { input }, INPUT.Size);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
+
             });
         }
 
@@ -89,58 +113,65 @@ namespace Remotely.Desktop.Win.Services
         {
             TryOnInputDesktop(() =>
             {
-                MOUSEEVENTF mouseEvent;
-                switch (button)
+                try
                 {
-                    case 0:
-                        switch (buttonAction)
-                        {
-                            case ButtonAction.Down:
-                                mouseEvent = MOUSEEVENTF.LEFTDOWN;
-                                break;
-                            case ButtonAction.Up:
-                                mouseEvent = MOUSEEVENTF.LEFTUP;
-                                break;
-                            default:
-                                return;
-                        }
-                        break;
-                    case 1:
-                        switch (buttonAction)
-                        {
-                            case ButtonAction.Down:
-                                mouseEvent = MOUSEEVENTF.MIDDLEDOWN;
-                                break;
-                            case ButtonAction.Up:
-                                mouseEvent = MOUSEEVENTF.MIDDLEUP;
-                                break;
-                            default:
-                                return;
-                        }
-                        break;
-                    case 2:
-                        switch (buttonAction)
-                        {
-                            case ButtonAction.Down:
-                                mouseEvent = MOUSEEVENTF.RIGHTDOWN;
-                                break;
-                            case ButtonAction.Up:
-                                mouseEvent = MOUSEEVENTF.RIGHTUP;
-                                break;
-                            default:
-                                return;
-                        }
-                        break;
-                    default:
-                        return;
+                    MOUSEEVENTF mouseEvent;
+                    switch (button)
+                    {
+                        case 0:
+                            switch (buttonAction)
+                            {
+                                case ButtonAction.Down:
+                                    mouseEvent = MOUSEEVENTF.LEFTDOWN;
+                                    break;
+                                case ButtonAction.Up:
+                                    mouseEvent = MOUSEEVENTF.LEFTUP;
+                                    break;
+                                default:
+                                    return;
+                            }
+                            break;
+                        case 1:
+                            switch (buttonAction)
+                            {
+                                case ButtonAction.Down:
+                                    mouseEvent = MOUSEEVENTF.MIDDLEDOWN;
+                                    break;
+                                case ButtonAction.Up:
+                                    mouseEvent = MOUSEEVENTF.MIDDLEUP;
+                                    break;
+                                default:
+                                    return;
+                            }
+                            break;
+                        case 2:
+                            switch (buttonAction)
+                            {
+                                case ButtonAction.Down:
+                                    mouseEvent = MOUSEEVENTF.RIGHTDOWN;
+                                    break;
+                                case ButtonAction.Up:
+                                    mouseEvent = MOUSEEVENTF.RIGHTUP;
+                                    break;
+                                default:
+                                    return;
+                            }
+                            break;
+                        default:
+                            return;
+                    }
+                    var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
+                    // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
+                    var normalizedX = xyPercent.Item1 * 65535D;
+                    var normalizedY = xyPercent.Item2 * 65535D;
+                    var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | mouseEvent | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
+                    var input = new INPUT() { type = InputType.MOUSE, U = union };
+                    SendInput(1, new INPUT[] { input }, INPUT.Size);
                 }
-                var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
-                // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
-                var normalizedX = xyPercent.Item1 * 65535D;
-                var normalizedY = xyPercent.Item2 * 65535D;
-                var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | mouseEvent | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
-                var input = new INPUT() { type = InputType.MOUSE, U = union };
-                SendInput(1, new INPUT[] { input }, INPUT.Size);
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
             });
         }
 
@@ -148,13 +179,20 @@ namespace Remotely.Desktop.Win.Services
         {
             TryOnInputDesktop(() =>
             {
-                var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
-                // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
-                var normalizedX = xyPercent.Item1 * 65535D;
-                var normalizedY = xyPercent.Item2 * 65535D;
-                var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.MOVE | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
-                var input = new INPUT() { type = InputType.MOUSE, U = union };
-                SendInput(1, new INPUT[] { input }, INPUT.Size);
+                try
+                {
+                    var xyPercent = GetAbsolutePercentFromRelativePercent(percentX, percentY, viewer.Capturer);
+                    // Coordinates must be normalized.  The bottom-right coordinate is mapped to 65535.
+                    var normalizedX = xyPercent.Item1 * 65535D;
+                    var normalizedY = xyPercent.Item2 * 65535D;
+                    var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.ABSOLUTE | MOUSEEVENTF.MOVE | MOUSEEVENTF.VIRTUALDESK, dx = (int)normalizedX, dy = (int)normalizedY, time = 0, mouseData = 0, dwExtraInfo = GetMessageExtraInfo() } };
+                    var input = new INPUT() { type = InputType.MOUSE, U = union };
+                    SendInput(1, new INPUT[] { input }, INPUT.Size);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
             });
         }
 
@@ -162,17 +200,24 @@ namespace Remotely.Desktop.Win.Services
         {
             TryOnInputDesktop(() =>
             {
-                if (deltaY < 0)
+                try
                 {
-                    deltaY = -120;
+                    if (deltaY < 0)
+                    {
+                        deltaY = -120;
+                    }
+                    else if (deltaY > 0)
+                    {
+                        deltaY = 120;
+                    }
+                    var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.WHEEL, dx = 0, dy = 0, time = 0, mouseData = deltaY, dwExtraInfo = GetMessageExtraInfo() } };
+                    var input = new INPUT() { type = InputType.MOUSE, U = union };
+                    SendInput(1, new INPUT[] { input }, INPUT.Size);
                 }
-                else if (deltaY > 0)
+                catch (Exception ex)
                 {
-                    deltaY = 120;
+                    Logger.Write(ex);
                 }
-                var union = new InputUnion() { mi = new MOUSEINPUT() { dwFlags = MOUSEEVENTF.WHEEL, dx = 0, dy = 0, time = 0, mouseData = deltaY, dwExtraInfo = GetMessageExtraInfo() } };
-                var input = new INPUT() { type = InputType.MOUSE, U = union };
-                SendInput(1, new INPUT[] { input }, INPUT.Size);
             });
         }
 
@@ -180,7 +225,14 @@ namespace Remotely.Desktop.Win.Services
         {
             TryOnInputDesktop(() =>
             {
-                SendKeys.SendWait(transferText);
+                try
+                {
+                    SendKeys.SendWait(transferText);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write(ex);
+                }
             });
         }
 
@@ -254,9 +306,9 @@ namespace Remotely.Desktop.Win.Services
             Logger.Write($"Stopping input processing on thread {Thread.CurrentThread.ManagedThreadId}.");
         }
 
-        private VirtualKey ConvertJavaScriptKeyToVirtualKey(string key)
+        private bool ConvertJavaScriptKeyToVirtualKey(string key, out VirtualKey? result)
         {
-            var keyCode = key switch
+            result = key switch
             {
                 "Down" or "ArrowDown" => VirtualKey.DOWN,
                 "Up" or "ArrowUp" => VirtualKey.UP,
@@ -294,9 +346,17 @@ namespace Remotely.Desktop.Win.Services
                 "F12" => VirtualKey.F12,
                 "Meta" => VirtualKey.LWIN,
                 "ContextMenu" => VirtualKey.MENU,
-                _ => (VirtualKey)VkKeyScan(Convert.ToChar(key)),
+                _ => key.Length == 1 ? 
+                        (VirtualKey)VkKeyScan(Convert.ToChar(key)) :
+                        null
             };
-            return keyCode;
+
+            if (result is null)
+            {
+                Logger.Write($"Unable to parse key input: {key}.");
+                return false;
+            }
+            return true;
         }
         private void StartInputProcessingThread()
         {
