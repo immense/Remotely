@@ -175,7 +175,7 @@ namespace Remotely.Desktop.Core.Services
         private void KeyDown(byte[] message)
         {
             var dto = MessagePackSerializer.Deserialize<KeyDownDto>(message);
-            if (string.IsNullOrWhiteSpace(dto?.Key))
+            if (dto?.Key is null)
             {
                 Logger.Write("Key input is empty.", EventType.Warning);
                 return;
@@ -187,7 +187,7 @@ namespace Remotely.Desktop.Core.Services
         {
             var dto = MessagePackSerializer.Deserialize<KeyPressDto>(message);
 
-            if (string.IsNullOrWhiteSpace(dto?.Key))
+            if (dto?.Key is null)
             {
                 Logger.Write("Key input is empty.", EventType.Warning);
                 return;
@@ -201,7 +201,7 @@ namespace Remotely.Desktop.Core.Services
         private void KeyUp(byte[] message)
         {
             var dto = MessagePackSerializer.Deserialize<KeyUpDto>(message);
-            if (string.IsNullOrWhiteSpace(dto?.Key))
+            if (dto?.Key is null)
             {
                 Logger.Write("Key input is empty.", EventType.Warning);
                 return;
