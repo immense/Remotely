@@ -4,12 +4,10 @@ import { ViewerApp } from "./App.js";
 import { ShowMessage } from "./UI.js";
 import { Sound } from "./Sound.js";
 import { ReceiveFile } from "./FileTransferService.js";
-import { When } from "./Utilities.js";
 export class DtoMessageHandler {
     constructor() {
         this.MessagePack = window['MessagePack'];
         this.ImagePartials = {};
-        this.Rendering = false;
     }
     ParseBinaryMessage(data) {
         var model = this.MessagePack.decode(data);
@@ -49,32 +47,25 @@ export class DtoMessageHandler {
     }
     HandleCaptureFrame(captureFrame) {
         if (captureFrame.EndOfFrame) {
-            When(() => !this.Rendering, 10).then(() => {
-                if (this.Rendering) {
-                    console.warn("Concurrency issue");
-                }
-                this.Rendering = true;
-                var partials = this.ImagePartials[captureFrame.Id];
-                let completedFrame = new Blob(partials);
-                this.ImagePartials[captureFrame.Id] = [];
-                let url = window.URL.createObjectURL(completedFrame);
-                let img = new Image(captureFrame.Width, captureFrame.Height);
-                img.onload = () => {
-                    UI.Screen2DContext.drawImage(img, captureFrame.Left, captureFrame.Top, captureFrame.Width, captureFrame.Height);
-                    window.URL.revokeObjectURL(url);
-                    this.Rendering = false;
-                };
-                img.src = url;
-                //createImageBitmap(completedFrame).then(bitmap => {
-                //    UI.Screen2DContext.drawImage(bitmap,
-                //        captureFrame.Left,
-                //        captureFrame.Top,
-                //        captureFrame.Width,
-                //        captureFrame.Height);
-                //    bitmap.close();
-                //})
-                ViewerApp.MessageSender.SendFrameReceived();
-            });
+            var partials = this.ImagePartials[captureFrame.Id];
+            let completedFrame = new Blob(partials);
+            this.ImagePartials[captureFrame.Id] = [];
+            let url = window.URL.createObjectURL(completedFrame);
+            let img = new Image(captureFrame.Width, captureFrame.Height);
+            img.onload = () => {
+                UI.Screen2DContext.drawImage(img, captureFrame.Left, captureFrame.Top, captureFrame.Width, captureFrame.Height);
+                window.URL.revokeObjectURL(url);
+            };
+            img.src = url;
+            //createImageBitmap(completedFrame).then(bitmap => {
+            //    UI.Screen2DContext.drawImage(bitmap,
+            //        captureFrame.Left,
+            //        captureFrame.Top,
+            //        captureFrame.Width,
+            //        captureFrame.Height);
+            //    bitmap.close();
+            //})
+            ViewerApp.MessageSender.SendFrameReceived();
         }
         else {
             if (!this.ImagePartials[captureFrame.Id]) {

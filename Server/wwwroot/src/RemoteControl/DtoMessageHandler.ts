@@ -16,12 +16,10 @@ import {
     WindowsSessionsDto
 } from "./Interfaces/Dtos.js";
 import { ReceiveFile } from "./FileTransferService.js";
-import { When } from "./Utilities.js";
 
 export class DtoMessageHandler {
     MessagePack: any = window['MessagePack'];
     ImagePartials: Record<string, Array<Uint8Array>> = {};
-    Rendering: boolean = false;
 
     ParseBinaryMessage(data: ArrayBuffer) {
         var model = this.MessagePack.decode(data) as BaseDto;
@@ -64,42 +62,34 @@ export class DtoMessageHandler {
     HandleCaptureFrame(captureFrame: CaptureFrameDto) {
 
         if (captureFrame.EndOfFrame) {
-            When(() => !this.Rendering, 10).then(() => {
-                if (this.Rendering) {
-                    console.warn("Concurrency issue");
-                }
-                this.Rendering = true;
 
-                var partials = this.ImagePartials[captureFrame.Id];
-                let completedFrame = new Blob(partials);
-                this.ImagePartials[captureFrame.Id] = [];
+            var partials = this.ImagePartials[captureFrame.Id];
+            let completedFrame = new Blob(partials);
+            this.ImagePartials[captureFrame.Id] = [];
 
-                let url = window.URL.createObjectURL(completedFrame);
-                let img = new Image(captureFrame.Width, captureFrame.Height);
-                img.onload = () => {
-                    UI.Screen2DContext.drawImage(img,
-                        captureFrame.Left,
-                        captureFrame.Top,
-                        captureFrame.Width,
-                        captureFrame.Height);
-                    window.URL.revokeObjectURL(url);
-                    this.Rendering = false;
-                };
-                img.src = url;
+            let url = window.URL.createObjectURL(completedFrame);
+            let img = new Image(captureFrame.Width, captureFrame.Height);
+            img.onload = () => {
+                UI.Screen2DContext.drawImage(img,
+                    captureFrame.Left,
+                    captureFrame.Top,
+                    captureFrame.Width,
+                    captureFrame.Height);
+                window.URL.revokeObjectURL(url);
+            };
+            img.src = url;
 
-                //createImageBitmap(completedFrame).then(bitmap => {
-                //    UI.Screen2DContext.drawImage(bitmap,
-                //        captureFrame.Left,
-                //        captureFrame.Top,
-                //        captureFrame.Width,
-                //        captureFrame.Height);
+            //createImageBitmap(completedFrame).then(bitmap => {
+            //    UI.Screen2DContext.drawImage(bitmap,
+            //        captureFrame.Left,
+            //        captureFrame.Top,
+            //        captureFrame.Width,
+            //        captureFrame.Height);
 
-                //    bitmap.close();
-                //})
+            //    bitmap.close();
+            //})
 
-                ViewerApp.MessageSender.SendFrameReceived();
-            });
-
+            ViewerApp.MessageSender.SendFrameReceived();
         }
         else {
             if (!this.ImagePartials[captureFrame.Id]) {
