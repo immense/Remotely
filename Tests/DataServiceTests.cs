@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Remotely.Agent.Interfaces;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
+using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,13 +14,11 @@ namespace Remotely.Tests
     [TestClass]
     public class DataServiceTests
     {
-        private TestData _testData;
-
         private IDataService _dataService;
         private IDeviceInformationService _deviceInfo;
+        private TestData _testData;
 
         [TestMethod]
-        [DoNotParallelize]
         public async Task AddAlert()
         {
             await _dataService.AddAlert(_testData.Device1.ID, _testData.OrganizationID, "Test Message");
@@ -30,7 +29,6 @@ namespace Remotely.Tests
         }
 
         [TestMethod]
-        [DoNotParallelize]
         public async Task AddOrUpdateDevice()
         {
             var newDeviceID = "NewDeviceName";
@@ -49,7 +47,6 @@ namespace Remotely.Tests
         }
 
         [TestMethod]
-        [DoNotParallelize]
         public async Task CreateDevice()
         {
             var deviceOptions = new DeviceSetupOptions()
@@ -69,7 +66,6 @@ namespace Remotely.Tests
         }
 
         [TestMethod]
-        [DoNotParallelize]
         public void DeviceGroupPermissions()
         {
             Assert.IsTrue(_dataService.GetDevicesForUser(_testData.Admin1.UserName).Count() == 2);
@@ -100,6 +96,70 @@ namespace Remotely.Tests
             Assert.AreEqual(1, _dataService.FilterDeviceIDsByUserPermission(allDevices, _testData.User2).Length);
         }
 
+        [TestMethod]
+        public async Task GetPendingScriptRuns_GivenMultipleRunsQueued_ReturnsOnlyLatest()
+        {
+            var now = Time.Now;
+
+            var savedScript = new SavedScript()
+            {
+                Content = "Get-ChildItem",
+                Creator = _testData.Admin1,
+                CreatorId = _testData.Admin1.Id,
+                Name = "GCI",
+                Organization = _testData.Admin1.Organization,
+                OrganizationID = _testData.OrganizationID,
+                Shell = Shared.Enums.ScriptingShell.PSCore
+            };
+
+            await _dataService.AddOrUpdateSavedScript(savedScript, _testData.Admin1.Id);
+
+            var scriptRun = new ScriptRun()
+            {
+                Devices = new() { _testData.Device1 },
+                InputType = Shared.Enums.ScriptInputType.ScheduledScript,
+                SavedScriptId = savedScript.Id,
+                Initiator = _testData.Admin1.UserName,
+                RunAt = now,
+                OrganizationID = _testData.OrganizationID,
+                Organization = _testData.Admin1.Organization,
+                RunOnNextConnect = true
+            };
+
+            await _dataService.AddScriptRun(scriptRun);
+
+            scriptRun.Id = 0;
+            scriptRun.RunAt = now.AddMinutes(1);
+
+            await _dataService.AddScriptRun(scriptRun);
+
+            Time.Adjust(TimeSpan.FromMinutes(2));
+
+            var pendingRuns = await _dataService.GetPendingScriptRuns(_testData.Device1.ID);
+
+            Assert.AreEqual(1, pendingRuns.Count);
+            Assert.AreEqual(2, pendingRuns[0].Id);
+
+            var scriptResult = new ScriptResult()
+            {
+                DeviceID = _testData.Device1.ID,
+                InputType = Shared.Enums.ScriptInputType.ScheduledScript,
+                OrganizationID = _testData.OrganizationID,
+                SavedScriptId = savedScript.Id,
+                ScriptRunId = scriptRun.Id,
+                Shell = Shared.Enums.ScriptingShell.PSCore
+            };
+
+            _dataService.AddOrUpdateScriptResult(scriptResult);
+
+            await _dataService.AddScriptResultToScriptRun(scriptResult.ID, scriptRun.Id);
+
+            pendingRuns = await _dataService.GetPendingScriptRuns(_testData.Device1.ID);
+
+            Assert.AreEqual(0, pendingRuns.Count);
+        }
+
+
         [TestCleanup]
         public void TestCleanup()
         {
@@ -115,7 +175,6 @@ namespace Remotely.Tests
         }
 
         [TestMethod]
-        [DoNotParallelize]
         public void UpdateOrganizationName()
         {
             Assert.IsTrue(string.IsNullOrWhiteSpace(_testData.Admin1.Organization.OrganizationName));
@@ -125,7 +184,6 @@ namespace Remotely.Tests
         }
 
         [TestMethod]
-        [DoNotParallelize]
         public async Task UpdateServerAdmins()
         {
             var currentAdmins = _dataService.GetServerAdmins();
@@ -156,7 +214,6 @@ namespace Remotely.Tests
         }
 
         [TestMethod]
-        [DoNotParallelize]
         public void VerifyInitialData()
         {
             Assert.IsNotNull(_dataService.GetUserByNameWithOrg(_testData.Admin1.UserName));
