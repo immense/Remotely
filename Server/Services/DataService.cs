@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace Remotely.Server.Services
 {
-    // TODO: Separate this into domains-specific services.
+    // TODO: Separate this into domain-specific services.
     public interface IDataService
     {
         Task AddAlert(string deviceID, string organizationID, string alertMessage, string details = null);
@@ -1423,8 +1423,7 @@ namespace Remotely.Server.Services
             var pendingRuns = new List<ScriptRun>();
 
             var now = Time.Now;
-            var device = await dbContext.Devices.FindAsync(deviceId);
-
+    
             var scriptRunGroups = dbContext.ScriptRuns
                 .Include(x => x.Devices)
                 .Include(x => x.DevicesCompleted)
@@ -1432,7 +1431,6 @@ namespace Remotely.Server.Services
                     scriptRun.RunOnNextConnect &&
                     dbContext.SavedScripts.Any(savedScript => savedScript.Id == scriptRun.SavedScriptId) &&
                     scriptRun.Devices.Any(device => device.ID == deviceId) &&
-                    !scriptRun.DevicesCompleted.Any(deviceCompleted => deviceCompleted.ID == deviceId) &&
                     scriptRun.RunAt < now)
                 .AsEnumerable()
                 .GroupBy(x => x.SavedScriptId);
@@ -1443,7 +1441,10 @@ namespace Remotely.Server.Services
                     .OrderByDescending(x => x.RunAt)
                     .FirstOrDefault();
 
-                pendingRuns.Add(latestRun);
+                if (!latestRun.DevicesCompleted.Any(x => x.ID == deviceId))
+                {
+                    pendingRuns.Add(latestRun);
+                }
             }
 
             await dbContext.SaveChangesAsync();
