@@ -5,7 +5,6 @@ EXPOSE 5000
 ENV ASPNETCORE_ENVIRONMENT="Production"
 ENV ASPNETCORE_URLS="http://*:5000"
 
-
 RUN \
   apt-get -y update && \
   apt-get -y install \
@@ -27,9 +26,18 @@ RUN \
   mkdir /config && \
   wget -q https://github.com/lucent-sea/Remotely/releases/latest/download/Remotely_Server_Linux-x64.zip && \
   unzip -o Remotely_Server_Linux-x64.zip -d /var/www/remotely && \
-  rm Remotely_Server_Linux-x64.zip && \
-  setfacl -R -m u:www-data:rwx /var/www/remotely && \
-  chown -R www-data:www-data /var/www/remotely
+  rm Remotely_Server_Linux-x64.zip
+
+RUN \
+  mkdir -p /remotely-data && \
+  sed -i 's/DataSource=Remotely.db/DataSource=\/remotely-data\/Remotely.db/' /var/www/remotely/appsettings.json
+
+VOLUME "/remotely-data"
 
 WORKDIR /var/www/remotely
-ENTRYPOINT ["/usr/bin/dotnet", "/var/www/remotely/Remotely_Server.dll"]
+
+COPY DockerMain.sh /
+
+RUN chmod 755 /DockerMain.sh
+
+ENTRYPOINT ["/DockerMain.sh"]

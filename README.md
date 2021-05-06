@@ -21,7 +21,8 @@ You can also sponsor the project as a way of saying "thank you".  But if you hav
 Public Server: https://app.remotely.one  
 Website: https://remotely.one  
 Subreddit: https://www.reddit.com/r/remotely_app/  
-Docker: https://hub.docker.com/repository/docker/translucency/remotely  
+Docker: https://hub.docker.com/r/translucency/remotely  
+Video Tutorials: https://remotely.one/Tutorials  
 
 ![image](https://user-images.githubusercontent.com/20995508/113913261-f7002a00-9790-11eb-81b3-c36fb8aa536d.png)
 
@@ -36,15 +37,30 @@ GitHub Actions allows you to build and deploy Remotely for free from their cloud
 
 I've created a cross-platform command line tool that can leverage the GitHub Actions REST API to build the project and install it on your private server.  This process will also embed your server's URL into the desktop clients, so that they won't need to prompt the end user to enter it.
 
+However, you can also choose to install the pre-built packages that do not have any server URLs embedded.  These don't require you to fork the repository on GitHub.
+
 ## Installation Instructions:
 - Before attempting installation, verify that your domain name is resolving to your server's IP address.
   - For example, I can use the command `ping app.remotely.one` and see the IP address to which it resolves.
-- Find the `Remotely_Server_Installer[.exe]` CLI tool for the latest release on the [Releases page](https://github.com/lucent-sea/Remotely/releases).
-  - You will download and run it on the server where you'll be hosting Remotely.
+- Find and download the `Remotely_Server_Installer[.exe]` CLI tool for the latest release on the [Releases page](https://github.com/lucent-sea/Remotely/releases).
+  - You will run it on the server where you'll be hosting Remotely.
+  - You need to run it with elevation (e.g. sudo or "Run as admin").
+  - Use `--help` argument to see all the command line arguments.
+    - If values are provided for all arguments, it will run non-interactive.
   - You can choose between installing the pre-built release package, or entering GitHub credentials to build and install a customized server.
   - The pre-built package will not have your server's URL embedded in the clients.  End users will need to enter it manually.
-- If you use the pre-built package, you're done!  Otherwise, follow the below steps for using the GitHub Actions integration.
+- If you want to use the pre-built package, run the installer now, and you're done!
+  - Otherwise, follow the below steps for setting up the GitHub Actions integration, then run the installer afterward.
 - Fork the repo if you haven't already.
+  - If you've already forked the repo and haven't updated your fork since the new installer was created, you'll need to do so first.
+  - You can use the following commands to pull the latest changes, merge them, and push them back up to your repo ([git](https://git-scm.com/downloads) required).  Make sure to replace `{your-username}` with your GitHub username.
+	```
+	git clone git@github.com:{your-username}/remotely
+	cd ./remotely
+	git remote add upstream https://github.com/lucent-sea/remotely
+	git pull upstream master
+	git push origin master
+	```
 - Go to the Actions tab in your forked repo and make sure you can see the Build workflows.
   - Before you can use Actions for the first time, there will be prompt that you must accept on this page.
 - Create a Personal Access Token that the installer will use to authorize with GitHub.
@@ -53,11 +69,7 @@ I've created a cross-platform command line tool that can leverage the GitHub Act
   - Save the PAT when it's displayed.  It will only be shown once.
 - By default, the server will be built from the author's repo.
   - If you want to build from your fork, comment out the `repository` line in `Build.yml` (in your repo).  There's a comment in the file that points out the line.
-- On your server, download the latest server installer executable (Linux or Windows) from [my releases page](https://github.com/lucent-sea/Remotely/releases).
-- Run the app with elevation (e.g. sudo or "Run as admin").
-- Follow the prompts to build and install the server.
-- Use `--help` argument to see all the command line arguments.
-  - If values are provided for all arguments, it will run non-interactive.
+- Now run the installer, as described above.
 
 ## After Installation
 - In the site's content directory, make a copy of the `appsettings.json` file and name it `appsettings.Production.json`.
@@ -89,7 +101,11 @@ There are countless ways to host an ASP.NET Core app, and I can't document or au
 The following steps will configure your Windows 10 machine for building the Remotely server and clients.
 * Install Visual Studio 2019.
     * Link: https://visualstudio.microsoft.com/downloads/
-	* You only need the below Individual Components for building:
+	* You should have the following Workloads selected:
+	    * ASP.NET and web development
+		* .NET desktop development
+		* .NET Core corss-platform development
+	* You should have the following Individual Components selected:
 	    * .NET SDK (latest version).
 		* MSBuild (which auto-selects Roslyn compilers).
 		* NuGet targets and build tasks.
@@ -97,6 +113,8 @@ The following steps will configure your Windows 10 machine for building the Remo
 	    * For debugging and development, you'll need all relevant workloads.
 * Install Git for Windows.
     * Link: https://git-scm.com/downloads
+* Install the latest LTS Node:
+	* Link: https://nodejs.org/
 * Clone the git repository: `git clone https://github.com/lucent-sea/remotely`
 * When debugging, the agent will use a pre-defined device ID and connect to https://localhost:5001.
 * In development environment, the server will assign all connecting agents to the first organization.

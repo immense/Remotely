@@ -68,11 +68,21 @@ namespace Remotely.Server.API
                 {
                     var device = _dataService.GetDevice(result.DeviceID);
 
+                    if (!string.IsNullOrWhiteSpace(device.DeviceGroupID))
+                    {
+                        device.DeviceGroup = await _dataService.GetDeviceGroup(device.DeviceGroupID);
+                    }
+
                     await _emailSender.SendEmailAsync(savedScript.SendErrorEmailTo,
                         "Script Run Alert",
                         $"An alert was triggered while running script {savedScript.Name} on device {device.DeviceName}. <br /><br />" +
-                            $"Error Output: <br /><br /> " +
-                            $"{string.Join("<br /><br />", result.ErrorOutput)}");
+                            $"Device ID: {device.ID} <br /> " +
+                            $"Device Name: {device.DeviceName} <br /> " +
+                            $"Device Alias: {device.Alias} <br /> " +
+                            $"Device Group (if any): {device.DeviceGroup?.Name} <br /> " +
+
+                            $"Error Output: <br /> <br /> " +
+                            $"{string.Join("<br /> <br />", result.ErrorOutput)}");
                 }
             }
 

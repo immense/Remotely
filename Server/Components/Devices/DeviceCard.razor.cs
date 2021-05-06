@@ -52,6 +52,10 @@ namespace Remotely.Server.Components.Devices
 
         private bool IsSelected => AppState.DevicesFrameSelectedDevices.Contains(Device.ID);
 
+        private bool IsOutdated =>
+            Version.TryParse(Device.AgentVersion, out var result) && 
+            result < ParentFrame.HighestVersion;
+
         [Inject]
         private IJsInterop JsInterop { get; set; }
 
@@ -258,6 +262,8 @@ namespace Remotely.Server.Components.Devices
             if (result)
             {
                 await CircuitConnection.UninstallAgents(new[] { Device.ID });
+                AppState.DevicesFrameFocusedDevice = null;
+                AppState.DevicesFrameFocusedCardState = DeviceCardState.Normal;
                 ParentFrame.Refresh();
             }
         }

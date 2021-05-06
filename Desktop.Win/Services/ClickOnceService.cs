@@ -44,7 +44,7 @@ namespace Remotely.Desktop.Win.Services
                 var appRoot = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory).Parent;
                 if (!Directory.Exists(Path.Combine(appRoot.FullName, "manifests")))
                 {
-                    Logger.Write($"Manifests folder not found in root folder: {appRoot}", EventType.Warning);
+                    Logger.Write($"Manifests folder not found in root folder: {appRoot}", EventType.Debug);
                     return _activationUri;
                 }
 

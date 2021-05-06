@@ -36,9 +36,7 @@ namespace Remotely.Server.Data
             {
                 options.UseNpgsql(_configuration.GetConnectionString("PostgreSQL"));
             }
-            options.ConfigureWarnings(x => x.Ignore(RelationalEventId.MultipleCollectionIncludeWarning));
-
-            options.LogTo((message) => System.Diagnostics.Debug.Write(message));
+            base.OnConfiguring(options);
         }
     }
 }

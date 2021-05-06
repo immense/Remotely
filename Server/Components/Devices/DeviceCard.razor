@@ -10,8 +10,21 @@
 
     <div class="card-header">
         <div>
-            <i class="oi oi-power-standby @(Device.IsOnline ? "text-success" : "text-danger")"
-               title="@(Device.IsOnline ? "Online" : "Offline")"></i>
+            @if (Device.IsOnline)
+            {
+                if (IsOutdated)
+                {
+                    <i class="oi oi-power-standby text-warning" title="Agent Outdated"></i>
+                }
+                else
+                {
+                    <i class="oi oi-power-standby text-success" title="Online"></i>
+                }
+            }
+            else
+            {
+                <i class="oi oi-power-standby text-danger" title="Offline"></i>
+            }
         </div>
         <div class="overflow-hidden ml-2">
             <div class="d-inline-block">

@@ -87,11 +87,7 @@ namespace Remotely.Desktop.Core.Services
         public void Dispose()
         {
             DisconnectRequested = true;
-            Disposer.TryDisposeAll(new IDisposable[]
-            {
-                RtcSession,
-                Capturer
-            });
+            Disposer.TryDisposeAll(RtcSession, Capturer);
             GC.SuppressFinalize(this);
         }
 
@@ -236,6 +232,7 @@ namespace Remotely.Desktop.Core.Services
             {
                 var dto = new CaptureFrameDto()
                 {
+                    Id = screenFrame.Id,
                     Left = left,
                     Top = top,
                     Width = width,
@@ -250,6 +247,7 @@ namespace Remotely.Desktop.Core.Services
 
             var endOfFrameDto = new CaptureFrameDto()
             {
+                Id = screenFrame.Id,
                 Left = left,
                 Top = top,
                 Width = width,

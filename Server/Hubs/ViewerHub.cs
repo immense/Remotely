@@ -173,7 +173,8 @@ namespace Remotely.Server.Hubs
                 orgId = user.OrganizationID;
                 var currentUsers = CasterHub.SessionInfoList.Count(x =>
                     x.Key != screenCasterID &&
-                    x.Value.OrganizationID == orgId);
+                    x.Value.OrganizationID == orgId &&
+                    x.Value.ViewerList.Any());
                 if (currentUsers >= AppConfig.RemoteControlSessionLimit)
                 {
                     await Clients.Caller.SendAsync("ShowMessage", "Max number of concurrent sessions reached.");

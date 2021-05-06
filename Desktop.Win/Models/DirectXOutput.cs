@@ -25,13 +25,7 @@ namespace Remotely.Desktop.Win.Models
 
         public void Dispose()
         {
-            Disposer.TryDisposeAll(new IDisposable[]
-            {
-                Adapter,
-                Device,
-                OutputDuplication,
-                Texture2D
-            });
+            Disposer.TryDisposeAll(Adapter, Device, OutputDuplication, Texture2D);
             GC.SuppressFinalize(this);
         }
     }

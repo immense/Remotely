@@ -7,7 +7,7 @@ import { ReceiveFile } from "./FileTransferService.js";
 export class DtoMessageHandler {
     constructor() {
         this.MessagePack = window['MessagePack'];
-        this.ImagePartials = [];
+        this.ImagePartials = {};
     }
     ParseBinaryMessage(data) {
         var model = this.MessagePack.decode(data);
@@ -47,8 +47,9 @@ export class DtoMessageHandler {
     }
     HandleCaptureFrame(captureFrame) {
         if (captureFrame.EndOfFrame) {
-            let completedFrame = new Blob(this.ImagePartials);
-            this.ImagePartials = [];
+            var partials = this.ImagePartials[captureFrame.Id];
+            let completedFrame = new Blob(partials);
+            this.ImagePartials[captureFrame.Id] = [];
             let url = window.URL.createObjectURL(completedFrame);
             let img = new Image(captureFrame.Width, captureFrame.Height);
             img.onload = () => {
@@ -67,7 +68,10 @@ export class DtoMessageHandler {
             ViewerApp.MessageSender.SendFrameReceived();
         }
         else {
-            this.ImagePartials.push(captureFrame.ImageBytes);
+            if (!this.ImagePartials[captureFrame.Id]) {
+                this.ImagePartials[captureFrame.Id] = [];
+            }
+            this.ImagePartials[captureFrame.Id].push(captureFrame.ImageBytes);
         }
     }
     HandleClipboardText(clipboardText) {

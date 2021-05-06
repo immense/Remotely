@@ -323,7 +323,7 @@ namespace Remotely.Server.Pages
             }
             else
             {
-                ToastService.ShowToast("Error sending email.  Check the server logs for details.", classString: "bg-error");
+                ToastService.ShowToast("Error sending email.  Check the server logs for details.", classString: "bg-danger");
                 _alertMessage = "Error sending email.  Check the server logs for details.";
             }
         }

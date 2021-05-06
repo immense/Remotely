@@ -32,39 +32,24 @@ namespace Remotely.Server.Hubs
         {
             get
             {
-                if (Context.Items.ContainsKey("SessionInfo"))
+                if (Context.Items.TryGetValue("SessionInfo", out var result))
                 {
-                    return (RCSessionInfo)Context.Items["SessionInfo"];
+                    return (RCSessionInfo)result;
                 }
-                else
-                {
-                    return null;
-                }
-            }
-            set
-            {
-                Context.Items["SessionInfo"] = value;
+                var newSession = new RCSessionInfo();
+                Context.Items["SessionInfo"] = newSession;
+                return newSession;
             }
         }
 
         private IHubContext<ViewerHub> ViewerHubContext { get; }
-        private List<string> ViewerList
-        {
-            get
-            {
-                if (!Context.Items.ContainsKey("ViewerList"))
-                {
-                    Context.Items["ViewerList"] = new List<string>();
-                }
-                return Context.Items["ViewerList"] as List<string>;
-            }
-        }
+
+        private ConcurrentList<string> ViewerList => SessionInfo.ViewerList;
+
         public async Task DisconnectViewer(string viewerID, bool notifyViewer)
         {
-            lock (ViewerList)
-            {
-                ViewerList.Remove(viewerID);
-            }
+            ViewerList.Remove(viewerID);
+
             if (notifyViewer)
             {
                 await ViewerHubContext.Clients.Client(viewerID).SendAsync("ViewerRemoved");
@@ -105,11 +90,8 @@ namespace Remotely.Server.Hubs
 
         public override async Task OnConnectedAsync()
         {
-            SessionInfo = new RCSessionInfo()
-            {
-                CasterSocketID = Context.ConnectionId,
-                StartTime = DateTimeOffset.Now
-            };
+            SessionInfo.CasterSocketID = Context.ConnectionId;
+            SessionInfo.StartTime = DateTimeOffset.Now;
             SessionInfoList.AddOrUpdate(Context.ConnectionId, SessionInfo, (id, si) => SessionInfo);
 
             await base.OnConnectedAsync();
@@ -190,10 +172,7 @@ namespace Remotely.Server.Hubs
 
         public Task ViewerConnected(string viewerConnectionId)
         {
-            lock (ViewerList)
-            {
-                ViewerList.Add(viewerConnectionId);
-            }
+            ViewerList.Add(viewerConnectionId);
             return Task.CompletedTask;
         }
     }
