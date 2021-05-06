@@ -38,4 +38,6 @@ WORKDIR /var/www/remotely
 
 COPY DockerMain.sh /
 
+RUN chmod 755 /DockerMain.sh
+
 ENTRYPOINT ["/DockerMain.sh"]
