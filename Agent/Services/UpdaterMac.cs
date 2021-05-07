@@ -64,7 +64,7 @@ namespace Remotely.Agent.Services
                 var connectionInfo = _configService.GetConnectionInfo();
                 var serverUrl = _configService.GetConnectionInfo().Host;
 
-                var fileUrl = serverUrl + $"/Content/Remotely-MacOS.zip";
+                var fileUrl = serverUrl + $"/Content/Remotely-MacOS-x64.zip";
 
                 var lastEtag = string.Empty;
 
