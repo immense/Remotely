@@ -100,11 +100,20 @@ namespace Server.Installer.Services
             // website process first.
             if (cliParams.WebServer == WebServerType.IisWindows)
             {
-                var initialW3wpCount = Process.GetProcessesByName("w3wp").Length;
-                Process.Start("powershell.exe", "-Command & \"{ Stop-WebAppPool -Name Remotely -ErrorAction SilentlyContinue }\"").WaitForExit();
-                Process.Start("powershell.exe", "-Command & \"{ Stop-Website -Name Remotely -ErrorAction SilentlyContinue }\"").WaitForExit();
-                ConsoleHelper.WriteLine("Waiting for w3wp processes to close...");
-                TaskHelper.DelayUntil(() => Process.GetProcessesByName("w3wp").Length < initialW3wpCount, TimeSpan.FromMinutes(5), 100);
+                var w3wpProcs = Process.GetProcessesByName("w3wp");
+                if (w3wpProcs.Length > 0)
+                {
+                    Process.Start("powershell.exe", "-Command & \"{ Stop-WebAppPool -Name Remotely -ErrorAction SilentlyContinue }\"").WaitForExit();
+                    Process.Start("powershell.exe", "-Command & \"{ Stop-Website -Name Remotely -ErrorAction SilentlyContinue }\"").WaitForExit();
+
+                    ConsoleHelper.WriteLine("Waiting for w3wp processes to close...");
+                    foreach (var proc in w3wpProcs)
+                    {
+                        try { proc.Kill(); } 
+                        catch { }
+                    }
+                    TaskHelper.DelayUntil(() => Process.GetProcessesByName("w3wp").Length < w3wpProcs.Length, TimeSpan.FromMinutes(5), 100);
+                }
             }
 
             ConsoleHelper.WriteLine("Extracting files.");
