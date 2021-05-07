@@ -2,7 +2,7 @@
 
 HostName=
 Organization=
-GUID=$(uuidgen)
+GUID="$(uuidgen)"
 UpdatePackagePath=""
 
 Args=( "$@" )
