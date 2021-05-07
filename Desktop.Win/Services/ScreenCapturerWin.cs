@@ -34,6 +34,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -91,15 +92,14 @@ namespace Remotely.Desktop.Win.Services
                         Logger.Write("Init needed in GetNextFrame.");
                         Init();
                     }
-
+                    
                     // Sometimes DX will result in a timeout, even when there are changes
                     // on the screen.  I've observed this when a laptop lid is closed, or
                     // on some machines that aren't connected to a monitor.  This will
                     // have it fall back to BitBlt in those cases.
                     // TODO: Make DX capture work with changed screen orientation.
-                    if (_directxScreens.ContainsKey(SelectedScreen) &&
-                        SystemInformation.ScreenOrientation != ScreenOrientation.Angle270 &&
-                        SystemInformation.ScreenOrientation != ScreenOrientation.Angle90)
+                    if (_directxScreens.TryGetValue(SelectedScreen, out var dxDisplay) &&
+                        dxDisplay.Rotation == DisplayModeRotation.Identity)
                     {
                         var (result, frame) = GetDirectXFrame();
 
@@ -337,7 +337,8 @@ namespace Remotely.Desktop.Win.Services
                                     new DirectXOutput(adapter,
                                         device,
                                         output1.DuplicateOutput(device),
-                                        texture2D));
+                                        texture2D,
+                                        output1.Description.Rotation));
                             }
                             catch (Exception ex)
                             {

@@ -40,7 +40,6 @@ namespace Remotely.Desktop.Core.Services
 
         public async Task BeginScreenCasting(ScreenCastRequest screenCastRequest)
         {
-        
             try
             {
                 var sendFramesLock = new SemaphoreSlim(1, 1);
@@ -49,6 +48,7 @@ namespace Remotely.Desktop.Core.Services
                 var currentQuality = _maxQuality;
                 Bitmap currentFrame = null;
                 Bitmap previousFrame = null;
+                var sw = Stopwatch.StartNew();
 
                 var viewer = ServiceContainer.Instance.GetRequiredService<Viewer>();
                 viewer.Name = screenCastRequest.RequesterName;
@@ -118,6 +118,9 @@ namespace Remotely.Desktop.Core.Services
                 {
                     try
                     {
+                        TaskHelper.DelayUntil(() => sw.Elapsed.TotalMilliseconds > 40, TimeSpan.FromSeconds(5));
+                        sw.Restart();
+
                         if (viewer.IsUsingWebRtcVideo)
                         {
                             Thread.Sleep(100);
