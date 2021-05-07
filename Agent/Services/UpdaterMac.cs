@@ -16,6 +16,7 @@ namespace Remotely.Agent.Services
 {
     public class UpdaterMac : IUpdater
     {
+        private readonly string _achitecture = RuntimeInformation.OSArchitecture.ToString().ToLower();
         private readonly SemaphoreSlim _checkForUpdatesLock = new SemaphoreSlim(1, 1);
         private readonly ConfigService _configService;
         private readonly IWebClientEx _webClientEx;
@@ -64,7 +65,7 @@ namespace Remotely.Agent.Services
                 var connectionInfo = _configService.GetConnectionInfo();
                 var serverUrl = _configService.GetConnectionInfo().Host;
 
-                var fileUrl = serverUrl + $"/Content/Remotely-MacOS-x64.zip";
+                var fileUrl = serverUrl + $"/Content/Remotely-MacOS-{_achitecture}.zip";
 
                 var lastEtag = string.Empty;
 
@@ -128,11 +129,11 @@ namespace Remotely.Agent.Services
                 var installerPath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.sh");
 
                 await _webClientEx.DownloadFileTaskAsync(
-                       serverUrl + $"/API/ClientDownloads/{connectionInfo.OrganizationID}/MacOSInstaller-x64",
+                       serverUrl + $"/API/ClientDownloads/{connectionInfo.OrganizationID}/MacOSInstaller-{_achitecture}",
                        installerPath);
 
                 await _webClientEx.DownloadFileTaskAsync(
-                   serverUrl + $"/API/AgentUpdate/DownloadPackage/macos-x64/{downloadId}",
+                   serverUrl + $"/API/AgentUpdate/DownloadPackage/macos-{_achitecture}/{downloadId}",
                    zipPath);
 
                 (await WebRequest.CreateHttp(serverUrl + $"/api/AgentUpdate/ClearDownload/{downloadId}").GetResponseAsync()).Dispose();
