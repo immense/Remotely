@@ -1054,6 +1054,79 @@ namespace Remotely.Shared.Win32
             MAPVK_VK_TO_VSC_EX = 4
         }
 
+        [StructLayout(LayoutKind.Explicit, CharSet = CharSet.Ansi)]
+        public struct DEVMODE
+        {
+            public const int CCHDEVICENAME = 32;
+            public const int CCHFORMNAME = 32;
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = CCHDEVICENAME)]
+            [FieldOffset(0)]
+            public string dmDeviceName;
+            [FieldOffset(32)]
+            public Int16 dmSpecVersion;
+            [FieldOffset(34)]
+            public Int16 dmDriverVersion;
+            [FieldOffset(36)]
+            public Int16 dmSize;
+            [FieldOffset(38)]
+            public Int16 dmDriverExtra;
+            [FieldOffset(40)]
+            public short dmFields;
+
+            [FieldOffset(44)]
+            Int16 dmOrientation;
+            [FieldOffset(46)]
+            Int16 dmPaperSize;
+            [FieldOffset(48)]
+            Int16 dmPaperLength;
+            [FieldOffset(50)]
+            Int16 dmPaperWidth;
+            [FieldOffset(52)]
+            Int16 dmScale;
+            [FieldOffset(54)]
+            Int16 dmCopies;
+            [FieldOffset(56)]
+            Int16 dmDefaultSource;
+            [FieldOffset(58)]
+            Int16 dmPrintQuality;
+
+            [FieldOffset(44)]
+            public POINT dmPosition;
+            [FieldOffset(52)]
+            public Int32 dmDisplayOrientation;
+            [FieldOffset(56)]
+            public Int32 dmDisplayFixedOutput;
+
+            [FieldOffset(60)]
+            public short dmColor; // See note below!
+            [FieldOffset(62)]
+            public short dmDuplex; // See note below!
+            [FieldOffset(64)]
+            public short dmYResolution;
+            [FieldOffset(66)]
+            public short dmTTOption;
+            [FieldOffset(68)]
+            public short dmCollate; // See note below!
+            [FieldOffset(70)]
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = CCHFORMNAME)]
+            public string dmFormName;
+            [FieldOffset(102)]
+            public Int16 dmLogPixels;
+            [FieldOffset(104)]
+            public Int32 dmBitsPerPel;
+            [FieldOffset(108)]
+            public Int32 dmPelsWidth;
+            [FieldOffset(112)]
+            public Int32 dmPelsHeight;
+            [FieldOffset(116)]
+            public Int32 dmDisplayFlags;
+            [FieldOffset(116)]
+            public Int32 dmNup;
+            [FieldOffset(120)]
+            public Int32 dmDisplayFrequency;
+        }
+
         #endregion
 
         #region Structs
@@ -1070,9 +1143,10 @@ namespace Remotely.Shared.Win32
         [StructLayout(LayoutKind.Sequential)]
         public struct POINT
         {
-            public Int32 x;
-            public Int32 y;
+            public int x;
+            public int y;
         }
+
 
         [StructLayout(LayoutKind.Sequential)]
         public struct CursorInfo
@@ -1184,6 +1258,9 @@ namespace Remotely.Shared.Win32
 
         [DllImport("user32.dll")]
         public static extern bool EnumDesktopsA(IntPtr hwinsta, EnumDesktopsDelegate lpEnumFunc, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        public static extern bool EnumDisplaySettingsEx(string lpszDeviceName, uint iModeNum, out DEVMODE lpDevMode, uint dwFlags);
 
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr OpenInputDesktop(uint dwFlags, bool fInherit, ACCESS_MASK dwDesiredAccess);
