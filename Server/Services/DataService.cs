@@ -2091,6 +2091,11 @@ namespace Remotely.Server.Services
                  .ThenInclude(x => x.Users)
                  .FirstOrDefault(x => x.ID == deviceID);
 
+            if (device is null)
+            {
+                return Array.Empty<string>();
+            }
+
             var orgUsers = dbContext.Users
                 .Where(user =>
                     user.OrganizationID == device.OrganizationID &&
