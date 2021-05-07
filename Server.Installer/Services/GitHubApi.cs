@@ -30,6 +30,7 @@ namespace Server.Installer.Services
         public GitHubApi()
         {
             _httpClient = new HttpClient();
+            _httpClient.Timeout = TimeSpan.FromHours(8);
             _httpClient.DefaultRequestHeaders.Add("User-Agent", "Remotely Server Installer");
         }
 
