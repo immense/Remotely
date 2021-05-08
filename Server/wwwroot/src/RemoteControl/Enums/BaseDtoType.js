@@ -16,6 +16,7 @@ export var BaseDtoType;
     BaseDtoType[BaseDtoType["KeyDown"] = 13] = "KeyDown";
     BaseDtoType[BaseDtoType["KeyUp"] = 14] = "KeyUp";
     BaseDtoType[BaseDtoType["CtrlAltDel"] = 15] = "CtrlAltDel";
+    BaseDtoType[BaseDtoType["ToggleAutoQuality"] = 16] = "ToggleAutoQuality";
     BaseDtoType[BaseDtoType["ToggleAudio"] = 17] = "ToggleAudio";
     BaseDtoType[BaseDtoType["ToggleBlockInput"] = 18] = "ToggleBlockInput";
     BaseDtoType[BaseDtoType["ClipboardTransfer"] = 19] = "ClipboardTransfer";

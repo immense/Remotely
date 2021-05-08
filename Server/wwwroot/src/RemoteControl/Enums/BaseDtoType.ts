@@ -15,6 +15,7 @@
     KeyDown = 13,
     KeyUp = 14,
     CtrlAltDel = 15,
+    ToggleAutoQuality = 16,
     ToggleAudio = 17,
     ToggleBlockInput = 18,
     ClipboardTransfer = 19,

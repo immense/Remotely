@@ -37,6 +37,8 @@ export const ViewerApp = {
 
         ApplyInputHandlers();
 
+        UI.UpdateAutoQualityToggled(ViewerApp.Settings.autoQuality);
+
         if (UI.RequesterNameInput.value) {
             ViewerApp.RequesterName = UI.RequesterNameInput.value;
         }

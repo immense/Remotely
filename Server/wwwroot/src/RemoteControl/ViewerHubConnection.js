@@ -55,16 +55,6 @@ export class ViewerHubConnection {
         hubConnection.on("SendDtoToBrowser", (dto) => {
             ViewerApp.DtoMessageHandler.ParseBinaryMessage(dto);
         });
-        hubConnection.on("ClipboardTextChanged", (clipboardText) => {
-            ViewerApp.ClipboardWatcher.SetClipboardText(clipboardText);
-            ShowMessage("Clipboard updated.");
-        });
-        hubConnection.on("ScreenData", (selectedDisplay, displayNames) => {
-            UI.UpdateDisplays(selectedDisplay, displayNames);
-        });
-        hubConnection.on("ScreenSize", (width, height) => {
-            UI.SetScreenSize(width, height);
-        });
         hubConnection.on("ConnectionFailed", () => {
             UI.ConnectButton.removeAttribute("disabled");
             UI.StatusMessage.innerHTML = "Connection failed or was denied.";
@@ -96,9 +86,6 @@ export class ViewerHubConnection {
         hubConnection.on("ScreenCasterDisconnected", () => {
             UI.StatusMessage.innerHTML = "The host has disconnected.";
             this.Connection.stop();
-        });
-        hubConnection.on("ReceiveMachineName", (machineName) => {
-            document.title = `${machineName} - Remotely Session`;
         });
         hubConnection.on("RelaunchedScreenCasterReady", (newClientID) => {
             ViewerApp.CasterID = newClientID;

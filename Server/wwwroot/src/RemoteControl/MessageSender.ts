@@ -16,7 +16,8 @@ import {
     FileDto,
     WindowsSessionsDto,
     GenericDto,
-    ToggleWebRtcVideoDto
+    ToggleWebRtcVideoDto,
+    ToggleAutoQualityDto
 } from "./Interfaces/Dtos.js";
 import { CreateGUID, When } from "./Utilities.js";
 import { FileTransferProgress } from "./UI.js";
@@ -125,6 +126,12 @@ export class MessageSender {
 
         dto = new FileDto(null, fileName, messageId, true, false);
 
+        this.SendToAgent(() => ViewerApp.RtcSession.SendDto(dto),
+            () => ViewerApp.ViewerHubConnection.SendDtoToClient(dto));
+    }
+
+    SendToggleAutoQuality(toggleOn: boolean) {
+        var dto = new ToggleAutoQualityDto(toggleOn);
         this.SendToAgent(() => ViewerApp.RtcSession.SendDto(dto),
             () => ViewerApp.ViewerHubConnection.SendDtoToClient(dto));
     }

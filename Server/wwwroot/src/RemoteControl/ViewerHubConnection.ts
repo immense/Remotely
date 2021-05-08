@@ -76,16 +76,6 @@ export class ViewerHubConnection {
         hubConnection.on("SendDtoToBrowser", (dto: ArrayBuffer) => {
             ViewerApp.DtoMessageHandler.ParseBinaryMessage(dto);
         });
-        hubConnection.on("ClipboardTextChanged", (clipboardText: string) => {
-            ViewerApp.ClipboardWatcher.SetClipboardText(clipboardText);
-            ShowMessage("Clipboard updated.");
-        });
-        hubConnection.on("ScreenData", (selectedDisplay: string, displayNames: string[]) => {
-            UI.UpdateDisplays(selectedDisplay, displayNames);
-        });
-        hubConnection.on("ScreenSize", (width: number, height: number) => {
-            UI.SetScreenSize(width, height);
-        });
 
         hubConnection.on("ConnectionFailed", () => {
             UI.ConnectButton.removeAttribute("disabled");
@@ -118,9 +108,6 @@ export class ViewerHubConnection {
         hubConnection.on("ScreenCasterDisconnected", () => {
             UI.StatusMessage.innerHTML = "The host has disconnected.";
             this.Connection.stop();
-        });
-        hubConnection.on("ReceiveMachineName", (machineName: string) => {
-            document.title = `${machineName} - Remotely Session`;
         });
         hubConnection.on("RelaunchedScreenCasterReady", (newClientID: string) => {
             ViewerApp.CasterID = newClientID;

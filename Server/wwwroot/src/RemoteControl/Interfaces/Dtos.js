@@ -93,6 +93,12 @@ export class ToggleAudioDto {
         this.ToggleOn = toggleOn;
     }
 }
+export class ToggleAutoQualityDto {
+    constructor(toggleOn) {
+        this.DtoType = BaseDtoType.ToggleAutoQuality;
+        this.ToggleOn = toggleOn;
+    }
+}
 export class ToggleBlockInputDto {
     constructor(toggleOn) {
         this.DtoType = BaseDtoType.ToggleBlockInput;

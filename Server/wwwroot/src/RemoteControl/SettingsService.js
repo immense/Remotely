@@ -1,6 +1,7 @@
 const defaultSettings = {
     streamModeEnabled: false,
-    displayName: ""
+    displayName: "",
+    autoQuality: true
 };
 export function GetSettings() {
     try {

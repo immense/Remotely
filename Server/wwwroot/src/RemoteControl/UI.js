@@ -45,6 +45,7 @@ export var RecordSessionButton = document.getElementById("recordSessionButton");
 export var DownloadRecordingButton = document.getElementById("downloadRecordingButton");
 export var ViewOnlyButton = document.getElementById("viewOnlyButton");
 export var FullScreenButton = document.getElementById("fullScreenButton");
+export var AutoQualityButton = document.getElementById("autoQualityButton");
 export var ToastsWrapper = document.getElementById("toastsWrapper");
 export function GetCurrentViewer() {
     if (ScreenViewer.hasAttribute("hidden")) {
@@ -155,11 +156,21 @@ export function UpdateStreamingToggled(toggleOn) {
         StreamVideoButton.classList.add("toggled");
         VideoScreenViewer.removeAttribute("hidden");
         ScreenViewer.setAttribute("hidden", "hidden");
+        AutoQualityButton.setAttribute("hidden", "hidden");
     }
     else {
         StreamVideoButton.classList.remove("toggled");
         ScreenViewer.removeAttribute("hidden");
         VideoScreenViewer.setAttribute("hidden", "hidden");
+        AutoQualityButton.removeAttribute("hidden");
+    }
+}
+export function UpdateAutoQualityToggled(toggleOn) {
+    if (toggleOn) {
+        AutoQualityButton.classList.add("toggled");
+    }
+    else {
+        AutoQualityButton.classList.remove("toggled");
     }
 }
 export function UpdateWindowsSessions(windowsSessions) {
