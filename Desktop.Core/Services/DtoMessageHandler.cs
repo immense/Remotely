@@ -91,6 +91,9 @@ namespace Remotely.Desktop.Core.Services
                     case BaseDtoType.CtrlAltDel:
                         await viewer.SendCtrlAltDel();
                         break;
+                    case BaseDtoType.ToggleAutoQuality:
+                        ToggleAutoQuality(message, viewer);
+                        break;
                     case BaseDtoType.ToggleAudio:
                         ToggleAudio(message);
                         break;
@@ -260,6 +263,11 @@ namespace Remotely.Desktop.Core.Services
         {
             var dto = MessagePackSerializer.Deserialize<ToggleAudioDto>(message);
             AudioCapturer.ToggleAudio(dto.ToggleOn);
+        }
+        private void ToggleAutoQuality(byte[] message, Viewer viewer)
+        {
+            var dto = MessagePackSerializer.Deserialize<ToggleAutoQualityDto>(message);
+            viewer.AutoQuality = dto.ToggleOn;
         }
 
         private void ToggleBlockInput(byte[] message)

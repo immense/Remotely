@@ -1,4 +1,4 @@
-import { AudioButton, ChangeScreenButton, HorizontalBars, ScreenSelectBar, ClipboardTransferButton, ClipboardTransferBar, TypeClipboardButton, ConnectButton, CtrlAltDelButton, DisconnectButton, FileTransferButton, FileTransferInput, FitToScreenButton, ScreenViewer, BlockInputButton, InviteButton, KeyboardButton, TouchKeyboardTextArea, MenuFrame, MenuButton, ScreenViewerWrapper, WindowsSessionSelect, RecordSessionButton, DownloadRecordingButton, VideoScreenViewer, StreamVideoButton, FileTransferBar, FileUploadButtton, FileDownloadButton, UpdateStreamingToggled, ViewOnlyButton, FullScreenButton } from "./UI.js";
+import { AudioButton, ChangeScreenButton, HorizontalBars, ScreenSelectBar, ClipboardTransferButton, ClipboardTransferBar, TypeClipboardButton, ConnectButton, CtrlAltDelButton, DisconnectButton, FileTransferButton, FileTransferInput, FitToScreenButton, ScreenViewer, BlockInputButton, InviteButton, KeyboardButton, TouchKeyboardTextArea, MenuFrame, MenuButton, ScreenViewerWrapper, WindowsSessionSelect, RecordSessionButton, DownloadRecordingButton, VideoScreenViewer, StreamVideoButton, FileTransferBar, FileUploadButtton, FileDownloadButton, UpdateStreamingToggled, ViewOnlyButton, FullScreenButton, AutoQualityButton } from "./UI.js";
 import { Sound } from "./Sound.js";
 import { ViewerApp } from "./App.js";
 import { UploadFiles } from "./FileTransferService.js";
@@ -28,6 +28,13 @@ export function ApplyInputHandlers() {
             Sound.Init();
         }
         ViewerApp.MessageSender.SendToggleAudio(toggleOn);
+    });
+    AutoQualityButton.addEventListener("click", (ev) => {
+        AutoQualityButton.classList.toggle("toggled");
+        var toggleOn = AutoQualityButton.classList.contains("toggled");
+        ViewerApp.Settings.autoQuality = toggleOn;
+        SetSettings(ViewerApp.Settings);
+        ViewerApp.MessageSender.SendToggleAutoQuality(toggleOn);
     });
     ChangeScreenButton.addEventListener("click", (ev) => {
         closeAllHorizontalBars("screenSelectBar");

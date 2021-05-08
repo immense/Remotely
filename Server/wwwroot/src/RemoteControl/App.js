@@ -31,6 +31,7 @@ export const ViewerApp = {
             UI.ViewOnlyButton.classList.add("toggled");
         }
         ApplyInputHandlers();
+        UI.UpdateAutoQualityToggled(ViewerApp.Settings.autoQuality);
         if (UI.RequesterNameInput.value) {
             ViewerApp.RequesterName = UI.RequesterNameInput.value;
         }

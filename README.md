@@ -26,9 +26,6 @@ Video Tutorials: https://remotely.one/Tutorials
 
 ![image](https://user-images.githubusercontent.com/20995508/113913261-f7002a00-9790-11eb-81b3-c36fb8aa536d.png)
 
-## WARNING:
-Remotely is undergoing a major overhaul for its server installation process.  There will be some instability for a short time, and the documentation below may not reflect the current state.  It's recommended that you use the installation scripts from the latest full release if you don't wish to participate in testing.
-
 ## Disclaimer
 Hosting a Remotely server requires running an ASP.NET Core web app behind IIS (Windows), Nginx (Ubuntu), or Caddy Server (any OS).  It's expected that the person deploying and maintaining the server is familiar with this process.  Since this is a hobby project that I develop in between working full time and raising a family, there simply isn't time available to provide support in this capacity.
 

@@ -193,6 +193,15 @@ export class ToggleAudioDto implements BaseDto {
     DtoType: BaseDtoType = BaseDtoType.ToggleAudio;
 }
 
+export class ToggleAutoQualityDto implements BaseDto {
+    constructor(toggleOn: boolean) {
+        this.ToggleOn = toggleOn;
+    }
+
+    ToggleOn: boolean;
+    DtoType: BaseDtoType = BaseDtoType.ToggleAutoQuality;
+}
+
 export class ToggleBlockInputDto implements BaseDto {
     constructor(toggleOn: boolean) {
         this.ToggleOn = toggleOn;
