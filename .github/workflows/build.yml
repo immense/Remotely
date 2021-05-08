@@ -170,7 +170,7 @@ jobs:
         
         
     - name: Download macOS x64 Agent
-    - uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v2
       with:
         name: Mac-Agent-x64
         path: ./Server/wwwroot/Content/Remotely-MacOS-x64.zip
