@@ -173,7 +173,7 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: Mac-Agent-x64
-        path: ./Server/wwwroot/Content/Remotely-MacOS-x64.zip
+        path: ./Server/wwwroot/Content/
 
     # Run the Publish script to build clients and server.
     - name: Run Publish script
