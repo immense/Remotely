@@ -66,11 +66,9 @@ jobs:
 
       - name: Publish macOS x64 Agent
         shell: pwsh
-        env:
-          CurrentVersion: ${{ env.CurrentVersion }}
         run: |
           Write-Host "Publishing agent with version $env:CurrentVersion"
-          dotnet publish /p:Version=$env:CurrentVersion /p:FileVersion=$env:CurrentVersion --runtime osx-x64 --configuration Release --output "./Agent/bin/publish/" "./Agent/"
+          dotnet publish /p:Version=${{ env.CurrentVersion }} /p:FileVersion=${{ env.CurrentVersion }} --runtime osx-x64 --configuration Release --output "./Agent/bin/publish/" "./Agent/"
           Compress-Archive -Path "./Agent/bin/publish/*" -DestinationPath "./Agent/bin/Remotely-MacOS-x64.zip" -Force
 
       - name: Upload build artifact
