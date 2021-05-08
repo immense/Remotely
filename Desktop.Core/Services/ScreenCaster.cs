@@ -149,8 +149,7 @@ namespace Remotely.Desktop.Core.Services
                             continue;
                         }
 
-                        if (refreshTimer.Elapsed.TotalSeconds > 10 ||
-                            refreshNeeded && refreshTimer.Elapsed.TotalSeconds > 5)
+                        if (refreshNeeded && refreshTimer.Elapsed.TotalSeconds > 5)
                         {
                             viewer.Capturer.CaptureFullscreen = true;
                         }
@@ -179,12 +178,16 @@ namespace Remotely.Desktop.Core.Services
                         }
                         else
                         {
-                            if (viewer.AverageBytesPerSecond > 0)
+                            if (!viewer.AutoQuality)
+                            {
+                                currentQuality = _maxQuality;
+                            }
+                            else if (viewer.AverageBytesPerSecond > 0)
                             {
                                 var expectedSize = diffArea.Height * diffArea.Width * 4 * .1;
                                 var timeToSend = expectedSize / viewer.AverageBytesPerSecond;
                                 currentQuality = Math.Max(_minQuality, Math.Min(_maxQuality, (int)(.1 / timeToSend * _maxQuality)));
-                                if (currentQuality < _maxQuality - 10)
+                                if (currentQuality < _maxQuality - 5)
                                 {
                                     refreshNeeded = true;
                                     Debug.WriteLine($"Quality Reduced: {currentQuality}");
