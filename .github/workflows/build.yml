@@ -32,44 +32,46 @@ on:
         default: "linux-x64"
 
 jobs:
+
   build-mac:
-     runs-on: macos-10.15
   
-  steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+    runs-on: macos-10.15
+  
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Install .NET Core
-      uses: actions/setup-dotnet@v1.7.2
+      - name: Install .NET Core
+        uses: actions/setup-dotnet@v1.7.2
 
-    - name: Set current version
-      shell: powershell
-      run: |
-        $VersionString = git show -s --format=%ci
-        $VersionDate = [DateTimeOffset]::Parse($VersionString)
+      - name: Set current version
+        shell: pwsh
+        run: |
+          $VersionString = git show -s --format=%ci
+          $VersionDate = [DateTimeOffset]::Parse($VersionString)
 
-        $Year = $VersionDate.Year.ToString()
-        $Month = $VersionDate.Month.ToString().PadLeft(2, "0")
-        $Day = $VersionDate.Day.ToString().PadLeft(2, "0")
-        $Hour = $VersionDate.Hour.ToString().PadLeft(2, "0")
-        $Minute = $VersionDate.Minute.ToString().PadLeft(2, "0")
-        $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
-        
-        echo "CurrentVersion=$CurrentVersion" >> $GITHUB_ENV
+          $Year = $VersionDate.Year.ToString()
+          $Month = $VersionDate.Month.ToString().PadLeft(2, "0")
+          $Day = $VersionDate.Day.ToString().PadLeft(2, "0")
+          $Hour = $VersionDate.Hour.ToString().PadLeft(2, "0")
+          $Minute = $VersionDate.Minute.ToString().PadLeft(2, "0")
+          $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
 
-        Write-Host "Setting current version to $CurrentVersion."
+          echo "CurrentVersion=$CurrentVersion" >> $GITHUB_ENV
 
-    - name: Set current version
-      shell: powershell
-      run: |
-        dotnet publish /p:Version=$env:CurrentVersion /p:FileVersion=$env:CurrentVersion --runtime osx-x64 --configuration Release --output "./Agent/bin/publish" ".\Agent"
-        Compress-Archive -Path "./Agent/bin/publish/*" -DestinationPath "./Agent/bin/Remotely-MacOS-x64.zip" -Force
+          Write-Host "Setting current version to $CurrentVersion."
 
-    - name: Upload build artifact
-      uses: actions/upload-artifact@v2
-      with:
-        path: ./Agent/bin/Remotely-MacOS-x64.zip
-        name: Mac-Agent-x64
+      - name: Set current version
+        shell: pwsh
+        run: |
+          dotnet publish /p:Version=$env:CurrentVersion /p:FileVersion=$env:CurrentVersion --runtime osx-x64 --configuration Release --output "./Agent/bin/publish" ".\Agent"
+          Compress-Archive -Path "./Agent/bin/publish/*" -DestinationPath "./Agent/bin/Remotely-MacOS-x64.zip" -Force
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          path: ./Agent/bin/Remotely-MacOS-x64.zip
+          name: Mac-Agent-x64
      
   build-windows:
 
