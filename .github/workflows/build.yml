@@ -58,7 +58,7 @@ jobs:
         echo "CurrentVersion=$CurrentVersion" >> $GITHUB_ENV
 
         Write-Host "Setting current version to $CurrentVersion."
-        
+
     - name: Set current version
       shell: powershell
       run: |
