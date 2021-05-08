@@ -65,7 +65,9 @@ jobs:
         shell: pwsh
         run: |
           dotnet publish /p:Version=$env:CurrentVersion /p:FileVersion=$env:CurrentVersion --runtime osx-x64 --configuration Release --output "./Agent/bin/publish" ".\Agent"
-          Compress-Archive -Path "./Agent/bin/publish/*" -DestinationPath "./Agent/bin/Remotely-MacOS-x64.zip" -Force
+          Get-ChildItem -Path "./Agent/bin/publish/" | ForEach-Object { 
+              Compress-Archive -Path $_.FullName -DestinationPath "./Agent/bin/Remotely-MacOS-x64.zip" -Update
+          }
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v2
