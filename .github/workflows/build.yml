@@ -59,11 +59,11 @@ jobs:
 
         Write-Host "Setting current version to $CurrentVersion."
 
-      - name: Set current version
-        shell: powershell
-        run: |
-          dotnet publish /p:Version=$env:CurrentVersion /p:FileVersion=$env:CurrentVersion --runtime osx-x64 --configuration Release --output "./Agent/bin/publish" ".\Agent"
-          Compress-Archive -Path "./Agent/bin/publish/*" -DestinationPath "./Agent/bin/Remotely-MacOS-x64.zip" -Force
+    - name: Set current version
+      shell: powershell
+      run: |
+        dotnet publish /p:Version=$env:CurrentVersion /p:FileVersion=$env:CurrentVersion --runtime osx-x64 --configuration Release --output "./Agent/bin/publish" ".\Agent"
+        Compress-Archive -Path "./Agent/bin/publish/*" -DestinationPath "./Agent/bin/Remotely-MacOS-x64.zip" -Force
 
     - name: Upload build artifact
       uses: actions/upload-artifact@v2
