@@ -101,13 +101,7 @@ jobs:
       ServerUrl: ${{ github.event.inputs.serverUrl }}
 
     steps:
-
-    - uses: actions/download-artifact@v2
-      with:
-        name: Mac-Agent-x64
-        path: ./Server/wwwroot/Content/Remotely-MacOS-x64.zip
-
-        
+       
     - name: Checkout
       uses: actions/checkout@v2
       with:
@@ -173,6 +167,13 @@ jobs:
         echo "CurrentVersion=$CurrentVersion" >> $GITHUB_ENV
 
         Write-Host "Setting current version to $CurrentVersion."
+        
+        
+    - name: Download macOS x64 Agent
+    - uses: actions/download-artifact@v2
+      with:
+        name: Mac-Agent-x64
+        path: ./Server/wwwroot/Content/Remotely-MacOS-x64.zip
 
     # Run the Publish script to build clients and server.
     - name: Run Publish script
