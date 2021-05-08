@@ -4,6 +4,7 @@ using Remotely.Agent.Interfaces;
 using Remotely.Agent.Services;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Utilities;
+using Remotely.Shared.Services;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -52,6 +53,8 @@ namespace Remotely.Agent
             serviceCollection.AddScoped<ConfigService>();
             serviceCollection.AddScoped<Uninstaller>();
             serviceCollection.AddScoped<ScriptExecutor>();
+            serviceCollection.AddScoped<IProcessInvoker, ProcessInvoker>();
+            serviceCollection.AddScoped<IWebClientEx, WebClientEx>();
 
             if (EnvironmentHelper.IsWindows)
             {
@@ -67,7 +70,9 @@ namespace Remotely.Agent
             }
             else if (EnvironmentHelper.IsMac)
             {
-                // TODO: Mac.
+                serviceCollection.AddScoped<IAppLauncher, AppLauncherMac>();
+                serviceCollection.AddSingleton<IUpdater, UpdaterMac>();
+                serviceCollection.AddSingleton<IDeviceInformationService, DeviceInformationServiceMac>();
             }
             else
             {

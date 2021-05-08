@@ -27,6 +27,7 @@ namespace Remotely.Server.Components.Devices
     [Authorize]
     public partial class DevicesFrame : AuthComponentBase, IDisposable
     {
+        private readonly object _devicesLock = new();
         private readonly List<Device> _allDevices = new();
         private readonly string _deviceGroupAll = Guid.NewGuid().ToString();
         private readonly string _deviceGroupNone = Guid.NewGuid().ToString();
@@ -89,8 +90,11 @@ namespace Remotely.Server.Components.Devices
 
         public void Refresh()
         {
-            LoadDevices();
-            InvokeAsync(StateHasChanged);
+            lock (_devicesLock)
+            {
+                LoadDevices();
+                InvokeAsync(StateHasChanged);
+            }
         }
 
         protected override async Task OnInitializedAsync()
@@ -112,7 +116,10 @@ namespace Remotely.Server.Components.Devices
 
             _sortableProperties.AddRange(sortableProperties);
 
-            LoadDevices();
+            lock (_devicesLock)
+            {
+                LoadDevices();
+            }
         }
 
         protected override bool ShouldRender()
@@ -120,7 +127,10 @@ namespace Remotely.Server.Components.Devices
             var shouldRender = base.ShouldRender();
             if (shouldRender)
             {
-                FilterDevices();
+                lock (_devicesLock)
+                {
+                    FilterDevices();
+                }
             }
             return shouldRender;
         }

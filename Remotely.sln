@@ -28,7 +28,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desktop.Core", "Desktop.Cor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{3B1B36AE-7A60-4974-A868-1E24894D4149}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desktop.Linux", "Desktop.Linux\Desktop.Linux.csproj", "{FF7FD66A-B3E2-4D39-A457-A00C94EDE9E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desktop.XPlat", "Desktop.XPlat\Desktop.XPlat.csproj", "{FF7FD66A-B3E2-4D39-A457-A00C94EDE9E6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desktop.Win", "Desktop.Win\Desktop.Win.csproj", "{6B726FC4-A907-4813-BF38-3342E02AA8D2}"
 EndProject

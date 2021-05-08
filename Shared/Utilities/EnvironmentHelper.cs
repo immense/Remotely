@@ -10,16 +10,16 @@ namespace Remotely.Shared.Utilities
         {
             get
             {
-                string fileExt = "";
-                if (IsWindows)
+                switch (Platform)
                 {
-                    fileExt = "Remotely_Agent.exe";
+                    case Platform.Windows:
+                        return "Remotely_Agent.exe";
+                    case Platform.Linux:
+                    case Platform.MacOS:
+                        return "Remotely_Agent";
+                    default:
+                        throw new PlatformNotSupportedException();
                 }
-                else if (IsLinux)
-                {
-                    fileExt = "Remotely_Agent";
-                }
-                return fileExt;
             }
         }
 
@@ -27,17 +27,15 @@ namespace Remotely.Shared.Utilities
         {
             get
             {
-                if (IsWindows)
+                switch (Platform)
                 {
-                    return "Remotely_Desktop.exe";
-                }
-                else if (IsLinux)
-                {
-                    return "Remotely_Desktop";
-                }
-                else
-                {
-                    throw new Exception("Unsupported operating system.");
+                    case Platform.Windows:
+                        return "Remotely_Desktop.exe";
+                    case Platform.Linux:
+                    case Platform.MacOS:
+                        return "Remotely_Desktop";
+                    default:
+                        throw new PlatformNotSupportedException();
                 }
             }
         }
@@ -76,7 +74,7 @@ namespace Remotely.Shared.Utilities
                 }
                 else if (IsMac)
                 {
-                    return Platform.OSX;
+                    return Platform.MacOS;
                 }
                 else
                 {
@@ -84,29 +82,5 @@ namespace Remotely.Shared.Utilities
                 }
             }
         }
-        public static string StartProcessWithResults(string command, string arguments)
-        {
-            try
-            {
-                var psi = new ProcessStartInfo(command, arguments)
-                {
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    Verb = "RunAs",
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true
-                };
-
-                var proc = Process.Start(psi);
-                proc.WaitForExit();
-
-                return proc.StandardOutput.ReadToEnd();
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex, "Failed to start process.");
-                return string.Empty;
-            }
-        }
-
     }
 }

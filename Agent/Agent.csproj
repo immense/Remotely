@@ -40,8 +40,4 @@
   </ItemGroup>
 
 
-  <ItemGroup>
-    <Compile Update="Services\WindowsService.cs" />
-  </ItemGroup>
-
 </Project>
