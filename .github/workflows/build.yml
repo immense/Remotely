@@ -67,8 +67,18 @@ jobs:
       - name: Publish macOS x64 Agent
         shell: pwsh
         run: |
-          Write-Host "Publishing agent with version ${{ env.CurrentVersion }}"
-          dotnet publish /p:Version=${{ env.CurrentVersion }} /p:FileVersion=${{ env.CurrentVersion }} --runtime osx-x64 --configuration Release --output "./Agent/bin/publish/" "./Agent/"
+          $VersionString = git show -s --format=%ci
+          $VersionDate = [DateTimeOffset]::Parse($VersionString)
+
+          $Year = $VersionDate.Year.ToString()
+          $Month = $VersionDate.Month.ToString().PadLeft(2, "0")
+          $Day = $VersionDate.Day.ToString().PadLeft(2, "0")
+          $Hour = $VersionDate.Hour.ToString().PadLeft(2, "0")
+          $Minute = $VersionDate.Minute.ToString().PadLeft(2, "0")
+          $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
+          
+          Write-Host "Publishing agent with version $CurrentVersion"
+          dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime osx-x64 --configuration Release --output "./Agent/bin/publish/" "./Agent/"
           Compress-Archive -Path "./Agent/bin/publish/*" -DestinationPath "./Agent/bin/Remotely-MacOS-x64.zip" -Force
 
       - name: Upload build artifact
