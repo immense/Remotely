@@ -42,7 +42,10 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install .NET Core
-        uses: actions/setup-dotnet@v1.7.2
+        uses: actions/setup-dotnet@v1.8.0
+        
+      - name: Setup NuGet.exe for use with actions
+        uses: NuGet/setup-nuget@v1.0.5
 
       - name: Set current version
         shell: pwsh
@@ -61,10 +64,21 @@ jobs:
 
           Write-Host "Setting current version to $CurrentVersion."
 
-      - name: Set current version
+      - name: Publish macOS x64 Agent
         shell: pwsh
         run: |
-          dotnet publish /p:Version=$env:CurrentVersion /p:FileVersion=$env:CurrentVersion --runtime osx-x64 --configuration Release --output "./Agent/bin/publish" ".\Agent"
+          $VersionString = git show -s --format=%ci
+          $VersionDate = [DateTimeOffset]::Parse($VersionString)
+
+          $Year = $VersionDate.Year.ToString()
+          $Month = $VersionDate.Month.ToString().PadLeft(2, "0")
+          $Day = $VersionDate.Day.ToString().PadLeft(2, "0")
+          $Hour = $VersionDate.Hour.ToString().PadLeft(2, "0")
+          $Minute = $VersionDate.Minute.ToString().PadLeft(2, "0")
+          $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
+          
+          Write-Host "Publishing agent with version $CurrentVersion"
+          dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime osx-x64 --configuration Release --output "./Agent/bin/publish/" "./Agent/"
           Compress-Archive -Path "./Agent/bin/publish/*" -DestinationPath "./Agent/bin/Remotely-MacOS-x64.zip" -Force
 
       - name: Upload build artifact
@@ -87,13 +101,7 @@ jobs:
       ServerUrl: ${{ github.event.inputs.serverUrl }}
 
     steps:
-
-    - uses: actions/download-artifact@v2
-      with:
-        name: Mac-Agent-x64
-        path: ./Server/wwwroot/Content/Remotely-MacOS-x64.zip
-
-        
+       
     - name: Checkout
       uses: actions/checkout@v2
       with:
@@ -113,7 +121,7 @@ jobs:
         
     # Install the .NET Core workload
     - name: Install .NET Core
-      uses: actions/setup-dotnet@v1.7.2
+      uses: actions/setup-dotnet@v1.8.0
       
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
@@ -159,6 +167,13 @@ jobs:
         echo "CurrentVersion=$CurrentVersion" >> $GITHUB_ENV
 
         Write-Host "Setting current version to $CurrentVersion."
+        
+        
+    - name: Download macOS x64 Agent
+      uses: actions/download-artifact@v2
+      with:
+        name: Mac-Agent-x64
+        path: ./Server/wwwroot/Content/
 
     # Run the Publish script to build clients and server.
     - name: Run Publish script
