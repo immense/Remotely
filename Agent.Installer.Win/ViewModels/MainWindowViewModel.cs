@@ -17,6 +17,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Net;
 
 namespace Remotely.Agent.Installer.Win.ViewModels
 {
@@ -166,7 +167,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             }
             set
             {
-                _serverUrl = value;
+                _serverUrl = value?.TrimEnd('/');
                 FirePropertyChanged();
             }
         }
@@ -372,11 +373,6 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             {
                 CreateSupportShortcut = true;
             }
-
-            if (ServerUrl?.EndsWith("/") == true)
-            {
-                ServerUrl = ServerUrl.Substring(0, ServerUrl.LastIndexOf("/"));
-            }
         }
 
         private async Task ExtractDeviceInitInfo()
@@ -406,10 +402,9 @@ namespace Remotely.Agent.Installer.Win.ViewModels
                         var relayCode = codeSection.Substring(1, 4);
                         using (var httpClient = new HttpClient())
                         {
-                            var response = await httpClient.GetAsync($"{ServerUrl}/api/relay/{relayCode}").ConfigureAwait(false);
+                            var response = await httpClient.GetAsync($"{ServerUrl.TrimEnd('/')}/api/relay/{relayCode}").ConfigureAwait(false);
                             if (response.IsSuccessStatusCode)
                             {
-                                var serializer = new JavaScriptSerializer();
                                 var organizationId = await response.Content.ReadAsStringAsync();
                                 OrganizationID = organizationId;
                                 break;
