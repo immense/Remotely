@@ -101,7 +101,7 @@ The following steps will configure your Windows 10 machine for building the Remo
 	* You should have the following Workloads selected:
 	    * ASP.NET and web development
 		* .NET desktop development
-		* .NET Core corss-platform development
+		* .NET Core cross-platform development
 	* You should have the following Individual Components selected:
 	    * .NET SDK (latest version).
 		* MSBuild (which auto-selects Roslyn compilers).
