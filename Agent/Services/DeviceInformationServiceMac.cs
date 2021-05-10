@@ -29,7 +29,7 @@ namespace Remotely.Agent.Services
                 var (usedStorage, totalStorage) = GetSystemDriveInfo();
                 var (usedMemory, totalMemory) = GetMemoryInGB();
 
-                device.CurrentUser = Environment.UserName;
+                device.CurrentUser = GetCurrentUser();
                 device.Drives = GetAllDrives();
                 device.UsedStorage = usedStorage;
                 device.TotalStorage = totalStorage;
@@ -56,7 +56,8 @@ namespace Remotely.Agent.Services
                 cpuPercentStrings
                     .Split(Environment.NewLine)
                     .ToList()
-                    .ForEach(x => {
+                    .ForEach(x =>
+                    {
                         if (double.TryParse(x, out var result))
                         {
                             cpuPercent += result;
@@ -94,7 +95,8 @@ namespace Remotely.Agent.Services
                 memPercentStrings
                     .Split(Environment.NewLine)
                     .ToList()
-                    .ForEach(x => {
+                    .ForEach(x =>
+                    {
                         if (double.TryParse(x, out var result))
                         {
                             usedMemPercent += result;
@@ -104,12 +106,18 @@ namespace Remotely.Agent.Services
                 usedMemPercent = usedMemPercent / 4 / 100;
                 usedGB = usedMemPercent * totalGB;
 
-                return (usedGB,totalGB);
+                return (usedGB, totalGB);
             }
             catch
             {
                 return (0, 0);
             }
+        }
+
+        private string GetCurrentUser()
+        {
+            var users = _processInvoker.InvokeProcessOutput("users", "");
+            return users?.Split()?.FirstOrDefault()?.Trim();
         }
     }
 }
