@@ -197,6 +197,11 @@ else
                     }
                     else
                     {
+                        <div class="mb-2">
+                            <button class="btn btn-primary mr-2" @onclick="GetRemoteLogs">Refresh</button>
+                            <button class="btn btn-danger" @onclick="DeleteLogs">Delete Logs</button>
+                        </div>
+
                         @if (_logLines.Any())
                         {
                             <div style="white-space: pre;">
