@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Remotely.Server.Components;
 using Remotely.Server.Hubs;
 using Remotely.Server.Services;
+using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
@@ -23,11 +24,10 @@ namespace Remotely.Server.Pages
         private string _inputDeviceId;
 
         [Parameter]
-        public string DeviceId { get; set; }
-
-        [Parameter]
         public string ActiveTab { get; set; }
 
+        [Parameter]
+        public string DeviceId { get; set; }
         [Inject]
         private ICircuitConnection CircuitConnection { get; set; }
 
@@ -37,6 +37,9 @@ namespace Remotely.Server.Pages
         private Device Device { get; set; }
 
         [Inject]
+        private IJsInterop JsInterop { get; set; }
+
+        [Inject]
         private IModalService ModalService { get; set; }
 
         [Inject]
@@ -44,6 +47,7 @@ namespace Remotely.Server.Pages
 
         [Inject]
         private IToastService ToastService { get; set; }
+
 
         protected override async Task OnInitializedAsync()
         {
@@ -64,6 +68,17 @@ namespace Remotely.Server.Pages
                 var logChunk = (string)e.Params[0];
                 _logLines.Enqueue(logChunk);
                 InvokeAsync(StateHasChanged);
+            }
+        }
+
+        private async Task DeleteLogs()
+        {
+            var result = await JsInterop.Confirm("Are you sure you want to delete the remote logs?");
+            if (result)
+            {
+                var psCommmand = "Remove-Item -Path \"$env:TEMP/Remotely_Logs.log\" -Force";
+                await CircuitConnection.ExecuteCommandOnAgent(ScriptingShell.PSCore, psCommmand, new string[] { Device.ID });
+                ToastService.ShowToast("Delete command sent.");
             }
         }
 
