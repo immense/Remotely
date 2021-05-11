@@ -32,8 +32,8 @@ else
             <EditForm OnValidSubmit="HandleValidSubmit" Model="_inputModel">
                 <DataAnnotationsValidator />
 
-                <div class="form-group mb-4">
-                    <label class="font-weight-bold">Product Name</label>
+                <div class="form-group mb-5">
+                    <label class="text-info font-weight-bold">Product Name</label>
                     <InputText class="form-control" @bind-Value="_inputModel.ProductName" />
                     <ValidationMessage For="() => _inputModel.ProductName" />
                 </div>
@@ -41,26 +41,26 @@ else
                 @if (!string.IsNullOrWhiteSpace(_base64Icon))
                 {
                     <div class="form-group mb-4">
-                        <label class="font-weight-bold">Current Icon</label>
+                        <label class="text-info font-weight-bold">Current Icon</label>
                         <br />
                         <img class="img-fluid" src="data:image/png;base64,@_base64Icon" />
                     </div>
                 }
 
-                <div class="form-group mb-4">
-                    <label class="font-weight-bold"></label>
+                <div class="form-group mb-5">
+                    <label class="text-info font-weight-bold">New Icon</label>
                     <InputFile type="file" accept="image/png" class="form-control" OnChange="IconUploadInputChanged" />
                 </div>
-                <div class="form-group mb-4">
-                    <label class="font-weight-bold">Title Foreground</label>
+                <div class="form-group mb-5">
+                    <label class="text-info font-weight-bold">Title Foreground</label>
                     <ColorPicker @bind-Color="_inputModel.TitleForegroundColor" />
                 </div>
-                <div class="form-group mb-4">
-                    <label class="font-weight-bold">Title Background</label>
+                <div class="form-group mb-5">
+                    <label class="text-info font-weight-bold">Title Background</label>
                     <ColorPicker @bind-Color="_inputModel.TitleBackgroundColor" />
                 </div>
-                <div class="form-group mb-2">
-                    <label class="font-weight-bold">Button Color</label>
+                <div class="form-group mb-5">
+                    <label class="text-info font-weight-bold">Button Color</label>
                     <ColorPicker @bind-Color="_inputModel.TitleButtonColor" />
                 </div>
                 <div class="form-group text-right">
