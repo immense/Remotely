@@ -1,9 +1,10 @@
 ﻿@page "/branding"
 @inherits AuthComponentBase
-@inject IDataService DataService  
-@inject IToastService ToastService 
+@inject IDataService DataService
+@inject IToastService ToastService
+@inject IJsInterop JsInterop 
 @using Remotely.Server.Models
-@using System.ComponentModel.DataAnnotations 
+@using System.ComponentModel.DataAnnotations
 
 <h3 class="mb-3">Branding</h3>
 
@@ -63,6 +64,7 @@ else
                     <ColorPicker @bind-Color="_inputModel.TitleButtonColor" />
                 </div>
                 <div class="form-group text-right">
+                    <button class="btn btn-secondary mr-3" type="button" @onclick="ResetBranding">Reset</button>
                     <button class="btn btn-primary" type="submit">Submit</button>
                 </div>
             </EditForm>
@@ -89,6 +91,32 @@ else
         public byte[] IconBytes { get; set; }
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        await LoadBrandingInfo();
+    }
+
+    private async Task HandleValidSubmit(EditContext context)
+    {
+        await DataService.UpdateBrandingInfo(
+            User.OrganizationID,
+            _inputModel.ProductName,
+            _inputModel.IconBytes,
+            _inputModel.TitleForegroundColor,
+            _inputModel.TitleBackgroundColor,
+            _inputModel.TitleButtonColor);
+
+        if (_inputModel?.IconBytes?.Any() == true)
+        {
+            _base64Icon = Convert.ToBase64String(_inputModel.IconBytes);
+        }
+
+        _alertMessage = "Branding saved.";
+        ToastService.ShowToast("Branding saved.");
+    }
+
     private async Task IconUploadInputChanged(InputFileChangeEventArgs args)
     {
         if (args.File is null)
@@ -107,26 +135,8 @@ else
         await rs.ReadAsync(_inputModel.IconBytes, 0, (int)args.File.Size);
     }
 
-    private async Task HandleValidSubmit(EditContext context)
+    private async Task LoadBrandingInfo()
     {
-        await DataService.UpdateBrandingInfo(
-            User.OrganizationID,
-            _inputModel.ProductName,
-            _inputModel.IconBytes,
-            _inputModel.TitleForegroundColor,
-            _inputModel.TitleBackgroundColor,
-            _inputModel.TitleButtonColor);
-
-        _base64Icon = Convert.ToBase64String(_inputModel.IconBytes);
-
-        _alertMessage = "Branding saved.";
-        ToastService.ShowToast("Branding saved.");
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-
         var organization = await DataService.GetOrganizationByUserName(User.UserName);
 
         var brandingInfo = await DataService.GetBrandingInfo(organization.ID);
@@ -150,5 +160,16 @@ else
         _inputModel.TitleButtonColor.Red = brandingInfo.ButtonForegroundRed;
         _inputModel.TitleButtonColor.Green = brandingInfo.ButtonForegroundGreen;
         _inputModel.TitleButtonColor.Blue = brandingInfo.ButtonForegroundBlue;
+    }
+
+    private async Task ResetBranding()
+    {
+        var result = await JsInterop.Confirm("Are you sure you want to reset branding to default?");
+        if (result)
+        {
+            await DataService.ResetBranding(User.OrganizationID);
+            await LoadBrandingInfo();
+            ToastService.ShowToast("Branding reset.");
+        }
     }
 }
