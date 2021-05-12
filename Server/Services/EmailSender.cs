@@ -51,7 +51,11 @@ namespace Remotely.Server.Services
 
                 await client.ConnectAsync(AppConfig.SmtpHost, AppConfig.SmtpPort);
 
-                await client.AuthenticateAsync(AppConfig.SmtpUserName, AppConfig.SmtpPassword);
+                if (!string.IsNullOrWhiteSpace(AppConfig.SmtpUserName) &&
+                    !string.IsNullOrWhiteSpace(AppConfig.SmtpPassword))
+                {
+                    await client.AuthenticateAsync(AppConfig.SmtpUserName, AppConfig.SmtpPassword);
+                }
 
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
