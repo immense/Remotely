@@ -49,8 +49,8 @@ However, you can also choose to install the pre-built packages that do not have 
 - If you want to use the pre-built package, run the installer now, and you're done!
   - Otherwise, follow the below steps for setting up the GitHub Actions integration, then run the installer afterward.
 - Fork the repo if you haven't already.
-  - If you've already forked the repo and haven't updated your fork since the new installer was created, you'll need to do so first.
-  - You can use the following commands to pull the latest changes, merge them, and push them back up to your repo ([git](https://git-scm.com/downloads) required).  Make sure to replace `{your-username}` with your GitHub username.
+  - If you've already forked the repo and haven't updated your fork recently, you'll need to do so first.
+  - You can use the following commands to pull the latest changes, merge them, and push them back up to your repo ([git](https://git-scm.com/downloads) required).  Make sure to replace `{your-username}` with your GitHub username.  This example assumes you've added your SSH key to your GitHub account.
 	```
 	git clone git@github.com:{your-username}/remotely
 	cd ./remotely
