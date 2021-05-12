@@ -95,7 +95,9 @@ namespace Server.Installer.Services
                     return null;
                 }
 
-                return payload.artifacts.OrderByDescending(x => x.created_at).First();
+                return payload.artifacts
+                    .OrderByDescending(x => x.created_at)
+                    .FirstOrDefault(x=>x.name.Equals("Server", StringComparison.OrdinalIgnoreCase));
             }
             catch (Exception ex)
             {
