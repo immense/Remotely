@@ -22,22 +22,28 @@ done
 
 
 # Install Homebrew
-su - $SUDO_USER -c '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
-su - $SUDO_USER -c "brew update"
+
+if [[ -n "$SUDO_USER" && "$SUDO_USER" != "root" ]]; then
+    su - $SUDO_USER -c '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+fi
+
+Owner=$(ls -l /usr/local/bin/brew | awk '{print $3}')
+
+su - $Owner -c "brew update"
 
 # Install .NET Runtime
-su - $SUDO_USER -c "brew install --cask dotnet"
+su - $Owner -c "brew install --cask dotnet"
 
 # Install dependency for System.Drawing.Common
-su - $SUDO_USER -c "brew install mono-libgdiplus"
+su - $Owner -c "brew install mono-libgdiplus"
 
 # Install other dependencies
-su - $SUDO_USER -c "brew install curl"
-su - $SUDO_USER -c "brew install jq"
+su - $Owner -c "brew install curl"
+su - $Owner -c "brew install jq"
 
 
 if [ -f "/usr/local/bin/Remotely/ConnectionInfo.json" ]; then
-    SavedGUID=`cat "/usr/local/bin/Remotely/ConnectionInfo.json" | jq -r '.DeviceID'`
+    SavedGUID=`su - $Owner -c "cat '/usr/local/bin/Remotely/ConnectionInfo.json' | jq -r '.DeviceID'"`
     if [[ "$SavedGUID" != "null" && -n "$SavedGUID" ]]; then
         GUID="$SavedGUID"
     fi
