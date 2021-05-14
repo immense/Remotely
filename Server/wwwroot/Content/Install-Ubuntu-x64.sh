@@ -44,7 +44,7 @@ apt-get -y install curl
 
 if [ -f "/usr/local/bin/Remotely/ConnectionInfo.json" ]; then
     SavedGUID=`cat "/usr/local/bin/Remotely/ConnectionInfo.json" | jq -r '.DeviceID'`
-    if [ -z "$SavedGUID" ]; then
+     if [[ "$SavedGUID" != "null" && -n "$SavedGUID" ]]; then
         GUID="$SavedGUID"
     fi
 fi
