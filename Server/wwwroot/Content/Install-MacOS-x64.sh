@@ -37,7 +37,10 @@ su - $SUDO_USER -c "brew install jq"
 
 
 if [ -f "/usr/local/bin/Remotely/ConnectionInfo.json" ]; then
-    GUID=`cat "/usr/local/bin/Remotely/ConnectionInfo.json" | jq -r '.DeviceID'`
+    SavedGUID=`cat "/usr/local/bin/Remotely/ConnectionInfo.json" | jq -r '.DeviceID'`
+    if [ -z "$SavedGUID" ]; then
+        GUID="$SavedGUID"
+    fi
 fi
 
 rm -r -f /Applications/Remotely
