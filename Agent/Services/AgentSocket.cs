@@ -207,6 +207,11 @@ namespace Remotely.Agent.Services
                 User32.SendSAS(false);
             });
 
+            _hubConnection.On("DeleteLogs",  () =>
+            {
+                Logger.DeleteLogs();
+            });
+
             _hubConnection.On("DownloadFile", async (string filePath, string senderConnectionID) =>
             {
                 try
