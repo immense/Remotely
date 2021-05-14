@@ -76,8 +76,7 @@ namespace Remotely.Server.Pages
             var result = await JsInterop.Confirm("Are you sure you want to delete the remote logs?");
             if (result)
             {
-                var psCommmand = "Remove-Item -Path \"$env:TEMP/Remotely_Logs.log\" -Force";
-                await CircuitConnection.ExecuteCommandOnAgent(ScriptingShell.PSCore, psCommmand, new string[] { Device.ID });
+                await CircuitConnection.DeleteRemoteLogs(Device.ID);
                 ToastService.ShowToast("Delete command sent.");
             }
         }

@@ -25,6 +25,8 @@ namespace Remotely.Server.Hubs
         event EventHandler<CircuitEvent> MessageReceived;
         RemotelyUser User { get; }
 
+        Task DeleteRemoteLogs(string deviceId);
+
         Task DownloadFile(string filePath, string deviceID);
 
         Task ExecuteCommandOnAgent(ScriptingShell shell, string command, string[] deviceIDs);
@@ -45,10 +47,11 @@ namespace Remotely.Server.Hubs
         Task SendChat(string message, string deviceId);
         Task<bool> TransferFileFromBrowserToAgent(string deviceId, string transferId, string[] fileIds);
 
+        Task TriggerHeartbeat(string deviceId);
+
         Task UninstallAgents(string[] deviceIDs);
         Task UpdateTags(string deviceID, string tags);
         Task UploadFiles(List<string> fileIDs, string transferID, string[] deviceIDs);
-        Task TriggerHeartbeat(string deviceId);
     }
 
     public class CircuitConnection : CircuitHandler, ICircuitConnection
@@ -91,6 +94,22 @@ namespace Remotely.Server.Hubs
         public string ConnectionId { get; set; }
         public RemotelyUser User { get; set; }
 
+
+        public Task DeleteRemoteLogs(string deviceId)
+        {
+            var (canAccess, key) = CanAccessDevice(deviceId);
+            if (!canAccess)
+            {
+                _toastService.ShowToast("Access denied.", classString: "bg-warning");
+                return Task.CompletedTask;
+            }
+
+            _logger.LogInformation("Delete logs command sent.  Device: {deviceId}.  User: {username}",
+                deviceId,
+                User.UserName);
+
+            return _agentHubContext.Clients.Client(key).SendAsync("DeleteLogs");
+        }
 
         public Task DownloadFile(string filePath, string deviceID)
         {

@@ -37,6 +37,24 @@ namespace Remotely.Shared.Utilities
             }
         }
 
+        public static void DeleteLogs()
+        {
+            try
+            {
+                WriteLock.Wait();
+
+                if (File.Exists(LogPath))
+                {
+                    File.Delete(LogPath);
+                }
+            }
+            catch { }
+            finally
+            {
+                WriteLock.Release();
+            }
+        }
+
         public static async Task<byte[]> ReadAllLogs()
         {
             try
