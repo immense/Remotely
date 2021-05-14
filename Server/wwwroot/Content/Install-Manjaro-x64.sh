@@ -33,7 +33,10 @@ pacman -S jq --noconfirm
 pacman -S curl --noconfirm
 
 if [ -f "/usr/local/bin/Remotely/ConnectionInfo.json" ]; then
-    GUID=`cat "/usr/local/bin/Remotely/ConnectionInfo.json" | jq -r '.DeviceID'`
+    SavedGUID=`cat "/usr/local/bin/Remotely/ConnectionInfo.json" | jq -r '.DeviceID'`
+    if [ -z "$SavedGUID" ]; then
+        GUID="$SavedGUID"
+    fi
 fi
 
 rm -r -f /usr/local/bin/Remotely
