@@ -90,11 +90,8 @@ namespace Remotely.Server.Components.Devices
 
         public void Refresh()
         {
-            lock (_devicesLock)
-            {
-                LoadDevices();
-                InvokeAsync(StateHasChanged);
-            }
+            LoadDevices();
+            InvokeAsync(StateHasChanged);
         }
 
         protected override async Task OnInitializedAsync()
@@ -116,10 +113,7 @@ namespace Remotely.Server.Components.Devices
 
             _sortableProperties.AddRange(sortableProperties);
 
-            lock (_devicesLock)
-            {
-                LoadDevices();
-            }
+            LoadDevices();
         }
 
         protected override bool ShouldRender()
@@ -127,10 +121,7 @@ namespace Remotely.Server.Components.Devices
             var shouldRender = base.ShouldRender();
             if (shouldRender)
             {
-                lock (_devicesLock)
-                {
-                    FilterDevices();
-                }
+                FilterDevices();
             }
             return shouldRender;
         }
@@ -226,67 +217,73 @@ namespace Remotely.Server.Components.Devices
 
         private void LoadDevices()
         {
-            _allDevices.Clear();
+            lock (_devicesLock)
+            {
+                _allDevices.Clear();
 
-            var devices = DataService.GetDevicesForUser(Username)
-                .OrderByDescending(x => x.IsOnline)
-                .ToList();
+                var devices = DataService.GetDevicesForUser(Username)
+                    .OrderByDescending(x => x.IsOnline)
+                    .ToList();
 
-            _allDevices.AddRange(devices);
+                _allDevices.AddRange(devices);
 
-            HighestVersion = _allDevices.Max(x => Version.TryParse(x.AgentVersion, out var result) ? result : default);
+                HighestVersion = _allDevices.Max(x => Version.TryParse(x.AgentVersion, out var result) ? result : default);
+            }
 
             FilterDevices();
         }
 
         private void FilterDevices()
         {
-            _filteredDevices.Clear();
-            _filteredDevices.AddRange(_allDevices);
-
-            if (!string.IsNullOrWhiteSpace(_selectedSortProperty))
+            lock (_devicesLock)
             {
-                var direction = _sortDirection == ListSortDirection.Ascending ? 1 : -1;
-                _filteredDevices.Sort((a, b) =>
+                _filteredDevices.Clear();
+                _filteredDevices.AddRange(_allDevices);
+
+                if (!string.IsNullOrWhiteSpace(_selectedSortProperty))
                 {
-                    if (a.IsOnline != b.IsOnline)
+                    var direction = _sortDirection == ListSortDirection.Ascending ? 1 : -1;
+                    _filteredDevices.Sort((a, b) =>
                     {
-                        return b.IsOnline.CompareTo(a.IsOnline);
-                    }
+                        if (a.IsOnline != b.IsOnline)
+                        {
+                            return b.IsOnline.CompareTo(a.IsOnline);
+                        }
 
-                    var propInfo = _sortableProperties.Find(x => x.Name == _selectedSortProperty);
+                        var propInfo = _sortableProperties.Find(x => x.Name == _selectedSortProperty);
 
-                    var valueA = propInfo.GetValue(a);
-                    var valueB = propInfo.GetValue(b);
+                        var valueA = propInfo.GetValue(a);
+                        var valueB = propInfo.GetValue(b);
 
-                    return Comparer.Default.Compare(valueA, valueB) * direction;
-                });
-            }
+                        return Comparer.Default.Compare(valueA, valueB) * direction;
+                    });
+                }
 
 
-            if (_hideOfflineDevices)
-            {
-                _filteredDevices.RemoveAll(x => !x.IsOnline);
-            }
+                if (_hideOfflineDevices)
+                {
+                    _filteredDevices.RemoveAll(x => !x.IsOnline);
+                }
 
-            if (_selectedGroupId == _deviceGroupNone)
-            {
-                _filteredDevices.RemoveAll(x => !string.IsNullOrWhiteSpace(x.DeviceGroupID));
-            }
-            else if (_selectedGroupId != _deviceGroupAll)
-            {
-                _filteredDevices.RemoveAll(x => x.DeviceGroupID != _selectedGroupId);
-            }
+                if (_selectedGroupId == _deviceGroupNone)
+                {
+                    _filteredDevices.RemoveAll(x => !string.IsNullOrWhiteSpace(x.DeviceGroupID));
+                }
+                else if (_selectedGroupId != _deviceGroupAll)
+                {
+                    _filteredDevices.RemoveAll(x => x.DeviceGroupID != _selectedGroupId);
+                }
 
-            if (!string.IsNullOrWhiteSpace(_filter))
-            {
-                _filteredDevices.RemoveAll(x =>
-                    x.Alias?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
-                    x.CurrentUser?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
-                    x.DeviceName?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
-                    x.Notes?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
-                    x.Platform?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
-                    x.Tags?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true);
+                if (!string.IsNullOrWhiteSpace(_filter))
+                {
+                    _filteredDevices.RemoveAll(x =>
+                        x.Alias?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
+                        x.CurrentUser?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
+                        x.DeviceName?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
+                        x.Notes?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
+                        x.Platform?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
+                        x.Tags?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true);
+                }
             }
         }
 
