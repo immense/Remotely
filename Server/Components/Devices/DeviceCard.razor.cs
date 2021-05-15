@@ -45,20 +45,19 @@ namespace Remotely.Server.Components.Devices
         [Inject]
         private IDataService DataService { get; set; }
 
-        [Inject]
-        private IModalService ModalService { get; set; }
-
         private bool IsExpanded => GetCardState() == DeviceCardState.Expanded;
 
-        private bool IsSelected => AppState.DevicesFrameSelectedDevices.Contains(Device.ID);
-
         private bool IsOutdated =>
-            Version.TryParse(Device.AgentVersion, out var result) && 
+            Version.TryParse(Device.AgentVersion, out var result) &&
             result < ParentFrame.HighestVersion;
+
+        private bool IsSelected => AppState.DevicesFrameSelectedDevices.Contains(Device.ID);
 
         [Inject]
         private IJsInterop JsInterop { get; set; }
 
+        [Inject]
+        private IModalService ModalService { get; set; }
         [Inject]
         private IToastService ToastService { get; set; }
 
@@ -85,18 +84,16 @@ namespace Remotely.Server.Components.Devices
             }
         }
 
-        private string GetProgressMessage(string key)
+        private void ContextMenuOpening(MouseEventArgs args)
         {
-            if (_fileUploadProgressLookup.TryGetValue(key, out var value))
+            if (GetCardState() == DeviceCardState.Normal)
             {
-                return $"{MathHelper.GetFormattedPercent(value)} - {key}";
+                JsInterop.OpenWindow($"/device-details/{Device.ID}", "_blank");
             }
-
-            return string.Empty;
         }
 
         private async Task ExpandCard(MouseEventArgs args)
-        {  
+        {
             if (AppState.DevicesFrameFocusedDevice == Device.ID)
             {
                 if (AppState.DevicesFrameFocusedCardState == DeviceCardState.Normal)
@@ -111,14 +108,6 @@ namespace Remotely.Server.Components.Devices
             JsInterop.ScrollToElement(_card);
 
             await CircuitConnection.TriggerHeartbeat(Device.ID);
-        }
-
-        private void ContextMenuOpening(MouseEventArgs args)
-        {
-            if (GetCardState() == DeviceCardState.Normal)
-            {
-                JsInterop.OpenWindow($"/device-details/{Device.ID}", "_blank");
-            }
         }
 
         private DeviceCardState GetCardState()
@@ -139,6 +128,37 @@ namespace Remotely.Server.Components.Devices
             }
 
             return string.Empty;
+        }
+
+        private string GetProgressMessage(string key)
+        {
+            if (_fileUploadProgressLookup.TryGetValue(key, out var value))
+            {
+                return $"{MathHelper.GetFormattedPercent(value)} - {key}";
+            }
+
+            return string.Empty;
+        }
+
+        private void HandleHeaderClick()
+        {
+            if (IsExpanded)
+            {
+                SetCardStateNormal();
+            }
+        }
+        private async Task HandleValidSubmit()
+        {
+            DataService.UpdateDevice(Device.ID,
+                  Device.Tags,
+                  Device.Alias,
+                  Device.DeviceGroupID,
+                  Device.Notes,
+                  Device.WebRtcSetting);
+
+            ToastService.ShowToast("Device settings saved.");
+
+            await CircuitConnection.TriggerHeartbeat(Device.ID);
         }
 
         private async Task OnFileInputChanged(InputFileChangeEventArgs args)
@@ -173,21 +193,6 @@ namespace Remotely.Server.Components.Devices
             _fileUploadProgressLookup.AddOrUpdate(fileName, percentComplete, (k, v) => percentComplete);
             InvokeAsync(StateHasChanged);
         }
-
-        private async Task HandleValidSubmit()
-        {
-            DataService.UpdateDevice(Device.ID,
-                  Device.Tags,
-                  Device.Alias,
-                  Device.DeviceGroupID,
-                  Device.Notes,
-                  Device.WebRtcSetting);
-
-            ToastService.ShowToast("Device settings saved.");
-
-            await CircuitConnection.TriggerHeartbeat(Device.ID);
-        }
-
         private void OpenDeviceDetails()
         {
             JsInterop.OpenWindow($"/device-details/{Device.ID}", "_blank");

@@ -8,7 +8,9 @@
      @oncontextmenu:preventDefault="GetCardState() == DeviceCardState.Normal"
      @oncontextmenu:stopPropagation="GetCardState() == DeviceCardState.Normal">
 
-    <div class="card-header">
+    <div class="card-header" @onclick="HandleHeaderClick" 
+         @onclick:stopPropagation="GetCardState() == DeviceCardState.Expanded"
+         @onclick:preventDefault="GetCardState() == DeviceCardState.Expanded">
         <div>
             @if (Device.IsOnline)
             {
@@ -37,15 +39,10 @@
         <div class="text-right">
             @if (IsExpanded)
             {
-                <button class="btn btn-sm mr-2" title="Collapse"
-                        @onclick:stopPropagation="true"
-                        @onclick="SetCardStateNormal">
-                    <i class="oi oi-fullscreen-exit"></i>
-                </button>
                 <button class="btn btn-sm mr-2" title="Open in New Tab"
                         @onclick:stopPropagation="true"
                         @onclick="OpenDeviceDetails">
-                    <i class="oi oi-external-link"></i>
+                    <i class="oi oi-external-link" style="font-size: 1.3em"></i>
                 </button>
             }
             <input type="checkbox"

@@ -21,6 +21,10 @@
             transition: .25s ease all;
         }
 
+        .device-card.expanded .card-header {
+            cursor: pointer;
+        }
+
     .device-card:hover {
         transition: all .25s;
     }
