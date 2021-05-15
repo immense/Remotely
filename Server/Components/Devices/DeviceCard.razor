@@ -3,7 +3,7 @@
 
 <div @ref="_card" class="card border-secondary my-3 mr-3 device-card @_theme @GetCardStateClass(Device)"
      @onclick="ExpandCard"
-     @onclick:stopPropagation="true"
+     @onclick:stopPropagation
      @oncontextmenu="ContextMenuOpening"
      @oncontextmenu:preventDefault="GetCardState() == DeviceCardState.Normal"
      @oncontextmenu:stopPropagation="GetCardState() == DeviceCardState.Normal">
@@ -40,7 +40,7 @@
             @if (IsExpanded)
             {
                 <button class="btn btn-sm mr-2" title="Open in New Tab"
-                        @onclick:stopPropagation="true"
+                        @onclick:stopPropagation
                         @onclick="OpenDeviceDetails">
                     <i class="oi oi-external-link" style="font-size: 1.3em"></i>
                 </button>
@@ -49,7 +49,7 @@
                    class="align-middle"
                    checked="@IsSelected"
                    @onchange="ToggleIsSelected"
-                   @onclick:stopPropagation="true" />
+                   @onclick:stopPropagation />
         </div>
 
     </div>
@@ -127,7 +127,7 @@
                 <button class="btn btn-link p-0 m-0 expanded-visible"
                         style="font-size: 50%"
                         @onclick="ShowAllDisks" 
-                        @onclick:stopPropagation="true">
+                        @onclick:stopPropagation>
                     (View All)
                 </button>
             </div>

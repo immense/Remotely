@@ -2,7 +2,7 @@
 @inject IJsInterop JsInterop
 
 <div class="modal fade @_showClass" style="display: @_displayStyle; background-color: rgba(0,0,0,0.35)" @onclick="CloseModal">
-    <div class="modal-dialog modal-dialog-scrollable" role="document" @onclick:stopPropagation="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document" @onclick:stopPropagation>
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">@ModalService.Title</h5>

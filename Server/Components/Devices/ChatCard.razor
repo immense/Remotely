@@ -11,7 +11,7 @@
             @Session?.DeviceName
         </h6>
         <div class="text-right">
-            <button class="btn btn-sm btn-secondary" title="Close" @onclick="CloseChatCard" @onclick:stopPropagation="true">
+            <button class="btn btn-sm btn-secondary" title="Close" @onclick="CloseChatCard" @onclick:stopPropagation>
                 <i class="oi oi-x pointer"></i>
             </button>
         </div>
@@ -64,8 +64,8 @@
             }
         }
     </div>
-    <textarea class="chat-input"
+    <input class="chat-input"
               @bind="_inputText"
               @bind:event="oninput"
-              @onkeypress="(ev) => EvaluateInputKeypress(ev)"></textarea>
+              @onkeypress="EvaluateInputKeypress" />
 </div>
