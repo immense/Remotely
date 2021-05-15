@@ -5,7 +5,7 @@
     <div class="@GetActiveClass() pointer tree-view-item" 
          style="padding-left: @($"{IndentLevel * .5}em"); @Style"
          @onclick="OnItemClick"
-         @onclick:stopPropagation="true">
+         @onclick:stopPropagation>
 
         <span class="@ItemIconCssSelector.Invoke(Source) mx-2" />
         <span>@HeaderSelector.Invoke(Source)</span>
