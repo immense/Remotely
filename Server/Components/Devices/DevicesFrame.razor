@@ -69,7 +69,6 @@
                         <option value="50">50</option>
                         <option value="100">100</option>
                         <option value="200">200</option>
-                        <option value="500">500</option>
                     </select>
                     <span class="ml-1 small">per page</span>
                 </div>
@@ -79,7 +78,7 @@
         </div>
     </div>
     <div id="deviceListDiv" class="p-2 mb-5">
-        @foreach (var device in DevicesForPage)
+        @foreach (var device in _devicesForPage)
         {
             <CascadingValue Value="this">
                 <DeviceCard @key="device.ID" Device="device" RemoteControlTargetLookup="_remoteControlTargetLookup" />
