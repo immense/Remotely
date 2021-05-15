@@ -31,6 +31,7 @@ namespace Remotely.Server.Components.Devices
         private readonly List<Device> _allDevices = new();
         private readonly string _deviceGroupAll = Guid.NewGuid().ToString();
         private readonly string _deviceGroupNone = Guid.NewGuid().ToString();
+        private readonly List<Device> _devicesForPage = new();
         private readonly List<DeviceGroup> _deviceGroups = new();
         private readonly List<Device> _filteredDevices = new();
         private readonly ConcurrentDictionary<string, RemoteControlTarget> _remoteControlTargetLookup = new();
@@ -53,22 +54,6 @@ namespace Remotely.Server.Components.Devices
 
         [Inject]
         private IDataService DataService { get; set; }
-
-        private IEnumerable<Device> DevicesForPage
-        {
-            get
-            {
-                var appendDevices = _filteredDevices.Where(x => AppState.DevicesFrameSelectedDevices.Contains(x.ID));
-                var skipCount = (_currentPage - 1) * _devicesPerPage;
-                var devicesForPage = _filteredDevices
-                    .Except(appendDevices)
-                    .Skip(skipCount)
-                    .Take(_devicesPerPage);
-
-
-                return appendDevices.Concat(devicesForPage);
-            }
-        }
 
         [Inject]
         private IJsInterop JsInterop { get; set; }
@@ -284,7 +269,18 @@ namespace Remotely.Server.Components.Devices
                         x.Platform?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
                         x.Tags?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true);
                 }
+
+                var appendDevices = _filteredDevices.Where(x => AppState.DevicesFrameSelectedDevices.Contains(x.ID));
+                var skipCount = (_currentPage - 1) * _devicesPerPage;
+                var devicesForPage = _filteredDevices
+                    .Except(appendDevices)
+                    .Skip(skipCount)
+                    .Take(_devicesPerPage);
+
+                _devicesForPage.Clear();
+                _devicesForPage.AddRange(devicesForPage);
             }
+
         }
 
         private void PageDown()
