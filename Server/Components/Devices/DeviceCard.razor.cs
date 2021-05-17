@@ -64,6 +64,7 @@ namespace Remotely.Server.Components.Devices
         public void Dispose()
         {
             AppState.PropertyChanged -= AppState_PropertyChanged;
+            CircuitConnection.MessageReceived -= CircuitConnection_MessageReceived;
             GC.SuppressFinalize(this);
         }
 
@@ -72,6 +73,7 @@ namespace Remotely.Server.Components.Devices
             await base.OnInitializedAsync();
             _theme = await AppState.GetEffectiveTheme();
             AppState.PropertyChanged += AppState_PropertyChanged;
+            CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
         }
 
         private void AppState_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -84,6 +86,25 @@ namespace Remotely.Server.Components.Devices
             }
         }
 
+        private void CircuitConnection_MessageReceived(object sender, CircuitEvent e)
+        {
+           switch (e.EventName)
+            {
+                case CircuitEventName.DeviceUpdate:
+                case CircuitEventName.DeviceWentOffline:
+                    {
+                        if (e.Params?.FirstOrDefault() is Device device &&
+                            device.ID == Device?.ID)
+                        {
+                            Device = device;
+                            InvokeAsync(StateHasChanged);
+                        }
+                        break;
+                    }
+                default:
+                    break;
+            }
+        }
         private void ContextMenuOpening(MouseEventArgs args)
         {
             if (GetCardState() == DeviceCardState.Normal)

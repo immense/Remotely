@@ -10,6 +10,7 @@ namespace Remotely.Tests.LoadTester
     internal class Program
     {
         private static readonly SemaphoreSlim _lock = new(10, 10);
+        private static readonly double _heartbeatMs = TimeSpan.FromMinutes(1).TotalMilliseconds;
         private static int _agentCount;
         private static string _organizationId;
         private static string _serverurl;
@@ -87,14 +88,19 @@ namespace Remotely.Tests.LoadTester
                     return;
                 }
 
-                var heartbeatTimer = new System.Timers.Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
-                heartbeatTimer.Elapsed += async (sender, args) =>
+                
+                _ = Task.Run(async () =>
                 {
-                    var currentInfo = await _deviceInfo.CreateDevice(device.ID, _organizationId);
-                    currentInfo.DeviceName = device.DeviceName;
-                    await hubConnection.SendAsync("DeviceHeartbeat", currentInfo);
-                };
-                heartbeatTimer.Start();
+                    await Task.Delay(new Random().Next(1, (int)_heartbeatMs));
+                    var heartbeatTimer = new System.Timers.Timer(_heartbeatMs);
+                    heartbeatTimer.Elapsed += async (sender, args) =>
+                    {
+                        var currentInfo = await _deviceInfo.CreateDevice(device.ID, _organizationId);
+                        currentInfo.DeviceName = device.DeviceName;
+                        await hubConnection.SendAsync("DeviceHeartbeat", currentInfo);
+                    };
+                    heartbeatTimer.Start();
+                });
             }
             catch (Exception ex)
             {
