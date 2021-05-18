@@ -162,6 +162,9 @@ namespace Remotely.Server.Pages
         [Inject]
         private IModalService ModalService { get; set; }
 
+        [Inject]
+        private ICircuitManager CircuitManager { get; set; }
+
         private IEnumerable<string> OutdatedDevices => GetOutdatedDevices();
 
         [Inject]

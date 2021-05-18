@@ -191,26 +191,6 @@ namespace Remotely.Server.Components.Devices
                 _filteredDevices.Clear();
                 _filteredDevices.AddRange(_allDevices);
 
-                if (!string.IsNullOrWhiteSpace(_selectedSortProperty))
-                {
-                    var direction = _sortDirection == ListSortDirection.Ascending ? 1 : -1;
-                    _filteredDevices.Sort((a, b) =>
-                    {
-                        if (a.IsOnline != b.IsOnline)
-                        {
-                            return b.IsOnline.CompareTo(a.IsOnline);
-                        }
-
-                        var propInfo = _sortableProperties.Find(x => x.Name == _selectedSortProperty);
-
-                        var valueA = propInfo.GetValue(a);
-                        var valueB = propInfo.GetValue(b);
-
-                        return Comparer.Default.Compare(valueA, valueB) * direction;
-                    });
-                }
-
-
                 if (_hideOfflineDevices)
                 {
                     _filteredDevices.RemoveAll(x => !x.IsOnline);
@@ -234,6 +214,25 @@ namespace Remotely.Server.Components.Devices
                         x.Notes?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
                         x.Platform?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
                         x.Tags?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true);
+                }
+
+                if (!string.IsNullOrWhiteSpace(_selectedSortProperty))
+                {
+                    var direction = _sortDirection == ListSortDirection.Ascending ? 1 : -1;
+                    _filteredDevices.Sort((a, b) =>
+                    {
+                        if (a.IsOnline != b.IsOnline)
+                        {
+                            return b.IsOnline.CompareTo(a.IsOnline);
+                        }
+
+                        var propInfo = _sortableProperties.Find(x => x.Name == _selectedSortProperty);
+
+                        var valueA = propInfo.GetValue(a);
+                        var valueB = propInfo.GetValue(b);
+
+                        return Comparer.Default.Compare(valueA, valueB) * direction;
+                    });
                 }
 
                 var appendDevices = _filteredDevices.Where(x => AppState.DevicesFrameSelectedDevices.Contains(x.ID));
