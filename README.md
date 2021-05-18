@@ -5,6 +5,11 @@ A remote control and remote scripting solution, built with .NET 5, Blazor, Signa
 ![GitHub Build](https://github.com/lucent-sea/Remotely/workflows/GitHub%20Build/badge.svg)
 
 
+> ## Repo is "On Pause"
+> I will soon be starting a new job and moving my family into a new house.  Until I get settled in, the repo will be archived.  This is for my own peace of mind, as it's rather stressful to see requests/issues come in when I don't have time to address them.
+>
+> Once I'm ready to resume the project, the archival will be removed.
+
 ## Donations
 If this project has benefited you in some way, or if you just want to show appreciation, please consider donating to a charity.
 
