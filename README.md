@@ -39,6 +39,8 @@ GitHub Actions allows you to build and deploy Remotely for free from their cloud
 
 I've created a cross-platform command line tool that can leverage the GitHub Actions REST API to build the project and install it on your private server.  This process will also embed your server's URL into the desktop clients, so that they won't need to prompt the end user to enter it.
 
+Branding will not work for the agent installer or quick support clients (in most cases) unless the server URL is embedded this way.  There is no way for the self-contained EXE to know what server to contact unless it's been compiled into it.
+
 However, you can also choose to install the pre-built packages that do not have any server URLs embedded.  These don't require you to fork the repository on GitHub.
 
 ## Installation Instructions:
