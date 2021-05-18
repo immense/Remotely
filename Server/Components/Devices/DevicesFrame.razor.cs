@@ -37,7 +37,7 @@ namespace Remotely.Server.Components.Devices
         private readonly ConcurrentDictionary<string, RemoteControlTarget> _remoteControlTargetLookup = new();
         private readonly List<PropertyInfo> _sortableProperties = new();
         private int _currentPage = 1;
-        private int _devicesPerPage = 50;
+        private int _devicesPerPage = 25;
         private string _filter;
         private bool _hideOfflineDevices = true;
         private string _selectedGroupId;
