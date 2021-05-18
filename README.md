@@ -78,6 +78,14 @@ However, you can also choose to install the pre-built packages that do not have 
 - By default, SQLite is used for the database.
     - The "Remotely.db" database file is automatically created in the root folder of your site.
 	- You can browse and modify the contents using [DB Browser for SQLite](https://sqlitebrowser.org/).
+- Create your account by clicking the `Register` button on the main page.
+  - This account will be both the server admin and organization admin.
+  - An organization is automatically created for the account.
+    - Organizations are used to group together users, devices, and other data items into a single pool.
+    - By default, only one organization can exist on a server.
+    - The `Register` button will disappear.
+    - People will no longer be able to create accounts on their own.
+    - To allow self-registration, increase the `MaxOrganizationCount` or set it to -1 (see Configuration section).
 
 ## Upgrading
 * To upgrade a server, do any of the below to copy the new Server application files.
