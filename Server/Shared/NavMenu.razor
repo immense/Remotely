@@ -5,9 +5,9 @@
 <div class="pl-4 pb-1 pr-0 pt-0 navbar navbar-dark" style="background-color: rgba(0,0,0,0.3)">
     <a class="navbar-brand text-left" href="">
         <div class="logo-title">
-            @if (!string.IsNullOrWhiteSpace(_user?.Organization?.OrganizationName))
+            @if (!string.IsNullOrWhiteSpace(_organization?.OrganizationName))
             {
-                @_user.Organization.OrganizationName
+                @_organization.OrganizationName
             }
             else
             {
@@ -137,11 +137,22 @@
         = new() { ["target"] = "blank", ["href"] = "/RemoteControl" };
 
     private RemotelyUser _user;
+    private Organization _organization;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+
         _user = await AuthService.GetUser();
+
+        if (!string.IsNullOrWhiteSpace(_user?.OrganizationID))
+        {
+            _organization = DataService.GetOrganizationById(_user.OrganizationID);
+        }
+        else
+        {
+            _organization = await DataService.GetDefaultOrganization();
+        }
     }
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
