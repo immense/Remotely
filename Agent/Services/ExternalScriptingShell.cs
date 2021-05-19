@@ -48,7 +48,8 @@ namespace Remotely.Agent.Services
 
         public static ExternalScriptingShell GetCurrent(ScriptingShell shell, string senderConnectionId)
         {
-            if (_sessions.TryGetValue($"{shell}-{senderConnectionId}", out var session))
+            if (_sessions.TryGetValue($"{shell}-{senderConnectionId}", out var session) &&
+                session.ShellProcess?.HasExited != true)
             {
                 session.ProcessIdleTimeout.Stop();
                 session.ProcessIdleTimeout.Start();

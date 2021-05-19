@@ -23,13 +23,9 @@ namespace Remotely.Server.Components.Devices
         private int _lastCursorIndex;
         private ScriptingShell _shell;
 
-        private string _terminalOpenClass;
-
         private ElementReference _terminalInput;
+        private string _terminalOpenClass;
         private ElementReference _terminalWindow;
-
-        [Inject]
-        private IModalService ModalService { get; set; }
 
         [Inject]
         private IClientAppState AppState { get; set; }
@@ -39,9 +35,6 @@ namespace Remotely.Server.Components.Devices
 
         [Inject]
         private IDataService DataService { get; set; }
-
-        [Inject]
-        private ILogger<Terminal> Logger { get; set; }
 
         private string InputText
         {
@@ -60,6 +53,33 @@ namespace Remotely.Server.Components.Devices
         private IJsInterop JsInterop { get; set; }
 
         [Inject]
+        private ILogger<Terminal> Logger { get; set; }
+
+        [Inject]
+        private IModalService ModalService { get; set; }
+        private EventCallback<SavedScript> RunQuickScript =>
+            EventCallback.Factory.Create<SavedScript>(this, async script =>
+            {
+                var scriptRun = new ScriptRun()
+                {
+                    OrganizationID = User.OrganizationID,
+                    RunAt = Time.Now,
+                    SavedScriptId = script.Id,
+                    RunOnNextConnect = false,
+                    Initiator = User.UserName,
+                    InputType = ScriptInputType.OneTimeScript
+                };
+
+                scriptRun.Devices = DataService.GetDevices(AppState.DevicesFrameSelectedDevices);
+
+                await DataService.AddScriptRun(scriptRun);
+
+                await CircuitConnection.RunScript(AppState.DevicesFrameSelectedDevices, script.Id, scriptRun.Id, ScriptInputType.OneTimeScript, false);
+
+                ToastService.ShowToast($"Running script on {scriptRun.Devices.Count} devices.");
+            });
+
+        [Inject]
         private IToastService ToastService { get; set; }
 
         public void Dispose()
@@ -67,13 +87,6 @@ namespace Remotely.Server.Components.Devices
             AppState.PropertyChanged -= AppState_PropertyChanged;
             CircuitConnection.MessageReceived -= CircuitConnection_MessageReceived;
             GC.SuppressFinalize(this);
-        }
-
-        protected override async Task OnInitializedAsync()
-        {
-            await base.OnInitializedAsync();
-            CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
-            AppState.PropertyChanged += AppState_PropertyChanged;
         }
 
         protected override Task OnAfterRenderAsync(bool firstRender)
@@ -85,6 +98,12 @@ namespace Remotely.Server.Components.Devices
             return base.OnAfterRenderAsync(firstRender);
         }
 
+        protected override async Task OnInitializedAsync()
+        {
+            await base.OnInitializedAsync();
+            CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
+            AppState.PropertyChanged += AppState_PropertyChanged;
+        }
         private void ApplyCompletion(PwshCommandCompletion completion)
         {
             try
@@ -172,25 +191,6 @@ namespace Remotely.Server.Components.Devices
             }
         }
 
-        private void ShowTerminalHelp()
-        {
-            ModalService.ShowModal("Terminal Help", new[]
-            {
-                "Enter terminal commands that will execute on all selected devices.",
-
-                "Tab completion is available for PowerShell Core (PSCore) and Windows PowerShell (WinPS).  Tab and Shift + Tab " +
-                "will cycle through potential completions.  Ctrl + Space will show all available completions.",
-
-                "If more than one devices is selected, the first device's file system will be used when " +
-                "auto-completing file and directory paths.",
-
-                "PowerShell Core is cross-platform and is available on all client operating systems.  Bash is available " +
-                "on Windows 10 if WSL (Windows Subsystem for Linux) is installed.",
-
-                "Note: The first PS Core command or tab completion takes a few moments while the service is " +
-                "starting on the remote device."
-            });
-        }
         private async Task EvaluateKeyDown(KeyboardEventArgs ev)
         {
             if (!ev.Key.Equals("Tab", StringComparison.OrdinalIgnoreCase) &&
@@ -238,6 +238,11 @@ namespace Remotely.Server.Components.Devices
 
                 await ShowAllCompletions();
             }
+            else if (ev.CtrlKey && ev.Key.Equals("q", StringComparison.OrdinalIgnoreCase))
+            {
+                AppState.TerminalLines.Clear();
+                AppState.InvokePropertyChanged(nameof(AppState.TerminalLines));
+            }
         }
 
         private async Task GetNextCompletion(bool forward)
@@ -261,17 +266,6 @@ namespace Remotely.Server.Components.Devices
 
             await CircuitConnection.GetPowerShellCompletions(_lastCompletionInput, _lastCursorIndex, CompletionIntent.ShowAll, false);
         }
-        private void ToggleTerminalOpen()
-        {
-            if (string.IsNullOrWhiteSpace(_terminalOpenClass))
-            {
-                _terminalOpenClass = "open";
-            }
-            else
-            {
-                _terminalOpenClass = string.Empty;
-            }
-        }
 
         private async Task ShowQuickScripts()
         {
@@ -288,7 +282,7 @@ namespace Remotely.Server.Components.Devices
                 return;
             }
 
-         
+
             void showModal(RenderTreeBuilder builder)
             {
                 builder.OpenComponent<QuickScriptsSelector>(0);
@@ -300,28 +294,38 @@ namespace Remotely.Server.Components.Devices
             await ModalService.ShowModal("Quick Scripts", showModal);
         }
 
-        private EventCallback<SavedScript> RunQuickScript => 
-            EventCallback.Factory.Create<SavedScript>(this, async script =>
+        private void ShowTerminalHelp()
+        {
+            ModalService.ShowModal("Terminal Help", new[]
             {
-                var scriptRun = new ScriptRun()
-                {
-                    OrganizationID = User.OrganizationID,
-                    RunAt = Time.Now,
-                    SavedScriptId = script.Id,
-                    RunOnNextConnect = false,
-                    Initiator = User.UserName,
-                    InputType = ScriptInputType.OneTimeScript
-                };
+                "Enter terminal commands that will execute on all selected devices.",
 
-                scriptRun.Devices = DataService.GetDevices(AppState.DevicesFrameSelectedDevices);
+                "Tab completion is available for PowerShell Core (PSCore) and Windows PowerShell (WinPS).  Tab and Shift + Tab " +
+                "will cycle through potential completions.  Ctrl + Space will show all available completions.",
 
-                await DataService.AddScriptRun(scriptRun);
+                "If more than one devices is selected, the first device's file system will be used when " +
+                "auto-completing file and directory paths.",
 
-                await CircuitConnection.RunScript(AppState.DevicesFrameSelectedDevices, script.Id, scriptRun.Id, ScriptInputType.OneTimeScript, false);
+                "PowerShell Core is cross-platform and is available on all client operating systems.  Bash is available " +
+                "on Windows 10 if WSL (Windows Subsystem for Linux) is installed.",
 
-                ToastService.ShowToast($"Running script on {scriptRun.Devices.Count} devices.");
+                "Up and down arrow keys will cycle through terminal input history.  Ctrl + Q will clear the output window.",
+
+                "Note: The first PS Core command or tab completion takes a few moments while the service is " +
+                "starting on the remote device."
             });
-
+        }
+        private void ToggleTerminalOpen()
+        {
+            if (string.IsNullOrWhiteSpace(_terminalOpenClass))
+            {
+                _terminalOpenClass = "open";
+            }
+            else
+            {
+                _terminalOpenClass = string.Empty;
+            }
+        }
         private bool TryMatchShellShortcuts()
         {
             var currentText = InputText?.Trim()?.ToLower();
