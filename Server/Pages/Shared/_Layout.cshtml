@@ -1,14 +1,28 @@
 ﻿@using Microsoft.AspNetCore.Hosting
 @using Microsoft.AspNetCore.Mvc.ViewEngines
-@using Remotely.Server.Services 
+@using Remotely.Server.Services
 @using Remotely.Shared.Models
-@inject IApplicationConfig AppConfig 
+@inject IApplicationConfig AppConfig
 @inject IWebHostEnvironment Environment
 @inject ICompositeViewEngine Engine
-@inject IDataService DataService  
+@inject IDataService DataService
 
 @{
+    var organizationName = "Remotely";
     var user = DataService.GetUserByNameWithOrg(User?.Identity?.Name);
+
+    if (user is null)
+    {
+        var defaultOrg = await DataService.GetDefaultOrganization();
+        if (!string.IsNullOrWhiteSpace(defaultOrg?.OrganizationName))
+        {
+            organizationName = defaultOrg.OrganizationName;
+        }
+    }
+    else if (!string.IsNullOrWhiteSpace(user.Organization?.OrganizationName))
+    {
+        organizationName = user.Organization.OrganizationName;
+    }
 }
 
 
@@ -63,14 +77,7 @@
             <div class="container">
                 <a class="navbar-brand text-left" href="~/">
                     <div>
-                        @if (!string.IsNullOrWhiteSpace(user?.Organization?.OrganizationName))
-                        {
-                            @user.Organization.OrganizationName
-                        }
-                        else
-                        {
-                            @Html.Raw("Remotely")
-                        }
+                        @organizationName
                     </div>
                     <div class="logo-subtitle">Support Portal</div>
                 </a>
