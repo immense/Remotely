@@ -27,27 +27,26 @@ namespace Remotely.Server.Services
         
         public async Task Invoke(HttpContext context, IWebHostEnvironment env, IDataService dataService, ILogger<ClickOnceMiddleware> logger)
         {
+            string architecture;
+            string appFilePath;
+
+            switch (context.Request.Path.Value)
+            {
+                case "/Content/Win-x64/ClickOnce/Remotely_Desktop.application":
+                    architecture = "x64";
+                    appFilePath = Path.Combine(env.WebRootPath, "Content", "Win-x64", "ClickOnce", "Remotely_Desktop.application");
+                    break;
+                case "/Content/Win-x86/ClickOnce/Remotely_Desktop.application":
+                    architecture = "x86";
+                    appFilePath = Path.Combine(env.WebRootPath, "Content", "Win-x86", "ClickOnce", "Remotely_Desktop.application");
+                    break;
+                default:
+                    await _next(context);
+                    return;
+            }
 
             try
             {
-                string architecture;
-                string appFilePath;
-
-                switch (context.Request.Path.Value)
-                {
-                    case "/Content/Win-x64/ClickOnce/Remotely_Desktop.application":
-                        architecture = "x64";
-                        appFilePath = Path.Combine(env.WebRootPath, "Content", "Win-x64", "ClickOnce", "Remotely_Desktop.application");
-                        break;
-                    case "/Content/Win-x86/ClickOnce/Remotely_Desktop.application":
-                        architecture = "x86";
-                        appFilePath = Path.Combine(env.WebRootPath, "Content", "Win-x86", "ClickOnce", "Remotely_Desktop.application");
-                        break;
-                    default:
-                        await _next(context);
-                        return;
-                }
-
                 var orgName = AppConstants.DefaultPublisherName;
                 var productName = AppConstants.DefaultProductName;
                 var orgId = string.Empty;
