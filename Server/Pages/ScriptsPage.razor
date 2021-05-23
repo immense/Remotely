@@ -38,7 +38,7 @@
 
     public bool ShowOnlyMyScripts { get; set; } = true;
 
-    public readonly List<ScriptTreeNode> TreeNodes = new();
+    public List<ScriptTreeNode> TreeNodes { get; } = new();
 
 
     public string GetItemIconCss(ScriptTreeNode viewModel)
