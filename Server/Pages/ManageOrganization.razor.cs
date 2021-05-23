@@ -261,7 +261,7 @@ namespace Remotely.Server.Pages
                 var result = await DataService.CreateUser(_inviteEmail, _inviteAsAdmin, User.OrganizationID);
                 if (result)
                 {
-                    var user = DataService.GetUserByNameWithOrg(_inviteEmail);
+                    var user = await DataService.GetUserAsync(_inviteEmail);
 
                     await UserManager.ConfirmEmailAsync(user, await UserManager.GenerateEmailConfirmationTokenAsync(user));
 
