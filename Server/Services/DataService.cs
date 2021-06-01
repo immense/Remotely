@@ -963,7 +963,6 @@ namespace Remotely.Server.Services
                     (
                         remotelyUser.IsAdministrator ||
                         string.IsNullOrWhiteSpace(device.DeviceGroupID) ||
-                        !device.DeviceGroup.Users.Any() ||
                         device.DeviceGroup.Users.Any(user => user.Id == remotelyUser.Id
                     )));
         }
@@ -2121,8 +2120,7 @@ namespace Remotely.Server.Services
                     user.OrganizationID == device.OrganizationID &&
                     userIDs.Contains(user.Id));
 
-            if (string.IsNullOrWhiteSpace(device.DeviceGroupID) ||
-                !device.DeviceGroup.Users.Any())
+            if (string.IsNullOrWhiteSpace(device.DeviceGroupID))
             {
                 return orgUsers
                     .Select(x => x.Id)
