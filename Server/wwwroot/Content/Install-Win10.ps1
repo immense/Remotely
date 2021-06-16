@@ -75,15 +75,12 @@ function Uninstall-Remotely {
 }
 
 function Install-Remotely {
-	if ((Test-Path -Path "$InstallPath") -eq $true){
-		if ((Test-Path -Path "$InstallPath\ConnectionInfo.json") -eq $true){
-			$ConnectionInfo = Get-Content -Path "$InstallPath\ConnectionInfo.json" | ConvertFrom-Json
-			if ($ConnectionInfo -ne $null) {
-				$ConnectionInfo.Host = $HostName
-				$ConnectionInfo.OrganizationID = $Organization
-				$ConnectionInfo.ServerVerificationToken = ""
-			}
-		
+	if ((Test-Path -Path "$InstallPath") -and (Test-Path -Path "$InstallPath\ConnectionInfo.json")) {
+		$ConnectionInfo = Get-Content -Path "$InstallPath\ConnectionInfo.json" | ConvertFrom-Json
+		if ($ConnectionInfo -ne $null) {
+			$ConnectionInfo.Host = $HostName
+			$ConnectionInfo.OrganizationID = $Organization
+			$ConnectionInfo.ServerVerificationToken = ""
 		}
 	}
 	else {
@@ -111,7 +108,7 @@ function Install-Remotely {
 	else {
 		$ProgressPreference = 'SilentlyContinue'
 		Write-Log "Downloading client..."
-		Invoke-WebRequest -Uri "$HostName/Downloads/Remotely-Win10-$Platform.zip" -OutFile "$env:TEMP\Remotely-Win10-$Platform.zip" 
+		Invoke-WebRequest -Uri "$HostName/Content/Remotely-Win10-$Platform.zip" -OutFile "$env:TEMP\Remotely-Win10-$Platform.zip" 
 		$ProgressPreference = 'Continue'
 	}
 
@@ -131,45 +128,18 @@ function Install-Remotely {
 		$DeviceSetupOptions = @{
 			DeviceAlias = $DeviceAlias;
 			DeviceGroup = $DeviceGroup;
+			OrganizationID = $Organization;
+			DeviceID = $ConnectionInfo.DeviceID;
 		}
 
-		New-Item -ItemType File -Path "$InstallPath\DeviceSetupOptions.json" -Value (ConvertTo-Json -InputObject $DeviceSetupOptions) -Force
+		Invoke-RestMethod -Method Post -ContentType "application/json" -Uri "$HostName/api/devices" -Body $DeviceSetupOptions -UseBasicParsing
 	}
 
 	New-Service -Name "Remotely_Service" -BinaryPathName "$InstallPath\Remotely_Agent.exe" -DisplayName "Remotely Service" -StartupType Automatic -Description "Background service that maintains a connection to the Remotely server.  The service is used for remote support and maintenance by this computer's administrators."
 	Start-Process -FilePath "cmd.exe" -ArgumentList "/c sc.exe failure `"Remotely_Service`" reset=5 actions=restart/5000" -Wait -WindowStyle Hidden
 	Start-Service -Name Remotely_Service
 
-	New-NetFirewallRule -Name "Remotely Desktop" -DisplayName "Remotely ScreenCast" -Description "The agent that allows screen sharing and remote control for Remotely." -Direction Inbound -Enabled True -Action Allow -Program "C:\Program Files\Remotely\Desktop\Remotely_Desktop.exe" -ErrorAction SilentlyContinue
-}
-
-function Install-DesktopRuntime() {
-	$UninstallKeys = New-Object System.Collections.ArrayList
-	Get-ChildItem -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" | ForEach-Object {
-		$UninstallKeys.Add($_) | Out-Null
-	}
-
-	if ([System.Environment]::Is64BitOperatingSystem) {
-		Get-ChildItem -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\" | ForEach-Object {
-		  $UninstallKeys.Add($_) | Out-Null
-		}
-	}
-
-	$RuntimeRegKey = $UninstallKeys | Where-Object {
-		$_.GetValue("DisplayName") -like "Microsoft Windows Desktop Runtime - 3.1.1*" 
-	}
-
-	if ($RuntimeRegKey -eq $null) {
-		Write-Host ".NET Core Windows Desktop runtime not found.  Downloading installer."
-		$Response = Invoke-WebRequest -Uri "https://dotnet.microsoft.com/download/dotnet-core/thank-you/runtime-desktop-3.1.1-windows-$Platform-installer" -UseBasicParsing
-		$DownloadLink = $Response.Links | Where-Object { $_.href -like "*windowsdesktop-runtime*" }
-		$ProgressPreference = 'SilentlyContinue'
-		Invoke-WebRequest -Uri $DownloadLink.href -OutFile "$env:TEMP\windowsdesktop-runtime.exe"
-		$ProgressPreference = 'Continue'
-		Write-Host "Installing .NET Core Windows Desktop runtime."
-		Start-Process -FilePath "$env:TEMP\windowsdesktop-runtime.exe" -ArgumentList "/install /quiet /norestart" -Wait
-	}
-
+	New-NetFirewallRule -Name "Remotely Desktop Unattended" -DisplayName "Remotely Desktop Unattended" -Description "The agent that allows screen sharing and remote control for Remotely." -Direction Inbound -Enabled True -Action Allow -Program "C:\Program Files\Remotely\Desktop\Remotely_Desktop.exe" -ErrorAction SilentlyContinue
 }
 
 try {
@@ -187,7 +157,6 @@ try {
 	else {
 		Write-Log "Install started."
         Write-Log
-		Install-DesktopRuntime
 		Install-Remotely
 		Write-Log "Install completed."
 		exit
