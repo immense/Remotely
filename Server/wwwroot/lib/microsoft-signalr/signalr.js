@@ -1979,7 +1979,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 // Version token that will be replaced by the prepack command
 /** The version of the SignalR client. */
-var VERSION = "5.0.5";
+var VERSION = "5.0.7";
 /** @private */
 var Arg = /** @class */ (function () {
     function Arg() {
@@ -2426,6 +2426,7 @@ var HubConnectionState;
 var HubConnection = /** @class */ (function () {
     function HubConnection(connection, logger, protocol, reconnectPolicy) {
         var _this = this;
+        this.nextKeepAlive = 0;
         _Utils__WEBPACK_IMPORTED_MODULE_4__["Arg"].isRequired(connection, "connection");
         _Utils__WEBPACK_IMPORTED_MODULE_4__["Arg"].isRequired(logger, "logger");
         _Utils__WEBPACK_IMPORTED_MODULE_4__["Arg"].isRequired(protocol, "protocol");
@@ -2940,40 +2941,50 @@ var HubConnection = /** @class */ (function () {
         return remainingData;
     };
     HubConnection.prototype.resetKeepAliveInterval = function () {
-        var _this = this;
         if (this.connection.features.inherentKeepAlive) {
             return;
         }
+        // Set the time we want the next keep alive to be sent
+        // Timer will be setup on next message receive
+        this.nextKeepAlive = new Date().getTime() + this.keepAliveIntervalInMilliseconds;
         this.cleanupPingTimer();
-        this.pingServerHandle = setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
-            var _a;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        if (!(this.connectionState === HubConnectionState.Connected)) return [3 /*break*/, 4];
-                        _b.label = 1;
-                    case 1:
-                        _b.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, this.sendMessage(this.cachedPingMessage)];
-                    case 2:
-                        _b.sent();
-                        return [3 /*break*/, 4];
-                    case 3:
-                        _a = _b.sent();
-                        // We don't care about the error. It should be seen elsewhere in the client.
-                        // The connection is probably in a bad or closed state now, cleanup the timer so it stops triggering
-                        this.cleanupPingTimer();
-                        return [3 /*break*/, 4];
-                    case 4: return [2 /*return*/];
-                }
-            });
-        }); }, this.keepAliveIntervalInMilliseconds);
     };
     HubConnection.prototype.resetTimeoutPeriod = function () {
         var _this = this;
         if (!this.connection.features || !this.connection.features.inherentKeepAlive) {
             // Set the timeout timer
             this.timeoutHandle = setTimeout(function () { return _this.serverTimeout(); }, this.serverTimeoutInMilliseconds);
+            // Set keepAlive timer if there isn't one
+            if (this.pingServerHandle === undefined) {
+                var nextPing = this.nextKeepAlive - new Date().getTime();
+                if (nextPing < 0) {
+                    nextPing = 0;
+                }
+                // The timer needs to be set from a networking callback to avoid Chrome timer throttling from causing timers to run once a minute
+                this.pingServerHandle = setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
+                    var _a;
+                    return __generator(this, function (_b) {
+                        switch (_b.label) {
+                            case 0:
+                                if (!(this.connectionState === HubConnectionState.Connected)) return [3 /*break*/, 4];
+                                _b.label = 1;
+                            case 1:
+                                _b.trys.push([1, 3, , 4]);
+                                return [4 /*yield*/, this.sendMessage(this.cachedPingMessage)];
+                            case 2:
+                                _b.sent();
+                                return [3 /*break*/, 4];
+                            case 3:
+                                _a = _b.sent();
+                                // We don't care about the error. It should be seen elsewhere in the client.
+                                // The connection is probably in a bad or closed state now, cleanup the timer so it stops triggering
+                                this.cleanupPingTimer();
+                                return [3 /*break*/, 4];
+                            case 4: return [2 /*return*/];
+                        }
+                    });
+                }); }, nextPing);
+            }
         }
     };
     HubConnection.prototype.serverTimeout = function () {
@@ -3116,7 +3127,11 @@ var HubConnection = /** @class */ (function () {
                         e_4 = _a.sent();
                         this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_2__["LogLevel"].Information, "Reconnect attempt failed because of error '" + e_4 + "'.");
                         if (this.connectionState !== HubConnectionState.Reconnecting) {
-                            this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_2__["LogLevel"].Debug, "Connection left the reconnecting state during reconnect attempt. Done reconnecting.");
+                            this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_2__["LogLevel"].Debug, "Connection moved to the '" + this.connectionState + "' from the reconnecting state during reconnect attempt. Done reconnecting.");
+                            // The TypeScript compiler thinks that connectionState must be Connected here. The TypeScript compiler is wrong.
+                            if (this.connectionState === HubConnectionState.Disconnecting) {
+                                this.completeClose();
+                            }
                             return [2 /*return*/];
                         }
                         retryError = e_4 instanceof Error ? e_4 : new Error(e_4.toString());
@@ -3156,6 +3171,7 @@ var HubConnection = /** @class */ (function () {
     HubConnection.prototype.cleanupPingTimer = function () {
         if (this.pingServerHandle) {
             clearTimeout(this.pingServerHandle);
+            this.pingServerHandle = undefined;
         }
     };
     HubConnection.prototype.cleanupTimeout = function () {
@@ -3724,6 +3740,7 @@ var MAX_REDIRECTS = 100;
 var HttpConnection = /** @class */ (function () {
     function HttpConnection(url, options) {
         if (options === void 0) { options = {}; }
+        this.stopPromiseResolver = function () { };
         this.features = {};
         this.negotiateVersion = 1;
         _Utils__WEBPACK_IMPORTED_MODULE_5__["Arg"].isRequired(url, "url");
@@ -3890,7 +3907,6 @@ var HttpConnection = /** @class */ (function () {
                         return [3 /*break*/, 10];
                     case 9:
                         this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Debug, "HttpConnection.transport is undefined in HttpConnection.stop() because start() failed.");
-                        this.stopConnection();
                         _a.label = 10;
                     case 10: return [2 /*return*/];
                 }
@@ -3987,6 +4003,8 @@ var HttpConnection = /** @class */ (function () {
                         this.logger.log(_ILogger__WEBPACK_IMPORTED_MODULE_1__["LogLevel"].Error, "Failed to start the connection: " + e_3);
                         this.connectionState = "Disconnected" /* Disconnected */;
                         this.transport = undefined;
+                        // if start fails, any active calls to stop assume that start will complete the stop promise
+                        this.stopPromiseResolver();
                         return [2 /*return*/, Promise.reject(e_3)];
                     case 13: return [2 /*return*/];
                 }
