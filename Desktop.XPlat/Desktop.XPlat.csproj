@@ -52,9 +52,9 @@
     <EmbeddedResource Include="Assets\Remotely_Icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.4" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.4" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.4" />
+    <PackageReference Include="Avalonia" Version="0.10.6" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.6" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.6" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Desktop.Core\Desktop.Core.csproj" />
