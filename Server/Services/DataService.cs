@@ -642,14 +642,10 @@ namespace Remotely.Server.Services
                 if (currentUser.IsServerAdmin)
                 {
                     dbContext.EventLogs.RemoveRange(dbContext.EventLogs);
-                    dbContext.ScriptResults.RemoveRange(dbContext.ScriptResults);
                 }
                 else
                 {
                     var eventLogs = dbContext.EventLogs.Where(x => x.OrganizationID == currentUser.OrganizationID);
-                    var commandResults = dbContext.ScriptResults.Where(x => x.OrganizationID == currentUser.OrganizationID);
-
-                    dbContext.ScriptResults.RemoveRange(commandResults);
                     dbContext.EventLogs.RemoveRange(eventLogs);
                 }
 
