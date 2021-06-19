@@ -6,7 +6,7 @@ import { IceServerModel } from "./Models/IceServerModel.js";
 export class RtcSession {
     PeerConnection: RTCPeerConnection;
     DataChannel: RTCDataChannel;
-    MessagePack: any = window['MessagePack'];
+    MessagePack: any = window['msgpack5']();
     Init(iceServers: IceServerModel[]) {
        
         this.PeerConnection = new RTCPeerConnection({

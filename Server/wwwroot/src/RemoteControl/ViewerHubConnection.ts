@@ -14,7 +14,7 @@ var signalR = window["signalR"];
 
 export class ViewerHubConnection {
     Connection: HubConnection;
-    MessagePack: any = window['MessagePack'];
+    MessagePack: any = window['msgpack5']();
     PartialCaptureFrames: Uint8Array[] = [];
 
  

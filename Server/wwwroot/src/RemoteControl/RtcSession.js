@@ -2,7 +2,7 @@ import * as UI from "./UI.js";
 import { ViewerApp } from "./App.js";
 export class RtcSession {
     constructor() {
-        this.MessagePack = window['MessagePack'];
+        this.MessagePack = window['msgpack5']();
     }
     Init(iceServers) {
         this.PeerConnection = new RTCPeerConnection({

@@ -5,7 +5,7 @@ import { ShowMessage } from "./UI.js";
 var signalR = window["signalR"];
 export class ViewerHubConnection {
     constructor() {
-        this.MessagePack = window['MessagePack'];
+        this.MessagePack = window['msgpack5']();
         this.PartialCaptureFrames = [];
     }
     Connect() {

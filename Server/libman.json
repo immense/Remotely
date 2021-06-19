@@ -20,17 +20,6 @@
         "dist/browser/signalr-protocol-msgpack.min.js",
         "dist/browser/signalr-protocol-msgpack.min.js.map"
       ]
-    },
-    {
-      "provider": "unpkg",
-      "library": "@msgpack/msgpack@2.7.0",
-      "destination": "wwwroot/lib/msgpack/",
-      "files": [
-        "dist.es5+umd/msgpack.js",
-        "dist.es5+umd/msgpack.js.map",
-        "dist.es5+umd/msgpack.min.js",
-        "dist.es5+umd/msgpack.min.js.map"
-      ]
     }
   ]
 }

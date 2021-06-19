@@ -6,7 +6,7 @@ import { Sound } from "./Sound.js";
 import { ReceiveFile } from "./FileTransferService.js";
 export class DtoMessageHandler {
     constructor() {
-        this.MessagePack = window['MessagePack'];
+        this.MessagePack = window['msgpack5']();
         this.ImagePartials = {};
     }
     ParseBinaryMessage(data) {

@@ -18,7 +18,7 @@ import {
 import { ReceiveFile } from "./FileTransferService.js";
 
 export class DtoMessageHandler {
-    MessagePack: any = window['MessagePack'];
+    MessagePack: any = window['msgpack5']();
     ImagePartials: Record<string, Array<Uint8Array>> = {};
 
     ParseBinaryMessage(data: ArrayBuffer) {
