@@ -60,7 +60,7 @@ jobs:
           $Minute = $VersionDate.Minute.ToString().PadLeft(2, "0")
           $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
 
-          echo "CurrentVersion=$CurrentVersion" >> $GITHUB_ENV
+          echo "CurrentVersion=$CurrentVersion" >> $env:GITHUB_ENV
 
           Write-Host "Setting current version to $CurrentVersion."
 
@@ -164,7 +164,7 @@ jobs:
         $Minute = $VersionDate.Minute.ToString().PadLeft(2, "0")
         $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
         
-        echo "CurrentVersion=$CurrentVersion" >> $GITHUB_ENV
+        echo "CurrentVersion=$CurrentVersion" >> $env:GITHUB_ENV
 
         Write-Host "Setting current version to $CurrentVersion."
         
