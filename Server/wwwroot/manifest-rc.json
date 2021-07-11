@@ -2,7 +2,7 @@
   "id": "Remotely Remote Control",
   "name": "Remotely Remote Control",
   "short_name": "Remotely Remote Control",
-  "start_url": "https://app.remotely.one/remotecontrol",
+  "start_url": "./remotecontrol",
   "display": "standalone",
   "background_color": "black",
   "theme_color": "white",
@@ -10,12 +10,12 @@
   "description": "Remote access tools designed to get things done quickly.",
   "icons": [
     {
-      "src": "https://app.remotely.one/images/Remotely_Icon_128.png",
+      "src": "./images/Remotely_Icon_128.png",
       "sizes": "128x128",
       "type": "image/png"
     },
     {
-      "src": "https://app.remotely.one/images/Remotely_Icon_512.png",
+      "src": "./images/Remotely_Icon_512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
@@ -23,15 +23,15 @@
   "related_applications": [
     {
       "platform": "windows",
-      "url": "https://app.remotely.one/remotecontrol"
+      "url": "./remotecontrol"
     },
     {
       "platform": "play",
-      "url": "https://app.remotely.one/remotecontrol"
+      "url": "./remotecontrol"
     },
     {
       "platform": "itunes",
-      "url": "https://app.remotely.one/remotecontrol"
+      "url": "./remotecontrol"
     }
   ]
 }
