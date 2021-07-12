@@ -91,7 +91,7 @@ else
         var secret = PasswordGenerator.GeneratePassword(36);
         var secretHash = new PasswordHasher<RemotelyUser>().HashPassword(null, secret);
 
-        await DataService.CreateApiToken(Username, _createKeyName, secret);
+        await DataService.CreateApiToken(Username, _createKeyName, secretHash);
         RefreshData();
         _alertMessage = "Key created.";
         _newKeySecret = secret;
