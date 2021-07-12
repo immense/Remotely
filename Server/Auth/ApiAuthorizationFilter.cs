@@ -32,6 +32,7 @@ namespace Remotely.Server.Auth
                 {
                     var orgID = DataService.GetApiKey(keyId)?.OrganizationID;
                     context.HttpContext.Request.Headers["OrganizationID"] = orgID;
+                    return;
                 }
             }
 
