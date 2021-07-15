@@ -158,7 +158,7 @@ namespace Remotely.Server
             services.AddSignalR(options =>
             {
                 options.EnableDetailedErrors = IsDev;
-                options.MaximumReceiveMessageSize = 500_000;
+                options.MaximumReceiveMessageSize = 100_000;
             })
                 .AddJsonProtocol(options =>
                 {
@@ -242,21 +242,9 @@ namespace Remotely.Server
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHub<AgentHub>("/AgentHub", options =>
-                {
-                    options.ApplicationMaxBufferSize = 500_000;
-                    options.TransportMaxBufferSize = 500_000;
-                });
-                endpoints.MapHub<CasterHub>("/CasterHub", options =>
-                {
-                    options.ApplicationMaxBufferSize = 100_000;
-                    options.TransportMaxBufferSize = 100_000;
-                });
-                endpoints.MapHub<ViewerHub>("/ViewerHub", options =>
-                {
-                    options.ApplicationMaxBufferSize = 100_000;
-                    options.TransportMaxBufferSize = 100_000;
-                });
+                endpoints.MapHub<AgentHub>("/AgentHub");
+                endpoints.MapHub<CasterHub>("/CasterHub");
+                endpoints.MapHub<ViewerHub>("/ViewerHub");
 
                 endpoints.MapControllers();
                 endpoints.MapBlazorHub();

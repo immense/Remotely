@@ -389,7 +389,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
                     if (Guid.TryParse(guid, out _))
                     {
                         OrganizationID = guid;
-                        return;
+                        break;
                     }
 
 

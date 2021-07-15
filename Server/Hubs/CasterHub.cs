@@ -64,16 +64,22 @@ namespace Remotely.Server.Hubs
         public Task GetSessionID()
         {
             var random = new Random();
-            var sessionID = "";
-            for (var i = 0; i < 3; i++)
+            var sessionId = "";
+
+            while (string.IsNullOrWhiteSpace(sessionId) ||
+                SessionInfoList.ContainsKey(sessionId))
             {
-                sessionID += random.Next(0, 999).ToString().PadLeft(3, '0');
+                for (var i = 0; i < 3; i++)
+                {
+                    sessionId += random.Next(0, 999).ToString().PadLeft(3, '0');
+                }
             }
-            Context.Items["SessionID"] = sessionID;
+            
+            Context.Items["SessionID"] = sessionId;
 
-            SessionInfoList[Context.ConnectionId].AttendedSessionID = sessionID;
+            SessionInfoList[Context.ConnectionId].AttendedSessionID = sessionId;
 
-            return Clients.Caller.SendAsync("SessionID", sessionID);
+            return Clients.Caller.SendAsync("SessionID", sessionId);
         }
 
         public Task NotifyRequesterUnattendedReady(string browserHubConnectionID)
