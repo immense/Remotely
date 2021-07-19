@@ -206,48 +206,51 @@ namespace Remotely.Desktop.Win.ViewModels
 
             try
             {
-                await _casterSocket.Connect(_conductor.Host);
+                var result = await _casterSocket.Connect(_conductor.Host);
 
-                if (_casterSocket.Connection is null)
+                if (result)
                 {
+                    _casterSocket.Connection.Closed += (ex) =>
+                    {
+                        App.Current?.Dispatcher?.Invoke(() =>
+                        {
+                            Viewers.Clear();
+                            SessionID = "Disconnected";
+                        });
+                        return Task.CompletedTask;
+                    };
+
+                    _casterSocket.Connection.Reconnecting += (ex) =>
+                    {
+                        App.Current?.Dispatcher?.Invoke(() =>
+                        {
+                            Viewers.Clear();
+                            SessionID = "Reconnecting";
+                        });
+                        return Task.CompletedTask;
+                    };
+
+                    _casterSocket.Connection.Reconnected += async (arg) =>
+                    {
+                        await GetSessionID();
+                    };
+
+                    await DeviceInitService.GetInitParams();
+                    ApplyBranding();
+
+                    await GetSessionID();
+
                     return;
                 }
-
-                _casterSocket.Connection.Closed += async (ex) =>
-                {
-                    await App.Current?.Dispatcher?.InvokeAsync(() =>
-                    {
-                        Viewers.Clear();
-                        SessionID = "Disconnected";
-                    });
-                };
-
-                _casterSocket.Connection.Reconnecting += async (ex) =>
-                {
-                    await App.Current?.Dispatcher?.InvokeAsync(() =>
-                    {
-                        Viewers.Clear();
-                        SessionID = "Reconnecting";
-                    });
-                };
-
-                _casterSocket.Connection.Reconnected += async (arg) =>
-                {
-                    await GetSessionID();
-                };
-
-                await DeviceInitService.GetInitParams();
-                ApplyBranding();
-
-                await GetSessionID();
             }
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                SessionID = "Failed";
-                MessageBox.Show(Application.Current.MainWindow, "Failed to connect to server.", "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
             }
+
+            // If we got here, something went wrong.
+            SessionID = "Failed";
+            MessageBox.Show(Application.Current.MainWindow, "Failed to connect to server.", "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
         public void PromptForHostName()
