@@ -4,8 +4,12 @@
 
 A remote control and remote scripting solution, built with .NET Core and SignalR Core.
 
-Website: https://remotely.lucency.co  
-Public Server: https://tryremotely.lucency.co
+> ## Repo is "On Pause"
+> My family and I have recently moved into a new house.  Until we've settled in and adjusted to the changes, the repo will be archived.  This is for my own peace of mind, as it's rather stressful to see requests/issues come in when I don't have time to address them.
+>
+> Once I'm ready to resume the project, the archival will be removed.
+>
+> Also, I'm looking for work.  If you might entertain the idea of hiring me, please shoot me an email!  :)  (translucency@outlook.com)
 
 ## Build Instructions (Windows 10)  
 The following steps will configure your Windows 10 machine for building the Remotely server and clients.
