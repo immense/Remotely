@@ -9,8 +9,6 @@ A remote control and remote scripting solution, built with .NET 5, Blazor, Signa
 > My family and I have recently moved into a new house.  Until we've settled in and adjusted to the changes, the repo will be archived.  This is for my own peace of mind, as it's rather stressful to see requests/issues come in when I don't have time to address them.
 >
 > Once I'm ready to resume the project, the archival will be removed.
->
-> Also, I'm looking for work.  If you might entertain the idea of hiring me, please shoot me an email!  :)  (translucency@outlook.com)
 
 ## Donations
 If this project has benefited you in some way, or if you just want to show appreciation, please consider donating to a charity.
