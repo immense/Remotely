@@ -2,8 +2,7 @@
 
 const defaultSettings = {
     streamModeEnabled: false,
-    displayName: "",
-    autoQuality: true
+    displayName: ""
 };
 
 

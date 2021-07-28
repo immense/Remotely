@@ -30,8 +30,7 @@
     FileDownloadButton,
     UpdateStreamingToggled,
     ViewOnlyButton,
-    FullScreenButton,
-    AutoQualityButton
+    FullScreenButton
 } from "./UI.js";
 import { Sound } from "./Sound.js";
 import { ViewerApp } from "./App.js";
@@ -65,15 +64,6 @@ export function ApplyInputHandlers() {
             Sound.Init();
         }
         ViewerApp.MessageSender.SendToggleAudio(toggleOn);
-    });
-    AutoQualityButton.addEventListener("click", (ev) => {
-        AutoQualityButton.classList.toggle("toggled");
-        var toggleOn = AutoQualityButton.classList.contains("toggled");
-
-        ViewerApp.Settings.autoQuality = toggleOn;
-        SetSettings(ViewerApp.Settings);
-
-        ViewerApp.MessageSender.SendToggleAutoQuality(toggleOn);
     });
     ChangeScreenButton.addEventListener("click", (ev) => {
         closeAllHorizontalBars("screenSelectBar");

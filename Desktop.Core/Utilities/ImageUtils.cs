@@ -29,6 +29,13 @@ namespace Remotely.Desktop.Core.Utilities
         //    return ms.ToArray();
         //}
 
+        public static byte[] EncodeJpeg(Bitmap bitmap)
+        {
+            using var ms = new MemoryStream();
+            bitmap.Save(ms, ImageFormat.Jpeg);
+            return ms.ToArray();
+        }
+
         public static byte[] EncodeJpeg(Bitmap bitmap, int quality)
         {
             using var ms = new MemoryStream();

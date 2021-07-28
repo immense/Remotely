@@ -114,7 +114,6 @@ export class DtoMessageHandler {
     }
     HandleScreenData(screenDataDto: ScreenDataDto) {
         UI.UpdateDisplays(screenDataDto.SelectedScreen, screenDataDto.DisplayNames);
-        ViewerApp.MessageSender.SendToggleAutoQuality(ViewerApp.Settings.autoQuality);
     }
 
     HandleScreenSize(screenSizeDto: ScreenSizeDto) {

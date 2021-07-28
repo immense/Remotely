@@ -37,8 +37,6 @@ namespace Remotely.Shared.Enums
         KeyUp = 14,
         [EnumMember(Value = "CtrlAltDel")]
         CtrlAltDel = 15,
-        [EnumMember(Value = "AutoQuality")]
-        ToggleAutoQuality = 16,
         [EnumMember(Value = "ToggleAudio")]
         ToggleAudio = 17,
         [EnumMember(Value = "ToggleBlockInput")]

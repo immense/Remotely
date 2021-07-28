@@ -19,9 +19,6 @@ namespace Remotely.Desktop.Core.Services
 {
     public class Viewer : IDisposable
     {
-        private long _bytesSent;
-        private TimeSpan _timeSpentSending = TimeSpan.Zero;
-
         public Viewer(ICasterSocket casterSocket,
             IScreenCapturer screenCapturer,
             IClipboardService clipboardService,
@@ -42,7 +39,6 @@ namespace Remotely.Desktop.Core.Services
         public bool DisconnectRequested { get; set; }
         public EncoderParameters EncoderParams { get; private set; }
         public bool HasControl { get; set; } = true;
-        public bool AutoQuality { get; set; } = true;
         public bool IsConnected => CasterSocket.IsConnected;
 
         public bool IsStalled
@@ -71,7 +67,6 @@ namespace Remotely.Desktop.Core.Services
 
         public string Name { get; set; }
 
-        public double AverageBytesPerSecond { get; set; }
         public ConcurrentQueue<SentFrame> PendingSentFrames { get; } = new();
 
         public WebRtcSession RtcSession { get; set; }
@@ -228,8 +223,6 @@ namespace Remotely.Desktop.Core.Services
             var width = screenFrame.Width;
             var height = screenFrame.Height;
 
-            var sw = Stopwatch.StartNew();
-
             for (var i = 0; i < screenFrame.EncodedImageBytes.Length; i += 50_000)
             {
                 var dto = new CaptureFrameDto()
@@ -260,16 +253,6 @@ namespace Remotely.Desktop.Core.Services
             await SendToViewer(
                 () => RtcSession.SendDto(endOfFrameDto),
                 () => CasterSocket.SendDtoToViewer(endOfFrameDto, ViewerConnectionID));
-
-            sw.Stop();
-
-            _bytesSent += screenFrame.EncodedImageBytes.Length;
-            _timeSpentSending += sw.Elapsed;
-
-
-            AverageBytesPerSecond = _bytesSent / _timeSpentSending.TotalSeconds;
-
-            Debug.WriteLine($"Mbps: {AverageBytesPerSecond / 1024 / 1024 * 8}");
         }
 
         public async Task SendScreenData(string selectedScreen, string[] displayNames)
@@ -302,9 +285,15 @@ namespace Remotely.Desktop.Core.Services
 
         public void ThrottleIfNeeded()
         {
+            // Limit to 20 FPS.
+            TaskHelper.DelayUntil(() => 
+                !PendingSentFrames.TryPeek(out var result) || DateTimeOffset.Now - result.Timestamp > TimeSpan.FromMilliseconds(50),
+                TimeSpan.FromSeconds(5));
+
+            // Wait for pending frames to be received.
             TaskHelper.DelayUntil(() =>
                 !PendingSentFrames.TryPeek(out var result) || DateTimeOffset.Now - result.Timestamp < TimeSpan.FromSeconds(1),
-                TimeSpan.FromSeconds(10));
+                TimeSpan.FromSeconds(5));
         }
 
         public void ToggleWebRtcVideo(bool toggleOn)
