@@ -103,6 +103,11 @@ namespace Remotely.Desktop.Win.Services
                     {
                         var (result, frame) = GetDirectXFrame();
 
+                        if (result == GetDirectXFrameResult.Timeout)
+                        {
+                            return null;
+                        }
+
                         if (result == GetDirectXFrameResult.Success)
                         {
                             return frame;
@@ -209,7 +214,7 @@ namespace Remotely.Desktop.Win.Services
                 var texture2D = _directxScreens[SelectedScreen].Texture2D;
 
                 // Try to get duplicated frame within given time is ms
-                var result = duplicatedOutput.TryAcquireNextFrame(100,
+                var result = duplicatedOutput.TryAcquireNextFrame(500,
                     out var duplicateFrameInformation,
                     out var screenResource);
 
