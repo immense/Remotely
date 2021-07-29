@@ -182,7 +182,7 @@ export function ApplyInputHandlers() {
             url = `${location.origin}${location.pathname}?sessionID=${ViewerApp.CasterID}`;
         }
         else {
-            url = `${location.origin}${location.pathname}?clientID=${ViewerApp.CasterID}&serviceID=${ViewerApp.ServiceID}`;
+            url = `${location.origin}${location.pathname}?casterID=${ViewerApp.CasterID}&serviceID=${ViewerApp.ServiceID}`;
         }
         ViewerApp.ClipboardWatcher.SetClipboardText(url);
         ShowMessage("Link copied to clipboard.");
