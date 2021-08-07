@@ -14,5 +14,6 @@ namespace Remotely.Desktop.Core.Models
         public int Left { get; init; }
         public int Height { get; init; }
         public int Width { get; init; }
+        public long Sequence { get; init; }
     }
 }

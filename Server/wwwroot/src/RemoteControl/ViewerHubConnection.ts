@@ -29,7 +29,6 @@ export class ViewerHubConnection {
 
         this.Connection.start().then(() => {
             this.SendScreenCastRequestToDevice();
-            UI.ToggleConnectUI(false);
         }).catch(err => {
             console.error(err.toString());
             console.log("Connection closed.");

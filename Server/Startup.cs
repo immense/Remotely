@@ -264,21 +264,6 @@ namespace Remotely.Server
 
         private static void ConfigureStaticFiles(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            // TODO: This redirects downloads from the old location to the new one.
-            // Remove after a few releases.
-            app.Use(async (context, next) =>
-            {
-                if (context.Request.Path.HasValue &&
-                    context.Request.Path.Value.Contains("/Downloads/", StringComparison.OrdinalIgnoreCase) &&
-                    !context.Request.Path.Value.TrimEnd('/').EndsWith("downloads", StringComparison.OrdinalIgnoreCase))
-                {
-                    var redirectUrl = context.Request.GetDisplayUrl().Replace("/Downloads/", "/Content/");
-                    context.Response.Redirect(redirectUrl);
-                    return;
-                }
-                await next();
-            });
-
             var provider = new FileExtensionContentTypeProvider();
             // Add new mappings
             provider.Mappings[".ps1"] = "application/octet-stream";

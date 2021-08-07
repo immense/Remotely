@@ -6,7 +6,6 @@ import { RemoteControlMode } from "./Enums/RemoteControlMode.js";
 import { GetDistanceBetween } from "./Utilities.js";
 import { ShowMessage } from "./UI.js";
 import { SetSettings } from "./SettingsService.js";
-var lastPointerMove = Date.now();
 var isDragging;
 var currentPointerDevice;
 var currentTouchCount;
@@ -196,10 +195,6 @@ export function ApplyInputHandlers() {
             if (ViewerApp.ViewOnlyMode) {
                 return;
             }
-            if (Date.now() - lastPointerMove < 25) {
-                return;
-            }
-            lastPointerMove = Date.now();
             var percentX = e.offsetX / viewer.clientWidth;
             var percentY = e.offsetY / viewer.clientHeight;
             ViewerApp.MessageSender.SendMouseMove(percentX, percentY);

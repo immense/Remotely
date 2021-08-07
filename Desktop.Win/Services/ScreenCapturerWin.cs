@@ -84,13 +84,17 @@ namespace Remotely.Desktop.Win.Services
             {
                 try
                 {
+                    if (!Win32Interop.SwitchToInputDesktop())
+                    {
+                        Logger.Write("SwitchToInputDesktop failed.", Shared.Enums.EventType.Warning);
+                    }
 
-                    Win32Interop.SwitchToInputDesktop();
 
                     if (NeedsInit)
                     {
                         Logger.Write("Init needed in GetNextFrame.");
                         Init();
+                        NeedsInit = false;
                     }
                     
                     // Sometimes DX will result in a timeout, even when there are changes
@@ -142,7 +146,10 @@ namespace Remotely.Desktop.Win.Services
 
         public void Init()
         {
-            Win32Interop.SwitchToInputDesktop();
+            if (!Win32Interop.SwitchToInputDesktop())
+            {
+                Logger.Write("SwitchToInputDesktop failed.", Shared.Enums.EventType.Warning);
+            }
 
             CaptureFullscreen = true;
             InitBitBlt();
@@ -280,22 +287,32 @@ namespace Remotely.Desktop.Win.Services
             }
             catch (SharpDXException e)
             {
-                if (e.ResultCode.Code != SharpDX.DXGI.ResultCode.WaitTimeout.Result.Code)
+                if (e.ResultCode.Code == SharpDX.DXGI.ResultCode.WaitTimeout.Code)
                 {
-                    Logger.Write(e);
-                    NeedsInit = true;
-                    return (GetDirectXFrameResult.Failure, null);
+                    return (GetDirectXFrameResult.Timeout, null);
                 }
-                return (GetDirectXFrameResult.Timeout, null);
+                Logger.Write(e, "SharpDXException error.");
             }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+            }
+            return (GetDirectXFrameResult.Failure, null);
         }
 
         private void InitBitBlt()
         {
-            _bitBltScreens.Clear();
-            for (var i = 0; i < Screen.AllScreens.Length; i++)
+            try
             {
-                _bitBltScreens.Add(Screen.AllScreens[i].DeviceName, i);
+                _bitBltScreens.Clear();
+                for (var i = 0; i < Screen.AllScreens.Length; i++)
+                {
+                    _bitBltScreens.Add(Screen.AllScreens[i].DeviceName, i);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
             }
         }
 
@@ -352,9 +369,6 @@ namespace Remotely.Desktop.Win.Services
                         }
                     }
                 }
-
-
-                NeedsInit = false;
             }
             catch (Exception ex)
             {

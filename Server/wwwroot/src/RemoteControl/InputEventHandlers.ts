@@ -41,7 +41,6 @@ import { GetDistanceBetween } from "./Utilities.js";
 import { ShowMessage } from "./UI.js";
 import { SetSettings } from "./SettingsService.js";
 
-var lastPointerMove = Date.now();
 var isDragging: boolean;
 var currentPointerDevice: string;
 var currentTouchCount: number;
@@ -245,10 +244,6 @@ export function ApplyInputHandlers() {
                 return;
             }
 
-            if (Date.now() - lastPointerMove < 25) {
-                return;
-            }
-            lastPointerMove = Date.now();
             var percentX = e.offsetX / viewer.clientWidth;
             var percentY = e.offsetY / viewer.clientHeight;
             ViewerApp.MessageSender.SendMouseMove(percentX, percentY);

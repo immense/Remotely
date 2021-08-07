@@ -1,4 +1,5 @@
 ﻿using Remotely.Shared.Enums;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace Remotely.Shared.Models.RemoteControlDtos
@@ -6,20 +7,23 @@ namespace Remotely.Shared.Models.RemoteControlDtos
     [DataContract]
     public class ScreenDataDto : BaseDto
     {
-        public ScreenDataDto(string selectedScreen, string[] displayNames)
-        {
-            SelectedScreen = selectedScreen;
-            DisplayNames = displayNames;
-        }
-
         [DataMember(Name = "DisplayNames")]
-        public string[] DisplayNames { get; }
+        public IEnumerable<string> DisplayNames { get; init; }
 
 
         [DataMember(Name = "DtoType")]
         public new BaseDtoType DtoType { get; } = BaseDtoType.ScreenData;
 
-        [DataMember(Name = "SelectedScreen")]
-        public string SelectedScreen { get; }
+        [DataMember(Name = "SelectedDisplay")]
+        public string SelectedDisplay { get; init; }
+
+        [DataMember(Name = "MachineName")]
+        public string MachineName { get; init; }
+
+        [DataMember(Name = "ScreenWidth")]
+        public int ScreenWidth { get; init; }
+
+        [DataMember(Name = "ScreenHeight")]
+        public int ScreenHeight { get; init; }
     }
 }

@@ -42,6 +42,7 @@ namespace Remotely.Desktop.Core.Services
             {
                 Bitmap currentFrame = null;
                 Bitmap previousFrame = null;
+                long sequence = 0;
 
                 var viewer = ServiceContainer.Instance.GetRequiredService<Viewer>();
                 viewer.Name = screenCastRequest.RequesterName;
@@ -66,11 +67,11 @@ namespace Remotely.Desktop.Core.Services
 
                 await viewer.SendViewerConnected();
 
-                await viewer.SendMachineName(Environment.MachineName);
-
                 await viewer.SendScreenData(
-                       viewer.Capturer.SelectedScreen,
-                       viewer.Capturer.GetDisplayNames().ToArray());
+                    viewer.Capturer.SelectedScreen,
+                    viewer.Capturer.GetDisplayNames(),
+                    screenBounds.Width,
+                    screenBounds.Height);
 
                 await viewer.SendScreenSize(screenBounds.Width, screenBounds.Height);
 
@@ -93,7 +94,8 @@ namespace Remotely.Desktop.Core.Services
                             Left = screenBounds.Left,
                             Top = screenBounds.Top,
                             Width = screenBounds.Width,
-                            Height = screenBounds.Height
+                            Height = screenBounds.Height,
+                            Sequence = sequence++
                         });
                     }
                 }
@@ -116,14 +118,13 @@ namespace Remotely.Desktop.Core.Services
                             Thread.Sleep(100);
                             continue;
                         }
+
                         if (viewer.IsStalled)
                         {
                             // Viewer isn't responding.  Abort sending.
                             Logger.Write("Viewer stalled.  Ending send loop.");
                             break;
                         }
-
-                        viewer.ThrottleIfNeeded();
 
                         if (currentFrame != null)
                         {
@@ -149,8 +150,21 @@ namespace Remotely.Desktop.Core.Services
                         viewer.Capturer.CaptureFullscreen = false;
 
                         using var croppedFrame = currentFrame.Clone(diffArea, currentFrame.PixelFormat);
-                        var encodedImageBytes = ImageUtils.EncodeJpeg(croppedFrame);
-                        await SendFrame(encodedImageBytes, diffArea, viewer);
+
+                        byte[] encodedImageBytes;
+
+                        if (viewer.ImageQuality == Viewer.DefaultQuality)
+                        {
+                            encodedImageBytes = ImageUtils.EncodeJpeg(croppedFrame);
+                        }
+                        else
+                        {
+                            encodedImageBytes = ImageUtils.EncodeJpeg(croppedFrame, viewer.ImageQuality);
+                        }
+
+                        await SendFrame(encodedImageBytes, diffArea, sequence++, viewer);
+
+                        viewer.ApplyAutoQuality();
 
                     }
                     catch (Exception ex)
@@ -184,7 +198,7 @@ namespace Remotely.Desktop.Core.Services
             }
         }
 
-        private static async Task SendFrame(byte[] encodedImageBytes, Rectangle diffArea, Viewer viewer)
+        private static async Task SendFrame(byte[] encodedImageBytes, Rectangle diffArea, long sequence, Viewer viewer)
         {
             if (encodedImageBytes.Length == 0)
             {
@@ -198,6 +212,7 @@ namespace Remotely.Desktop.Core.Services
                 Left = diffArea.Left,
                 Width = diffArea.Width,
                 Height = diffArea.Height,
+                Sequence = sequence
             });
         }
     }

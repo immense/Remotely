@@ -61,7 +61,7 @@ namespace Remotely.Server.Hubs
             return _appConfig.IceServers;
         }
 
-        public Task GetSessionID()
+        public string GetSessionID()
         {
             var random = new Random();
             var sessionId = "";
@@ -79,7 +79,7 @@ namespace Remotely.Server.Hubs
 
             SessionInfoList[Context.ConnectionId].AttendedSessionID = sessionId;
 
-            return Clients.Caller.SendAsync("SessionID", sessionId);
+            return sessionId;
         }
 
         public Task NotifyRequesterUnattendedReady(string browserHubConnectionID)

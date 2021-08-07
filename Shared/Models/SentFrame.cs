@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Remotely.Shared.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,9 +9,9 @@ namespace Remotely.Shared.Models
 {
     public struct SentFrame
     {
-        public SentFrame(DateTimeOffset timestamp, int frameSize)
+        public SentFrame(int frameSize)
         {
-            Timestamp = timestamp;
+            Timestamp = Time.Now;
             FrameSize = frameSize;
         }
 

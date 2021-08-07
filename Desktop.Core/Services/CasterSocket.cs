@@ -20,14 +20,14 @@ namespace Remotely.Desktop.Core.Services
         Task DisconnectAllViewers();
         Task DisconnectViewer(Viewer viewer, bool notifyViewer);
         Task<IceServerModel[]> GetIceServers();
-        Task GetSessionID();
+        Task<string> GetSessionID();
         Task NotifyRequesterUnattendedReady(string requesterID);
         Task NotifyViewersRelaunchedScreenCasterReady(string[] viewerIDs);
         Task SendConnectionFailedToViewers(List<string> viewerIDs);
         Task SendConnectionRequestDenied(string viewerID);
         Task SendCtrlAltDelToAgent();
         Task SendDeviceInfo(string serviceID, string machineName, string deviceID);
-        Task SendDtoToViewer<T>(T baseDto, string viewerId);
+        Task SendDtoToViewer<T>(T dto, string viewerId);
         Task SendIceCandidateToBrowser(string candidate, int sdpMlineIndex, string sdpMid, string viewerConnectionID);
         Task SendMessageToViewer(string viewerID, string message);
         Task SendRtcOfferToBrowser(string sdp, string viewerID, IceServerModel[] iceServers);
@@ -108,11 +108,11 @@ namespace Remotely.Desktop.Core.Services
             }
         }
 
-        public async Task DisconnectViewer(Viewer viewer, bool notifyViewer)
+        public Task DisconnectViewer(Viewer viewer, bool notifyViewer)
         {
             viewer.DisconnectRequested = true;
             viewer.Dispose();
-            await Connection.SendAsync("DisconnectViewer", viewer.ViewerConnectionID, notifyViewer);
+            return Connection.SendAsync("DisconnectViewer", viewer.ViewerConnectionID, notifyViewer);
         }
 
         public async Task<IceServerModel[]> GetIceServers()
@@ -120,62 +120,62 @@ namespace Remotely.Desktop.Core.Services
             return await Connection.InvokeAsync<IceServerModel[]>("GetIceServers");
         }
 
-        public async Task GetSessionID()
+        public async Task<string> GetSessionID()
         {
-            await Connection.SendAsync("GetSessionID");
+            return await Connection.InvokeAsync<string>("GetSessionID");
         }
-        public async Task NotifyRequesterUnattendedReady(string requesterID)
+        public Task NotifyRequesterUnattendedReady(string requesterID)
         {
-            await Connection.SendAsync("NotifyRequesterUnattendedReady", requesterID);
-        }
-
-        public async Task NotifyViewersRelaunchedScreenCasterReady(string[] viewerIDs)
-        {
-            await Connection.SendAsync("NotifyViewersRelaunchedScreenCasterReady", viewerIDs);
+            return Connection.SendAsync("NotifyRequesterUnattendedReady", requesterID);
         }
 
-        public async Task SendConnectionFailedToViewers(List<string> viewerIDs)
+        public Task NotifyViewersRelaunchedScreenCasterReady(string[] viewerIDs)
         {
-            await Connection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
+            return Connection.SendAsync("NotifyViewersRelaunchedScreenCasterReady", viewerIDs);
         }
 
-        public async Task SendConnectionRequestDenied(string viewerID)
+        public Task SendConnectionFailedToViewers(List<string> viewerIDs)
         {
-            await Connection.SendAsync("SendConnectionRequestDenied", viewerID);
+            return Connection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
         }
 
-        public async Task SendMessageToViewer(string viewerID, string message)
+        public Task SendConnectionRequestDenied(string viewerID)
         {
-            await Connection.SendAsync("SendMessageToViewer", viewerID, message);
+            return Connection.SendAsync("SendConnectionRequestDenied", viewerID);
         }
 
-        public async Task SendCtrlAltDelToAgent()
+        public Task SendMessageToViewer(string viewerID, string message)
         {
-            await Connection.SendAsync("SendCtrlAltDelToAgent");
+            return Connection.SendAsync("SendMessageToViewer", viewerID, message);
         }
 
-        public async Task SendDeviceInfo(string serviceID, string machineName, string deviceID)
+        public Task SendCtrlAltDelToAgent()
         {
-            await Connection.SendAsync("ReceiveDeviceInfo", serviceID, machineName, deviceID);
+            return Connection.SendAsync("SendCtrlAltDelToAgent");
         }
 
-        public Task SendDtoToViewer<T>(T baseDto, string viewerId)
+        public Task SendDeviceInfo(string serviceID, string machineName, string deviceID)
         {
-            var serializedDto = MessagePack.MessagePackSerializer.Serialize(baseDto);
+            return Connection.SendAsync("ReceiveDeviceInfo", serviceID, machineName, deviceID);
+        }
+
+        public Task SendDtoToViewer<T>(T dto, string viewerId)
+        {
+            var serializedDto = MessagePack.MessagePackSerializer.Serialize(dto);
             return Connection.SendAsync("SendDtoToBrowser", serializedDto, viewerId);
         }
-        public async Task SendIceCandidateToBrowser(string candidate, int sdpMlineIndex, string sdpMid, string viewerConnectionID)
+        public Task SendIceCandidateToBrowser(string candidate, int sdpMlineIndex, string sdpMid, string viewerConnectionID)
         {
-            await Connection.SendAsync("SendIceCandidateToBrowser", candidate, sdpMlineIndex, sdpMid, viewerConnectionID);
+            return Connection.SendAsync("SendIceCandidateToBrowser", candidate, sdpMlineIndex, sdpMid, viewerConnectionID);
         }
 
-        public async Task SendRtcOfferToBrowser(string sdp, string viewerID, IceServerModel[] iceServers)
+        public Task SendRtcOfferToBrowser(string sdp, string viewerID, IceServerModel[] iceServers)
         {
-            await Connection.SendAsync("SendRtcOfferToBrowser", sdp, viewerID, iceServers);
+            return Connection.SendAsync("SendRtcOfferToBrowser", sdp, viewerID, iceServers);
         }
-        public async Task SendViewerConnected(string viewerConnectionId)
+        public Task SendViewerConnected(string viewerConnectionId)
         {
-            await Connection.SendAsync("ViewerConnected", viewerConnectionId);
+            return Connection.SendAsync("ViewerConnected", viewerConnectionId);
         }
 
         private void ApplyConnectionHandlers()
@@ -285,11 +285,6 @@ namespace Remotely.Desktop.Core.Services
                 {
                     MessageHandler.ParseMessage(viewer, baseDto);
                 }
-            });
-
-            Connection.On("SessionID", (string sessionID) =>
-            {
-                conductor.InvokeSessionIDChanged(sessionID);
             });
 
             Connection.On("ViewerDisconnected", async (string viewerID) =>

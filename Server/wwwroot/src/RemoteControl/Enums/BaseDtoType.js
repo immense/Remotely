@@ -3,7 +3,6 @@ export var BaseDtoType;
     BaseDtoType[BaseDtoType["CaptureFrame"] = 0] = "CaptureFrame";
     BaseDtoType[BaseDtoType["ScreenData"] = 1] = "ScreenData";
     BaseDtoType[BaseDtoType["ScreenSize"] = 2] = "ScreenSize";
-    BaseDtoType[BaseDtoType["MachineName"] = 3] = "MachineName";
     BaseDtoType[BaseDtoType["ClipboardText"] = 4] = "ClipboardText";
     BaseDtoType[BaseDtoType["AudioSample"] = 5] = "AudioSample";
     BaseDtoType[BaseDtoType["CursorChange"] = 6] = "CursorChange";

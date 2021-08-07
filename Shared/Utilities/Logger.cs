@@ -117,10 +117,10 @@ namespace Remotely.Shared.Utilities
             }
         }
 
-        public static void Write(Exception ex, string message, EventType eventType = EventType.Error)
+        public static void Write(Exception ex, string message, EventType eventType = EventType.Error, [CallerMemberName] string callerName = "")
         {
-            Write(message, eventType);
-            Write(ex, eventType);
+            Write(message, eventType, callerName);
+            Write(ex, eventType, callerName);
         }
 
         private static void CheckLogFileExists()

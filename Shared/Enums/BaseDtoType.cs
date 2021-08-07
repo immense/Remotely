@@ -11,8 +11,6 @@ namespace Remotely.Shared.Enums
         ScreenData = 1,
         [EnumMember(Value = "ScreenSize")]
         ScreenSize = 2,
-        [EnumMember(Value = "MachineName")]
-        MachineName = 3,
         [EnumMember(Value = "ClipboardText")]
         ClipboardText = 4,
         [EnumMember(Value = "AudioSample")]

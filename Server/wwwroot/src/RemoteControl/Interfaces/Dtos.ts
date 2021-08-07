@@ -8,13 +8,13 @@ export interface AudioSampleDto extends BaseDto {
 }
 
 export interface CaptureFrameDto extends BaseDto {
-    Id: string;
     EndOfFrame: boolean;
     Left: number;
     Top: number;
     Width: number;
     Height: number;
     ImageBytes: Uint8Array;
+    Sequence: number;
 }
 
 export interface ClipboardTextDto extends BaseDto {
@@ -102,10 +102,6 @@ export class KeyUpDto implements BaseDto {
     DtoType: BaseDtoType = BaseDtoType.KeyUp;
 }
 
-export interface MachineNameDto extends BaseDto {
-    MachineName: string;
-}
-
 export class MouseDownDto implements BaseDto {
     constructor(button: number, percentX: number, percentY: number) {
         this.Button = button;
@@ -156,7 +152,10 @@ export class MouseWheelDto implements BaseDto {
 
 export interface ScreenDataDto extends BaseDto {
     DisplayNames: string[];
-    SelectedScreen: string;
+    SelectedDisplay: string;
+    MachineName: string;
+    ScreenWidth: number;
+    ScreenHeight: number;
 }
 
 export interface ScreenSizeDto extends BaseDto {

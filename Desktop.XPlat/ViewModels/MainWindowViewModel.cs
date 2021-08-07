@@ -29,7 +29,8 @@ namespace Remotely.Desktop.XPlat.ViewModels
         private double _copyMessageOpacity;
         private string _host;
         private bool _isCopyMessageVisible;
-        private string _sessionID;
+        private string _sessionId;
+        private string _statusMessage;
 
         public MainWindowViewModel()
         {
@@ -39,7 +40,6 @@ namespace Remotely.Desktop.XPlat.ViewModels
             _conductor = Services.GetRequiredService<Conductor>();
             _casterSocket = Services.GetRequiredService<ICasterSocket>();
 
-            _conductor.SessionIDChanged += SessionIDChanged;
             _conductor.ViewerRemoved += ViewerRemoved;
             _conductor.ViewerAdded += ViewerAdded;
             _conductor.ScreenCastRequested += ScreenCastRequested;
@@ -70,7 +70,7 @@ namespace Remotely.Desktop.XPlat.ViewModels
 
         public ICommand CopyLinkCommand => new Executor(async (param) =>
         {
-            await App.Current.Clipboard.SetTextAsync($"{Host}/RemoteControl?sessionID={SessionID.Replace(" ", "")}");
+            await App.Current.Clipboard.SetTextAsync($"{Host}/RemoteControl?sessionID={StatusMessage.Replace(" ", "")}");
 
             CopyMessageOpacity = 1;
             IsCopyMessageVisible = true;
@@ -122,19 +122,31 @@ namespace Remotely.Desktop.XPlat.ViewModels
                 await _casterSocket.DisconnectViewer(viewer, true);
             }
         });
-
-        public string SessionID
+        public string StatusMessage
         {
-            get => _sessionID;
-            set => this.RaiseAndSetIfChanged(ref _sessionID, value);
+            get => _statusMessage;
+            set => this.RaiseAndSetIfChanged(ref _statusMessage, value);
         }
 
         public ObservableCollection<Viewer> Viewers { get; } = new ObservableCollection<Viewer>();
         private static IServiceProvider Services => ServiceContainer.Instance;
+
         public async Task GetSessionID()
         {
             await _casterSocket.SendDeviceInfo(_conductor.ServiceID, Environment.MachineName, _conductor.DeviceID);
-            await _casterSocket.GetSessionID();
+            var sessionId = await _casterSocket.GetSessionID();
+
+            var formattedSessionID = "";
+            for (var i = 0; i < sessionId.Length; i += 3)
+            {
+                formattedSessionID += sessionId.Substring(i, 3) + " ";
+            }
+
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                _sessionId = formattedSessionID.Trim();
+                StatusMessage = _sessionId;
+            });
         }
 
         public async Task Init()
@@ -147,11 +159,11 @@ namespace Remotely.Desktop.XPlat.ViewModels
                     Environment.Exit(0);
                 }
 
-                SessionID = "Initializing...";
+                StatusMessage = "Initializing...";
 
                 await InstallDependencies();
 
-                SessionID = "Retrieving...";
+                StatusMessage = "Retrieving...";
 
                 Host = _configService.GetConfig().Host;
 
@@ -176,7 +188,7 @@ namespace Remotely.Desktop.XPlat.ViewModels
                     {
                         await Dispatcher.UIThread.InvokeAsync(() =>
                         {
-                            SessionID = "Disconnected";
+                            StatusMessage = "Disconnected";
                         });
                     };
 
@@ -184,21 +196,20 @@ namespace Remotely.Desktop.XPlat.ViewModels
                     {
                         await Dispatcher.UIThread.InvokeAsync(() =>
                         {
-                            SessionID = "Reconnecting";
+                            StatusMessage = "Reconnecting";
                         });
                     };
 
-                    _casterSocket.Connection.Reconnected += async (arg) =>
+                    _casterSocket.Connection.Reconnected += (id) =>
                     {
-                        await GetSessionID();
+                        StatusMessage = _sessionId;
+                        return Task.CompletedTask;
                     };
 
                     await DeviceInitService.GetInitParams();
-
                     ApplyBranding();
 
-                    await _casterSocket.SendDeviceInfo(_conductor.ServiceID, Environment.MachineName, _conductor.DeviceID);
-                    await _casterSocket.GetSessionID();
+                    await GetSessionID();
 
                     return;
                 }
@@ -210,7 +221,7 @@ namespace Remotely.Desktop.XPlat.ViewModels
             }
 
             // If we got here, something went wrong.
-            _sessionID = "Failed";
+            _statusMessage = "Failed";
             await MessageBox.Show("Failed to connect to server.", "Connection Failed", MessageBoxType.OK);
         }
 
@@ -278,18 +289,6 @@ namespace Remotely.Desktop.XPlat.ViewModels
                         Services.GetRequiredService<IScreenCaster>().BeginScreenCasting(screenCastRequest);
                     });
                 }
-            });
-        }
-        private async void SessionIDChanged(object sender, string sessionID)
-        {
-            await Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                var formattedSessionID = "";
-                for (var i = 0; i < sessionID.Length; i += 3)
-                {
-                    formattedSessionID += sessionID.Substring(i, 3) + " ";
-                }
-                SessionID = formattedSessionID.Trim();
             });
         }
 

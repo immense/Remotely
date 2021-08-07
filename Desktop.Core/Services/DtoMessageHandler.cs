@@ -161,15 +161,7 @@ namespace Remotely.Desktop.Core.Services
 
         private void HandleFrameReceived(Viewer viewer)
         {
-            while (viewer.PendingSentFrames.Count > 0 &&
-                !viewer.IsStalled &&
-                viewer.IsConnected)
-            {
-                if (viewer.PendingSentFrames.TryDequeue(out _))
-                {
-                    break;
-                }
-            }
+            viewer.DequeuePendingFrame();
         }
 
         private void KeyDown(byte[] message)

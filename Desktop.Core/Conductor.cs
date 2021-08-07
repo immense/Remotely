@@ -11,8 +11,6 @@ namespace Remotely.Desktop.Core
     {
         public event EventHandler<ScreenCastRequest> ScreenCastRequested;
 
-        public event EventHandler<string> SessionIDChanged;
-
         public event EventHandler<Services.Viewer> ViewerAdded;
 
         public event EventHandler<string> ViewerRemoved;
@@ -30,11 +28,6 @@ namespace Remotely.Desktop.Core
         public void InvokeScreenCastRequested(ScreenCastRequest viewerIdAndRequesterName)
         {
             ScreenCastRequested?.Invoke(null, viewerIdAndRequesterName);
-        }
-
-        public void InvokeSessionIDChanged(string sessionID)
-        {
-            SessionIDChanged?.Invoke(null, sessionID);
         }
 
         public void InvokeViewerAdded(Services.Viewer viewer)

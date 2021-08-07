@@ -2,7 +2,6 @@
     CaptureFrame = 0,
     ScreenData = 1,
     ScreenSize = 2,
-    MachineName = 3,
     ClipboardText = 4,
     AudioSample = 5,
     CursorChange = 6,

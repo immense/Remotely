@@ -9,17 +9,16 @@ import {
     CaptureFrameDto,
     ClipboardTextDto,
     CursorChangeDto,
-    MachineNameDto,
     ScreenDataDto,
     ScreenSizeDto,
     FileDto,
     WindowsSessionsDto
 } from "./Interfaces/Dtos.js";
 import { ReceiveFile } from "./FileTransferService.js";
+import { HandleCaptureReceived } from "./CaptureProcessor.js";
 
 export class DtoMessageHandler {
     MessagePack: any = window['msgpack5']();
-    ImagePartials: Record<string, Array<Uint8Array>> = {};
 
     ParseBinaryMessage(data: ArrayBuffer) {
         var model = this.MessagePack.decode(data) as BaseDto;
@@ -35,9 +34,6 @@ export class DtoMessageHandler {
                 break;
             case BaseDtoType.CursorChange:
                 this.HandleCursorChange(model as unknown as CursorChangeDto);
-                break;
-            case BaseDtoType.MachineName:
-                this.HandleMachineName(model as unknown as MachineNameDto);
                 break;
             case BaseDtoType.ScreenData:
                 this.HandleScreenData(model as unknown as ScreenDataDto);
@@ -60,48 +56,11 @@ export class DtoMessageHandler {
     }
 
     HandleCaptureFrame(captureFrame: CaptureFrameDto) {
-
-        if (captureFrame.EndOfFrame) {
-
-            var partials = this.ImagePartials[captureFrame.Id];
-            let completedFrame = new Blob(partials);
-            this.ImagePartials[captureFrame.Id] = [];
-
-            let url = window.URL.createObjectURL(completedFrame);
-            let img = new Image(captureFrame.Width, captureFrame.Height);
-            img.onload = () => {
-                UI.Screen2DContext.drawImage(img,
-                    captureFrame.Left,
-                    captureFrame.Top,
-                    captureFrame.Width,
-                    captureFrame.Height);
-                window.URL.revokeObjectURL(url);
-            };
-            img.src = url;
-
-            //createImageBitmap(completedFrame).then(bitmap => {
-            //    UI.Screen2DContext.drawImage(bitmap,
-            //        captureFrame.Left,
-            //        captureFrame.Top,
-            //        captureFrame.Width,
-            //        captureFrame.Height);
-
-            //    bitmap.close();
-            //})
-
-            ViewerApp.MessageSender.SendFrameReceived();
-        }
-        else {
-            if (!this.ImagePartials[captureFrame.Id]) {
-                this.ImagePartials[captureFrame.Id] = [];
-            }
-            this.ImagePartials[captureFrame.Id].push(captureFrame.ImageBytes);
-        }
+        HandleCaptureReceived(captureFrame);
     }
 
     HandleClipboardText(clipboardText: ClipboardTextDto) {
         ViewerApp.ClipboardWatcher.SetClipboardText(clipboardText.ClipboardText);
-        ShowMessage("Clipboard updated.");
     }
     HandleCursorChange(cursorChange: CursorChangeDto) {
         UI.UpdateCursor(cursorChange.ImageBytes, cursorChange.HotSpotX, cursorChange.HotSpotY, cursorChange.CssOverride);
@@ -109,11 +68,11 @@ export class DtoMessageHandler {
     HandleFile(file: FileDto) {
         ReceiveFile(file);
     }
-    HandleMachineName(machineNameDto: MachineNameDto) {
-        document.title = `${machineNameDto.MachineName} - Remotely Session`;
-    }
     HandleScreenData(screenDataDto: ScreenDataDto) {
-        UI.UpdateDisplays(screenDataDto.SelectedScreen, screenDataDto.DisplayNames);
+        document.title = `${screenDataDto.MachineName} - Remotely Session`;
+        UI.ToggleConnectUI(false);
+        UI.SetScreenSize(screenDataDto.ScreenWidth, screenDataDto.ScreenHeight);
+        UI.UpdateDisplays(screenDataDto.SelectedDisplay, screenDataDto.DisplayNames);
     }
 
     HandleScreenSize(screenSizeDto: ScreenSizeDto) {
