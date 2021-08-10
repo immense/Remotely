@@ -19,6 +19,6 @@ namespace Remotely.Shared.Models.RemoteControlDtos
         public int Height { get; }
 
         [DataMember(Name = "DtoType")]
-        public new BaseDtoType DtoType { get; } = BaseDtoType.ScreenSize;
+        public override BaseDtoType DtoType { get; init; } = BaseDtoType.ScreenSize;
     }
 }

@@ -8,7 +8,7 @@ namespace Remotely.Shared.Models.RemoteControlDtos
     {
 
         [DataMember(Name = "DtoType")]
-        public new BaseDtoType DtoType { get; } = BaseDtoType.Tap;
+        public override BaseDtoType DtoType { get; init; } = BaseDtoType.Tap;
 
         [DataMember(Name = "PercentX")]
         public double PercentX { get; set; }

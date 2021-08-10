@@ -12,7 +12,7 @@ namespace Remotely.Shared.Models.RemoteControlDtos
 
 
         [DataMember(Name = "DtoType")]
-        public new BaseDtoType DtoType { get; } = BaseDtoType.ScreenData;
+        public override BaseDtoType DtoType { get; init; } = BaseDtoType.ScreenData;
 
         [DataMember(Name = "SelectedDisplay")]
         public string SelectedDisplay { get; init; }

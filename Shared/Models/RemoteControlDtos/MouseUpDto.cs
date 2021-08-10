@@ -10,7 +10,7 @@ namespace Remotely.Shared.Models.RemoteControlDtos
         public int Button { get; set; }
 
         [DataMember(Name = "DtoType")]
-        public new BaseDtoType DtoType { get; } = BaseDtoType.MouseUp;
+        public override BaseDtoType DtoType { get; init; } = BaseDtoType.MouseUp;
 
         [DataMember(Name = "PercentX")]
         public double PercentX { get; set; }

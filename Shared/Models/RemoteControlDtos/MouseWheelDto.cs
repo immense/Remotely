@@ -8,7 +8,7 @@ namespace Remotely.Shared.Models.RemoteControlDtos
     {
 
         [DataMember(Name = "DtoType")]
-        public new BaseDtoType DtoType { get; } = BaseDtoType.MouseWheel;
+        public override BaseDtoType DtoType { get; init; } = BaseDtoType.MouseWheel;
 
         [DataMember(Name = "DeltaX")]
         public double DeltaX { get; set; }

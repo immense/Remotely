@@ -10,6 +10,6 @@ namespace Remotely.Shared.Models.RemoteControlDtos
         public bool ToggleOn { get; set; }
 
         [DataMember(Name = "DtoType")]
-        public new BaseDtoType DtoType { get; } = BaseDtoType.ToggleBlockInput;
+        public override BaseDtoType DtoType { get; init; } = BaseDtoType.ToggleBlockInput;
     }
 }

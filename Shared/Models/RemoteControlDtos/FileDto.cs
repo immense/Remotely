@@ -23,6 +23,6 @@ namespace Remotely.Shared.Models.RemoteControlDtos
         public bool StartOfFile { get; set; }
 
         [DataMember(Name = "DtoType")]
-        public new BaseDtoType DtoType { get; } = BaseDtoType.File;
+        public override BaseDtoType DtoType { get; init; } = BaseDtoType.File;
     }
 }

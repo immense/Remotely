@@ -7,6 +7,6 @@ namespace Remotely.Shared.Models.RemoteControlDtos
     public class BaseDto
     {
         [DataMember(Name = "DtoType")]
-        public BaseDtoType DtoType { get; set; }
+        public virtual BaseDtoType DtoType { get; init; }
     }
 }

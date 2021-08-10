@@ -18,7 +18,7 @@ namespace Remotely.Shared.Models.RemoteControlDtos
         public string CssOverride { get; }
 
         [DataMember(Name = "DtoType")]
-        public new BaseDtoType DtoType { get; } = BaseDtoType.CursorChange;
+        public override BaseDtoType DtoType { get; init; } = BaseDtoType.CursorChange;
 
         [DataMember(Name = "HotSpotX")]
         public int HotSpotX { get; }

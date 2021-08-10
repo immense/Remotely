@@ -16,7 +16,7 @@ namespace Remotely.Shared.Models.RemoteControlDtos
 
 
         [DataMember(Name = "DtoType")]
-        public new BaseDtoType DtoType { get; } = BaseDtoType.AudioSample;
+        public override BaseDtoType DtoType { get; init; } = BaseDtoType.AudioSample;
 
     }
 }

@@ -10,6 +10,6 @@ namespace Remotely.Shared.Models.RemoteControlDtos
         public string Key { get; set; }
 
         [DataMember(Name = "DtoType")]
-        public new BaseDtoType DtoType { get; } = BaseDtoType.KeyUp;
+        public override BaseDtoType DtoType { get; init; } = BaseDtoType.KeyUp;
     }
 }

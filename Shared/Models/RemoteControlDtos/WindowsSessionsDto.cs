@@ -18,6 +18,6 @@ namespace Remotely.Shared.Models.RemoteControlDtos
 
 
         [DataMember(Name = "DtoType")]
-        public new BaseDtoType DtoType { get; } = BaseDtoType.WindowsSessions;
+        public override BaseDtoType DtoType { get; init; } = BaseDtoType.WindowsSessions;
     }
 }
