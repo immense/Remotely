@@ -126,6 +126,10 @@ namespace Remotely.Desktop.Core.Services
                             break;
                         }
 
+                        viewer.CalculateFps();
+
+                        viewer.ApplyAutoQuality();
+
                         if (currentFrame != null)
                         {
                             previousFrame?.Dispose();
@@ -163,8 +167,6 @@ namespace Remotely.Desktop.Core.Services
                         }
 
                         await SendFrame(encodedImageBytes, diffArea, sequence++, viewer);
-
-                        viewer.ApplyAutoQuality();
 
                     }
                     catch (Exception ex)

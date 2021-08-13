@@ -16,6 +16,6 @@ namespace Remotely.Shared.Models
         }
 
         public DateTimeOffset Timestamp { get; }
-        public double FrameSize { get; }
+        public int FrameSize { get; }
     }
 }

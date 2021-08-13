@@ -25,12 +25,11 @@ namespace Remotely.Desktop.Core.Services
         private const double MaxLatency = 300;
         private const double MaxMbps = 9;
         private const int MinQuality = 20;
-        private readonly ConcurrentQueue<double> _sentMegabits = new();
 
-        private readonly ConcurrentQueue<DateTimeOffset> _sentTimestamps = new();
-
+        private readonly ConcurrentQueue<DateTimeOffset> _fpsQueue = new();
+        private readonly ConcurrentQueue<SentFrame> _receivedFrames = new();
         public Viewer(ICasterSocket casterSocket,
-                            IScreenCapturer screenCapturer,
+            IScreenCapturer screenCapturer,
             IClipboardService clipboardService,
             IWebRtcSessionFactory webRtcSessionFactory,
             IAudioCapturer audioCapturer)
@@ -44,6 +43,7 @@ namespace Remotely.Desktop.Core.Services
             AudioCapturer.AudioSampleReady += AudioCapturer_AudioSampleReady;
         }
         public IScreenCapturer Capturer { get; }
+        public double CurrentFps { get; private set; }
         public double CurrentMbps { get; private set; }
         public bool DisconnectRequested { get; set; }
         public EncoderParameters EncoderParams { get; private set; }
@@ -106,9 +106,6 @@ namespace Remotely.Desktop.Core.Services
                 !PendingSentFrames.TryPeek(out var result) || DateTimeOffset.Now - result.Timestamp < TimeSpan.FromSeconds(1),
                 TimeSpan.FromSeconds(5));
 
-            // Limit max number of pending frames.
-            _ = TaskHelper.DelayUntil(() => PendingSentFrames.Count < 5, TimeSpan.FromSeconds(5));
-
             if (RoundTripLatency.TotalMilliseconds > MaxLatency)
             {
                 ImageQuality = Math.Max(MinQuality, (int)(MaxLatency / RoundTripLatency.TotalMilliseconds * ImageQuality));
@@ -118,8 +115,27 @@ namespace Remotely.Desktop.Core.Services
             {
                 var targetPercent = MaxMbps / CurrentMbps;
                 ImageQuality = Math.Max(MinQuality, (int)(ImageQuality * targetPercent));
-                Debug.WriteLine($"Current Mbps: {CurrentMbps}.  Setting quality to {ImageQuality}");
             }
+
+            if (CurrentFps < 5)
+            {
+                ImageQuality = (int)Math.Min(100, Math.Max(20, CurrentFps / 5 * ImageQuality));
+            }
+
+            Debug.WriteLine($"Current Mbps: {CurrentMbps}.  Current FPS: {CurrentFps}.  Setting quality to {ImageQuality}");
+        }
+
+        public void CalculateFps()
+        {
+            _fpsQueue.Enqueue(Time.Now);
+
+            while (_fpsQueue.TryPeek(out var oldestTime) &&
+                Time.Now - oldestTime > TimeSpan.FromSeconds(1))
+            {
+                _fpsQueue.TryDequeue(out _);
+            }
+
+            CurrentFps = _fpsQueue.Count;
         }
 
         public void DequeuePendingFrame()
@@ -127,9 +143,16 @@ namespace Remotely.Desktop.Core.Services
             if (PendingSentFrames.TryDequeue(out var frame))
             {
                 RoundTripLatency = Time.Now - frame.Timestamp;
+
+                _receivedFrames.Enqueue(new SentFrame(frame.FrameSize));
+                while (_receivedFrames.TryPeek(out var oldestFrame) &&
+                    Time.Now - oldestFrame.Timestamp > TimeSpan.FromSeconds(1))
+                {
+                    _receivedFrames.TryDequeue(out _);
+                }
+                CurrentMbps = (double)_receivedFrames.Sum(x => x.FrameSize) / 1024 / 1024 * 8;
             }
         }
-
         public void Dispose()
         {
             DisconnectRequested = true;
@@ -296,8 +319,6 @@ namespace Remotely.Desktop.Core.Services
             await SendToViewer(
                        () => RtcSession.SendDto(endOfFrameDto),
                        () => CasterSocket.SendDtoToViewer(endOfFrameDto, ViewerConnectionID));
-
-            UpdateMbps(screenFrame.EncodedImageBytes.Length);
         }
 
         public async Task SendScreenData(
@@ -372,28 +393,6 @@ namespace Remotely.Desktop.Core.Services
                 Logger.Write(ex);
                 return Task.CompletedTask;
             }
-        }
-
-        private void UpdateMbps(int frameSize)
-        {
-            while (_sentMegabits.Count > 10)
-            {
-                _sentMegabits.TryDequeue(out _);
-            }
-            while (_sentTimestamps.Count > 10)
-            {
-                _sentTimestamps.TryDequeue(out _);
-            }
-            var mb = (double)frameSize / 1024 / 1024 * 8;
-            _sentMegabits.Enqueue(mb);
-            _sentTimestamps.Enqueue(Time.Now);
-            // Don't calculate Mbps until we have a decent sample size.
-            if (_sentMegabits.Count < 5)
-            {
-                return;
-            }
-            _sentTimestamps.TryPeek(out var oldestTime);
-            CurrentMbps = _sentMegabits.Sum() / (Time.Now - oldestTime).TotalSeconds;
         }
     }
 }
