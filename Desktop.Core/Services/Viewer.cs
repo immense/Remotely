@@ -111,15 +111,19 @@ namespace Remotely.Desktop.Core.Services
                 ImageQuality = Math.Max(MinQuality, (int)(MaxLatency / RoundTripLatency.TotalMilliseconds * ImageQuality));
             }
 
-            if (CurrentMbps > MaxMbps)
+            // Estimate how long it will take to send pending frames and adjust quality
+            var frameSizes = PendingSentFrames.Sum(x => x.FrameSize);
+            if (CurrentMbps > 0 && frameSizes > 0)
             {
-                var targetPercent = MaxMbps / CurrentMbps;
-                ImageQuality = Math.Max(MinQuality, (int)(ImageQuality * targetPercent));
-            }
+                var pendingMegabits = (double)frameSizes / 1024 / 1024 * 8;
+                var secondsToSend = pendingMegabits / CurrentMbps;
+                
+                if (secondsToSend > .5)
+                {
+                    var targetQuality = .5 / secondsToSend * ImageQuality;
+                    ImageQuality = (int)Math.Max(20, targetQuality);
+                }
 
-            if (CurrentFps < 5)
-            {
-                ImageQuality = (int)Math.Min(100, Math.Max(20, CurrentFps / 5 * ImageQuality));
             }
 
             Debug.WriteLine($"Current Mbps: {CurrentMbps}.  Current FPS: {CurrentFps}.  Setting quality to {ImageQuality}");
