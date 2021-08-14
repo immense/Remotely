@@ -54,7 +54,7 @@ namespace Remotely.Tests
                 ViewerID = "asdf"
             };
 
-            _ = Task.Run(async () => await _screenCaster.BeginScreenCasting(request));
+            _screenCaster.BeginScreenCasting(request);
 
             var timeout = 5_000;
 
