@@ -25,7 +25,7 @@ namespace Remotely.Desktop.Core.Services
         private const int MinQuality = 20;
 
         private readonly ConcurrentQueue<DateTimeOffset> _fpsQueue = new();
-        private readonly ConcurrentQueue<ReceivedFrame> _receivedFrames = new();
+        private readonly ConcurrentQueue<SentFrame> _receivedFrames = new();
         public Viewer(ICasterSocket casterSocket,
             IScreenCapturer screenCapturer,
             IClipboardService clipboardService,
@@ -42,9 +42,8 @@ namespace Remotely.Desktop.Core.Services
         }
         public IScreenCapturer Capturer { get; }
         public double CurrentFps { get; private set; }
-        public double AverageMbps { get; private set; }
+        public double CurrentMbps { get; private set; }
         public bool DisconnectRequested { get; set; }
-        public EncoderParameters EncoderParams { get; private set; }
         public bool HasControl { get; set; } = true;
         public int ImageQuality { get; private set; } = DefaultQuality;
         public bool IsConnected => CasterSocket.IsConnected;
@@ -100,30 +99,21 @@ namespace Remotely.Desktop.Core.Services
                 !PendingSentFrames.TryPeek(out var result) || DateTimeOffset.Now - result.Timestamp > TimeSpan.FromMilliseconds(50),
                 TimeSpan.FromSeconds(5));
 
-            // Wait for pending frames to be received.
+            // Delay based on roundtrip time to prevent too many frames from queuing up on slow connections.
+            _ = TaskHelper.DelayUntil(() => PendingSentFrames.Count < 1 / RoundTripLatency.TotalSeconds,
+                TimeSpan.FromSeconds(5));
+
+            // Wait until oldest pending frame is within the past 1 second.
             _ = TaskHelper.DelayUntil(() =>
                 !PendingSentFrames.TryPeek(out var result) || DateTimeOffset.Now - result.Timestamp < TimeSpan.FromSeconds(1),
                 TimeSpan.FromSeconds(5));
 
-            // Estimate how long it will take to send pending frames and adjust quality
-            var frameSizes = PendingSentFrames.Sum(x => x.FrameSize);
-            if (AverageMbps > 0 && frameSizes > 0)
-            {
-                var pendingMegabits = (double)frameSizes / 1024 / 1024 * 8;
-                var secondsToSend = pendingMegabits / AverageMbps;
-                
-                if (secondsToSend > 1)
-                {
-                    var targetQuality = 1 / secondsToSend * ImageQuality;
-                    ImageQuality = (int)Math.Max(20, targetQuality);
-                    Thread.Sleep(500);
-                }
-            }
 
             Debug.WriteLine(
-                $"Average Mbps: {AverageMbps}.  " +
+                $"Current Mbps: {CurrentMbps}.  " +
                 $"Current FPS: {CurrentFps}.  " +
-                $"Setting quality to {ImageQuality}");
+                $"Roundtrip Latency: {RoundTripLatency}.  " +
+                $"Image Quality: {ImageQuality}");
         }
 
         public void CalculateFps()
@@ -144,24 +134,16 @@ namespace Remotely.Desktop.Core.Services
             if (PendingSentFrames.TryDequeue(out var frame))
             {
                 RoundTripLatency = Time.Now - frame.Timestamp;
-
-                _receivedFrames.Enqueue(new ReceivedFrame()
-                {  
-                    FrameSize = frame.FrameSize,
-                    TimeToSend = Time.Now - frame.Timestamp
-                });
-
-                while (_receivedFrames.Count > 20)
-                {
-                    _receivedFrames.TryDequeue(out _);
-                }
-
-                var megabits = (double)_receivedFrames.Sum(x => x.FrameSize) / 1024 / 1024 * 8;
-                var secondsSpentSending = _receivedFrames.Sum(x => x.TimeToSend.TotalSeconds);
-
-                AverageMbps = megabits / secondsSpentSending;
+                _receivedFrames.Enqueue(new SentFrame(frame.FrameSize));
             }
+            while (_receivedFrames.TryPeek(out var oldestFrame) &&
+                Time.Now - oldestFrame.Timestamp > TimeSpan.FromSeconds(1))
+            {
+                _receivedFrames.TryDequeue(out _);
+            }
+            CurrentMbps = (double)_receivedFrames.Sum(x => x.FrameSize) / 1024 / 1024 * 8;
         }
+
         public void Dispose()
         {
             DisconnectRequested = true;
