@@ -82,47 +82,66 @@ namespace Remotely.Desktop.Win.Services
         {
             lock (_screenBoundsLock)
             {
-                try
+                Bitmap returnFrame = null;
+                var frameCompletedEvent = new ManualResetEventSlim();
+
+                // This is necessary to ensure SwitchToInputDesktop works.  Threads
+                // that have hooks in the current desktop will not succeed.
+                var captureThread = new Thread(() =>
                 {
-                    Win32Interop.SwitchToInputDesktop();
-
-                    if (NeedsInit)
+                    try
                     {
-                        Logger.Write("Init needed in GetNextFrame.");
-                        Init();
-                        NeedsInit = false;
-                    }
-                    
-                    // Sometimes DX will result in a timeout, even when there are changes
-                    // on the screen.  I've observed this when a laptop lid is closed, or
-                    // on some machines that aren't connected to a monitor.  This will
-                    // have it fall back to BitBlt in those cases.
-                    // TODO: Make DX capture work with changed screen orientation.
-                    if (_directxScreens.TryGetValue(SelectedScreen, out var dxDisplay) &&
-                        dxDisplay.Rotation == DisplayModeRotation.Identity)
-                    {
-                        var (result, frame) = GetDirectXFrame();
+                        Win32Interop.SwitchToInputDesktop();
 
-                        if (result == GetDirectXFrameResult.Timeout)
+                        if (NeedsInit)
                         {
-                            return null;
+                            Logger.Write("Init needed in GetNextFrame.");
+                            Init();
+                            NeedsInit = false;
                         }
 
-                        if (result == GetDirectXFrameResult.Success)
+                        // Sometimes DX will result in a timeout, even when there are changes
+                        // on the screen.  I've observed this when a laptop lid is closed, or
+                        // on some machines that aren't connected to a monitor.  This will
+                        // have it fall back to BitBlt in those cases.
+                        // TODO: Make DX capture work with changed screen orientation.
+                        if (_directxScreens.TryGetValue(SelectedScreen, out var dxDisplay) &&
+                            dxDisplay.Rotation == DisplayModeRotation.Identity)
                         {
-                            return frame;
+                            var (result, frame) = GetDirectXFrame();
+
+                            if (result == GetDirectXFrameResult.Timeout)
+                            {
+                                return;
+                            }
+
+                            if (result == GetDirectXFrameResult.Success)
+                            {
+                                returnFrame = frame;
+                                return;
+                            }
                         }
+
+                        returnFrame = GetBitBltFrame();
+
                     }
+                    catch (Exception e)
+                    {
+                        Logger.Write(e);
+                        NeedsInit = true;
+                    }
+                    finally
+                    {
+                        frameCompletedEvent.Set();
+                    }
+                });
 
-                    return GetBitBltFrame();
+                captureThread.SetApartmentState(ApartmentState.STA);
+                captureThread.Start();
 
-                }
-                catch (Exception e)
-                {
-                    Logger.Write(e);
-                    NeedsInit = true;
-                }
-                return null;
+                frameCompletedEvent.Wait();
+
+                return returnFrame;
             }
 
         }
