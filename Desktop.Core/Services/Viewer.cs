@@ -112,11 +112,11 @@ namespace Remotely.Desktop.Core.Services
                 var pendingMegabits = (double)frameSizes / 1024 / 1024 * 8;
                 var secondsToSend = pendingMegabits / AverageMbps;
                 
-                if (secondsToSend > .5)
+                if (secondsToSend > 1)
                 {
-                    var targetQuality = .5 / secondsToSend * ImageQuality;
+                    var targetQuality = 1 / secondsToSend * ImageQuality;
                     ImageQuality = (int)Math.Max(20, targetQuality);
-                    Thread.Sleep(TimeSpan.FromSeconds(secondsToSend / 2));
+                    Thread.Sleep(500);
                 }
             }
 
