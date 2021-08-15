@@ -23,7 +23,6 @@ namespace Remotely.Desktop.Core.Services
     {
         public const int DefaultQuality = 75;
         private const double MaxLatency = 300;
-        private const double MaxMbps = 9;
         private const int MinQuality = 20;
 
         private readonly ConcurrentQueue<DateTimeOffset> _fpsQueue = new();
@@ -45,6 +44,7 @@ namespace Remotely.Desktop.Core.Services
         public IScreenCapturer Capturer { get; }
         public double CurrentFps { get; private set; }
         public double CurrentMbps { get; private set; }
+        public double MaxMbps { get; private set; }
         public bool DisconnectRequested { get; set; }
         public EncoderParameters EncoderParams { get; private set; }
         public bool HasControl { get; set; } = true;
@@ -89,6 +89,7 @@ namespace Remotely.Desktop.Core.Services
         private IClipboardService ClipboardService { get; }
 
         private IWebRtcSessionFactory WebRtcSessionFactory { get; }
+
         public void ApplyAutoQuality()
         {
             if (ImageQuality < DefaultQuality)
@@ -106,27 +107,29 @@ namespace Remotely.Desktop.Core.Services
                 !PendingSentFrames.TryPeek(out var result) || DateTimeOffset.Now - result.Timestamp < TimeSpan.FromSeconds(1),
                 TimeSpan.FromSeconds(5));
 
-            if (RoundTripLatency.TotalMilliseconds > MaxLatency)
-            {
-                ImageQuality = Math.Max(MinQuality, (int)(MaxLatency / RoundTripLatency.TotalMilliseconds * ImageQuality));
-            }
-
             // Estimate how long it will take to send pending frames and adjust quality
             var frameSizes = PendingSentFrames.Sum(x => x.FrameSize);
-            if (CurrentMbps > 0 && frameSizes > 0)
+            if (MaxMbps > 0 && frameSizes > 0)
             {
                 var pendingMegabits = (double)frameSizes / 1024 / 1024 * 8;
-                var secondsToSend = pendingMegabits / CurrentMbps;
+                var secondsToSend = pendingMegabits / MaxMbps;
                 
                 if (secondsToSend > .5)
                 {
                     var targetQuality = .5 / secondsToSend * ImageQuality;
                     ImageQuality = (int)Math.Max(20, targetQuality);
                 }
-
+            }
+            else if (RoundTripLatency.TotalMilliseconds > MaxLatency)
+            {
+                ImageQuality = Math.Max(MinQuality, (int)(MaxLatency / RoundTripLatency.TotalMilliseconds * ImageQuality));
             }
 
-            Debug.WriteLine($"Current Mbps: {CurrentMbps}.  Current FPS: {CurrentFps}.  Setting quality to {ImageQuality}");
+            Debug.WriteLine(
+                $"Current Mbps: {CurrentMbps}.  " +
+                $"Max Mbps: {MaxMbps}.  " +
+                $"Current FPS: {CurrentFps}.  " +
+                $"Setting quality to {ImageQuality}");
         }
 
         public void CalculateFps()
@@ -155,6 +158,7 @@ namespace Remotely.Desktop.Core.Services
                     _receivedFrames.TryDequeue(out _);
                 }
                 CurrentMbps = (double)_receivedFrames.Sum(x => x.FrameSize) / 1024 / 1024 * 8;
+                MaxMbps = Math.Max(CurrentMbps, MaxMbps);
             }
         }
         public void Dispose()
