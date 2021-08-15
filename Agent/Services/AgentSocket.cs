@@ -327,9 +327,9 @@ namespace Remotely.Agent.Services
                     return;
                 }
 
-                for (var i = 0; i < logBytes.Length; i += 100_000)
+                for (var i = 0; i < logBytes.Length; i += 50_000)
                 {
-                    var chunk = Encoding.UTF8.GetString(logBytes.Skip(i).Take(100_000).ToArray());
+                    var chunk = Encoding.UTF8.GetString(logBytes.Skip(i).Take(50_000).ToArray());
                     await _hubConnection.InvokeAsync("SendLogs", chunk, senderConnectionId);
                 }
             });
