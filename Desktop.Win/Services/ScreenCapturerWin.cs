@@ -84,11 +84,7 @@ namespace Remotely.Desktop.Win.Services
             {
                 try
                 {
-                    if (!Win32Interop.SwitchToInputDesktop())
-                    {
-                        Logger.Write("SwitchToInputDesktop failed.", Shared.Enums.EventType.Warning);
-                    }
-
+                    Win32Interop.SwitchToInputDesktop();
 
                     if (NeedsInit)
                     {
@@ -146,10 +142,7 @@ namespace Remotely.Desktop.Win.Services
 
         public void Init()
         {
-            if (!Win32Interop.SwitchToInputDesktop())
-            {
-                Logger.Write("SwitchToInputDesktop failed.", Shared.Enums.EventType.Warning);
-            }
+            Win32Interop.SwitchToInputDesktop();
 
             CaptureFullscreen = true;
             InitBitBlt();
@@ -322,50 +315,48 @@ namespace Remotely.Desktop.Win.Services
             {
                 ClearDirectXOutputs();
 
-                using (var factory = new Factory1())
+                using var factory = new Factory1();
+                foreach (var adapter in factory.Adapters1.Where(x => (x.Outputs?.Length ?? 0) > 0))
                 {
-                    foreach (var adapter in factory.Adapters1.Where(x => (x.Outputs?.Length ?? 0) > 0))
+                    foreach (var output in adapter.Outputs)
                     {
-                        foreach (var output in adapter.Outputs)
+                        try
                         {
-                            try
+                            var device = new SharpDX.Direct3D11.Device(adapter);
+                            var output1 = output.QueryInterface<Output1>();
+
+                            var bounds = output1.Description.DesktopBounds;
+                            var width = bounds.Right - bounds.Left;
+                            var height = bounds.Bottom - bounds.Top;
+
+                            // Create Staging texture CPU-accessible
+                            var textureDesc = new Texture2DDescription
                             {
-                                var device = new SharpDX.Direct3D11.Device(adapter);
-                                var output1 = output.QueryInterface<Output1>();
+                                CpuAccessFlags = CpuAccessFlags.Read,
+                                BindFlags = BindFlags.None,
+                                Format = Format.B8G8R8A8_UNorm,
+                                Width = width,
+                                Height = height,
+                                OptionFlags = ResourceOptionFlags.None,
+                                MipLevels = 1,
+                                ArraySize = 1,
+                                SampleDescription = { Count = 1, Quality = 0 },
+                                Usage = ResourceUsage.Staging
+                            };
 
-                                var bounds = output1.Description.DesktopBounds;
-                                var width = bounds.Right - bounds.Left;
-                                var height = bounds.Bottom - bounds.Top;
+                            var texture2D = new Texture2D(device, textureDesc);
 
-                                // Create Staging texture CPU-accessible
-                                var textureDesc = new Texture2DDescription
-                                {
-                                    CpuAccessFlags = CpuAccessFlags.Read,
-                                    BindFlags = BindFlags.None,
-                                    Format = Format.B8G8R8A8_UNorm,
-                                    Width = width,
-                                    Height = height,
-                                    OptionFlags = ResourceOptionFlags.None,
-                                    MipLevels = 1,
-                                    ArraySize = 1,
-                                    SampleDescription = { Count = 1, Quality = 0 },
-                                    Usage = ResourceUsage.Staging
-                                };
-
-                                var texture2D = new Texture2D(device, textureDesc);
-
-                                _directxScreens.Add(
-                                    output1.Description.DeviceName,
-                                    new DirectXOutput(adapter,
-                                        device,
-                                        output1.DuplicateOutput(device),
-                                        texture2D,
-                                        output1.Description.Rotation));
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger.Write(ex);
-                            }
+                            _directxScreens.Add(
+                                output1.Description.DeviceName,
+                                new DirectXOutput(adapter,
+                                    device,
+                                    output1.DuplicateOutput(device),
+                                    texture2D,
+                                    output1.Description.Rotation));
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Write(ex);
                         }
                     }
                 }
