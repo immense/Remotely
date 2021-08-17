@@ -21,8 +21,28 @@ namespace Remotely.Agent.Services
 {
     public class AgentSocket
     {
+        private readonly IAppLauncher _appLauncher;
+
+        private readonly ChatClientService _chatService;
+
+        private readonly ConfigService _configService;
+
+        private readonly IDeviceInformationService _deviceInfoService;
+
+        private readonly ScriptExecutor _scriptExecutor;
+
+        private readonly Uninstaller _uninstaller;
+
+        private readonly IUpdater _updater;
+
+        private ConnectionInfo _connectionInfo;
+        private HubConnection _hubConnection;
+        private System.Timers.Timer HeartbeatTimer;
+
+        private bool IsServerVerified;
+
         public AgentSocket(ConfigService configService,
-            Uninstaller uninstaller,
+                                                                                                    Uninstaller uninstaller,
             ScriptExecutor scriptExecutor,
             ChatClientService chatService,
             IAppLauncher appLauncher,
@@ -38,27 +58,14 @@ namespace Remotely.Agent.Services
             _deviceInfoService = deviceInfoService;
         }
         public bool IsConnected => _hubConnection?.State == HubConnectionState.Connected;
-        private readonly IAppLauncher _appLauncher;
-        private readonly ChatClientService _chatService;
-        private readonly ScriptExecutor _scriptExecutor;
-        private readonly ConfigService _configService;
-        private readonly Uninstaller _uninstaller;
-        private readonly IUpdater _updater;
-        private bool IsServerVerified;
-        private ConnectionInfo ConnectionInfo;
-        private System.Timers.Timer HeartbeatTimer;
-        private HubConnection _hubConnection;
-
-        private readonly IDeviceInformationService _deviceInfoService;
-
         public async Task Connect()
         {
             try
             {
-                ConnectionInfo = _configService.GetConnectionInfo();
+                _connectionInfo = _configService.GetConnectionInfo();
 
                 _hubConnection = new HubConnectionBuilder()
-                    .WithUrl(ConnectionInfo.Host + "/AgentHub")
+                    .WithUrl(_connectionInfo.Host + "/AgentHub")
                     .AddMessagePackProtocol()
                     .Build();
 
@@ -74,7 +81,7 @@ namespace Remotely.Agent.Services
 
             try
             {
-                var device = await _deviceInfoService.CreateDevice(ConnectionInfo.DeviceID, ConnectionInfo.OrganizationID);
+                var device = await _deviceInfoService.CreateDevice(_connectionInfo.DeviceID, _connectionInfo.OrganizationID);
 
                 var result = await _hubConnection.InvokeAsync<bool>("DeviceCameOnline", device);
 
@@ -89,17 +96,12 @@ namespace Remotely.Agent.Services
                     return;
                 }
 
-                if (string.IsNullOrWhiteSpace(ConnectionInfo.ServerVerificationToken))
+                if (!await VerifyServer())
                 {
-                    IsServerVerified = true;
-                    ConnectionInfo.ServerVerificationToken = Guid.NewGuid().ToString();
-                    await _hubConnection.SendAsync("SetServerVerificationToken", ConnectionInfo.ServerVerificationToken);
-                    _configService.SaveConnectionInfo(ConnectionInfo);
+                    return;
                 }
-                else
-                {
-                    await _hubConnection.SendAsync("SendServerVerificationToken");
-                }
+
+                await CheckForServerMigration();
 
                 HeartbeatTimer?.Dispose();
                 HeartbeatTimer = new System.Timers.Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
@@ -137,12 +139,11 @@ namespace Remotely.Agent.Services
             }
         }
 
-
         public async Task SendHeartbeat()
         {
             try
             {
-                var currentInfo = await _deviceInfoService.CreateDevice(ConnectionInfo.DeviceID, ConnectionInfo.OrganizationID);
+                var currentInfo = await _deviceInfoService.CreateDevice(_connectionInfo.DeviceID, _connectionInfo.OrganizationID);
                 await _hubConnection.SendAsync("DeviceHeartbeat", currentInfo);
             }
             catch (Exception ex)
@@ -151,6 +152,18 @@ namespace Remotely.Agent.Services
             }
         }
 
+        private async Task CheckForServerMigration()
+        {
+            var serverUrl = await _hubConnection.InvokeAsync<string>("GetServerUrl");
+
+            if (Uri.TryCreate(serverUrl, UriKind.Absolute, out var serverUri) &&
+                Uri.TryCreate(_connectionInfo.Host, UriKind.Absolute, out var savedUri) &&
+                serverUri.Host != savedUri.Host)
+            {
+                _connectionInfo.Host = serverUrl.Trim().TrimEnd('/');
+                _configService.SaveConnectionInfo(_connectionInfo);
+            }
+        }
         private async void HeartbeatTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             await SendHeartbeat();
@@ -207,10 +220,10 @@ namespace Remotely.Agent.Services
                 User32.SendSAS(false);
             });
 
-            _hubConnection.On("DeleteLogs",  () =>
-            {
-                Logger.DeleteLogs();
-            });
+            _hubConnection.On("DeleteLogs", () =>
+           {
+               Logger.DeleteLogs();
+           });
 
             _hubConnection.On("DownloadFile", async (string filePath, string senderConnectionID) =>
             {
@@ -225,8 +238,8 @@ namespace Remotely.Agent.Services
                     filePath = filePath.Replace("\"", "");
                     if (!File.Exists(filePath))
                     {
-                        await _hubConnection.SendAsync("DisplayMessage", 
-                            "File not found on remote device.", 
+                        await _hubConnection.SendAsync("DisplayMessage",
+                            "File not found on remote device.",
                             "File not found.",
                             "bg-danger",
                             senderConnectionID);
@@ -246,17 +259,17 @@ namespace Remotely.Agent.Services
 
                     try
                     {
-                        var response = await wc.UploadFileTaskAsync($"{ConnectionInfo.Host}/API/FileSharing/", filePath);
+                        var response = await wc.UploadFileTaskAsync($"{_connectionInfo.Host}/API/FileSharing/", filePath);
                         var fileIDs = JsonSerializer.Deserialize<string[]>(Encoding.UTF8.GetString(response));
                         await _hubConnection.SendAsync("DownloadFile", fileIDs[0], senderConnectionID);
                     }
                     catch (Exception ex)
                     {
                         Logger.Write(ex);
-                        await _hubConnection.SendAsync("DisplayMessage", 
-                            "Error occurred while uploading file from remote computer.", 
-                            "Upload error.", 
-                            "bg-danger", 
+                        await _hubConnection.SendAsync("DisplayMessage",
+                            "Error occurred while uploading file from remote computer.",
+                            "Upload error.",
+                            "bg-danger",
                             senderConnectionID);
                     }
                 }
@@ -429,21 +442,6 @@ namespace Remotely.Agent.Services
                 }
             });
 
-
-            _hubConnection.On("ServerVerificationToken", (string verificationToken) =>
-            {
-                if (verificationToken == ConnectionInfo.ServerVerificationToken)
-                {
-                    IsServerVerified = true;
-                }
-                else
-                {
-                    Logger.Write($"Server sent an incorrect verification token.  Token Sent: {verificationToken}.", EventType.Warning);
-                    return;
-                }
-            });
-
-
             _hubConnection.On("TransferFileFromBrowserToAgent", async (string transferID, List<string> fileIDs, string requesterID, string authToken) =>
             {
                 try
@@ -459,7 +457,7 @@ namespace Remotely.Agent.Services
 
                     foreach (var fileID in fileIDs)
                     {
-                        var url = $"{ConnectionInfo.Host}/API/FileSharing/{fileID}";
+                        var url = $"{_connectionInfo.Host}/API/FileSharing/{fileID}";
                         var wr = WebRequest.CreateHttp(url);
                         wr.Headers[HttpRequestHeader.Authorization] = authToken;
                         using var response = await wr.GetResponseAsync();
@@ -490,6 +488,33 @@ namespace Remotely.Agent.Services
             {
                 await SendHeartbeat();
             });
+        }
+
+        private async Task<bool> VerifyServer()
+        {
+            if (string.IsNullOrWhiteSpace(_connectionInfo.ServerVerificationToken))
+            {
+                IsServerVerified = true;
+                _connectionInfo.ServerVerificationToken = Guid.NewGuid().ToString();
+                await _hubConnection.SendAsync("SetServerVerificationToken", _connectionInfo.ServerVerificationToken);
+                _configService.SaveConnectionInfo(_connectionInfo);
+            }
+            else
+            {
+                var verificationToken = await _hubConnection.InvokeAsync<string>("GetServerVerificationToken");
+
+                if (verificationToken == _connectionInfo.ServerVerificationToken)
+                {
+                    IsServerVerified = true;
+                }
+                else
+                {
+                    Logger.Write($"Server sent an incorrect verification token.  Token Sent: {verificationToken}.", EventType.Warning);
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

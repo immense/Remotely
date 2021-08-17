@@ -264,9 +264,9 @@ namespace Remotely.Server.Hubs
             return _circuitManager.InvokeOnConnection(requesterConnectionId, CircuitEventName.RemoteLogsReceived, logChunk);
         }
 
-        public Task SendServerVerificationToken()
+        public string GetServerVerificationToken()
         {
-            return Clients.Caller.SendAsync("ServerVerificationToken", Device.ServerVerificationToken);
+            return Device.ServerVerificationToken;
         }
 
         public void SetServerVerificationToken(string verificationToken)
@@ -274,7 +274,10 @@ namespace Remotely.Server.Hubs
             Device.ServerVerificationToken = verificationToken;
             _dataService.SetServerVerificationToken(Device.ID, verificationToken);
         }
-
+        public string GetServerUrl()
+        {
+            return _appConfig.ServerUrl;
+        }
         public Task TransferCompleted(string transferID, string requesterID)
         {
             return _circuitManager.InvokeOnConnection(requesterID, CircuitEventName.TransferCompleted, transferID);
