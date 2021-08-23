@@ -23,13 +23,13 @@ You can also sponsor the project as a way of saying "thank you".  But if you hav
 
 
 ## Project Links
-Public Server: https://app.remotely.one  
-Website: https://remotely.one  
+Public Server: https://remotely.lucency.co  
+Website: https://remotely-info.lucency.co  
 Subreddit: https://www.reddit.com/r/remotely_app/  
 Docker: https://hub.docker.com/r/translucency/remotely  
-Video Tutorials: https://remotely.one/Tutorials  
+Video Tutorials: https://remotely-info.lucency.co/Tutorials  
 
-![image](https://user-images.githubusercontent.com/20995508/113913261-f7002a00-9790-11eb-81b3-c36fb8aa536d.png)
+![image](https://remotely-info.lucency.co/media/ask-remote.png)
 
 ## Disclaimer
 Hosting a Remotely server requires running an ASP.NET Core web app behind IIS (Windows), Nginx (Ubuntu), or Caddy Server (any OS).  It's expected that the person deploying and maintaining the server is familiar with this process.  Since this is a hobby project that I develop in between working full time and raising a family, there simply isn't time available to provide support in this capacity.
@@ -45,7 +45,7 @@ However, you can also choose to install the pre-built packages that do not have 
 
 ## Installation Instructions:
 - Before attempting installation, verify that your domain name is resolving to your server's IP address.
-  - For example, I can use the command `ping app.remotely.one` and see the IP address to which it resolves.
+  - For example, I can use the command `ping remotely.lucency.co` and see the IP address to which it resolves.
 - Find and download the `Remotely_Server_Installer[.exe]` CLI tool for the latest release on the [Releases page](https://github.com/lucent-sea/Remotely/releases).
   - You will run it on the server where you'll be hosting Remotely.
   - You need to run it with elevation (e.g. sudo or "Run as admin").
@@ -249,7 +249,7 @@ Alternatively, you can use a command-line argument for the `Remotely_Server` pro
   - `ASPNETCORE_URLS=http://localhost:{port-number}`
 
 ## API and Integrations
-Remotely has a basic API, which can be browsed at https://app.remotely.one/swagger (or your own server instance).  Most endpoints require authentication via an API access token, which can be created by going to Account - API Access.
+Remotely has a basic API, which can be browsed at https://remotely.lucency.co/swagger (or your own server instance).  Most endpoints require authentication via an API access token, which can be created by going to Account - API Access.
 
 When accessing the API from the browser on another website, you'll need to set up CORS in appsettings by adding the website origin URL to the TrustedCorsOrigins array.  If you're not familiar with how CORS works, I recommend reading up on it before proceeding.  For example, if I wanted to create a login form on https://lucency.co that logged into the Remotely API, I'd need to add "https://lucency.co" to the TrustedCorsOrigins.
 
