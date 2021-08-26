@@ -25,7 +25,6 @@ namespace Remotely.Desktop.Core.Services
 
     public class ScreenCaster : IScreenCaster
     {
-        private readonly ConcurrentDictionary<string, Thread> _castingThreads = new();
         private readonly Conductor _conductor;
         private readonly ICursorIconWatcher _cursorIconWatcher;
         private readonly ISessionIndicator _sessionIndicator;
@@ -45,13 +44,7 @@ namespace Remotely.Desktop.Core.Services
 
         public void BeginScreenCasting(ScreenCastRequest screenCastRequest)
         {
-            var castingThread = new Thread(async () =>
-            {
-                await CastScreen(screenCastRequest);
-            });
-            castingThread.SetApartmentState(ApartmentState.STA);
-            _castingThreads.AddOrUpdate(screenCastRequest.ViewerID, castingThread, (k, v) => castingThread);
-            castingThread.Start();
+            _ = Task.Run(async () => await CastScreen(screenCastRequest));
         }
 
         private async Task CastScreen(ScreenCastRequest screenCastRequest)
@@ -215,7 +208,6 @@ namespace Remotely.Desktop.Core.Services
                     Logger.Write("No more viewers.  Calling shutdown service.");
                     await _shutdownService.Shutdown();
                 }
-                _castingThreads.TryRemove(screenCastRequest.ViewerID, out _);
             }
         }
 

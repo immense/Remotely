@@ -20,7 +20,6 @@ namespace Remotely.Desktop.XPlat
 {
     public class App : Application
     {
-        private static Conductor Conductor;
         private static IServiceProvider Services => ServiceContainer.Instance;
 
         public override void Initialize()
@@ -96,24 +95,24 @@ namespace Remotely.Desktop.XPlat
 
             BuildServices();
 
-            Conductor = Services.GetRequiredService<Conductor>();
+            var conductor = Services.GetRequiredService<Conductor>();
 
             var args = Environment.GetCommandLineArgs().SkipWhile(x => !x.StartsWith("-"));
             Logger.Write("Processing Args: " + string.Join(", ", args));
-            Conductor.ProcessArgs(args.ToArray());
+            conductor.ProcessArgs(args.ToArray());
 
             await Services.GetRequiredService<IDeviceInitService>().GetInitParams();
 
-            if (Conductor.Mode == Core.Enums.AppMode.Chat)
+            if (conductor.Mode == Core.Enums.AppMode.Chat)
             {
-                await Services.GetRequiredService<IChatClientService>().StartChat(Conductor.RequesterID, Conductor.OrganizationName);
+                await Services.GetRequiredService<IChatClientService>().StartChat(conductor.RequesterID, conductor.OrganizationName);
             }
-            else if (Conductor.Mode == Core.Enums.AppMode.Unattended)
+            else if (conductor.Mode == Core.Enums.AppMode.Unattended)
             {
                 var casterSocket = Services.GetRequiredService<ICasterSocket>();
-                await casterSocket.Connect(Conductor.Host).ConfigureAwait(false);
-                await casterSocket.SendDeviceInfo(Conductor.ServiceID, Environment.MachineName, Conductor.DeviceID).ConfigureAwait(false);
-                await casterSocket.NotifyRequesterUnattendedReady(Conductor.RequesterID).ConfigureAwait(false);
+                await casterSocket.Connect(conductor.Host).ConfigureAwait(false);
+                await casterSocket.SendDeviceInfo(conductor.ServiceID, Environment.MachineName, conductor.DeviceID).ConfigureAwait(false);
+                await casterSocket.NotifyRequesterUnattendedReady(conductor.RequesterID).ConfigureAwait(false);
                 Services.GetRequiredService<IdleTimer>().Start();
                 Services.GetRequiredService<IClipboardService>().BeginWatching();
                 Services.GetRequiredService<IKeyboardMouseInput>().Init();

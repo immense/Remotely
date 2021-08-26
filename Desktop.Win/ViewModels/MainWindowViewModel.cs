@@ -315,26 +315,19 @@ namespace Remotely.Desktop.Win.ViewModels
             }
         }
 
-        private void ScreenCastRequested(object sender, ScreenCastRequest screenCastRequest)
+        private async void ScreenCastRequested(object sender, ScreenCastRequest screenCastRequest)
         {
-            App.Current.Dispatcher.Invoke(() =>
+            await App.Current.Dispatcher.InvokeAsync(async () =>
             {
                 App.Current.MainWindow.Activate();
                 var result = MessageBox.Show(Application.Current.MainWindow, $"You've received a connection request from {screenCastRequest.RequesterName}.  Accept?", "Connection Request", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
-                    Task.Run(() =>
-                    {
-                        Services.GetRequiredService<IScreenCaster>().BeginScreenCasting(screenCastRequest);
-                    });
+                    Services.GetRequiredService<IScreenCaster>().BeginScreenCasting(screenCastRequest);
                 }
                 else
                 {
-                    // Run on another thread so it doesn't tie up the UI thread.
-                    Task.Run(async () =>
-                    {
-                        await _casterSocket.SendConnectionRequestDenied(screenCastRequest.ViewerID);
-                    });
+                    await _casterSocket.SendConnectionRequestDenied(screenCastRequest.ViewerID);
                 }
             });
         }

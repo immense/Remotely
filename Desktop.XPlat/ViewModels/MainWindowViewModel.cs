@@ -284,10 +284,7 @@ namespace Remotely.Desktop.XPlat.ViewModels
                 var result = await MessageBox.Show($"You've received a connection request from {screenCastRequest.RequesterName}.  Accept?", "Connection Request", MessageBoxType.YesNo);
                 if (result == MessageBoxResult.Yes)
                 {
-                    _ = Task.Run(() =>
-                    {
-                        Services.GetRequiredService<IScreenCaster>().BeginScreenCasting(screenCastRequest);
-                    });
+                    Services.GetRequiredService<IScreenCaster>().BeginScreenCasting(screenCastRequest);
                 }
             });
         }
