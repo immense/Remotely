@@ -42,7 +42,7 @@ namespace Remotely.Agent.Services
         private bool IsServerVerified;
 
         public AgentSocket(ConfigService configService,
-                                                                                                    Uninstaller uninstaller,
+            Uninstaller uninstaller,
             ScriptExecutor scriptExecutor,
             ChatClientService chatService,
             IAppLauncher appLauncher,
@@ -101,7 +101,10 @@ namespace Remotely.Agent.Services
                     return;
                 }
 
-                await CheckForServerMigration();
+                if (await CheckForServerMigration())
+                {
+                    return;
+                }
 
                 HeartbeatTimer?.Dispose();
                 HeartbeatTimer = new System.Timers.Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
@@ -152,7 +155,7 @@ namespace Remotely.Agent.Services
             }
         }
 
-        private async Task CheckForServerMigration()
+        private async Task<bool> CheckForServerMigration()
         {
             var serverUrl = await _hubConnection.InvokeAsync<string>("GetServerUrl");
 
@@ -161,8 +164,12 @@ namespace Remotely.Agent.Services
                 serverUri.Host != savedUri.Host)
             {
                 _connectionInfo.Host = serverUrl.Trim().TrimEnd('/');
+                _connectionInfo.ServerVerificationToken = null;
                 _configService.SaveConnectionInfo(_connectionInfo);
+                await _hubConnection.DisposeAsync();
+                return true;
             }
+            return false;
         }
         private async void HeartbeatTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
