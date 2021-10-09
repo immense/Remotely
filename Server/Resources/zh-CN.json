@@ -274,6 +274,17 @@
   "Shown to clients instead of your email": "对客户端隐藏你的邮箱",
   "Command Shortcuts": "命令快捷键",
   "Options saved": "选项保存",
-  "modalText": "shell快捷方式用于在主页面上的终端shell之间快速切换。如果您在终端中输入这些快捷方式之一，它将选择相应的命令模式(例如PowerShell Core、Bash等)。"
-
+  "modalText": "shell快捷方式用于在主页面上的终端shell之间快速切换。如果您在终端中输入这些快捷方式之一，它将选择相应的命令模式(例如PowerShell Core、Bash等)。",
+  "Log out": "登出",
+  "Log in": "登入",
+  "Two-Factor Authentication Required": "要求两步验证",
+  "Two-factor authentication is required.  Click the button below to set up your authenticator app.": "需要双因素身份验证。单击下面的按钮来设置您的验证程序。",
+  "Enable 2FA": "启用 2FA",
+  "Home": "主页",
+  "Remote Control": "远程控制",
+  "Downloads": "下载",
+  "Scripts": "脚本",
+  "Organization": "组织",
+  "Branding": "品牌",
+  "Server Config": "服务器配置"
 }

@@ -1,7 +1,9 @@
 ﻿@page
 @model ConfirmEmailModel
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer Localizer
 @{
-    ViewData["Title"] = "Confirm email";
+    ViewData["Title"] = Localizer["Confirm email"];
 }
 
 <h1>@ViewData["Title"]</h1>
