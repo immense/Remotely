@@ -207,16 +207,17 @@ namespace Remotely.Shared.Win32
 
         public static bool SwitchToInputDesktop()
         {
-            var inputDesktop = OpenInputDesktop();
             try
             {
+                CloseDesktop(_lastInputDesktop);
+                var inputDesktop = OpenInputDesktop();
+
                 if (inputDesktop == IntPtr.Zero)
                 {
                     return false;
                 }
 
                 var result = SetThreadDesktop(inputDesktop) && SwitchDesktop(inputDesktop);
-                CloseDesktop(_lastInputDesktop);
                 _lastInputDesktop = inputDesktop;
                 return result;
             }

@@ -82,66 +82,47 @@ namespace Remotely.Desktop.Win.Services
         {
             lock (_screenBoundsLock)
             {
-                Bitmap returnFrame = null;
-                var frameCompletedEvent = new ManualResetEventSlim();
-
-                // This is necessary to ensure SwitchToInputDesktop works.  Threads
-                // that have hooks in the current desktop will not succeed.
-                var captureThread = new Thread(() =>
+                try
                 {
-                    try
-                    {
-                        Win32Interop.SwitchToInputDesktop();
+                    Win32Interop.SwitchToInputDesktop();
 
-                        if (NeedsInit)
+                    if (NeedsInit)
+                    {
+                        Logger.Write("Init needed in GetNextFrame.");
+                        Init();
+                    }
+
+                    // Sometimes DX will result in a timeout, even when there are changes
+                    // on the screen.  I've observed this when a laptop lid is closed, or
+                    // on some machines that aren't connected to a monitor.  This will
+                    // have it fall back to BitBlt in those cases.
+                    // TODO: Make DX capture work with changed screen orientation.
+                    if (_directxScreens.TryGetValue(SelectedScreen, out var dxDisplay) &&
+                        dxDisplay.Rotation == DisplayModeRotation.Identity)
+                    {
+                        var (result, frame) = GetDirectXFrame();
+
+                        if (result == GetDirectXFrameResult.Timeout)
                         {
-                            Logger.Write("Init needed in GetNextFrame.");
-                            Init();
-                            NeedsInit = false;
+                            return null;
                         }
 
-                        // Sometimes DX will result in a timeout, even when there are changes
-                        // on the screen.  I've observed this when a laptop lid is closed, or
-                        // on some machines that aren't connected to a monitor.  This will
-                        // have it fall back to BitBlt in those cases.
-                        // TODO: Make DX capture work with changed screen orientation.
-                        if (_directxScreens.TryGetValue(SelectedScreen, out var dxDisplay) &&
-                            dxDisplay.Rotation == DisplayModeRotation.Identity)
+                        if (result == GetDirectXFrameResult.Success)
                         {
-                            var (result, frame) = GetDirectXFrame();
-
-                            if (result == GetDirectXFrameResult.Timeout)
-                            {
-                                return;
-                            }
-
-                            if (result == GetDirectXFrameResult.Success)
-                            {
-                                returnFrame = frame;
-                                return;
-                            }
+                            return frame;
                         }
-
-                        returnFrame = GetBitBltFrame();
-
                     }
-                    catch (Exception e)
-                    {
-                        Logger.Write(e);
-                        NeedsInit = true;
-                    }
-                    finally
-                    {
-                        frameCompletedEvent.Set();
-                    }
-                });
 
-                captureThread.SetApartmentState(ApartmentState.STA);
-                captureThread.Start();
+                    return GetBitBltFrame();
 
-                frameCompletedEvent.Wait();
+                }
+                catch (Exception e)
+                {
+                    Logger.Write(e);
+                    NeedsInit = true;
+                }
 
-                return returnFrame;
+                return null;
             }
 
         }
@@ -168,6 +149,8 @@ namespace Remotely.Desktop.Win.Services
             InitDirectX();
 
             ScreenChanged?.Invoke(this, CurrentScreenBounds);
+
+            NeedsInit = false;
         }
 
         public void SetSelectedScreen(string displayName)

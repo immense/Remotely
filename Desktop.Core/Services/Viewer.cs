@@ -94,7 +94,7 @@ namespace Remotely.Desktop.Core.Services
                 ImageQuality = Math.Min(DefaultQuality, ImageQuality + 2);
             }
 
-            // Limit to 20 FPS.
+            // Limit FPS.
             _ = TaskHelper.DelayUntil(() =>
                 !PendingSentFrames.TryPeek(out var result) || DateTimeOffset.Now - result.Timestamp > TimeSpan.FromMilliseconds(50),
                 TimeSpan.FromSeconds(5));
