@@ -1,8 +1,9 @@
 ﻿@page "/manage-organization"
 @attribute [Authorize]
 @inherits AuthComponentBase
-
-<h3 class="mb-3">Manage Organization</h3>
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer Localizer
+<h3 class="mb-3">@Localizer["Manage Organization"]</h3>
 
 
 @if (User?.IsAdministrator == true)
@@ -11,11 +12,11 @@
         <div class="col-sm-8">
             @* Organization ID *@
             <div class="form-group mw">
-                <label class="mb-1">Organization ID</label>
+                <label class="mb-1">@Localizer["Organization ID"]</label>
                 <input readonly class="form-control" value="@_organization?.ID" />
             </div>
             <div class="form-group mw">
-                <label class="mb-1">Relay Code</label>
+                <label class="mb-1">@Localizer["Relay Code"]</label>
                 <button class="btn btn-sm btn-secondary ml-2" @onclick="ShowRelayCodeHelp">
                     <span id="relayCodeHelp" class="oi oi-question-mark"></span>
                 </button>
@@ -30,7 +31,7 @@
         <div class="col-sm-8">
             @* Organization Name *@
             <div class="form-group mw">
-                <label class="mb-1">Organization Name</label>
+                <label class="mb-1">@Localizer["Organization Name"]</label>
 
                 <div class="input-group">
                     <input @onchange="OrganizationNameChanged"
@@ -41,13 +42,13 @@
                            autocomplete="off" />
                 </div>
                 <div class="text-info small">
-                    * Requires browser refresh.
+                    * @Localizer["Requires browser refresh."]
                 </div>
             </div>
             @if (User.IsServerAdmin)
             {
                 <div class="form-group">
-                    <label class="mb-1">Default Organization For Server</label>
+                    <label class="mb-1">@Localizer["Default Organization For Server"]</label>
                     <button class="btn btn-sm btn-secondary ml-2" @onclick="ShowDefaultOrgHelp">
                         <span id="relayCodeHelp" class="oi oi-question-mark"></span>
                     </button>
@@ -62,7 +63,7 @@
         <div class="col-sm-8">
             @* Device Groups *@
             <div class="form-group">
-                <label class="mb-1">Device Groups</label>
+                <label class="mb-1">@Localizer["Device Groups"]</label>
                 <button class="btn btn-sm btn-secondary ml-2" @onclick="ShowDeviceGroupHelp">
                     <span id="relayCodeHelp" class="oi oi-question-mark"></span>
                 </button>
@@ -75,15 +76,15 @@
                 </select>
 
                 <div class="text-right mb-3">
-                    <button type="button" class="btn btn-danger" @onclick="DeleteSelectedDeviceGroup">Delete</button>
+                    <button type="button" class="btn btn-danger" @onclick="DeleteSelectedDeviceGroup">@Localizer["Delete"]</button>
                 </div>
 
                 <div class="input-group">
-                    <input placeholder="Add new device group" class="form-control" maxlength="200"
+                    <input placeholder="@Localizer["Add new device group"]" class="form-control" maxlength="200"
                            @bind="_newDeviceGroupName"
                            @bind:event="oninput"
                            @onkeypress="EvaluateNewDeviceGroupKeyPress" />
-                    <button type="submit" class="btn btn-secondary" @onclick="CreateNewDeviceGroup">Add</button>
+                    <button type="submit" class="btn btn-secondary" @onclick="CreateNewDeviceGroup">@Localizer["Add"]</button>
                 </div>
             </div>
 
@@ -94,18 +95,18 @@
         <div class="col-sm-12">
             @* Users *@
             <div class="form-group">
-                <label class="control-label">Users</label>
+                <label class="control-label">@Localizer["Users"]</label>
                 <button class="btn btn-sm btn-secondary ml-2" @onclick="ShowUsersHelp">
                     <span id="relayCodeHelp" class="oi oi-question-mark"></span>
                 </button>
                 <table class="table table-striped table-hover" style="max-height: 400px">
                     <thead>
                         <tr>
-                            <th>User Name</th>
-                            <th>Administrator</th>
-                            <th>Device Groups</th>
-                            <th>Reset Password</th>
-                            <th>Delete Group</th>
+                            <th>@Localizer["User Name"]</th>
+                            <th>@Localizer["Administrator"]</th>
+                            <th>@Localizer["Device Groups"]</th>
+                            <th>@Localizer["Reset Password"]</th>
+                            <th>@Localizer["Delete Group"]</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -116,16 +117,16 @@
                                 @if (User.Id == orgUser.Id)
                                 {
                                     <td><input type="checkbox" readonly disabled checked="@orgUser.IsAdministrator" /></td>
-                                    <td><button type="button" class="btn btn-secondary" title="Edit" @onclick="() => EditDeviceGroups(orgUser)">Edit</button></td>
+                                    <td><button type="button" class="btn btn-secondary" title="Edit" @onclick="() => EditDeviceGroups(orgUser)">@Localizer["Edit"]</button></td>
                                     <td></td>
-                                    <td><button type="button" class="btn btn-danger delete-user-button" disabled>Delete</button></td>
+                                    <td><button type="button" class="btn btn-danger delete-user-button" disabled>@Localizer["Delete"]</button></td>
                                 }
                                 else
                                 {
                                     <td><input type="checkbox" @onchange="(ev) => SetUserIsAdmin(ev, orgUser)" checked="@orgUser.IsAdministrator" /></td>
-                                    <td><button type="button" class="btn btn-secondary" title="Edit" @onclick="() => EditDeviceGroups(orgUser)">Edit</button></td>
-                                    <td><button type="button" class="btn btn-danger" title="Reset Password" @onclick="() => ResetPassword(orgUser)">Reset</button></td>
-                                    <td><button type="button" class="btn btn-danger" title="Delete User" @onclick="() => DeleteUser(orgUser)">Delete</button></td>
+                                    <td><button type="button" class="btn btn-secondary" title="Edit" @onclick="() => EditDeviceGroups(orgUser)">@Localizer["Edit"]</button></td>
+                                    <td><button type="button" class="btn btn-danger" title="Reset Password" @onclick="() => ResetPassword(orgUser)">@Localizer["Reset"]</button></td>
+                                    <td><button type="button" class="btn btn-danger" title="Delete User" @onclick="() => DeleteUser(orgUser)">@Localizer["Delete"]</button></td>
                                 }
                             </tr>
                         }
@@ -140,17 +141,17 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="form-group">
-                <label class="control-label">Invitations</label>
+                <label class="control-label">@Localizer["Invitations"]</label>
                 <button class="btn btn-sm btn-secondary ml-2" @onclick="ShowInvitesHelp">
                     <span id="relayCodeHelp" class="oi oi-question-mark"></span>
                 </button>
                 <table id="invitesTable" class="table table-striped table-hover" style="max-height: 400px">
                     <thead>
                         <tr>
-                            <th>Invited User</th>
-                            <th>Administrator</th>
-                            <th>Link(s)</th>
-                            <th>Delete</th>
+                            <th>@Localizer["Invited User"]</th>
+                            <th>@Localizer["Administrator"]</th>
+                            <th>@Localizer["Link(s)"]</th>
+                            <th>@Localizer["Delete"]</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -161,10 +162,10 @@
                                 <td class="middle-aligned"><input type="checkbox" checked="@invite.IsAdmin" disabled /></td>
                                 <td class="middle-aligned">
                                     <label class="control-label">
-                                        <a href="@NavManager.BaseUri/Invite/?id=@invite.ID">Join Link</a>
+                                        <a href="@NavManager.BaseUri/Invite/?id=@invite.ID">@Localizer["Join Link"]</a>
                                     </label>
                                 </td>
-                                <td><button type="button" class="btn btn-danger" invite="@invite.ID" @onclick="() => DeleteInvite(invite)">Delete</button></td>
+                                <td><button type="button" class="btn btn-danger" invite="@invite.ID" @onclick="() => DeleteInvite(invite)">@Localizer["Delete"]</button></td>
                             </tr>
                         }
                     </tbody>
@@ -179,16 +180,16 @@
         <div class="col-sm-8">
             <div class="text-danger"></div>
             <div class="form-group">
-                <label class="control-label">Add User</label>
+                <label class="control-label">@Localizer["Add User"]</label>
                 <div class="input-group">
                     <input @bind="_inviteEmail" @bind:event="oninput"
-                           placeholder="Email of user to add"
+                           placeholder="@Localizer["Email of user to add"]"
                            type="email"
                            required
                            class="form-control" />
 
                     <div class="input-group-append">
-                        <span class="input-group-text pr-1">Admin?</span>
+                        <span class="input-group-text pr-1">@Localizer["Admin?"]</span>
                     </div>
                     <div class="input-group-append">
                         <div class="input-group-text pl-1">
@@ -196,7 +197,7 @@
                         </div>
                     </div>
                     <div class="input-group-append">
-                        <button type="submit" class="btn btn-secondary" @onclick="SendInvite">Add</button>
+                        <button type="submit" class="btn btn-secondary" @onclick="SendInvite">@Localizer["Add"]</button>
                     </div>
                 </div>
             </div>
@@ -206,6 +207,6 @@
 }
 else
 {
-    <h5 class="text-muted">Only organization administrators can view this page.</h5>
+    <h5 class="text-muted">@Localizer["Only organization administrators can view this page."]</h5>
 }
 

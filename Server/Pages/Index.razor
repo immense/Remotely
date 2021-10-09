@@ -13,11 +13,11 @@
             </p>
             <hr class="my-4">
             <p class="lead">
-                <a class="btn btn-primary btn-lg mr-2" href="Identity/Account/Login" role="button">Log In</a>
+                <a class="btn btn-primary btn-lg mr-2" href="Identity/Account/Login" role="button">@Localizer["Log In"]</a>
 
                 @if (AppConfig.MaxOrganizationCount < 0 || DataService.GetOrganizationCount() < AppConfig.MaxOrganizationCount)
                 {
-                    <a class="btn btn-primary btn-lg" href="Identity/Account/Register" role="button">Register</a>
+                    <a class="btn btn-primary btn-lg" href="Identity/Account/Register" role="button">@Localizer["Register"]</a>
                 }
             </p>
         </div>

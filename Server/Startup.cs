@@ -237,7 +237,7 @@ namespace Remotely.Server
             var options = new RequestLocalizationOptions
             {
                 DefaultRequestCulture = new RequestCulture(new CultureInfo("en-US")),
-                SupportedCultures = new[] { new CultureInfo("en-US"),new CultureInfo("zh-Hans") }
+                SupportedCultures = new[] { new CultureInfo("en-US"),new CultureInfo("zh-Hans"),new CultureInfo("zh-CN") }
             };
             app.UseRequestLocalization(options);
             app.UseStaticFiles();
