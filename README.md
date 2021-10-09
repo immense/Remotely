@@ -27,7 +27,7 @@ Public Server: https://app.remotely.one
 Website: https://remotely.one  
 Subreddit: https://www.reddit.com/r/remotely_app/  
 Docker: https://hub.docker.com/r/translucency/remotely  
-Video Tutorials: https://remotely-info.lucency.co/Tutorials  
+Video Tutorials: https://remotely.one/Tutorials  
 
 ![image](https://remotely.one/media/ask-remote.png)
 
