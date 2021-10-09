@@ -6,9 +6,10 @@
 @inject AuthenticationStateProvider AuthProvider
 @inject IJsInterop JsInterop
 @inject IModalService ModalService
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer Localizer
 
-
-<h3>API Keys</h3>
+<h3>@Localizer["API Keys"]</h3>
 
 @if (!string.IsNullOrWhiteSpace(_alertMessage))
 {
@@ -19,7 +20,7 @@
 {
     if (!string.IsNullOrWhiteSpace(_newKeySecret))
     {
-        <h5 class="text-warning font-weight-bold mb-2 mt-4">Warning: The key's secret will only be shown once.  Save it now.</h5>
+        <h5 class="text-warning font-weight-bold mb-2 mt-4">@Localizer["ApiKeyWarn"]</h5>
         <h5 class="mb-4">
             <label class="mr-1">Key Secret:</label>
             <input class="form-control custom-control-inline" readonly value="@_newKeySecret" style="width:400px" />
@@ -28,12 +29,12 @@
 
 
     <div class="mb-2 mt-4">
-        <label class="mr-1">New Token Name:</label>
+        <label class="mr-1">@Localizer["New Token Name"]:</label>
         <input @bind="_createKeyName" @bind:event="oninput"
-               class="form-control form-control-sm custom-control-inline mr-1"
-               style="width:200px" />
+           class="form-control form-control-sm custom-control-inline mr-1"
+           style="width:200px" />
 
-        <button class="btn btn-primary" type="button" @onclick="CreateNewKey">Create</button>
+        <button class="btn btn-primary" type="button" @onclick="CreateNewKey">@Localizer["Create"]</button>
 
         <button class="btn btn-sm btn-secondary ml-2" @onclick="ShowApiKeyHelp">
             <span class="oi oi-question-mark"></span>
@@ -43,9 +44,9 @@
     <table class="table table-hover table-striped">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>ID</th>
-                <th>Last Used</th>
+                <th>@Localizer["Name"]</th>
+                <th>@Localizer["ID"]</th>
+                <th>@Localizer["Last Used"]</th>
                 <th></th>
                 <th></th>
             </tr>
@@ -58,10 +59,10 @@
                     <td>@apiToken.ID</td>
                     <td>@apiToken.LastUsed</td>
                     <td>
-                        <button type="button" class="btn btn-primary" @onclick="() => RenameKey(apiToken.ID)">Rename</button>
+                        <button type="button" class="btn btn-primary" @onclick="() => RenameKey(apiToken.ID)">@Localizer["Rename"]</button>
                     </td>
                     <td>
-                        <button type="submit" class="btn btn-danger" @onclick="() => DeleteKey(apiToken.ID)">Delete</button>
+                        <button type="submit" class="btn btn-danger" @onclick="() => DeleteKey(apiToken.ID)">@Localizer["Delete"]</button>
                     </td>
                 </tr>
             }
@@ -70,7 +71,7 @@
 }
 else
 {
-    <h5 class="text-muted">Only organization administrators can view this page.</h5>
+    <h5 class="text-muted">@Localizer["AdminViewOnly"]</h5>
 }
 
 
@@ -93,18 +94,18 @@ else
 
         await DataService.CreateApiToken(Username, _createKeyName, secretHash);
         RefreshData();
-        _alertMessage = "Key created.";
+        _alertMessage = Localizer["Key created"];
         _newKeySecret = secret;
     }
 
     private async Task DeleteKey(string keyId)
     {
-        var result = await JsInterop.Confirm("Are you sure you want to delete this key?");
+        var result = await JsInterop.Confirm(Localizer["Are you sure you want to delete this key"]);
         if (result)
         {
             await DataService.DeleteApiToken(Username, keyId);
             RefreshData();
-            _alertMessage = "Key deleted.";
+            _alertMessage = Localizer["Key deleted"];
         }
     }
 
@@ -120,21 +121,23 @@ else
 
     private async Task RenameKey(string keyId)
     {
-        var newName = await JsInterop.Prompt("New key name");
+        var newName = await JsInterop.Prompt(Localizer["New key name"]);
         if (!string.IsNullOrWhiteSpace(newName))
         {
             await DataService.RenameApiToken(Username, keyId, newName);
             RefreshData();
-            _alertMessage = "Key renamed.";
+            _alertMessage = Localizer["Key renamed"];
         }
     }
 
     private void ShowApiKeyHelp()
     {
-        ModalService.ShowModal("Using API Keys", new[]
-        {
-            "API keys should be added to the request header when making API calls.  The key should be \"Authorization\", and value should be \"{key-id}:{key-secret}\".  Note the colon in between.",
-            "Example: Authorization=e5da1c09-e851-4bd4-a8c1-532144b3f894:7uY6h5zBYm4+90pZVek4lD6ewbQ83nKcDpghBfG00hhZu6Ew"
+        ModalService.ShowModal(Localizer["Using API Keys"], new[]
+                        {
+                Localizer["ApiKeyShowMsg"].Value,
+                Localizer["ApiKeyExample"].Value
+           // "API keys should be added to the request header when making API calls.  The key should be \"Authorization\", and value should be \"{key-id}:{key-secret}\".  Note the colon in between.",
+           // "Example: Authorization=e5da1c09-e851-4bd4-a8c1-532144b3f894:7uY6h5zBYm4+90pZVek4lD6ewbQ83nKcDpghBfG00hhZu6Ew"
         });
     }
 }

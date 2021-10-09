@@ -1,13 +1,15 @@
 ﻿@page "/"
 @inject IApplicationConfig AppConfig
 @inject IDataService DataService
- 
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer Localizer
 <AuthorizeView>
     <NotAuthorized>
         <div class="jumbotron">
             <h3 class="display-4">Remotely</h3>
             <p class="lead">
-                An open-source remote support solution.
+                @Localizer["An open-source remote support solution"]
+                
             </p>
             <hr class="my-4">
             <p class="lead">

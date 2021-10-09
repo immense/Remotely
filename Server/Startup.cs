@@ -27,6 +27,11 @@ using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.AspNetCore.Authorization;
 using Remotely.Server.Auth;
 using Microsoft.AspNetCore.Http.Extensions;
+using Remotely.Server.Localization;
+using Microsoft.Extensions.Localization;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Remotely.Server
 {
@@ -194,6 +199,13 @@ namespace Remotely.Server
             services.AddScoped<IClientAppState, ClientAppState>();
             services.AddScoped<IExpiringTokenService, ExpiringTokenService>();
             services.AddScoped<IScriptScheduleDispatcher, ScriptScheduleDispatcher>();
+            services.AddLocalization();
+          
+            services.AddSingleton<LocalizationMiddleware>();
+            services.AddDistributedMemoryCache();
+            services.TryAddSingleton<IStringLocalizerFactory, JsonStringLocalizerFactory>();
+            services.TryAddTransient(typeof(IStringLocalizer), typeof(JsonStringLocalizer));
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -222,7 +234,14 @@ namespace Remotely.Server
                     app.UseHttpsRedirection();
                 }
             }
-
+            var options = new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture(new CultureInfo("en-US")),
+                SupportedCultures = new[] { new CultureInfo("en-US"),new CultureInfo("zh-Hans") }
+            };
+            app.UseRequestLocalization(options);
+            app.UseStaticFiles();
+            app.UseMiddleware<LocalizationMiddleware>();
             app.UseMiddleware<ClickOnceMiddleware>();
 
             ConfigureStaticFiles(app, env);
