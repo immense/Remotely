@@ -9,7 +9,7 @@
      @oncontextmenu:preventDefault="GetCardState() == DeviceCardState.Normal"
      @oncontextmenu:stopPropagation="GetCardState() == DeviceCardState.Normal">
 
-    <div class="card-header" @onclick="HandleHeaderClick" 
+    <div class="card-header" @onclick="HandleHeaderClick"
          @onclick:stopPropagation="GetCardState() == DeviceCardState.Expanded"
          @onclick:preventDefault="GetCardState() == DeviceCardState.Expanded">
         <div>
@@ -35,14 +35,14 @@
 
                 <div class="small text-muted" style="height: 1rem">@Device.Alias</div>
             </div>
-            
+
         </div>
         <div class="text-right">
             @if (IsExpanded)
             {
                 <button class="btn btn-sm mr-2" title="@Localizer["Open in New Tab"]"
-                        @onclick:stopPropagation
-                        @onclick="OpenDeviceDetails">
+                    @onclick:stopPropagation
+                    @onclick="OpenDeviceDetails">
                     <i class="oi oi-external-link" style="font-size: 1.3em"></i>
                 </button>
             }
@@ -62,7 +62,7 @@
             {
                 <AlertBanner Message="@GetProgressMessage(kvp.Key)" />
             }
-        } 
+        }
         <div>
             <div class="font-weight-bold text-info">
                 <label>@Localizer["User"]</label>
@@ -127,7 +127,7 @@
                 <label>@Localizer["Disk"]</label>
                 <button class="btn btn-link p-0 m-0 expanded-visible"
                         style="font-size: 50%"
-                        @onclick="ShowAllDisks" 
+                        @onclick="ShowAllDisks"
                         @onclick:stopPropagation>
                     (View All)
                 </button>
@@ -152,7 +152,7 @@
             </div>
 
             <div class="font-weight-bold text-info expanded-visible">
-                Total Memory
+                @Localizer["Total Memory"]
             </div>
             <div class="expanded-visible">
                 @(Device.TotalMemory) GB
@@ -219,51 +219,51 @@
                             <InputSelect @bind-Value="Device.WebRtcSetting" class="form-control">
                                 @foreach (var setting in Enum.GetValues(typeof(WebRtcSetting)))
                                 {
-                                    <option @key="setting" value="@setting">@setting</option>
+                                <option @key="setting" value="@setting">@setting</option>
                                 }
-                            </InputSelect>
-                            <ValidationMessage For="() => Device.WebRtcSetting" />
-                        </div>
+                        </InputSelect>
+                        <ValidationMessage For="() => Device.WebRtcSetting" />
+                    </div>
 
-                        <div class="font-weight-bold text-info mt-2">
-                            @Localizer["Device Group"]
-                        </div>
-                        <div>
-                            <InputSelect @bind-Value="Device.DeviceGroupID" class="form-control">
-                                <option value="">@Localizer["None"]</option>
+                    <div class="font-weight-bold text-info mt-2">
+                        @Localizer["Device Group"]
+                    </div>
+                    <div>
+                        <InputSelect @bind-Value="Device.DeviceGroupID" class="form-control">
+                            <option value="">@Localizer["None"]</option>
 
-                                @foreach (var group in DataService.GetDeviceGroups(Username))
+                            @foreach (var group in DataService.GetDeviceGroups(Username))
                                 {
-                                    <option @key="group.ID" value="@group.ID">@group.Name</option>
+                                <option @key="group.ID" value="@group.ID">@group.Name</option>
                                 }
-                            </InputSelect>
-                            <ValidationMessage For="() => Device.DeviceGroupID" />
-                        </div>
+                        </InputSelect>
+                        <ValidationMessage For="() => Device.DeviceGroupID" />
+                    </div>
 
-                        <div class="font-weight-bold text-info mt-2">
-                            @Localizer["Tags"]
-                        </div>
-                        <div>
-                            <InputText @bind-Value="Device.Tags" class="form-control" />
-                            <ValidationMessage For="() => Device.Tags" />
-                        </div>
+                    <div class="font-weight-bold text-info mt-2">
+                        @Localizer["Tags"]
+                    </div>
+                    <div>
+                        <InputText @bind-Value="Device.Tags" class="form-control" />
+                        <ValidationMessage For="() => Device.Tags" />
+                    </div>
 
-                        <div class="font-weight-bold text-info mt-2">
-                            @Localizer["Notes"]
-                        </div>
-                        <div>
-                            <InputTextArea @bind-Value="Device.Notes" style="width:100%; height: 10em;"></InputTextArea>
-                            <ValidationMessage For="() => Device.Notes" />
-                        </div>
+                    <div class="font-weight-bold text-info mt-2">
+                        @Localizer["Notes"]
+                    </div>
+                    <div>
+                        <InputTextArea @bind-Value="Device.Notes" style="width:100%; height: 10em;"></InputTextArea>
+                        <ValidationMessage For="() => Device.Notes" />
+                    </div>
 
-                        <div>
-                            <ValidationSummary />
-                        </div>
+                    <div>
+                        <ValidationSummary />
+                    </div>
 
-                        <div class="text-right mt-2">
-                            <button type="submit" class="btn btn-primary">@Localizer["Save"]</button>
-                        </div>
-                    </EditForm>
+                    <div class="text-right mt-2">
+                        <button type="submit" class="btn btn-primary">@Localizer["Save"]</button>
+                    </div>
+                </EditForm>
 
                 }
             </div>

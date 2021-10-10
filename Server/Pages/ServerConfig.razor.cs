@@ -377,12 +377,12 @@ namespace Remotely.Server.Pages
                     .GetDevices(OutdatedDevices)
                     .Select(x => x.DeviceName);
 
-                ModalService.ShowModal("Outdated Devices",
+                ModalService.ShowModal(Localizer["Outdated Devices"],
                     (new[] { "Outdated Devices:" }).Concat(outdatedDeviceNames).ToArray());
             }
             else
             {
-                ModalService.ShowModal("Outdated Devices", new[] { "There are no outdated devices currently online." });
+                ModalService.ShowModal(Localizer["Outdated Devices"], new[] { Localizer["There are no outdated devices currently online."].Value });
             }
         }
 

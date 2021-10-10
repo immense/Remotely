@@ -390,7 +390,14 @@
   "Memory Used %": "Memory Used %",
   "Storage Used": "Storage Used",
   "Storage Used %": "Storage Used %",
-  "Search": "Search"
+  "Search": "Search",
+  "Enter a name for your organization": "Enter a name for your organization",
+  "Enter your email.": "Enter your email.",
+  "Password Reset URL:": "Password Reset URL:",
+  "Outdated Devices": "Outdated Devices",
+  "There are no outdated devices currently online.": "There are no outdated devices currently online.",
+  "Add a known proxy": "Add a known proxy"
+
 
 
 

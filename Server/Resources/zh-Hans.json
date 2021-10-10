@@ -389,5 +389,11 @@
   "Memory Used %": "内存占用 %",
   "Storage Used": "存储占用",
   "Storage Used %": "存储占用 %",
-  "Search": "搜索"
+  "Search": "搜索",
+  "Enter a name for your organization": "为你的组织取一个名字",
+  "Enter your email.": "输入你的邮箱。",
+  "Password Reset URL:": "密码重置链接:",
+  "Outdated Devices": "过时的设备",
+  "There are no outdated devices currently online.": "目前线上还没有过时的设备。",
+  "Add a known proxy": "添加一个已知的代理"
 }

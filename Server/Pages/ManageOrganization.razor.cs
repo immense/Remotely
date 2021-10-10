@@ -243,7 +243,7 @@ namespace Remotely.Server.Pages
 
             await ModalService.ShowModal(Localizer["Password Reset"], builder =>
             {
-                builder.AddMarkupContent(0, $@"<div class=""mb-3"">Password Reset URL:</div>
+                builder.AddMarkupContent(0, $@"<div class=""mb-3"">{Localizer["Password Reset URL:"]}</div>
                     <input readonly value=""{resetUrl}"" class=""form-control"" /> 
                     <div class=""mt-3"">{Localizer["NOTE: Give this URL to the user.  They must be logged out completely for it to work."]}</div>");
             });
