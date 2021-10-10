@@ -2,7 +2,8 @@
 @attribute [Authorize]
 @inject IDataService DataService 
 @inject IModalService ModalService 
-
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer Localizer
 <button id="alertsButton" class="btn btn-info" @onclick="ToggleOpen">
     <span class="oi oi-bell"></span>
     <span id="alertsCount">
@@ -13,7 +14,7 @@
 <div id="alertsFrame" class="bg-secondary @FrameClass">
     <div class="text-right">
         <button id="clearAllAlertsButton" class="btn btn-secondary mt-2 mr-2 align-top" @onclick="ClearAllAlerts">
-            Clear All
+            @Localizer["Clear All"]
         </button>
         <button id="closeAlertsFrameButton" class="btn btn-secondary btn-sm mt-2 mr-2 align-top" @onclick="ToggleOpen">
             <span class="oi oi-x pointer"></span>
@@ -34,7 +35,7 @@
                     {
                         <div class="small">
                             <button class="btn btn-link" @onclick="() => ShowAlertDetails(alert)">
-                                View Details
+                                @Localizer["View Details"]
                             </button>
                         </div>
                     }
@@ -44,7 +45,7 @@
                                 class="btn btn-sm btn-secondary alert-dismiss-button"
                                 type="button"
                                 @onclick="()=> { _ = ClearAlert(alert); }">
-                            Dismiss
+                            @Localizer["Dismiss"]
                         </button>
                     </div>
                 </div>
@@ -93,7 +94,7 @@
 
     private void ShowAlertDetails(Alert alert)
     {
-        ModalService.ShowModal($"Alert Details for {alert.Device?.DeviceName}", alert.Details.Split('\n'));
+        ModalService.ShowModal(string.Format( Localizer["Alert Details for {0}"],alert.Device?.DeviceName), alert.Details.Split('\n'));
     }
 
     private void ToggleOpen()

@@ -124,8 +124,14 @@ namespace Remotely.Server
                     builder.Requirements.Add(new TwoFactorRequiredRequirement());
                 });
             });
+            services.AddLocalization();
 
-            services.AddRazorPages();
+            services.AddSingleton<LocalizationMiddleware>();
+            services.AddDistributedMemoryCache();
+            services.TryAddSingleton<IStringLocalizerFactory, JsonStringLocalizerFactory>();
+            services.TryAddTransient(typeof(IStringLocalizer), typeof(JsonStringLocalizer));
+            services.TryAddTransient(typeof(IStringLocalizer<>), typeof(JsonStringLocalizer<>));
+            services.AddRazorPages().AddDataAnnotationsLocalization();
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<RemotelyUser>>();
             services.AddDatabaseDeveloperPageExceptionFilter();
@@ -199,13 +205,7 @@ namespace Remotely.Server
             services.AddScoped<IClientAppState, ClientAppState>();
             services.AddScoped<IExpiringTokenService, ExpiringTokenService>();
             services.AddScoped<IScriptScheduleDispatcher, ScriptScheduleDispatcher>();
-            services.AddLocalization();
-          
-            services.AddSingleton<LocalizationMiddleware>();
-            services.AddDistributedMemoryCache();
-            services.TryAddSingleton<IStringLocalizerFactory, JsonStringLocalizerFactory>();
-            services.TryAddTransient(typeof(IStringLocalizer), typeof(JsonStringLocalizer));
-
+        
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

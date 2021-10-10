@@ -2,9 +2,10 @@
 @inherits AuthComponentBase
 @inject IDataService DataService
 @inject IToastService ToastService  
-
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer Localizer
 <h5 class="text-info">
-    Editing @EditUser?.UserName
+    @Localizer["Editing"] @EditUser?.UserName
 </h5>
 
 @foreach (var group in DeviceGroups ?? Array.Empty<DeviceGroup>())
@@ -42,7 +43,7 @@
             }
             else
             {
-                ToastService.ShowToast("User added to group.");
+                ToastService.ShowToast(Localizer["User added to group."]);
             }
 
         }
@@ -51,11 +52,11 @@
             var result = await DataService.RemoveUserFromDeviceGroup(EditUser.OrganizationID, group.ID, EditUser.Id);
             if (!result)
             {
-                ToastService.ShowToast("Failed to remove from group.", classString: "bg-warning");
+                ToastService.ShowToast(Localizer["Failed to remove from group."], classString: "bg-warning");
             }
             else
             {
-                ToastService.ShowToast("Removed user from group.");
+                ToastService.ShowToast(Localizer["Removed user from group."]);
             }
         }
     }

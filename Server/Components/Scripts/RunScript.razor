@@ -1,18 +1,19 @@
 ﻿@inherits AuthComponentBase
 @attribute [Authorize]
-
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer Localizer
 <div class="main-grid mt-3 auto-height">
     <div style="grid-column: span 3">
-        <button class="btn btn-primary align-middle mr-4" @onclick="ExecuteScript">Run</button>
+        <button class="btn btn-primary align-middle mr-4" @onclick="ExecuteScript">@Localizer["Run"]</button>
         <input type="checkbox" class="mr-1 align-middle" @bind="_runOnNextConnect" />
-        <span class="align-middle">If offline, run immediately when next connected</span>
+        <span class="align-middle">@Localizer["If offline, run immediately when next connected"]</span>
     </div>
     <div class="column-wrapper h-100 pb-3">
         <div>
-            <h5>Saved Scripts</h5>
+            <h5>@Localizer["Saved Scripts"]</h5>
             <div>
                 <input type="checkbox" @bind="ParentPage.ShowOnlyMyScripts" />
-                <span class="align-top">Show only mine</span>
+                <span class="align-top">@Localizer["Show only mine"]</span>
             </div>
         </div>
         <TreeView DataSource="ParentPage.TreeNodes"
@@ -42,7 +43,7 @@
     </div>
 
     <div class="column-wrapper h-100 pb-3">
-        <h5>Devices</h5>
+        <h5>@Localizer["Devices"]</h5>
         <div class="item-list-border h-100">
             @foreach (var device in _devices)
             {

@@ -88,7 +88,7 @@ namespace Remotely.Server.Components.Devices
 
         private void CircuitConnection_MessageReceived(object sender, CircuitEvent e)
         {
-           switch (e.EventName)
+            switch (e.EventName)
             {
                 case CircuitEventName.DeviceUpdate:
                 case CircuitEventName.DeviceWentOffline:
@@ -177,14 +177,14 @@ namespace Remotely.Server.Components.Devices
                   Device.Notes,
                   Device.WebRtcSetting);
 
-            ToastService.ShowToast("Device settings saved.");
+            ToastService.ShowToast(Localizer["Device settings saved."]);
 
             await CircuitConnection.TriggerHeartbeat(Device.ID);
         }
 
         private async Task OnFileInputChanged(InputFileChangeEventArgs args)
         {
-            ToastService.ShowToast("File upload started.");
+            ToastService.ShowToast(Localizer["File upload started."]);
 
             var fileId = await DataService.AddSharedFile(args.File, User.OrganizationID, OnFileInputProgress);
 
@@ -194,11 +194,11 @@ namespace Remotely.Server.Components.Devices
 
             if (!result)
             {
-                ToastService.ShowToast("Device not found.", classString: "bg-warning");
+                ToastService.ShowToast(Localizer["Device not found."], classString: "bg-warning");
             }
             else
             {
-                ToastService.ShowToast("File upload completed.");
+                ToastService.ShowToast(Localizer["File upload completed."]);
             }
         }
 
@@ -234,7 +234,7 @@ namespace Remotely.Server.Components.Devices
                 builder.AddMarkupContent(0, $"<div style='white-space: pre'>{disksString}</div>");
             }
 
-            ModalService.ShowModal($"All Disks for {Device.DeviceName}", modalBody);
+            ModalService.ShowModal($"{Localizer["All Disks for"]} {Device.DeviceName}", modalBody);
         }
 
         private void StartChat()
@@ -284,7 +284,7 @@ namespace Remotely.Server.Components.Devices
 
         private async Task UninstallAgent()
         {
-            var result = await JsInterop.Confirm("Are you sure you want to uninstall this agent?  This is permanent!");
+            var result = await JsInterop.Confirm(Localizer["Are you sure you want to uninstall this agent?  This is permanent!"]);
             if (result)
             {
                 await CircuitConnection.UninstallAgents(new[] { Device.ID });

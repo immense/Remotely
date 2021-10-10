@@ -7,6 +7,14 @@ using System.Threading;
 
 namespace Remotely.Server.Localization
 {
+    public class JsonStringLocalizer<T> : JsonStringLocalizer, IStringLocalizer<T>
+    {
+        public JsonStringLocalizer(IDistributedCache cache) : base(cache)
+        {
+
+
+        }
+    }
     public class JsonStringLocalizer : IStringLocalizer
     {
 
@@ -60,6 +68,9 @@ namespace Remotely.Server.Localization
 
         private string GetString(string key)
         {
+            if (key == "The password and confirmation password do not match.")
+            { 
+            }
             string relativeFilePath = $"Resources/{Thread.CurrentThread.CurrentCulture.Name}.json";
             string fullFilePath = Path.GetFullPath(relativeFilePath);
             string cacheKey = $"locale_{Thread.CurrentThread.CurrentCulture.Name}_{key}";
@@ -67,7 +78,7 @@ namespace Remotely.Server.Localization
             if (!string.IsNullOrEmpty(cacheValue)) return cacheValue;
             if (File.Exists(fullFilePath))
             {
-               
+
                 string result = GetValueFromJSON(key, Path.GetFullPath(relativeFilePath));
                 if (!string.IsNullOrEmpty(result)) _cache.SetString(cacheKey, result);
                 return result;

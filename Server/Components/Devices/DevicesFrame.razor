@@ -1,7 +1,8 @@
 ﻿@attribute [Authorize]
 @inherits AuthComponentBase
-
-<h3>Devices</h3>
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer Localizer
+<h3>@Localizer["Devices"]</h3>
 
 <div @onclick="ClearSelectedCard">
     <div id="deviceControlsWrapper">
@@ -9,8 +10,8 @@
             <div>
                 <div>Device Group</div>
                 <select class="form-control" style="width: 200px" @bind="_selectedGroupId">
-                    <option value="@_deviceGroupAll">All</option>
-                    <option value="@_deviceGroupNone">None</option>
+                    <option value="@_deviceGroupAll">@Localizer["All"]</option>
+                    <option value="@_deviceGroupNone">@Localizer["None"]</option>
                     @foreach (var group in _deviceGroups)
                     {
                         <option @key="group.ID" value="@group.ID">@group.Name</option>
@@ -34,11 +35,11 @@
 
             <div class="custom-control custom-checkbox mt-2">
                 <input id="hideOfflineDevicesCheckbox" type="checkbox" class="custom-control-input" @bind="_hideOfflineDevices" />
-                <label class="custom-control-label" for="hideOfflineDevicesCheckbox">Hide offline devices</label>
+                <label class="custom-control-label" for="hideOfflineDevicesCheckbox">@Localizer["Hide offline devices"]</label>
             </div>
             <div class="mt-2">
-                <button class="btn btn-sm btn-secondary mr-2" @onclick="SelectAllCards">Select All</button>
-                <button class="btn btn-sm btn-primary" @onclick="HandleRefreshClicked">Refresh</button>
+                <button class="btn btn-sm btn-secondary mr-2" @onclick="SelectAllCards">@Localizer["Select All"]</button>
+                <button class="btn btn-sm btn-primary" @onclick="HandleRefreshClicked">@Localizer["Refresh"]</button>
             </div>
         </div>
          
@@ -56,9 +57,9 @@
                     <button class="btn btn-sm btn-secondary" @onclick="PageDown">
                         <i class="oi oi-chevron-left"></i>
                     </button>
-                    <span class="small">Page</span>
+                    <span class="small">@Localizer["Page"]</span>
                     <input id="currentPageInput" style="width:75px; text-align: center" pattern="[0-9]" @bind="_currentPage" @bind:event="oninput" />
-                    <span class="small">of</span>
+                    <span class="small">@Localizer["of"]</span>
                     <span>@TotalPages</span>
                     <button class="btn btn-sm btn-secondary" @onclick="PageUp">
                         <i class="oi oi-chevron-right"></i>
@@ -72,7 +73,7 @@
                         <option value="100">100</option>
                         <option value="200">200</option>
                     </select>
-                    <span class="ml-1 small">per page</span>
+                    <span class="ml-1 small">@Localizer["per page"]</span>
                 </div>
             </div>
            

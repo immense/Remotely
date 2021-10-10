@@ -1,6 +1,7 @@
 ﻿@inject IModalService ModalService
 @inject IJsInterop JsInterop
-
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer Localizer
 <div class="modal fade @_showClass" style="display: @_displayStyle; background-color: rgba(0,0,0,0.35)" @onclick="CloseModal">
     <div class="modal-dialog modal-dialog-scrollable" role="document" @onclick:stopPropagation>
         <div class="modal-content">
@@ -31,7 +32,7 @@
                 {
                     <button @key="button" type="button" class="@button.Class" @onclick="() => ExecuteButtonAction(button.OnClick)">@button.Text</button>
                 }
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="CloseModal">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="CloseModal">@Localizer["Close"]</button>
             </div>
         </div>
     </div>
