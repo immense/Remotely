@@ -124,13 +124,13 @@ namespace Remotely.Server
                     builder.Requirements.Add(new TwoFactorRequiredRequirement());
                 });
             });
-            services.AddLocalization();
+        
 
             services.AddSingleton<LocalizationMiddleware>();
             services.AddDistributedMemoryCache();
-            services.TryAddSingleton<IStringLocalizerFactory, JsonStringLocalizerFactory>();
-            services.TryAddTransient(typeof(IStringLocalizer), typeof(JsonStringLocalizer));
-            services.TryAddTransient(typeof(IStringLocalizer<>), typeof(JsonStringLocalizer<>));
+            services.AddSingleton<IStringLocalizerFactory, JsonStringLocalizerFactory>();
+            services.AddSingleton<IStringLocalizer,JsonStringLocalizer>();
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddRazorPages().AddDataAnnotationsLocalization();
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<RemotelyUser>>();

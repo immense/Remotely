@@ -54,7 +54,7 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
-            [EmailAddress]
+            [EmailAddress(ErrorMessage = "The true field is not a valid e-mail address.")]
             [Display(Name = "Email")]
             public string Email { get; set; }
 

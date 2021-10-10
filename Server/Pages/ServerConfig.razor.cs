@@ -76,7 +76,7 @@ namespace Remotely.Server.Pages
         public string SmtpDisplayName { get; set; }
 
         [Display(Name = "SMTP Email")]
-        [EmailAddress]
+        [EmailAddress(ErrorMessage = "The true field is not a valid e-mail address.")]
         public string SmtpEmail { get; set; }
 
         [Display(Name = "SMTP Host")]

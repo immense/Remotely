@@ -373,7 +373,24 @@
   "Alert Details for {0}": "Alert Details for {0}",
   "Color Sample": "Color Sample",
   "Close": "Close",
-  "The password and confirmation password do not match.": "The password and confirmation password do not match."
+  "The password and confirmation password do not match.": "The password and confirmation password do not match.",
+  "The {0} must be at least {2} and at max {1} characters long.": "The {0} must be at least {2} and at max {1} characters long.",
+  "The true field is not a valid e-mail address.": "The true field is not a valid e-mail address.",
+  "Search device properties": "Search device properties",
+  "Sort": "Sort",
+  "Alias": "Alias",
+  "CPU Utilization": "CPU Utilization",
+  "Current User": "Current User",
+  "Device Name": "Device Name",
+  "OS Description": "OS Description",
+  "Processor Count": "Processor Count",
+  "Memory Total": "Memory Total",
+  "Storage Total": "Storage Total",
+  "Memory Used": "Memory Used",
+  "Memory Used %": "Memory Used %",
+  "Storage Used": "Storage Used",
+  "Storage Used %": "Storage Used %",
+  "Search": "Search"
 
 
 

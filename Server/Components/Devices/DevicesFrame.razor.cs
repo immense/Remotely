@@ -221,7 +221,7 @@ namespace Remotely.Server.Components.Devices
                         continue;
                     }
 
-                    if (_selectedGroupId == _deviceGroupNone && 
+                    if (_selectedGroupId == _deviceGroupNone &&
                         !string.IsNullOrWhiteSpace(device.DeviceGroupID))
                     {
                         continue;
@@ -279,7 +279,7 @@ namespace Remotely.Server.Components.Devices
 
         private string GetDisplayName(PropertyInfo propInfo)
         {
-            return propInfo.GetCustomAttribute<DisplayAttribute>()?.Name ?? propInfo.Name;
+            return Localizer[propInfo.GetCustomAttribute<DisplayAttribute>()?.Name ?? propInfo.Name];
         }
 
         private string GetSortIcon()

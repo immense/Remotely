@@ -8,7 +8,7 @@
     <div id="deviceControlsWrapper">
         <div>
             <div>
-                <div>Device Group</div>
+                <div>@Localizer["Device Group"]</div>
                 <select class="form-control" style="width: 200px" @bind="_selectedGroupId">
                     <option value="@_deviceGroupAll">@Localizer["All"]</option>
                     <option value="@_deviceGroupNone">@Localizer["None"]</option>
@@ -20,7 +20,7 @@
             </div>
 
             <div>
-                <div class="mt-1">Sort</div>
+                <div class="mt-1">@Localizer["Sort"]</div>
                 <select class="form-control d-inline" style="width: 150px" @bind="_selectedSortProperty">
                     <option value=""></option>
                     @foreach (var prop in _sortableProperties)
@@ -46,10 +46,10 @@
         <div>
             <div class="d-inline-block text-left">
                 <div>
-                    <div>Search</div>
+                    <div>@Localizer["Search"]</div>
                     <input class="form-control d-inline"
                            style="width: 200px"
-                           placeholder="Search device properties"
+                           placeholder="@Localizer["Search device properties"]"
                            @bind="_filter" />
                 </div>
 

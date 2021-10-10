@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 
@@ -31,7 +32,7 @@ namespace Remotely.Server.Localization
         {
             get
             {
-                string value = GetString(name);
+                string value = GetString(Thread.CurrentThread.CurrentCulture, name);
                 return new LocalizedString(name, value ?? name, value == null);
             }
         }
@@ -66,22 +67,28 @@ namespace Remotely.Server.Localization
             }
         }
 
-        private string GetString(string key)
+        private string GetString(CultureInfo culture, string key)
         {
-            if (key == "The password and confirmation password do not match.")
-            { 
-            }
-            string relativeFilePath = $"Resources/{Thread.CurrentThread.CurrentCulture.Name}.json";
-            string fullFilePath = Path.GetFullPath(relativeFilePath);
-            string cacheKey = $"locale_{Thread.CurrentThread.CurrentCulture.Name}_{key}";
+
+
+            string cacheKey = $"locale_{culture.Name}_{key}";
             string cacheValue = _cache.GetString(cacheKey);
             if (!string.IsNullOrEmpty(cacheValue)) return cacheValue;
+            string relativeFilePath = $"Resources/{culture.Name}.json";
+            string fullFilePath = Path.GetFullPath(relativeFilePath);
             if (File.Exists(fullFilePath))
             {
 
                 string result = GetValueFromJSON(key, Path.GetFullPath(relativeFilePath));
                 if (!string.IsNullOrEmpty(result)) _cache.SetString(cacheKey, result);
                 return result;
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(culture.Parent.Name))
+                {
+                    return GetString(culture.Parent, key);
+                }
             }
 
             return default(string);
