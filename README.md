@@ -5,15 +5,6 @@ A remote control and remote scripting solution, built with .NET 5, Blazor, Signa
 ![GitHub Build](https://github.com/lucent-sea/Remotely/workflows/GitHub%20Build/badge.svg)
 
 
-> # Remotely needs your help!
-> Please help Remotely stay free and open-source by convincing Syncro (my previous employer) to release any claims of ownership they may have over this project due to ambiguous language in their employment agreement.
->
-> Head over to [this Reddit post](https://www.reddit.com/r/msp/comments/q5l3pt/please_help_me_convince_syncro_to_release_any/) and add your voice to mine!
->
-> Thank you!
->
-> - Jared
-
 ## Donations
 If this project has benefited you in some way, or if you just want to show appreciation, please consider donating to a charity.
 
