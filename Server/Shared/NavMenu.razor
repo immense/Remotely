@@ -1,8 +1,15 @@
-﻿@inject IAuthService AuthService 
+﻿@inject IAuthService AuthService
 @inject IApplicationConfig AppConfig
 @inject IDataService DataService
+@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Http
 @using Microsoft.Extensions.Localization
+@using Microsoft.Extensions.Options
+@using Remotely.Server.Localization
+@using System.Globalization
 @inject IStringLocalizer Localizer
+@inject IOptions<RequestLocalizationOptions> locOptions
+@inject NavigationManager Nav
 <div class="pl-4 pb-1 pr-0 pt-0 navbar navbar-dark" style="background-color: rgba(0,0,0,0.3)">
     <a class="navbar-brand text-left" href="">
         <div class="logo-title">
@@ -104,7 +111,7 @@
             <Authorized>
                 <li class="px-3 mt-3">
                     <a class="btn btn-link text-light" href="Identity/Account/Manage">
-                       @Localizer["Account"]
+                        @Localizer["Account"]
                     </a>
                 </li>
                 <li class="px-3">
@@ -125,20 +132,55 @@
                 }
             </NotAuthorized>
         </AuthorizeView>
+        <li class="px-3">
+            <select class="form-control d-inline" @bind="Selectlanguage">
 
+                @foreach (var prop in AcceptLanguageCultureProvider.SupperCultureInfos)
+                {
+                    <option value="@prop.Name">@prop.NativeName  </option>
+                }
+            </select>
+        </li>
         <li class="px-3 mt-3">
+
             <a class="btn btn-link text-light" href="/about">@Localizer["About"]</a>
         </li>
 
     </ul>
+    <div>
+    </div>
 </div>
 
-@code {       
+@code {
     private bool collapseNavMenu = true;
     private Dictionary<string, object> _remoteControlAttributes
         = new() { ["target"] = "blank", ["href"] = "/RemoteControl" };
+    private string _selectlanguage;
+    public string Selectlanguage
+    {
+        get
+        {
+            return _selectlanguage;
+        }
+        set
+        {
+            _selectlanguage = value;
+            if (CultureInfo.CurrentCulture.Name != value)
+            {
+                var uri = new Uri(Nav.Uri)
+                    .GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped);
+                var cultureEscaped = Uri.EscapeDataString(value);
+                var uriEscaped = Uri.EscapeDataString(uri);
 
-    private RemotelyUser _user;
+                Nav.NavigateTo(
+                    $"Culture/Set?culture={cultureEscaped}&redirectUri={uriEscaped}",
+                    forceLoad: true);
+            }
+        }
+    }
+
+
+    RemotelyUser _user;
     private Organization _organization;
 
     protected override async Task OnInitializedAsync()
@@ -155,6 +197,7 @@
         {
             _organization = await DataService.GetDefaultOrganization();
         }
+        _selectlanguage = CultureInfo.CurrentCulture.Name;
     }
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;

@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Globalization;
@@ -23,16 +25,18 @@ namespace Remotely.Server.Localization
 
         private readonly JsonSerializer _serializer = new JsonSerializer();
 
+
         public JsonStringLocalizer(IDistributedCache cache)
         {
             _cache = cache;
+
         }
 
         public LocalizedString this[string name]
         {
             get
             {
-                string value = GetString(Thread.CurrentThread.CurrentCulture, name);
+                string value = GetString(CultureInfo.CurrentCulture, name);
                 return new LocalizedString(name, value ?? name, value == null);
             }
         }

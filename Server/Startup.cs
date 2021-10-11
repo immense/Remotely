@@ -124,12 +124,12 @@ namespace Remotely.Server
                     builder.Requirements.Add(new TwoFactorRequiredRequirement());
                 });
             });
-        
 
-            services.AddSingleton<LocalizationMiddleware>();
+
+
             services.AddDistributedMemoryCache();
-            services.AddSingleton<IStringLocalizerFactory, JsonStringLocalizerFactory>();
-            services.AddSingleton<IStringLocalizer,JsonStringLocalizer>();
+            services.AddTransient<IStringLocalizerFactory, JsonStringLocalizerFactory>();
+            services.AddTransient<IStringLocalizer, JsonStringLocalizer>();
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddRazorPages().AddDataAnnotationsLocalization();
             services.AddServerSideBlazor();
@@ -205,7 +205,7 @@ namespace Remotely.Server
             services.AddScoped<IClientAppState, ClientAppState>();
             services.AddScoped<IExpiringTokenService, ExpiringTokenService>();
             services.AddScoped<IScriptScheduleDispatcher, ScriptScheduleDispatcher>();
-        
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -234,14 +234,17 @@ namespace Remotely.Server
                     app.UseHttpsRedirection();
                 }
             }
+            var provider = new AcceptLanguageCultureProvider();
             var options = new RequestLocalizationOptions
             {
-                DefaultRequestCulture = new RequestCulture(new CultureInfo("en-US")),
-                SupportedCultures = new[] { new CultureInfo("en-US"),new CultureInfo("zh-Hans"),new CultureInfo("zh-CN") }
+                DefaultRequestCulture = new RequestCulture(AcceptLanguageCultureProvider.SupperCultureInfos[0]),
+                SupportedCultures = AcceptLanguageCultureProvider.SupperCultureInfos,
+                SupportedUICultures = AcceptLanguageCultureProvider.SupperCultureInfos
+
             };
+            options.RequestCultureProviders.Add(provider);
             app.UseRequestLocalization(options);
             app.UseStaticFiles();
-            app.UseMiddleware<LocalizationMiddleware>();
             app.UseMiddleware<ClickOnceMiddleware>();
 
             ConfigureStaticFiles(app, env);
