@@ -5,10 +5,14 @@ A remote control and remote scripting solution, built with .NET 5, Blazor, Signa
 ![GitHub Build](https://github.com/lucent-sea/Remotely/workflows/GitHub%20Build/badge.svg)
 
 
-> ## Repo is "On Pause"
-> My family and I have recently moved into a new house.  Until we've settled in and adjusted to the changes, the repo will be archived.  This is for my own peace of mind, as it's rather stressful to see requests/issues come in when I don't have time to address them.
+> # Remotely needs your help!
+> Please help Remotely stay free and open-source by convincing Syncro (my previous employer) to release any claims of ownership they may have over this project due to ambiguous language in their employment agreement.
 >
-> Once I'm ready to resume the project, the archival will be removed.
+> Head over to [this Reddit post](https://www.reddit.com/r/msp/comments/q5l3pt/please_help_me_convince_syncro_to_release_any/) and add your voice to mine!
+>
+> Thank you!
+>
+> - Jared
 
 ## Donations
 If this project has benefited you in some way, or if you just want to show appreciation, please consider donating to a charity.
