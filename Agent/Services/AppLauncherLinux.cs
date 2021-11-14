@@ -126,13 +126,26 @@ namespace Remotely.Agent.Services
             {
                 try
                 {
-                    var whoLine = whoString
-                        .Split('\n', StringSplitOptions.RemoveEmptyEntries)
-                        .First();
-
-                    var whoSplit = whoLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                    username = whoSplit[0];
-                    display = whoSplit.Last().TrimStart('(').TrimEnd(')');
+                    var whoLines = whoString
+                        .Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                        
+                    for(int i = 0; i < whoLines.Length; i++)
+                    {
+                        var whoLine = whoLines[i];                        
+                        var whoSplit = whoLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                                                
+                        username = whoSplit[0];
+                         Logger.Write($"split last: {whoSplit.Last()}");
+                         
+                        display = whoSplit.Last().TrimStart('(').TrimEnd(')');
+                          Logger.Write($"display: {display}");
+                          
+                        if(display.Length >0 && display[0] == ':')
+                        {
+                            break;
+                        }
+                          
+                    }
                     xauthority = $"/home/{username}/.Xauthority";
                     args = $"-u {username} {args}";
                 }

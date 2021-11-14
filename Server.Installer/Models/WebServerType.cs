@@ -14,6 +14,7 @@ namespace Server.Installer.Models
         UbuntuNginx,
         CentOsCaddy,
         CentOsNginx,
-        IisWindows
+        IisWindows3,
+        LinuxNginx
     }
 }

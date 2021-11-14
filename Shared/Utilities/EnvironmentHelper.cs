@@ -60,6 +60,8 @@ namespace Remotely.Shared.Utilities
 
         public static bool IsWindows => OperatingSystem.IsWindows();
 
+        public static bool Is64 => Environment.Is64BitProcess;
+
         public static Platform Platform
         {
             get
