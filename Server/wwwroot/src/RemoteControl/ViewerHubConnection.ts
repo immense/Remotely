@@ -35,7 +35,8 @@ export class ViewerHubConnection {
             UI.StatusMessage.innerHTML = `Connection error: ${err.message}`;
             UI.ToggleConnectUI(true);
         });
-        this.Connection.closedCallbacks.push((ev) => {
+
+        this.Connection.onclose(() => {
             UI.ToggleConnectUI(true);
         });
 

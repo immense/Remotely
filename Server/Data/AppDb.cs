@@ -21,11 +21,6 @@ namespace Remotely.Server.Data
                     c => c.Aggregate(0, (a, b) => HashCode.Combine(a, b.GetHashCode())),
                     c => c.ToArray());
 
-        public AppDb(DbContextOptions context)
-                    : base(context)
-        {
-        }
-
         public DbSet<Alert> Alerts { get; set; }
 
         public DbSet<ApiToken> ApiTokens { get; set; }
