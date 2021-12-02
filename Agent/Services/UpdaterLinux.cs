@@ -70,28 +70,21 @@ namespace Remotely.Agent.Services
 
                 var fileUrl = serverUrl + $"/Content/Remotely-Linux.zip";
 
-                var lastEtag = string.Empty;
+                using var httpClient = _httpClientFactory.CreateClient();
+                using var request = new HttpRequestMessage(HttpMethod.Head, fileUrl);
 
                 if (File.Exists("etag.txt"))
                 {
-                    lastEtag = await File.ReadAllTextAsync("etag.txt");
-                }
-
-                try
-                {
-                    using var httpClient = _httpClientFactory.CreateClient();
-                    using var request = new HttpRequestMessage(HttpMethod.Head, fileUrl);
-                    request.Headers.IfNoneMatch.Add(new EntityTagHeaderValue(lastEtag));
-
-                    using var response = await httpClient.SendAsync(request);
-
-                    if (response.StatusCode == HttpStatusCode.NotModified)
+                    var lastEtag = await File.ReadAllTextAsync("etag.txt");
+                    if (!string.IsNullOrEmpty(lastEtag))
                     {
-                        Logger.Write("Service Updater: Version is current.");
-                        return;
+                        request.Headers.IfNoneMatch.Add(new EntityTagHeaderValue(lastEtag));
                     }
                 }
-                catch (WebException ex) when ((ex.Response as HttpWebResponse).StatusCode == HttpStatusCode.NotModified)
+
+                using var response = await httpClient.SendAsync(request);
+
+                if (response.StatusCode == HttpStatusCode.NotModified)
                 {
                     Logger.Write("Service Updater: Version is current.");
                     return;
@@ -101,6 +94,11 @@ namespace Remotely.Agent.Services
 
                 await InstallLatestVersion();
 
+            }
+            catch (WebException ex) when ((ex.Response as HttpWebResponse).StatusCode == HttpStatusCode.NotModified)
+            {
+                Logger.Write("Service Updater: Version is current.");
+                return;
             }
             catch (Exception ex)
             {
