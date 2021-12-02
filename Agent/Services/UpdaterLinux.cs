@@ -78,7 +78,8 @@ namespace Remotely.Agent.Services
                     var lastEtag = await File.ReadAllTextAsync("etag.txt");
                     if (!string.IsNullOrEmpty(lastEtag))
                     {
-                        request.Headers.IfNoneMatch.Add(new EntityTagHeaderValue(lastEtag));
+                        var etagValue = new EntityTagHeaderValue(lastEtag.Trim());
+                        request.Headers.IfNoneMatch.Add(etagValue);
                     }
                 }
 
