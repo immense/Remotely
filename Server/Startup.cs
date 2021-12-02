@@ -54,8 +54,8 @@ namespace Remotely.Server
                     options.UseSqlite(Configuration.GetConnectionString("SQLite"));
                 });
 
-                services.AddScoped<IDbContextFactory<AppDb>>(p =>
-                    p.GetRequiredService<IDbContextFactory<SqliteDbContext>>());
+                services.AddScoped(p =>
+                     (IDbContextFactory<AppDb>)p.GetRequiredService<IDbContextFactory<SqliteDbContext>>());
 
                 services.AddScoped<AppDb, SqliteDbContext>(p =>
                     p.GetRequiredService<IDbContextFactory<SqliteDbContext>>().CreateDbContext());
@@ -68,8 +68,8 @@ namespace Remotely.Server
                     options.UseSqlServer(Configuration.GetConnectionString("SQLServer"));
                 });
 
-                services.AddScoped<IDbContextFactory<AppDb>>(p =>
-                    p.GetRequiredService<IDbContextFactory<SqlServerDbContext>>());
+                services.AddScoped(p =>
+                    (IDbContextFactory<AppDb>)p.GetRequiredService<IDbContextFactory<SqlServerDbContext>>());
 
                 services.AddScoped<AppDb, SqlServerDbContext>(p =>
                     p.GetRequiredService<IDbContextFactory<SqlServerDbContext>>().CreateDbContext());
@@ -94,8 +94,8 @@ namespace Remotely.Server
                     }
                 });
 
-                services.AddScoped<IDbContextFactory<AppDb>>(p =>
-                    p.GetRequiredService<IDbContextFactory<PostgreSqlDbContext>>());
+                services.AddScoped(p =>
+                     (IDbContextFactory<AppDb>)p.GetRequiredService<IDbContextFactory<PostgreSqlDbContext>>());
 
                 services.AddScoped<AppDb, PostgreSqlDbContext>(p =>
                     p.GetRequiredService<IDbContextFactory<PostgreSqlDbContext>>().CreateDbContext());
