@@ -1,4 +1,27 @@
-﻿using Microsoft.Win32;
+﻿// The DirectX capture code is based off examples from the
+// SharpDX Samples at https://github.com/sharpdx/SharpDX.
+
+// Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+using Microsoft.Win32;
 using Remotely.Desktop.Core.Interfaces;
 using Remotely.Desktop.Win.Models;
 using Remotely.Shared.Utilities;
@@ -74,21 +97,21 @@ namespace Remotely.Desktop.Win.Services
                     // on some machines that aren't connected to a monitor.  This will
                     // have it fall back to BitBlt in those cases.
                     // TODO: Make DX capture work with changed screen orientation.
-                    //if (_directxScreens.TryGetValue(SelectedScreen, out var dxDisplay) &&
-                    //    dxDisplay.Rotation == DisplayModeRotation.Identity)
-                    //{
-                    //    var (result, frame) = GetDirectXFrame();
+                    if (_directxScreens.TryGetValue(SelectedScreen, out var dxDisplay) &&
+                        dxDisplay.Rotation == DisplayModeRotation.Identity)
+                    {
+                        var (result, frame) = GetDirectXFrame();
 
-                    //    if (result == GetDirectXFrameResult.Timeout)
-                    //    {
-                    //        return null;
-                    //    }
+                        if (result == GetDirectXFrameResult.Timeout)
+                        {
+                            return null;
+                        }
 
-                    //    if (result == GetDirectXFrameResult.Success)
-                    //    {
-                    //        return frame;
-                    //    }
-                    //}
+                        if (result == GetDirectXFrameResult.Success)
+                        {
+                            return frame;
+                        }
+                    }
 
                     return GetBitBltFrame();
 
