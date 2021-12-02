@@ -1889,14 +1889,26 @@ namespace Remotely.Server.Services
         {
             using var dbContext = GetDbContext();
 
-            var device = dbContext.Devices.Find(deviceID);
+            var device = dbContext.Devices
+                .Include(x => x.DeviceGroup)
+                .FirstOrDefault(x => x.ID == deviceID);
             if (device == null)
             {
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(deviceGroupID))
+            {
+                device.DeviceGroup?.Devices?.RemoveAll(x => x.ID == deviceID);
+                device.DeviceGroup = null;
+                device.DeviceGroupID = null;
+            }
+            else
+            {
+                device.DeviceGroupID = deviceGroupID;
+            }
+
             device.Tags = tag;
-            device.DeviceGroupID = deviceGroupID;
             device.Alias = alias;
             device.Notes = notes;
             device.WebRtcSetting = webRtcSetting;
