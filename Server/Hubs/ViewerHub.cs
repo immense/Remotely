@@ -204,25 +204,23 @@ namespace Remotely.Server.Hubs
 
             if (Mode == RemoteControlMode.Unattended)
             {
-                var targetDevice = AgentHub.ServiceConnections[SessionInfo.ServiceID];
-
-                var useWebRtc = targetDevice.WebRtcSetting == WebRtcSetting.Default ?
-                            AppConfig.UseWebRtc :
-                            targetDevice.WebRtcSetting == WebRtcSetting.Enabled;
-
-
                 SessionInfo.Mode = RemoteControlMode.Unattended;
+                bool useWebRtc = AppConfig.UseWebRtc;
+                if (SessionInfo.ServiceID is not null && AgentHub.ServiceConnections.TryGetValue(SessionInfo.ServiceID, out var targetDevice))
+                {
+                    useWebRtc = targetDevice.WebRtcSetting == WebRtcSetting.Enabled;
+                }
 
                 if ((!string.IsNullOrWhiteSpace(otp) &&
-                        RemoteControlFilterAttribute.OtpMatchesDevice(otp, targetDevice.ID))
+                        RemoteControlFilterAttribute.OtpMatchesDevice(otp, SessionInfo.DeviceID))
                     ||
                     (Context.User.Identity.IsAuthenticated &&
-                        DataService.DoesUserHaveAccessToDevice(targetDevice.ID, Context.UserIdentifier)))
+                        DataService.DoesUserHaveAccessToDevice(SessionInfo.DeviceID, Context.UserIdentifier)))
                 {
                     var orgName = DataService.GetOrganizationNameById(orgId);
-                    await CasterHubContext.Clients.Client(screenCasterID).SendAsync("GetScreenCast", 
-                        Context.ConnectionId, 
-                        RequesterName, 
+                    await CasterHubContext.Clients.Client(screenCasterID).SendAsync("GetScreenCast",
+                        Context.ConnectionId,
+                        RequesterName,
                         AppConfig.RemoteControlNotifyUser,
                         AppConfig.EnforceAttendedAccess,
                         useWebRtc,

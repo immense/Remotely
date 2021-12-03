@@ -77,12 +77,19 @@ namespace Remotely.Server.API
 
         private async Task<IActionResult> InitiateRemoteControl(string deviceID, string orgID)
         {
-            var targetDevice = AgentHub.ServiceConnections.FirstOrDefault(x =>
-                                    x.Value.OrganizationID == orgID &&
-                                    x.Value.ID.ToLower() == deviceID.ToLower());
-
-            if (targetDevice.Value != null)
+            var existingSessions = CasterHub.SessionInfoList
+                    .Where(x => x.Value.DeviceID == deviceID)
+                    .Select(x => x.Key)
+                    .ToList();
+            if (existingSessions == null)
             {
+                var targetDevice = AgentHub.ServiceConnections.FirstOrDefault(x =>
+                                        x.Value.OrganizationID == orgID &&
+                                        x.Value.ID.ToLower() == deviceID.ToLower());
+                if (targetDevice.Value is null)
+                {
+                    return BadRequest("The target device couldn't be found.");
+                }
                 if (User.Identity.IsAuthenticated &&
                    !DataService.DoesUserHaveAccessToDevice(targetDevice.Value.ID, DataService.GetUserByNameWithOrg(User.Identity.Name)))
                 {
@@ -96,10 +103,7 @@ namespace Remotely.Server.API
                     return BadRequest("There are already the maximum amount of active remote control sessions for your organization.");
                 }
 
-                var existingSessions = CasterHub.SessionInfoList
-                    .Where(x => x.Value.DeviceID == targetDevice.Value.ID)
-                    .Select(x => x.Key)
-                    .ToList();
+
 
                 await AgentHubContext.Clients.Client(targetDevice.Key).SendAsync("RemoteControl", Request.HttpContext.Connection.Id, targetDevice.Key);
 
@@ -114,17 +118,17 @@ namespace Remotely.Server.API
                 {
                     return StatusCode(408, "The remote control process failed to start in time on the remote device.");
                 }
-                else
-                {
-                    var rcSession = CasterHub.SessionInfoList.Values.LastOrDefault(x => x.DeviceID == targetDevice.Value.ID && !existingSessions.Contains(x.CasterSocketID));
-                    var otp = RemoteControlFilterAttribute.GetOtp(targetDevice.Value.ID);
-                    return Ok($"{HttpContext.Request.Scheme}://{Request.Host}/RemoteControl?casterID={rcSession.CasterSocketID}&serviceID={targetDevice.Key}&fromApi=true&otp={Uri.EscapeDataString(otp)}");
-                }
             }
             else
             {
-                return BadRequest("The target device couldn't be found.");
+                var rcSession = CasterHub.SessionInfoList.Values.LastOrDefault(x => x.DeviceID == deviceID);
+                if (rcSession != null)
+                {
+                    var otp = RemoteControlFilterAttribute.GetOtp(deviceID);
+                    return Ok($"{HttpContext.Request.Scheme}://{Request.Host}/RemoteControl?casterID={rcSession.CasterSocketID}&serviceID={rcSession.ServiceID}&fromApi=true&otp={Uri.EscapeDataString(otp)}");
+                }
             }
+            return BadRequest("The target device couldn't be found.");
         }
     }
 }
