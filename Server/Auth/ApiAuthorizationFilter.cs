@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Remotely.Server.Services;
+using System;
+using System.Text;
 
 namespace Remotely.Server.Auth
 {
@@ -25,15 +27,26 @@ namespace Remotely.Server.Auth
 
             if (context.HttpContext.Request.Headers.TryGetValue("Authorization", out var result))
             {
-                var keyId = result.ToString().Split(":")[0]?.Trim();
-                var apiSecret = result.ToString().Split(":")[1]?.Trim();
+                var tokenType = result.ToString().Split(" ")[0].Trim();
 
-                if (DataService.ValidateApiKey(keyId, apiSecret, context.HttpContext.Request.Path, context.HttpContext.Connection.RemoteIpAddress.ToString()))
+                switch (tokenType)
                 {
-                    var orgID = DataService.GetApiKey(keyId)?.OrganizationID;
-                    context.HttpContext.Request.Headers["OrganizationID"] = orgID;
-                    return;
+                    case "Basic":
+                        var encodedToken = result.ToString().Split(" ")[1].Trim();
+
+                        byte[] data = Convert.FromBase64String(encodedToken);
+                        string decodedString = Encoding.UTF8.GetString(data);
+                        var keyId = decodedString.ToString().Split(":")[0]?.Trim();
+                        var apiSecret = decodedString.ToString().Split(":")[1]?.Trim();
+                        if (DataService.ValidateApiKey(keyId, apiSecret, context.HttpContext.Request.Path, context.HttpContext.Connection.RemoteIpAddress.ToString()))
+                        {
+                            var orgID = DataService.GetApiKey(keyId)?.OrganizationID;
+                            context.HttpContext.Request.Headers["OrganizationID"] = orgID;
+                            return;
+                        }
+                        break;
                 }
+
             }
 
             context.Result = new UnauthorizedResult();
