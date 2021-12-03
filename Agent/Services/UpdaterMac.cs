@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -17,16 +19,18 @@ namespace Remotely.Agent.Services
     public class UpdaterMac : IUpdater
     {
         private readonly string _achitecture = RuntimeInformation.OSArchitecture.ToString().ToLower();
-        private readonly SemaphoreSlim _checkForUpdatesLock = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _checkForUpdatesLock = new(1, 1);
         private readonly ConfigService _configService;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly IWebClientEx _webClientEx;
-        private readonly SemaphoreSlim _installLatestVersionLock = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _installLatestVersionLock = new(1, 1);
         private DateTimeOffset _lastUpdateFailure;
-        private readonly System.Timers.Timer _updateTimer = new System.Timers.Timer(TimeSpan.FromHours(6).TotalMilliseconds);
+        private readonly System.Timers.Timer _updateTimer = new(TimeSpan.FromHours(6).TotalMilliseconds);
 
-        public UpdaterMac(ConfigService configService, IWebClientEx webClientEx)
+        public UpdaterMac(ConfigService configService, IWebClientEx webClientEx, IHttpClientFactory httpClientFactory)
         {
             _configService = configService;
+            _httpClientFactory = httpClientFactory;
             _webClientEx = webClientEx;
             _webClientEx.SetRequestTimeout((int)_updateTimer.Interval);
         }
@@ -67,26 +71,21 @@ namespace Remotely.Agent.Services
 
                 var fileUrl = serverUrl + $"/Content/Remotely-MacOS-{_achitecture}.zip";
 
-                var lastEtag = string.Empty;
+                using var httpClient = _httpClientFactory.CreateClient();
+                using var request = new HttpRequestMessage(HttpMethod.Head, fileUrl);
 
                 if (File.Exists("etag.txt"))
                 {
-                    lastEtag = await File.ReadAllTextAsync("etag.txt");
-                }
-
-                try
-                {
-                    var wr = WebRequest.CreateHttp(fileUrl);
-                    wr.Method = "Head";
-                    wr.Headers.Add("If-None-Match", lastEtag);
-                    using var response = (HttpWebResponse)await wr.GetResponseAsync();
-                    if (response.StatusCode == HttpStatusCode.NotModified)
+                    var lastEtag = await File.ReadAllTextAsync("etag.txt");
+                    if (!string.IsNullOrEmpty(lastEtag))
                     {
-                        Logger.Write("Service Updater: Version is current.");
-                        return;
+                        request.Headers.IfNoneMatch.Add(new EntityTagHeaderValue(lastEtag.Trim()));
                     }
                 }
-                catch (WebException ex) when ((ex.Response as HttpWebResponse).StatusCode == HttpStatusCode.NotModified)
+
+                using var response = await httpClient.SendAsync(request);
+
+                if (response.StatusCode == HttpStatusCode.NotModified)
                 {
                     Logger.Write("Service Updater: Version is current.");
                     return;
@@ -96,6 +95,11 @@ namespace Remotely.Agent.Services
 
                 await InstallLatestVersion();
 
+            }
+            catch (WebException ex) when ((ex.Response as HttpWebResponse).StatusCode == HttpStatusCode.NotModified)
+            {
+                Logger.Write("Service Updater: Version is current.");
+                return;
             }
             catch (Exception ex)
             {
@@ -110,6 +114,7 @@ namespace Remotely.Agent.Services
         public void Dispose()
         {
             _webClientEx?.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         public async Task InstallLatestVersion()
@@ -136,7 +141,8 @@ namespace Remotely.Agent.Services
                    serverUrl + $"/API/AgentUpdate/DownloadPackage/macos-{_achitecture}/{downloadId}",
                    zipPath);
 
-                (await WebRequest.CreateHttp(serverUrl + $"/api/AgentUpdate/ClearDownload/{downloadId}").GetResponseAsync()).Dispose();
+                using var httpClient = _httpClientFactory.CreateClient();
+                using var response = httpClient.GetAsync($"{serverUrl}/api/AgentUpdate/ClearDownload/{downloadId}");
 
                 Logger.Write("Launching installer to perform update.");
 

@@ -118,7 +118,13 @@ namespace Remotely.Desktop.Core.Services
                 }
 
                 // Wait until the first image is received.
-                TaskHelper.DelayUntil(() => !viewer.PendingSentFrames.Any(), TimeSpan.MaxValue);
+                if (!TaskHelper.DelayUntil(() => !viewer.PendingSentFrames.Any(), TimeSpan.FromSeconds(30)))
+                {
+                    Logger.Write("Timed out while waiting for first frame receipt.");
+                    _conductor.Viewers.TryRemove(viewer.ViewerConnectionID, out _);
+                    viewer.Dispose();
+                    return;
+                }
 
                 while (!viewer.DisconnectRequested && viewer.IsConnected)
                 {
