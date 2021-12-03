@@ -65,6 +65,11 @@ namespace Remotely.Tests
             dbContext.DeviceGroups.RemoveRange(dbContext.DeviceGroups.ToList());
             dbContext.Users.RemoveRange(dbContext.Users.ToList());
             dbContext.Organizations.RemoveRange(dbContext.Organizations.ToList());
+            dbContext.Alerts.RemoveRange(dbContext.Alerts.ToList());
+            dbContext.ScriptResults.RemoveRange(dbContext.ScriptResults.ToList());
+            dbContext.ScriptRuns.RemoveRange(dbContext.ScriptRuns.ToList());
+            dbContext.ScriptSchedules.RemoveRange(dbContext.ScriptSchedules.ToList());
+            dbContext.SavedScripts.RemoveRange(dbContext.SavedScripts.ToList());
             dbContext.SaveChanges();
 
         }

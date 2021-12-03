@@ -2168,7 +2168,8 @@ namespace Remotely.Server.Services
 
                 case "postgresql":
                     return new PostgreSqlDbContext(_configuration);
-
+                case "inmemory":
+                    return new TestingDbContext();
                 default:
                     throw new ArgumentException("Unknown DB provider.");
             }
