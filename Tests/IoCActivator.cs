@@ -64,6 +64,7 @@ namespace Remotely.Tests
              .AddDefaultUI()
              .AddDefaultTokenProviders();
 
+            services.AddTransient<IAppDbFactory, AppDbFactory>();
             services.AddTransient<IDataService, DataService>();
             services.AddTransient<IApplicationConfig, ApplicationConfig>();
             services.AddTransient<IEmailSenderEx, EmailSenderEx>();
