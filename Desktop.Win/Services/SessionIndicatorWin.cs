@@ -49,7 +49,7 @@ namespace Remotely.Desktop.Win.Services
 
                     Icon icon;
 
-                    if (_deviceInitService.BrandingInfo.Icon?.Any() == true)
+                    if (_deviceInitService.BrandingInfo?.Icon?.Any() == true)
                     {
                         using var ms = new MemoryStream(_deviceInitService.BrandingInfo.Icon);
                         using var bitmap = new Bitmap(ms);
