@@ -53,7 +53,6 @@ namespace Remotely.Server
                 {
                     options.UseSqlite(Configuration.GetConnectionString("SQLite"));
                 });
-
             }
             else if (dbProvider == "sqlserver")
             {
@@ -158,6 +157,7 @@ namespace Remotely.Server
             services.AddLogging();
             services.AddScoped<IEmailSenderEx, EmailSenderEx>();
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<IAppDbFactory, AppDbFactory>();
             services.AddTransient<IDataService, DataService>();
             services.AddScoped<IApplicationConfig, ApplicationConfig>();
             services.AddScoped<ApiAuthorizationFilter>();
