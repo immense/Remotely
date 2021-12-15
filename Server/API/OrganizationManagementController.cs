@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using MailKit;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Org.BouncyCastle.Crypto.Agreement;
 using Remotely.Server.Auth;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
@@ -17,8 +19,8 @@ namespace Remotely.Server.API
     [ApiController]
     public class OrganizationManagementController : ControllerBase
     {
-        public OrganizationManagementController(IDataService dataService, 
-            UserManager<RemotelyUser> userManager, 
+        public OrganizationManagementController(IDataService dataService,
+            UserManager<RemotelyUser> userManager,
             IEmailSenderEx emailSender)
         {
             DataService = dataService;
@@ -87,6 +89,20 @@ namespace Remotely.Server.API
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
             await DataService.DeleteUser(orgID, userID);
             return Ok("ok");
+        }
+
+        [HttpGet("DeviceGroup")]
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
+        public IActionResult DeviceGroup()
+        {
+            if (User.Identity.IsAuthenticated &&
+                DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
+            {
+                return Ok(DataService.GetDeviceGroups(User.Identity.Name));
+            }
+            if (Request.Headers.TryGetValue("OrganizationID", out var orgID))
+                return Ok(DataService.GetDeviceGroupsForOrganization(orgID));
+            return NotFound("Unable to find User or organizationID for device group");
         }
 
         [HttpDelete("DeviceGroup")]
