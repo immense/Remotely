@@ -27,13 +27,20 @@ namespace Remotely.Server.Auth
 
             if (context.HttpContext.Request.Headers.TryGetValue("Authorization", out var result))
             {
-                var tokenType = result.ToString().Split(" ")[0].Trim();
+
+                var headerComponents = result.ToString().Split(" ");
+                if (headerComponents.Length < 2)
+                {
+                    context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                    return;
+                };
+
+                var tokenType = headerComponents[0].Trim();
+                var encodedToken = headerComponents[1].Trim();
 
                 switch (tokenType)
                 {
                     case "Basic":
-                        var encodedToken = result.ToString().Split(" ")[1].Trim();
-
                         byte[] data = Convert.FromBase64String(encodedToken);
                         string decodedString = Encoding.UTF8.GetString(data);
                         var keyId = decodedString.ToString().Split(":")[0]?.Trim();
