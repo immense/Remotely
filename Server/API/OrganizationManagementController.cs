@@ -102,7 +102,7 @@ namespace Remotely.Server.API
             }
             if (Request.Headers.TryGetValue("OrganizationID", out var orgID))
                 return Ok(DataService.GetDeviceGroupsForOrganization(orgID));
-            return BadRequest("Unable to find User or organizationID for device group");
+            return NotFound("Unable to find User or organizationID for device group");
         }
 
         [HttpDelete("DeviceGroup")]
