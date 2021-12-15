@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Remotely.Server.Services;
 using System;
+using System.Net;
 using System.Text;
 
 namespace Remotely.Server.Auth
@@ -43,8 +44,16 @@ namespace Remotely.Server.Auth
                     case "Basic":
                         byte[] data = Convert.FromBase64String(encodedToken);
                         string decodedString = Encoding.UTF8.GetString(data);
-                        var keyId = decodedString.ToString().Split(":")[0]?.Trim();
-                        var apiSecret = decodedString.ToString().Split(":")[1]?.Trim();
+
+                        var authComponents = decodedString.ToString().Split(":");
+                        if (authComponents.Length < 2)
+                        {
+                            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                            return;
+                        };
+
+                        var keyId = authComponents[0]?.Trim();
+                        var apiSecret = authComponents[1]?.Trim();
                         if (DataService.ValidateApiKey(keyId, apiSecret, context.HttpContext.Request.Path, context.HttpContext.Connection.RemoteIpAddress.ToString()))
                         {
                             var orgID = DataService.GetApiKey(keyId)?.OrganizationID;
