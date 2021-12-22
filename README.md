@@ -41,7 +41,7 @@ However, you can also choose to install the pre-built packages that do not have 
 ## Installation Instructions:
 - Before attempting installation, verify that your domain name is resolving to your server's IP address.
   - For example, I can use the command `ping remotely.lucency.co` and see the IP address to which it resolves.
-- Find and download the `Remotely_Server_Installer[.exe]` CLI tool for the latest release on the [Releases page](https://github.com/lucent-sea/Remotely/releases).
+- Find and download the `Remotely_Server_Installer[.exe]` CLI tool for the latest release on the [Releases page](https://github.com/immense/Remotely/releases).
   - You will run it on the server where you'll be hosting Remotely.
   - You need to run it with elevation (e.g. sudo or "Run as admin").
   - Use `--help` argument to see all the command line arguments.
@@ -56,7 +56,7 @@ However, you can also choose to install the pre-built packages that do not have 
 	```
 	git clone git@github.com:{your-username}/remotely
 	cd ./remotely
-	git remote add upstream https://github.com/lucent-sea/remotely
+	git remote add upstream https://github.com/immense/Remotely
 	git pull upstream master
 	git push origin master
 	```
@@ -122,7 +122,7 @@ The following steps will configure your Windows 10 machine for building the Remo
     * Link: https://git-scm.com/downloads
 * Install the latest LTS Node:
 	* Link: https://nodejs.org/
-* Clone the git repository: `git clone https://github.com/lucent-sea/remotely`
+* Clone the git repository: `git clone https://github.com/immense/Remotely`
 * When debugging, the agent will use a pre-defined device ID and connect to https://localhost:5001.
 * In development environment, the server will assign all connecting agents to the first organization.
 * The above two allow you to debug the agent and server together, and see your device in the list.
