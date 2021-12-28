@@ -103,6 +103,7 @@ namespace Server.Installer
                     "Nginx on Ubuntu",
                     "Caddy on CentOS",
                     "Nginx on CentOS",
+                    "Nginx on RHEL8"
                     "IIS on Windows Server 2016+");
 
                 if (Enum.TryParse<WebServerType>(webServerType, out var result))
