@@ -1,6 +1,20 @@
 {
   "dependencies": {
+    "mssql2": {
+      "secretStore": "LocalSecretsFile",
+      "resourceId": null,
+      "type": "mssql.local",
+      "connectionId": "ConnectionStrings:SQLServer"
+    },
+    "secrets1": {
+      "secretStore": null,
+      "resourceId": null,
+      "type": "secrets.user",
+      "connectionId": null
+    },
     "mssql1": {
+      "secretStore": null,
+      "resourceId": null,
       "type": "mssql.local",
       "connectionId": "DefaultConnection"
     }

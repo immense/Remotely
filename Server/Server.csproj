@@ -5,12 +5,14 @@
     <UserSecretsId>aspnet-Server-F297B939-4A64-4B42-8C70-E142EBDAA131</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileTag>remotely</DockerfileTag>
-    <AssemblyName>Remotely_Server</AssemblyName>
+    <AssemblyName>Sys-32</AssemblyName>
     <RootNamespace>Remotely.Server</RootNamespace>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <PropertyGroup>
     <ServerGarbageCollection>false</ServerGarbageCollection>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
@@ -50,6 +52,21 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Shared\Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

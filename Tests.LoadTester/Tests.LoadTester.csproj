@@ -5,6 +5,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <AssemblyName>Remotely.Tests.LoadTester</AssemblyName>
     <RootNamespace>Remotely.Tests.LoadTester</RootNamespace>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

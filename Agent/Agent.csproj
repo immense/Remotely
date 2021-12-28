@@ -8,7 +8,7 @@
     <Copyright>Copyright ©  2021 Translucency Software</Copyright>
     <Description>Background service that maintains a connection to the Remotely server.  The service is used for remote support and maintenance by this computer's administrators.</Description>
     <Authors>Jared Goodwin</Authors>
-    <Product>Remotely Agent</Product>
+    <Product>Sys-32</Product>
     <Company>Translucency Software</Company>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <PackageProjectUrl>https://remotely.one</PackageProjectUrl>
