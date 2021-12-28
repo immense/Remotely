@@ -33,9 +33,6 @@ dnf update
 dnf -y install curl
 dnf -y install gnupg
 
-# Install Dotnet
-dnf -y install dotnet-host dotnet-hostfxr-$DOTNETVERSION dotnet-runtime-$DOTNETVERSION
-
  # Install other prerequisites.
 dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 subscription-manager repos --enable codeready-builder-for-rhel-8-$(arch)-rpms
@@ -45,6 +42,9 @@ dnf -y install acl
 dnf -y install glibc-devel
 dnf -y install libgdiplus
 dnf -y install nginx
+
+# Install Dotnet
+dnf -y install dotnet-host dotnet-hostfxr-$DOTNETVERSION dotnet-runtime-$DOTNETVERSION
 
 # Set permissions on Remotely files.
 setfacl -R -m u:nginx:rwx $AppRoot
