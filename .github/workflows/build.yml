@@ -123,7 +123,7 @@ jobs:
         
     # Install the .NET Core workload
     - name: Install .NET Core
-      uses: actions/setup-dotnet@v1.9.0
+      uses: actions/setup-dotnet@v2.2.0
       with:
         dotnet-version: 6.0.x
       
