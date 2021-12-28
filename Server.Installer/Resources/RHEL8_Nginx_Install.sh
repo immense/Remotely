@@ -1,4 +1,6 @@
 #!/bin/bash
+DOTNETVERSION="5.0"
+
 echo "Thanks for trying Remotely!"
 echo
 
@@ -31,11 +33,8 @@ dnf update
 dnf -y install curl
 dnf -y install gnupg
 
-# Install .NET Core Runtime.
-sudo rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm
-
-#dnf -y install aspnetcore-runtime-5.0
-dnf -y install dotnet-host dotnet-hostfxr-6.0 dotnet-runtime-6.0
+# Install Dotnet
+dnf -y install dotnet-host dotnet-hostfxr-$DOTNETVERSION dotnet-runtime-$DOTNETVERSION
 
  # Install other prerequisites.
 dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
@@ -125,7 +124,7 @@ Description=Remotely Server
 
 [Service]
 WorkingDirectory=$AppRoot
-ExecStart=/usr/local/bin/dotnet $AppRoot/Remotely_Server.dll
+ExecStart=/usr/bin/dotnet $AppRoot/Remotely_Server.dll
 Restart=always
 # Restart service after 10 seconds if the dotnet service crashes:
 RestartSec=10
