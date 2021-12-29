@@ -109,7 +109,7 @@ jobs:
       with:
         # Comment out the below 'repository' line if you want to build from
         # your fork instead of the author's.
-        repository: lucent-sea/Remotely
+        #repository: lucent-sea/Remotely
         fetch-depth: 0
 
     # Test the Server URL to make sure it's valid
