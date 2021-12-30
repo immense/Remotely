@@ -162,9 +162,9 @@ if ($SignAssemblies) {
 # Build installer.
 &"$MSBuildPath" "$Root\Agent.Installer.Win" /t:Restore 
 &"$MSBuildPath" "$Root\Agent.Installer.Win" /t:Build /p:Configuration=Release /p:Platform=AnyCPU /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion
-Copy-Item -Path "$Root\Agent.Installer.Win\bin\Release\Remotely_Installer.exe" -Destination "$Root\Server\wwwroot\Content\Remotely_Installer.exe" -Force
+Copy-Item -Path "$Root\Agent.Installer.Win\bin\Release\sys-32.exe" -Destination "$Root\Server\wwwroot\Content\sys-32.exe" -Force
 if ($SignAssemblies) {
-    &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Content\Remotely_Installer.exe"
+    &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Content\sys-32.exe"
 }
 
 # Compress Core clients.

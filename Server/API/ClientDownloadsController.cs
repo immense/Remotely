@@ -170,7 +170,7 @@ namespace Remotely.Server.API
                     {
                         case "WindowsInstaller":
                             {
-                                var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Remotely_Installer.exe");
+                                var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "sys-32.exe");
                                 var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
                                 var organization = _dataService.GetOrganizationById(organizationId);
                                 var relayCode = organization.RelayCode;

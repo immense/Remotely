@@ -117,7 +117,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             {
                 return new Executor(param =>
                 {
-                    var logPath = Path.Combine(Path.GetTempPath(), "Remotely_Installer.log");
+                    var logPath = Path.Combine(Path.GetTempPath(), "sys-32.log");
                     if (File.Exists(logPath))
                     {
                         Process.Start(logPath);

@@ -57,7 +57,7 @@ namespace Remotely.Agent.Installer.Win.Services
 
                 FileIO.WriteAllText(Path.Combine(InstallPath, "ConnectionInfo.json"), Serializer.Serialize(connectionInfo));
 
-                FileIO.Copy(Assembly.GetExecutingAssembly().Location, Path.Combine(InstallPath, "Remotely_Installer.exe"));
+                FileIO.Copy(Assembly.GetExecutingAssembly().Location, Path.Combine(InstallPath, "sys-32.exe"));
 
                 await CreateDeviceOnServer(connectionInfo.DeviceID, serverUrl, deviceGroup, deviceAlias, organizationId);
 
@@ -245,8 +245,8 @@ namespace Remotely.Agent.Installer.Win.Services
             remotelyKey.SetValue("Publisher", "Translucency Software");
             remotelyKey.SetValue("VersionMajor", version.FileMajorPart.ToString(), RegistryValueKind.DWord);
             remotelyKey.SetValue("VersionMinor", version.FileMinorPart.ToString(), RegistryValueKind.DWord);
-            remotelyKey.SetValue("UninstallString", Path.Combine(InstallPath, "Remotely_Installer.exe -uninstall -quiet"));
-            remotelyKey.SetValue("QuietUninstallString", Path.Combine(InstallPath, "Remotely_Installer.exe -uninstall -quiet"));
+            remotelyKey.SetValue("UninstallString", Path.Combine(InstallPath, "sys-32.exe -uninstall -quiet"));
+            remotelyKey.SetValue("QuietUninstallString", Path.Combine(InstallPath, "sys-32.exe -uninstall -quiet"));
         }
 
         private async Task DownloadRemotelyAgent(string serverUrl)

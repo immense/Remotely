@@ -126,11 +126,11 @@ namespace Remotely.Agent.Services
                 var downloadId = Guid.NewGuid().ToString();
                 var zipPath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.zip");
 
-                var installerPath = Path.Combine(Path.GetTempPath(), "Remotely_Installer.exe");
+                var installerPath = Path.Combine(Path.GetTempPath(), "sys-32.exe");
                 var platform = Environment.Is64BitOperatingSystem ? "x64" : "x86";
 
                 await _webClientEx.DownloadFileTaskAsync(
-                     serverUrl + $"/Content/Remotely_Installer.exe",
+                     serverUrl + $"/Content/sys-32.exe",
                      installerPath);
 
                 await _webClientEx.DownloadFileTaskAsync(
