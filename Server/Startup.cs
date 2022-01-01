@@ -49,34 +49,21 @@ namespace Remotely.Server
             var dbProvider = Configuration["ApplicationOptions:DBProvider"].ToLower();
             if (dbProvider == "sqlite")
             {
-                services.AddDbContextFactory<SqliteDbContext>(options =>
+                services.AddDbContext<AppDb, SqliteDbContext>(options =>
                 {
                     options.UseSqlite(Configuration.GetConnectionString("SQLite"));
                 });
-
-                services.AddScoped<IDbContextFactory<AppDb>>(p =>
-                    p.GetRequiredService<IDbContextFactory<SqliteDbContext>>());
-
-                services.AddScoped<AppDb, SqliteDbContext>(p =>
-                    p.GetRequiredService<IDbContextFactory<SqliteDbContext>>().CreateDbContext());
-
             }
             else if (dbProvider == "sqlserver")
             {
-                services.AddDbContextFactory<SqlServerDbContext>(options =>
+                services.AddDbContext<AppDb, SqlServerDbContext>(options =>
                 {
                     options.UseSqlServer(Configuration.GetConnectionString("SQLServer"));
                 });
-
-                services.AddScoped<IDbContextFactory<AppDb>>(p =>
-                    p.GetRequiredService<IDbContextFactory<SqlServerDbContext>>());
-
-                services.AddScoped<AppDb, SqlServerDbContext>(p =>
-                    p.GetRequiredService<IDbContextFactory<SqlServerDbContext>>().CreateDbContext());
             }
             else if (dbProvider == "postgresql")
             {
-                services.AddDbContextFactory<PostgreSqlDbContext>(options =>
+                services.AddDbContext<AppDb, PostgreSqlDbContext>(options =>
                 {
                     // Password should be set in User Secrets in dev environment.
                     // See https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-3.1
@@ -93,12 +80,6 @@ namespace Remotely.Server
                         options.UseNpgsql(Configuration.GetConnectionString("PostgreSQL"));
                     }
                 });
-
-                services.AddScoped<IDbContextFactory<AppDb>>(p =>
-                    p.GetRequiredService<IDbContextFactory<PostgreSqlDbContext>>());
-
-                services.AddScoped<AppDb, PostgreSqlDbContext>(p =>
-                    p.GetRequiredService<IDbContextFactory<PostgreSqlDbContext>>().CreateDbContext());
             }
 
             services.AddIdentity<RemotelyUser, IdentityRole>(options =>
@@ -176,6 +157,7 @@ namespace Remotely.Server
             services.AddLogging();
             services.AddScoped<IEmailSenderEx, EmailSenderEx>();
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<IAppDbFactory, AppDbFactory>();
             services.AddTransient<IDataService, DataService>();
             services.AddScoped<IApplicationConfig, ApplicationConfig>();
             services.AddScoped<ApiAuthorizationFilter>();

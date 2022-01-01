@@ -12,7 +12,7 @@ namespace Remotely.Desktop.Core.Utilities
 {
     public class ImageUtils
     {
-        private static ImageCodecInfo _jpegEncoder = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == ImageFormat.Jpeg.Guid);
+        private static readonly ImageCodecInfo _jpegEncoder = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == ImageFormat.Jpeg.Guid);
 
         //public static byte[] EncodeWithSkia(Bitmap bitmap, SKEncodedImageFormat format, int quality)
         //{

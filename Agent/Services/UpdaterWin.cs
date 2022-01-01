@@ -4,6 +4,8 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,18 +13,20 @@ namespace Remotely.Agent.Services
 {
     public class UpdaterWin : IUpdater
     {
-        private readonly SemaphoreSlim _checkForUpdatesLock = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _checkForUpdatesLock = new(1, 1);
         private readonly ConfigService _configService;
         private readonly IWebClientEx _webClientEx;
-        private readonly SemaphoreSlim _installLatestVersionLock = new SemaphoreSlim(1, 1);
-        private readonly System.Timers.Timer _updateTimer = new System.Timers.Timer(TimeSpan.FromHours(6).TotalMilliseconds);
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly SemaphoreSlim _installLatestVersionLock = new(1, 1);
+        private readonly System.Timers.Timer _updateTimer = new(TimeSpan.FromHours(6).TotalMilliseconds);
         private DateTimeOffset _lastUpdateFailure;
 
 
-        public UpdaterWin(ConfigService configService, IWebClientEx webClientEx)
+        public UpdaterWin(ConfigService configService, IWebClientEx webClientEx, IHttpClientFactory httpClientFactory)
         {
             _configService = configService;
             _webClientEx = webClientEx;
+            _httpClientFactory = httpClientFactory;
             _webClientEx.SetRequestTimeout((int)_updateTimer.Interval);
         }
 
@@ -62,35 +66,35 @@ namespace Remotely.Agent.Services
                 var platform = Environment.Is64BitOperatingSystem ? "x64" : "x86";
                 var fileUrl = serverUrl + $"/Content/Remotely-Win10-{platform}.zip";
 
-                var lastEtag = string.Empty;
+                using var httpClient = _httpClientFactory.CreateClient();
+                using var request = new HttpRequestMessage(HttpMethod.Head, fileUrl);
 
                 if (File.Exists("etag.txt"))
                 {
-                    lastEtag = await File.ReadAllTextAsync("etag.txt");
-                }
-
-                try
-                {
-                    var wr = WebRequest.CreateHttp(fileUrl);
-                    wr.Method = "Head";
-                    wr.Headers.Add("If-None-Match", lastEtag);
-                    using var response = (HttpWebResponse)await wr.GetResponseAsync();
-                    if (response.StatusCode == HttpStatusCode.NotModified)
+                    var lastEtag = await File.ReadAllTextAsync("etag.txt");
+                    if (!string.IsNullOrEmpty(lastEtag))
                     {
-                        Logger.Write("Service Updater: Version is current.");
-                        return;
+                        request.Headers.IfNoneMatch.Add(new EntityTagHeaderValue(lastEtag.Trim()));
                     }
                 }
-                catch (WebException ex) when ((ex.Response as HttpWebResponse).StatusCode == HttpStatusCode.NotModified)
+
+                using var response = await httpClient.SendAsync(request);
+                if (response.StatusCode == HttpStatusCode.NotModified)
                 {
                     Logger.Write("Service Updater: Version is current.");
                     return;
                 }
 
+
                 Logger.Write("Service Updater: Update found.");
 
                 await InstallLatestVersion();
 
+            }
+            catch (WebException ex) when ((ex.Response as HttpWebResponse).StatusCode == HttpStatusCode.NotModified)
+            {
+                Logger.Write("Service Updater: Version is current.");
+                return;
             }
             catch (Exception ex)
             {
@@ -105,6 +109,7 @@ namespace Remotely.Agent.Services
         public void Dispose()
         {
             _webClientEx?.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         public async Task InstallLatestVersion()
@@ -132,8 +137,8 @@ namespace Remotely.Agent.Services
                    serverUrl + $"/api/AgentUpdate/DownloadPackage/win-{platform}/{downloadId}",
                    zipPath);
 
-                (await WebRequest.CreateHttp(serverUrl + $"/api/AgentUpdate/ClearDownload/{downloadId}").GetResponseAsync()).Dispose();
-
+                using var httpClient = _httpClientFactory.CreateClient();
+                using var response = httpClient.GetAsync($"{serverUrl}/api/AgentUpdate/ClearDownload/{downloadId}");
 
                 foreach (var proc in Process.GetProcessesByName("Remotely_Installer"))
                 {

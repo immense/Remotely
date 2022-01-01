@@ -28,7 +28,7 @@ export class RtcSession {
                 UI.VideoScreenViewer.setAttribute("hidden", "hidden");
             };
             this.DataChannel.onerror = (ev) => {
-                console.log("Data channel error.", ev.error);
+                console.log("Data channel error.", ev);
                 UI.ConnectionP2PIcon.style.display = "none";
                 UI.ConnectionRelayedIcon.style.display = "unset";
                 UI.StreamVideoButton.setAttribute("hidden", "hidden");

@@ -5,6 +5,8 @@ using Remotely.Shared.Models;
 using System;
 using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -15,31 +17,33 @@ namespace Remotely.Server.API
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
     public class AlertsController : ControllerBase
     {
-        public AlertsController(IDataService dataService, IEmailSenderEx emailSender)
-        {
-            DataService = dataService;
-            EmailSender = emailSender;
-        }
+        private readonly IDataService _dataService;
+        private readonly IEmailSenderEx _emailSender;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        private IDataService DataService { get; }
-        private IEmailSenderEx EmailSender { get; }
+        public AlertsController(IDataService dataService, IEmailSenderEx emailSender, IHttpClientFactory httpClientFactory)
+        {
+            _dataService = dataService;
+            _emailSender = emailSender;
+            _httpClientFactory = httpClientFactory;
+        }
 
         [HttpPost("Create")]
         public async Task<IActionResult> Create(AlertOptions alertOptions)
         {
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
 
-            DataService.WriteEvent("Alert created.  Alert Options: " + JsonSerializer.Serialize(alertOptions), orgID);
+            _dataService.WriteEvent("Alert created.  Alert Options: " + JsonSerializer.Serialize(alertOptions), orgID);
 
             if (alertOptions.ShouldAlert)
             {
                 try
                 {
-                    await DataService.AddAlert(alertOptions.AlertDeviceID, orgID, alertOptions.AlertMessage);
+                    await _dataService.AddAlert(alertOptions.AlertDeviceID, orgID, alertOptions.AlertMessage);
                 }
                 catch (Exception ex)
                 {
-                    DataService.WriteEvent(ex, orgID);
+                    _dataService.WriteEvent(ex, orgID);
                 }
             }
 
@@ -47,14 +51,14 @@ namespace Remotely.Server.API
             {
                 try
                 {
-                    await EmailSender.SendEmailAsync(alertOptions.EmailTo,
+                    await _emailSender.SendEmailAsync(alertOptions.EmailTo,
                         alertOptions.EmailSubject,
                         alertOptions.EmailBody,
                         orgID);
                 }
                 catch (Exception ex)
                 {
-                    DataService.WriteEvent(ex, orgID);
+                    _dataService.WriteEvent(ex, orgID);
                 }
 
             }
@@ -63,24 +67,25 @@ namespace Remotely.Server.API
             {
                 try
                 {
-                    var httpRequest = WebRequest.CreateHttp(alertOptions.ApiRequestUrl);
-                    httpRequest.Method = alertOptions.ApiRequestMethod;
-                    httpRequest.ContentType = "application/json";
+                    using var httpClient = _httpClientFactory.CreateClient();
+                    using var request = new HttpRequestMessage(
+                        new HttpMethod(alertOptions.ApiRequestMethod),
+                        alertOptions.ApiRequestUrl);
+
+                    request.Content = new StringContent(alertOptions.ApiRequestBody);
+                    request.Content.Headers.ContentType.MediaType = "application/json";
+                    
                     foreach (var header in alertOptions.ApiRequestHeaders)
                     {
-                        httpRequest.Headers.Add(header.Key, header.Value);
+                        request.Headers.TryAddWithoutValidation(header.Key, header.Value);
                     }
-                    using (var rs = httpRequest.GetRequestStream())
-                    using (var sw = new StreamWriter(rs))
-                    {
-                        sw.Write(alertOptions.ApiRequestBody);
-                    }
-                    using var response = (HttpWebResponse)httpRequest.GetResponse();
-                    DataService.WriteEvent($"Alert API Response Status: {response.StatusCode}.", orgID);
+
+                    using var response = await httpClient.SendAsync(request);
+                    _dataService.WriteEvent($"Alert API Response Status: {response.StatusCode}.", orgID);
                 }
                 catch (Exception ex)
                 {
-                    DataService.WriteEvent(ex, orgID);
+                    _dataService.WriteEvent(ex, orgID);
                 }
 
             }
@@ -93,11 +98,11 @@ namespace Remotely.Server.API
         {
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
 
-            var alert = await DataService.GetAlert(alertID);
+            var alert = await _dataService.GetAlert(alertID);
 
             if (alert?.OrganizationID == orgID)
             {
-                await DataService.DeleteAlert(alert);
+                await _dataService.DeleteAlert(alert);
 
                 return Ok();
             }
@@ -112,11 +117,11 @@ namespace Remotely.Server.API
 
             if (User.Identity.IsAuthenticated)
             {
-                await DataService.DeleteAllAlerts(orgID, User.Identity.Name);
+                await _dataService.DeleteAllAlerts(orgID, User.Identity.Name);
             }
             else
             {
-                await DataService.DeleteAllAlerts(orgID);
+                await _dataService.DeleteAllAlerts(orgID);
             }
 
             return Ok();

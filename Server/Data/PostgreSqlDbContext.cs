@@ -14,8 +14,7 @@ namespace Remotely.Server.Data
     {
         private readonly IConfiguration _configuration;
 
-        public PostgreSqlDbContext(DbContextOptions context, IConfiguration configuration)
-            : base(context)
+        public PostgreSqlDbContext(IConfiguration configuration)
         {
             _configuration = configuration;
         }
