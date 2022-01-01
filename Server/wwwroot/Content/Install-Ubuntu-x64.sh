@@ -28,7 +28,7 @@ dpkg -i packages-microsoft-prod.deb
 apt-get update
 apt-get -y install apt-transport-https
 apt-get update
-apt-get -y install dotnet-runtime-5.0
+apt-get -y install dotnet-runtime-6.0
 rm packages-microsoft-prod.deb
 
 apt-get -y install libx11-dev

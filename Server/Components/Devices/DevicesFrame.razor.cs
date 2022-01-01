@@ -221,29 +221,26 @@ namespace Remotely.Server.Components.Devices
                         continue;
                     }
 
-                    if (_selectedGroupId == _deviceGroupNone && 
-                        !string.IsNullOrWhiteSpace(device.DeviceGroupID))
-                    {
-                        continue;
-                    }
-                    else if (_selectedGroupId != _deviceGroupAll &&
-                        _selectedGroupId != device.DeviceGroupID)
-                    {
-                        continue;
-                    }
-
                     if (!string.IsNullOrWhiteSpace(_filter) &&
-                        device.Alias?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
-                        device.CurrentUser?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
-                        device.DeviceName?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
-                        device.Notes?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
-                        device.Platform?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
-                        device.Tags?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true)
+                            device.Alias?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
+                            device.CurrentUser?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
+                            device.DeviceName?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
+                            device.Notes?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
+                            device.Platform?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
+                            device.Tags?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true)
                     {
                         continue;
                     }
 
-                    _filteredDevices.Add(device);
+                    if (_selectedGroupId == _deviceGroupAll ||
+                        _selectedGroupId == device.DeviceGroupID ||
+                        (
+                            _selectedGroupId == _deviceGroupNone && 
+                            string.IsNullOrWhiteSpace(device.DeviceGroupID
+                        )))
+                    {
+                        _filteredDevices.Add(device);
+                    }
                 }
 
                 if (!string.IsNullOrWhiteSpace(_selectedSortProperty))

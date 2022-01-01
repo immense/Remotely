@@ -22,7 +22,7 @@ do
 done
 
 pacman -Sy
-pacman -S dotnet-runtime-5.0 --noconfirm
+pacman -S dotnet-runtime-6.0 --noconfirm
 pacman -S libx11 --noconfirm
 pacman -S unzip --noconfirm
 pacman -S libc6 --noconfirm

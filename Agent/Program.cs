@@ -42,6 +42,7 @@ namespace Remotely.Agent
         private static void BuildServices()
         {
             var serviceCollection = new ServiceCollection();
+            serviceCollection.AddHttpClient();
             serviceCollection.AddLogging(builder =>
             {
                 builder.AddConsole().AddDebug();
