@@ -79,6 +79,16 @@ connectionInfo="{
 
 echo "$connectionInfo" > ./ConnectionInfo.json
 
+runtimeOptions="{
+   \"runtimeOptions\": {
+      \"configProperties\": {
+         \"System.Drawing.EnableUnixSupport\": true
+      }
+   }
+}"
+
+echo "$runtimeOptions" > ./Desktop/Remotely_Desktop.runtimeconfig.json
+
 curl --head $HostName/Content/Remotely-Linux.zip | grep -i "etag" | cut -d' ' -f 2 > ./etag.txt
 
 echo Creating service... >> /tmp/Remotely_Install.log
