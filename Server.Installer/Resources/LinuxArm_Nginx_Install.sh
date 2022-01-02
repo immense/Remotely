@@ -36,18 +36,13 @@ apt-get -y install software-properties-common
 apt-get -y install gnupg
 
 # Install .NET Core Runtime.
-wget -q https://packages.microsoft.com/config/ubuntu/$UbuntuVersion/packages-microsoft-prod.deb
-dpkg -i packages-microsoft-prod.deb
-add-apt-repository universe
-apt-get update
-apt-get -y install apt-transport-https
-apt-get -y install aspnetcore-runtime-5.0
-rm packages-microsoft-prod.deb
+# Install .NET Core Runtime.
+curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin -c 6.0
+echo 'export DOTNET_ROOT=$HOME/.dotnet' >> ~/.bashrc
+echo 'export PATH=$PATH:$HOME/.dotnet' >> ~/.bashrc
+source ~/.bashrc
 
-curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin -c 5.0
-
-
- # Install other prerequisites.
+# Install other prerequisites.
 apt-get -y install unzip
 apt-get -y install acl
 apt-get -y install libc6-dev
@@ -146,7 +141,7 @@ Description=Remotely Server
 
 [Service]
 WorkingDirectory=$AppRoot
-ExecStart=/usr/bin/dotnet $AppRoot/Remotely_Server.dll
+ExecStart=/home/pi/.dotnet/dotnet $AppRoot/Remotely_Server.dll
 Restart=always
 # Restart service after 10 seconds if the dotnet service crashes:
 RestartSec=10

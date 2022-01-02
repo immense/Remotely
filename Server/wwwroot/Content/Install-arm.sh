@@ -23,13 +23,11 @@ done
 
 UbuntuVersion=$(lsb_release -r -s)
 
-wget -q https://packages.microsoft.com/config/ubuntu/$UbuntuVersion/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-dpkg -i packages-microsoft-prod.deb
-apt-get update
-apt-get -y install apt-transport-https
-apt-get update
-apt-get -y install dotnet-runtime-5.0
-rm packages-microsoft-prod.deb
+# Install .NET Core Runtime.
+curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin -c 6.0
+echo 'export DOTNET_ROOT=$HOME/.dotnet' >> ~/.bashrc
+echo 'export PATH=$PATH:$HOME/.dotnet' >> ~/.bashrc
+source ~/.bashrc
 
 apt-get -y install libx11-dev
 apt-get -y install libxrandr-dev
@@ -43,9 +41,6 @@ apt-get -y install curl
 
 sudo curl -fsSL https://deb.nodesource.com/setup_17.x | bash -
 sudo apt install nodejs
-
-curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin -c 5.0
-
 
 if [ -f "/usr/local/bin/Remotely/ConnectionInfo.json" ]; then
     SavedGUID=`cat "/usr/local/bin/Remotely/ConnectionInfo.json" | jq -r '.DeviceID'`
