@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Primitives;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Remotely.Agent.Interfaces;
 using Remotely.Agent.Services;
@@ -13,6 +15,8 @@ using Remotely.Server.Services;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
+using System.Collections.Generic;
+using System.Configuration;
 
 namespace Remotely.Tests
 {
@@ -28,7 +32,14 @@ namespace Remotely.Tests
             {
                 builder = WebHost.CreateDefaultBuilder()
                    .UseStartup<Startup>()
-                   .CaptureStartupErrors(true);
+                   .CaptureStartupErrors(true)
+                   .ConfigureAppConfiguration(config =>
+                   {
+                       config.AddInMemoryCollection(new Dictionary<string, string>()
+                       {
+                           ["ApplicationOptions:DBProvider"] = "InMemory"
+                       });
+                   });
 
                 builder.Build();
             }
@@ -46,19 +57,14 @@ namespace Remotely.Tests
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContextFactory<AppDb>(options =>
-            {
-                options.UseInMemoryDatabase("Remotely");
-            });
-
-            services.AddScoped(p =>
-                p.GetRequiredService<IDbContextFactory<AppDb>>().CreateDbContext());
+            services.AddDbContext<AppDb, TestingDbContext>();
 
             services.AddIdentity<RemotelyUser, IdentityRole>(options => options.Stores.MaxLengthForKeys = 128)
              .AddEntityFrameworkStores<AppDb>()
              .AddDefaultUI()
              .AddDefaultTokenProviders();
 
+            services.AddTransient<IAppDbFactory, AppDbFactory>();
             services.AddTransient<IDataService, DataService>();
             services.AddTransient<IApplicationConfig, ApplicationConfig>();
             services.AddTransient<IEmailSenderEx, EmailSenderEx>();
@@ -79,6 +85,5 @@ namespace Remotely.Tests
         {
         }
     }
-
 
 }

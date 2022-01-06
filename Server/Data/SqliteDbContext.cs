@@ -13,8 +13,7 @@ namespace Remotely.Server.Data
     {
         private readonly IConfiguration _configuration;
 
-        public SqliteDbContext(DbContextOptions context, IConfiguration configuration)
-            : base(context)
+        public SqliteDbContext(IConfiguration configuration)
         {
             _configuration = configuration;
         }
