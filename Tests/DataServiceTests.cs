@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using Remotely.Agent.Interfaces;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
@@ -15,8 +16,9 @@ namespace Remotely.Tests
     public class DataServiceTests
     {
         private IDataService _dataService;
-        private IDeviceInformationService _deviceInfo;
+        private Mock<IDeviceInformationService> _deviceInfo;
         private TestData _testData;
+        private string _newDeviceID = "NewDeviceName";
 
         [TestMethod]
         public async Task AddAlert()
@@ -31,17 +33,16 @@ namespace Remotely.Tests
         [TestMethod]
         public async Task AddOrUpdateDevice()
         {
-            var newDeviceID = "NewDeviceName";
-            var storedDevice = _dataService.GetDevice(newDeviceID);
+            var storedDevice = _dataService.GetDevice(_newDeviceID);
 
             Assert.IsNull(storedDevice);
 
-            var newDevice = await _deviceInfo.CreateDevice(newDeviceID, _testData.OrganizationID);
+            var newDevice = await _deviceInfo.Object.CreateDevice(_newDeviceID, _testData.OrganizationID);
             Assert.IsTrue(_dataService.AddOrUpdateDevice(newDevice, out _));
 
-            storedDevice = _dataService.GetDevice(newDeviceID);
+            storedDevice = _dataService.GetDevice(_newDeviceID);
 
-            Assert.AreEqual(newDeviceID, storedDevice.ID);
+            Assert.AreEqual(_newDeviceID, storedDevice.ID);
             Assert.AreEqual(Environment.MachineName, storedDevice.DeviceName);
             Assert.AreEqual(Environment.Is64BitOperatingSystem, storedDevice.Is64Bit);
         }
@@ -171,7 +172,19 @@ namespace Remotely.Tests
         {
             _testData = new TestData();
             _dataService = IoCActivator.ServiceProvider.GetRequiredService<IDataService>();
-            _deviceInfo = IoCActivator.ServiceProvider.GetRequiredService<IDeviceInformationService>();
+
+            var newDevice = new Device()
+            {
+                ID = _newDeviceID,
+                DeviceName = Environment.MachineName,
+                Is64Bit = Environment.Is64BitOperatingSystem,
+                OrganizationID = _testData.OrganizationID
+            };
+
+            _deviceInfo = new Mock<IDeviceInformationService>();
+            _deviceInfo
+                .Setup(x => x.CreateDevice(_newDeviceID, _testData.OrganizationID))
+                .Returns(Task.FromResult(newDevice));
         }
 
         [TestMethod]

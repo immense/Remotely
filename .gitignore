@@ -292,3 +292,4 @@ Server/.config/dotnet-tools.json
 /Server/Properties/ServiceDependencies/*
 Server.Installer/Properties/launchSettings.json
 .DS_Store
+/Server/wwwroot/Content/Linux-x64/Remotely_Desktop

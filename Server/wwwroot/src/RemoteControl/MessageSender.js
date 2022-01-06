@@ -106,12 +106,14 @@ export class MessageSender {
         return ViewerApp.RtcSession.DataChannel && ViewerApp.RtcSession.DataChannel.readyState == "open";
     }
     SendToAgent(rtcSend, websocketSend) {
-        var _a;
         if (ViewerApp.RtcSession.DataChannel && ViewerApp.RtcSession.DataChannel.readyState == "open") {
             rtcSend();
         }
-        else if ((_a = ViewerApp.ViewerHubConnection.Connection) === null || _a === void 0 ? void 0 : _a.connectionStarted) {
+        else if (ViewerApp.ViewerHubConnection.Connection) {
             websocketSend();
+        }
+        else {
+            console.warn("No connection available.");
         }
     }
     async SendToAgentAsync(rtcSend, websocketSend) {

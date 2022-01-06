@@ -16,15 +16,10 @@ namespace Remotely.Server.Data
 {
     public class AppDb : IdentityDbContext
     {
-        private static ValueComparer<string[]> _stringArrayComparer = new(
+        private static readonly ValueComparer<string[]> _stringArrayComparer = new(
                     (a, b) => a.SequenceEqual(b),
                     c => c.Aggregate(0, (a, b) => HashCode.Combine(a, b.GetHashCode())),
                     c => c.ToArray());
-
-        public AppDb(DbContextOptions context)
-                    : base(context)
-        {
-        }
 
         public DbSet<Alert> Alerts { get; set; }
 
@@ -106,8 +101,8 @@ namespace Remotely.Server.Data
             builder.Entity<RemotelyUser>()
                 .Property(x => x.UserOptions)
                 .HasConversion(
-                    x => JsonSerializer.Serialize(x, null),
-                    x => JsonSerializer.Deserialize<RemotelyUserOptions>(x, null));
+                    x => JsonSerializer.Serialize(x, (JsonSerializerOptions)null),
+                    x => JsonSerializer.Deserialize<RemotelyUserOptions>(x, (JsonSerializerOptions)null));
             builder.Entity<RemotelyUser>()
                 .HasMany(x => x.SavedScripts)
                 .WithOne(x => x.Creator);
@@ -121,8 +116,8 @@ namespace Remotely.Server.Data
             builder.Entity<Device>()
                 .Property(x => x.Drives)
                 .HasConversion(
-                    x => JsonSerializer.Serialize(x, null),
-                    x => JsonSerializer.Deserialize<List<Drive>>(x, null));
+                    x => JsonSerializer.Serialize(x, (JsonSerializerOptions)null),
+                    x => JsonSerializer.Deserialize<List<Drive>>(x, (JsonSerializerOptions)null));
             builder.Entity<Device>()
                .Property(x => x.Drives)
                .Metadata.SetValueComparer(new ValueComparer<List<Drive>>(true));
@@ -157,16 +152,16 @@ namespace Remotely.Server.Data
             builder.Entity<ScriptResult>()
               .Property(x => x.ErrorOutput)
               .HasConversion(
-                  x => JsonSerializer.Serialize(x, null),
-                  x => JsonSerializer.Deserialize<string[]>(x, null))
+                  x => JsonSerializer.Serialize(x, (JsonSerializerOptions)null),
+                  x => JsonSerializer.Deserialize<string[]>(x, (JsonSerializerOptions)null))
               .Metadata
               .SetValueComparer(_stringArrayComparer);
 
             builder.Entity<ScriptResult>()
               .Property(x => x.StandardOutput)
               .HasConversion(
-                  x => JsonSerializer.Serialize(x, null),
-                  x => JsonSerializer.Deserialize<string[]>(x, null))
+                  x => JsonSerializer.Serialize(x, (JsonSerializerOptions)null),
+                  x => JsonSerializer.Deserialize<string[]>(x, (JsonSerializerOptions)null))
               .Metadata
               .SetValueComparer(_stringArrayComparer);
 
