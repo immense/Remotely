@@ -52,6 +52,10 @@ namespace Remotely.Server.Hubs
         Task UninstallAgents(string[] deviceIDs);
         Task UpdateTags(string deviceID, string tags);
         Task UploadFiles(List<string> fileIDs, string transferID, string[] deviceIDs);
+
+        Task WOL(string deviceId);
+
+        Task WOL_ALL();
     }
 
     public class CircuitConnection : CircuitHandler, ICircuitConnection
@@ -439,6 +443,65 @@ namespace Remotely.Server.Hubs
                     }
                 }
             }
+        }
+
+        public Task WOL(string deviceId)
+        {
+            var device = _dataService.GetDevice(deviceId);
+            if (device == null)
+            {
+                return Task.CompletedTask;
+            }
+
+            if (!_dataService.DoesUserHaveAccessToDevice(deviceId, _dataService.GetUserByNameWithOrg(User.UserName)))
+            {
+                return Task.CompletedTask;
+            }
+
+            var devices = _dataService.GetDevicesForUser(User.UserName);
+            var ActiveDevices = devices.Where(c => c.DeviceGroup == device.DeviceGroup && c.OrganizationID == device.OrganizationID).Select(s => s.ID).ToArray();
+
+            var connections = GetActiveClientConnections(ActiveDevices);
+            foreach (var connection in connections)
+            {
+                string[] MACs = device.MACAddresses.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var mac in MACs) {
+                    _agentHubContext.Clients.Client(connection.Key).SendAsync("WOL", mac);
+                }
+
+                break;  // only one Device send. Remove if any device send magic packet íswewsayí65r4ewasya1aw2
+            }
+            
+            return Task.CompletedTask;
+        }
+
+        public Task WOL_ALL()
+        {
+            var orgdevices = _dataService.GetDevicesForUser(User.UserName);
+
+            var allAgenthubDevices = AgentHub.ServiceConnections.Where(x => x.Value.OrganizationID == User.OrganizationID).Select(c => c.Value.ID).ToArray();
+
+            var notActiveDevices = orgdevices.Where(c => !allAgenthubDevices.Contains(c.ID)).ToList();
+
+            foreach (var orgdevice in notActiveDevices) {
+
+                var activeDevices = AgentHub.ServiceConnections.Where(x =>
+                        x.Value.OrganizationID == User.OrganizationID
+                        && x.Value.DeviceGroupID == orgdevice.DeviceGroupID)
+                        .ToList();
+
+                foreach (var connection in activeDevices)
+                {
+                    string[] MACs = orgdevice.MACAddresses.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var mac in MACs)
+                    {
+                        _agentHubContext.Clients.Client(connection.Key).SendAsync("WOL", mac);
+                    }
+                    break;  // only one Device send. Remove if any device send magic packet
+                }
+            }
+           
+            return Task.CompletedTask;
         }
     }
 }

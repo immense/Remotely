@@ -35,6 +35,8 @@ namespace Remotely.Agent.Services
 
         private readonly IUpdater _updater;
 
+        private readonly WakeOnLanService _wakeOnLanService;
+
         private ConnectionInfo _connectionInfo;
         private HubConnection _hubConnection;
         private System.Timers.Timer HeartbeatTimer;
@@ -47,7 +49,8 @@ namespace Remotely.Agent.Services
             ChatClientService chatService,
             IAppLauncher appLauncher,
             IUpdater updater,
-            IDeviceInformationService deviceInfoService)
+            IDeviceInformationService deviceInfoService,
+            WakeOnLanService wakeOnLanService)
         {
             _configService = configService;
             _uninstaller = uninstaller;
@@ -56,6 +59,7 @@ namespace Remotely.Agent.Services
             _chatService = chatService;
             _updater = updater;
             _deviceInfoService = deviceInfoService;
+            _wakeOnLanService = wakeOnLanService;
         }
         public bool IsConnected => _hubConnection?.State == HubConnectionState.Connected;
         public async Task Connect()
@@ -494,6 +498,11 @@ namespace Remotely.Agent.Services
             _hubConnection.On("TriggerHeartbeat", async () =>
             {
                 await SendHeartbeat();
+            });
+
+            _hubConnection.On("WOL", async (string macAddress) =>
+            {
+                await _wakeOnLanService.Wake(macAddress);
             });
         }
 

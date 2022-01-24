@@ -293,5 +293,13 @@ namespace Remotely.Server.Components.Devices
                 ParentFrame.Refresh();
             }
         }
+
+        private async Task WakeOnLan(Boolean all) {
+            if (all) {
+                await CircuitConnection.WOL_ALL();
+            } else {
+                await CircuitConnection.WOL(Device.ID);
+            }
+        }
     }
 }

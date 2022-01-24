@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Remotely.Server.Data;
 
+#nullable disable
+
 namespace Remotely.Server.Migrations.SqlServer
 {
     [DbContext(typeof(SqlServerDbContext))]
@@ -15,9 +17,10 @@ namespace Remotely.Server.Migrations.SqlServer
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.5")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "6.0.0")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("DeviceGroupRemotelyUser", b =>
                 {
@@ -118,15 +121,16 @@ namespace Remotely.Server.Migrations.SqlServer
                         .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("AspNetRoles");
+                    b.ToTable("AspNetRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -142,7 +146,7 @@ namespace Remotely.Server.Migrations.SqlServer
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims");
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
@@ -211,7 +215,7 @@ namespace Remotely.Server.Migrations.SqlServer
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("RemotelyUsers");
+                    b.ToTable("RemotelyUsers", (string)null);
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
                 });
@@ -220,8 +224,9 @@ namespace Remotely.Server.Migrations.SqlServer
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -237,18 +242,16 @@ namespace Remotely.Server.Migrations.SqlServer
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims");
+                    b.ToTable("AspNetUserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -261,7 +264,7 @@ namespace Remotely.Server.Migrations.SqlServer
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins");
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -276,7 +279,7 @@ namespace Remotely.Server.Migrations.SqlServer
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles");
+                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -285,19 +288,17 @@ namespace Remotely.Server.Migrations.SqlServer
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens");
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.Alert", b =>
@@ -441,6 +442,9 @@ namespace Remotely.Server.Migrations.SqlServer
 
                     b.Property<DateTimeOffset>("LastOnline")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("MACAddresses")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(5000)
@@ -722,8 +726,9 @@ namespace Remotely.Server.Migrations.SqlServer
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Initiator")
                         .HasColumnType("nvarchar(max)");
@@ -762,8 +767,9 @@ namespace Remotely.Server.Migrations.SqlServer
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");

@@ -293,3 +293,5 @@ Server/.config/dotnet-tools.json
 Server.Installer/Properties/launchSettings.json
 .DS_Store
 /Server/wwwroot/Content/Linux-x64/Remotely_Desktop
+/Deploy
+/Server/Remotely_Server_Linux-x64.zip

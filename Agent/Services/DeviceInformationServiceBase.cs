@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,6 +28,7 @@ namespace Remotely.Agent.Services
                 OSArchitecture = RuntimeInformation.OSArchitecture,
                 OSDescription = RuntimeInformation.OSDescription,
                 Is64Bit = Environment.Is64BitOperatingSystem,
+                MACAddresses = GetMacAddresses(),
                 IsOnline = true,
                 OrganizationID = orgID
             };
@@ -153,5 +156,38 @@ namespace Remotely.Agent.Services
             return totalUtilization;
         }
 
+        private string GetMacAddresses(string separator = "") {
+            NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
+
+            var macAddress = new List<string>();
+
+            if (nics == null || nics.Length < 1)
+            {
+                Debug.WriteLine(" No network interfaces found.");
+                return "";
+            }
+
+            foreach (NetworkInterface adapter in nics.Where(c =>
+             c.NetworkInterfaceType != NetworkInterfaceType.Loopback && c.OperationalStatus == OperationalStatus.Up))
+            {
+                IPInterfaceProperties properties = adapter.GetIPProperties();
+
+                var unicastAddresses = properties.UnicastAddresses;
+                if (unicastAddresses.Any(temp => temp.Address.AddressFamily == AddressFamily.InterNetwork))
+                {
+                    var address = adapter.GetPhysicalAddress();
+                    if (string.IsNullOrEmpty(separator))
+                    {
+                        macAddress.Add(address.ToString().Trim());
+                    }
+                    else
+                    {
+                        macAddress.Add(string.Join(separator, address.GetAddressBytes()));
+                    }
+                }
+            }
+
+            return string.Join(",", macAddress.ToArray());
+        }
     }
 }

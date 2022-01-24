@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Remotely.Server.Data;
 
+#nullable disable
+
 namespace Remotely.Server.Migrations.Sqlite
 {
     [DbContext(typeof(SqliteDbContext))]
@@ -13,8 +15,7 @@ namespace Remotely.Server.Migrations.Sqlite
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "5.0.5");
+            modelBuilder.HasAnnotation("ProductVersion", "6.0.0");
 
             modelBuilder.Entity("DeviceGroupRemotelyUser", b =>
                 {
@@ -114,7 +115,7 @@ namespace Remotely.Server.Migrations.Sqlite
                         .IsUnique()
                         .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("AspNetRoles");
+                    b.ToTable("AspNetRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -137,7 +138,7 @@ namespace Remotely.Server.Migrations.Sqlite
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims");
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
@@ -205,7 +206,7 @@ namespace Remotely.Server.Migrations.Sqlite
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("RemotelyUsers");
+                    b.ToTable("RemotelyUsers", (string)null);
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
                 });
@@ -230,17 +231,15 @@ namespace Remotely.Server.Migrations.Sqlite
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims");
+                    b.ToTable("AspNetUserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(128)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ProviderDisplayName")
@@ -254,7 +253,7 @@ namespace Remotely.Server.Migrations.Sqlite
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins");
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -269,7 +268,7 @@ namespace Remotely.Server.Migrations.Sqlite
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles");
+                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -278,11 +277,9 @@ namespace Remotely.Server.Migrations.Sqlite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(128)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Value")
@@ -290,7 +287,7 @@ namespace Remotely.Server.Migrations.Sqlite
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens");
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.Alert", b =>
@@ -435,6 +432,9 @@ namespace Remotely.Server.Migrations.Sqlite
 
                     b.Property<string>("LastOnline")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MACAddresses")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Notes")

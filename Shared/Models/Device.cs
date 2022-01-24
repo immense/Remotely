@@ -69,6 +69,9 @@ namespace Remotely.Shared.Models
         public int ProcessorCount { get; set; }
 
         public string PublicIP { get; set; }
+
+        public string MACAddresses { get; set; }
+
         public string ServerVerificationToken { get; set; }
 
         [JsonIgnore]

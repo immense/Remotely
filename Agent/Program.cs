@@ -56,6 +56,7 @@ namespace Remotely.Agent
             serviceCollection.AddScoped<ScriptExecutor>();
             serviceCollection.AddScoped<IProcessInvoker, ProcessInvoker>();
             serviceCollection.AddScoped<IWebClientEx, WebClientEx>();
+            
 
             if (EnvironmentHelper.IsWindows)
             {
@@ -79,6 +80,8 @@ namespace Remotely.Agent
             {
                 throw new NotSupportedException("Operating system not supported.");
             }
+
+            serviceCollection.AddScoped<WakeOnLanService>();
 
             Services = serviceCollection.BuildServiceProvider();
         }

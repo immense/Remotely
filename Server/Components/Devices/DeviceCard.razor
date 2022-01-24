@@ -106,6 +106,18 @@
                             </FileInputButton>
                         </li>
                         <li>
+                            <button class="dropdown-item" @onclick="() => WakeOnLan(false)">
+                                <i class="oi oi-eye" title="View Only"></i>
+                                <span class="ml-2">Wake</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item" @onclick="() => WakeOnLan(true)">
+                                <i class="oi oi-eye" title="View Only"></i>
+                                <span class="ml-2">Wake All</span>
+                            </button>
+                        </li>
+                        <li>
                             <button class="dropdown-item bg-danger" @onclick="UninstallAgent">
                                 <i class="oi oi-delete" title="Uninstall"></i>
                                 <span class="ml-2">Uninstall</span>
@@ -198,6 +210,13 @@
                     </div>
                     <div>
                         <input class="form-control" readonly value="@Device.PublicIP" />
+                    </div>
+
+                    <div class="font-weight-bold text-info mt-2">
+                        MAC Addresses
+                    </div>
+                    <div>
+                        <input class="form-control" readonly value="@Device.MACAddresses" />
                     </div>
 
                     <EditForm Model="Device" OnValidSubmit="HandleValidSubmit">
