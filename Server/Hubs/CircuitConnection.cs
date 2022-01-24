@@ -469,7 +469,7 @@ namespace Remotely.Server.Hubs
                     _agentHubContext.Clients.Client(connection.Key).SendAsync("WOL", mac);
                 }
 
-                break;  // only one Device send. Remove if any device send magic packet íswewsayí65r4ewasya1aw2
+                break;  // Delete the line so that all active devices will send the Magic packet. 
             }
             
             return Task.CompletedTask;
@@ -497,7 +497,7 @@ namespace Remotely.Server.Hubs
                     {
                         _agentHubContext.Clients.Client(connection.Key).SendAsync("WOL", mac);
                     }
-                    break;  // only one Device send. Remove if any device send magic packet
+                    break;  // Delete the line so that all active devices will send the Magic packet. 
                 }
             }
            
