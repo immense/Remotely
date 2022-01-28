@@ -191,7 +191,16 @@ jobs:
       with:
         path: ./publish/
         name: Server
-    
+    # Create Release from Artifact
+    - name: upload artifacts
+    uses: actions/upload-release-asset@v1
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    with:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      asset_path: ./publish/Server.zip
+      asset_name: Server.zip
+      asset_content_type: application/zip
 
     # Remove the pfx
     - name: Remove the pfx
