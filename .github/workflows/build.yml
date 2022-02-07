@@ -130,6 +130,8 @@ jobs:
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1
+      with:
+        vs-prerelease: true
 
     # Execute all unit tests in the solution
     - name: Execute unit tests
