@@ -8,7 +8,7 @@ export class ViewerHubConnection {
         this.MessagePack = window['msgpack5']();
         this.PartialCaptureFrames = [];
     }
-    Connect() {
+    Connect(waitForDevice = false) {
         this.Connection = new signalR.HubConnectionBuilder()
             .withUrl("/ViewerHub")
             .withHubProtocol(new signalR.protocols.msgpack.MessagePackHubProtocol())
@@ -16,7 +16,12 @@ export class ViewerHubConnection {
             .build();
         this.ApplyMessageHandlers(this.Connection);
         this.Connection.start().then(() => {
-            this.SendScreenCastRequestToDevice();
+            if (waitForDevice) {
+                this.SendWaitForDeviceToConnect();
+            }
+            else {
+                this.SendScreenCastRequestToDevice();
+            }
         }).catch(err => {
             console.error(err.toString());
             console.log("Connection closed.");
@@ -50,7 +55,15 @@ export class ViewerHubConnection {
     SendScreenCastRequestToDevice() {
         this.Connection.invoke("SendScreenCastRequestToDevice", ViewerApp.CasterID, ViewerApp.RequesterName, ViewerApp.Mode, ViewerApp.Otp);
     }
+    SendWaitForDeviceToConnect() {
+        this.Connection.invoke("WaitForDeviceToConnect", ViewerApp.PrejoinID);
+    }
     ApplyMessageHandlers(hubConnection) {
+        hubConnection.on("GuestConnected", (screenCasterID) => {
+            ViewerApp.CasterID = screenCasterID;
+            this.Connection.invoke("SendScreenCastRequestToDevice", screenCasterID, ViewerApp.RequesterName, ViewerApp.Mode, ViewerApp.Otp);
+            UI.WaitForDeviceToConnectBox.style.display = "none";
+        });
         hubConnection.on("SendDtoToBrowser", (dto) => {
             ViewerApp.DtoMessageHandler.ParseBinaryMessage(dto);
         });

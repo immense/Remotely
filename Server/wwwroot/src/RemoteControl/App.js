@@ -17,6 +17,7 @@ export const ViewerApp = {
     DtoMessageHandler: new DtoMessageHandler(),
     RtcSession: new RtcSession(),
     SessionRecorder: new SessionRecorder(),
+    PrejoinID: queryString["prejoinID"] ? decodeURIComponent(queryString["prejoinID"]) : "",
     CasterID: queryString["casterID"] ? decodeURIComponent(queryString["casterID"]) : "",
     Otp: queryString["otp"] ? decodeURIComponent(queryString["otp"]) : "",
     ServiceID: queryString["serviceID"] ? decodeURIComponent(queryString["serviceID"]) : "",
@@ -24,7 +25,7 @@ export const ViewerApp = {
     ViewOnlyMode: queryString["viewonly"] ?
         decodeURIComponent(queryString["viewonly"]).toLowerCase() == "true" :
         false,
-    Mode: RemoteControlMode.None,
+    Mode: queryString["mode"] == "Unattended" ? RemoteControlMode.Unattended : RemoteControlMode.None,
     Settings: GetSettings(),
     Init: () => {
         if (ViewerApp.ViewOnlyMode) {
@@ -43,6 +44,10 @@ export const ViewerApp = {
             ViewerApp.ViewerHubConnection.Connect();
             UI.StatusMessage.innerHTML = "Connecting to remote device...";
         }
+        else if (ViewerApp.PrejoinID) {
+            UI.WaitForDeviceToConnectBox.style.removeProperty("display");
+            ViewerApp.ConnectAndWaitForCient();
+        }
         else {
             UI.ConnectBox.style.removeProperty("display");
         }
@@ -53,6 +58,12 @@ export const ViewerApp = {
                 ViewerApp.ConnectToClient();
             }
         }
+    },
+    ConnectAndWaitForCient: () => {
+        UI.ConnectButton.disabled = true;
+        ViewerApp.ViewerHubConnection.Connect(true);
+        ViewerApp.Settings.displayName = ViewerApp.RequesterName;
+        SetSettings(ViewerApp.Settings);
     },
     ConnectToClient: () => {
         UI.ConnectButton.disabled = true;

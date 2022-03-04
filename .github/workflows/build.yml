@@ -101,16 +101,16 @@ jobs:
       PfxBase64: ${{ secrets.BASE64_ENCODED_PFX }}
       PfxKey: ${{ secrets.PFX_KEY }}
       ServerUrl: ${{ github.event.inputs.serverUrl }}
+      SignerUrl: ${{ secrets.SIGNER_URL }}
 
     steps:
        
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         # Comment out the below 'repository' line if you want to build from
         # your fork instead of the author's.
-        repository: lucent-sea/Remotely
-        fetch-depth: 0
+        repository: immense/Remotely
 
     # Test the Server URL to make sure it's valid
     - name: Check Server URL Format
@@ -181,9 +181,9 @@ jobs:
 
     # Run the Publish script to build clients and server.
     - name: Run Publish script
-      shell: powershell
+      shell: pwsh
       run: |
-        .\Utilities\Publish.ps1 -CertificatePath "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx" -CertificatePassword $env:PfxKey -Hostname $env:ServerUrl -CurrentVersion $env:CurrentVersion -RID ${{ github.event.inputs.rid }} -OutDir "$env:GITHUB_WORKSPACE\publish"
+        .\Utilities\Publish.ps1 -SignerUrl "$env:SignerUrl" -CertificatePath "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx" -CertificatePassword $env:PfxKey -Hostname $env:ServerUrl -CurrentVersion $env:CurrentVersion -RID ${{ github.event.inputs.rid }} -OutDir "$env:GITHUB_WORKSPACE\publish"
         
     # Upload build artifact to be deployed from Ubuntu runner
     - name: Upload build artifact

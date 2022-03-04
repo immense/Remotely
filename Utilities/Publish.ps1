@@ -18,10 +18,9 @@ param (
 	[string]$Hostname = "",
 	[string]$CertificatePath = "",
     [string]$CertificatePassword = "",
-    [string]$CurrentVersion = ""
+    [string]$CurrentVersion = "",
+    [string]$SignerUrl = ""
 )
-
-
 
 $ErrorActionPreference = "Stop"
 $InstallerDir = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer"
@@ -51,9 +50,15 @@ if ($CertificatePath.Length -gt 0 -and
     $CertificatePassword.Length -gt 0) 
 {
     $SignAssemblies = $true
+} elseif ($SignerUrl) {
+    $SignAssemblies = $true
 }
 
-
+if (!$SignAssemblies) {
+    Write-Host "Not signing assemblies"
+} else {
+    Write-Host "Will sign assemblies"
+}
 
 Set-Location -Path $Root
 
@@ -75,6 +80,18 @@ function Replace-LineInFile($FilePath, $MatchPattern, $ReplaceLineWith, $MaxCoun
     ($Content | Out-String).Trim() | Out-File -FilePath $FilePath -Force -Encoding utf8
 }
 
+function Sign-Exe($FilePath) {
+    $FileToSign = (Get-Item $FilePath)
+    $FileToSignFullName = $FileToSign.FullName
+    $SignedFilePath = "$FilePath-signed"    
+    Write-Output "Submitting $FileToSignFullName to signing service"
+    Invoke-RestMethod -Uri $SignerUrl -Method POST -Form @{
+        signme = $FileToSign
+    } -OutFile $SignedFilePath
+    Remove-Item $FilePath -Force
+    Move-Item "$SignedFilePath" "$FilePath"
+}
+
 #endregion
 
 if ([string]::IsNullOrWhiteSpace($MSBuildPath) -or !(Test-Path -Path $MSBuildPath)) {
@@ -85,6 +102,8 @@ if ([string]::IsNullOrWhiteSpace($MSBuildPath) -or !(Test-Path -Path $MSBuildPat
     return
 }
 
+# Replace AgentVersion
+Replace-LineInFile -FilePath "$Root\Server\appsettings.json" -MatchPattern "AgentVersion" -ReplaceLineWith "    ""AgentVersion"": ""$CurrentVersion""," -MaxCount 1
 
 # Update hostname.
 if ($Hostname) {
@@ -147,16 +166,23 @@ dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:Publ
 &"$MSBuildPath" "$Root\Desktop.Win" -t:Restore -t:Publish -p:PublishProfile="ClickOnce-x64.pubxml" -p:Configuration=Release -p:Platform=x64 -p:ApplicationVersion=$CurrentVersion -p:Version=$CurrentVersion -p:FileVersion=$CurrentVersion -p:PublishDir="$Root\Server\wwwroot\Content\Win-x64\ClickOnce\"
 
 if ($SignAssemblies) {
-    &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Content\Win-x64\Remotely_Desktop.exe"
+    if ($SignerUrl) {
+        Sign-Exe -FilePath "$Root\Server\wwwroot\Content\Win-x64\Remotely_Desktop.exe"
+    } else {
+        &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Content\Win-x64\Remotely_Desktop.exe"
+    }
 }
-
 
 # Publish Windows GUI App (32-bit)
 dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=desktop-win-x86 --configuration Release "$Root\Desktop.Win"
 &"$MSBuildPath" "$Root\Desktop.Win" -t:Restore -t:Publish -p:PublishProfile="ClickOnce-x86.pubxml" -p:Configuration=Release -p:Platform=x86 -p:ApplicationVersion=$CurrentVersion -p:Version=$CurrentVersion -p:FileVersion=$CurrentVersion -p:PublishDir="$Root\Server\wwwroot\Content\Win-x86\ClickOnce\"
 
 if ($SignAssemblies) {
-    &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Content\Win-x86\Remotely_Desktop.exe"
+    if ($SignerUrl) {
+        Sign-Exe -FilePath "$Root\Server\wwwroot\Content\Win-x86\Remotely_Desktop.exe"
+    } else {
+        &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Content\Win-x86\Remotely_Desktop.exe"
+    }
 }
 
 # Build installer.
@@ -164,7 +190,11 @@ if ($SignAssemblies) {
 &"$MSBuildPath" "$Root\Agent.Installer.Win" /t:Build /p:Configuration=Release /p:Platform=AnyCPU /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion
 Copy-Item -Path "$Root\Agent.Installer.Win\bin\Release\Remotely_Installer.exe" -Destination "$Root\Server\wwwroot\Content\Remotely_Installer.exe" -Force
 if ($SignAssemblies) {
-    &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Content\Remotely_Installer.exe"
+    if ($SignerUrl) {
+        Sign-Exe -FilePath "$Root\Server\wwwroot\Content\Remotely_Installer.exe"
+    } else {
+        &"$Root\Utilities\signtool.exe" sign /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Content\Remotely_Installer.exe"
+    }
 }
 
 # Compress Core clients.

@@ -15,6 +15,7 @@ export var ScreenViewerWrapper = document.getElementById("screenViewerWrapper");
 export var Screen2DContext = ScreenViewer ? ScreenViewer.getContext("2d") : null;
 export var HorizontalBars = document.querySelectorAll(".horizontal-button-bar");
 export var ConnectBox = document.getElementById("connectBox");
+export var WaitForDeviceToConnectBox = document.getElementById("waitForDeviceToConnectBox");
 export var DisconnectedBox = document.getElementById("disconnectedBox");
 export var ScreenSelectBar = document.getElementById("screenSelectBar");
 export var ActionsBar = document.getElementById("actionsBar");

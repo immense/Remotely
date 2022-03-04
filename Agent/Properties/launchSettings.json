@@ -2,8 +2,12 @@
   "profiles": {
     "Agent": {
       "commandName": "Project",
-      "commandLineArgs": "",
       "nativeDebugging": true
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "environmentVariables": {},
+      "distributionName": ""
     }
   }
 }
