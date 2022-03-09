@@ -65,7 +65,7 @@ namespace Remotely.Server.API
             }
         }
 
-
+        [HttpHead("desktop/{platformId}/{organizationId}")]
         [HttpGet("desktop/{platformId}/{organizationId}")]
         public async Task<IActionResult> GetDesktop(string platformId, string organizationId)
         {
