@@ -175,15 +175,15 @@ namespace Remotely.Server.Hubs
         return;
       }
 
+      // if mode is normal, and this was triggered by the remotely ui, then try to resolve to the proper screen caster id
+      // since the one passed in is actually the session id.
+      // otherwise, continue on and try to find a value with the provided screen caster id (adhoc)
       if ((RemoteControlMode)remoteControlMode == RemoteControlMode.Normal)
       {
-        if (!CasterHub.SessionInfoList.Any(x => x.Value.AttendedSessionID == screenCasterID))
+        if (CasterHub.SessionInfoList.Any(x => x.Value.AttendedSessionID == screenCasterID))
         {
-          await Clients.Caller.SendAsync("SessionIDNotFound");
-          return;
+          screenCasterID = CasterHub.SessionInfoList.First(x => x.Value.AttendedSessionID == screenCasterID).Value.CasterSocketID;
         }
-
-        screenCasterID = CasterHub.SessionInfoList.First(x => x.Value.AttendedSessionID == screenCasterID).Value.CasterSocketID;
       }
 
       if (!CasterHub.SessionInfoList.TryGetValue(screenCasterID, out var sessionInfo))

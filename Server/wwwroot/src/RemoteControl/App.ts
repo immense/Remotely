@@ -28,7 +28,7 @@ export const ViewerApp = {
   ViewOnlyMode: queryString["viewonly"] ?
     decodeURIComponent(queryString["viewonly"]).toLowerCase() == "true" :
     false,
-  Mode: queryString["mode"] == "Unattended" ? RemoteControlMode.Unattended : RemoteControlMode.None,
+  Mode: queryString["mode"] == "Unattended" ? RemoteControlMode.Unattended : queryString["mode"] == "Normal" ? RemoteControlMode.Normal : RemoteControlMode.None,
   Settings: GetSettings(),
 
   Init: () => {
@@ -47,7 +47,6 @@ export const ViewerApp = {
     }
 
     if (ViewerApp.CasterID) {
-      ViewerApp.Mode = RemoteControlMode.Unattended;
       ViewerApp.ViewerHubConnection.Connect();
       UI.StatusMessage.innerHTML = "Connecting to remote device...";
     }
