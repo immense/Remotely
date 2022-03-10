@@ -26,6 +26,7 @@ on:
       serverUrl:
         description: 'Server URL'     
         required: false
+        default: ""
       rid:
         description: 'Server Runtime Identifier'     
         required: false
@@ -116,7 +117,7 @@ jobs:
     - name: Check Server URL Format
       run: |
         $Result = ""
-        if ($env:ServerUrl && ![System.Uri]::TryCreate($env:ServerUrl, [System.UriKind]::Absolute, [ref] $Result)) {
+        if ($env:ServerUrl -ne "" && ![System.Uri]::TryCreate($env:ServerUrl, [System.UriKind]::Absolute, [ref] $Result)) {
             throw "Server URL is not in the correct format.  It should be fully qualified with scheme and host (e.g. https://app.remotely.one)."
         }
         
