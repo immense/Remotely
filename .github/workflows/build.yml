@@ -25,7 +25,7 @@ on:
     inputs:
       serverUrl:
         description: 'Server URL'     
-        required: true
+        required: false
       rid:
         description: 'Server Runtime Identifier'     
         required: false
