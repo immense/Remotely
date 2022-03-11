@@ -14,75 +14,75 @@ import { GetSettings, SetSettings } from "./SettingsService.js";
 var queryString = Utilities.ParseSearchString();
 
 export const ViewerApp = {
-  ClipboardWatcher: new ClipboardWatcher(),
-  MessageSender: new MessageSender(),
-  ViewerHubConnection: new ViewerHubConnection(),
-  DtoMessageHandler: new DtoMessageHandler(),
-  RtcSession: new RtcSession(),
-  SessionRecorder: new SessionRecorder(),
-  PrejoinID: queryString["prejoinID"] ? decodeURIComponent(queryString["prejoinID"]) : "",
-  CasterID: queryString["casterID"] ? decodeURIComponent(queryString["casterID"]) : "",
-  Otp: queryString["otp"] ? decodeURIComponent(queryString["otp"]) : "",
-  ServiceID: queryString["serviceID"] ? decodeURIComponent(queryString["serviceID"]) : "",
-  RequesterName: queryString["requesterName"] ? decodeURIComponent(queryString["requesterName"]) : "",
-  ViewOnlyMode: queryString["viewonly"] ?
-    decodeURIComponent(queryString["viewonly"]).toLowerCase() == "true" :
-    false,
-  Mode: queryString["mode"] == "Unattended" ? RemoteControlMode.Unattended : queryString["mode"] == "Normal" ? RemoteControlMode.Normal : RemoteControlMode.None,
-  Settings: GetSettings(),
+    ClipboardWatcher: new ClipboardWatcher(),
+    MessageSender: new MessageSender(),
+    ViewerHubConnection: new ViewerHubConnection(),
+    DtoMessageHandler: new DtoMessageHandler(),
+    RtcSession: new RtcSession(),
+    SessionRecorder: new SessionRecorder(),
+    PrejoinID: queryString["prejoinID"] ? decodeURIComponent(queryString["prejoinID"]) : "",
+    CasterID: queryString["casterID"] ? decodeURIComponent(queryString["casterID"]) : "",
+    Otp: queryString["otp"] ? decodeURIComponent(queryString["otp"]) : "",
+    ServiceID: queryString["serviceID"] ? decodeURIComponent(queryString["serviceID"]) : "",
+    RequesterName: queryString["requesterName"] ? decodeURIComponent(queryString["requesterName"]) : "",
+    ViewOnlyMode: queryString["viewonly"] ?
+        decodeURIComponent(queryString["viewonly"]).toLowerCase() == "true" :
+        false,
+    Mode: queryString["mode"] == "Unattended" ? RemoteControlMode.Unattended : queryString["mode"] == "Normal" ? RemoteControlMode.Normal : RemoteControlMode.None,
+    Settings: GetSettings(),
 
-  Init: () => {
-    if (ViewerApp.ViewOnlyMode) {
-      UI.ViewOnlyButton.classList.add("toggled");
-    }
+    Init: () => {
+        if (ViewerApp.ViewOnlyMode) {
+            UI.ViewOnlyButton.classList.add("toggled");
+        }
 
-    ApplyInputHandlers();
+        ApplyInputHandlers();
 
-    if (UI.RequesterNameInput.value) {
-      ViewerApp.RequesterName = UI.RequesterNameInput.value;
-    }
-    else if (ViewerApp.Settings.displayName) {
-      UI.RequesterNameInput.value = ViewerApp.Settings.displayName;
-      ViewerApp.RequesterName = ViewerApp.Settings.displayName;
-    }
+        if (UI.RequesterNameInput.value) {
+            ViewerApp.RequesterName = UI.RequesterNameInput.value;
+        }
+        else if (ViewerApp.Settings.displayName) {
+            UI.RequesterNameInput.value = ViewerApp.Settings.displayName;
+            ViewerApp.RequesterName = ViewerApp.Settings.displayName;
+        }
 
-    if (ViewerApp.CasterID) {
-      ViewerApp.ViewerHubConnection.Connect();
-      UI.StatusMessage.innerHTML = "Connecting to remote device...";
-    }
-    else if (ViewerApp.PrejoinID) {
-      UI.WaitForDeviceToConnectBox.style.removeProperty("display");
-      ViewerApp.ConnectAndWaitForCient();
-    }
-    else {
-      UI.ConnectBox.style.removeProperty("display");
-    }
+        if (ViewerApp.CasterID) {
+            ViewerApp.ViewerHubConnection.Connect();
+            UI.StatusMessage.innerHTML = "Connecting to remote device...";
+        }
+        else if (ViewerApp.PrejoinID) {
+            UI.WaitForDeviceToConnectBox.style.removeProperty("display");
+            ViewerApp.ConnectAndWaitForCient();
+        }
+        else {
+            UI.ConnectBox.style.removeProperty("display");
+        }
 
-    if (queryString["sessionID"]) {
-      UI.SessionIDInput.value = decodeURIComponent(queryString["sessionID"]);
-      if (queryString["requesterName"]) {
-        UI.RequesterNameInput.value = decodeURIComponent(queryString["requesterName"]);
-        ViewerApp.ConnectToClient();
-      }
-    }
-  },
-  ConnectAndWaitForCient: () => {
-    UI.ConnectButton.disabled = true;
-    ViewerApp.ViewerHubConnection.Connect(true);
-    ViewerApp.Settings.displayName = ViewerApp.RequesterName;
-    SetSettings(ViewerApp.Settings);
-  },
-  ConnectToClient: () => {
-    UI.ConnectButton.disabled = true;
-    ViewerApp.CasterID = UI.SessionIDInput.value.split(" ").join("");
-    ViewerApp.RequesterName = UI.RequesterNameInput.value;
-    ViewerApp.Mode = RemoteControlMode.Normal;
-    ViewerApp.ViewerHubConnection.Connect();
-    UI.StatusMessage.innerHTML = "Request access on remote device...";
+        if (queryString["sessionID"]) {
+            UI.SessionIDInput.value = decodeURIComponent(queryString["sessionID"]);
+            if (queryString["requesterName"]) {
+                UI.RequesterNameInput.value = decodeURIComponent(queryString["requesterName"]);
+                ViewerApp.ConnectToClient();
+            }
+        }
+    },
+    ConnectAndWaitForCient: () => {
+        UI.ConnectButton.disabled = true;
+        ViewerApp.ViewerHubConnection.Connect(true);
+        ViewerApp.Settings.displayName = ViewerApp.RequesterName;
+        SetSettings(ViewerApp.Settings);
+    },
+    ConnectToClient: () => {
+        UI.ConnectButton.disabled = true;
+        ViewerApp.CasterID = UI.SessionIDInput.value.split(" ").join("");
+        ViewerApp.RequesterName = UI.RequesterNameInput.value;
+        ViewerApp.Mode = RemoteControlMode.Normal;
+        ViewerApp.ViewerHubConnection.Connect();
+        UI.StatusMessage.innerHTML = "Request access on remote device...";
 
-    ViewerApp.Settings.displayName = ViewerApp.RequesterName;
-    SetSettings(ViewerApp.Settings);
-  }
+        ViewerApp.Settings.displayName = ViewerApp.RequesterName;
+        SetSettings(ViewerApp.Settings);
+    }
 }
 
 window["ViewerApp"] = ViewerApp;

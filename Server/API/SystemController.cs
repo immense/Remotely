@@ -12,27 +12,27 @@ namespace Remotely.Server.API;
 [ApiController]
 public class SystemController : ControllerBase
 {
-  public IDataService DataService { get; }
-  public IHubContext<AgentHub> AgentHubContext { get; }
-  public IApplicationConfig AppConfig { get; }
-  public SignInManager<RemotelyUser> SignInManager { get; }
+    public IDataService DataService { get; }
+    public IHubContext<AgentHub> AgentHubContext { get; }
+    public IApplicationConfig AppConfig { get; }
+    public SignInManager<RemotelyUser> SignInManager { get; }
 
-  public SystemController(
-    IDataService dataService,
-    IHubContext<AgentHub> agentHub,
-    IApplicationConfig appConfig,
-    SignInManager<RemotelyUser> signInManager)
-  {
-    DataService = dataService;
-    AgentHubContext = agentHub;
-    AppConfig = appConfig;
-    SignInManager = signInManager;
-  }
+    public SystemController(
+      IDataService dataService,
+      IHubContext<AgentHub> agentHub,
+      IApplicationConfig appConfig,
+      SignInManager<RemotelyUser> signInManager)
+    {
+        DataService = dataService;
+        AgentHubContext = agentHub;
+        AppConfig = appConfig;
+        SignInManager = signInManager;
+    }
 
-  [HttpGet("agent-version")]
-  [ServiceFilter(typeof(ApiAuthorizationFilter))]
-  public IActionResult GetAgentVersion()
-  {
-    return Ok(AppConfig.AgentVersion);
-  }
+    [HttpGet("agent-version")]
+    [ServiceFilter(typeof(ApiAuthorizationFilter))]
+    public IActionResult GetAgentVersion()
+    {
+        return Ok(AppConfig.AgentVersion);
+    }
 }
