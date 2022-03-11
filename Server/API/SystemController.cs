@@ -29,10 +29,10 @@ public class SystemController : ControllerBase
         SignInManager = signInManager;
     }
 
-    [HttpGet("agent-version")]
+    [HttpGet("Version")]
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
-    public IActionResult GetAgentVersion()
+    public IActionResult GetVersion()
     {
-        return Ok(AppConfig.AgentVersion);
+        return Ok(AppConfig.Version);
     }
 }

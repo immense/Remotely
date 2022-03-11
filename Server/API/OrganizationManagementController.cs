@@ -35,7 +35,6 @@ namespace Remotely.Server.API
         private IEmailSenderEx EmailSender { get; }
         private UserManager<RemotelyUser> UserManager { get; }
 
-
         [HttpPost("ChangeIsAdmin/{userID}")]
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
         public IActionResult ChangeIsAdmin(string userID, [FromBody] bool isAdmin)
@@ -256,6 +255,11 @@ namespace Remotely.Server.API
             }
 
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
+
+            // check if organization is server admin also
+            var org = DataService.GetOrganizationById(orgID);
+            if (!org.IsServerAdminOrganization) return Unauthorized();
+
             DataService.SetIsDefaultOrganization(orgID, isDefault);
             return Ok("ok");
         }
@@ -366,6 +370,14 @@ namespace Remotely.Server.API
             var token = await DataService.CreateApiTokenWithOrg(vm.OrganizationID, vm.Name, secretHash);
             var res = new CreateApiTokenResponse(token.ID, token.Name, secret, token.OrganizationID);
             return Ok(res);
+        }
+
+        [HttpGet("MyOrganizationID")]
+        [ServiceFilter(typeof(ApiAuthorizationFilter))]
+        public IActionResult GetMyOrganizationID()
+        {
+            Request.Headers.TryGetValue("OrganizationID", out var orgID);
+            return Ok(orgID.ToString());
         }
     }
 }

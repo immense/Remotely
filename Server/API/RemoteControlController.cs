@@ -51,7 +51,7 @@ namespace Remotely.Server.API
         /// </summary>
         /// <param name="deviceID"></param>
         /// <returns></returns>
-        [HttpGet("adhoc/{deviceID}")]
+        [HttpGet("Adhoc/{deviceID}")]
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
         public async Task<IActionResult> GetAdhoc(string deviceID, [FromQuery] string requesterName, [FromQuery] RemoteControlMode mode)
         {

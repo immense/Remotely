@@ -102,8 +102,8 @@ if ([string]::IsNullOrWhiteSpace($MSBuildPath) -or !(Test-Path -Path $MSBuildPat
     return
 }
 
-# Replace AgentVersion
-Replace-LineInFile -FilePath "$Root\Server\appsettings.json" -MatchPattern "AgentVersion" -ReplaceLineWith "    ""AgentVersion"": ""$CurrentVersion""," -MaxCount 1
+# Replace Version in appsettings
+Replace-LineInFile -FilePath "$Root\Server\appsettings.json" -MatchPattern """Version""" -ReplaceLineWith "    ""Version"": ""$CurrentVersion""," -MaxCount 1
 
 # Update hostname.
 if ($Hostname) {

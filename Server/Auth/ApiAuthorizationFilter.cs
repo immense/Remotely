@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Remotely.Server.Services;
 using System;
-using System.Net;
 using System.Text;
 
 namespace Remotely.Server.Auth
@@ -18,7 +17,6 @@ namespace Remotely.Server.Auth
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-
             if (context.HttpContext.User.Identity.IsAuthenticated)
             {
                 var orgID = DataService.GetUserByNameWithOrg(context.HttpContext.User.Identity.Name)?.OrganizationID;
@@ -28,11 +26,10 @@ namespace Remotely.Server.Auth
 
             if (context.HttpContext.Request.Headers.TryGetValue("Authorization", out var result))
             {
-
                 var headerComponents = result.ToString().Split(" ");
                 if (headerComponents.Length < 2)
                 {
-                    context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                    context.Result = new UnauthorizedResult();
                     return;
                 };
 
@@ -48,7 +45,7 @@ namespace Remotely.Server.Auth
                         var authComponents = decodedString.ToString().Split(":");
                         if (authComponents.Length < 2)
                         {
-                            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                            context.Result = new UnauthorizedResult();
                             return;
                         };
 
@@ -62,7 +59,6 @@ namespace Remotely.Server.Auth
                         }
                         break;
                 }
-
             }
 
             context.Result = new UnauthorizedResult();

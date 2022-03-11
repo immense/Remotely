@@ -36,7 +36,7 @@ namespace Remotely.Server.Services
         string[] TrustedCorsOrigins { get; }
         bool UseHsts { get; }
         bool UseWebRtc { get; }
-        string AgentVersion { get; }
+        string Version { get; }
     }
 
     public class ApplicationConfig : IApplicationConfig
@@ -81,7 +81,7 @@ namespace Remotely.Server.Services
         public string[] TrustedCorsOrigins => Config.GetSection("ApplicationOptions:TrustedCorsOrigins").Get<string[]>() ?? System.Array.Empty<string>();
         public bool UseHsts => bool.Parse(Config["ApplicationOptions:UseHsts"] ?? "false");
         public bool UseWebRtc => bool.Parse(Config["ApplicationOptions:UseWebRtc"] ?? "true");
-        public string AgentVersion => Config.GetSection("ApplicationOptions:AgentVersion").Get<string>() ?? string.Empty;
+        public string Version => Config.GetSection("ApplicationOptions:Version").Get<string>() ?? string.Empty;
 
         private IConfiguration Config { get; set; }
     }
