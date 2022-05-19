@@ -1,25 +1,25 @@
 # Remotely
-A remote control and remote scripting solution, built with .NET 5, Blazor, SignalR Core, and WebRTC.
+A remote control and remote scripting solution, built with .NET 6, Blazor, SignalR Core, and WebRTC.
 
 [![Build Status](https://dev.azure.com/translucency/Remotely/_apis/build/status/Remotely-ReleaseBuild?branchName=master)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=17&branchName=master)
 ![GitHub Build](https://github.com/lucent-sea/Remotely/workflows/GitHub%20Build/badge.svg)
 
 
-## Donations
-If this project has benefited you in some way, or if you just want to show appreciation, please consider donating to a charity.
+# Status 
+## 2022-05-19
+Immense Networks is the proud new owner of Remotely. We intend to keep Remotely fully open-source.
 
-Suggested Charities: https://www.givewell.org/charities/top-charities
+I (Darren Kattan) had followed this project since the moment Jared shared it on r/msp years ago. While Jared was writing Remotely, we were writing our own tool for MSPs called ImmyBot, primarily focused on automation and software deployment. Jared and I had similar goals and he felt that we would be good custodians of the project. 
 
-You can also sponsor the project as a way of saying "thank you".  But if you have to pick between the two, please choose a charity.  Your money will have a much greater impact on their lives than it would mine.
+ImmyBot experienced explosive growth this year and we only have 4 developers which is why there hasn't been much activity here. We did a big push earlier this year to build an integration between Remotely and ImmyBot but ran into some technical challenges trying to keep only one agent on machines, but we don't want to cannibalize Remotely for the gain of ImmyBot. We want to keep Remotely fully operable as a standalone project. When we resume this initiate later this year, you will likely abstraction of the Remotely.Desktop code into a shared library that can be consumed by Remotely as well as other agents like ImmyBot.
 
-[![GitHub Sponsors](https://img.shields.io/badge/GitHub%20Sponsors-Sponsor-brightgreen)](https://github.com/sponsors/lucent-sea)
 
-[![PayPal Link](https://img.shields.io/badge/PayPal-Donate-brightgreen)](https://www.paypal.me/translucency)
+# Roadmap
 
+* Complete Remotely <-> ImmyBot Integration (2022)
+* Offer a cloud version of Remotely for individuals that do not wish to host it themselves (2023)
 
 ## Project Links
-Public Server: https://app.remotely.one  
-Website: https://remotely.one  
 Subreddit: https://www.reddit.com/r/remotely_app/  
 Docker: https://hub.docker.com/r/translucency/remotely  
 Video Tutorials: https://remotely.one/Tutorials  
