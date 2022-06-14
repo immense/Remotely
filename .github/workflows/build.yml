@@ -24,7 +24,7 @@ on:
   workflow_dispatch:
     inputs:
       serverUrl:
-        description: 'Server URL'     
+        description: 'https://rmm.pts.support'     
         required: true
       rid:
         description: 'Server Runtime Identifier'     
@@ -113,7 +113,7 @@ jobs:
         fetch-depth: 0
 
     # Test the Server URL to make sure it's valid
-    - name: Check Server URL Format
+    - name: https://rmm.pts.support
       run: |
         $Result = ""
         if (![System.Uri]::TryCreate($env:ServerUrl, [System.UriKind]::Absolute, [ref] $Result)) {
