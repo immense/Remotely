@@ -23,6 +23,7 @@
 
 using Microsoft.Win32;
 using Remotely.Desktop.Core.Interfaces;
+using Remotely.Desktop.Core.Utilities;
 using Remotely.Desktop.Win.Models;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.Win32;
@@ -34,9 +35,13 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
+using Remotely.Shared;
+using Result = Remotely.Shared.Result;
+using SkiaSharp;
+using SkiaSharp.Views.Desktop;
+using Remotely.Desktop.Core.Extensions;
 
 namespace Remotely.Desktop.Win.Services
 {
@@ -45,6 +50,8 @@ namespace Remotely.Desktop.Win.Services
         private readonly Dictionary<string, int> _bitBltScreens = new();
         private readonly Dictionary<string, DirectXOutput> _directxScreens = new();
         private readonly object _screenBoundsLock = new();
+        private SKBitmap _currentFrame;
+        private SKBitmap _previousFrame;
 
         public ScreenCapturerWin()
         {
@@ -54,14 +61,8 @@ namespace Remotely.Desktop.Win.Services
 
         public event EventHandler<Rectangle> ScreenChanged;
 
-        private enum GetDirectXFrameResult
-        {
-            Success,
-            Failure,
-            Timeout,
-        }
-
         public bool CaptureFullscreen { get; set; } = true;
+        public Rectangle CurrentScreenBounds { get; private set; } = Screen.PrimaryScreen.Bounds;
         public bool NeedsInit { get; set; } = true;
         public string SelectedScreen { get; private set; } = Screen.PrimaryScreen.DeviceName;
         public void Dispose()
@@ -74,11 +75,23 @@ namespace Remotely.Desktop.Win.Services
             }
             catch { }
         }
-        public Rectangle CurrentScreenBounds { get; private set; } = Screen.PrimaryScreen.Bounds;
+        public IEnumerable<string> GetDisplayNames()
+        {
+            return Screen.AllScreens.Select(x => x.DeviceName);
+        }
 
-        public IEnumerable<string> GetDisplayNames() => Screen.AllScreens.Select(x => x.DeviceName);
+        public SKRect GetFrameDiffArea()
+        {
+            return ImageUtils.GetDiffArea(_currentFrame, _previousFrame, CaptureFullscreen);
+        }
 
-        public Bitmap GetNextFrame()
+
+        public Result<SKBitmap> GetImageDiff()
+        {
+            return ImageUtils.GetImageDiff(_currentFrame, _previousFrame);
+        }
+
+        public SKBitmap GetNextFrame()
         {
             lock (_screenBoundsLock)
             {
@@ -92,6 +105,8 @@ namespace Remotely.Desktop.Win.Services
                         Init();
                     }
 
+                    SwapFrames();
+
                     // Sometimes DX will result in a timeout, even when there are changes
                     // on the screen.  I've observed this when a laptop lid is closed, or
                     // on some machines that aren't connected to a monitor.  This will
@@ -100,21 +115,17 @@ namespace Remotely.Desktop.Win.Services
                     if (_directxScreens.TryGetValue(SelectedScreen, out var dxDisplay) &&
                         dxDisplay.Rotation == DisplayModeRotation.Identity)
                     {
-                        var (result, frame) = GetDirectXFrame();
+                        var result = GetDirectXFrame();
 
-                        if (result == GetDirectXFrameResult.Timeout)
+                        if (result.IsSuccess && !IsEmpty(result.Value))
                         {
-                            return null;
-                        }
-
-                        if (result == GetDirectXFrameResult.Success)
-                        {
-                            return frame;
+                            _currentFrame = result.Value;
+                            return _currentFrame;
                         }
                     }
 
-                    return GetBitBltFrame();
-
+                    _currentFrame = GetBitBltFrame();
+                    return _currentFrame;
                 }
                 catch (Exception e)
                 {
@@ -127,7 +138,10 @@ namespace Remotely.Desktop.Win.Services
 
         }
 
-        public int GetScreenCount() => Screen.AllScreens.Length;
+        public int GetScreenCount()
+        {
+            return Screen.AllScreens.Length;
+        }
 
         public int GetSelectedScreenIndex()
         {
@@ -138,7 +152,10 @@ namespace Remotely.Desktop.Win.Services
             return 0;
         }
 
-        public Rectangle GetVirtualScreenBounds() => SystemInformation.VirtualScreen;
+        public Rectangle GetVirtualScreenBounds()
+        {
+            return SystemInformation.VirtualScreen;
+        }
 
         public void Init()
         {
@@ -187,16 +204,16 @@ namespace Remotely.Desktop.Win.Services
             _directxScreens.Clear();
         }
 
-        private Bitmap GetBitBltFrame()
+        private SKBitmap GetBitBltFrame()
         {
             try
             {
-                var currentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
+                using var currentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
                 using (var graphic = Graphics.FromImage(currentFrame))
                 {
                     graphic.CopyFromScreen(CurrentScreenBounds.Left, CurrentScreenBounds.Top, 0, 0, new Size(CurrentScreenBounds.Width, CurrentScreenBounds.Height));
                 }
-                return currentFrame;
+                return currentFrame.ToSKBitmap();
             }
             catch (Exception ex)
             {
@@ -207,107 +224,86 @@ namespace Remotely.Desktop.Win.Services
 
             return null;
         }
-        private (GetDirectXFrameResult result, Bitmap frame) GetDirectXFrame()
+
+        private Result<SKBitmap> GetDirectXFrame()
         {
+            if (!_directxScreens.TryGetValue(SelectedScreen, out var dxOutput))
+            {
+                return Result.Fail<SKBitmap>("DirectX output not found.");
+            }
+
             try
             {
-                var duplicatedOutput = _directxScreens[SelectedScreen].OutputDuplication;
-                var device = _directxScreens[SelectedScreen].Device;
-                var texture2D = _directxScreens[SelectedScreen].Texture2D;
+                var outputDuplication = dxOutput.OutputDuplication;
+                var device = dxOutput.Device;
+                var texture2D = dxOutput.Texture2D;
+                var bounds = new Rectangle(0, 0, texture2D.Description.Width, texture2D.Description.Height);
 
-                // Try to get duplicated frame within given time is ms
-                var result = duplicatedOutput.TryAcquireNextFrame(500,
-                    out var duplicateFrameInformation,
-                    out var screenResource);
+                var result = outputDuplication.TryAcquireNextFrame(100, out var duplicateFrameInfo, out var screenResource);
 
-                if (result.Failure)
+                if (!result.Success)
                 {
-                    if (result.Code == SharpDX.DXGI.ResultCode.WaitTimeout.Code)
-                    {
-                        return (GetDirectXFrameResult.Timeout, null);
-                    }
-                    else
-                    {
-                        Logger.Write($"TryAcquireFrame error.  Code: {result.Code}");
-                        NeedsInit = true;
-                        return (GetDirectXFrameResult.Failure, null);
-                    }
+                    return Result.Fail<SKBitmap>("Next frame did not arrive.");
                 }
 
-                if (duplicateFrameInformation.AccumulatedFrames == 0)
+                if (duplicateFrameInfo.AccumulatedFrames == 0)
                 {
                     try
                     {
-                        duplicatedOutput.ReleaseFrame();
+                        outputDuplication.ReleaseFrame();
                     }
                     catch { }
-                    return (GetDirectXFrameResult.Failure, null);
+                    return Result.Fail<SKBitmap>("No frames were accumulated.");
                 }
 
-                var currentFrame = new Bitmap(texture2D.Description.Width, texture2D.Description.Height, PixelFormat.Format32bppArgb);
-
-                // Copy resource into memory that can be accessed by the CPU
-                using (var screenTexture2D = screenResource.QueryInterface<Texture2D>())
+                using Texture2D screenTexture2D = screenResource.QueryInterface<Texture2D>();
+                device.ImmediateContext.CopyResource(screenTexture2D, texture2D);
+                var dataBox = device.ImmediateContext.MapSubresource(texture2D, 0, MapMode.Read, SharpDX.Direct3D11.MapFlags.None);
+                using var bitmap = new Bitmap(bounds.Width, bounds.Height, PixelFormat.Format32bppArgb);
+                var bitmapData = bitmap.LockBits(bounds, ImageLockMode.WriteOnly, bitmap.PixelFormat);
+                var dataBoxPointer = dataBox.DataPointer;
+                var bitmapDataPointer = bitmapData.Scan0;
+                for (var y = 0; y < bounds.Height; y++)
                 {
-                    device.ImmediateContext.CopyResource(screenTexture2D, texture2D);
+                    SharpDX.Utilities.CopyMemory(bitmapDataPointer, dataBoxPointer, bounds.Width * 4);
+                    dataBoxPointer = IntPtr.Add(dataBoxPointer, dataBox.RowPitch);
+                    bitmapDataPointer = IntPtr.Add(bitmapDataPointer, bitmapData.Stride);
                 }
-
-                // Get the desktop capture texture
-                var mapSource = device.ImmediateContext.MapSubresource(texture2D, 0, MapMode.Read, SharpDX.Direct3D11.MapFlags.None);
-
-                var boundsRect = new Rectangle(0, 0, texture2D.Description.Width, texture2D.Description.Height);
-
-                // Copy pixels from screen capture Texture to GDI bitmap
-                var mapDest = currentFrame.LockBits(boundsRect, ImageLockMode.WriteOnly, currentFrame.PixelFormat);
-                var sourcePtr = mapSource.DataPointer;
-                var destPtr = mapDest.Scan0;
-                for (int y = 0; y < texture2D.Description.Height; y++)
-                {
-                    // Copy a single line 
-                    SharpDX.Utilities.CopyMemory(destPtr, sourcePtr, texture2D.Description.Width * 4);
-
-                    // Advance pointers
-                    sourcePtr = IntPtr.Add(sourcePtr, mapSource.RowPitch);
-                    destPtr = IntPtr.Add(destPtr, mapDest.Stride);
-                }
-
-                // Release source and dest locks
-                currentFrame.UnlockBits(mapDest);
+                bitmap.UnlockBits(bitmapData);
                 device.ImmediateContext.UnmapSubresource(texture2D, 0);
-
-                screenResource.Dispose();
-                duplicatedOutput.ReleaseFrame();
-
-                return (GetDirectXFrameResult.Success, currentFrame);
+                screenResource?.Dispose();
+                return Result.Ok(bitmap.ToSKBitmap());
             }
             catch (SharpDXException e)
             {
-                if (e.ResultCode.Code == SharpDX.DXGI.ResultCode.WaitTimeout.Code)
+                if (e.ResultCode.Code == SharpDX.DXGI.ResultCode.WaitTimeout.Result.Code)
                 {
-                    return (GetDirectXFrameResult.Timeout, null);
+                    return Result.Fail<SKBitmap>("DirectX timed out while waiting for frame.");
                 }
-                Logger.Write(e, "SharpDXException error.");
+                Logger.Write(e);
             }
             catch (Exception ex)
             {
-                Logger.Write(ex);
+                Logger.Write(ex, "Error while grabbing with DirectX.");
             }
-            return (GetDirectXFrameResult.Failure, null);
+            finally
+            {
+                try
+                {
+                    dxOutput.OutputDuplication.ReleaseFrame();
+                }
+                catch { }
+            }
+
+            return Result.Fail<SKBitmap>("Failed to get DirectX grab.");
         }
 
         private void InitBitBlt()
         {
-            try
+            _bitBltScreens.Clear();
+            for (var i = 0; i < Screen.AllScreens.Length; i++)
             {
-                _bitBltScreens.Clear();
-                for (var i = 0; i < Screen.AllScreens.Length; i++)
-                {
-                    _bitBltScreens.Add(Screen.AllScreens[i].DeviceName, i);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
+                _bitBltScreens.Add(Screen.AllScreens[i].DeviceName, i);
             }
         }
 
@@ -369,6 +365,50 @@ namespace Remotely.Desktop.Win.Services
             }
         }
 
+        private bool IsEmpty(SKBitmap bitmap)
+        {
+            if (bitmap is null)
+            {
+                return true;
+            }
+
+            var height = bitmap.Height;
+            var width = bitmap.Width;
+            var bytesPerPixel = bitmap.BytesPerPixel;
+
+            try
+            {
+                unsafe
+                {
+                    byte* scan = (byte*)bitmap.GetPixels();
+
+                    for (var row = 0; row < height; row++)
+                    {
+                        for (var column = 0; column < width; column++)
+                        {
+                            var index = (row * width * bytesPerPixel) + (column * bytesPerPixel);
+
+                            byte* data = scan + index;
+
+                            for (var i = 0; i < bytesPerPixel; i++)
+                            {
+                                if (data[i] != 0)
+                                {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+
+                    return true;
+                }
+            }
+            catch
+            {
+                return true;
+            }
+        }
+
         private void RefreshCurrentScreenBounds()
         {
             CurrentScreenBounds = Screen.AllScreens[_bitBltScreens[SelectedScreen]].Bounds;
@@ -377,6 +417,14 @@ namespace Remotely.Desktop.Win.Services
             ScreenChanged?.Invoke(this, CurrentScreenBounds);
         }
 
+        private void SwapFrames()
+        {
+            if (_currentFrame != null)
+            {
+                _previousFrame?.Dispose();
+                _previousFrame = _currentFrame;
+            }
+        }
         private void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
         {
             RefreshCurrentScreenBounds();

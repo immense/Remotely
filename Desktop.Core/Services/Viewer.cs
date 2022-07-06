@@ -279,17 +279,22 @@ namespace Remotely.Desktop.Core.Services
             var width = screenFrame.Width;
             var height = screenFrame.Height;
 
-            for (var i = 0; i < screenFrame.EncodedImageBytes.Length; i += 50_000)
+            var chunks = screenFrame.EncodedImageBytes.Chunk(50_000).ToArray();
+            var chunkCount = chunks.Length;
+
+            for (var i = 0; i < chunkCount; i++)
             {
+                var chunk = chunks[i];
+
                 var dto = new CaptureFrameDto()
                 {
                     Left = left,
                     Top = top,
                     Width = width,
                     Height = height,
-                    EndOfFrame = false,
+                    EndOfFrame = i == chunkCount - 1,
                     Sequence = screenFrame.Sequence,
-                    ImageBytes = screenFrame.EncodedImageBytes.Skip(i).Take(50_000).ToArray()
+                    ImageBytes = chunk
                 };
 
                 await SendToViewer(
@@ -297,19 +302,38 @@ namespace Remotely.Desktop.Core.Services
                       () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
             }
 
-            var endOfFrameDto = new CaptureFrameDto()
-            {
-                Left = left,
-                Top = top,
-                Width = width,
-                Height = height,
-                EndOfFrame = true,
-                Sequence = screenFrame.Sequence,
-            };
 
-            await SendToViewer(
-                       () => RtcSession.SendDto(endOfFrameDto),
-                       () => CasterSocket.SendDtoToViewer(endOfFrameDto, ViewerConnectionID));
+            //for (var i = 0; i < screenFrame.EncodedImageBytes.Length; i += 50_000)
+            //{
+            //    var dto = new CaptureFrameDto()
+            //    {
+            //        Left = left,
+            //        Top = top,
+            //        Width = width,
+            //        Height = height,
+            //        EndOfFrame = false,
+            //        Sequence = screenFrame.Sequence,
+            //        ImageBytes = screenFrame.EncodedImageBytes.Skip(i).Take(50_000).ToArray()
+            //    };
+
+            //    await SendToViewer(
+            //          () => RtcSession.SendDto(dto),
+            //          () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
+            //}
+
+            //var endOfFrameDto = new CaptureFrameDto()
+            //{
+            //    Left = left,
+            //    Top = top,
+            //    Width = width,
+            //    Height = height,
+            //    EndOfFrame = true,
+            //    Sequence = screenFrame.Sequence,
+            //};
+
+            //await SendToViewer(
+            //           () => RtcSession.SendDto(endOfFrameDto),
+            //           () => CasterSocket.SendDtoToViewer(endOfFrameDto, ViewerConnectionID));
         }
 
         public async Task SendScreenData(

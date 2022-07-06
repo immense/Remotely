@@ -182,26 +182,16 @@ namespace Remotely.Desktop.Core.Services
                     return;
                 }
 
-                var bitmapData = currentFrame.LockBits(
-                       new Rectangle(Point.Empty, Viewer.Capturer.CurrentScreenBounds.Size),
-                       System.Drawing.Imaging.ImageLockMode.ReadOnly,
-                       System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                var pixels = currentFrame.GetPixels();
 
-                try
+                var frame = new Argb32VideoFrame()
                 {
-                    var frame = new Argb32VideoFrame()
-                    {
-                        data = bitmapData.Scan0,
-                        height = (uint)currentFrame.Height,
-                        width = (uint)currentFrame.Width,
-                        stride = bitmapData.Stride
-                    };
-                    request.CompleteRequest(in frame);
-                }
-                finally
-                {
-                    currentFrame.UnlockBits(bitmapData);
-                }
+                    data = pixels,
+                    height = (uint)currentFrame.Height,
+                    width = (uint)currentFrame.Width,
+                    stride = currentFrame.RowBytes
+                };
+                request.CompleteRequest(in frame);
             }
             catch (Exception ex)
             {
