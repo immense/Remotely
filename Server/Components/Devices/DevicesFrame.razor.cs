@@ -8,6 +8,7 @@ using Remotely.Server.Models;
 using Remotely.Server.Services;
 using Remotely.Shared.Attributes;
 using Remotely.Shared.Models;
+using Remotely.Shared.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -156,6 +157,7 @@ namespace Remotely.Server.Components.Devices
                                     _devicesForPage[index] = device;
                                 }
                             }
+                            Debouncer.Debounce(TimeSpan.FromSeconds(2), Refresh);
                         }
                         break;
                     }
