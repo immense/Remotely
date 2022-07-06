@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Remotely.Agent.Interfaces;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
@@ -16,7 +15,6 @@ namespace Remotely.Tests
     public class DataServiceTests
     {
         private IDataService _dataService;
-        private Mock<IDeviceInformationService> _deviceInfo;
         private TestData _testData;
         private string _newDeviceID = "NewDeviceName";
 
@@ -31,13 +29,20 @@ namespace Remotely.Tests
         }
 
         [TestMethod]
-        public async Task AddOrUpdateDevice()
+        public void AddOrUpdateDevice()
         {
             var storedDevice = _dataService.GetDevice(_newDeviceID);
 
             Assert.IsNull(storedDevice);
 
-            var newDevice = await _deviceInfo.Object.CreateDevice(_newDeviceID, _testData.OrganizationID);
+            var newDevice = new Device()
+            {
+                ID = _newDeviceID,
+                OrganizationID = _testData.OrganizationID,
+                DeviceName = Environment.MachineName,
+                Is64Bit = Environment.Is64BitOperatingSystem
+            };
+
             Assert.IsTrue(_dataService.AddOrUpdateDevice(newDevice, out _));
 
             storedDevice = _dataService.GetDevice(_newDeviceID);
@@ -180,11 +185,6 @@ namespace Remotely.Tests
                 Is64Bit = Environment.Is64BitOperatingSystem,
                 OrganizationID = _testData.OrganizationID
             };
-
-            _deviceInfo = new Mock<IDeviceInformationService>();
-            _deviceInfo
-                .Setup(x => x.CreateDevice(_newDeviceID, _testData.OrganizationID))
-                .Returns(Task.FromResult(newDevice));
         }
 
         [TestMethod]

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿#nullable disable
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -185,7 +186,7 @@ namespace Remotely.Tests
 
         private SKBitmap GetFrame(string frameFileName)
         {
-            using var mrs = Assembly.GetExecutingAssembly().GetManifestResourceStream($"Remotely.Tests.Resources.{frameFileName}.jpg");
+            using var mrs = Assembly.GetExecutingAssembly().GetManifestResourceStream($"Remotely.Desktop.Win.Tests.Resources.{frameFileName}.jpg");
             var resourceImage = (Bitmap)Bitmap.FromStream(mrs);
 
             if (resourceImage.PixelFormat != PixelFormat.Format32bppArgb)
