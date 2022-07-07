@@ -155,7 +155,7 @@ namespace Remotely.Desktop.Core.Services
 
                         using var croppedFrame = ImageUtils.CropBitmap(currentFrame, diffArea);
 
-                        var encodedImageBytes = ImageUtils.EncodeBitmap(croppedFrame, SKEncodedImageFormat.Jpeg, 80);
+                        var encodedImageBytes = ImageUtils.EncodeBitmap(croppedFrame, SKEncodedImageFormat.Jpeg, viewer.ImageQuality);
 
                         await SendFrame(encodedImageBytes, diffArea, sequence++, viewer);
 

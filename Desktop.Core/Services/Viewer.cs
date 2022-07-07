@@ -21,8 +21,7 @@ namespace Remotely.Desktop.Core.Services
 {
     public class Viewer : IDisposable
     {
-        public const int DefaultQuality = 75;
-        private const int MinQuality = 20;
+        public const int DefaultQuality = 80;
 
         private readonly ConcurrentQueue<DateTimeOffset> _fpsQueue = new();
         private readonly ConcurrentQueue<SentFrame> _receivedFrames = new();
