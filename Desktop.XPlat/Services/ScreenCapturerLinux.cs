@@ -53,7 +53,7 @@ namespace Remotely.Desktop.XPlat.Services
             return ImageUtils.GetImageDiff(_currentFrame, _previousFrame);
         }
 
-        public SKBitmap GetNextFrame()
+        public Result<SKBitmap> GetNextFrame()
         {
             lock (_screenBoundsLock)
             {
@@ -73,13 +73,13 @@ namespace Remotely.Desktop.XPlat.Services
                     }
 
                     _currentFrame = GetX11Capture();
-                    return _currentFrame;
+                    return Result.Ok(_currentFrame);
                 }
                 catch (Exception ex)
                 {
                     Logger.Write(ex);
                     Init();
-                    return null;
+                    return Result.Fail<SKBitmap>(ex);
                 }
             }
         }

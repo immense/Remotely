@@ -176,7 +176,15 @@ namespace Remotely.Desktop.Core.Services
                     return;
                 }
 
-                using var currentFrame = Viewer.Capturer.GetNextFrame();
+                var result = Viewer.Capturer.GetNextFrame();
+
+                if (!result.IsSuccess || result.Value is null)
+                {
+                    return;
+                }
+
+                using var currentFrame = result.Value;
+
                 if (currentFrame == null)
                 {
                     return;

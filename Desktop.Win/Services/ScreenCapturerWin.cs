@@ -91,7 +91,7 @@ namespace Remotely.Desktop.Win.Services
             return ImageUtils.GetImageDiff(_currentFrame, _previousFrame);
         }
 
-        public SKBitmap GetNextFrame()
+        public Result<SKBitmap> GetNextFrame()
         {
             lock (_screenBoundsLock)
             {
@@ -107,35 +107,29 @@ namespace Remotely.Desktop.Win.Services
 
                     SwapFrames();
 
-                    // Sometimes DX will result in a timeout, even when there are changes
-                    // on the screen.  I've observed this when a laptop lid is closed, or
-                    // on some machines that aren't connected to a monitor.  This will
-                    // have it fall back to BitBlt in those cases.
-                    // TODO: Make DX capture work with changed screen orientation.
-                    if (_directxScreens.TryGetValue(SelectedScreen, out var dxDisplay) &&
-                        dxDisplay.Rotation == DisplayModeRotation.Identity)
-                    {
-                        var result = GetDirectXFrame();
+                    var result = GetDirectXFrame();
 
-                        if (result.IsSuccess && !IsEmpty(result.Value))
+                    if (!result.IsSuccess || result.Value is null || IsEmpty(result.Value))
+                    {
+                        result = GetBitBltFrame();
+                        if (!result.IsSuccess || result.Value is null)
                         {
-                            _currentFrame = result.Value;
-                            return _currentFrame;
+                            var ex = result.Exception ?? new("Unknown error.");
+                            Logger.Write(ex);
+                            return Result.Fail<SKBitmap>(ex);
                         }
                     }
 
-                    _currentFrame = GetBitBltFrame();
-                    return _currentFrame;
+                    _currentFrame = result.Value;
+                    return result;
                 }
                 catch (Exception e)
                 {
                     Logger.Write(e);
                     NeedsInit = true;
+                    return Result.Fail<SKBitmap>(e);
                 }
-
-                return null;
             }
-
         }
 
         public int GetScreenCount()
@@ -191,41 +185,27 @@ namespace Remotely.Desktop.Win.Services
             }
         }
 
-        private void ClearDirectXOutputs()
-        {
-            foreach (var screen in _directxScreens.Values)
-            {
-                try
-                {
-                    screen.Dispose();
-                }
-                catch { }
-            }
-            _directxScreens.Clear();
-        }
-
-        private SKBitmap GetBitBltFrame()
+        internal Result<SKBitmap> GetBitBltFrame()
         {
             try
             {
-                using var currentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
-                using (var graphic = Graphics.FromImage(currentFrame))
+                using var bitmap = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
+                using (var graphic = Graphics.FromImage(bitmap))
                 {
                     graphic.CopyFromScreen(CurrentScreenBounds.Left, CurrentScreenBounds.Top, 0, 0, new Size(CurrentScreenBounds.Width, CurrentScreenBounds.Height));
                 }
-                return currentFrame.ToSKBitmap();
+                return Result.Ok(bitmap.ToSKBitmap());
             }
             catch (Exception ex)
             {
                 Logger.Write(ex);
                 Logger.Write("Capturer error in BitBltCapture.");
                 NeedsInit = true;
+                return Result.Fail<SKBitmap>("Error while capturing BitBlt frame.");
             }
-
-            return null;
         }
 
-        private Result<SKBitmap> GetDirectXFrame()
+        internal Result<SKBitmap> GetDirectXFrame()
         {
             if (!_directxScreens.TryGetValue(SelectedScreen, out var dxOutput))
             {
@@ -237,9 +217,9 @@ namespace Remotely.Desktop.Win.Services
                 var outputDuplication = dxOutput.OutputDuplication;
                 var device = dxOutput.Device;
                 var texture2D = dxOutput.Texture2D;
-                var bounds = new Rectangle(0, 0, texture2D.Description.Width, texture2D.Description.Height);
+                var bounds = dxOutput.Bounds;
 
-                var result = outputDuplication.TryAcquireNextFrame(100, out var duplicateFrameInfo, out var screenResource);
+                var result = outputDuplication.TryAcquireNextFrame(50, out var duplicateFrameInfo, out var screenResource);
 
                 if (!result.Success)
                 {
@@ -265,26 +245,36 @@ namespace Remotely.Desktop.Win.Services
                 var bitmapDataPointer = bitmapData.Scan0;
                 for (var y = 0; y < bounds.Height; y++)
                 {
-                    SharpDX.Utilities.CopyMemory(bitmapDataPointer, dataBoxPointer, bounds.Width * 4);
+                    Utilities.CopyMemory(bitmapDataPointer, dataBoxPointer, bounds.Width * 4);
                     dataBoxPointer = IntPtr.Add(dataBoxPointer, dataBox.RowPitch);
                     bitmapDataPointer = IntPtr.Add(bitmapDataPointer, bitmapData.Stride);
                 }
                 bitmap.UnlockBits(bitmapData);
                 device.ImmediateContext.UnmapSubresource(texture2D, 0);
                 screenResource?.Dispose();
-                return Result.Ok(bitmap.ToSKBitmap());
-            }
-            catch (SharpDXException e)
-            {
-                if (e.ResultCode.Code == SharpDX.DXGI.ResultCode.WaitTimeout.Result.Code)
+
+                switch (dxOutput.Rotation)
                 {
-                    return Result.Fail<SKBitmap>("DirectX timed out while waiting for frame.");
+                    case DisplayModeRotation.Unspecified:
+                    case DisplayModeRotation.Identity:
+                        break;
+                    case DisplayModeRotation.Rotate90:
+                        bitmap.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                        break;
+                    case DisplayModeRotation.Rotate180:
+                        bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                        break;
+                    case DisplayModeRotation.Rotate270:
+                        bitmap.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                        break;
+                    default:
+                        break;
                 }
-                Logger.Write(e);
+                return Result.Ok(bitmap.ToSKBitmap());
             }
             catch (Exception ex)
             {
-                Logger.Write(ex, "Error while grabbing with DirectX.");
+                Logger.Write(ex, "Error while getting DirectX frame.");
             }
             finally
             {
@@ -295,9 +285,21 @@ namespace Remotely.Desktop.Win.Services
                 catch { }
             }
 
-            return Result.Fail<SKBitmap>("Failed to get DirectX grab.");
+            return Result.Fail<SKBitmap>("Failed to get DirectX frame.");
         }
 
+        private void ClearDirectXOutputs()
+        {
+            foreach (var screen in _directxScreens.Values)
+            {
+                try
+                {
+                    screen.Dispose();
+                }
+                catch { }
+            }
+            _directxScreens.Clear();
+        }
         private void InitBitBlt()
         {
             _bitBltScreens.Clear();

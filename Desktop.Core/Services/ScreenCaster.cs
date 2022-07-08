@@ -92,13 +92,13 @@ namespace Remotely.Desktop.Core.Services
                 };
 
                 // This gets disposed internally in the Capturer on the next call.
-                var initialFrame = viewer.Capturer.GetNextFrame();
+                var result = viewer.Capturer.GetNextFrame();
 
-                if (initialFrame != null)
+                if (result.IsSuccess && result.Value is not null)
                 {
                     await viewer.SendScreenCapture(new CaptureFrame()
                     {
-                        EncodedImageBytes = ImageUtils.EncodeBitmap(initialFrame, SKEncodedImageFormat.Jpeg, viewer.ImageQuality),
+                        EncodedImageBytes = ImageUtils.EncodeBitmap(result.Value, SKEncodedImageFormat.Jpeg, viewer.ImageQuality),
                         Left = screenBounds.Left,
                         Top = screenBounds.Top,
                         Width = screenBounds.Width,
@@ -142,7 +142,12 @@ namespace Remotely.Desktop.Core.Services
 
                         viewer.ApplyAutoQuality();
 
-                        var currentFrame = viewer.Capturer.GetNextFrame();
+                        result = viewer.Capturer.GetNextFrame();
+
+                        if (!result.IsSuccess || result.Value is null)
+                        {
+                            continue;
+                        }
 
                         var diffArea = viewer.Capturer.GetFrameDiffArea();
 
@@ -153,7 +158,7 @@ namespace Remotely.Desktop.Core.Services
 
                         viewer.Capturer.CaptureFullscreen = false;
 
-                        using var croppedFrame = ImageUtils.CropBitmap(currentFrame, diffArea);
+                        using var croppedFrame = ImageUtils.CropBitmap(result.Value, diffArea);
 
                         var encodedImageBytes = ImageUtils.EncodeBitmap(croppedFrame, SKEncodedImageFormat.Jpeg, viewer.ImageQuality);
 

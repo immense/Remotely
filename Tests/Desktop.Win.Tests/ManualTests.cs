@@ -76,9 +76,8 @@ namespace Remotely.Tests
         {
             for (var i = 0; i < 2; i++)
             {
-                using var frame1 = GetFrame("Frame1");
-                using var frame2 = GetFrame("Frame2");
-                var jpegEncoder = GetEncoder(ImageFormat.Jpeg);
+                using var frame1 = GetImage("Image1");
+                using var frame2 = GetImage("Image1");
                 byte[] imageBytes;
 
                 var sw = Stopwatch.StartNew();
@@ -110,29 +109,189 @@ namespace Remotely.Tests
                 Debug.WriteLine($"Diff Image time: {sw.Elapsed.TotalMilliseconds}");
 
 
-                //sw.Restart();
-
-                //diffSize = 0;
-
-                //using (var tempImage = (Bitmap)frame1.Clone(new Rectangle(diff.X, diff.Y, diff.Width, diff.Height), PixelFormat.Format32bppArgb))
-                //{
-                //    imageBytes = ImageUtils.EncodeWithSkia(tempImage, SkiaSharp.SKEncodedImageFormat.Webp, 60);
-                //    diffSize = imageBytes.Length;
-                //}
-                //Debug.WriteLine($"WEBP diff size: {diffSize}");
-                //Debug.WriteLine($"WEBP diff time: {sw.Elapsed.TotalMilliseconds}");
-
-
-                //sw.Restart();
-                //diffImage = ImageUtils.GetImageDiff(frame1, frame2, false, out hadChanges);
-
-                //imageBytes = ImageUtils.EncodeWithSkia(diffImage, SkiaSharp.SKEncodedImageFormat.Webp, 60);
-                //Debug.WriteLine($"WEBP image size: {imageBytes.Length}");
-                //Debug.WriteLine($"WEBP Image time: {sw.Elapsed.TotalMilliseconds}");
-
 
                 Debug.WriteLine($"\n");
             }
+        }
+
+
+        [TestMethod]
+        public void CaptureAndEncodeSpeedTest()
+        {
+            var iterations = 30;
+            var quality = 80;
+            var sw = Stopwatch.StartNew();
+
+            SKBitmap currentFrame = new();
+            SKBitmap previousFrame = new();
+
+            for (var i = 0; i < iterations; i++)
+            {
+                previousFrame?.Dispose();
+                previousFrame = currentFrame.Copy();
+                currentFrame.Dispose();
+                
+                currentFrame = _capturer.GetNextFrame().Value;
+                var diffArea = ImageUtils.GetDiffArea(currentFrame, previousFrame);
+                using var cropped = ImageUtils.CropBitmap(currentFrame, diffArea);
+                using var skData = cropped.Encode(SKEncodedImageFormat.Webp, quality);
+            }
+            sw.Stop();
+            Console.WriteLine($"GetNextFrame & WEBP: {GetAverage(sw, iterations)}ms per iteration");
+
+            sw.Restart();
+            for (var i = 0; i < iterations; i++)
+            {
+                previousFrame.Dispose();
+                previousFrame = currentFrame.Copy();
+                currentFrame.Dispose();
+
+                currentFrame = _capturer.GetNextFrame().Value;
+                var diffArea = ImageUtils.GetDiffArea(currentFrame, previousFrame);
+                using var cropped = ImageUtils.CropBitmap(currentFrame, diffArea);
+                using var skData = cropped.Encode(SKEncodedImageFormat.Jpeg, quality);
+            }
+            sw.Stop();
+            Console.WriteLine($"GetNextFrame & JPEG: {GetAverage(sw, iterations)}ms per iteration");
+        }
+
+        [TestMethod]
+        public void CaptureSpeedTest()
+        {
+            var iterations = 30;
+            var sw = Stopwatch.StartNew();
+
+            for (var i = 0; i < iterations; i++)
+            {
+                using var bitmap = _capturer.GetNextFrame().Value;
+            }
+
+            sw.Stop();
+
+            Console.WriteLine($"GetNextFrame: {GetAverage(sw, iterations)}ms per capture");
+
+
+
+            sw.Restart();
+
+            for (var i = 0; i < iterations; i++)
+            {
+                using var bitmap = _capturer.GetDirectXFrame().Value;
+            }
+
+            sw.Stop();
+
+            Console.WriteLine($"DirectX: {GetAverage(sw, iterations)}ms per capture");
+
+
+
+            sw.Restart();
+
+            for (var i = 0; i < iterations; i++)
+            {
+                using var bitmap = _capturer.GetBitBltFrame().Value;
+            }
+
+            sw.Stop();
+
+            Console.WriteLine($"BitBlt: {GetAverage(sw, iterations)}ms per capture");
+
+        }
+
+        [TestMethod]
+        public void DiffSpeedTests()
+        {
+            using var bitmap1 = GetImage("Image1");
+            using var bitmap2 = GetImage("Image2");
+            var iterations = 60;
+
+
+            var sw = Stopwatch.StartNew();
+            for (var i = 0; i < iterations; i++)
+            {
+                _ = ImageUtils.GetDiffArea(bitmap1, bitmap2);
+            }
+            sw.Stop();
+            Console.WriteLine($"Diff Area: {GetAverage(sw, iterations)}ms per call");
+
+
+            sw.Restart();
+            for (var i = 0; i < iterations; i++)
+            {
+                using var imageDiff = ImageUtils.GetImageDiff(bitmap1, bitmap2).Value;
+            }
+            sw.Stop();
+            Console.WriteLine($"Image Diff: {GetAverage(sw, iterations)}ms per call");
+        }
+
+        [TestMethod]
+        public void EncodeSpeedTest()
+        {
+            using var skBitmap = GetImage("Image1");
+            var quality = 75;
+            var iterations = 30;
+
+            {
+                using var skData = skBitmap.Encode(SKEncodedImageFormat.Jpeg, quality);
+                Console.WriteLine($"JPEG size: {skData.Size:N0}");
+            }
+
+            var sw = Stopwatch.StartNew();
+            for (var i = 0; i < iterations; i++)
+            {
+                using var skData = skBitmap.Encode(SKEncodedImageFormat.Jpeg, quality);
+            }
+            sw.Stop();
+            Console.WriteLine($"JPEG: {GetAverage(sw, iterations)}ms per encode");
+
+
+            {
+                using var skData = skBitmap.Encode(SKEncodedImageFormat.Png, quality);
+                Console.WriteLine($"PNG size: {skData.Size:N0}");
+            }
+            sw.Restart();
+            for (var i = 0; i < iterations; i++)
+            {
+                using var skData = skBitmap.Encode(SKEncodedImageFormat.Png, quality);
+            }
+            sw.Stop();
+            Console.WriteLine($"PNG: {GetAverage(sw, iterations)}ms per encode");
+
+
+            {
+                using var skData = skBitmap.Encode(SKEncodedImageFormat.Webp, quality);
+                Console.WriteLine($"WEBP size: {skData.Size:N0}");
+            }
+            sw.Restart();
+            for (var i = 0; i < iterations; i++)
+            {
+                using var skData = skBitmap.Encode(SKEncodedImageFormat.Webp, quality);
+            }
+            sw.Stop();
+            Console.WriteLine($"WEBP: {GetAverage(sw, iterations)}ms per encode");
+        }
+
+        [TestMethod]
+        public void GetDiffAreaTest()
+        {
+            using var bitmap1 = GetImage("Image1");
+            using var bitmap2 = GetImage("Image2");
+
+            var diffArea = ImageUtils.GetDiffArea(bitmap1, bitmap2);
+            using var cropped = ImageUtils.CropBitmap(bitmap2, diffArea);
+
+            SaveFile(cropped, "Test.webp");
+        }
+
+        [TestMethod]
+        public void GetImageDiffTest()
+        {
+            using var bitmap1 = GetImage("Image1");
+            using var bitmap2 = GetImage("Image2");
+
+            var diff = ImageUtils.GetImageDiff(bitmap1, bitmap2);
+
+            SaveFile(diff.Value, "Test.webp");
         }
 
         [TestInitialize]
@@ -184,9 +343,15 @@ namespace Remotely.Tests
             ServiceContainer.Instance = serviceCollection.BuildServiceProvider();
         }
 
-        private SKBitmap GetFrame(string frameFileName)
+
+        private static double GetAverage(Stopwatch sw, int iterations)
         {
-            using var mrs = Assembly.GetExecutingAssembly().GetManifestResourceStream($"Remotely.Desktop.Win.Tests.Resources.{frameFileName}.jpg");
+            return Math.Round(sw.Elapsed.TotalMilliseconds / iterations, 2);
+        }
+
+        private SKBitmap GetImage(string imageFileName)
+        {
+            using var mrs = Assembly.GetExecutingAssembly().GetManifestResourceStream($"Remotely.Desktop.Win.Tests.Resources.{imageFileName}.jpg");
             var resourceImage = (Bitmap)Bitmap.FromStream(mrs);
 
             if (resourceImage.PixelFormat != PixelFormat.Format32bppArgb)
@@ -198,11 +363,15 @@ namespace Remotely.Tests
             return resourceImage.ToSKBitmap();
         }
 
-        private ImageCodecInfo GetEncoder(ImageFormat format)
+        private static void SaveFile(
+          SKBitmap bitmap,
+          string fileName,
+          SKEncodedImageFormat format = SKEncodedImageFormat.Webp,
+          int quality = 80)
         {
-            var codecs = ImageCodecInfo.GetImageEncoders();
-
-            return codecs.FirstOrDefault(x => x.FormatID == format.Guid);
+            var savePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
+            using var fs = new FileStream(savePath, FileMode.Create);
+            bitmap.Encode(fs, format, quality);
         }
     }
 }

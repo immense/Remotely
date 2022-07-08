@@ -13,13 +13,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\Frame1.jpg" />
-    <None Remove="Resources\Frame2.jpg" />
+    <None Remove="Resources\Image1.jpg" />
+    <None Remove="Resources\Image2.jpg" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Frame1.jpg" />
-    <EmbeddedResource Include="Resources\Frame2.jpg" />
+    <EmbeddedResource Include="Resources\Image1.jpg" />
+    <EmbeddedResource Include="Resources\Image2.jpg" />
   </ItemGroup>
 
   <ItemGroup>

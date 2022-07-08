@@ -19,7 +19,7 @@ namespace Remotely.Desktop.Core.Interfaces
 
         Result<SKBitmap> GetImageDiff();
 
-        SKBitmap GetNextFrame();
+        Result<SKBitmap> GetNextFrame();
 
         int GetScreenCount();
 
