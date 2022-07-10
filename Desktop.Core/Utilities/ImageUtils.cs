@@ -8,7 +8,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -19,7 +18,6 @@ namespace Remotely.Desktop.Core.Utilities
     public class ImageUtils
     {
         private static readonly RecyclableMemoryStreamManager _recycleManager = new();
-        private static readonly ImageCodecInfo _jpegEncoder = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == ImageFormat.Jpeg.Guid);
 
         public static byte[] EncodeBitmap(SKBitmap bitmap, SKEncodedImageFormat format, int quality)
         {
