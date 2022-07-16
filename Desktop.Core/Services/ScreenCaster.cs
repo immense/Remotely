@@ -15,6 +15,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using SkiaSharp;
 
 namespace Remotely.Desktop.Core.Services
 {
@@ -51,10 +52,7 @@ namespace Remotely.Desktop.Core.Services
         {
             try
             {
-                Bitmap currentFrame = null;
-                Bitmap previousFrame = null;
                 long sequence = 0;
-
                 var viewer = ServiceContainer.Instance.GetRequiredService<Viewer>();
                 viewer.Name = screenCastRequest.RequesterName;
                 viewer.ViewerConnectionID = screenCastRequest.ViewerID;
@@ -84,8 +82,6 @@ namespace Remotely.Desktop.Core.Services
                     screenBounds.Width,
                     screenBounds.Height);
 
-                await viewer.SendScreenSize(screenBounds.Width, screenBounds.Height);
-
                 await viewer.SendCursorChange(_cursorIconWatcher.GetCurrentCursor());
 
                 await viewer.SendWindowsSessions();
@@ -95,20 +91,19 @@ namespace Remotely.Desktop.Core.Services
                     await viewer.SendScreenSize(bounds.Width, bounds.Height);
                 };
 
-                using (var initialFrame = viewer.Capturer.GetNextFrame())
+                // This gets disposed internally in the Capturer on the next call.
+                var result = viewer.Capturer.GetNextFrame();
+
+                if (result.IsSuccess && result.Value is not null)
                 {
-                    if (initialFrame != null)
+                    await viewer.SendScreenCapture(new CaptureFrame()
                     {
-                        await viewer.SendScreenCapture(new CaptureFrame()
-                        {
-                            EncodedImageBytes = ImageUtils.EncodeJpeg(initialFrame),
-                            Left = screenBounds.Left,
-                            Top = screenBounds.Top,
-                            Width = screenBounds.Width,
-                            Height = screenBounds.Height,
-                            Sequence = sequence++
-                        });
-                    }
+                        EncodedImageBytes = ImageUtils.EncodeBitmap(result.Value, SKEncodedImageFormat.Jpeg, viewer.ImageQuality),
+                        Left = screenBounds.Left,
+                        Top = screenBounds.Top,
+                        Width = screenBounds.Width,
+                        Height = screenBounds.Height
+                    });
                 }
 
 
@@ -147,21 +142,14 @@ namespace Remotely.Desktop.Core.Services
 
                         viewer.ApplyAutoQuality();
 
-                        if (currentFrame != null)
-                        {
-                            previousFrame?.Dispose();
-                            previousFrame = (Bitmap)currentFrame.Clone();
-                        }
+                        result = viewer.Capturer.GetNextFrame();
 
-                        currentFrame?.Dispose();
-                        currentFrame = viewer.Capturer.GetNextFrame();
-
-                        if (currentFrame is null)
+                        if (!result.IsSuccess || result.Value is null)
                         {
                             continue;
                         }
 
-                        var diffArea = ImageUtils.GetDiffArea(currentFrame, previousFrame, viewer.Capturer.CaptureFullscreen);
+                        var diffArea = viewer.Capturer.GetFrameDiffArea();
 
                         if (diffArea.IsEmpty)
                         {
@@ -170,18 +158,9 @@ namespace Remotely.Desktop.Core.Services
 
                         viewer.Capturer.CaptureFullscreen = false;
 
-                        using var croppedFrame = currentFrame.Clone(diffArea, currentFrame.PixelFormat);
+                        using var croppedFrame = ImageUtils.CropBitmap(result.Value, diffArea);
 
-                        byte[] encodedImageBytes;
-
-                        if (viewer.ImageQuality == Viewer.DefaultQuality)
-                        {
-                            encodedImageBytes = ImageUtils.EncodeJpeg(croppedFrame);
-                        }
-                        else
-                        {
-                            encodedImageBytes = ImageUtils.EncodeJpeg(croppedFrame, viewer.ImageQuality);
-                        }
+                        var encodedImageBytes = ImageUtils.EncodeBitmap(croppedFrame, SKEncodedImageFormat.Jpeg, viewer.ImageQuality);
 
                         await SendFrame(encodedImageBytes, diffArea, sequence++, viewer);
 
@@ -217,7 +196,7 @@ namespace Remotely.Desktop.Core.Services
             }
         }
 
-        private static async Task SendFrame(byte[] encodedImageBytes, Rectangle diffArea, long sequence, Viewer viewer)
+        private static async Task SendFrame(byte[] encodedImageBytes, SKRect diffArea, long sequence, Viewer viewer)
         {
             if (encodedImageBytes.Length == 0)
             {
@@ -227,10 +206,10 @@ namespace Remotely.Desktop.Core.Services
             await viewer.SendScreenCapture(new CaptureFrame()
             {
                 EncodedImageBytes = encodedImageBytes,
-                Top = diffArea.Top,
-                Left = diffArea.Left,
-                Width = diffArea.Width,
-                Height = diffArea.Height,
+                Top = (int)diffArea.Top,
+                Left = (int)diffArea.Left,
+                Width = (int)diffArea.Width,
+                Height = (int)diffArea.Height,
                 Sequence = sequence
             });
         }

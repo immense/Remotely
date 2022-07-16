@@ -76,10 +76,10 @@ namespace Remotely.Agent.Services
                 if (File.Exists("etag.txt"))
                 {
                     var lastEtag = await File.ReadAllTextAsync("etag.txt");
-                    if (!string.IsNullOrEmpty(lastEtag))
+                    if (!string.IsNullOrWhiteSpace(lastEtag) &&
+                       EntityTagHeaderValue.TryParse(lastEtag.Trim(), out var etag))
                     {
-                        var etagValue = new EntityTagHeaderValue(lastEtag.Trim());
-                        request.Headers.IfNoneMatch.Add(etagValue);
+                        request.Headers.IfNoneMatch.Add(etag);
                     }
                 }
 

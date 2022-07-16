@@ -1,14 +1,15 @@
 ﻿using Remotely.Desktop.Core.Interfaces;
+using Remotely.Desktop.Core.Utilities;
 using Remotely.Desktop.XPlat.Native.Linux;
+using Remotely.Shared;
 using Remotely.Shared.Utilities;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text.Json;
-using System.Threading;
 
 namespace Remotely.Desktop.XPlat.Services
 {
@@ -16,6 +17,9 @@ namespace Remotely.Desktop.XPlat.Services
     {
         private readonly object _screenBoundsLock = new();
         private readonly Dictionary<string, LibXrandr.XRRMonitorInfo> _x11Screens = new();
+        private SKBitmap _currentFrame;
+        private SKBitmap _previousFrame;
+
         public ScreenCapturerLinux()
         {
             Display = LibX11.XOpenDisplay(null);
@@ -34,27 +38,60 @@ namespace Remotely.Desktop.XPlat.Services
             LibX11.XCloseDisplay(Display);
             GC.SuppressFinalize(this);
         }
-        public IEnumerable<string> GetDisplayNames() => _x11Screens.Keys.Select(x => x.ToString());
+        public IEnumerable<string> GetDisplayNames()
+        {
+            return _x11Screens.Keys.Select(x => x.ToString());
+        }
 
-        public Bitmap GetNextFrame()
+        public SKRect GetFrameDiffArea()
+        {
+            return ImageUtils.GetDiffArea(_currentFrame, _previousFrame, CaptureFullscreen);
+        }
+
+        public Result<SKBitmap> GetImageDiff()
+        {
+            return ImageUtils.GetImageDiff(_currentFrame, _previousFrame);
+        }
+
+        public Result<SKBitmap> GetNextFrame()
         {
             lock (_screenBoundsLock)
             {
                 try
                 {
-                    return GetX11Capture();
+                    if (_currentFrame != null)
+                    {
+                        _previousFrame?.Dispose();
+                        try
+                        {
+                            _previousFrame = _currentFrame;
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Write(ex);
+                        }
+                    }
+
+                    _currentFrame = GetX11Capture();
+                    return Result.Ok(_currentFrame);
                 }
                 catch (Exception ex)
                 {
                     Logger.Write(ex);
                     Init();
-                    return null;
+                    return Result.Fail<SKBitmap>(ex);
                 }
             }
         }
-        public int GetScreenCount() => _x11Screens.Count;
+        public int GetScreenCount()
+        {
+            return _x11Screens.Count;
+        }
 
-        public int GetSelectedScreenIndex() => int.Parse(SelectedScreen ?? "0");
+        public int GetSelectedScreenIndex()
+        {
+            return int.Parse(SelectedScreen ?? "0");
+        }
 
         public Rectangle GetVirtualScreenBounds()
         {
@@ -77,7 +114,7 @@ namespace Remotely.Desktop.XPlat.Services
             {
                 CaptureFullscreen = true;
                 _x11Screens.Clear();
-               
+
                 var monitorsPtr = LibXrandr.XRRGetMonitors(Display, LibX11.XDefaultRootWindow(Display), true, out var monitorCount);
 
                 var monitorInfoSize = Marshal.SizeOf<LibXrandr.XRRMonitorInfo>();
@@ -140,9 +177,9 @@ namespace Remotely.Desktop.XPlat.Services
             }
         }
 
-        private Bitmap GetX11Capture()
+        private SKBitmap GetX11Capture()
         {
-            var currentFrame = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
+            var currentFrame = new SKBitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height);
 
             var window = LibX11.XDefaultRootWindow(Display);
 
@@ -157,20 +194,19 @@ namespace Remotely.Desktop.XPlat.Services
 
             var image = Marshal.PtrToStructure<LibX11.XImage>(imagePointer);
 
-            var bd = currentFrame.LockBits(new Rectangle(0, 0, CurrentScreenBounds.Width, CurrentScreenBounds.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+            var pixels = currentFrame.GetPixels();
             unsafe
             {
-                byte* scan1 = (byte*)bd.Scan0.ToPointer();
+                byte* scan1 = (byte*)pixels.ToPointer();
                 byte* scan2 = (byte*)image.data.ToPointer();
-                var bytesPerPixel = Bitmap.GetPixelFormatSize(currentFrame.PixelFormat) / 8;
-                var totalSize = bd.Height * bd.Width * bytesPerPixel;
+                var bytesPerPixel = currentFrame.BytesPerPixel;
+                var totalSize = currentFrame.Height * currentFrame.Width * bytesPerPixel;
                 for (int counter = 0; counter < totalSize - bytesPerPixel; counter++)
                 {
                     scan1[counter] = scan2[counter];
                 }
             }
 
-            currentFrame.UnlockBits(bd);
             Marshal.DestroyStructure<LibX11.XImage>(imagePointer);
             LibX11.XDestroyImage(imagePointer);
 

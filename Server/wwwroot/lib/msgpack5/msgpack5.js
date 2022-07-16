@@ -91,7 +91,7 @@ function msgpack (options) {
 
 module.exports = msgpack
 
-},{"./lib/codecs/DateCodec":2,"./lib/decoder":3,"./lib/encoder":4,"./lib/helpers.js":5,"./lib/streams":6,"assert":8,"bl":15,"safe-buffer":53}],2:[function(require,module,exports){
+},{"./lib/codecs/DateCodec":2,"./lib/decoder":3,"./lib/encoder":4,"./lib/helpers.js":5,"./lib/streams":6,"assert":7,"bl":14,"safe-buffer":51}],2:[function(require,module,exports){
 (function (Buffer){(function (){
 const type = -1
 
@@ -226,7 +226,7 @@ function decode (buf) {
 module.exports = { check, type, encode, decode }
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"buffer":17}],3:[function(require,module,exports){
+},{"buffer":16}],3:[function(require,module,exports){
 'use strict'
 
 const bl = require('bl')
@@ -267,238 +267,236 @@ function isValidDataSize (dataLength, bufLength, headerLength) {
 }
 
 module.exports = function buildDecode (decodingTypes, options) {
+  const context = { decodingTypes, options, decode }
   return decode
 
   function decode (buf) {
-    // TODO: Make it into ensureBl handler ?
-    if (!(buf instanceof bl)) {
-      buf = bl().append(buf)
+    if (!bl.isBufferList(buf)) {
+      buf = bl(buf)
     }
 
-    const result = tryDecode(buf, 0)
+    const result = tryDecode(buf, 0, context)
     // Handle worst case ASAP and keep code flat
     if (!result) throw new IncompleteBufferError()
 
     buf.consume(result[1])
     return result[0]
   }
+}
 
-  function tryDecode (buf, initialOffset) {
-    if (buf.length <= initialOffset) return null
+function decodeArray (buf, initialOffset, length, headerLength, context) {
+  let offset = initialOffset
+  const result = []
+  let i = 0
 
-    const bufLength = buf.length - initialOffset
-    let offset = initialOffset
+  while (i++ < length) {
+    const decodeResult = tryDecode(buf, offset, context)
+    if (!decodeResult) return null
 
-    const first = buf.readUInt8(offset)
-    offset += 1
+    result.push(decodeResult[0])
+    offset += decodeResult[1]
+  }
+  return [result, headerLength + offset - initialOffset]
+}
 
-    const size = SIZES[first] || -1
-    if (bufLength < size) return null
+function decodeMap (buf, offset, length, headerLength, context) {
+  const _temp = decodeArray(buf, offset, 2 * length, headerLength, context)
+  if (!_temp) return null
+  const [result, consumedBytes] = _temp
 
-    const inRange = (start, end) => first >= start && first <= end
+  let isPlainObject = !context.options.preferMap
 
-    if (first < 0x80) return [first, 1] // 7-bits positive ints
-    if ((first & 0xf0) === 0x80) {
-      const length = first & 0x0f
-      const headerSize = offset - initialOffset
-      // we have a map with less than 15 elements
-      return decodeMap(buf, offset, length, headerSize, options)
-    }
-    if ((first & 0xf0) === 0x90) {
-      const length = first & 0x0f
-      const headerSize = offset - initialOffset
-      // we have an array with less than 15 elements
-      return decodeArray(buf, offset, length, headerSize)
-    }
-
-    if ((first & 0xe0) === 0xa0) {
-      // fixstr up to 31 bytes
-      const length = first & 0x1f
-      if (!isValidDataSize(length, bufLength, 1)) return null
-      const result = buf.toString('utf8', offset, offset + length)
-      return [result, length + 1]
-    }
-    if (inRange(0xc0, 0xc3)) return decodeConstants(first)
-    if (inRange(0xc4, 0xc6)) {
-      const length = buf.readUIntBE(offset, size - 1)
-      offset += size - 1
-
-      if (!isValidDataSize(length, bufLength, size)) return null
-      const result = buf.slice(offset, offset + length)
-      return [result, size + length]
-    }
-    if (inRange(0xc7, 0xc9)) {
-      const length = buf.readUIntBE(offset, size - 2)
-      offset += size - 2
-
-      const type = buf.readInt8(offset)
-      offset += 1
-
-      if (!isValidDataSize(length, bufLength, size)) return null
-      return decodeExt(buf, offset, type, length, size)
-    }
-    if (inRange(0xca, 0xcb)) return decodeFloat(buf, offset, size - 1)
-    if (inRange(0xcc, 0xcf)) return decodeUnsignedInt(buf, offset, size - 1)
-    if (inRange(0xd0, 0xd3)) return decodeSigned(buf, offset, size - 1)
-    if (inRange(0xd4, 0xd8)) {
-      const type = buf.readInt8(offset) // Signed
-      offset += 1
-      return decodeExt(buf, offset, type, size - 2, 2)
-    }
-
-    if (inRange(0xd9, 0xdb)) {
-      const length = buf.readUIntBE(offset, size - 1)
-      offset += size - 1
-
-      if (!isValidDataSize(length, bufLength, size)) return null
-      const result = buf.toString('utf8', offset, offset + length)
-      return [result, size + length]
-    }
-    if (inRange(0xdc, 0xdd)) {
-      const length = buf.readUIntBE(offset, size - 1)
-      offset += size - 1
-      return decodeArray(buf, offset, length, size)
-    }
-    if (inRange(0xde, 0xdf)) {
-      let length
-      switch (first) {
-        case 0xde:
-          // maps up to 2^16 elements - 2 bytes
-          length = buf.readUInt16BE(offset)
-          offset += 2
-          // console.log(offset - initialOffset)
-          return decodeMap(buf, offset, length, 3, options)
-
-        case 0xdf:
-          length = buf.readUInt32BE(offset)
-          offset += 4
-          return decodeMap(buf, offset, length, 5, options)
+  if (isPlainObject) {
+    for (let i = 0; i < 2 * length; i += 2) {
+      if (typeof result[i] !== 'string') {
+        isPlainObject = false
+        break
       }
     }
-    if (first >= 0xe0) return [first - 0x100, 1] // 5 bits negative ints
-
-    throw new Error('not implemented yet')
   }
 
-  function decodeArray (buf, initialOffset, length, headerLength) {
-    let offset = initialOffset
-    const result = []
-    let i = 0
+  if (isPlainObject) {
+    const object = {}
+    for (let i = 0; i < 2 * length; i += 2) {
+      const key = result[i]
+      const val = result[i + 1]
 
-    while (i++ < length) {
-      const decodeResult = tryDecode(buf, offset)
-      if (!decodeResult) return null
-
-      result.push(decodeResult[0])
-      offset += decodeResult[1]
-    }
-    return [result, headerLength + offset - initialOffset]
-  }
-
-  function decodeMap (buf, offset, length, headerLength, options) {
-    const _temp = decodeArray(buf, offset, 2 * length, headerLength)
-    if (!_temp) return null
-    const [result, consumedBytes] = _temp
-
-    let isPlainObject = !options.preferMap
-
-    if (isPlainObject) {
-      for (let i = 0; i < 2 * length; i += 2) {
-        if (typeof result[i] !== 'string') {
-          isPlainObject = false
-          break
-        }
-      }
-    }
-
-    if (isPlainObject) {
-      const object = {}
-      for (let i = 0; i < 2 * length; i += 2) {
-        const key = result[i]
-        const val = result[i + 1]
-
-        if (key === '__proto__') {
-          if (options.protoAction === 'error') {
-            throw new SyntaxError('Object contains forbidden prototype property')
-          }
-
-          if (options.protoAction === 'remove') {
-            continue
-          }
+      if (key === '__proto__') {
+        if (context.options.protoAction === 'error') {
+          throw new SyntaxError('Object contains forbidden prototype property')
         }
 
-        object[key] = val
+        if (context.options.protoAction === 'remove') {
+          continue
+        }
       }
-      return [object, consumedBytes]
-    } else {
-      const mapping = new Map()
-      for (let i = 0; i < 2 * length; i += 2) {
-        const key = result[i]
-        const val = result[i + 1]
-        mapping.set(key, val)
-      }
-      return [mapping, consumedBytes]
+
+      object[key] = val
     }
-  }
-
-  function readInt64BE (buf, offset) {
-    var negate = (buf[offset] & 0x80) == 0x80; // eslint-disable-line
-
-    if (negate) {
-      let carry = 1
-      for (let i = offset + 7; i >= offset; i--) {
-        const v = (buf[i] ^ 0xff) + carry
-        buf[i] = v & 0xff
-        carry = v >> 8
-      }
+    return [object, consumedBytes]
+  } else {
+    const mapping = new Map()
+    for (let i = 0; i < 2 * length; i += 2) {
+      const key = result[i]
+      const val = result[i + 1]
+      mapping.set(key, val)
     }
-
-    const hi = buf.readUInt32BE(offset + 0)
-    const lo = buf.readUInt32BE(offset + 4)
-    return (hi * 4294967296 + lo) * (negate ? -1 : +1)
-  }
-
-  function decodeUnsignedInt (buf, offset, size) {
-    const maxOffset = offset + size
-    let result = 0
-    while (offset < maxOffset) { result += buf.readUInt8(offset++) * Math.pow(256, maxOffset - offset) }
-    return [result, size + 1]
-  }
-
-  function decodeConstants (first) {
-    if (first === 0xc0) return [null, 1]
-    if (first === 0xc2) return [false, 1]
-    if (first === 0xc3) return [true, 1]
-  }
-
-  function decodeSigned (buf, offset, size) {
-    let result
-    if (size === 1) result = buf.readInt8(offset)
-    if (size === 2) result = buf.readInt16BE(offset)
-    if (size === 4) result = buf.readInt32BE(offset)
-    if (size === 8) result = readInt64BE(buf.slice(offset, offset + 8), 0)
-    return [result, size + 1]
-  }
-
-  function decodeFloat (buf, offset, size) {
-    let result
-    if (size === 4) result = buf.readFloatBE(offset)
-    if (size === 8) result = buf.readDoubleBE(offset)
-    return [result, size + 1]
-  }
-
-  function decodeExt (buf, offset, type, size, headerSize) {
-    const toDecode = buf.slice(offset, offset + size)
-
-    const decode = decodingTypes.get(type)
-    if (!decode) throw new Error('unable to find ext type ' + type)
-
-    const value = decode(toDecode)
-    return [value, headerSize + size]
+    return [mapping, consumedBytes]
   }
 }
 
-},{"./helpers.js":5,"bl":15}],4:[function(require,module,exports){
+function tryDecode (buf, initialOffset, context) {
+  if (buf.length <= initialOffset) return null
+
+  const bufLength = buf.length - initialOffset
+  let offset = initialOffset
+
+  const first = buf.readUInt8(offset)
+  offset += 1
+
+  const size = SIZES[first] || -1
+  if (bufLength < size) return null
+
+  if (first < 0x80) return [first, 1] // 7-bits positive ints
+  if ((first & 0xf0) === 0x80) {
+    const length = first & 0x0f
+    const headerSize = offset - initialOffset
+    // we have a map with less than 15 elements
+    return decodeMap(buf, offset, length, headerSize, context)
+  }
+  if ((first & 0xf0) === 0x90) {
+    const length = first & 0x0f
+    const headerSize = offset - initialOffset
+    // we have an array with less than 15 elements
+    return decodeArray(buf, offset, length, headerSize, context)
+  }
+
+  if ((first & 0xe0) === 0xa0) {
+    // fixstr up to 31 bytes
+    const length = first & 0x1f
+    if (!isValidDataSize(length, bufLength, 1)) return null
+    const result = buf.toString('utf8', offset, offset + length)
+    return [result, length + 1]
+  }
+  if (first >= 0xc0 && first <= 0xc3) return decodeConstants(first)
+  if (first >= 0xc4 && first <= 0xc6) {
+    const length = buf.readUIntBE(offset, size - 1)
+    offset += size - 1
+
+    if (!isValidDataSize(length, bufLength, size)) return null
+    const result = buf.slice(offset, offset + length)
+    return [result, size + length]
+  }
+  if (first >= 0xc7 && first <= 0xc9) {
+    const length = buf.readUIntBE(offset, size - 2)
+    offset += size - 2
+
+    const type = buf.readInt8(offset)
+    offset += 1
+
+    if (!isValidDataSize(length, bufLength, size)) return null
+    return decodeExt(buf, offset, type, length, size, context)
+  }
+  if (first >= 0xca && first <= 0xcb) return decodeFloat(buf, offset, size - 1)
+  if (first >= 0xcc && first <= 0xcf) return decodeUnsignedInt(buf, offset, size - 1)
+  if (first >= 0xd0 && first <= 0xd3) return decodeSigned(buf, offset, size - 1)
+  if (first >= 0xd4 && first <= 0xd8) {
+    const type = buf.readInt8(offset) // Signed
+    offset += 1
+    return decodeExt(buf, offset, type, size - 2, 2, context)
+  }
+
+  if (first >= 0xd9 && first <= 0xdb) {
+    const length = buf.readUIntBE(offset, size - 1)
+    offset += size - 1
+
+    if (!isValidDataSize(length, bufLength, size)) return null
+    const result = buf.toString('utf8', offset, offset + length)
+    return [result, size + length]
+  }
+  if (first >= 0xdc && first <= 0xdd) {
+    const length = buf.readUIntBE(offset, size - 1)
+    offset += size - 1
+    return decodeArray(buf, offset, length, size, context)
+  }
+  if (first >= 0xde && first <= 0xdf) {
+    let length
+    switch (first) {
+      case 0xde:
+        // maps up to 2^16 elements - 2 bytes
+        length = buf.readUInt16BE(offset)
+        offset += 2
+        // console.log(offset - initialOffset)
+        return decodeMap(buf, offset, length, 3, context)
+
+      case 0xdf:
+        length = buf.readUInt32BE(offset)
+        offset += 4
+        return decodeMap(buf, offset, length, 5, context)
+    }
+  }
+  if (first >= 0xe0) return [first - 0x100, 1] // 5 bits negative ints
+
+  throw new Error('not implemented yet')
+}
+
+function decodeSigned (buf, offset, size) {
+  let result
+  if (size === 1) result = buf.readInt8(offset)
+  if (size === 2) result = buf.readInt16BE(offset)
+  if (size === 4) result = buf.readInt32BE(offset)
+  if (size === 8) result = readInt64BE(buf.slice(offset, offset + 8), 0)
+  return [result, size + 1]
+}
+
+function decodeExt (buf, offset, type, size, headerSize, context) {
+  const toDecode = buf.slice(offset, offset + size)
+
+  const decode = context.decodingTypes.get(type)
+  if (!decode) throw new Error('unable to find ext type ' + type)
+
+  const value = decode(toDecode)
+  return [value, headerSize + size]
+}
+
+function decodeUnsignedInt (buf, offset, size) {
+  const maxOffset = offset + size
+  let result = 0
+  while (offset < maxOffset) { result += buf.readUInt8(offset++) * Math.pow(256, maxOffset - offset) }
+  return [result, size + 1]
+}
+
+function decodeConstants (first) {
+  if (first === 0xc0) return [null, 1]
+  if (first === 0xc2) return [false, 1]
+  if (first === 0xc3) return [true, 1]
+}
+
+function decodeFloat (buf, offset, size) {
+  let result
+  if (size === 4) result = buf.readFloatBE(offset)
+  if (size === 8) result = buf.readDoubleBE(offset)
+  return [result, size + 1]
+}
+
+function readInt64BE (buf, offset) {
+  var negate = (buf[offset] & 0x80) == 0x80; // eslint-disable-line
+
+  if (negate) {
+    let carry = 1
+    for (let i = offset + 7; i >= offset; i--) {
+      const v = (buf[i] ^ 0xff) + carry
+      buf[i] = v & 0xff
+      carry = v >> 8
+    }
+  }
+
+  const hi = buf.readUInt32BE(offset + 0)
+  const lo = buf.readUInt32BE(offset + 4)
+  return (hi * 4294967296 + lo) * (negate ? -1 : +1)
+}
+
+},{"./helpers.js":5,"bl":14}],4:[function(require,module,exports){
 'use strict'
 
 const Buffer = require('safe-buffer').Buffer
@@ -777,7 +775,7 @@ function encodeNumber (obj, options) {
 //    return n
 // }
 
-},{"./helpers.js":5,"bl":15,"safe-buffer":53}],5:[function(require,module,exports){
+},{"./helpers.js":5,"bl":14,"safe-buffer":51}],5:[function(require,module,exports){
 'use strict'
 
 const util = require('util')
@@ -799,7 +797,7 @@ exports.isFloat = function isFloat (n) {
   return n % 1 !== 0
 }
 
-},{"util":57}],6:[function(require,module,exports){
+},{"util":56}],6:[function(require,module,exports){
 'use strict'
 
 const Transform = require('readable-stream').Transform
@@ -891,34 +889,7 @@ Decoder.prototype._transform = function (buf, enc, done) {
 module.exports.decoder = Decoder
 module.exports.encoder = Encoder
 
-},{"bl":15,"inherits":30,"readable-stream":52}],7:[function(require,module,exports){
-
-/**
- * Array#filter.
- *
- * @param {Array} arr
- * @param {Function} fn
- * @param {Object=} self
- * @return {Array}
- * @throw TypeError
- */
-
-module.exports = function (arr, fn, self) {
-  if (arr.filter) return arr.filter(fn, self);
-  if (void 0 === arr || null === arr) throw new TypeError;
-  if ('function' != typeof fn) throw new TypeError;
-  var ret = [];
-  for (var i = 0; i < arr.length; i++) {
-    if (!hasOwn.call(arr, i)) continue;
-    var val = arr[i];
-    if (fn.call(self, val, i, arr)) ret.push(val);
-  }
-  return ret;
-};
-
-var hasOwn = Object.prototype.hasOwnProperty;
-
-},{}],8:[function(require,module,exports){
+},{"bl":14,"inherits":30,"readable-stream":50}],7:[function(require,module,exports){
 (function (global){(function (){
 'use strict';
 
@@ -1428,7 +1399,7 @@ var objectKeys = Object.keys || function (obj) {
 };
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"object-assign":34,"util/":11}],9:[function(require,module,exports){
+},{"object-assign":34,"util/":10}],8:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -1453,14 +1424,14 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 (function (process,global){(function (){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -2050,32 +2021,38 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":10,"_process":35,"inherits":9}],12:[function(require,module,exports){
+},{"./support/isBuffer":9,"_process":35,"inherits":8}],11:[function(require,module,exports){
 (function (global){(function (){
 'use strict';
 
-var filter = require('array-filter');
+var possibleNames = [
+	'BigInt64Array',
+	'BigUint64Array',
+	'Float32Array',
+	'Float64Array',
+	'Int16Array',
+	'Int32Array',
+	'Int8Array',
+	'Uint16Array',
+	'Uint32Array',
+	'Uint8Array',
+	'Uint8ClampedArray'
+];
+
+var g = typeof globalThis === 'undefined' ? global : globalThis;
 
 module.exports = function availableTypedArrays() {
-	return filter([
-		'BigInt64Array',
-		'BigUint64Array',
-		'Float32Array',
-		'Float64Array',
-		'Int16Array',
-		'Int32Array',
-		'Int8Array',
-		'Uint16Array',
-		'Uint32Array',
-		'Uint8Array',
-		'Uint8ClampedArray'
-	], function (typedArray) {
-		return typeof global[typedArray] === 'function';
-	});
+	var out = [];
+	for (var i = 0; i < possibleNames.length; i++) {
+		if (typeof g[possibleNames[i]] === 'function') {
+			out[out.length] = possibleNames[i];
+		}
+	}
+	return out;
 };
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"array-filter":7}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -2227,7 +2204,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict'
 
 const { Buffer } = require('buffer')
@@ -2625,7 +2602,7 @@ BufferList.isBufferList = function isBufferList (b) {
 
 module.exports = BufferList
 
-},{"buffer":17}],15:[function(require,module,exports){
+},{"buffer":16}],14:[function(require,module,exports){
 'use strict'
 
 const DuplexStream = require('readable-stream').Duplex
@@ -2711,9 +2688,9 @@ module.exports = BufferListStream
 module.exports.BufferListStream = BufferListStream
 module.exports.BufferList = BufferList
 
-},{"./BufferList":14,"inherits":30,"readable-stream":52}],16:[function(require,module,exports){
+},{"./BufferList":13,"inherits":30,"readable-stream":50}],15:[function(require,module,exports){
 
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 (function (Buffer){(function (){
 /*!
  * The buffer module from node.js, for the browser.
@@ -4494,7 +4471,7 @@ function numberIsNaN (obj) {
 }
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"base64-js":13,"buffer":17,"ieee754":29}],18:[function(require,module,exports){
+},{"base64-js":12,"buffer":16,"ieee754":29}],17:[function(require,module,exports){
 'use strict';
 
 var GetIntrinsic = require('get-intrinsic');
@@ -4511,7 +4488,7 @@ module.exports = function callBoundIntrinsic(name, allowMissing) {
 	return intrinsic;
 };
 
-},{"./":19,"get-intrinsic":25}],19:[function(require,module,exports){
+},{"./":18,"get-intrinsic":24}],18:[function(require,module,exports){
 'use strict';
 
 var bind = require('function-bind');
@@ -4560,12 +4537,12 @@ if ($defineProperty) {
 	module.exports.apply = applyBind;
 }
 
-},{"function-bind":24,"get-intrinsic":25}],20:[function(require,module,exports){
+},{"function-bind":23,"get-intrinsic":24}],19:[function(require,module,exports){
 'use strict';
 
 var GetIntrinsic = require('get-intrinsic');
 
-var $gOPD = GetIntrinsic('%Object.getOwnPropertyDescriptor%');
+var $gOPD = GetIntrinsic('%Object.getOwnPropertyDescriptor%', true);
 if ($gOPD) {
 	try {
 		$gOPD([], 'length');
@@ -4577,7 +4554,7 @@ if ($gOPD) {
 
 module.exports = $gOPD;
 
-},{"get-intrinsic":25}],21:[function(require,module,exports){
+},{"get-intrinsic":24}],20:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -5076,7 +5053,7 @@ function eventTargetAgnosticAddListener(emitter, name, listener, flags) {
   }
 }
 
-},{}],22:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 
 var hasOwn = Object.prototype.hasOwnProperty;
 var toString = Object.prototype.toString;
@@ -5100,7 +5077,7 @@ module.exports = function forEach (obj, fn, ctx) {
 };
 
 
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 'use strict';
 
 /* eslint no-invalid-this: 1 */
@@ -5154,14 +5131,14 @@ module.exports = function bind(that) {
     return bound;
 };
 
-},{}],24:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 'use strict';
 
 var implementation = require('./implementation');
 
 module.exports = Function.prototype.bind || implementation;
 
-},{"./implementation":23}],25:[function(require,module,exports){
+},{"./implementation":22}],24:[function(require,module,exports){
 'use strict';
 
 var undefined;
@@ -5493,7 +5470,7 @@ module.exports = function GetIntrinsic(name, allowMissing) {
 	return value;
 };
 
-},{"function-bind":24,"has":28,"has-symbols":26}],26:[function(require,module,exports){
+},{"function-bind":23,"has":28,"has-symbols":25}],25:[function(require,module,exports){
 'use strict';
 
 var origSymbol = typeof Symbol !== 'undefined' && Symbol;
@@ -5508,7 +5485,7 @@ module.exports = function hasNativeSymbols() {
 	return hasSymbolSham();
 };
 
-},{"./shams":27}],27:[function(require,module,exports){
+},{"./shams":26}],26:[function(require,module,exports){
 'use strict';
 
 /* eslint complexity: [2, 18], max-statements: [2, 33] */
@@ -5552,14 +5529,23 @@ module.exports = function hasSymbols() {
 	return true;
 };
 
-},{}],28:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
+'use strict';
+
+var hasSymbols = require('has-symbols/shams');
+
+module.exports = function hasToStringTagShams() {
+	return hasSymbols() && !!Symbol.toStringTag;
+};
+
+},{"has-symbols/shams":26}],28:[function(require,module,exports){
 'use strict';
 
 var bind = require('function-bind');
 
 module.exports = bind.call(Function.call, Object.prototype.hasOwnProperty);
 
-},{"function-bind":24}],29:[function(require,module,exports){
+},{"function-bind":23}],29:[function(require,module,exports){
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
@@ -5678,7 +5664,7 @@ if (typeof Object.create === 'function') {
 },{}],31:[function(require,module,exports){
 'use strict';
 
-var hasToStringTag = typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol';
+var hasToStringTag = require('has-tostringtag/shams')();
 var callBound = require('call-bind/callBound');
 
 var $toString = callBound('Object.prototype.toString');
@@ -5710,13 +5696,13 @@ isStandardArguments.isLegacyArguments = isLegacyArguments; // for tests
 
 module.exports = supportsStandardArguments ? isStandardArguments : isLegacyArguments;
 
-},{"call-bind/callBound":18}],32:[function(require,module,exports){
+},{"call-bind/callBound":17,"has-tostringtag/shams":27}],32:[function(require,module,exports){
 'use strict';
 
 var toStr = Object.prototype.toString;
 var fnToStr = Function.prototype.toString;
 var isFnRegex = /^\s*(?:function)?\*/;
-var hasToStringTag = typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol';
+var hasToStringTag = require('has-tostringtag/shams')();
 var getProto = Object.getPrototypeOf;
 var getGeneratorFunc = function () { // eslint-disable-line consistent-return
 	if (!hasToStringTag) {
@@ -5727,8 +5713,7 @@ var getGeneratorFunc = function () { // eslint-disable-line consistent-return
 	} catch (e) {
 	}
 };
-var generatorFunc = getGeneratorFunc();
-var GeneratorFunction = getProto && generatorFunc ? getProto(generatorFunc) : false;
+var GeneratorFunction;
 
 module.exports = function isGeneratorFunction(fn) {
 	if (typeof fn !== 'function') {
@@ -5741,10 +5726,17 @@ module.exports = function isGeneratorFunction(fn) {
 		var str = toStr.call(fn);
 		return str === '[object GeneratorFunction]';
 	}
-	return getProto && getProto(fn) === GeneratorFunction;
+	if (!getProto) {
+		return false;
+	}
+	if (typeof GeneratorFunction === 'undefined') {
+		var generatorFunc = getGeneratorFunc();
+		GeneratorFunction = generatorFunc ? getProto(generatorFunc) : false;
+	}
+	return getProto(fn) === GeneratorFunction;
 };
 
-},{}],33:[function(require,module,exports){
+},{"has-tostringtag/shams":27}],33:[function(require,module,exports){
 (function (global){(function (){
 'use strict';
 
@@ -5753,9 +5745,9 @@ var availableTypedArrays = require('available-typed-arrays');
 var callBound = require('call-bind/callBound');
 
 var $toString = callBound('Object.prototype.toString');
-var hasSymbols = require('has-symbols')();
-var hasToStringTag = hasSymbols && typeof Symbol.toStringTag === 'symbol';
+var hasToStringTag = require('has-tostringtag/shams')();
 
+var g = typeof globalThis === 'undefined' ? global : globalThis;
 var typedArrays = availableTypedArrays();
 
 var $indexOf = callBound('Array.prototype.indexOf', true) || function indexOf(array, value) {
@@ -5772,17 +5764,16 @@ var gOPD = require('es-abstract/helpers/getOwnPropertyDescriptor');
 var getPrototypeOf = Object.getPrototypeOf; // require('getprototypeof');
 if (hasToStringTag && gOPD && getPrototypeOf) {
 	forEach(typedArrays, function (typedArray) {
-		var arr = new global[typedArray]();
-		if (!(Symbol.toStringTag in arr)) {
-			throw new EvalError('this engine has support for Symbol.toStringTag, but ' + typedArray + ' does not have the property! Please report this.');
+		var arr = new g[typedArray]();
+		if (Symbol.toStringTag in arr) {
+			var proto = getPrototypeOf(arr);
+			var descriptor = gOPD(proto, Symbol.toStringTag);
+			if (!descriptor) {
+				var superProto = getPrototypeOf(proto);
+				descriptor = gOPD(superProto, Symbol.toStringTag);
+			}
+			toStrTags[typedArray] = descriptor.get;
 		}
-		var proto = getPrototypeOf(arr);
-		var descriptor = gOPD(proto, Symbol.toStringTag);
-		if (!descriptor) {
-			var superProto = getPrototypeOf(proto);
-			descriptor = gOPD(superProto, Symbol.toStringTag);
-		}
-		toStrTags[typedArray] = descriptor.get;
 	});
 }
 
@@ -5800,7 +5791,7 @@ var tryTypedArrays = function tryAllTypedArrays(value) {
 
 module.exports = function isTypedArray(value) {
 	if (!value || typeof value !== 'object') { return false; }
-	if (!hasToStringTag) {
+	if (!hasToStringTag || !(Symbol.toStringTag in value)) {
 		var tag = $slice($toString(value), 8, -1);
 		return $indexOf(typedArrays, tag) > -1;
 	}
@@ -5809,7 +5800,7 @@ module.exports = function isTypedArray(value) {
 };
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"available-typed-arrays":12,"call-bind/callBound":18,"es-abstract/helpers/getOwnPropertyDescriptor":20,"foreach":22,"has-symbols":26}],34:[function(require,module,exports){
+},{"available-typed-arrays":11,"call-bind/callBound":17,"es-abstract/helpers/getOwnPropertyDescriptor":19,"foreach":21,"has-tostringtag/shams":27}],34:[function(require,module,exports){
 /*
 object-assign
 (c) Sindre Sorhus
@@ -7525,7 +7516,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../errors":36,"./_stream_duplex":37,"./internal/streams/async_iterator":42,"./internal/streams/buffer_list":43,"./internal/streams/destroy":44,"./internal/streams/from":46,"./internal/streams/state":48,"./internal/streams/stream":49,"_process":35,"buffer":17,"events":21,"inherits":30,"string_decoder/":51,"util":16}],40:[function(require,module,exports){
+},{"../errors":36,"./_stream_duplex":37,"./internal/streams/async_iterator":42,"./internal/streams/buffer_list":43,"./internal/streams/destroy":44,"./internal/streams/from":46,"./internal/streams/state":48,"./internal/streams/stream":49,"_process":35,"buffer":16,"events":20,"inherits":30,"string_decoder/":52,"util":15}],40:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -8427,7 +8418,7 @@ Writable.prototype._destroy = function (err, cb) {
   cb(err);
 };
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../errors":36,"./_stream_duplex":37,"./internal/streams/destroy":44,"./internal/streams/state":48,"./internal/streams/stream":49,"_process":35,"buffer":17,"inherits":30,"util-deprecate":54}],42:[function(require,module,exports){
+},{"../errors":36,"./_stream_duplex":37,"./internal/streams/destroy":44,"./internal/streams/state":48,"./internal/streams/stream":49,"_process":35,"buffer":16,"inherits":30,"util-deprecate":53}],42:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -8848,7 +8839,7 @@ function () {
 
   return BufferList;
 }();
-},{"buffer":17,"util":16}],44:[function(require,module,exports){
+},{"buffer":16,"util":15}],44:[function(require,module,exports){
 (function (process){(function (){
 'use strict'; // undocumented cb() API, needed for core, not for public API
 
@@ -9195,7 +9186,19 @@ module.exports = {
 },{"../../../errors":36}],49:[function(require,module,exports){
 module.exports = require('events').EventEmitter;
 
-},{"events":21}],50:[function(require,module,exports){
+},{"events":20}],50:[function(require,module,exports){
+exports = module.exports = require('./lib/_stream_readable.js');
+exports.Stream = exports;
+exports.Readable = exports;
+exports.Writable = require('./lib/_stream_writable.js');
+exports.Duplex = require('./lib/_stream_duplex.js');
+exports.Transform = require('./lib/_stream_transform.js');
+exports.PassThrough = require('./lib/_stream_passthrough.js');
+exports.finished = require('./lib/internal/streams/end-of-stream.js');
+exports.pipeline = require('./lib/internal/streams/pipeline.js');
+
+},{"./lib/_stream_duplex.js":37,"./lib/_stream_passthrough.js":38,"./lib/_stream_readable.js":39,"./lib/_stream_transform.js":40,"./lib/_stream_writable.js":41,"./lib/internal/streams/end-of-stream.js":45,"./lib/internal/streams/pipeline.js":47}],51:[function(require,module,exports){
+/*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
 var Buffer = buffer.Buffer
@@ -9217,6 +9220,8 @@ if (Buffer.from && Buffer.alloc && Buffer.allocUnsafe && Buffer.allocUnsafeSlow)
 function SafeBuffer (arg, encodingOrOffset, length) {
   return Buffer(arg, encodingOrOffset, length)
 }
+
+SafeBuffer.prototype = Object.create(Buffer.prototype)
 
 // Copy static methods from Buffer
 copyProps(Buffer, SafeBuffer)
@@ -9259,7 +9264,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
   return buffer.SlowBuffer(size)
 }
 
-},{"buffer":17}],51:[function(require,module,exports){
+},{"buffer":16}],52:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -9556,85 +9561,7 @@ function simpleWrite(buf) {
 function simpleEnd(buf) {
   return buf && buf.length ? this.write(buf) : '';
 }
-},{"safe-buffer":50}],52:[function(require,module,exports){
-exports = module.exports = require('./lib/_stream_readable.js');
-exports.Stream = exports;
-exports.Readable = exports;
-exports.Writable = require('./lib/_stream_writable.js');
-exports.Duplex = require('./lib/_stream_duplex.js');
-exports.Transform = require('./lib/_stream_transform.js');
-exports.PassThrough = require('./lib/_stream_passthrough.js');
-exports.finished = require('./lib/internal/streams/end-of-stream.js');
-exports.pipeline = require('./lib/internal/streams/pipeline.js');
-
-},{"./lib/_stream_duplex.js":37,"./lib/_stream_passthrough.js":38,"./lib/_stream_readable.js":39,"./lib/_stream_transform.js":40,"./lib/_stream_writable.js":41,"./lib/internal/streams/end-of-stream.js":45,"./lib/internal/streams/pipeline.js":47}],53:[function(require,module,exports){
-/*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
-/* eslint-disable node/no-deprecated-api */
-var buffer = require('buffer')
-var Buffer = buffer.Buffer
-
-// alternative to using Object.keys for old browsers
-function copyProps (src, dst) {
-  for (var key in src) {
-    dst[key] = src[key]
-  }
-}
-if (Buffer.from && Buffer.alloc && Buffer.allocUnsafe && Buffer.allocUnsafeSlow) {
-  module.exports = buffer
-} else {
-  // Copy properties from require('buffer')
-  copyProps(buffer, exports)
-  exports.Buffer = SafeBuffer
-}
-
-function SafeBuffer (arg, encodingOrOffset, length) {
-  return Buffer(arg, encodingOrOffset, length)
-}
-
-SafeBuffer.prototype = Object.create(Buffer.prototype)
-
-// Copy static methods from Buffer
-copyProps(Buffer, SafeBuffer)
-
-SafeBuffer.from = function (arg, encodingOrOffset, length) {
-  if (typeof arg === 'number') {
-    throw new TypeError('Argument must not be a number')
-  }
-  return Buffer(arg, encodingOrOffset, length)
-}
-
-SafeBuffer.alloc = function (size, fill, encoding) {
-  if (typeof size !== 'number') {
-    throw new TypeError('Argument must be a number')
-  }
-  var buf = Buffer(size)
-  if (fill !== undefined) {
-    if (typeof encoding === 'string') {
-      buf.fill(fill, encoding)
-    } else {
-      buf.fill(fill)
-    }
-  } else {
-    buf.fill(0)
-  }
-  return buf
-}
-
-SafeBuffer.allocUnsafe = function (size) {
-  if (typeof size !== 'number') {
-    throw new TypeError('Argument must be a number')
-  }
-  return Buffer(size)
-}
-
-SafeBuffer.allocUnsafeSlow = function (size) {
-  if (typeof size !== 'number') {
-    throw new TypeError('Argument must be a number')
-  }
-  return buffer.SlowBuffer(size)
-}
-
-},{"buffer":17}],54:[function(require,module,exports){
+},{"safe-buffer":51}],53:[function(require,module,exports){
 (function (global){(function (){
 
 /**
@@ -9705,9 +9632,9 @@ function config (name) {
 }
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],55:[function(require,module,exports){
-arguments[4][10][0].apply(exports,arguments)
-},{"dup":10}],56:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
+arguments[4][9][0].apply(exports,arguments)
+},{"dup":9}],55:[function(require,module,exports){
 // Currently in sync with Node.js lib/internal/util/types.js
 // https://github.com/nodejs/node/commit/112cc7c27551254aa2b17098fb774867f05ed0d9
 
@@ -9945,21 +9872,23 @@ function isDataView(value) {
 }
 exports.isDataView = isDataView;
 
+// Store a copy of SharedArrayBuffer in case it's deleted elsewhere
+var SharedArrayBufferCopy = typeof SharedArrayBuffer !== 'undefined' ? SharedArrayBuffer : undefined;
 function isSharedArrayBufferToString(value) {
   return ObjectToString(value) === '[object SharedArrayBuffer]';
 }
-isSharedArrayBufferToString.working = (
-  typeof SharedArrayBuffer !== 'undefined' &&
-  isSharedArrayBufferToString(new SharedArrayBuffer())
-);
 function isSharedArrayBuffer(value) {
-  if (typeof SharedArrayBuffer === 'undefined') {
+  if (typeof SharedArrayBufferCopy === 'undefined') {
     return false;
+  }
+
+  if (typeof isSharedArrayBufferToString.working === 'undefined') {
+    isSharedArrayBufferToString.working = isSharedArrayBufferToString(new SharedArrayBufferCopy());
   }
 
   return isSharedArrayBufferToString.working
     ? isSharedArrayBufferToString(value)
-    : value instanceof SharedArrayBuffer;
+    : value instanceof SharedArrayBufferCopy;
 }
 exports.isSharedArrayBuffer = isSharedArrayBuffer;
 
@@ -10041,7 +9970,7 @@ exports.isAnyArrayBuffer = isAnyArrayBuffer;
   });
 });
 
-},{"is-arguments":31,"is-generator-function":32,"is-typed-array":33,"which-typed-array":58}],57:[function(require,module,exports){
+},{"is-arguments":31,"is-generator-function":32,"is-typed-array":33,"which-typed-array":57}],56:[function(require,module,exports){
 (function (process){(function (){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -10760,7 +10689,7 @@ function callbackify(original) {
 exports.callbackify = callbackify;
 
 }).call(this)}).call(this,require('_process'))
-},{"./support/isBuffer":55,"./support/types":56,"_process":35,"inherits":30}],58:[function(require,module,exports){
+},{"./support/isBuffer":54,"./support/types":55,"_process":35,"inherits":30}],57:[function(require,module,exports){
 (function (global){(function (){
 'use strict';
 
@@ -10769,9 +10698,9 @@ var availableTypedArrays = require('available-typed-arrays');
 var callBound = require('call-bind/callBound');
 
 var $toString = callBound('Object.prototype.toString');
-var hasSymbols = require('has-symbols')();
-var hasToStringTag = hasSymbols && typeof Symbol.toStringTag === 'symbol';
+var hasToStringTag = require('has-tostringtag/shams')();
 
+var g = typeof globalThis === 'undefined' ? global : globalThis;
 var typedArrays = availableTypedArrays();
 
 var $slice = callBound('String.prototype.slice');
@@ -10780,18 +10709,17 @@ var gOPD = require('es-abstract/helpers/getOwnPropertyDescriptor');
 var getPrototypeOf = Object.getPrototypeOf; // require('getprototypeof');
 if (hasToStringTag && gOPD && getPrototypeOf) {
 	forEach(typedArrays, function (typedArray) {
-		if (typeof global[typedArray] === 'function') {
-			var arr = new global[typedArray]();
-			if (!(Symbol.toStringTag in arr)) {
-				throw new EvalError('this engine has support for Symbol.toStringTag, but ' + typedArray + ' does not have the property! Please report this.');
+		if (typeof g[typedArray] === 'function') {
+			var arr = new g[typedArray]();
+			if (Symbol.toStringTag in arr) {
+				var proto = getPrototypeOf(arr);
+				var descriptor = gOPD(proto, Symbol.toStringTag);
+				if (!descriptor) {
+					var superProto = getPrototypeOf(proto);
+					descriptor = gOPD(superProto, Symbol.toStringTag);
+				}
+				toStrTags[typedArray] = descriptor.get;
 			}
-			var proto = getPrototypeOf(arr);
-			var descriptor = gOPD(proto, Symbol.toStringTag);
-			if (!descriptor) {
-				var superProto = getPrototypeOf(proto);
-				descriptor = gOPD(superProto, Symbol.toStringTag);
-			}
-			toStrTags[typedArray] = descriptor.get;
 		}
 	});
 }
@@ -10815,10 +10743,10 @@ var isTypedArray = require('is-typed-array');
 
 module.exports = function whichTypedArray(value) {
 	if (!isTypedArray(value)) { return false; }
-	if (!hasToStringTag) { return $slice($toString(value), 8, -1); }
+	if (!hasToStringTag || !(Symbol.toStringTag in value)) { return $slice($toString(value), 8, -1); }
 	return tryTypedArrays(value);
 };
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"available-typed-arrays":12,"call-bind/callBound":18,"es-abstract/helpers/getOwnPropertyDescriptor":20,"foreach":22,"has-symbols":26,"is-typed-array":33}]},{},[1])(1)
+},{"available-typed-arrays":11,"call-bind/callBound":17,"es-abstract/helpers/getOwnPropertyDescriptor":19,"foreach":21,"has-tostringtag/shams":27,"is-typed-array":33}]},{},[1])(1)
 });
