@@ -42,17 +42,15 @@ namespace Remotely.Desktop.Core.Services
             _shutdownService = shutdownService;
         }
 
-
         public void BeginScreenCasting(ScreenCastRequest screenCastRequest)
         {
-            _ = Task.Run(async () => await CastScreen(screenCastRequest));
+            _ = Task.Run(() => BeginScreenCastingImpl(screenCastRequest));
         }
 
-        private async Task CastScreen(ScreenCastRequest screenCastRequest)
+        private async Task BeginScreenCastingImpl(ScreenCastRequest screenCastRequest)
         {
             try
             {
-                long sequence = 0;
                 var viewer = ServiceContainer.Instance.GetRequiredService<Viewer>();
                 viewer.Name = screenCastRequest.RequesterName;
                 viewer.ViewerConnectionID = screenCastRequest.ViewerID;
@@ -121,6 +119,19 @@ namespace Remotely.Desktop.Core.Services
                     return;
                 }
 
+                _ = Task.Run(() => CastScreen(screenCastRequest, viewer, 0));
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+            }
+        }
+
+        private async Task CastScreen(ScreenCastRequest screenCastRequest, Viewer viewer, int sequence)
+        {
+            try
+            {
+
                 while (!viewer.DisconnectRequested && viewer.IsConnected)
                 {
                     try
@@ -142,11 +153,12 @@ namespace Remotely.Desktop.Core.Services
 
                         viewer.ApplyAutoQuality();
 
-                        result = viewer.Capturer.GetNextFrame();
+                        var result = viewer.Capturer.GetNextFrame();
 
                         if (!result.IsSuccess || result.Value is null)
                         {
-                            continue;
+                            _ = Task.Run(() => CastScreen(screenCastRequest, viewer, sequence));
+                            return;
                         }
 
                         var diffArea = viewer.Capturer.GetFrameDiffArea();

@@ -42,6 +42,7 @@ using Result = Remotely.Shared.Result;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using Remotely.Desktop.Core.Extensions;
+using System.Runtime.InteropServices;
 
 namespace Remotely.Desktop.Win.Services
 {
@@ -97,7 +98,17 @@ namespace Remotely.Desktop.Win.Services
             {
                 try
                 {
-                    Win32Interop.SwitchToInputDesktop();
+                    if (!Win32Interop.SwitchToInputDesktop())
+                    {
+                        // Something will occasionally prevent this from succeeding after active
+                        // desktop has changed to/from WinLogon (err code 170).  I'm guessing a hook
+                        // is getting put in the desktop, which causes SetThreadDesktop to fail.
+                        // The caller can start a new thread, which seems to resolve it.
+                        var errCode = Marshal.GetLastWin32Error();
+                        var errMessage = $"Failed to switch to input desktop. Last Win32 error code: {errCode}";
+                        Logger.Write(errMessage);
+                        return Result.Fail<SKBitmap>(errMessage);
+                    }
 
                     if (NeedsInit)
                     {
