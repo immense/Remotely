@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -232,59 +234,6 @@ namespace Remotely.Agent.Services
                Logger.DeleteLogs();
            });
 
-            _hubConnection.On("DownloadFile", async (string filePath, string senderConnectionID) =>
-            {
-                try
-                {
-                    if (!IsServerVerified)
-                    {
-                        Logger.Write("File download attempted before server was verified.", EventType.Warning);
-                        return;
-                    }
-
-                    filePath = filePath.Replace("\"", "");
-                    if (!File.Exists(filePath))
-                    {
-                        await _hubConnection.SendAsync("DisplayMessage",
-                            "File not found on remote device.",
-                            "File not found.",
-                            "bg-danger",
-                            senderConnectionID);
-                        return;
-                    }
-
-                    using var wc = new WebClient();
-                    var lastProgressPercent = 0;
-                    wc.UploadProgressChanged += async (sender, args) =>
-                    {
-                        if (args.ProgressPercentage > lastProgressPercent)
-                        {
-                            lastProgressPercent = args.ProgressPercentage;
-                            await _hubConnection.SendAsync("DownloadFileProgress", lastProgressPercent, senderConnectionID);
-                        }
-                    };
-
-                    try
-                    {
-                        var response = await wc.UploadFileTaskAsync($"{_connectionInfo.Host}/API/FileSharing/", filePath);
-                        var fileIDs = JsonSerializer.Deserialize<string[]>(Encoding.UTF8.GetString(response));
-                        await _hubConnection.SendAsync("DownloadFile", fileIDs[0], senderConnectionID);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Write(ex);
-                        await _hubConnection.SendAsync("DisplayMessage",
-                            "Error occurred while uploading file from remote computer.",
-                            "Upload error.",
-                            "bg-danger",
-                            senderConnectionID);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.Write(ex);
-                }
-            });
 
             _hubConnection.On("ExecuteCommand", ((ScriptingShell shell, string command, string authToken, string senderUsername, string senderConnectionID) =>
             {
