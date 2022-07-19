@@ -42,12 +42,10 @@ namespace Server.Installer.Services
                     "https://github.com/lucent-sea/Remotely/releases/latest/download/Remotely_Server_Linux-x64.zip";
 
                 using var httpClient = new HttpClient();
-
-                var headMessage = new HttpRequestMessage(HttpMethod.Head, releaseFile);
-                var response = await httpClient.SendAsync(headMessage);
+                var response = await httpClient.GetAsync(releaseFile);
                 var contentLength = (double?)response.Content.Headers.ContentLength;
 
-                using var webStream = await httpClient.GetStreamAsync(releaseFile);
+                using var webStream = await response.Content.ReadAsStreamAsync();
                 using var fileStream = new FileStream(zipPath, FileMode.Create);
 
                 var progress = 0;
