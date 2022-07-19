@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Remotely.Shared.Extensions;
 
 namespace Server.Installer.Services
 {
@@ -36,23 +37,40 @@ namespace Server.Installer.Services
             {
                 ConsoleHelper.WriteLine("Downloading pre-built server package.");
 
-                int progress = 0;
-
                 var releaseFile = cliParams.WebServer == WebServerType.IisWindows ?
                     "https://github.com/lucent-sea/Remotely/releases/latest/download/Remotely_Server_Win-x64.zip" :
                     "https://github.com/lucent-sea/Remotely/releases/latest/download/Remotely_Server_Linux-x64.zip";
 
-                using var webClient = new WebClient();
-                webClient.DownloadProgressChanged += (sender, args) =>
+                using var httpClient = new HttpClient();
+
+                var headMessage = new HttpRequestMessage(HttpMethod.Head, releaseFile);
+                var response = await httpClient.SendAsync(headMessage);
+                var contentLength = (double?)response.Content.Headers.ContentLength;
+
+                using var webStream = await httpClient.GetStreamAsync(releaseFile);
+                using var fileStream = new FileStream(zipPath, FileMode.Create);
+
+                var progress = 0;
+
+                await webStream.CopyToAsync(fileStream, (int bytesRead) =>
                 {
-                    var newProgress = args.ProgressPercentage / 5 * 5;
-                    if (newProgress != progress)
+                    if (contentLength is null ||
+                        contentLength <= 0)
                     {
-                        progress = newProgress;
+                        return;
+
+                    }
+
+                    var newProgress = bytesRead / contentLength * 100;
+
+                    if (newProgress == 100 ||
+                        newProgress - progress > 5)
+                    {
+                        progress = (int)newProgress;
                         ConsoleHelper.WriteLine($"Progress: {progress}%");
                     }
-                };
-                await webClient.DownloadFileTaskAsync(releaseFile, zipPath);
+                });
+
             }
             else
             {
