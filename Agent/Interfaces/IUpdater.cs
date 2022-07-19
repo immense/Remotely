@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Remotely.Agent.Interfaces
 {
-    public interface IUpdater : IDisposable
+    public interface IUpdater
     {
         Task BeginChecking();
         Task CheckForUpdates();
