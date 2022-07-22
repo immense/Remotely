@@ -43,7 +43,7 @@ namespace Server.Installer.Services
 
                 using var httpClient = new HttpClient();
                 var response = await httpClient.GetAsync(releaseFile);
-                var contentLength = (double?)response.Content.Headers.ContentLength;
+                var contentLength = response.Content.Headers.ContentLength;
 
                 using var webStream = await response.Content.ReadAsStreamAsync();
                 using var fileStream = new FileStream(zipPath, FileMode.Create);
@@ -59,7 +59,7 @@ namespace Server.Installer.Services
 
                     }
 
-                    var newProgress = bytesRead / contentLength * 100;
+                    var newProgress = (double)bytesRead / contentLength * 100;
 
                     if (newProgress == 100 ||
                         newProgress - progress > 5)
