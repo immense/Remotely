@@ -248,7 +248,7 @@ Remotely has a basic API, which can be browsed at https://remotely.lucency.co/sw
 
 When accessing the API from the browser on another website, you'll need to set up CORS in appsettings by adding the website origin URL to the TrustedCorsOrigins array.  If you're not familiar with how CORS works, I recommend reading up on it before proceeding.  For example, if I wanted to create a login form on https://lucency.co that logged into the Remotely API, I'd need to add "https://lucency.co" to the TrustedCorsOrigins.
 
-The API key and secret must be added to the request's Authorization header in the following format: [ApiKey]:[ApiSecret]
+The API key and secret must first be combined [ApiKey]:[ApiSecret] and then encoded with Base64 as [EncodedAuhorization]. After that you can add the encoded string to the request's Authorization header in the form "Basic [EncodedAuhorization]"
 
 Below is an example API request:
 
@@ -272,7 +272,7 @@ Below are examples of using the cookie-based login API (JavaScript):
 		method: "post",
 		credentials: "include",
 		mode: "cors",
-		body: '{"Email":"email@example.com", "Password":"P@ssword1"}',
+		body: '{"email":"email@example.com", "password":"P@ssword1"}',
 		headers: {
 			"Content-Type": "application/json",
 		}
@@ -297,7 +297,7 @@ Below are examples of using the cookie-based login API (JavaScript):
 		method: "post",
 		credentials: "include",
 		mode: "cors",
-		body: '{"Email":"email@example.com", "Password":"P@ssword1", "DeviceID":"b68c24b0-2c67-4524-ad28-dadea7a576a4"}',
+		body: '{"email":"email@example.com", "password":"P@ssword1", "deviceID":"b68c24b0-2c67-4524-ad28-dadea7a576a4"}',
 		headers: {
 			"Content-Type": "application/json",
 		}
