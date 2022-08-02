@@ -357,8 +357,17 @@ export function ApplyInputHandlers() {
                 let touchMove1 = lastScrollTouchY1 - e.touches[0].pageY;
                 let touchMove2 = lastScrollTouchY2 - e.touches[1].pageY;
 
-                if (!isPinchZooming && (touchMove1 * touchMove2 > 0 || isScrolling)) {
+                if (!isPinchZooming && (isScrolling || touchMove1 * touchMove2 > 10)) {
                     // Both touch points are moving in the same direction.  We're doing a scroll.
+
+                    if (!isScrolling) {
+                        // If this is the start of scrolling, move the mouse to our touch point so
+                        // the scroll wheel action will target the intended element on screen.
+                        var pagePercentX = (e.touches[0].pageX - screenViewerLeft) / viewer.clientWidth;
+                        var pagePercentY = (e.touches[0].pageY - screenViewerTop) / viewer.clientHeight;
+                        ViewerApp.MessageSender.SendMouseMove(pagePercentX, pagePercentY);
+                    }
+
                     isScrolling = true;
                     if (Date.now() - lastScrollTime < 100) {
                         return;
