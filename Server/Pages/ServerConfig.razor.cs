@@ -76,7 +76,7 @@ namespace Remotely.Server.Pages
         public string SmtpDisplayName { get; set; }
 
         [Display(Name = "SMTP Email")]
-        [EmailAddress]
+        [EmailAddress(ErrorMessage = "The true field is not a valid e-mail address.")]
         public string SmtpEmail { get; set; }
 
         [Display(Name = "SMTP Host")]
@@ -377,12 +377,12 @@ namespace Remotely.Server.Pages
                     .GetDevices(OutdatedDevices)
                     .Select(x => x.DeviceName);
 
-                ModalService.ShowModal("Outdated Devices",
+                ModalService.ShowModal(Localizer["Outdated Devices"],
                     (new[] { "Outdated Devices:" }).Concat(outdatedDeviceNames).ToArray());
             }
             else
             {
-                ModalService.ShowModal("Outdated Devices", new[] { "There are no outdated devices currently online." });
+                ModalService.ShowModal(Localizer["Outdated Devices"], new[] { Localizer["There are no outdated devices currently online."].Value });
             }
         }
 

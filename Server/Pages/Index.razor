@@ -1,21 +1,23 @@
 ﻿@page "/"
 @inject IApplicationConfig AppConfig
 @inject IDataService DataService
- 
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer Localizer
 <AuthorizeView>
     <NotAuthorized>
         <div class="jumbotron">
             <h3 class="display-4">Remotely</h3>
             <p class="lead">
-                An open-source remote support solution.
+                @Localizer["An open-source remote support solution"]
+                
             </p>
             <hr class="my-4">
             <p class="lead">
-                <a class="btn btn-primary btn-lg mr-2" href="Identity/Account/Login" role="button">Log In</a>
+                <a class="btn btn-primary btn-lg mr-2" href="Identity/Account/Login" role="button">@Localizer["Log In"]</a>
 
                 @if (AppConfig.MaxOrganizationCount < 0 || DataService.GetOrganizationCount() < AppConfig.MaxOrganizationCount)
                 {
-                    <a class="btn btn-primary btn-lg" href="Identity/Account/Register" role="button">Register</a>
+                    <a class="btn btn-primary btn-lg" href="Identity/Account/Register" role="button">@Localizer["Register"]</a>
                 }
             </p>
         </div>

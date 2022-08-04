@@ -1,7 +1,15 @@
-﻿@inject IAuthService AuthService 
+﻿@inject IAuthService AuthService
 @inject IApplicationConfig AppConfig
 @inject IDataService DataService
-
+@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Http
+@using Microsoft.Extensions.Localization
+@using Microsoft.Extensions.Options
+@using Remotely.Server.Localization
+@using System.Globalization
+@inject IStringLocalizer Localizer
+@inject IOptions<RequestLocalizationOptions> locOptions
+@inject NavigationManager Nav
 <div class="pl-4 pb-1 pr-0 pt-0 navbar navbar-dark" style="background-color: rgba(0,0,0,0.3)">
     <a class="navbar-brand text-left" href="">
         <div class="logo-title">
@@ -11,10 +19,10 @@
             }
             else
             {
-                <span>Remotely</span>
+                <span>@Localizer["Remotely"]</span>
             }
         </div>
-        <div class="logo-subtitle">Support Portal</div>
+        <div class="logo-subtitle">@Localizer["Support Portal"]</div>
     </a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
@@ -25,19 +33,19 @@
     <ul class="nav flex-column">
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
+                <span class="oi oi-home" aria-hidden="true"></span> @Localizer["Home"]
             </NavLink>
         </li>
 
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="/RemoteControl" target="_blank">
-                <span class="oi oi-monitor" aria-hidden="true"></span> Remote Control
+                <span class="oi oi-monitor" aria-hidden="true"></span> @Localizer["Remote Control"]
             </NavLink>
 
         </li>
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="downloads">
-                <span class="oi oi-cloud-download" aria-hidden="true"></span> Downloads
+                <span class="oi oi-cloud-download" aria-hidden="true"></span> @Localizer["Downloads"]
             </NavLink>
         </li>
 
@@ -45,17 +53,17 @@
             <Authorized>
                 <li class="nav-item px-3">
                     <NavLink class="nav-link" href="scripts">
-                        <span class="oi oi-script" aria-hidden="true"></span> Scripts
+                        <span class="oi oi-script" aria-hidden="true"></span> @Localizer["Scripts"]
                     </NavLink>
                 </li>
                 <li class="nav-item px-3">
                     <NavLink class="nav-link" href="device-details">
-                        <span class="oi oi-info" aria-hidden="true"></span> Device Details
+                        <span class="oi oi-info" aria-hidden="true"></span> @Localizer["Device Details"]
                     </NavLink>
                 </li>
                 <li class="nav-item px-3">
                     <NavLink class="nav-link" href="user-options">
-                        <span class="oi oi-pencil" aria-hidden="true"></span> User Options
+                        <span class="oi oi-pencil" aria-hidden="true"></span> @Localizer["User Options"]
                     </NavLink>
                 </li>
 
@@ -65,27 +73,27 @@
         @if (_user?.IsAdministrator == true)
         {
             <li class="nav-item px-3 pt-3 small text-muted">
-                Admin
+                @Localizer["Admin"]
             </li>
 
             <li class="nav-item px-3">
                 <NavLink class="nav-link" href="manage-organization">
-                    <span class="oi oi-briefcase" aria-hidden="true"></span> Organization
+                    <span class="oi oi-briefcase" aria-hidden="true"></span> @Localizer["Organization"]
                 </NavLink>
             </li>
             <li class="nav-item px-3">
                 <NavLink class="nav-link" href="branding">
-                    <span class="oi oi-brush" aria-hidden="true"></span> Branding
+                    <span class="oi oi-brush" aria-hidden="true"></span> @Localizer["Branding"]
                 </NavLink>
             </li>
             <li class="nav-item px-3">
                 <NavLink class="nav-link" href="api-keys">
-                    <span class="oi oi-key" aria-hidden="true"></span> API Keys
+                    <span class="oi oi-key" aria-hidden="true"></span> @Localizer["API Keys"]
                 </NavLink>
             </li>
             <li class="nav-item px-3">
                 <NavLink class="nav-link" href="server-logs">
-                    <span class="oi oi-document" aria-hidden="true"></span> Server Logs
+                    <span class="oi oi-document" aria-hidden="true"></span> @Localizer["Server Logs"]
                 </NavLink>
             </li>
 
@@ -93,7 +101,7 @@
             {
                 <li class="nav-item px-3">
                     <NavLink class="nav-link" href="server-config">
-                        <span class="oi oi-wrench" aria-hidden="true"></span> Server Config
+                        <span class="oi oi-wrench" aria-hidden="true"></span> @Localizer["Server Config"]
                     </NavLink>
                 </li>
             }
@@ -103,40 +111,76 @@
             <Authorized>
                 <li class="px-3 mt-3">
                     <a class="btn btn-link text-light" href="Identity/Account/Manage">
-                        Account
+                        @Localizer["Account"]
                     </a>
                 </li>
                 <li class="px-3">
                     <form method="post" action="Identity/Account/LogOut">
-                        <button type="submit" class="btn btn-link text-light">Log out</button>
+                        <button type="submit" class="btn btn-link text-light">@Localizer["Log out"]</button>
                     </form>
                 </li>
             </Authorized>
             <NotAuthorized>
                 <li class="px-3">
-                    <a class="btn btn-link text-light" href="Identity/Account/Login">Log in</a>
+                    <a class="btn btn-link text-light" href="Identity/Account/Login">@Localizer["Log in"]</a>
                 </li>
                 @if (AppConfig.MaxOrganizationCount < 0 || DataService.GetOrganizationCount() < AppConfig.MaxOrganizationCount)
                 {
                     <li class="px-3 mt-3">
-                        <a class="btn btn-link text-light" href="Identity/Account/Register">Register</a>
+                        <a class="btn btn-link text-light" href="Identity/Account/Register">@Localizer["Register"]</a>
                     </li>
                 }
             </NotAuthorized>
         </AuthorizeView>
+        <li class="px-3">
+            <select class="form-control d-inline" @bind="Selectlanguage">
 
-        <li class="px-3 mt-3">
-            <a class="btn btn-link text-light" href="/about">About</a>
+                @foreach (var prop in AcceptLanguageCultureProvider.SupperCultureInfos)
+                {
+                    <option value="@prop.Name">@prop.NativeName  </option>
+                }
+            </select>
         </li>
+        <li class="px-3 mt-3">
+
+            <a class="btn btn-link text-light" href="/about">@Localizer["About"]</a>
+        </li>
+
     </ul>
+    <div>
+    </div>
 </div>
 
-@code {       
+@code {
     private bool collapseNavMenu = true;
     private Dictionary<string, object> _remoteControlAttributes
         = new() { ["target"] = "blank", ["href"] = "/RemoteControl" };
+    private string _selectlanguage;
+    public string Selectlanguage
+    {
+        get
+        {
+            return _selectlanguage;
+        }
+        set
+        {
+            _selectlanguage = value;
+            if (CultureInfo.CurrentCulture.Name != value)
+            {
+                var uri = new Uri(Nav.Uri)
+                    .GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped);
+                var cultureEscaped = Uri.EscapeDataString(value);
+                var uriEscaped = Uri.EscapeDataString(uri);
 
-    private RemotelyUser _user;
+                Nav.NavigateTo(
+                    $"Culture/Set?culture={cultureEscaped}&redirectUri={uriEscaped}",
+                    forceLoad: true);
+            }
+        }
+    }
+
+
+    RemotelyUser _user;
     private Organization _organization;
 
     protected override async Task OnInitializedAsync()
@@ -153,6 +197,7 @@
         {
             _organization = await DataService.GetDefaultOrganization();
         }
+        _selectlanguage = CultureInfo.CurrentCulture.Name;
     }
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;

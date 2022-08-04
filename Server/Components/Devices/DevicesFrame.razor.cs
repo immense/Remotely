@@ -278,7 +278,7 @@ namespace Remotely.Server.Components.Devices
 
         private string GetDisplayName(PropertyInfo propInfo)
         {
-            return propInfo.GetCustomAttribute<DisplayAttribute>()?.Name ?? propInfo.Name;
+            return Localizer[propInfo.GetCustomAttribute<DisplayAttribute>()?.Name ?? propInfo.Name];
         }
 
         private string GetSortIcon()
@@ -289,7 +289,7 @@ namespace Remotely.Server.Components.Devices
         private void HandleRefreshClicked()
         {
             Refresh();
-            ToastService.ShowToast("Devices refreshed.");
+            ToastService.ShowToast(Localizer["Devices refreshed."]);
         }
 
         private void LoadDevices()

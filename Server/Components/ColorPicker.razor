@@ -1,7 +1,8 @@
 ﻿@using Remotely.Server.Models
- 
+ @using Microsoft.Extensions.Localization
+@inject IStringLocalizer Localizer
 <div>
-    <div>Color Sample:</div>
+    <div>@Localizer["Color Sample"]:</div>
     <div class="color-sample mb-2" style="background-color:@($"rgb({Red},{Green},{Blue})")"></div>
 
     <div>Red</div>

@@ -81,7 +81,7 @@ namespace Remotely.Server.Pages
                 return;
             }
 
-            ToastService.ShowToast("Device group created.");
+            ToastService.ShowToast(Localizer["Device group created."]);
             _deviceGroups.Add(deviceGroup);
             _newDeviceGroupName = string.Empty;
         }
@@ -95,7 +95,7 @@ namespace Remotely.Server.Pages
 
             var isDefault = (bool)args.Value;
             DataService.SetIsDefaultOrganization(_organization.ID, isDefault);
-            ToastService.ShowToast("Default organization set.");
+            ToastService.ShowToast(Localizer["Default organization set."]);
         }
 
         private async Task DeleteInvite(InviteLink invite)
@@ -105,7 +105,7 @@ namespace Remotely.Server.Pages
                 return;
             }
 
-            var result = await JsInterop.Confirm("Are you sure you want to delete this invitation?");
+            var result = await JsInterop.Confirm(Localizer["Are you sure you want to delete this invitation?"]);
             if (!result)
             {
                 return;
@@ -113,7 +113,7 @@ namespace Remotely.Server.Pages
 
             DataService.DeleteInvite(User.OrganizationID, invite.ID);
             _invites.RemoveAll(x => x.ID == invite.ID);
-            ToastService.ShowToast("Invitation deleted.");
+            ToastService.ShowToast(Localizer["Invitation deleted."]);
         }
 
         private async Task DeleteSelectedDeviceGroup()
@@ -128,7 +128,7 @@ namespace Remotely.Server.Pages
                 return;
             }
 
-            var result = await JsInterop.Confirm("Are you sure you want to delete this device group?");
+            var result = await JsInterop.Confirm(Localizer["Are you sure you want to delete this device group?"]);
             if (!result)
             {
                 return;
@@ -148,11 +148,11 @@ namespace Remotely.Server.Pages
 
             if (User.Id == user.Id)
             {
-                ToastService.ShowToast("You can't delete yourself.", classString: "bg-warning");
+                ToastService.ShowToast(Localizer["You can't delete yourself."], classString: "bg-warning");
                 return;
             }
 
-            var result = await JsInterop.Confirm("Are you sure you want to delete this user?");
+            var result = await JsInterop.Confirm(Localizer["Are you sure you want to delete this user?"]);
             if (!result)
             {
                 return;
@@ -160,7 +160,7 @@ namespace Remotely.Server.Pages
 
             await DataService.DeleteUser(User.OrganizationID, user.Id);
             _orgUsers.RemoveAll(x => x.Id == user.Id);
-            ToastService.ShowToast("User deleted.");
+            ToastService.ShowToast(Localizer["User deleted."]);
         }
 
         private async Task EditDeviceGroups(RemotelyUser user)
@@ -174,7 +174,7 @@ namespace Remotely.Server.Pages
                 builder.AddAttribute(2, EditDeviceGroup.DeviceGroupsPropName, deviceGroups);
                 builder.CloseComponent();
             }
-            await ModalService.ShowModal("Device Groups", editDeviceGroupsModal);
+            await ModalService.ShowModal(Localizer["Device Groups"], editDeviceGroupsModal);
         }
 
         private async Task EvaluateInviteInputKeypress(KeyboardEventArgs args)
@@ -207,14 +207,14 @@ namespace Remotely.Server.Pages
 
             if (newName.Length > 25)
             {
-                ToastService.ShowToast("Must be 25 characters or less.",
+                ToastService.ShowToast(Localizer["Must be 25 characters or less."],
                     classString: "bg-warning");
                 return;
             }
 
             DataService.UpdateOrganizationName(_organization.ID, newName);
             _organization.OrganizationName = newName;
-            ToastService.ShowToast("Organization name changed.");
+            ToastService.ShowToast(Localizer["Organization name changed."]);
         }
 
         private async Task RefreshData()
@@ -241,11 +241,11 @@ namespace Remotely.Server.Pages
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
             var resetUrl = $"{NavManager.BaseUri}Identity/Account/ResetPassword?code={code}";
 
-            await ModalService.ShowModal("Password Reset", builder =>
+            await ModalService.ShowModal(Localizer["Password Reset"], builder =>
             {
-                builder.AddMarkupContent(0, $@"<div class=""mb-3"">Password Reset URL:</div>
+                builder.AddMarkupContent(0, $@"<div class=""mb-3"">{Localizer["Password Reset URL:"]}</div>
                     <input readonly value=""{resetUrl}"" class=""form-control"" /> 
-                    <div class=""mt-3"">NOTE: Give this URL to the user.  They must be logged out completely for it to work.</div>");
+                    <div class=""mt-3"">{Localizer["NOTE: Give this URL to the user.  They must be logged out completely for it to work."]}</div>");
             });
         }
 
@@ -269,12 +269,12 @@ namespace Remotely.Server.Pages
 
                     _inviteAsAdmin = false;
                     _inviteEmail = string.Empty;
-                    ToastService.ShowToast("User account created.");
+                    ToastService.ShowToast(Localizer["User account created."]);
                     return;
                 }
                 else
                 {
-                    ToastService.ShowToast("Create user failed.", classString: "bg-danger");
+                    ToastService.ShowToast(Localizer["Create user failed."], classString: "bg-danger");
                     return;
                 }
             }
@@ -300,7 +300,7 @@ namespace Remotely.Server.Pages
                         User.OrganizationID);
                 if (emailResult)
                 {
-                    ToastService.ShowToast("Invitation sent.");
+                    ToastService.ShowToast(Localizer["Invitation sent."]);
                     
                     _inviteAsAdmin = false;
                     _inviteEmail = string.Empty;
@@ -308,7 +308,7 @@ namespace Remotely.Server.Pages
                 }
                 else
                 {
-                    ToastService.ShowToast("Error sending invititation email.", classString: "bg-danger");
+                    ToastService.ShowToast(Localizer["Error sending invititation email."], classString: "bg-danger");
                 }
             }
         }
@@ -322,58 +322,50 @@ namespace Remotely.Server.Pages
 
             var isAdmin = (bool)args.Value;
             DataService.ChangeUserIsAdmin(User.OrganizationID, orgUser.Id, isAdmin);
-            ToastService.ShowToast("Administrator value set.");
+            ToastService.ShowToast(Localizer["Administrator value set."]);
         }
 
         private void ShowDefaultOrgHelp()
         {
-            ModalService.ShowModal("Default Organization", new[]
+            ModalService.ShowModal(Localizer["Default Organization"], new[]
             {
-                @"This option is only available for server administrators.  When selected,
-                it sets this organization as the default for the server.  If the organization can't
-                be determined in the quick support apps, they will use the default organization's branding."
+                 Localizer["ShowDefaultOrgHelp"].Value
+               // Localizer[@"This option is only available for server administrators.  When selected, it sets this organization as the default for the server.  If the organization can't be determined in the quick support apps, they will use the default organization's branding."].Value
             });
         }
 
         private void ShowDeviceGroupHelp()
         {
-            ModalService.ShowModal("Device Groups", new[]
+            ModalService.ShowModal(Localizer["Device Groups"], new[]
            {
-                "Device groups can be used to restrict user permissions and to filter computers on " +
-                "the main page.",
-                "Everyone will have access to devices that are not in a group.  Only " +
-                "administrators and users in a device group will have access to devices in that group."
+               Localizer["DeviceGroupHelp"].Value
+               //Localizer["Device groups can be used to restrict user permissions and to filter computers on the main page. Everyone will have access to devices that are not in a group.  Only administrators and users in a device group will have access to devices in that group."].Value
             });
         }
 
         private void ShowInvitesHelp()
         {
-            ModalService.ShowModal("Invitations", new[]
+            ModalService.ShowModal(Localizer["Invitations"], new[]
            {
-                "All pending invitations will be shown here and can be revoked by deleting them.",
-
-                "If a user does not exist, sending an invite will create their account and add them to the current organization. " +
-                "A password reset URL can be generated from the user table.",
-
-                "The Admin checkbox determines if the new user will have administrator privileges in this organization."
+                Localizer["ShowInvitesHelp"].Value
+               // "All pending invitations will be shown here and can be revoked by deleting them. If a user does not exist, sending an invite will create their account and add them to the current organization.A password reset URL can be generated from the user table.The Admin checkbox determines if the new user will have administrator privileges in this organization."
             });
         }
 
         private void ShowRelayCodeHelp()
         {
-            ModalService.ShowModal("Relay Code", new[]
+            ModalService.ShowModal(Localizer["Relay Code"], new[]
             {
-                @"This relay code will be appended to EXE filenames.  If the clients were built
-                from source and have the server URL embedded, they will use this code to look
-                up your organization's branding to use."
+                Localizer["ShowRelayCodeHelp"].Value
+                //@"This relay code will be appended to EXE filenames.  If the clients were built from source and have the server URL embedded, they will use this code to look up your organization's branding to use."
             });
         }
         private void ShowUsersHelp()
         {
-            ModalService.ShowModal("Users", new[]
+            ModalService.ShowModal(Localizer["Users"], new[]
             {
-                "All users for the organization are managed here",
-                "Administrators will have access to this management screen as well as all computers."
+                 Localizer["ShowUsersHelp"].Value
+               // "All users for the organization are managed here Administrators will have access to this management screen as well as all computers."
             });
         }
     }

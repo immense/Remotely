@@ -1,6 +1,7 @@
 ﻿@inherits AuthComponentBase
 @attribute [Authorize]
-
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer Localizer
 <div class="outer-grid mt-3 auto-height">
     <EditForm Model="_selectedScript" OnValidSubmit="OnValidSubmit" class="h-100 pb-3">
         <div class="h-100 left-outer-grid">
@@ -17,7 +18,7 @@
                     </div>
 
                     <div class="mt-2 col-md-6 col-lg-4">
-                        <label>Shell</label>
+                        <label>@Localizer["Shell"]</label>
                         <InputSelect class="form-control" DisplayName="Shell" @bind-Value="_selectedScript.Shell">
                             @foreach (var shell in Enum.GetValues<ScriptingShell>())
                             {
@@ -28,32 +29,32 @@
                     </div>
 
                     <div class="mt-2 col-md-6 col-lg-4">
-                        <label>Script Name</label>
+                        <label>@Localizer["Script Name"]</label>
                         <InputText class="form-control" DisplayName="Script Name" @bind-Value="_selectedScript.Name" placeholder="Script name" />
                         <ValidationMessage For="() => _selectedScript.Name" />
                     </div>
 
                     <div class="mt-2 col-md-6 col-lg-4">
-                        <label>Folder Path</label>
+                        <label>@Localizer["Folder Path"]</label>
                         <InputText class="form-control" DisplayName="Folder Path" @bind-Value="_selectedScript.FolderPath" placeholder="Example: or/portland/quick burger #5" />
                         <ValidationMessage For="() => _selectedScript.FolderPath" />
                     </div>
 
 
                     <div class="mt-2 col-md-6 col-lg-4">
-                        <label>Public?</label>
+                        <label>@Localizer["Public?"]</label>
                         <br />
                         <InputCheckbox DisplayName="Public?" @bind-Value="_selectedScript.IsPublic" />
                         <ValidationMessage For="() => _selectedScript.IsPublic" />
                     </div>
                     <div class="mt-2 col-md-6 col-lg-4">
-                        <label>Quick Script?</label>
+                        <label>@Localizer["Quick Script?"]</label>
                         <br />
                         <InputCheckbox DisplayName="Quick Script?" @bind-Value="_selectedScript.IsQuickScript" />
                         <ValidationMessage For="() => _selectedScript.IsQuickScript" />
                     </div>
                     <div class="mt-2 col-md-6 col-lg-4">
-                        <label>Creator</label>
+                        <label>@Localizer["Creator"]</label>
                         <br />
                         <input class="form-control" readonly value="@_selectedScript.Creator?.UserName" />
                     </div>
@@ -61,24 +62,24 @@
                         <button class="btn btn-primary"
                                 type="submit"
                                 disabled="@(!CanModifyScript)">
-                            Save
+                            @Localizer["Save"]
                         </button>
 
                         <button class="btn btn-success ml-3" type="button" @onclick="CreateNew">
-                            New
+                            @Localizer["New"]
                         </button>
                         <button class="btn btn-danger ml-3" type="button"
                                 disabled="@(!CanDeleteScript)"
                                 @onclick="DeleteSelectedScript">
-                            Delete
+                           @Localizer["Delete"]
                         </button>
                     </div>
                     <div class="mt-2 col-12">
                         <button type="button" class="btn btn-link mr-3" @onclick="ToggleAlertOptionsShown">
-                            Alert Options
+                            @Localizer["Alert Options"]
                         </button>
                         <button type="button" class="btn btn-link" @onclick="ToggleEnvironmentVarsShown">
-                            Environment Variables
+                            @Localizer["Environment Variables"]
                         </button>
                     </div>
                     <div class="my-2 col-12 collapse @_alertOptionsShowClass">
@@ -90,12 +91,12 @@
                         </h5>
                         <div class="row">
                             <div class="mt-2 col-md-6">
-                                <label>Send Email</label>
+                                <label>@Localizer["Send Email"]</label>
                                 <br />
                                 <InputCheckbox DisplayName="Send Email on Error" @bind-Value="_selectedScript.SendEmailOnError" />
                                 <ValidationMessage For="() => _selectedScript.SendEmailOnError" />
                                 <br />
-                                to
+                                @Localizer["to"]
                                 <br />
                                 <InputText type="email"
                                            class="form-control"
@@ -105,7 +106,7 @@
                                 <ValidationMessage For="() => _selectedScript.SendErrorEmailTo" />
                             </div>
                             <div class="mt-2 col-md-6">
-                                <label>Generate Alert</label>
+                                <label>@Localizer["Generate Alert"]</label>
                                 <br />
                                 <InputCheckbox DisplayName="Alert on Error" @bind-Value="_selectedScript.GenerateAlertOnError" />
                                 <ValidationMessage For="() => _selectedScript.GenerateAlertOnError" />
@@ -113,15 +114,15 @@
                         </div>
                     </div>
                     <div class="my-2 col-12 collapse @_environmentVarsShowClass">
-                        <h5>Environment Variables</h5>
+                        <h5>@Localizer["Environment Variables"]</h5>
                         <div class="row">
                             <div class="mt-2 col-md-6">
-                                <div>Device ID</div>
+                                <div>@Localizer["Device ID"]</div>
                                 <div class="small text-muted mt-1">The device ID (GUID) of the computer currently running the script.</div>
                                 <input type="text" readonly class="form-control" value="DeviceId" />
                             </div>
                             <div class="mt-2 col-md-6">
-                                <div>Server URL</div>
+                                <div>@Localizer["Server URL"]</div>
                                 <div class="small text-muted mt-1">The URL of the server that the device connects to (e.g. https://app.remotely.one).</div>
                                 <input type="text" readonly class="form-control" value="ServerUrl" />
                             </div>
@@ -136,17 +137,17 @@
                                class="h-100 w-100"
                                spellcheck="false"
                                autocomplete="off"
-                               placeholder="Enter script text here" />
+                               placeholder="@Localizer["Enter script text here"]" />
                 <ValidationMessage For="() => _selectedScript.Content" />
             </div>
         </div>
     </EditForm>
     <div class="tree-view-wrapper-grid h-100 pb-3">
         <div>
-            <h5>Saved Scripts</h5>
+            <h5>@Localizer["Saved Scripts"]</h5>
             <div>
                 <input type="checkbox" @bind="ParentPage.ShowOnlyMyScripts" />
-                <span class="align-top">Show only mine</span>
+                <span class="align-top">@Localizer["Show only mine"]</span>
             </div>
         </div>
         <TreeView DataSource="ParentPage.TreeNodes"

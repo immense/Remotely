@@ -1,7 +1,8 @@
 ﻿@using Remotely.Server.Components 
 @using Remotely.Server.Auth 
 @inherits LayoutComponentBase
-
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer Localizer
 <AuthorizeView Policy="@TwoFactorRequiredRequirement.PolicyName">
     <Authorized>
             <div class="page">
@@ -22,14 +23,14 @@
     </Authorized>
     <NotAuthorized>
         <div class="container mt-5">
-            <h3>Two-Factor Authentication Required</h3>
+            <h3>@Localizer["Two-Factor Authentication Required"]</h3>
 
             <hr />
             <div class="row">
                 <div class="col-sm-12">
-                    <p>Two-factor authentication is required.  Click the button below to set up your authenticator app.</p>
+                    <p>@Localizer["Two-factor authentication is required.  Click the button below to set up your authenticator app."]</p>
                     <p>
-                        <a href="/Identity/Account/Manage/TwoFactorAuthentication" class="btn btn-primary">Enable 2FA</a>
+                        <a href="/Identity/Account/Manage/TwoFactorAuthentication" class="btn btn-primary">@Localizer["Enable 2FA"]</a>
                     </p>
                 </div>
             </div>

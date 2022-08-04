@@ -2,25 +2,26 @@
 
 @attribute [Authorize]
 @inherits AuthComponentBase
-
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer Localizer
 
 @if (User?.IsServerAdmin == true)
 {
     <AlertBanner Message="@_alertMessage" />
 
-    <h3 class="mt-3">Server Info</h3>
+    <h3 class="mt-3">@Localizer["Server Info"]</h3>
 
     <div class="row">
         <div class="col-md-8">
             <div class="mb-4" style="display:flex; justify-content: space-evenly">
                 <div class="d-inline-block text-center mr-2">
-                    <label>Devices Online</label>
+                    <label>@Localizer["Devices Online"]</label>
                     <br />
                     <span class="badge badge-primary p-2">@AgentHub.ServiceConnections.Count</span>
                 </div>
              
                 <div class="d-inline-block text-center mr-2">
-                    <label>Devices Outdated</label>
+                    <label>@Localizer["Devices Outdated"]</label>
                     <br />
 
                     <button class="btn btn-sm btn-secondary" @onclick="ShowOutdatedDevices">
@@ -33,12 +34,12 @@
                 </div>
 
                 <div class="d-inline-block text-center mr-2">
-                    <label>Devices Total</label>
+                    <label>@Localizer["Devices Total"]</label>
                     <br />
                     <span class="badge badge-primary p-2">@TotalDevices</span>
                 </div>
                 <div class="d-inline-block text-center mr-2">
-                    <label>Active Users</label>
+                    <label>@Localizer["Active Users"]</label>
                     <br />
                     <span class="badge badge-primary p-2">@CircuitManager.Connections.Count</span>
                 </div>
@@ -48,19 +49,19 @@
 
     <div class="row">
         <div class="col-md-8">
-            <h3 class="mt3">Server Admins</h3>
+            <h3 class="mt3">@Localizer["Server Admins"]</h3>
 
             <div class="form-group">
-                <label class="control-label">Server Admins</label>
+                <label class="control-label">@Localizer["Server Admins"]</label>
                 <br />
 
                 <div class="small">
                     <input class="align-middle mr-1" type="checkbox" @bind="_showMyOrgAdminsOnly" />
-                    <span class="align-middle">Show my organization only</span>
+                    <span class="align-middle">@Localizer["Show my organization only"]</span>
                 </div>
                 <div class="small">
                     <input class="align-middle mr-1" type="checkbox" @bind="_showAdminsOnly" />
-                    <span class="align-middle">Show current admins only</span>
+                    <span class="align-middle">@Localizer["Show current admins only"]</span>
                 </div>
 
                 <br />
@@ -82,20 +83,20 @@
             <EditForm Model="Input" OnValidSubmit="HandleValidSubmit" autocomplete="off">
                 <DataAnnotationsValidator />
 
-                <h3 class="mt-3">Application Settings</h3>
+                <h3 class="mt-3">@Localizer["Application Settings"]</h3>
 
                 <ValidationSummary Model="Input" />
 
 
                 <div class="form-group">
-                    <label>Allow API Login</label>
+                    <label>@Localizer["Allow API Login"]</label>
                     <br />
                     <InputCheckbox @bind-Value="Input.AllowApiLogin" autocomplete="off" />
                     <br />
                     <ValidationMessage For="() => Input.AllowApiLogin" />
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Banned Devices</label>
+                    <label class="control-label">@Localizer["Banned Devices"]</label>
                     <br />
                     <select size="4" class="form-control" @bind="_bannedDeviceSelected">
                         @foreach (var bannedDevice in Input.BannedDevices)
@@ -105,27 +106,27 @@
                     </select>
 
                     <div class="text-right mb-2 mt-1">
-                        <button type="button" class="btn btn-secondary" @onclick="RemoveBannedDevice">Remove</button>
+                        <button type="button" class="btn btn-secondary" @onclick="RemoveBannedDevice">@Localizer["Remove"]</button>
                     </div>
                     <div class="input-group">
-                        <input placeholder="Add banned device ID, name, or IP"
+                        <input placeholder="@Localizer["Add banned device ID, name, or IP"]"
                                class="form-control" autocomplete="off"
                                @bind="_bannedDeviceToAdd"
                                @bind:event="oninput"
                                @onkeydown="HandleBannedDeviceKeyDown" />
-                        <button type="button" class="btn btn-secondary" @onclick="AddBannedDevice">Add</button>
+                        <button type="button" class="btn btn-secondary" @onclick="AddBannedDevice">@Localizer["Add"]</button>
                     </div>
                     <ValidationMessage For="() => Input.BannedDevices" />
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Data Retention in Days</label>
+                    <label class="control-label">@Localizer["Data Retention in Days"]</label>
                     <br />
                     <InputNumber @bind-Value="Input.DataRetentionInDays" class="form-control" autocomplete="off" />
                     <br />
                     <ValidationMessage For="() => Input.DataRetentionInDays" />
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Database Provider</label>
+                    <label class="control-label">@Localizer["Database Provider"]</label>
                     <br />
                     <select class="form-control" @bind="Input.DBProvider">
                         @foreach (var provider in Enum.GetValues<DbProvider>())
@@ -137,21 +138,21 @@
                     <ValidationMessage For="() => Input.DBProvider" />
                 </div>
                 <div class="form-group">
-                    <label>Enable Windows Event Log</label>
+                    <label>@Localizer["Enable Windows Event Log"]</label>
                     <br />
                     <InputCheckbox @bind-Value="Input.EnableWindowsEventLog" autocomplete="off" />
                     <br />
                     <ValidationMessage For="() => Input.EnableWindowsEventLog" />
                 </div>
                 <div class="form-group">
-                    <label>Enforce Attended Access</label>
+                    <label>@Localizer["Enforce Attended Access"]</label>
                     <br />
                     <InputCheckbox @bind-Value="Input.EnforceAttendedAccess" autocomplete="off" />
                     <br />
                     <ValidationMessage For="() => Input.EnforceAttendedAccess" />
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Known Proxies</label>
+                    <label class="control-label">@Localizer["Known Proxies"]</label>
                     <br />
                     <select class="form-control" @bind="_knownProxySelected" size="4">
                         @foreach (var proxy in Input.KnownProxies)
@@ -160,7 +161,7 @@
                         }
                     </select>
                     <div class="text-right mb-2 mt-1">
-                        <button type="button" class="btn btn-secondary" @onclick="RemoveKnownProxy">Remove</button>
+                        <button type="button" class="btn btn-secondary" @onclick="RemoveKnownProxy">@Localizer["Remove"]</button>
                     </div>
                     <div class="input-group">
                         <input @bind="_knownProxyToAdd"
@@ -170,98 +171,98 @@
                                autocomplete="off"
                                @onkeydown="HandleKnownProxyKeyDown" />
 
-                        <button type="button" class="btn btn-secondary" @onclick="AddKnownProxy">Add</button>
+                        <button type="button" class="btn btn-secondary" @onclick="AddKnownProxy">@Localizer["Add"]</button>
                     </div>
                     <ValidationMessage For="() => Input.KnownProxies" />
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Max Organization Count</label>
+                    <label class="control-label">@Localizer["Max Organization Count"]</label>
                     <br />
                     <InputNumber @bind-Value="Input.MaxOrganizationCount" class="form-control" autocomplete="off" />
                     <br />
                     <ValidationMessage For="() => Input.MaxOrganizationCount" />
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Max Concurrent Updates</label>
+                    <label class="control-label">@Localizer["Max Concurrent Updates"]</label>
                     <br />
                     <InputNumber @bind-Value="Input.MaxConcurrentUpdates" class="form-control" autocomplete="off" />
                     <br />
                     <ValidationMessage For="() => Input.MaxConcurrentUpdates" />
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Message of the Day</label>
+                    <label class="control-label">@Localizer["Message of the Day"]</label>
                     <br />
                     <InputText @bind-Value="Input.MessageOfTheDay" class="form-control" autocomplete="off" />
                     <br />
                     <ValidationMessage For="() => Input.MessageOfTheDay" />
                 </div>
                 <div class="form-group">
-                    <label>Redirect to HTTPS</label>
+                    <label>@Localizer["Redirect to HTTPS"]</label>
                     <br />
                     <InputCheckbox @bind-Value="Input.RedirectToHttps" autocomplete="off" />
                     <br />
                     <ValidationMessage For="() => Input.RedirectToHttps" />
                 </div>
                 <div class="form-group">
-                    <label>Remote Control Notify User</label>
+                    <label>@Localizer["Remote Control Notify User"]</label>
                     <br />
                     <InputCheckbox @bind-Value="Input.RemoteControlNotifyUser" autocomplete="off" />
                     <br />
                     <ValidationMessage For="() => Input.RemoteControlNotifyUser" />
                 </div>
                 <div class="form-group">
-                    <label>Require Authentication on Remote Control Page</label>
+                    <label>@Localizer["Require Authentication on Remote Control Page"]</label>
                     <br />
                     <InputCheckbox @bind-Value="Input.RemoteControlRequiresAuthentication" autocomplete="off" />
                     <br />
                     <ValidationMessage For="() => Input.RemoteControlRequiresAuthentication" />
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Remote Control Session Limit</label>
+                    <label class="control-label">@Localizer["Remote Control Session Limit"]</label>
                     <br />
                     <InputNumber @bind-Value="Input.RemoteControlSessionLimit" class="form-control" autocomplete="off" />
                     <br />
                     <ValidationMessage For="() => Input.RemoteControlSessionLimit" />
                 </div>
                 <div class="form-group">
-                    <label>Require 2FA</label>
+                    <label>@Localizer["Require 2FA"]</label>
                     <br />
                     <InputCheckbox @bind-Value="Input.Require2FA" autocomplete="off" />
                     <br />
                     <ValidationMessage For="() => Input.Require2FA" />
                 </div>
                 <div class="form-group">
-                    <label class="control-label">SMTP Display Name</label>
+                    <label class="control-label">@Localizer["SMTP Display Name"]</label>
                     <br />
                     <InputText @bind-Value="Input.SmtpDisplayName" class="form-control" autocomplete="off" />
                     <br />
                     <ValidationMessage For="() => Input.SmtpDisplayName" />
                 </div>
                 <div class="form-group">
-                    <label class="control-label">SMTP Email</label>
+                    <label class="control-label">@Localizer["SMTP Email"]</label>
                     <br />
                     <InputText type="email" @bind-Value="Input.SmtpEmail" class="form-control" autocomplete="off" />
                     <br />
                     <ValidationMessage For="() => Input.SmtpEmail" />
                 </div>
                 <div class="form-group">
-                    <label class="control-label">SMTP Host</label>
+                    <label class="control-label">@Localizer["SMTP Host"]</label>
                     <br />
                     <InputText @bind-Value="Input.SmtpHost" class="form-control" autocomplete="off" />
                     <br />
                     <ValidationMessage For="() => Input.SmtpHost" />
                 </div>
                 <div class="form-group">
-                    <label class="control-label">SMTP Port</label>
+                    <label class="control-label">@Localizer["SMTP Port"]</label>
                     <br />
                     <InputNumber @bind-Value="Input.SmtpPort" class="form-control" autocomplete="off" />
                     <br />
                     <ValidationMessage For="() => Input.SmtpPort" />
                 </div>
                 <div class="form-group">
-                    <label class="control-label">SMTP Check Certificate Revocation</label>
+                    <label class="control-label">@Localizer["SMTP Check Certificate Revocation"]</label>
                     <div class="small text-muted">
-                        This sometimes needs to be disabled for Let's Encrypt certificates.
+                        @Localizer["This sometimes needs to be disabled for Let's Encrypt certificates."]
                     </div>
                     <br />
                     <InputCheckbox @bind-Value="Input.SmtpCheckCertificateRevocation" autocomplete="off" />
@@ -269,31 +270,31 @@
                     <ValidationMessage For="() => Input.SmtpCheckCertificateRevocation" />
                 </div>
                 <div class="form-group">
-                    <label class="control-label">SMTP Local Domain</label>
+                    <label class="control-label">@Localizer["SMTP Local Domain"]</label>
                     <br />
                     <InputText @bind-Value="Input.SmtpLocalDomain" class="form-control" autocomplete="off" />
                     <br />
                     <ValidationMessage For="() => Input.SmtpLocalDomain" />
                 </div>
                 <div class="form-group">
-                    <label class="control-label">SMTP Username</label>
+                    <label class="control-label">@Localizer["SMTP Username"]</label>
                     <br />
                     <InputText @bind-Value="Input.SmtpUserName" class="form-control" autocomplete="new-password" />
                     <br />
                     <ValidationMessage For="() => Input.SmtpUserName" />
                 </div>
                 <div class="form-group">
-                    <label class="control-label">SMTP Password</label>
+                    <label class="control-label">@Localizer["SMTP Password"]</label>
                     <br />
                     <InputText type="password" @bind-Value="Input.SmtpPassword" class="form-control" autocomplete="new-password" />
                     <br />
                     <ValidationMessage For="() => Input.SmtpPassword" />
                 </div>
                 <div class="form-group text-right">
-                    <button id="sendTestEmailButton" type="button" class="btn btn-secondary" @onclick="SaveAndTestSmtpSettings">Test</button>
+                    <button id="sendTestEmailButton" type="button" class="btn btn-secondary" @onclick="SaveAndTestSmtpSettings">@Localizer["Test"]</button>
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Theme</label>
+                    <label class="control-label">@Localizer["Theme"]</label>
                     <br />
                     <select class="form-control" @bind="Input.Theme">
                         @foreach (var theme in Enum.GetValues<Theme>())
@@ -306,7 +307,7 @@
                     <ValidationMessage For="() => Input.Theme" />
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Trusted CORS Origins</label>
+                    <label class="control-label">@Localizer["Trusted CORS Origins"]</label>
                     <br />
                     <select class="form-control" @bind="_trustedCorsOriginSelected" size="4">
                         @foreach (var origin in Input.TrustedCorsOrigins)
@@ -316,22 +317,22 @@
                     </select>
 
                     <div class="text-right mb-2 mt-1">
-                        <button type="button" class="btn btn-secondary" @onclick="RemoveTrustedCorsOrigin">Remove</button>
+                        <button type="button" class="btn btn-secondary" @onclick="RemoveTrustedCorsOrigin">@Localizer["Remove"]</button>
                     </div>
                     <div class="input-group">
-                        <input placeholder="Add trusted URL"
+                        <input placeholder="@Localizer["Add trusted URL"]"
                                class="form-control"
                                autocomplete="off"
                                @bind="_trustedCorsOriginToAdd"
                                @bind:event="oninput"
                                @onkeydown="HandleTrustedCorsKeyDown" />
 
-                        <button id="trustedCorsAddButton" type="button" class="btn btn-secondary" @onclick="AddTrustedCorsOrigin">Add</button>
+                        <button id="trustedCorsAddButton" type="button" class="btn btn-secondary" @onclick="AddTrustedCorsOrigin">@Localizer["Add"]</button>
                     </div>
                     <ValidationMessage For="() => Input.TrustedCorsOrigins" />
                 </div>
                 <div class="form-group">
-                    <label>Use HSTS</label>
+                    <label>@Localizer["Use HSTS"]</label>
                     <br />
                     <InputCheckbox @bind-Value="Input.UseHsts" autocomplete="off" />
                     <br />
@@ -339,7 +340,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Use WebRTC</label>
+                    <label>@Localizer["Use WebRTC"]</label>
                     <br />
                     <InputCheckbox @bind-Value="Input.UseWebRtc" autocomplete="off" />
                     <br />
@@ -347,15 +348,15 @@
                 </div>
 
                 <div class="form-group">
-                    <label>ICE Servers</label>
+                    <label>@Localizer["ICE Servers"]</label>
                     <br />
-                    <span class="text-muted">Must be edited in appsettings.json.</span>
+                    <span class="text-muted">@Localizer["Must be edited in appsettings.json."]</span>
                 </div>
 
-                <h4>Connection Strings</h4>
+                <h4>@Localizer["Connection Strings"]</h4>
 
                 <div class="form-group">
-                    <label class="control-label">PostgreSQL</label>
+                    <label class="control-label">@Localizer["PostgreSQL"]</label>
                     <br />
                     <InputText @bind-Value="ConnectionStrings.PostgreSQL" class="form-control" autocomplete="off" />
                     <br />
@@ -363,7 +364,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="control-label">SQLite</label>
+                    <label class="control-label">@Localizer["SQLite"]</label>
                     <br />
                     <InputText @bind-Value="ConnectionStrings.SQLite" class="form-control" autocomplete="off" />
                     <br />
@@ -372,7 +373,7 @@
 
 
                 <div class="form-group">
-                    <label class="control-label">SQL Server</label>
+                    <label class="control-label">@Localizer["SQL Server"]</label>
                     <br />
                     <InputText @bind-Value="ConnectionStrings.SQLServer" class="form-control" autocomplete="off" />
                     <br />
@@ -381,7 +382,7 @@
 
 
                 <div class="form-group mt-3">
-                    <button type="button" class="btn btn-primary" @onclick="Save">Save</button>
+                    <button type="button" class="btn btn-primary" @onclick="Save">@Localizer["Save"]</button>
                 </div>
             </EditForm>
         </div>
@@ -390,5 +391,5 @@
 }
 else
 {
-    <h5 class="text-muted">Only organization administrators can view this page.</h5>
+    <h5 class="text-muted">@Localizer["Only organization administrators can view this page."]</h5>
 }

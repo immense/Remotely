@@ -2,18 +2,19 @@
 @inherits AuthComponentBase
 @using System.Collections
 @inject IDataService DataService 
-
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer Localizer
 <CascadingValue Value="this">
     <TabControl InitialActiveTab="@(ActiveTab ?? "saved-scripts")">
         <TabHeaders>
             <TabHeader Name="saved-scripts" NavigationUri="/scripts/saved-scripts">
-                Saved Scripts
+                @Localizer["Saved Scripts"]
             </TabHeader>
             <TabHeader Name="run-script" NavigationUri="/scripts/run-script">
-                Run Script
+                @Localizer["Run Script"]
             </TabHeader>
             <TabHeader Name="script-schedules" NavigationUri="/scripts/script-schedules">
-                Script Schedules
+                @Localizer["Script Schedules"]
             </TabHeader>
         </TabHeaders>
         <TabContents>

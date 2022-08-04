@@ -1,17 +1,18 @@
 ﻿@inherits AuthComponentBase
-
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer Localizer
 <div class="terminal-frame @_terminalOpenClass">
     <div class="terminal-header">
         <div>
             <button class="btn btn-secondary terminal-button ml-4" @onclick="ToggleTerminalOpen">
                 <i class="oi oi-terminal"></i>
-                <span class="ml-2">Terminal</span>
+                <span class="ml-2">@Localizer["Terminal"]</span>
             </button>
         </div>
         <div class="text-right">
             <button class="btn btn-secondary terminal-button mr-4" @onclick="ShowQuickScripts">
                 <i class="oi oi-script"></i>
-                <span class="ml-2">Quick Scripts</span>
+                <span class="ml-2">@Localizer["Quick Scripts"]</span>
             </button>
         </div>
 
@@ -49,7 +50,7 @@
                 <div>
                     <input @ref="_terminalInput" 
                            class="form-control" 
-                           placeholder="Enter a terminal command"
+                           placeholder="@Localizer["Enter a terminal command"]"
                            spellcheck="false"
                            autocomplete="off"
                            @bind="InputText" 

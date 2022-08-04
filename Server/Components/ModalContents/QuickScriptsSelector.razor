@@ -1,4 +1,6 @@
-﻿<select class="form-control mb-3" @bind="_selectedScriptId">
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer Localizer
+<select class="form-control mb-3" @bind="_selectedScriptId">
     @foreach (var script in QuickScripts)
     {
         <option @key="script.Id" value="@script.Id">@script.Name</option>
@@ -6,7 +8,7 @@
 </select>
 
 <div class="text-right">
-    <button class="btn btn-primary" @onclick="RunScriptClicked">Run</button>
+    <button class="btn btn-primary" @onclick="RunScriptClicked">@Localizer["Run"]</button>
 </div>
 
 @code {
