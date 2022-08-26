@@ -65,7 +65,7 @@ namespace Remotely.Agent.Services
                 _connectionInfo = _configService.GetConnectionInfo();
 
                 _hubConnection = new HubConnectionBuilder()
-                    .WithUrl(_connectionInfo.Host + "/AgentHub")
+                    .WithUrl(_connectionInfo.Host + "/hubs/service")
                     .AddMessagePackProtocol()
                     .Build();
 

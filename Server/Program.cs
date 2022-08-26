@@ -227,11 +227,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseCors("TrustedOriginPolicy");
 
+app.UseRemoteControlServer();
+
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapHub<AgentHub>("/AgentHub");
-    endpoints.MapHub<CasterHub>("/CasterHub");
-    endpoints.MapHub<ViewerHub>("/ViewerHub");
+    endpoints.MapHub<AgentHub>("/hubs/service");
 
     endpoints.MapControllers();
     endpoints.MapBlazorHub();

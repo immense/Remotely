@@ -69,7 +69,7 @@ namespace Remotely.Desktop.Core.Services
                     catch { }
                 }
                 Connection = new HubConnectionBuilder()
-                    .WithUrl($"{host.Trim().TrimEnd('/')}/CasterHub")
+                    .WithUrl($"{host.Trim().TrimEnd('/')}/hubs/desktop")
                     .AddMessagePackProtocol()
                     .WithAutomaticReconnect()
                     .Build();

@@ -20,7 +20,7 @@ export class ViewerHubConnection {
  
     Connect() {
         this.Connection = new signalR.HubConnectionBuilder()
-            .withUrl("/ViewerHub")
+            .withUrl("/hubs/viewer")
             .withHubProtocol(new signalR.protocols.msgpack.MessagePackHubProtocol())
             .configureLogging(signalR.LogLevel.Information)
             .build();

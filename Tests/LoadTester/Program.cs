@@ -71,7 +71,7 @@ namespace Remotely.Tests.LoadTester
                 var deviceId = Guid.NewGuid().ToString();
 
                 var hubConnection = new HubConnectionBuilder()
-                    .WithUrl(_serverurl + "/AgentHub")
+                    .WithUrl(_serverurl + "/hubs/service")
                     .Build();
 
                 Console.WriteLine("Connecting device number " + i.ToString());
