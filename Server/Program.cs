@@ -28,6 +28,9 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using Remotely.Shared.Utilities;
+using Immense.RemoteControl.Server.Extensions;
+using Remotely.Server.Services.RcImplementations;
+using Immense.RemoteControl.Server.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -176,6 +179,14 @@ services.AddScoped<IClientAppState, ClientAppState>();
 services.AddScoped<IExpiringTokenService, ExpiringTokenService>();
 services.AddScoped<IScriptScheduleDispatcher, ScriptScheduleDispatcher>();
 
+services.AddRemoteControlServer(config =>
+{
+    config.AddHubEventHandler<HubEventHandler>();
+    config.AddServiceHubSessionCache<ServiceHubSessionCache>();
+    config.AddViewerAuthorizer<ViewerAuthorizer>();
+    config.AddViewerHubDataProvider<ViewerHubDataProvider>();
+    config.AddViewerPageDataProvider<ViewerPageDataProvider>();
+});
 
 var app = builder.Build();
 
