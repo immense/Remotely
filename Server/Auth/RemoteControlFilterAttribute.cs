@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Immense.RemoteControl.Server.Abstractions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
 using Remotely.Server.Services;
@@ -7,7 +8,7 @@ using System;
 
 namespace Remotely.Server.Auth
 {
-    public class RemoteControlFilterAttribute : ActionFilterAttribute, IAuthorizationFilter
+    public class RemoteControlFilterAttribute : IAuthorizationFilter
     {
         private readonly IApplicationConfig _appConfig;
 
