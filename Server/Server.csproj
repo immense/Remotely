@@ -50,7 +50,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Shared\Shared.csproj" />
-    <ProjectReference Include="..\submodules\Immense.RemoteControl\Server\Server.csproj" />
   </ItemGroup>
 
 </Project>
