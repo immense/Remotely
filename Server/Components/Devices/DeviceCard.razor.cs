@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Immense.RemoteControl.Server.Abstractions;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.SignalR;
@@ -41,6 +42,9 @@ namespace Remotely.Server.Components.Devices
 
         [Inject]
         private ICircuitConnection CircuitConnection { get; set; }
+
+        [Inject]
+        private IServiceHubSessionCache ServiceSessionCache { get; init; }
 
         [Inject]
         private IDataService DataService { get; set; }
@@ -257,7 +261,7 @@ namespace Remotely.Server.Components.Devices
 
         private void StartRemoteControl(bool viewOnly)
         {
-            var targetDevice = ServiceHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == Device.ID);
+            var targetDevice = ServiceSessionCache.Sessions.FirstOrDefault(x => x.Value == Device.ID);
             RemoteControlTargetLookup[Device.ID] = new RemoteControlTarget()
             {
                 ViewOnlyMode = viewOnly,

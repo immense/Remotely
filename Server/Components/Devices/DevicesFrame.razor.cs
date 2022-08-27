@@ -185,7 +185,7 @@ namespace Remotely.Server.Components.Devices
                         {
                             var serviceId = target.ServiceConnectionId;
                             var viewOnly = target.ViewOnlyMode;
-                            JsInterop.OpenWindow($"/RemoteControl?casterID={casterId}&serviceID={serviceId}&viewonly={viewOnly}", "_blank");
+                            JsInterop.OpenWindow($"/RemoteControl/Viewer?casterID={casterId}&serviceID={serviceId}&viewonly={viewOnly}", "_blank");
                         }
                         else
                         {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Immense.RemoteControl.Server.Abstractions;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Hosting;
@@ -154,6 +155,9 @@ namespace Remotely.Server.Pages
         [Inject]
         private IWebHostEnvironment HostEnv { get; set; }
 
+        [Inject]
+        private IServiceHubSessionCache ServiceSessionCache { get; init; }
+
         private AppSettingsModel Input { get; } = new();
 
         [Inject]
@@ -226,12 +230,15 @@ namespace Remotely.Server.Pages
 
         private IEnumerable<string> GetOutdatedDevices()
         {
-            var highestVersion = ServiceHub.ServiceConnections.Values.Max(x =>
-                Version.TryParse(x.AgentVersion, out var result) ? result : default);
+            var highestVersion = ServiceSessionCache.Sessions.Values.Max(x =>
+            {
+                 var device = DataService.GetDevice(x);
+                return Version.TryParse(device.AgentVersion, out var result) ? result : default;
+            });
 
-            return ServiceHub.ServiceConnections.Values
-                .Where(x => Version.TryParse(x.AgentVersion, out var result) && result != highestVersion)
-                .Select(x => x.ID);
+
+            return ServiceSessionCache.Sessions.Values
+                .Where(x => Version.TryParse(DataService.GetDevice(x)?.AgentVersion, out var result) && result != highestVersion);
         }
 
         private void HandleBannedDeviceKeyDown(KeyboardEventArgs args)
@@ -398,7 +405,7 @@ namespace Remotely.Server.Pages
                 return;
             }
 
-            var agentConnections = ServiceHub.ServiceConnections.Where(x => outdatedDevices.Contains(x.Value.ID));
+            var agentConnections = ServiceSessionCache.Sessions.Where(x => outdatedDevices.Contains(x.Value));
 
             await AgentHubContext.Clients.Clients(agentConnections.Select(x => x.Key)).SendAsync("ReinstallAgent");
             ToastService.ShowToast("Update command sent.");

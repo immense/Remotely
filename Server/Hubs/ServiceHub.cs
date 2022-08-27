@@ -1,4 +1,5 @@
-﻿using Immense.RemoteControl.Server.Hubs;
+﻿using Immense.RemoteControl.Server.Abstractions;
+using Immense.RemoteControl.Server.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -22,23 +23,27 @@ namespace Remotely.Server.Hubs
         private readonly ICircuitManager _circuitManager;
         private readonly IExpiringTokenService _expiringTokenService;
         private readonly IDataService _dataService;
+        private readonly IServiceHubSessionCache _serviceSessionCache;
         private readonly IHubContext<ViewerHub> _viewerHubContext;
 
         public ServiceHub(IDataService dataService,
             IApplicationConfig appConfig,
+            IServiceHubSessionCache serviceSessionCache,
             IHubContext<ViewerHub> viewerHubContext,
             ICircuitManager circuitManager,
             IExpiringTokenService expiringTokenService)
         {
             _dataService = dataService;
+            _serviceSessionCache = serviceSessionCache;
             _viewerHubContext = viewerHubContext;
             _appConfig = appConfig;
             _circuitManager = circuitManager;
             _expiringTokenService = expiringTokenService;
         }
 
+        // TODO: Move to service behind interface.
         public static IMemoryCache ApiScriptResults { get; } = new MemoryCache(new MemoryCacheOptions());
-        public static ConcurrentDictionary<string, Device> ServiceConnections { get; } = new ConcurrentDictionary<string, Device>();
+
         private Device Device
         {
             get
@@ -49,11 +54,6 @@ namespace Remotely.Server.Hubs
             {
                 Context.Items["Device"] = value;
             }
-        }
-
-        public static Device GetDevice(string deviceId)
-        {
-            return ServiceConnections.Values.FirstOrDefault(x => x.ID == deviceId);
         }
 
         public Task Chat(string message, bool disconnected, string browserConnectionId)
@@ -93,7 +93,7 @@ namespace Remotely.Server.Hubs
                     return Task.FromResult(false);
                 }
 
-                if (ServiceConnections.Any(x => x.Value.ID == device.ID))
+                if (_serviceSessionCache.Sessions.Any(x => x.Value == device.ID))
                 {
                     _dataService.WriteEvent(new EventLog()
                     {
@@ -119,7 +119,7 @@ namespace Remotely.Server.Hubs
                 if (_dataService.AddOrUpdateDevice(device, out var updatedDevice))
                 {
                     Device = updatedDevice;
-                    ServiceConnections.AddOrUpdate(Context.ConnectionId, Device, (id, d) => Device);
+                    _serviceSessionCache.Sessions.AddOrUpdate(Context.ConnectionId, Device.ID, (k, v) => Device.ID);
 
                     var userIDs = _circuitManager.Connections.Select(x => x.User.Id);
 
@@ -172,7 +172,7 @@ namespace Remotely.Server.Hubs
 
             _dataService.AddOrUpdateDevice(device, out var updatedDevice);
             Device = updatedDevice;
-            ServiceConnections.AddOrUpdate(Context.ConnectionId, Device, (id, d) => Device);
+            _serviceSessionCache.Sessions.AddOrUpdate(Context.ConnectionId, Device.ID, (k,v) => Device.ID);
 
             var userIDs = _circuitManager.Connections.Select(x => x.User.Id);
 
@@ -234,7 +234,7 @@ namespace Remotely.Server.Hubs
             }
             finally
             {
-                ServiceConnections.TryRemove(Context.ConnectionId, out _);
+                _serviceSessionCache.Sessions.TryRemove(Context.ConnectionId, out _);
             }
         }
 

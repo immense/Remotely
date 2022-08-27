@@ -2,7 +2,7 @@
   "id": "Remotely Remote Control",
   "name": "Remotely Remote Control",
   "short_name": "Remotely Remote Control",
-  "start_url": "./remotecontrol",
+  "start_url": "./remotecontrol/viewer",
   "display": "standalone",
   "background_color": "black",
   "theme_color": "white",
@@ -23,15 +23,15 @@
   "related_applications": [
     {
       "platform": "windows",
-      "url": "./remotecontrol"
+      "url": "./remotecontrol/viewer"
     },
     {
       "platform": "play",
-      "url": "./remotecontrol"
+      "url": "./remotecontrol/viewer"
     },
     {
       "platform": "itunes",
-      "url": "./remotecontrol"
+      "url": "./remotecontrol/viewer"
     }
   ]
 }

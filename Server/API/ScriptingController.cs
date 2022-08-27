@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Remotely.Shared.Enums;
 using Remotely.Server.Auth;
+using Immense.RemoteControl.Server.Abstractions;
 
 namespace Remotely.Server.API
 {
@@ -22,17 +23,19 @@ namespace Remotely.Server.API
         private readonly IHubContext<ServiceHub> _agentHubContext;
 
         private readonly IDataService _dataService;
-
+        private readonly IServiceHubSessionCache _serviceSessionCache;
         private readonly IExpiringTokenService _expiringTokenService;
 
         private readonly UserManager<RemotelyUser> _userManager;
 
         public ScriptingController(UserManager<RemotelyUser> userManager,
-                                            IDataService dataService,
+            IDataService dataService,
+            IServiceHubSessionCache serviceSessionCache,
             IExpiringTokenService expiringTokenService,
             IHubContext<ServiceHub> agentHub)
         {
             _dataService = dataService;
+            _serviceSessionCache = serviceSessionCache;
             _expiringTokenService = expiringTokenService;
             _userManager = userManager;
             _agentHubContext = agentHub;
@@ -68,9 +71,9 @@ namespace Remotely.Server.API
 
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
 
-            KeyValuePair<string, Device> connection = ServiceHub.ServiceConnections.FirstOrDefault(x =>
-                x.Value.OrganizationID == orgID &&
-                x.Value.ID == deviceID);
+            var connection = _serviceSessionCache.Sessions.FirstOrDefault(x =>
+                x.Value == deviceID &&
+                _dataService.GetDevice(x.Value)?.Organization == orgID);
 
             if (string.IsNullOrWhiteSpace(connection.Key))
             {

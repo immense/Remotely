@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Remotely.Server.Auth;
 using Immense.RemoteControl.Server.Services;
 using Remotely.Server.Services.RcImplementations;
+using Immense.RemoteControl.Server.Abstractions;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -24,6 +25,7 @@ namespace Remotely.Server.API
     {
         private readonly IHubContext<ServiceHub> _serviceHub;
         private readonly IDesktopHubSessionCache _desktopSessionCache;
+        private readonly IServiceHubSessionCache _serviceSessionCache;
         private readonly IApplicationConfig _appConfig;
         private readonly IOtpProvider _otpProvider;
         private readonly IDataService _dataService;
@@ -34,12 +36,14 @@ namespace Remotely.Server.API
             IDataService dataService,
             IDesktopHubSessionCache desktopSessionCache,
             IHubContext<ServiceHub> serviceHub,
+            IServiceHubSessionCache serviceSessionCache,
             IOtpProvider otpProvider,
             IApplicationConfig appConfig)
         {
             _dataService = dataService;
             _serviceHub = serviceHub;
             _desktopSessionCache = desktopSessionCache;
+            _serviceSessionCache = serviceSessionCache;
             _appConfig = appConfig;
             _otpProvider = otpProvider;
             _signInManager = signInManager;
@@ -86,14 +90,14 @@ namespace Remotely.Server.API
 
         private async Task<IActionResult> InitiateRemoteControl(string deviceID, string orgID)
         {
-            var targetDevice = ServiceHub.ServiceConnections.FirstOrDefault(x =>
-                                    x.Value.OrganizationID == orgID &&
-                                    x.Value.ID.ToLower() == deviceID.ToLower());
+            var targetDevice = _serviceSessionCache.Sessions.FirstOrDefault(x =>
+                                    x.Value.ToLower() == deviceID.ToLower() &&
+                                    _dataService.GetDevice(x.Value)?.OrganizationID == orgID);
 
             if (targetDevice.Value != null)
             {
                 if (User.Identity.IsAuthenticated &&
-                   !_dataService.DoesUserHaveAccessToDevice(targetDevice.Value.ID, _dataService.GetUserByNameWithOrg(User.Identity.Name)))
+                   !_dataService.DoesUserHaveAccessToDevice(targetDevice.Value, _dataService.GetUserByNameWithOrg(User.Identity.Name)))
                 {
                     return Unauthorized();
                 }
@@ -106,7 +110,7 @@ namespace Remotely.Server.API
                 }
 
                 var existingSessions = _desktopSessionCache.Sessions
-                    .Where(x => x.Value.DeviceID == targetDevice.Value.ID)
+                    .Where(x => x.Value.DeviceID == targetDevice.Value)
                     .Select(x => x.Key)
                     .ToList();
 
@@ -115,7 +119,7 @@ namespace Remotely.Server.API
                 bool remoteControlStarted()
                 {
                     return !_desktopSessionCache.Sessions.Values
-                        .Where(x => x.DeviceID == targetDevice.Value.ID)
+                        .Where(x => x.DeviceID == targetDevice.Value)
                         .All(x => existingSessions.Contains(x.CasterConnectionId));
                 };
 
@@ -126,10 +130,10 @@ namespace Remotely.Server.API
                 else
                 {
                     var rcSession = _desktopSessionCache.Sessions.Values.LastOrDefault(x =>
-                        x.DeviceID == targetDevice.Value.ID && 
+                        x.DeviceID == targetDevice.Value && 
                         !existingSessions.Contains(x.CasterConnectionId));
 
-                    var otp = _otpProvider.GetOtp(targetDevice.Value.ID);
+                    var otp = _otpProvider.GetOtp(targetDevice.Value);
                     return Ok($"{HttpContext.Request.Scheme}://{Request.Host}/RemoteControl?casterID={rcSession.CasterConnectionId}&serviceID={targetDevice.Key}&fromApi=true&otp={Uri.EscapeDataString(otp)}");
                 }
             }

@@ -1,4 +1,5 @@
-﻿using Immense.RemoteControl.Server.Services;
+﻿using Immense.RemoteControl.Server.Abstractions;
+using Immense.RemoteControl.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.Circuits;
@@ -64,6 +65,7 @@ namespace Remotely.Server.Hubs
         private readonly ConcurrentQueue<CircuitEvent> _eventQueue = new();
         private readonly IExpiringTokenService _expiringTokenService;
         private readonly IDesktopHubSessionCache _desktopSessionCache;
+        private readonly IServiceHubSessionCache _serviceSessionCache;
         private readonly ILogger<CircuitConnection> _logger;
         private readonly IToastService _toastService;
         public CircuitConnection(
@@ -76,6 +78,7 @@ namespace Remotely.Server.Hubs
             IToastService toastService,
             IExpiringTokenService expiringTokenService,
             IDesktopHubSessionCache desktopSessionCache,
+            IServiceHubSessionCache serviceSessionCache,
             ILogger<CircuitConnection> logger)
         {
             _dataService = dataService;
@@ -87,6 +90,7 @@ namespace Remotely.Server.Hubs
             _toastService = toastService;
             _expiringTokenService = expiringTokenService;
             _desktopSessionCache = desktopSessionCache;
+            _serviceSessionCache = serviceSessionCache;
             _logger = logger;
         }
 
@@ -202,7 +206,7 @@ namespace Remotely.Server.Hubs
 
         public async Task<bool> RemoteControl(string deviceID)
         {
-            var targetDevice = ServiceHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == deviceID);
+            var targetDevice = _serviceSessionCache.Sessions.FirstOrDefault(x => x.Value == deviceID);
 
             if (targetDevice.Value is null)
             {
@@ -229,7 +233,8 @@ namespace Remotely.Server.Hubs
             }
             else
             {
-                _dataService.WriteEvent($"Remote control attempted by unauthorized user.  Device ID: {deviceID}.  User Name: {User.UserName}.", EventType.Warning, targetDevice.Value.OrganizationID);
+                var device = _dataService.GetDevice(targetDevice.Value);
+                _dataService.WriteEvent($"Remote control attempted by unauthorized user.  Device ID: {deviceID}.  User Name: {User.UserName}.", EventType.Warning, device?.OrganizationID);
                 return false;
             }
         }
@@ -256,7 +261,7 @@ namespace Remotely.Server.Hubs
            
             var authToken = _expiringTokenService.GetToken(Time.Now.AddMinutes(AppConstants.ScriptRunExpirationMinutes));
 
-            var connectionIds = ServiceHub.ServiceConnections.Where(x => deviceIds.Contains(x.Value.ID)).Select(x=>x.Key);
+            var connectionIds = _serviceSessionCache.Sessions.Where(x => deviceIds.Contains(x.Value)).Select(x=>x.Key);
 
             if (connectionIds.Any())
             {
@@ -272,9 +277,9 @@ namespace Remotely.Server.Hubs
                 return Task.CompletedTask;
             }
 
-            var connection = ServiceHub.ServiceConnections.FirstOrDefault(x =>
-                x.Value.OrganizationID == User.OrganizationID &&
-                x.Value.ID == deviceId
+            var connection = _serviceSessionCache.Sessions.FirstOrDefault(x =>
+                x.Value == deviceId &&
+                _dataService.GetDevice(x.Value)?.OrganizationID == User.OrganizationID
             );
 
             if (connection.Value is null)
@@ -295,7 +300,7 @@ namespace Remotely.Server.Hubs
 
         public async Task<bool> TransferFileFromBrowserToAgent(string deviceId, string transferId, string[] fileIds)
         {
-            var serviceConnection = ServiceHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == deviceId);
+            var serviceConnection = _serviceSessionCache.Sessions.FirstOrDefault(x => x.Value == deviceId);
 
             if (serviceConnection.Value is null)
             {
@@ -392,14 +397,14 @@ namespace Remotely.Server.Hubs
                 return (false, null);
             }
 
-            var kvp = ServiceHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == deviceId);
+            var kvp = _serviceSessionCache.Sessions.FirstOrDefault(x => x.Value == deviceId);
 
             if (kvp.Value is null)
             {
                 return (false, null);
             }
 
-            if (!_dataService.DoesUserHaveAccessToDevice(kvp.Value.ID, User))
+            if (!_dataService.DoesUserHaveAccessToDevice(kvp.Value, User))
             {
                 return (false, null);
             }
@@ -407,11 +412,11 @@ namespace Remotely.Server.Hubs
             return (true, kvp.Key);
         }
 
-        private IEnumerable<KeyValuePair<string, Device>> GetActiveClientConnections(IEnumerable<string> deviceIDs)
+        private IEnumerable<KeyValuePair<string, string>> GetActiveClientConnections(IEnumerable<string> deviceIDs)
         {
-            return ServiceHub.ServiceConnections.Where(x =>
-                x.Value.OrganizationID == User.OrganizationID &&
-                deviceIDs.Contains(x.Value.ID)
+            return _serviceSessionCache.Sessions.Where(x =>
+                deviceIDs.Contains(x.Value) &&
+                _dataService.GetDevice(x.Value)?.OrganizationID == User.OrganizationID
             );
         }
 
