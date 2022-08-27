@@ -70,7 +70,7 @@ namespace Remotely.Desktop.XPlat.ViewModels
 
         public ICommand CopyLinkCommand => new Executor(async (param) =>
         {
-            await App.Current.Clipboard.SetTextAsync($"{Host}/RemoteControl?sessionID={StatusMessage.Replace(" ", "")}");
+            await App.Current.Clipboard.SetTextAsync($"{Host}/RemoteControl/Viewer?sessionID={StatusMessage.Replace(" ", "")}");
 
             CopyMessageOpacity = 1;
             IsCopyMessageVisible = true;

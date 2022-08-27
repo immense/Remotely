@@ -180,7 +180,7 @@ namespace Remotely.Desktop.Win.ViewModels
 
         public void CopyLink()
         {
-            Clipboard.SetText($"{Host}/RemoteControl?sessionID={StatusMessage?.Replace(" ", "")}");
+            Clipboard.SetText($"{Host}/RemoteControl/Viewer?sessionID={StatusMessage?.Replace(" ", "")}");
         }
 
         public async Task GetSessionID()

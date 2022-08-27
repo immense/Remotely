@@ -23,6 +23,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="D:\NuGet\Packages\immense.remotecontrol.server\0.5.1\contentFiles\any\net6.0\Areas\RemoteControl\wwwroot\libman.json" />
+    <Content Remove="D:\NuGet\Packages\immense.remotecontrol.server\0.5.1\contentFiles\any\net6.0\Areas\RemoteControl\wwwroot\manifest.json" />
+    <Content Remove="D:\NuGet\Packages\immense.remotecontrol.server\0.5.1\contentFiles\any\net6.0\Areas\RemoteControl\wwwroot\src\tsconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Immense.RemoteControl.Server" Version="0.5.7" />
     <PackageReference Include="MailKit" Version="3.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.6" />
@@ -37,10 +44,6 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="6.0.0" />
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.7.4">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.16.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.6" />
     <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.175" />
