@@ -56,7 +56,6 @@ namespace Remotely.Desktop.XPlat
             serviceCollection.AddSingleton<Conductor>();
             serviceCollection.AddSingleton<IChatClientService, ChatHostService>();
             serviceCollection.AddTransient<Viewer>();
-            serviceCollection.AddScoped<IWebRtcSessionFactory, WebRtcSessionFactory>();
             serviceCollection.AddScoped<IDtoMessageHandler, DtoMessageHandler>();
             serviceCollection.AddScoped<IDeviceInitService, DeviceInitService>();
 

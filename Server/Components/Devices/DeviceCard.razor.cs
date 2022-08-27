@@ -23,8 +23,8 @@ namespace Remotely.Server.Components.Devices
 {
     public partial class DeviceCard : AuthComponentBase, IDisposable
     {
+        private readonly ConcurrentDictionary<string, double> _fileUploadProgressLookup = new();
         private ElementReference _card;
-        private ConcurrentDictionary<string, double> _fileUploadProgressLookup = new();
         private Theme _theme;
 
         [Parameter]
@@ -174,8 +174,7 @@ namespace Remotely.Server.Components.Devices
                   Device.Tags,
                   Device.Alias,
                   Device.DeviceGroupID,
-                  Device.Notes,
-                  Device.WebRtcSetting);
+                  Device.Notes);
 
             ToastService.ShowToast("Device settings saved.");
 

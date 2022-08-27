@@ -212,19 +212,6 @@
                         </div>
 
                         <div class="font-weight-bold text-info mt-2">
-                            WebRTC Setting
-                        </div>
-                        <div>
-                            <InputSelect @bind-Value="Device.WebRtcSetting" class="form-control">
-                                @foreach (var setting in Enum.GetValues(typeof(WebRtcSetting)))
-                                {
-                                    <option @key="setting" value="@setting">@setting</option>
-                                }
-                            </InputSelect>
-                            <ValidationMessage For="() => Device.WebRtcSetting" />
-                        </div>
-
-                        <div class="font-weight-bold text-info mt-2">
                             Device Group
                         </div>
                         <div>

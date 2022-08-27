@@ -110,7 +110,5 @@ namespace Remotely.Shared.Models
         [Sortable]
         [Display(Name = "Storage Used %")]
         public double UsedStoragePercent => UsedStorage / TotalStorage;
-
-        public WebRtcSetting WebRtcSetting { get; set; }
     }
 }

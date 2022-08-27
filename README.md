@@ -1,5 +1,5 @@
 # Remotely
-A remote control and remote scripting solution, built with .NET 6, Blazor, SignalR Core, and WebRTC.
+A remote control and remote scripting solution, built with .NET 6, Blazor, and SignalR Core.
 
 [![Build Status](https://dev.azure.com/translucency/Remotely/_apis/build/status/Remotely-ReleaseBuild?branchName=master)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=17&branchName=master)
 ![GitHub Build](https://github.com/lucent-sea/Remotely/workflows/GitHub%20Build/badge.svg)
@@ -155,7 +155,6 @@ For more information on configuring ASP.NET Core, see https://docs.microsoft.com
 * DBProvider: Determines which of the three connection strings (at the top) will be used.  The appropriate DB provider for the database type is automatically loaded in code.
 * EnableWindowsEventLog: Whether to also add server log entries to the Windows Event Log.
 * EnforceAttendedAccess: Clients will be prompted to allow unattended remote control attempts.
-* IceServers: The ICE (STUN/TURN) servers to use for WebRTC.
 * KnownProxies: If your reverse proxy is on a different machine and is forwarding requests to the Remotely server, you will need to add the IP of the reverse proxy server to this array.
 * MaxOrganizationCount: By default, one organization can exist on the server, which is created automatically when the first account is registered.  Afterward, self-registration will be disabled.
     * Set this to -1 or increase it to a specific number to allow multi-tenancy.
@@ -168,8 +167,6 @@ For more information on configuring ASP.NET Core, see https://docs.microsoft.com
 * Theme: The color theme to use for the site.  Values are "Light" or "Dark".  This can also be configured per-user in Account - Options.
 * TrustedCorsOrigins: For cross-origin API requests via JavaScript.  The websites listed in this array with be allowed to make requests to the API.  This does not grant authentication, which is still required on most endpoints.
 * UseHsts: Whether ASP.NET Core will use HTTP Strict Transport Security.
-* UseWebRtc: Attempt to create a peer-to-peer connection via WebRTC for screen sharing.
-    * Only works on Windows agents.
 
 
 ## Changing the Database

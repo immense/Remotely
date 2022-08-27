@@ -216,7 +216,7 @@ namespace Remotely.Server.Services
 
         Task<Device> UpdateDevice(DeviceSetupOptions deviceOptions, string organizationId);
 
-        void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes, WebRtcSetting webRtcSetting);
+        void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes);
 
         void UpdateOrganizationName(string orgID, string organizationName);
 
@@ -1860,10 +1860,7 @@ namespace Remotely.Server.Services
                 return;
             }
 
-            if (organization.BrandingInfo is null)
-            {
-                organization.BrandingInfo = new BrandingInfo();
-            }
+            organization.BrandingInfo ??= new BrandingInfo();
 
             organization.BrandingInfo.Product = productName;
 
@@ -1887,7 +1884,7 @@ namespace Remotely.Server.Services
             await dbContext.SaveChangesAsync();
         }
 
-        public void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes, WebRtcSetting webRtcSetting)
+        public void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes)
         {
             using var dbContext = _appDbFactory.GetContext();
 
@@ -1913,7 +1910,6 @@ namespace Remotely.Server.Services
             device.Tags = tag;
             device.Alias = alias;
             device.Notes = notes;
-            device.WebRtcSetting = webRtcSetting;
             dbContext.SaveChanges();
         }
 

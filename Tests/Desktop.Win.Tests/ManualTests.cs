@@ -41,7 +41,6 @@ namespace Remotely.Tests
         private ScreenCaster _screenCaster;
         private Mock<ISessionIndicator> _sessionIndicator;
         private Mock<IShutdownService> _shutdown;
-        private Mock<IWebRtcSessionFactory> _webrtcFactory;
         private Viewer _viewer;
 
 
@@ -303,10 +302,9 @@ namespace Remotely.Tests
             _casterSocket = new Mock<ICasterSocket>();
             _audio = new Mock<IAudioCapturer>();
             _shutdown = new Mock<IShutdownService>();
-            _webrtcFactory = new Mock<IWebRtcSessionFactory>();
             _capturer = new ScreenCapturerWin();
             _screenCaster = new ScreenCaster(_conductor, _cursorWatcher.Object, _sessionIndicator.Object, _shutdown.Object);
-            _viewer = new Viewer(_casterSocket.Object, _capturer, _clipboard.Object, _webrtcFactory.Object, _audio.Object);
+            _viewer = new Viewer(_casterSocket.Object, _capturer, _clipboard.Object, _audio.Object);
 
             _casterSocket
                 .Setup(x => x.SendDtoToViewer(It.IsAny<CaptureFrameDto>(), It.IsAny<string>()))

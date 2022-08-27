@@ -105,9 +105,6 @@ namespace Remotely.Server.Pages
 
         [Display(Name = "Use HSTS")]
         public bool UseHsts { get; set; }
-
-        [Display(Name = "Use WebRTC")]
-        public bool UseWebRtc { get; set; }
     }
 
     public class ConnectionStringsModel

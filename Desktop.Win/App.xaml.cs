@@ -26,10 +26,11 @@ namespace Remotely.Desktop.Win
     /// </summary>
     public partial class App : Application
     {
+        private ICasterSocket _casterSocket;
+        private Conductor _conductor;
+        private ICursorIconWatcher _cursorIconWatcher;
+
         public Form BackgroundForm { get; private set; }
-        private ICasterSocket _casterSocket { get; set; }
-        private Conductor _conductor { get; set; }
-        private ICursorIconWatcher CursorIconWatcher { get; set; }
         private IServiceProvider Services => ServiceContainer.Instance;
 
         public async void CursorIconWatcher_OnChange(object sender, CursorInfo cursor)
@@ -91,7 +92,6 @@ namespace Remotely.Desktop.Win
             serviceCollection.AddSingleton<IChatUiService, ChatUiServiceWin>();
             serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerWin>();
             serviceCollection.AddTransient<Viewer>();
-            serviceCollection.AddScoped<IWebRtcSessionFactory, WebRtcSessionFactory>();
             serviceCollection.AddScoped<IFileTransferService, FileTransferServiceWin>();
             serviceCollection.AddSingleton<ISessionIndicator, SessionIndicatorWin>();
             serviceCollection.AddSingleton<IShutdownService, ShutdownServiceWin>();
@@ -204,7 +204,7 @@ namespace Remotely.Desktop.Win
         private async Task StartScreenCasting()
         {
 
-            CursorIconWatcher = Services.GetRequiredService<ICursorIconWatcher>();
+            _cursorIconWatcher = Services.GetRequiredService<ICursorIconWatcher>();
 
             await _casterSocket.Connect(_conductor.Host);
             await _casterSocket.SendDeviceInfo(_conductor.ServiceID, Environment.MachineName, _conductor.DeviceID);
@@ -225,7 +225,7 @@ namespace Remotely.Desktop.Win
 
             await SendReadyNotificationToViewers();
             Services.GetRequiredService<IdleTimer>().Start();
-            CursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
+            _cursorIconWatcher.OnChange += CursorIconWatcher_OnChange;
             Services.GetRequiredService<IClipboardService>().BeginWatching();
             Services.GetRequiredService<IKeyboardMouseInput>().Init();
         }
