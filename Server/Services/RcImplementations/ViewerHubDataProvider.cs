@@ -5,11 +5,11 @@ namespace Remotely.Server.Services.RcImplementations
 {
     public class ViewerHubDataProvider : IViewerHubDataProvider
     {
-        private readonly DataService _dataService;
+        private readonly IDataService _dataService;
         private readonly IApplicationConfig _appConfig;
 
         public ViewerHubDataProvider(
-            DataService dataService,
+            IDataService dataService,
             IApplicationConfig appConfig)
         {
             _dataService = dataService;
