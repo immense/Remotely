@@ -9,34 +9,19 @@ namespace Remotely.Server.Services.RcImplementations
 {
     public class ViewerAuthorizer : IViewerAuthorizer
     {
-        private static readonly MemoryCache _otpCache = new(new MemoryCacheOptions());
-
         private readonly IApplicationConfig _appConfig;
+        private readonly IOtpProvider _otpProvider;
 
-        public ViewerAuthorizer(IApplicationConfig appConfig)
+        public ViewerAuthorizer(IApplicationConfig appConfig, IOtpProvider otpProvider)
         {
             _appConfig = appConfig;
+            _otpProvider = otpProvider;
         }
 
         public string UnauthorizedRedirectArea => "Identity";
         public string UnauthorizedRedirectPageName => "/Account/Login";
 
-        public static string GetOtp(string deviceId)
-        {
-            var otp = RandomGenerator.GenerateString(16);
-            _otpCache.Set(otp, deviceId, TimeSpan.FromMinutes(1));
-            return otp;
-        }
 
-        public static bool OtpMatchesDevice(string otp, string deviceId)
-        {
-            if (_otpCache.TryGetValue(otp, out string cachedDevice) &&
-                cachedDevice == deviceId)
-            {
-                return true;
-            }
-            return false;
-        }
 
         public bool IsAuthorized(AuthorizationFilterContext context)
         {
@@ -51,7 +36,7 @@ namespace Remotely.Server.Services.RcImplementations
             }
 
             if (context.HttpContext.Request.Query.TryGetValue("otp", out var otp) &&
-                _otpCache.TryGetValue(otp.ToString(), out _))
+                _otpProvider.Exists($"{otp}"))
             {
                 return true;
             }

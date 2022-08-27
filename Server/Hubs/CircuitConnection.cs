@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Immense.RemoteControl.Server.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.AspNetCore.Identity;
@@ -54,7 +55,7 @@ namespace Remotely.Server.Hubs
 
     public class CircuitConnection : CircuitHandler, ICircuitConnection
     {
-        private readonly IHubContext<AgentHub> _agentHubContext;
+        private readonly IHubContext<ServiceHub> _agentHubContext;
         private readonly IApplicationConfig _appConfig;
         private readonly IClientAppState _appState;
         private readonly IAuthService _authService;
@@ -62,17 +63,19 @@ namespace Remotely.Server.Hubs
         private readonly IDataService _dataService;
         private readonly ConcurrentQueue<CircuitEvent> _eventQueue = new();
         private readonly IExpiringTokenService _expiringTokenService;
+        private readonly IDesktopHubSessionCache _desktopSessionCache;
         private readonly ILogger<CircuitConnection> _logger;
         private readonly IToastService _toastService;
         public CircuitConnection(
             IAuthService authService,
             IDataService dataService,
             IClientAppState appState,
-            IHubContext<AgentHub> agentHubContext,
+            IHubContext<ServiceHub> agentHubContext,
             IApplicationConfig appConfig,
             ICircuitManager circuitManager,
             IToastService toastService,
             IExpiringTokenService expiringTokenService,
+            IDesktopHubSessionCache desktopSessionCache,
             ILogger<CircuitConnection> logger)
         {
             _dataService = dataService;
@@ -83,6 +86,7 @@ namespace Remotely.Server.Hubs
             _circuitManager = circuitManager;
             _toastService = toastService;
             _expiringTokenService = expiringTokenService;
+            _desktopSessionCache = desktopSessionCache;
             _logger = logger;
         }
 
@@ -198,7 +202,7 @@ namespace Remotely.Server.Hubs
 
         public async Task<bool> RemoteControl(string deviceID)
         {
-            var targetDevice = AgentHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == deviceID);
+            var targetDevice = ServiceHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == deviceID);
 
             if (targetDevice.Value is null)
             {
@@ -211,7 +215,7 @@ namespace Remotely.Server.Hubs
 
             if (_dataService.DoesUserHaveAccessToDevice(deviceID, User))
             {
-                var currentUsers = CasterHub.SessionInfoList.Count(x => x.Value.OrganizationID == User.OrganizationID);
+                var currentUsers = _desktopSessionCache.Sessions.Count(x => x.Value.OrganizationID == User.OrganizationID);
                 if (currentUsers >= _appConfig.RemoteControlSessionLimit)
                 {
                     MessageReceived?.Invoke(this, new CircuitEvent(CircuitEventName.DisplayMessage,
@@ -252,7 +256,7 @@ namespace Remotely.Server.Hubs
            
             var authToken = _expiringTokenService.GetToken(Time.Now.AddMinutes(AppConstants.ScriptRunExpirationMinutes));
 
-            var connectionIds = AgentHub.ServiceConnections.Where(x => deviceIds.Contains(x.Value.ID)).Select(x=>x.Key);
+            var connectionIds = ServiceHub.ServiceConnections.Where(x => deviceIds.Contains(x.Value.ID)).Select(x=>x.Key);
 
             if (connectionIds.Any())
             {
@@ -268,7 +272,7 @@ namespace Remotely.Server.Hubs
                 return Task.CompletedTask;
             }
 
-            var connection = AgentHub.ServiceConnections.FirstOrDefault(x =>
+            var connection = ServiceHub.ServiceConnections.FirstOrDefault(x =>
                 x.Value.OrganizationID == User.OrganizationID &&
                 x.Value.ID == deviceId
             );
@@ -291,7 +295,7 @@ namespace Remotely.Server.Hubs
 
         public async Task<bool> TransferFileFromBrowserToAgent(string deviceId, string transferId, string[] fileIds)
         {
-            var serviceConnection = AgentHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == deviceId);
+            var serviceConnection = ServiceHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == deviceId);
 
             if (serviceConnection.Value is null)
             {
@@ -388,7 +392,7 @@ namespace Remotely.Server.Hubs
                 return (false, null);
             }
 
-            var kvp = AgentHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == deviceId);
+            var kvp = ServiceHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == deviceId);
 
             if (kvp.Value is null)
             {
@@ -405,7 +409,7 @@ namespace Remotely.Server.Hubs
 
         private IEnumerable<KeyValuePair<string, Device>> GetActiveClientConnections(IEnumerable<string> deviceIDs)
         {
-            return AgentHub.ServiceConnections.Where(x =>
+            return ServiceHub.ServiceConnections.Where(x =>
                 x.Value.OrganizationID == User.OrganizationID &&
                 deviceIDs.Contains(x.Value.ID)
             );

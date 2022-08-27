@@ -141,7 +141,7 @@ namespace Remotely.Server.Pages
 
 
         [Inject]
-        private IHubContext<AgentHub> AgentHubContext { get; set; }
+        private IHubContext<ServiceHub> AgentHubContext { get; set; }
 
         [Inject]
         private IConfiguration Configuration { get; set; }
@@ -229,10 +229,10 @@ namespace Remotely.Server.Pages
 
         private IEnumerable<string> GetOutdatedDevices()
         {
-            var highestVersion = AgentHub.ServiceConnections.Values.Max(x =>
+            var highestVersion = ServiceHub.ServiceConnections.Values.Max(x =>
                 Version.TryParse(x.AgentVersion, out var result) ? result : default);
 
-            return AgentHub.ServiceConnections.Values
+            return ServiceHub.ServiceConnections.Values
                 .Where(x => Version.TryParse(x.AgentVersion, out var result) && result != highestVersion)
                 .Select(x => x.ID);
         }
@@ -401,7 +401,7 @@ namespace Remotely.Server.Pages
                 return;
             }
 
-            var agentConnections = AgentHub.ServiceConnections.Where(x => outdatedDevices.Contains(x.Value.ID));
+            var agentConnections = ServiceHub.ServiceConnections.Where(x => outdatedDevices.Contains(x.Value.ID));
 
             await AgentHubContext.Clients.Clients(agentConnections.Select(x => x.Key)).SendAsync("ReinstallAgent");
             ToastService.ShowToast("Update command sent.");

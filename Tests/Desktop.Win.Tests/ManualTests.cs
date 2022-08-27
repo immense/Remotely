@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 namespace Remotely.Tests
 {
     [TestClass]
+    [Ignore("Manual test.")]
     public class ManualTests
     {
         private const int RoundtripLatency = 25;
@@ -45,7 +46,6 @@ namespace Remotely.Tests
 
 
         [TestMethod]
-        [Ignore("Manual test.")]
         public async Task CaptureTest()
         {
             var request = new ScreenCastRequest()
@@ -71,7 +71,6 @@ namespace Remotely.Tests
 
 
         [TestMethod]
-        [Ignore("Manual test.")]
         public void EncodingTests()
         {
             for (var i = 0; i < 2; i++)

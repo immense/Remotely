@@ -81,7 +81,7 @@ namespace Remotely.Server.Services
                             .Distinct()
                             .ToArray();
 
-                        var onlineDevices = AgentHub.ServiceConnections
+                        var onlineDevices = ServiceHub.ServiceConnections
                             .Where(x => deviceIds.Contains(x.Value.ID))
                             .Select(x => x.Value.ID);
 

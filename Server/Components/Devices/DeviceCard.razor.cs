@@ -258,7 +258,7 @@ namespace Remotely.Server.Components.Devices
 
         private void StartRemoteControl(bool viewOnly)
         {
-            var targetDevice = AgentHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == Device.ID);
+            var targetDevice = ServiceHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == Device.ID);
             RemoteControlTargetLookup[Device.ID] = new RemoteControlTarget()
             {
                 ViewOnlyMode = viewOnly,

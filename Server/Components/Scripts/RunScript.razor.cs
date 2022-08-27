@@ -119,7 +119,7 @@ namespace Remotely.Server.Components.Scripts
 
             var filteredDevices = DataService.FilterDeviceIDsByUserPermission(deviceIds.ToArray(), User);
 
-            var onlineDevices = AgentHub.ServiceConnections
+            var onlineDevices = ServiceHub.ServiceConnections
                 .Where(x => filteredDevices.Contains(x.Value.ID))
                 .Select(x=>x.Value.ID);
 

@@ -11,6 +11,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Remotely.Server.Auth;
+using Immense.RemoteControl.Server.Services;
+using Remotely.Server.Services.RcImplementations;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,21 +22,28 @@ namespace Remotely.Server.API
     [ApiController]
     public class RemoteControlController : ControllerBase
     {
-        public RemoteControlController(IDataService dataService,
-            IHubContext<AgentHub> agentHub,
-            IApplicationConfig appConfig,
-            SignInManager<RemotelyUser> signInManager)
-        {
-            DataService = dataService;
-            AgentHubContext = agentHub;
-            AppConfig = appConfig;
-            SignInManager = signInManager;
-        }
+        private readonly IHubContext<ServiceHub> _serviceHub;
+        private readonly IDesktopHubSessionCache _desktopSessionCache;
+        private readonly IApplicationConfig _appConfig;
+        private readonly IOtpProvider _otpProvider;
+        private readonly IDataService _dataService;
+        private readonly SignInManager<RemotelyUser> _signInManager;
 
-        public IDataService DataService { get; }
-        public IHubContext<AgentHub> AgentHubContext { get; }
-        public IApplicationConfig AppConfig { get; }
-        public SignInManager<RemotelyUser> SignInManager { get; }
+        public RemoteControlController(
+            SignInManager<RemotelyUser> signInManager,
+            IDataService dataService,
+            IDesktopHubSessionCache desktopSessionCache,
+            IHubContext<ServiceHub> serviceHub,
+            IOtpProvider otpProvider,
+            IApplicationConfig appConfig)
+        {
+            _dataService = dataService;
+            _serviceHub = serviceHub;
+            _desktopSessionCache = desktopSessionCache;
+            _appConfig = appConfig;
+            _otpProvider = otpProvider;
+            _signInManager = signInManager;
+        }
 
         [HttpGet("{deviceID}")]
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
@@ -47,67 +56,67 @@ namespace Remotely.Server.API
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] RemoteControlRequest rcRequest)
         {
-            if (!AppConfig.AllowApiLogin)
+            if (!_appConfig.AllowApiLogin)
             {
                 return NotFound();
             }
 
-            var orgId = DataService.GetUserByNameWithOrg(rcRequest.Email)?.OrganizationID;
+            var orgId = _dataService.GetUserByNameWithOrg(rcRequest.Email)?.OrganizationID;
 
-            var result = await SignInManager.PasswordSignInAsync(rcRequest.Email, rcRequest.Password, false, true);
+            var result = await _signInManager.PasswordSignInAsync(rcRequest.Email, rcRequest.Password, false, true);
             if (result.Succeeded &&
-                DataService.DoesUserHaveAccessToDevice(rcRequest.DeviceID, DataService.GetUserByNameWithOrg(rcRequest.Email)))
+                _dataService.DoesUserHaveAccessToDevice(rcRequest.DeviceID, _dataService.GetUserByNameWithOrg(rcRequest.Email)))
             {
-                DataService.WriteEvent($"API login successful for {rcRequest.Email}.", orgId);
+                _dataService.WriteEvent($"API login successful for {rcRequest.Email}.", orgId);
                 return await InitiateRemoteControl(rcRequest.DeviceID, orgId);
             }
             else if (result.IsLockedOut)
             {
-                DataService.WriteEvent($"API login unsuccessful due to lockout for {rcRequest.Email}.", orgId);
+                _dataService.WriteEvent($"API login unsuccessful due to lockout for {rcRequest.Email}.", orgId);
                 return Unauthorized("Account is locked.");
             }
             else if (result.RequiresTwoFactor)
             {
-                DataService.WriteEvent($"API login unsuccessful due to 2FA for {rcRequest.Email}.", orgId);
+                _dataService.WriteEvent($"API login unsuccessful due to 2FA for {rcRequest.Email}.", orgId);
                 return Unauthorized("Account requires two-factor authentication.");
             }
-            DataService.WriteEvent($"API login unsuccessful due to bad attempt for {rcRequest.Email}.", orgId);
+            _dataService.WriteEvent($"API login unsuccessful due to bad attempt for {rcRequest.Email}.", orgId);
             return BadRequest();
         }
 
         private async Task<IActionResult> InitiateRemoteControl(string deviceID, string orgID)
         {
-            var targetDevice = AgentHub.ServiceConnections.FirstOrDefault(x =>
+            var targetDevice = ServiceHub.ServiceConnections.FirstOrDefault(x =>
                                     x.Value.OrganizationID == orgID &&
                                     x.Value.ID.ToLower() == deviceID.ToLower());
 
             if (targetDevice.Value != null)
             {
                 if (User.Identity.IsAuthenticated &&
-                   !DataService.DoesUserHaveAccessToDevice(targetDevice.Value.ID, DataService.GetUserByNameWithOrg(User.Identity.Name)))
+                   !_dataService.DoesUserHaveAccessToDevice(targetDevice.Value.ID, _dataService.GetUserByNameWithOrg(User.Identity.Name)))
                 {
                     return Unauthorized();
                 }
 
 
-                var currentUsers = CasterHub.SessionInfoList.Count(x => x.Value.OrganizationID == orgID);
-                if (currentUsers >= AppConfig.RemoteControlSessionLimit)
+                var currentUsers = _desktopSessionCache.Sessions.Count(x => x.Value.OrganizationID == orgID);
+                if (currentUsers >= _appConfig.RemoteControlSessionLimit)
                 {
                     return BadRequest("There are already the maximum amount of active remote control sessions for your organization.");
                 }
 
-                var existingSessions = CasterHub.SessionInfoList
+                var existingSessions = _desktopSessionCache.Sessions
                     .Where(x => x.Value.DeviceID == targetDevice.Value.ID)
                     .Select(x => x.Key)
                     .ToList();
 
-                await AgentHubContext.Clients.Client(targetDevice.Key).SendAsync("RemoteControl", Request.HttpContext.Connection.Id, targetDevice.Key);
+                await _serviceHub.Clients.Client(targetDevice.Key).SendAsync("RemoteControl", Request.HttpContext.Connection.Id, targetDevice.Key);
 
                 bool remoteControlStarted()
                 {
-                    return !CasterHub.SessionInfoList.Values
+                    return !_desktopSessionCache.Sessions.Values
                         .Where(x => x.DeviceID == targetDevice.Value.ID)
-                        .All(x => existingSessions.Contains(x.CasterSocketID));
+                        .All(x => existingSessions.Contains(x.CasterConnectionId));
                 };
 
                 if (!await TaskHelper.DelayUntilAsync(remoteControlStarted, TimeSpan.FromSeconds(30)))
@@ -116,9 +125,12 @@ namespace Remotely.Server.API
                 }
                 else
                 {
-                    var rcSession = CasterHub.SessionInfoList.Values.LastOrDefault(x => x.DeviceID == targetDevice.Value.ID && !existingSessions.Contains(x.CasterSocketID));
-                    var otp = RemoteControlFilterAttribute.GetOtp(targetDevice.Value.ID);
-                    return Ok($"{HttpContext.Request.Scheme}://{Request.Host}/RemoteControl?casterID={rcSession.CasterSocketID}&serviceID={targetDevice.Key}&fromApi=true&otp={Uri.EscapeDataString(otp)}");
+                    var rcSession = _desktopSessionCache.Sessions.Values.LastOrDefault(x =>
+                        x.DeviceID == targetDevice.Value.ID && 
+                        !existingSessions.Contains(x.CasterConnectionId));
+
+                    var otp = _otpProvider.GetOtp(targetDevice.Value.ID);
+                    return Ok($"{HttpContext.Request.Scheme}://{Request.Host}/RemoteControl?casterID={rcSession.CasterConnectionId}&serviceID={targetDevice.Key}&fromApi=true&otp={Uri.EscapeDataString(otp)}");
                 }
             }
             else

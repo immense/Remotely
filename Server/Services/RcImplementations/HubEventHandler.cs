@@ -13,12 +13,12 @@ namespace Remotely.Server.Services.RcImplementations
     {
         private readonly IDataService _dataService;
         private readonly ICircuitManager _circuitManager;
-        private readonly IHubContext<AgentHub> _serviceHub;
+        private readonly IHubContext<ServiceHub> _serviceHub;
 
         public HubEventHandler(
             IDataService dataService,
             ICircuitManager circuitManager,
-            IHubContext<AgentHub> serviceHub)
+            IHubContext<ServiceHub> serviceHub)
         {
             _dataService = dataService;
             _circuitManager = circuitManager;

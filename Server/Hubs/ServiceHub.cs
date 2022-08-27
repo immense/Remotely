@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Immense.RemoteControl.Server.Hubs;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Remotely.Server.Models;
@@ -15,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Remotely.Server.Hubs
 {
-    public class AgentHub : Hub
+    public class ServiceHub : Hub
     {
         private readonly IApplicationConfig _appConfig;
         private readonly ICircuitManager _circuitManager;
@@ -23,7 +24,7 @@ namespace Remotely.Server.Hubs
         private readonly IDataService _dataService;
         private readonly IHubContext<ViewerHub> _viewerHubContext;
 
-        public AgentHub(IDataService dataService,
+        public ServiceHub(IDataService dataService,
             IApplicationConfig appConfig,
             IHubContext<ViewerHub> viewerHubContext,
             ICircuitManager circuitManager,

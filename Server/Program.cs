@@ -177,6 +177,7 @@ services.AddScoped<IAuthService, AuthService>();
 services.AddScoped<IClientAppState, ClientAppState>();
 services.AddScoped<IExpiringTokenService, ExpiringTokenService>();
 services.AddScoped<IScriptScheduleDispatcher, ScriptScheduleDispatcher>();
+services.AddSingleton<IOtpProvider, OtpProvider>();
 
 services.AddRemoteControlServer(config =>
 {
@@ -230,8 +231,7 @@ app.UseRemoteControlServer();
 
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapHub<AgentHub>("/hubs/service");
-
+    endpoints.MapHub<ServiceHub>("/hubs/service");
     endpoints.MapControllers();
     endpoints.MapBlazorHub();
     endpoints.MapFallbackToPage("/_Host");

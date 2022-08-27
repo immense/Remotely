@@ -26,9 +26,9 @@ namespace Remotely.Server.Services.RcImplementations
                 switch (user.UserOptions.Theme)
                 {
                     case Remotely.Shared.Enums.Theme.Light:
-                        return "~/css/remote-control-light.css";
+                        return "_content/Immense.RemoteControl.Server/css/remote-control-light.css";
                     case Remotely.Shared.Enums.Theme.Dark:
-                        return "~/css/remote-control-dark.css";
+                        return "_content/Immense.RemoteControl.Server/css/remote-control-dark.css";
                     default:
                         break;
                 }
@@ -36,11 +36,11 @@ namespace Remotely.Server.Services.RcImplementations
 
             if (_appConfig.Theme == Remotely.Shared.Enums.Theme.Light)
             {
-                return "~/css/remote-control-light.css";
+                return "_content/Immense.RemoteControl.Server/css/remote-control-light.css";
             }
             else
             {
-                return "~/css/remote-control-dark.css";
+                return "_content/Immense.RemoteControl.Server/css/remote-control-dark.css";
             }
         }
 

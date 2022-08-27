@@ -161,7 +161,7 @@ namespace Remotely.Server.Components.Devices
         private void DisplayCompletions(List<PwshCompletionResult> completionMatches)
         {
             var deviceId = AppState.DevicesFrameSelectedDevices.FirstOrDefault();
-            var device = AgentHub.GetDevice(deviceId);
+            var device = ServiceHub.GetDevice(deviceId);
 
             AppState.AddTerminalLine($"Completions for {device?.DeviceName}", className: "font-weight-bold");
 

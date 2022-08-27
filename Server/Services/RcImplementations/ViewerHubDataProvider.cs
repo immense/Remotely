@@ -6,13 +6,16 @@ namespace Remotely.Server.Services.RcImplementations
     public class ViewerHubDataProvider : IViewerHubDataProvider
     {
         private readonly IDataService _dataService;
+        private readonly IOtpProvider _otpProvider;
         private readonly IApplicationConfig _appConfig;
 
         public ViewerHubDataProvider(
             IDataService dataService,
+            IOtpProvider otpProvider,
             IApplicationConfig appConfig)
         {
             _dataService = dataService;
+            _otpProvider = otpProvider;
             _appConfig = appConfig;
         }
 
@@ -52,7 +55,7 @@ namespace Remotely.Server.Services.RcImplementations
 
         public bool OtpMatchesDevice(string otp, string targetDeviceId)
         {
-            return ViewerAuthorizer.OtpMatchesDevice(otp, targetDeviceId);
+            return _otpProvider.OtpMatchesDevice(otp, targetDeviceId);
         }
     }
 }

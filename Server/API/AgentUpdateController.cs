@@ -28,7 +28,7 @@ namespace Remotely.Server.API
         public AgentUpdateController(IWebHostEnvironment hostingEnv,
             IDataService dataService,
             IApplicationConfig appConfig,
-            IHubContext<AgentHub> agentHubContext)
+            IHubContext<ServiceHub> agentHubContext)
         {
             HostEnv = hostingEnv;
             DataService = dataService;
@@ -38,7 +38,7 @@ namespace Remotely.Server.API
 
         private IDataService DataService { get; }
         private IApplicationConfig AppConfig { get; }
-        private IHubContext<AgentHub> AgentHubContext { get; }
+        private IHubContext<ServiceHub> AgentHubContext { get; }
         private IWebHostEnvironment HostEnv { get; }
 
 
@@ -139,7 +139,7 @@ namespace Remotely.Server.API
             {
                 DataService.WriteEvent($"Device IP ({deviceIp}) is banned.  Sending uninstall command.", null);
 
-                var bannedDevices = AgentHub.ServiceConnections.Where(x => x.Value.PublicIP == deviceIp);
+                var bannedDevices = ServiceHub.ServiceConnections.Where(x => x.Value.PublicIP == deviceIp);
                 foreach (var bannedDevice in bannedDevices)
                 {
                     // TODO: Remove when devices have been removed.
