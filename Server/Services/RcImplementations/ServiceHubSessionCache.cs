@@ -5,6 +5,7 @@ namespace Remotely.Server.Services.RcImplementations
 {
     public class ServiceHubSessionCache : IServiceHubSessionCache
     {
-        public ConcurrentDictionary<string, string> Sessions => throw new System.NotImplementedException();
+        private static readonly ConcurrentDictionary<string, string> _sessions = new();
+        public ConcurrentDictionary<string, string> Sessions => _sessions;
     }
 }

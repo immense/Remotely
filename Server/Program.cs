@@ -166,7 +166,6 @@ services.AddScoped<ApiAuthorizationFilter>();
 services.AddScoped<ExpiringTokenFilter>();
 services.AddHostedService<CleanupService>();
 services.AddHostedService<ScriptScheduler>();
-services.AddScoped<RemoteControlFilterAttribute>();
 services.AddScoped<IUpgradeService, UpgradeService>();
 services.AddScoped<IToastService, ToastService>();
 services.AddScoped<IModalService, ModalService>();

@@ -2,11 +2,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Remotely.Server.Auth;
 using Remotely.Server.Services;
+using Remotely.Server.Services.RcImplementations;
 using Remotely.Shared.Models;
 
 namespace Remotely.Server.Pages
 {
-    [ServiceFilter(typeof(RemoteControlFilterAttribute))]
+    [ServiceFilter(typeof(ViewerAuthorizer))]
     public class RemoteControlModel : PageModel
     {
         private readonly IDataService _dataService;

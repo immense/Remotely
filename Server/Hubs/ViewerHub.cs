@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 using Remotely.Server.Auth;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
+using Remotely.Server.Services.RcImplementations;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using System;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Remotely.Server.Hubs
 {
-    [ServiceFilter(typeof(RemoteControlFilterAttribute))]
+    [ServiceFilter(typeof(ViewerAuthorizer))]
     public class ViewerHub : Hub
     {
         public ViewerHub(IDataService dataService,
@@ -214,7 +215,7 @@ namespace Remotely.Server.Hubs
                 SessionInfo.Mode = RemoteControlMode.Unattended;
 
                 if ((!string.IsNullOrWhiteSpace(otp) &&
-                        RemoteControlFilterAttribute.OtpMatchesDevice(otp, targetDevice.ID))
+                        ViewerAuthorizer.OtpMatchesDevice(otp, targetDevice.ID))
                     ||
                     (Context.User.Identity.IsAuthenticated &&
                         DataService.DoesUserHaveAccessToDevice(targetDevice.ID, Context.UserIdentifier)))

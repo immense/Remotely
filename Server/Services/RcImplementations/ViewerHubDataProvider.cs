@@ -1,41 +1,58 @@
 ﻿using Immense.RemoteControl.Server.Abstractions;
+using Remotely.Server.Auth;
 
 namespace Remotely.Server.Services.RcImplementations
 {
     public class ViewerHubDataProvider : IViewerHubDataProvider
     {
-        public bool EnforceAttendedAccess => throw new System.NotImplementedException();
+        private readonly DataService _dataService;
+        private readonly IApplicationConfig _appConfig;
 
-        public bool RemoteControlNotifyUser => throw new System.NotImplementedException();
+        public ViewerHubDataProvider(
+            DataService dataService,
+            IApplicationConfig appConfig)
+        {
+            _dataService = dataService;
+            _appConfig = appConfig;
+        }
+
+        public bool EnforceAttendedAccess => _appConfig.EnforceAttendedAccess;
+
+        public bool RemoteControlNotifyUser => _appConfig.RemoteControlNotifyUser;
+
+        public int RemoteControlSessionLimit => _appConfig.RemoteControlSessionLimit;
 
         public bool DoesUserHaveAccessToDevice(string targetDeviceId, string userIdentifier)
         {
-            throw new System.NotImplementedException();
+            var user = _dataService.GetUserByID(userIdentifier);
+            return _dataService.DoesUserHaveAccessToDevice(targetDeviceId, user);
         }
 
-        public int GetConcurrentSessionLimit()
-        {
-            throw new System.NotImplementedException();
-        }
-
+   
         public string GetOrganizationNameById(string orgId)
         {
-            throw new System.NotImplementedException();
+            return _dataService.GetOrganizationNameById(orgId);
         }
 
         public string GetRequesterDisplayName(string userIdentifier)
         {
-            throw new System.NotImplementedException();
+            var user = _dataService.GetUserByID(userIdentifier);
+            if (!string.IsNullOrWhiteSpace(user.UserOptions?.DisplayName))
+            {
+                return user.UserOptions.DisplayName;
+            }
+            return user.UserName;
         }
 
         public string GetRequesterOrganizationId(string userIdentifier)
         {
-            throw new System.NotImplementedException();
+            var user = _dataService.GetUserByID(userIdentifier);
+            return user.OrganizationID;
         }
 
         public bool OtpMatchesDevice(string otp, string targetDeviceId)
         {
-            throw new System.NotImplementedException();
+            return ViewerAuthorizer.OtpMatchesDevice(otp, targetDeviceId);
         }
     }
 }

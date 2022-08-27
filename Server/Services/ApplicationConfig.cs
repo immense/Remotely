@@ -21,7 +21,7 @@ namespace Remotely.Server.Services
         bool RedirectToHttps { get; }
         bool RemoteControlNotifyUser { get; }
         bool RemoteControlRequiresAuthentication { get; }
-        double RemoteControlSessionLimit { get; }
+        int RemoteControlSessionLimit { get; }
         bool Require2FA { get; }
         string ServerUrl { get; }
         bool SmtpCheckCertificateRevocation { get; }
@@ -65,7 +65,7 @@ namespace Remotely.Server.Services
         public bool RedirectToHttps => bool.Parse(Config["ApplicationOptions:RedirectToHttps"] ?? "false");
         public bool RemoteControlNotifyUser => bool.Parse(Config["ApplicationOptions:RemoteControlNotifyUser"] ?? "true");
         public bool RemoteControlRequiresAuthentication => bool.Parse(Config["ApplicationOptions:RemoteControlRequiresAuthentication"] ?? "true");
-        public double RemoteControlSessionLimit => double.Parse(Config["ApplicationOptions:RemoteControlSessionLimit"] ?? "3");
+        public int RemoteControlSessionLimit => int.Parse(Config["ApplicationOptions:RemoteControlSessionLimit"] ?? "3");
         public bool Require2FA => bool.Parse(Config["ApplicationOptions:Require2FA"] ?? "false");
         public string ServerUrl => Config["ApplicationOptions:ServerUrl"];
         public bool SmtpCheckCertificateRevocation => bool.Parse(Config["ApplicationOptions:SmtpCheckCertificateRevocation"] ?? "true");
