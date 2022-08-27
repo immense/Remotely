@@ -153,7 +153,7 @@ namespace Remotely.Desktop.Win.ViewModels
             {
                 return new Executor(async (param) =>
                 {
-                    foreach (Viewer viewer in (param as IList<object>).ToArray())
+                    foreach (var viewer in (param as IList<object>).ToArray().Cast<Viewer>())
                     {
                         ViewerRemoved(this, viewer.ViewerConnectionID);
                         await _casterSocket.DisconnectViewer(viewer, true);

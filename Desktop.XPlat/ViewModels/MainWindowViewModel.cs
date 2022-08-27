@@ -117,7 +117,7 @@ namespace Remotely.Desktop.XPlat.ViewModels
         public ICommand RemoveViewerCommand => new Executor(async (param) =>
         {
             var viewerList = param as AvaloniaList<object> ?? new AvaloniaList<object>();
-            foreach (Viewer viewer in viewerList)
+            foreach (var viewer in viewerList.Cast<Viewer>())
             {
                 await _casterSocket.DisconnectViewer(viewer, true);
             }
