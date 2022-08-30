@@ -247,7 +247,6 @@ namespace Remotely.Desktop.Win.ViewModels
                         return Task.CompletedTask;
                     };
 
-                    await DeviceInitService.GetInitParams();
                     ApplyBranding();
 
                     await GetSessionID();

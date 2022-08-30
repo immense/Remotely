@@ -35,7 +35,7 @@ namespace Remotely.Desktop.XPlat.ViewModels
         {
             try
             {
-                var brandingInfo = DeviceInitService?.BrandingInfo ?? new Shared.Models.BrandingInfo();
+                var brandingInfo = DeviceInitService?.GetBrandingInfo ?? new Shared.Models.BrandingInfo();
 
                 ProductName = "Remotely";
 

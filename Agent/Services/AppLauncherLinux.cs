@@ -26,7 +26,7 @@ namespace Remotely.Agent.Services
         }
 
 
-        public async Task<int> LaunchChatService(string orgName, string requesterID, HubConnection hubConnection)
+        public async Task<int> LaunchChatService(string orgName, string pipeName, string requesterID, HubConnection hubConnection)
         {
             try
             {
@@ -44,6 +44,7 @@ namespace Remotely.Agent.Services
                 await hubConnection.SendAsync("DisplayMessage", $"Starting chat service.", "Starting chat service.", "bg-success", requesterID);
                 var args = $"{_rcBinaryPath} " +
                     $"-mode Chat " +
+                    $"--pipe-name {pipeName}" +
                     $"-requester \"{requesterID}\" " +
                     $"-organization \"{orgName}\" " +
                     $"-host \"{_connectionInfo.Host}\" " +

@@ -49,9 +49,9 @@ namespace Remotely.Desktop.Win.Services
 
                     Icon icon;
 
-                    if (_deviceInitService.BrandingInfo?.Icon?.Any() == true)
+                    if (_deviceInitService.GetBrandingInfo?.Icon?.Any() == true)
                     {
-                        using var ms = new MemoryStream(_deviceInitService.BrandingInfo.Icon);
+                        using var ms = new MemoryStream(_deviceInitService.GetBrandingInfo.Icon);
                         using var bitmap = new Bitmap(ms);
                         icon = Icon.FromHandle(bitmap.GetHicon());
                     }

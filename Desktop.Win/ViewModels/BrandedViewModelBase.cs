@@ -26,7 +26,7 @@ namespace Remotely.Desktop.Win.ViewModels
         {
             try
             {
-                var brandingInfo = DeviceInitService?.BrandingInfo ?? new BrandingInfo();
+                var brandingInfo = DeviceInitService?.GetBrandingInfo ?? new BrandingInfo();
 
                 ProductName = "Remotely";
 

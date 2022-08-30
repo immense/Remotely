@@ -24,7 +24,7 @@ namespace Remotely.Agent.Services
 
         private ConnectionInfo ConnectionInfo { get; }
 
-        public async Task<int> LaunchChatService(string orgName, string requesterID, HubConnection hubConnection)
+        public async Task<int> LaunchChatService(string orgName, string pipeName, string requesterID, HubConnection hubConnection)
         {
             try
             {
@@ -40,6 +40,7 @@ namespace Remotely.Agent.Services
                 {
                     var result = Win32Interop.OpenInteractiveProcess($"{_rcBinaryPath} " +
                             $"-mode Chat " +
+                            $"--pipe-name {pipeName}" +
                             $"-requester \"{requesterID}\" " +
                             $"-organization \"{orgName}\" " +
                             $"-host \"{ConnectionInfo.Host}\" " +
@@ -67,6 +68,7 @@ namespace Remotely.Agent.Services
                     return Process.Start(_rcBinaryPath, 
                         $"-mode Chat " +
                         $"-requester \"{requesterID}\" " +
+                        $"--pipe-name {pipeName}" +
                         $"-organization \"{orgName}\" " +
                          $"-host \"{ConnectionInfo.Host}\" " +
                         $"-orgid \"{ConnectionInfo.OrganizationID}\"").Id;

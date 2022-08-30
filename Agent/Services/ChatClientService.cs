@@ -60,7 +60,8 @@ namespace Remotely.Agent.Services
                         return;
                     }
 
-                    var procID = await AppLauncher.LaunchChatService(orgName, senderConnectionID, hubConnection);
+                    var pipeName = Guid.NewGuid().ToString();
+                    var procID = await AppLauncher.LaunchChatService(orgName, pipeName, senderConnectionID, hubConnection);
 
                     if (procID > 0)
                     {

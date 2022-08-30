@@ -7,7 +7,7 @@ namespace Remotely.Agent.Services
 {
     public class AppLauncherMac : IAppLauncher
     {
-        public async Task<int> LaunchChatService(string orgName, string requesterID, HubConnection hubConnection)
+        public async Task<int> LaunchChatService(string orgName, string pipeName, string requesterID, HubConnection hubConnection)
         {
             await hubConnection.SendAsync("DisplayMessage", "Feature under development.", "Feature is under development.", "bg-warning", requesterID);
             return 0;

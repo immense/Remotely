@@ -148,9 +148,6 @@ namespace Remotely.Desktop.Win
                     .TrySetBrandingFromActivationUri()
                     .ConfigureAwait(false);
 
-                var deviceInitService = Services.GetRequiredService<IDeviceInitService>();
-                await deviceInitService.GetInitParams().ConfigureAwait(false);
-
                 StartWinFormsThread();
 
                 if (_conductor.Mode == Core.Enums.AppMode.Chat)
