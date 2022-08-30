@@ -81,23 +81,23 @@ namespace Remotely.Desktop.Win
             });
 
             serviceCollection.AddSingleton<ICursorIconWatcher, CursorIconWatcherWin>();
-            serviceCollection.AddSingleton<IScreenCaster, ScreenCaster>();
             serviceCollection.AddSingleton<IKeyboardMouseInput, KeyboardMouseInputWin>();
             serviceCollection.AddSingleton<IClipboardService, ClipboardServiceWin>();
             serviceCollection.AddSingleton<IAudioCapturer, AudioCapturerWin>();
-            serviceCollection.AddSingleton<ICasterSocket, CasterSocket>();
-            serviceCollection.AddSingleton<IdleTimer>();
-            serviceCollection.AddSingleton<Conductor>();
-            serviceCollection.AddSingleton<IChatClientService, ChatHostService>();
             serviceCollection.AddSingleton<IChatUiService, ChatUiServiceWin>();
             serviceCollection.AddTransient<IScreenCapturer, ScreenCapturerWin>();
-            serviceCollection.AddTransient<Viewer>();
             serviceCollection.AddScoped<IFileTransferService, FileTransferServiceWin>();
             serviceCollection.AddSingleton<ISessionIndicator, SessionIndicatorWin>();
             serviceCollection.AddSingleton<IShutdownService, ShutdownServiceWin>();
             serviceCollection.AddScoped<IDtoMessageHandler, DtoMessageHandler>();
             serviceCollection.AddScoped<IRemoteControlAccessService, RemoteControlAccessServiceWin>();
             serviceCollection.AddScoped<IConfigService, ConfigServiceWin>();
+            serviceCollection.AddSingleton<IScreenCaster, ScreenCaster>();
+            serviceCollection.AddSingleton<ICasterSocket, CasterSocket>();
+            serviceCollection.AddSingleton<IdleTimer>();
+            serviceCollection.AddSingleton<Conductor>();
+            serviceCollection.AddSingleton<IChatClientService, ChatHostService>();
+            serviceCollection.AddTransient<Viewer>();
             serviceCollection.AddScoped<IDeviceInitService, DeviceInitService>();
             serviceCollection.AddScoped<IClickOnceService, ClickOnceService>();
 
