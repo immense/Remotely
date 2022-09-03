@@ -1,4 +1,5 @@
 ﻿using Immense.RemoteControl.Desktop.Shared.Abstractions;
+using Immense.RemoteControl.Desktop.UI.WPF.Services;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
@@ -10,7 +11,6 @@ using Remotely.Shared.Services;
 using Immense.RemoteControl.Desktop.Shared.Services;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Immense.RemoteControl.Desktop.Shared.Enums;
-using Immense.RemoteControl.Desktop.UI.Services;
 
 var fallbackUri = "https://localhost:5001";
 
@@ -52,9 +52,9 @@ Console.CancelKeyPress += async (s, e) =>
     await shutdownService.Shutdown();
 };
 
-var dispatcher = provider.GetRequiredService<IAvaloniaDispatcher>();
+var dispatcher = provider.GetRequiredService<IWindowsUiDispatcher>();
 try
 {
-    await Task.Delay(Timeout.InfiniteTimeSpan, dispatcher.AppCancellationToken);
+    await Task.Delay(Timeout.InfiniteTimeSpan, dispatcher.ApplicationExitingToken);
 }
 catch (TaskCanceledException) { }

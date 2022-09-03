@@ -2,7 +2,7 @@
   "profiles": {
     "Desktop.Linux": {
       "commandName": "Project",
-      "commandLineArgs": "-orgid \"e42c65b4-deb2-4dca-b4fb-ec8dcbe8f84c\" -host \"https://localhost:5001\""
+      "commandLineArgs": "-m Attended -s some-session-id -a vERyLonGAndCOMpleXKeY -o Immense -r Han"
     }
   }
 }

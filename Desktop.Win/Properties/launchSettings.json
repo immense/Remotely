@@ -1,7 +1,8 @@
 {
   "profiles": {
     "Desktop.Win": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "-m Attended -s some-session-id -a vERyLonGAndCOMpleXKeY -o Immense -r Han"
     }
   }
 }

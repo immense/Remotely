@@ -1,4 +1,5 @@
-﻿using Remotely.Shared.Enums;
+﻿using Immense.RemoteControl.Shared.Models;
+using Remotely.Shared.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
