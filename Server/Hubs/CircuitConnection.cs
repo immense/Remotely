@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Remotely.Server.Auth;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
+using Remotely.Shared;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;

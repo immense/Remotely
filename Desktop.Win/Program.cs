@@ -11,8 +11,7 @@ using Remotely.Shared.Services;
 using Immense.RemoteControl.Desktop.Shared.Services;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Immense.RemoteControl.Desktop.Shared.Enums;
-
-var fallbackUri = "https://localhost:5001";
+using Remotely.Shared;
 
 var provider = await Startup.UseRemoteControlClient(
     args,
@@ -34,7 +33,7 @@ var provider = await Startup.UseRemoteControlClient(
         services.AddSingleton<IAppStateEx, AppStateEx>();
         services.AddSingleton<IAppState>(s => s.GetRequiredService<IAppStateEx>());
     },
-    fallbackUri);
+    AppConstants.ServerUrl);
 
 
 var brandingProvider = provider.GetRequiredService<IBrandingProvider>();

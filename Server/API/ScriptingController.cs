@@ -14,6 +14,7 @@ using Remotely.Shared.Enums;
 using Remotely.Server.Auth;
 using Immense.RemoteControl.Server.Abstractions;
 using Immense.RemoteControl.Shared.Helpers;
+using Remotely.Shared;
 
 namespace Remotely.Server.API
 {

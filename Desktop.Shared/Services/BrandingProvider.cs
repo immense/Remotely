@@ -1,6 +1,7 @@
 ﻿using Immense.RemoteControl.Desktop.Shared.Abstractions;
 using Immense.RemoteControl.Desktop.Shared.Services;
 using Immense.RemoteControl.Shared.Models;
+using Remotely.Shared;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;

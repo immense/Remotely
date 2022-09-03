@@ -96,8 +96,7 @@ if ($Hostname) {
             return
     }
 
-    Replace-LineInFile -FilePath "$Root\Agent.Installer.Win\ViewModels\MainWindowViewModel.cs" -MatchPattern "private string _serverUrl" -ReplaceLineWith "private string _serverUrl = `"$($Hostname)`";" -MaxCount 1
-    Replace-LineInFile -FilePath "$Root\Shared\Models\DesktopAppConfig.cs" -MatchPattern "private string _host" -ReplaceLineWith "private string _host = `"$($Hostname)`";" -MaxCount 1
+    Replace-LineInFile -FilePath "$Root\Shared\AppConstants.cs" -MatchPattern "public const string ServerUrl" -ReplaceLineWith "public const string ServerUrl = `"$($Hostname)`";" -MaxCount 1
 }
 else {
     Write-Warning "`nNo hostname parameter was specified.  The server name will need to be entered manually in the desktop client.`n"
