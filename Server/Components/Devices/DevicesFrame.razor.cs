@@ -183,7 +183,7 @@ namespace Remotely.Server.Components.Devices
                         var deviceId = (string)args.Params[2];
                         var viewOnly = (bool)args.Params[3];
 
-                        JsInterop.OpenWindow($"/RemoteControl/Viewer?sessionId={sessionId}&accessKey={accessKey}&viewonly={viewOnly}", "_blank");
+                        JsInterop.OpenWindow($"/RemoteControl/Viewer?mode=Unattended&sessionId={sessionId}&accessKey={accessKey}&viewonly={viewOnly}", "_blank");
                     }
                     break;
                 default:

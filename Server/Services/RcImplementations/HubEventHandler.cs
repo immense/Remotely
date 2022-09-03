@@ -124,7 +124,7 @@ namespace Remotely.Server.Services.RcImplementations
             }
 
             return _circuitManager.InvokeOnConnection(
-                ex.ServiceConnectionId,
+                ex.UserConnectionId,
                 CircuitEventName.UnattendedSessionReady,
                 session.UnattendedSessionId, 
                 session.AccessKey,
