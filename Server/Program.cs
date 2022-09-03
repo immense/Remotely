@@ -215,8 +215,6 @@ else
     }
 }
 
-app.UseMiddleware<ClickOnceMiddleware>();
-
 ConfigureStaticFiles();
 
 app.UseSwagger();
