@@ -1,53 +1,179 @@
 ﻿using Immense.RemoteControl.Server.Abstractions;
+using Immense.RemoteControl.Server.Models;
+using Immense.RemoteControl.Shared.Enums;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Build.Framework;
+using Microsoft.Extensions.Logging;
 using NuGet.Protocol.Core.Types;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models;
 using Remotely.Shared.Enums;
+using Remotely.Shared.Models;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Remotely.Server.Services.RcImplementations
 {
-    public class HubEventHandler : IHubEventHandler
+    public interface IHubEventHandlerEx : IHubEventHandler
     {
+        Task<bool> TryWaitForSession(string sessionId, Func<Task> createSessionFunc);
+    }
+
+    public class HubEventHandlerEx : IHubEventHandlerEx
+    {
+        private static readonly ConcurrentDictionary<string, SemaphoreSlim> _sessionWaitHandlers = new();
+
         private readonly IDataService _dataService;
         private readonly ICircuitManager _circuitManager;
         private readonly IHubContext<ServiceHub> _serviceHub;
+        private readonly ILogger<HubEventHandlerEx> _logger;
 
-        public HubEventHandler(
+        public HubEventHandlerEx(
             IDataService dataService,
             ICircuitManager circuitManager,
-            IHubContext<ServiceHub> serviceHub)
+            IHubContext<ServiceHub> serviceHub,
+            ILogger<HubEventHandlerEx> logger)
         {
             _dataService = dataService;
             _circuitManager = circuitManager;
             _serviceHub = serviceHub;
+            _logger = logger;
         }
 
-        public Task ChangeWindowsSession(string serviceConnectionId, string viewerConnectionId, int targetWindowsSession)
+        public Task ChangeWindowsSession(RemoteControlSession session, string viewerConnectionId, int targetWindowsSession)
         {
+            if (session is not RemoteControlSessionEx ex)
+            {
+                _logger.LogError("Event should have been for RemoteControlSessionEx.");
+                return Task.CompletedTask;
+            }
+
             return _serviceHub.Clients
-                    .Client(serviceConnectionId)
-                    .SendAsync("ChangeWindowsSession",
-                        serviceConnectionId,
-                        viewerConnectionId,
-                        targetWindowsSession);
+                .Client(ex.ServiceConnectionId)
+                .SendAsync("ChangeWindowsSession",
+                    viewerConnectionId,
+                    ex.UnattendedSessionId,
+                    ex.AccessKey,
+                    ex.UserConnectionId,
+                    ex.RequesterUserName,
+                    ex.OrganizationName,
+                    targetWindowsSession);
         }
 
-        public void LogRemoteControlStarted(string message, string organizationId)
+        public Task InvokeCtrlAltDel(RemoteControlSession session, string viewerConnectionId)
         {
-            _dataService.WriteEvent(message, EventType.Info, organizationId);
+            if (session is not RemoteControlSessionEx ex)
+            {
+                _logger.LogError("Event should have been for RemoteControlSessionEx.");
+                return Task.CompletedTask;
+            }
+
+            return _serviceHub.Clients.Client(ex.ServiceConnectionId).SendAsync("CtrlAltDel");
         }
 
-        public Task NotifyUnattendedSessionReady(string userConnectionId, string desktopConnectionId, string deviceId)
+        public Task NotifySessionChanged(RemoteControlSession session, SessionSwitchReasonEx reason, int currentSessionId)
         {
-            return _circuitManager.InvokeOnConnection(userConnectionId, CircuitEventName.UnattendedSessionReady, desktopConnectionId, deviceId);
+            if (session is not RemoteControlSessionEx ex)
+            {
+                _logger.LogError("Event should have been for RemoteControlSessionEx.");
+                return Task.CompletedTask;
+            }
+
+            switch (reason)
+            {
+                case SessionSwitchReasonEx.ConsoleDisconnect:
+                case SessionSwitchReasonEx.RemoteConnect:
+                case SessionSwitchReasonEx.RemoteDisconnect:
+                case SessionSwitchReasonEx.SessionLogoff:
+                case SessionSwitchReasonEx.SessionLock:
+                case SessionSwitchReasonEx.SessionRemoteControl:
+                    return _serviceHub.Clients
+                      .Client(ex.ServiceConnectionId)
+                      .SendAsync("RestartScreenCaster",
+                          ex.ViewerList,
+                          ex.UnattendedSessionId,
+                          ex.AccessKey,
+                          ex.UserConnectionId,
+                          ex.RequesterUserName,
+                          ex.OrganizationName);
+                case SessionSwitchReasonEx.ConsoleConnect:
+                case SessionSwitchReasonEx.SessionUnlock:
+                case SessionSwitchReasonEx.SessionLogon:
+                default:
+                    break;
+            }
+
+            return Task.CompletedTask;
         }
 
-        public Task RestartScreenCaster(string desktopConnectionId, string serviceConnectionId, HashSet<string> viewerList)
+        public Task NotifyUnattendedSessionReady(RemoteControlSession session, string relativeAccessUrl)
         {
-            return _serviceHub.Clients.Client(serviceConnectionId).SendAsync("RestartScreenCaster", viewerList, serviceConnectionId, desktopConnectionId);
+            if (_sessionWaitHandlers.TryGetValue(session.UnattendedSessionId, out var waitHandle))
+            {
+                waitHandle.Release();
+                return Task.CompletedTask;
+            }
+
+            if (session is not RemoteControlSessionEx ex)
+            {
+                _logger.LogError("Event should have been for RemoteControlSessionEx.");
+                return Task.CompletedTask;
+            }
+
+            return _circuitManager.InvokeOnConnection(
+                ex.ServiceConnectionId,
+                CircuitEventName.UnattendedSessionReady,
+                session.UnattendedSessionId, 
+                session.AccessKey,
+                ex.DeviceId,
+                ex.ViewOnly);
         }
+
+        public Task RestartScreenCaster(RemoteControlSession session, HashSet<string> viewerList)
+        {
+
+            if (session is not RemoteControlSessionEx ex)
+            {
+                _logger.LogError("Event should have been for RemoteControlSessionEx.");
+                return Task.CompletedTask;
+            }
+
+            return _serviceHub.Clients
+                     .Client(ex.ServiceConnectionId)
+                     .SendAsync("RestartScreenCaster",
+                            viewerList,
+                            ex.UnattendedSessionId,
+                            ex.AccessKey,
+                            ex.UserConnectionId,
+                            ex.RequesterUserName,
+                            ex.OrganizationName);
+        }
+
+        public async Task<bool> TryWaitForSession(string sessionId, Func<Task> createSessionFunc)
+        {
+            try
+            {
+                var waitHandle = _sessionWaitHandlers.AddOrUpdate(sessionId, new SemaphoreSlim(0, 1), (k, v) =>
+                {
+                    v.Release();
+                    return new SemaphoreSlim(0, 1);
+                });
+
+                await createSessionFunc();
+
+                return waitHandle.Wait(TimeSpan.FromSeconds(30));
+            }
+            finally
+            {
+                if (_sessionWaitHandlers.TryRemove(sessionId, out var result))
+                {
+                    result.Dispose();
+                }
+            }
+        }
+
     }
 }

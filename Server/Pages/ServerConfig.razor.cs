@@ -230,15 +230,15 @@ namespace Remotely.Server.Pages
 
         private IEnumerable<string> GetOutdatedDevices()
         {
-            var highestVersion = ServiceSessionCache.Sessions.Values.Max(x =>
+            var highestVersion = ServiceSessionCache.GetAllDevices().Max(device =>
             {
-                 var device = DataService.GetDevice(x);
                 return Version.TryParse(device.AgentVersion, out var result) ? result : default;
             });
 
 
-            return ServiceSessionCache.Sessions.Values
-                .Where(x => Version.TryParse(DataService.GetDevice(x)?.AgentVersion, out var result) && result != highestVersion);
+            return ServiceSessionCache.GetAllDevices()
+                .Where(x => Version.TryParse(x.AgentVersion, out var result) && result != highestVersion)
+                .Select(x => x.ID);
         }
 
         private void HandleBannedDeviceKeyDown(KeyboardEventArgs args)
@@ -405,9 +405,9 @@ namespace Remotely.Server.Pages
                 return;
             }
 
-            var agentConnections = ServiceSessionCache.Sessions.Where(x => outdatedDevices.Contains(x.Value));
+            var agentConnections = ServiceSessionCache.GetConnectionIdsByDeviceIds(outdatedDevices);
 
-            await AgentHubContext.Clients.Clients(agentConnections.Select(x => x.Key)).SendAsync("ReinstallAgent");
+            await AgentHubContext.Clients.Clients(agentConnections).SendAsync("ReinstallAgent");
             ToastService.ShowToast("Update command sent.");
         }
     }

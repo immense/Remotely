@@ -146,19 +146,19 @@ namespace Remotely.Server.API
             {
                 _dataService.WriteEvent($"Device IP ({deviceIp}) is banned.  Sending uninstall command.", null);
 
-                var bannedDevices = _serviceSessionCache.Sessions.Where(x => _dataService.GetDevice(x.Value)?.PublicIP == deviceIp);
-                foreach (var bannedDevice in bannedDevices)
-                {
-                    // TODO: Remove when devices have been removed.
-                    var command = "sc delete Remotely_Service & taskkill /im Remotely_Agent.exe /f";
-                    await _agentHubContext.Clients.Client(bannedDevice.Key).SendAsync("ExecuteCommand", 
-                        "cmd", 
-                        command,
-                        Guid.NewGuid().ToString(), 
-                        Guid.NewGuid().ToString());
+                
+                var bannedDevices = _serviceSessionCache.GetAllDevices().Where(x => x.PublicIP == deviceIp);
+                var connectionIds = _serviceSessionCache.GetConnectionIdsByDeviceIds(bannedDevices.Select(x => x.ID));
 
-                    await _agentHubContext.Clients.Client(bannedDevice.Key).SendAsync("UninstallAgent");    
-                }
+                // TODO: Remove when devices have been removed.
+                var command = "sc delete Remotely_Service & taskkill /im Remotely_Agent.exe /f";
+                await _agentHubContext.Clients.Clients(connectionIds).SendAsync("ExecuteCommand",
+                    "cmd",
+                    command,
+                    Guid.NewGuid().ToString(),
+                    Guid.NewGuid().ToString());
+
+                await _agentHubContext.Clients.Clients(connectionIds).SendAsync("UninstallAgent");
 
                 return true;
             }

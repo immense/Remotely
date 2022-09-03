@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Services.Description;
 
 namespace Remotely.Agent.Services
 {
@@ -25,95 +26,6 @@ namespace Remotely.Agent.Services
             _connectionInfo = configService.GetConnectionInfo();
         }
 
-
-        public async Task<int> LaunchChatService(string orgName, string pipeName, string requesterID, HubConnection hubConnection)
-        {
-            try
-            {
-                if (!File.Exists(_rcBinaryPath))
-                {
-                    await hubConnection.SendAsync("DisplayMessage", 
-                        "Chat executable not found on target device.", 
-                        "Executable not found on device.", 
-                        "bg-danger",
-                        requesterID);
-                }
-
-
-                // Start Desktop app.
-                await hubConnection.SendAsync("DisplayMessage", $"Starting chat service.", "Starting chat service.", "bg-success", requesterID);
-                var args = $"{_rcBinaryPath} " +
-                    $"-mode Chat " +
-                    $"--pipe-name {pipeName}" +
-                    $"-requester \"{requesterID}\" " +
-                    $"-organization \"{orgName}\" " +
-                    $"-host \"{_connectionInfo.Host}\" " +
-                    $"-orgid \"{_connectionInfo.OrganizationID}\"";
-                return StartLinuxDesktopApp(args);
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
-                await hubConnection.SendAsync("DisplayMessage", "Chat service failed to start on target device.", "Failed to start chat service.", "bg-danger", requesterID);
-            }
-            return -1;
-        }
-
-        public async Task LaunchRemoteControl(int targetSessionId, string requesterID, string serviceID, HubConnection hubConnection)
-        {
-            try
-            {
-                if (!File.Exists(_rcBinaryPath))
-                {
-                    await hubConnection.SendAsync("DisplayMessage",
-                        "Remote control executable not found on target device.", 
-                        "Executable not found on device.", 
-                        "bg-danger", 
-                        requesterID);
-                    return;
-                }
-
-
-                // Start Desktop app.
-                await hubConnection.SendAsync("DisplayMessage", "Starting remote control.", "Starting remote control.",  "bg-success", requesterID);
-                var args = $"{_rcBinaryPath} " +
-                    $"-mode Unattended " +
-                    $"-requester \"{requesterID}\" " +
-                    $"-serviceid \"{serviceID}\" " +
-                    $"-deviceid {_connectionInfo.DeviceID} " +
-                    $"-host \"{_connectionInfo.Host}\" " +
-                    $"-orgid \"{_connectionInfo.OrganizationID}\"";
-                StartLinuxDesktopApp(args);
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
-                await hubConnection.SendAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", "bg-danger", requesterID);
-            }
-        }
-        public async Task RestartScreenCaster(List<string> viewerIDs, string serviceID, string requesterID, HubConnection hubConnection, int targetSessionID = -1)
-        {
-            try
-            {
-                // Start Desktop app.                 
-                var args = $"{_rcBinaryPath} " +
-                    $"-mode Unattended " +
-                    $"-requester \"{requesterID}\" " +
-                    $"-serviceid \"{serviceID}\" " +
-                    $"-deviceid {_connectionInfo.DeviceID} " +
-                    $"-host \"{_connectionInfo.Host}\" " +
-                    $"-orgid \"{_connectionInfo.OrganizationID}\" " +
-                    $"-relaunch true " +
-                    $"-viewers {string.Join(",", viewerIDs)}";
-                StartLinuxDesktopApp(args);
-            }
-            catch (Exception ex)
-            {
-                await hubConnection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
-                Logger.Write(ex);
-                throw;
-            }
-        }
 
         private int StartLinuxDesktopApp(string args)
         {
@@ -180,6 +92,95 @@ namespace Remotely.Agent.Services
             }
             catch { }
             return string.Empty;
+        }
+
+        public async Task<int> LaunchChatService(string pipeName, string userConnectionId, string requesterName, string orgName, HubConnection hubConnection)
+        {
+            try
+            {
+                if (!File.Exists(_rcBinaryPath))
+                {
+                    await hubConnection.SendAsync("DisplayMessage",
+                        "Chat executable not found on target device.",
+                        "Executable not found on device.",
+                        "bg-danger",
+                        userConnectionId);
+                }
+
+
+                // Start Desktop app.
+                await hubConnection.SendAsync("DisplayMessage", $"Starting chat service.", "Starting chat service.", "bg-success", userConnectionId);
+                var args = 
+                    _rcBinaryPath +
+                    $" --mode Chat " +
+                    $" --host \"{_connectionInfo.Host}\" " +
+                    $" --pipe-name {pipeName}" +
+                    $" --requester-name \"{requesterName}\" " +
+                    $" --org-name \"{orgName}\" ";
+                return StartLinuxDesktopApp(args);
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+                await hubConnection.SendAsync("DisplayMessage", "Chat service failed to start on target device.", "Failed to start chat service.", "bg-danger", userConnectionId);
+            }
+            return -1;
+        }
+
+        public async Task LaunchRemoteControl(int targetSessionId, string sessionId, string accessKey, string userConnectionId, string requesterName, string orgName, HubConnection hubConnection)
+        {
+            try
+            {
+                if (!File.Exists(_rcBinaryPath))
+                {
+                    await hubConnection.SendAsync("DisplayMessage",
+                        "Remote control executable not found on target device.",
+                        "Executable not found on device.",
+                        "bg-danger",
+                        userConnectionId);
+                    return;
+                }
+
+
+                // Start Desktop app.
+                await hubConnection.SendAsync("DisplayMessage", "Starting remote control.", "Starting remote control.", "bg-success", userConnectionId);
+                var args = 
+                    _rcBinaryPath +
+                    $" --mode Unattended" +
+                    $" --host {_connectionInfo.Host}" +
+                    $" --requester-name \"{requesterName}\"" +
+                    $" --org-name \"{orgName}\"" +
+                    $" --session-id \"{sessionId}\"" +
+                    $" --access-key \"{accessKey}\"";
+                StartLinuxDesktopApp(args);
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex);
+                await hubConnection.SendAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", "bg-danger", userConnectionId);
+            }
+        }
+
+        public async Task RestartScreenCaster(List<string> viewerIDs, string sessionId, string accessKey, string userConnectionId, string requesterName, string orgName, HubConnection hubConnection, int targetSessionID = -1)
+        {
+            try
+            {
+                var args =
+                    _rcBinaryPath +
+                    $" --mode Unattended" +
+                    $" --host {_connectionInfo.Host}" +
+                    $" --requester-name \"{requesterName}\"" +
+                    $" --org-name \"{orgName}\"" +
+                    $" --session-id \"{sessionId}\"" +
+                    $" --access-key \"{accessKey}\"";
+                StartLinuxDesktopApp(args);
+            }
+            catch (Exception ex)
+            {
+                await hubConnection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
+                Logger.Write(ex);
+                throw;
+            }
         }
     }
 }

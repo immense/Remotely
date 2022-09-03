@@ -19,8 +19,8 @@
             var activeSessions = DesktopSessionCache.Sessions.Where(x => x.Value.RequesterUserName == HttpContext.User.Identity.Name);
             foreach (var session in activeSessions)
             {
-                await DesktopHubContext.Clients.Client(session.Value.CasterConnectionId).SendAsync("Disconnect", "User logged out.");
-                await ViewerHubContext.Clients.Client(session.Value.RequesterSocketID).SendAsync("ConnectionFailed");
+                await DesktopHubContext.Clients.Client(session.Value.DesktopConnectionId).SendAsync("Disconnect", "User logged out.");
+                await ViewerHubContext.Clients.Clients(session.Value.ViewerList).SendAsync("ConnectionFailed");
             }
 
             await SignInManager.SignOutAsync();

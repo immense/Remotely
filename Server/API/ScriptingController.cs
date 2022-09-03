@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Remotely.Shared.Enums;
 using Remotely.Server.Auth;
 using Immense.RemoteControl.Server.Abstractions;
+using Immense.RemoteControl.Shared.Helpers;
 
 namespace Remotely.Server.API
 {
@@ -71,21 +72,27 @@ namespace Remotely.Server.API
 
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
 
-            var connection = _serviceSessionCache.Sessions.FirstOrDefault(x =>
-                x.Value == deviceID &&
-                _dataService.GetDevice(x.Value)?.Organization == orgID);
-
-            if (string.IsNullOrWhiteSpace(connection.Key))
+            if (!_serviceSessionCache.TryGetByDeviceId(deviceID, out var device))
             {
                 return NotFound();
+            }
+
+            if (!_serviceSessionCache.TryGetConnectionId(deviceID, out var connectionId))
+            {
+                return NotFound();
+            }
+
+            if (device.OrganizationID != orgID)
+            {
+                return Unauthorized();
             }
 
             var requestID = Guid.NewGuid().ToString();
             var authToken = _expiringTokenService.GetToken(Time.Now.AddMinutes(AppConstants.ScriptRunExpirationMinutes));
 
-            await _agentHubContext.Clients.Client(connection.Key).SendAsync("ExecuteCommandFromApi", shell, authToken, requestID, command, User?.Identity?.Name);
+            await _agentHubContext.Clients.Client(connectionId).SendAsync("ExecuteCommandFromApi", shell, authToken, requestID, command, User?.Identity?.Name);
 
-            var success = await TaskHelper.DelayUntilAsync(() => ServiceHub.ApiScriptResults.TryGetValue(requestID, out _), TimeSpan.FromSeconds(30));
+            var success = await WaitHelper.WaitForAsync(() => ServiceHub.ApiScriptResults.TryGetValue(requestID, out _), TimeSpan.FromSeconds(30));
             if (!success)
             {
                 return NotFound();

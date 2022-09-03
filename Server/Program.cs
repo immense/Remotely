@@ -31,6 +31,7 @@ using Remotely.Shared.Utilities;
 using Immense.RemoteControl.Server.Extensions;
 using Remotely.Server.Services.RcImplementations;
 using Immense.RemoteControl.Server.Abstractions;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -181,12 +182,16 @@ services.AddSingleton<IOtpProvider, OtpProvider>();
 
 services.AddRemoteControlServer(config =>
 {
-    config.AddHubEventHandler<HubEventHandler>();
-    config.AddServiceHubSessionCache<ServiceHubSessionCache>();
+    config.AddHubEventHandler<HubEventHandlerEx>();
     config.AddViewerAuthorizer<ViewerAuthorizer>();
     config.AddViewerHubDataProvider<ViewerHubDataProvider>();
     config.AddViewerPageDataProvider<ViewerPageDataProvider>();
 });
+
+services.RemoveAll<IHubEventHandler>();
+services.AddScoped<IHubEventHandlerEx, HubEventHandlerEx>();
+services.AddScoped<IHubEventHandler>(s => s.GetRequiredService<IHubEventHandlerEx>());
+services.AddSingleton<IServiceHubSessionCache, ServiceHubSessionCache>();
 
 var app = builder.Build();
 

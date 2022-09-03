@@ -18,10 +18,7 @@ namespace Remotely.Server.Services.RcImplementations
             _otpProvider = otpProvider;
         }
 
-        public string UnauthorizedRedirectArea => "Identity";
-        public string UnauthorizedRedirectPageName => "/Account/Login";
-
-
+        public string UnauthorizedRedirectUrl { get; } = "/Identity/Account/Login";
 
         public bool IsAuthorized(AuthorizationFilterContext context)
         {

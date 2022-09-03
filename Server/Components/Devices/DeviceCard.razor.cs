@@ -34,8 +34,6 @@ namespace Remotely.Server.Components.Devices
         [CascadingParameter]
         public DevicesFrame ParentFrame { get; set; }
 
-        [Parameter]
-        public ConcurrentDictionary<string, RemoteControlTarget> RemoteControlTargetLookup { get; set; }
 
         [Inject]
         private IClientAppState AppState { get; set; }
@@ -261,14 +259,13 @@ namespace Remotely.Server.Components.Devices
 
         private void StartRemoteControl(bool viewOnly)
         {
-            var targetDevice = ServiceSessionCache.Sessions.FirstOrDefault(x => x.Value == Device.ID);
-            RemoteControlTargetLookup[Device.ID] = new RemoteControlTarget()
+            if (!ServiceSessionCache.TryGetConnectionId(Device.ID, out var connectionId))
             {
-                ViewOnlyMode = viewOnly,
-                ServiceConnectionId = targetDevice.Key
-            };
+                ToastService.ShowToast("Device connection not found", classString: "bg-danger");
+                return;
+            }
 
-            CircuitConnection.RemoteControl(Device.ID);
+            CircuitConnection.RemoteControl(Device.ID, viewOnly);
         }
 
         private void ToggleIsSelected(ChangeEventArgs args)

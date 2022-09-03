@@ -10,6 +10,8 @@ namespace Remotely.Shared.Models
 {
     public class Device
     {
+        public static Device Empty { get; } = new();
+
         [Sortable]
         [Display(Name = "Agent Version")]
         public string AgentVersion { get; set; }

@@ -1,5 +1,4 @@
-﻿using Immense.RemoteControl.Server.Abstractions;
-using Immense.RemoteControl.Server.Hubs;
+﻿using Immense.RemoteControl.Server.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -93,16 +92,16 @@ namespace Remotely.Server.Hubs
                     return Task.FromResult(false);
                 }
 
-                if (_serviceSessionCache.Sessions.Any(x => x.Value == device.ID))
-                {
-                    _dataService.WriteEvent(new EventLog()
-                    {
-                        EventType = EventType.Info,
-                        OrganizationID = device.OrganizationID,
-                        Message = $"Device connection for {device?.DeviceName} was denied because it is already connected."
-                    });
-                    return Task.FromResult(false);
-                }
+                //if (_serviceSessionCache.Sessions.Any(x => x.Value == device.ID))
+                //{
+                //    _dataService.WriteEvent(new EventLog()
+                //    {
+                //        EventType = EventType.Info,
+                //        OrganizationID = device.OrganizationID,
+                //        Message = $"Device connection for {device?.DeviceName} was denied because it is already connected."
+                //    });
+                //    return Task.FromResult(false);
+                //}
 
                 var ip = Context.GetHttpContext()?.Connection?.RemoteIpAddress;
                 if (ip != null && ip.IsIPv4MappedToIPv6)
@@ -119,7 +118,8 @@ namespace Remotely.Server.Hubs
                 if (_dataService.AddOrUpdateDevice(device, out var updatedDevice))
                 {
                     Device = updatedDevice;
-                    _serviceSessionCache.Sessions.AddOrUpdate(Context.ConnectionId, Device.ID, (k, v) => Device.ID);
+
+                    _serviceSessionCache.AddOrUpdateByConnectionId(Context.ConnectionId, Device);
 
                     var userIDs = _circuitManager.Connections.Select(x => x.User.Id);
 
@@ -172,7 +172,8 @@ namespace Remotely.Server.Hubs
 
             _dataService.AddOrUpdateDevice(device, out var updatedDevice);
             Device = updatedDevice;
-            _serviceSessionCache.Sessions.AddOrUpdate(Context.ConnectionId, Device.ID, (k,v) => Device.ID);
+
+            _serviceSessionCache.AddOrUpdateByConnectionId(Context.ConnectionId, Device);
 
             var userIDs = _circuitManager.Connections.Select(x => x.User.Id);
 
@@ -234,7 +235,7 @@ namespace Remotely.Server.Hubs
             }
             finally
             {
-                _serviceSessionCache.Sessions.TryRemove(Context.ConnectionId, out _);
+                _serviceSessionCache.TryRemoveByConnectionId(Context.ConnectionId, out _);
             }
         }
 

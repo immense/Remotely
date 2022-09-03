@@ -7,7 +7,7 @@
     "Version": 3,
     
     /*  Create an item in the dropdown list for each project in the solution?  */
-    "ListAllProjects": true,
+    "ListAllProjects": false,
 
     /*
         Dictionary of named configurations with one or multiple startup projects
@@ -51,5 +51,19 @@
           }
         }
     */
-    "MultiProjectConfigurations": {}
+  "MultiProjectConfigurations": {
+    "Server+Agent+Desktop": {
+      "Projects": {
+        "Server\\Server.csproj": {
+          "ProfileName": "Server"
+        },
+        "Agent": {
+          "ProfileName": "Agent"
+        },
+        "Desktop.Win": {
+          "ProfileName": "Desktop.Win"
+        }
+      }
+    }
+  }
 }

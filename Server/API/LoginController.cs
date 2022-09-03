@@ -52,8 +52,8 @@ namespace Remotely.Server.API
                 var activeSessions = _desktopSessionCache.Sessions.Where(x => x.Value.RequesterUserName == HttpContext.User.Identity.Name);
                 foreach (var session in activeSessions.ToList())
                 {
-                    await _desktopHub.Clients.Client(session.Value.CasterConnectionId).SendAsync("Disconnect", "User logged out.");
-                    await _viewerHub.Clients.Client(session.Value.RequesterSocketID).SendAsync("ConnectionFailed");
+                    await _desktopHub.Clients.Client(session.Value.DesktopConnectionId).SendAsync("Disconnect", "User logged out.");
+                    await _viewerHub.Clients.Clients(session.Value.ViewerList).SendAsync("ConnectionFailed");
                 }
             }
             await _signInManager.SignOutAsync();

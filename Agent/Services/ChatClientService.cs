@@ -37,7 +37,8 @@ namespace Remotely.Agent.Services
 
         private MemoryCache ChatClients { get; } = new("ChatClients");
 
-        public async Task SendMessage(string senderName,
+        public async Task SendMessage(
+            string senderName,
             string message,
             string orgName,
             bool disconnected,
@@ -62,7 +63,7 @@ namespace Remotely.Agent.Services
                     }
 
                     var pipeName = Guid.NewGuid().ToString();
-                    var procID = await AppLauncher.LaunchChatService(orgName, pipeName, senderConnectionID, hubConnection);
+                    var procID = await AppLauncher.LaunchChatService(pipeName, senderConnectionID, senderName, orgName, hubConnection);
 
                     if (procID > 0)
                     {
