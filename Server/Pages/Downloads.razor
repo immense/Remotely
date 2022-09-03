@@ -175,7 +175,6 @@
 
 @code {
     private string _organizationId;
-    private bool _isServerUrlEmbedded;
     private bool _isAuthenticated;
 
     protected override async Task OnInitializedAsync()
@@ -193,28 +192,6 @@
         else
         {
             _organizationId = (await DataService.GetDefaultOrganization())?.ID;
-        }
-
-        var appFilePath = System.IO.Path.Combine(
-            HostEnv.WebRootPath,
-            "Content",
-            "Win-x64",
-            "ClickOnce",
-            "Remotely_Desktop.application");
-
-        try
-        {
-            await ClickOnceMiddleware.AppFileLock.WaitAsync();
-            var appContent = await System.IO.File.ReadAllTextAsync(appFilePath);
-            _isServerUrlEmbedded = appContent.Contains(NavManager.BaseUri.TrimEnd('/'));
-        }
-        catch (Exception ex)
-        {
-            Logger.LogWarning(ex, "Error while checking ClickOnce file.");
-        }
-        finally
-        {
-            ClickOnceMiddleware.AppFileLock.Release();
         }
     }
 }
