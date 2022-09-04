@@ -75,7 +75,7 @@ namespace Remotely.Agent.Services
                         return;
                     }
 
-                    var clientPipe = new NamedPipeClientStream(".", "Remotely_Chat" + senderConnectionID, PipeDirection.InOut, PipeOptions.Asynchronous);
+                    var clientPipe = new NamedPipeClientStream(".", pipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
                     clientPipe.Connect(15000);
                     if (!clientPipe.IsConnected)
                     {
