@@ -1,4 +1,5 @@
 ﻿using Immense.RemoteControl.Server.Models;
+using System;
 
 namespace Remotely.Server.Models
 {

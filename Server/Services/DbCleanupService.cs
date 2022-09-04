@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Remotely.Server.Services
 {
-    public class CleanupService : IHostedService, IDisposable
+    public class DbCleanupService : IHostedService, IDisposable
     {
-        public CleanupService(IServiceProvider serviceProvider)
+        public DbCleanupService(IServiceProvider serviceProvider)
         {
             Services = serviceProvider;
         }
