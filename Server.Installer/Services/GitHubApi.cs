@@ -113,7 +113,7 @@ namespace Server.Installer.Services
         {
             try
             {
-                var response = await _httpClient.GetFromJsonAsync<GitHubReleasesResponsePayload>("https://api.github.com/repos/lucent-sea/Remotely/releases/latest");
+                var response = await _httpClient.GetFromJsonAsync<GitHubReleasesResponsePayload>("https://api.github.com/repos/immense/Remotely/releases/latest");
                 return response.tag_name;
             }
             catch (Exception ex)

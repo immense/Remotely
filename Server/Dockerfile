@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:jammy
 
 EXPOSE 5000
 
@@ -16,15 +16,12 @@ RUN \
   libssl1.0
 
 RUN \
-  wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb && \
-  dpkg -i packages-microsoft-prod.deb && \
-  apt-get -y update && \
-  apt-get -y install aspnetcore-runtime-5.0
+  apt-get -y install aspnetcore-runtime-6.0
 
 RUN \
   mkdir -p /var/www/remotely && \
   mkdir /config && \
-  wget -q https://github.com/lucent-sea/Remotely/releases/latest/download/Remotely_Server_Linux-x64.zip && \
+  wget -q https://github.com/immense/Remotely/releases/latest/download/Remotely_Server_Linux-x64.zip && \
   unzip -o Remotely_Server_Linux-x64.zip -d /var/www/remotely && \
   rm Remotely_Server_Linux-x64.zip
 
