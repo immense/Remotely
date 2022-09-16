@@ -37,7 +37,7 @@ sudo rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-
 
 yum -y install apt-transport-https
 yum -y update
-yum -y install aspnetcore-runtime-5.0
+yum -y install aspnetcore-runtime-6.0
 
 
  # Install other prerequisites.

@@ -29,33 +29,33 @@ chmod +x "$AppRoot/Remotely_Server"
 
 echo "Using $AppRoot as the Remotely website's content directory."
 
-UbuntuVersion=$(lsb_release -r -s)
-
 apt-get -y install curl
 apt-get -y install software-properties-common
 apt-get -y install gnupg
 
+UbuntuVersion=$(lsb_release -r -s)
+UbuntuVersionInt=$(("${UbuntuVersion/./}"))
+
 # Install .NET Core Runtime.
-wget -q https://packages.microsoft.com/config/ubuntu/$UbuntuVersion/packages-microsoft-prod.deb
-dpkg -i packages-microsoft-prod.deb
-add-apt-repository universe
-apt-get update
-apt-get -y install apt-transport-https
-apt-get -y install aspnetcore-runtime-5.0
-rm packages-microsoft-prod.deb
+if [ $UbuntuVersionInt -ge 2204 ]; then
+    apt-get install -y aspnetcore-runtime-6.0
+else
+    wget -q https://packages.microsoft.com/config/ubuntu/$UbuntuVersion/packages-microsoft-prod.deb
+    dpkg -i packages-microsoft-prod.deb
+    add-apt-repository universe
+    apt-get update
+    apt-get -y install apt-transport-https
+    apt-get -y install aspnetcore-runtime-6.0
+    rm packages-microsoft-prod.deb
+fi
 
 
- # Install other prerequisites.
-apt-get -y install unzip
-apt-get -y install acl
-apt-get -y install libc6-dev
-apt-get -y install libgdiplus
 
 
 # Install Caddy
 apt install -y debian-keyring debian-archive-keyring apt-transport-https
-curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo apt-key add -
-curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee -a /etc/apt/sources.list.d/caddy-stable.list
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
 apt update
 apt install caddy
 
