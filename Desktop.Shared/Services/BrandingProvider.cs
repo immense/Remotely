@@ -2,6 +2,7 @@
 using Immense.RemoteControl.Desktop.Shared.Services;
 using Immense.RemoteControl.Shared.Models;
 using Remotely.Shared;
+using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
@@ -17,16 +18,17 @@ namespace Remotely.Desktop.Win.Services
 {
     public class BrandingProvider : IBrandingProvider
     {
-        private readonly IAppStateEx _appState;
-
-        private BrandingInfo _brandingInfo = new()
+        private readonly IAppState _appState;
+        private readonly IOrganizationIdProvider _orgIdProvider;
+        private BrandingInfoBase _brandingInfo = new()
         {
             Product = "Remote Control"
         };
 
-        public BrandingProvider(IAppStateEx appState)
+        public BrandingProvider(IAppState appState, IOrganizationIdProvider orgIdProvider)
         {
             _appState = appState;
+            _orgIdProvider = orgIdProvider;
 
             using var mrs = typeof(BrandingProvider).Assembly.GetManifestResourceStream("Desktop.Shared.Assets.Remotely_Icon.png");
             using var ms = new MemoryStream();
@@ -35,12 +37,12 @@ namespace Remotely.Desktop.Win.Services
             _brandingInfo.Icon = ms.ToArray();
         }
 
-        public Task<BrandingInfo> GetBrandingInfo()
+        public Task<BrandingInfoBase> GetBrandingInfo()
         {
             return Task.FromResult(_brandingInfo);
         }
 
-        public void SetBrandingInfo(BrandingInfo brandingInfo)
+        public void SetBrandingInfo(BrandingInfoBase brandingInfo)
         {
             _brandingInfo = brandingInfo;
         }
@@ -82,7 +84,7 @@ namespace Remotely.Desktop.Win.Services
                             if (response.IsSuccessStatusCode)
                             {
                                 var organizationId = await response.Content.ReadAsStringAsync();
-                                _appState.OrganizationId = organizationId;
+                                _orgIdProvider.OrganizationId = organizationId;
 
                                 var brandingUrl = $"{host.TrimEnd('/')}/api/branding/{organizationId}";
                                 var result = await httpClient.GetFromJsonAsync<BrandingInfo>(brandingUrl).ConfigureAwait(false);
@@ -96,9 +98,9 @@ namespace Remotely.Desktop.Win.Services
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(host) && !string.IsNullOrWhiteSpace(_appState.OrganizationId))
+                if (!string.IsNullOrWhiteSpace(host) && !string.IsNullOrWhiteSpace(_orgIdProvider.OrganizationId))
                 {
-                    var brandingUrl = $"{host.TrimEnd('/')}/api/branding/{_appState.OrganizationId}";
+                    var brandingUrl = $"{host.TrimEnd('/')}/api/branding/{_orgIdProvider.OrganizationId}";
                     var result = await httpClient.GetFromJsonAsync<BrandingInfo>(brandingUrl).ConfigureAwait(false);
                     if (result is not null)
                     {

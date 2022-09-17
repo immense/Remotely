@@ -29,12 +29,16 @@ var provider = await Startup.UseRemoteControlClient(
             builder.AddProvider(new FileLoggerProvider());
         });
 
-        services.RemoveAll<IAppState>();
-        services.AddSingleton<IAppStateEx, AppStateEx>();
-        services.AddSingleton<IAppState>(s => s.GetRequiredService<IAppStateEx>());
+        services.AddSingleton<IOrganizationIdProvider, OrganizationIdProvider>();
     },
     AppConstants.ServerUrl);
 
+var appState = provider.GetRequiredService<IAppState>();
+if (appState.ArgDict.TryGetValue("org-id", out var orgId))
+{
+    var orgIdProvider = provider.GetRequiredService<IOrganizationIdProvider>();
+    orgIdProvider.OrganizationId = orgId;
+}
 
 var brandingProvider = provider.GetRequiredService<IBrandingProvider>();
 if (brandingProvider is BrandingProvider branding)

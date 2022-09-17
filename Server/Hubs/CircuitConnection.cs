@@ -258,7 +258,14 @@ namespace Remotely.Server.Hubs
                 _desktopSessionCache.Sessions.AddOrUpdate(sessionId, session, (k, v) => session);
 
                 var organization = _dataService.GetOrganizationNameByUserName(User.UserName);
-                await _agentHubContext.Clients.Client(serviceConnectionId).SendAsync("RemoteControl", sessionId, accessKey, ConnectionId, User.UserOptions.DisplayName, organization);
+                await _agentHubContext.Clients.Client(serviceConnectionId).SendAsync("RemoteControl", 
+                    sessionId, 
+                    accessKey, 
+                    ConnectionId, 
+                    User.UserOptions.DisplayName, 
+                    organization, 
+                    User.OrganizationID);
+
                 return true;
             }
             else
@@ -326,6 +333,7 @@ namespace Remotely.Server.Hubs
                 User.UserOptions.DisplayName ?? User.UserName,
                 message,
                 organizationName,
+                User.OrganizationID,
                 false,
                 ConnectionId);
         }

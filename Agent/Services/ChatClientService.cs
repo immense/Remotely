@@ -41,6 +41,7 @@ namespace Remotely.Agent.Services
             string senderName,
             string message,
             string orgName,
+            string orgId,
             bool disconnected,
             string senderConnectionID,
             HubConnection hubConnection)
@@ -63,7 +64,7 @@ namespace Remotely.Agent.Services
                     }
 
                     var pipeName = Guid.NewGuid().ToString();
-                    var procID = await AppLauncher.LaunchChatService(pipeName, senderConnectionID, senderName, orgName, hubConnection);
+                    var procID = await AppLauncher.LaunchChatService(pipeName, senderConnectionID, senderName, orgName, orgId, hubConnection);
 
                     if (procID > 0)
                     {

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Versioning;
+using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Threading.Tasks;
 
@@ -23,7 +24,8 @@ namespace Remotely.Agent.Services
         {
             _connectionInfo = configService.GetConnectionInfo();
         }
-        public async Task<int> LaunchChatService(string pipeName, string userConnectionId, string requesterName, string orgName, HubConnection hubConnection)
+
+        public async Task<int> LaunchChatService(string pipeName, string userConnectionId, string requesterName, string orgName, string orgId, HubConnection hubConnection)
         {
             try
             {
@@ -43,7 +45,8 @@ namespace Remotely.Agent.Services
                             $" --host \"{_connectionInfo.Host}\"" +
                             $" --pipe-name {pipeName}" +
                             $" --requester-name \"{requesterName}\"" +
-                            $" --org-name \"{orgName}\"",
+                            $" --org-name \"{orgName}\"" +
+                            $" --org-id \"{orgId}\"",
                         targetSessionId: -1,
                         forceConsoleSession: false,
                         desktopName: "default",
@@ -69,6 +72,7 @@ namespace Remotely.Agent.Services
                         $" --host \"{_connectionInfo.Host}\"" +
                         $" --requester-name \"{userConnectionId}\"" +
                         $" --org-name \"{orgName}\"" +
+                        $" --org-id \"{orgId}\"" +
                         $" --pipe-name {pipeName}").Id;
                 }
             }
@@ -84,7 +88,7 @@ namespace Remotely.Agent.Services
             return -1;
         }
 
-        public async Task LaunchRemoteControl(int targetSessionId, string sessionId, string accessKey, string userConnectionId, string requesterName, string orgName, HubConnection hubConnection)
+        public async Task LaunchRemoteControl(int targetSessionId, string sessionId, string accessKey, string userConnectionId, string requesterName, string orgName, string orgId, HubConnection hubConnection)
         {
             try
             {
@@ -111,8 +115,9 @@ namespace Remotely.Agent.Services
                         _rcBinaryPath +
                             $" --mode Unattended" +
                             $" --host {_connectionInfo.Host}" +
-                            $" --requester-name \"{requesterName}\" " +
-                            $" --org-name \"{orgName}\" " +
+                            $" --requester-name \"{requesterName}\"" +
+                            $" --org-name \"{orgName}\"" +
+                            $" --org-id \"{orgId}\"" +
                             $" --session-id \"{sessionId}\"" +
                             $" --access-key \"{accessKey}\"",
                         targetSessionId: targetSessionId,
@@ -136,6 +141,7 @@ namespace Remotely.Agent.Services
                             $" --host {_connectionInfo.Host}" +
                             $" --requester-name \"{requesterName}\"" +
                             $" --org-name \"{orgName}\"" +
+                            $" --org-id \"{orgId}\"" +
                             $" --session-id \"{sessionId}\"" +
                             $" --access-key \"{accessKey}\"");
                 }
@@ -150,7 +156,7 @@ namespace Remotely.Agent.Services
                     userConnectionId);
             }
         }
-        public async Task RestartScreenCaster(List<string> viewerIDs, string sessionId, string accessKey, string userConnectionId, string requesterName, string orgName, HubConnection hubConnection, int targetSessionID = -1)
+        public async Task RestartScreenCaster(List<string> viewerIDs, string sessionId, string accessKey, string userConnectionId, string requesterName, string orgName, string orgId, HubConnection hubConnection, int targetSessionID = -1)
         {
             try
             {
@@ -167,9 +173,10 @@ namespace Remotely.Agent.Services
                             $" --host {_connectionInfo.Host}" +
                             $" --requester-name \"{requesterName}\"" +
                             $" --org-name \"{orgName}\"" +
+                            $" --org-id \"{orgId}\"" +
                             $" --session-id \"{sessionId}\"" +
                             $" --access-key \"{accessKey}\"" +
-                            $" --viewers {String.Join(",", viewerIDs)}",
+                            $" --viewers {string.Join(",", viewerIDs)}",
 
                         targetSessionId: targetSessionID,
                         forceConsoleSession: Shlwapi.IsOS(OsType.OS_ANYSERVER) && targetSessionID == -1,
@@ -196,9 +203,10 @@ namespace Remotely.Agent.Services
                         $" --host {_connectionInfo.Host}" +
                         $" --requester-name \"{requesterName}\"" +
                         $" --org-name \"{orgName}\"" +
+                        $" --org-id \"{orgId}\"" +
                         $" --session-id \"{sessionId}\"" +
                         $" --access-key \"{accessKey}\"" +
-                        $" --viewers {String.Join(",", viewerIDs)}");
+                        $" --viewers {string.Join(",", viewerIDs)}");
                 }
             }
             catch (Exception ex)

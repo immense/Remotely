@@ -26,18 +26,15 @@ namespace Remotely.Server.Services.RcImplementations
     {
         private static readonly ConcurrentDictionary<string, SemaphoreSlim> _sessionWaitHandlers = new();
 
-        private readonly IDataService _dataService;
         private readonly ICircuitManager _circuitManager;
         private readonly IHubContext<ServiceHub> _serviceHub;
         private readonly ILogger<HubEventHandlerEx> _logger;
 
         public HubEventHandlerEx(
-            IDataService dataService,
             ICircuitManager circuitManager,
             IHubContext<ServiceHub> serviceHub,
             ILogger<HubEventHandlerEx> logger)
         {
-            _dataService = dataService;
             _circuitManager = circuitManager;
             _serviceHub = serviceHub;
             _logger = logger;
@@ -60,6 +57,7 @@ namespace Remotely.Server.Services.RcImplementations
                     ex.UserConnectionId,
                     ex.RequesterUserName,
                     ex.OrganizationName,
+                    ex.OrganizationId,
                     targetWindowsSession);
         }
 
@@ -98,7 +96,8 @@ namespace Remotely.Server.Services.RcImplementations
                           ex.AccessKey,
                           ex.UserConnectionId,
                           ex.RequesterUserName,
-                          ex.OrganizationName);
+                          ex.OrganizationName,
+                          ex.OrganizationId);
                 case SessionSwitchReasonEx.ConsoleConnect:
                 case SessionSwitchReasonEx.SessionUnlock:
                 case SessionSwitchReasonEx.SessionLogon:
@@ -149,7 +148,8 @@ namespace Remotely.Server.Services.RcImplementations
                             ex.AccessKey,
                             ex.UserConnectionId,
                             ex.RequesterUserName,
-                            ex.OrganizationName);
+                            ex.OrganizationName,
+                            ex.OrganizationId);
         }
 
         public async Task<bool> TryWaitForSession(string sessionId, Func<Task> createSessionFunc)

@@ -14,6 +14,7 @@ namespace Remotely.Shared.Models
         public ICollection<ApiToken> ApiTokens { get; set; }
 
         public BrandingInfo BrandingInfo { get; set; }
+        public string BrandingInfoId { get; set; }
 
         public ICollection<ScriptResult> ScriptResults { get; set; }
 

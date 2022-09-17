@@ -29,27 +29,22 @@ var provider = await Startup.UseRemoteControlClient(
             builder.AddProvider(new FileLoggerProvider());
         });
 
-        services.RemoveAll<IAppState>();
-        services.AddSingleton<IAppStateEx, AppStateEx>();
-        services.AddSingleton<IAppState>(s => s.GetRequiredService<IAppStateEx>());
+        services.AddSingleton<IOrganizationIdProvider, OrganizationIdProvider>();
     },
     AppConstants.ServerUrl);
 
+var appState = provider.GetRequiredService<IAppState>();
+if (appState.ArgDict.TryGetValue("org-id", out var orgId))
+{
+    var orgIdProvider = provider.GetRequiredService<IOrganizationIdProvider>();
+    orgIdProvider.OrganizationId = orgId;
+}
 
 var brandingProvider = provider.GetRequiredService<IBrandingProvider>();
 if (brandingProvider is BrandingProvider branding)
 {
     await branding.TrySetFromApi();
 }
-
-
-Console.WriteLine("Press Ctrl + C to exit.");
-
-var shutdownService = provider.GetRequiredService<IShutdownService>();
-Console.CancelKeyPress += async (s, e) =>
-{
-    await shutdownService.Shutdown();
-};
 
 var dispatcher = provider.GetRequiredService<IWindowsUiDispatcher>();
 try
