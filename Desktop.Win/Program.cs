@@ -31,20 +31,23 @@ var provider = await Startup.UseRemoteControlClient(
 
         services.AddSingleton<IOrganizationIdProvider, OrganizationIdProvider>();
     },
+    async services =>
+    {
+        var appState = services.GetRequiredService<IAppState>();
+        if (appState.ArgDict.TryGetValue("org-id", out var orgId))
+        {
+            var orgIdProvider = services.GetRequiredService<IOrganizationIdProvider>();
+            orgIdProvider.OrganizationId = orgId;
+        }
+
+        var brandingProvider = services.GetRequiredService<IBrandingProvider>();
+        if (brandingProvider is BrandingProvider branding)
+        {
+            await branding.TrySetFromApi();
+        }
+
+    },
     AppConstants.ServerUrl);
-
-var appState = provider.GetRequiredService<IAppState>();
-if (appState.ArgDict.TryGetValue("org-id", out var orgId))
-{
-    var orgIdProvider = provider.GetRequiredService<IOrganizationIdProvider>();
-    orgIdProvider.OrganizationId = orgId;
-}
-
-var brandingProvider = provider.GetRequiredService<IBrandingProvider>();
-if (brandingProvider is BrandingProvider branding)
-{
-    await branding.TrySetFromApi();
-}
 
 var dispatcher = provider.GetRequiredService<IWindowsUiDispatcher>();
 try

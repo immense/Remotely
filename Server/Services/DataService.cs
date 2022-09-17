@@ -1169,7 +1169,14 @@ namespace Remotely.Server.Services
 
             if (organization.BrandingInfo is null)
             {
-                organization.BrandingInfo = new BrandingInfo();
+                var brandingInfo = new BrandingInfo()
+                {
+                    OrganizationId = organizationId
+                };
+
+                dbContext.BrandingInfos.Add(brandingInfo);
+                organization.BrandingInfo = brandingInfo;
+
                 await dbContext.SaveChangesAsync();
             }
             return organization.BrandingInfo;
@@ -1730,13 +1737,14 @@ namespace Remotely.Server.Services
                .Include(x => x.BrandingInfo)
                .FirstOrDefaultAsync(x => x.ID == organizationId);
 
-            if (organization is null)
+            if (organization?.BrandingInfo is null)
             {
                 return;
             }
 
-            organization.BrandingInfo = new BrandingInfo();
-
+            var entry = dbContext.Entry(organization.BrandingInfo);
+            entry.CurrentValues.SetValues(BrandingInfoBase.Default);
+            
             await dbContext.SaveChangesAsync();
         }
 

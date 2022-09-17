@@ -90,7 +90,8 @@ namespace Remotely.Server.Data
                 .WithOne(x => x.Organization);
             builder.Entity<Organization>()
                 .HasOne(x => x.BrandingInfo)
-                .WithOne(x => x.Organization);
+                .WithOne(x => x.Organization)
+                .HasForeignKey<BrandingInfo>(x => x.OrganizationId);
 
             builder.Entity<RemotelyUser>()
                .HasOne(x => x.Organization)

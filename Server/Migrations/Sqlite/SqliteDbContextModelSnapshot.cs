@@ -15,7 +15,7 @@ namespace Remotely.Server.Migrations.Sqlite
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "6.0.6");
+            modelBuilder.HasAnnotation("ProductVersion", "6.0.9");
 
             modelBuilder.Entity("DeviceGroupRemotelyUser", b =>
                 {
@@ -368,9 +368,14 @@ namespace Remotely.Server.Migrations.Sqlite
                         .HasColumnType("INTEGER");
 
                     b.Property<byte[]>("Icon")
+                        .IsRequired()
                         .HasColumnType("BLOB");
 
+                    b.Property<string>("OrganizationId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Product")
+                        .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("TEXT");
 
@@ -394,7 +399,10 @@ namespace Remotely.Server.Migrations.Sqlite
 
                     b.HasKey("Id");
 
-                    b.ToTable("BrandingInfo");
+                    b.HasIndex("OrganizationId")
+                        .IsUnique();
+
+                    b.ToTable("BrandingInfos");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.Device", b =>
@@ -573,9 +581,6 @@ namespace Remotely.Server.Migrations.Sqlite
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("BrandingInfoId")
-                        .HasColumnType("TEXT");
-
                     b.Property<bool>("IsDefaultOrganization")
                         .HasColumnType("INTEGER");
 
@@ -587,8 +592,6 @@ namespace Remotely.Server.Migrations.Sqlite
                         .HasColumnType("TEXT");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("BrandingInfoId");
 
                     b.ToTable("Organizations");
                 });
@@ -1009,6 +1012,15 @@ namespace Remotely.Server.Migrations.Sqlite
                     b.Navigation("Organization");
                 });
 
+            modelBuilder.Entity("Remotely.Shared.Models.BrandingInfo", b =>
+                {
+                    b.HasOne("Remotely.Shared.Models.Organization", "Organization")
+                        .WithOne("BrandingInfo")
+                        .HasForeignKey("Remotely.Shared.Models.BrandingInfo", "OrganizationId");
+
+                    b.Navigation("Organization");
+                });
+
             modelBuilder.Entity("Remotely.Shared.Models.Device", b =>
                 {
                     b.HasOne("Remotely.Shared.Models.DeviceGroup", "DeviceGroup")
@@ -1049,15 +1061,6 @@ namespace Remotely.Server.Migrations.Sqlite
                         .HasForeignKey("OrganizationID");
 
                     b.Navigation("Organization");
-                });
-
-            modelBuilder.Entity("Remotely.Shared.Models.Organization", b =>
-                {
-                    b.HasOne("Remotely.Shared.Models.BrandingInfo", "BrandingInfo")
-                        .WithMany()
-                        .HasForeignKey("BrandingInfoId");
-
-                    b.Navigation("BrandingInfo");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.SavedScript", b =>
@@ -1163,6 +1166,8 @@ namespace Remotely.Server.Migrations.Sqlite
                     b.Navigation("Alerts");
 
                     b.Navigation("ApiTokens");
+
+                    b.Navigation("BrandingInfo");
 
                     b.Navigation("DeviceGroups");
 
