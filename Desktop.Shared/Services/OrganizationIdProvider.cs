@@ -9,19 +9,12 @@ using System.Threading.Tasks;
 
 namespace Remotely.Desktop.Win.Services
 {
-    public interface IAppStateEx : IAppState
+    public interface IOrganizationIdProvider
     {
         string OrganizationId { get; set; }
     }
-    public class AppStateEx : AppState, IAppStateEx
+    public class OrganizationIdProvider : IOrganizationIdProvider
     {
-        public AppStateEx(
-            IMessenger messenger,
-            ILogger<AppStateEx> logger) 
-            : base(messenger, logger)
-        {
-        }
-
         public string OrganizationId { get; set; } = string.Empty;
     }
 }

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Web.Services.Description;
 
@@ -94,7 +95,7 @@ namespace Remotely.Agent.Services
             return string.Empty;
         }
 
-        public async Task<int> LaunchChatService(string pipeName, string userConnectionId, string requesterName, string orgName, HubConnection hubConnection)
+        public async Task<int> LaunchChatService(string pipeName, string userConnectionId, string requesterName, string orgName, string orgId, HubConnection hubConnection)
         {
             try
             {
@@ -110,13 +111,14 @@ namespace Remotely.Agent.Services
 
                 // Start Desktop app.
                 await hubConnection.SendAsync("DisplayMessage", $"Starting chat service.", "Starting chat service.", "bg-success", userConnectionId);
-                var args = 
+                var args =
                     _rcBinaryPath +
-                    $" --mode Chat " +
-                    $" --host \"{_connectionInfo.Host}\" " +
+                    $" --mode Chat" +
+                    $" --host \"{_connectionInfo.Host}\"" +
                     $" --pipe-name {pipeName}" +
-                    $" --requester-name \"{requesterName}\" " +
-                    $" --org-name \"{orgName}\" ";
+                    $" --requester-name \"{requesterName}\"" +
+                    $" --org-name \"{orgName}\"" +
+                    $" --org-id \"{orgId}\"";
                 return StartLinuxDesktopApp(args);
             }
             catch (Exception ex)
@@ -127,7 +129,7 @@ namespace Remotely.Agent.Services
             return -1;
         }
 
-        public async Task LaunchRemoteControl(int targetSessionId, string sessionId, string accessKey, string userConnectionId, string requesterName, string orgName, HubConnection hubConnection)
+        public async Task LaunchRemoteControl(int targetSessionId, string sessionId, string accessKey, string userConnectionId, string requesterName, string orgName, string orgId, HubConnection hubConnection)
         {
             try
             {
@@ -150,6 +152,7 @@ namespace Remotely.Agent.Services
                     $" --host {_connectionInfo.Host}" +
                     $" --requester-name \"{requesterName}\"" +
                     $" --org-name \"{orgName}\"" +
+                    $" --org-id \"{orgId}\"" +
                     $" --session-id \"{sessionId}\"" +
                     $" --access-key \"{accessKey}\"";
                 StartLinuxDesktopApp(args);
@@ -161,7 +164,7 @@ namespace Remotely.Agent.Services
             }
         }
 
-        public async Task RestartScreenCaster(List<string> viewerIDs, string sessionId, string accessKey, string userConnectionId, string requesterName, string orgName, HubConnection hubConnection, int targetSessionID = -1)
+        public async Task RestartScreenCaster(List<string> viewerIDs, string sessionId, string accessKey, string userConnectionId, string requesterName, string orgName, string orgId, HubConnection hubConnection, int targetSessionID = -1)
         {
             try
             {
@@ -171,6 +174,7 @@ namespace Remotely.Agent.Services
                     $" --host {_connectionInfo.Host}" +
                     $" --requester-name \"{requesterName}\"" +
                     $" --org-name \"{orgName}\"" +
+                    $" --org-id \"{orgId}\"" +
                     $" --session-id \"{sessionId}\"" +
                     $" --access-key \"{accessKey}\"";
                 StartLinuxDesktopApp(args);

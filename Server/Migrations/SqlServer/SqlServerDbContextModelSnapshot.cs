@@ -17,7 +17,7 @@ namespace Remotely.Server.Migrations.SqlServer
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.6")
+                .HasAnnotation("ProductVersion", "6.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -378,9 +378,14 @@ namespace Remotely.Server.Migrations.SqlServer
                         .HasColumnType("tinyint");
 
                     b.Property<byte[]>("Icon")
+                        .IsRequired()
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<string>("OrganizationId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Product")
+                        .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
 
@@ -404,7 +409,11 @@ namespace Remotely.Server.Migrations.SqlServer
 
                     b.HasKey("Id");
 
-                    b.ToTable("BrandingInfo");
+                    b.HasIndex("OrganizationId")
+                        .IsUnique()
+                        .HasFilter("[OrganizationId] IS NOT NULL");
+
+                    b.ToTable("BrandingInfos");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.Device", b =>
@@ -580,9 +589,6 @@ namespace Remotely.Server.Migrations.SqlServer
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("BrandingInfoId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<bool>("IsDefaultOrganization")
                         .HasColumnType("bit");
 
@@ -594,8 +600,6 @@ namespace Remotely.Server.Migrations.SqlServer
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("BrandingInfoId");
 
                     b.ToTable("Organizations");
                 });
@@ -1014,6 +1018,15 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.Navigation("Organization");
                 });
 
+            modelBuilder.Entity("Remotely.Shared.Models.BrandingInfo", b =>
+                {
+                    b.HasOne("Remotely.Shared.Models.Organization", "Organization")
+                        .WithOne("BrandingInfo")
+                        .HasForeignKey("Remotely.Shared.Models.BrandingInfo", "OrganizationId");
+
+                    b.Navigation("Organization");
+                });
+
             modelBuilder.Entity("Remotely.Shared.Models.Device", b =>
                 {
                     b.HasOne("Remotely.Shared.Models.DeviceGroup", "DeviceGroup")
@@ -1054,15 +1067,6 @@ namespace Remotely.Server.Migrations.SqlServer
                         .HasForeignKey("OrganizationID");
 
                     b.Navigation("Organization");
-                });
-
-            modelBuilder.Entity("Remotely.Shared.Models.Organization", b =>
-                {
-                    b.HasOne("Remotely.Shared.Models.BrandingInfo", "BrandingInfo")
-                        .WithMany()
-                        .HasForeignKey("BrandingInfoId");
-
-                    b.Navigation("BrandingInfo");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.SavedScript", b =>
@@ -1168,6 +1172,8 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.Navigation("Alerts");
 
                     b.Navigation("ApiTokens");
+
+                    b.Navigation("BrandingInfo");
 
                     b.Navigation("DeviceGroups");
 

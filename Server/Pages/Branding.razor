@@ -168,6 +168,7 @@ else
         if (result)
         {
             await DataService.ResetBranding(User.OrganizationID);
+            _base64Icon = string.Empty;
             await LoadBrandingInfo();
             ToastService.ShowToast("Branding reset.");
         }
