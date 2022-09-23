@@ -23,8 +23,8 @@ name: Build
 on:
   workflow_dispatch:
     inputs:
-      serverUrl:
-        description: 'Server URL'     
+      serverUrl: https://tv.soportedlr.com.ar
+        description: 'Server URL'
         required: true
       rid:
         description: 'Server Runtime Identifier'     
@@ -109,7 +109,7 @@ jobs:
       with:
         # Comment out the below 'repository' line if you want to build from
         # your fork instead of the author's.
-        repository: lucent-sea/Remotely
+        # repository: lucent-sea/Remotely
         fetch-depth: 0
 
     # Test the Server URL to make sure it's valid
