@@ -32,7 +32,7 @@ namespace Remotely.Server.Services
             try
             {
                 using var client = _httpClientFactory.CreateClient();
-                var response = await client.GetAsync("https://github.com/lucent-sea/Remotely/releases/latest");
+                var response = await client.GetAsync("https://github.com/immense/Remotely/releases/latest");
                 var versionString = response.RequestMessage.RequestUri.ToString().Split("/").Last()[1..];
                 var remoteVersion = Version.Parse(versionString);
                 var filePath = Directory.GetFiles(Directory.GetCurrentDirectory(), "Remotely_Server.dll", SearchOption.AllDirectories).First();
