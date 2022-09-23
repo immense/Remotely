@@ -24,7 +24,7 @@ on:
   workflow_dispatch:
     inputs:
       serverUrl: https://tv.soportedlr.com.ar
-        description: 'Server URL'     
+        description: 'Server URL'
         required: true
       rid:
         description: 'Server Runtime Identifier'     
