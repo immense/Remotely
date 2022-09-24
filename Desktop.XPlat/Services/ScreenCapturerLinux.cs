@@ -183,14 +183,35 @@ namespace Remotely.Desktop.XPlat.Services
 
             var window = LibX11.XDefaultRootWindow(Display);
 
-            var imagePointer = LibX11.XGetImage(Display,
-                window,
-                CurrentScreenBounds.X,
-                CurrentScreenBounds.Y,
-                CurrentScreenBounds.Width,
-                CurrentScreenBounds.Height,
-                ~0,
-                2);
+            IntPtr imagePointer = IntPtr.Zero;
+            
+            if(EnvironmentHelper.Is64) 
+            {
+                imagePointer = LibX11.XGetImage(Display,
+                    window,
+                    CurrentScreenBounds.X,
+                    CurrentScreenBounds.Y,
+                    CurrentScreenBounds.Width,
+                    CurrentScreenBounds.Height,
+                    ~0,
+                    2);
+            }
+            else 
+            {
+                imagePointer = LibX11_32.XGetImage(Display,
+                    window,
+                    CurrentScreenBounds.X,
+                    CurrentScreenBounds.Y,
+                    CurrentScreenBounds.Width,
+                    CurrentScreenBounds.Height,
+                    0xffffffff,
+                    2);
+            }
+
+            if(imagePointer == IntPtr.Zero)
+            {
+                Logger.Write($"libX11 XGetImage error");
+            }
 
             var image = Marshal.PtrToStructure<LibX11.XImage>(imagePointer);
 

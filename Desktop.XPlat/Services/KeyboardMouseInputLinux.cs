@@ -32,7 +32,13 @@ namespace Remotely.Desktop.XPlat.Services
                 }
 
                 var keyCode = LibX11.XKeysymToKeycode(Display, keySim);
-                LibXtst.XTestFakeKeyEvent(Display, keyCode, true, 0);
+                if(EnvironmentHelper.Is64) 
+                {
+                    LibXtst.XTestFakeKeyEvent(Display, keyCode, true, 0);
+                } 
+                else{
+                    LibXtst_32.XTestFakeKeyEvent(Display, keyCode, true, 0);
+                }
                 LibX11.XSync(Display, false);
             }
             catch (Exception ex)
@@ -55,7 +61,13 @@ namespace Remotely.Desktop.XPlat.Services
                 }
 
                 var keyCode = LibX11.XKeysymToKeycode(Display, keySim);
-                LibXtst.XTestFakeKeyEvent(Display, keyCode, false, 0);
+                if(EnvironmentHelper.Is64) 
+                {
+                    LibXtst.XTestFakeKeyEvent(Display, keyCode, false, 0);
+                } 
+                else{
+                    LibXtst_32.XTestFakeKeyEvent(Display, keyCode, false, 0);
+                }
                 LibX11.XSync(Display, false);
             }
             catch (Exception ex)
@@ -75,8 +87,14 @@ namespace Remotely.Desktop.XPlat.Services
                 var mouseButton = (uint)(button + 1);
 
                 InitDisplay();
-                SendMouseMove(percentX, percentY, viewer);
-                LibXtst.XTestFakeButtonEvent(Display, mouseButton, isPressed, 0);
+                SendMouseMove(percentX, percentY, viewer);                
+                if(EnvironmentHelper.Is64) 
+                {
+                    LibXtst.XTestFakeButtonEvent(Display, mouseButton, isPressed, 0);
+                } 
+                else{
+                    LibXtst_32.XTestFakeButtonEvent(Display, mouseButton, isPressed, 0);
+                }
                 LibX11.XSync(Display, false);
             }
             catch (Exception ex)
@@ -92,11 +110,22 @@ namespace Remotely.Desktop.XPlat.Services
                 InitDisplay();
 
                 var screenBounds = viewer.Capturer.CurrentScreenBounds;
-                LibXtst.XTestFakeMotionEvent(Display,
-                    LibX11.XDefaultScreen(Display),
-                    screenBounds.X + (int)(screenBounds.Width * percentX),
-                    screenBounds.Y + (int)(screenBounds.Height * percentY),
+                 if(EnvironmentHelper.Is64) 
+                {
+                    LibXtst.XTestFakeMotionEvent(Display,
+                        LibX11.XDefaultScreen(Display),
+                        screenBounds.X + (int)(screenBounds.Width * percentX),
+                        screenBounds.Y + (int)(screenBounds.Height * percentY),
                     0);
+                } 
+                else{
+                    LibXtst_32.XTestFakeMotionEvent(Display,
+                        LibX11.XDefaultScreen(Display),
+                        screenBounds.X + (int)(screenBounds.Width * percentX),
+                        screenBounds.Y + (int)(screenBounds.Height * percentY),
+                    0);
+                }
+                
                 LibX11.XSync(Display, false);
             }
             catch (Exception ex)
@@ -114,11 +143,27 @@ namespace Remotely.Desktop.XPlat.Services
                 {
                     LibXtst.XTestFakeButtonEvent(Display, 4, true, 0);
                     LibXtst.XTestFakeButtonEvent(Display, 4, false, 0);
+                    if(EnvironmentHelper.Is64) 
+                    {
+                        LibXtst.XTestFakeButtonEvent(Display, 4, true, 0);
+                        LibXtst.XTestFakeButtonEvent(Display, 4, false, 0);
+                    } 
+                    else{
+                        LibXtst_32.XTestFakeButtonEvent(Display, 4, true, 0);
+                        LibXtst_32.XTestFakeButtonEvent(Display, 4, false, 0);
+                    }
                 }
                 else
                 {
-                    LibXtst.XTestFakeButtonEvent(Display, 5, true, 0);
-                    LibXtst.XTestFakeButtonEvent(Display, 5, false, 0);
+                    if(EnvironmentHelper.Is64) 
+                    {
+                        LibXtst.XTestFakeButtonEvent(Display, 5, true, 0);
+                        LibXtst.XTestFakeButtonEvent(Display, 5, false, 0);
+                    } 
+                    else{
+                        LibXtst_32.XTestFakeButtonEvent(Display, 5, true, 0);
+                        LibXtst_32.XTestFakeButtonEvent(Display, 5, false, 0);
+                    }
                 }
                 LibX11.XSync(Display, false);
             }
@@ -134,7 +179,13 @@ namespace Remotely.Desktop.XPlat.Services
             {
                 InitDisplay();
                 SendMouseMove(percentX, percentY, viewer);
-                LibXtst.XTestFakeButtonEvent(Display, 3, true, 0);
+                if(EnvironmentHelper.Is64) 
+                {
+                    LibXtst.XTestFakeButtonEvent(Display, 3, true, 0);
+                } 
+                else{
+                    LibXtst_32.XTestFakeButtonEvent(Display, 3, true, 0);
+                }
                 LibX11.XSync(Display, false);
             }
             catch (Exception ex)
@@ -149,7 +200,13 @@ namespace Remotely.Desktop.XPlat.Services
             {
                 InitDisplay();
                 SendMouseMove(percentX, percentY, viewer);
-                LibXtst.XTestFakeButtonEvent(Display, 3, false, 0);
+                if(EnvironmentHelper.Is64) 
+                {
+                    LibXtst.XTestFakeButtonEvent(Display, 3, false, 0);
+                } 
+                else{
+                    LibXtst_32.XTestFakeButtonEvent(Display, 3, false, 0);
+                }
                 LibX11.XSync(Display, false);
             }
             catch (Exception ex)
