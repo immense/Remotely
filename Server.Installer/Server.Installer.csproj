@@ -18,6 +18,7 @@
   <ItemGroup>
     <None Remove="Resources\CentOS_Caddy_Install.sh" />
     <None Remove="Resources\CentOS_Nginx_Install.sh" />
+    <None Remove="Resources\RHEL8_Nginx_Install.sh" />
     <None Remove="Resources\IIS_Windows_Install.ps1" />
     <None Remove="Resources\Ubuntu_Caddy_Install.sh" />
     <None Remove="Resources\Ubuntu_Nginx_Install.sh" />
@@ -26,6 +27,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\CentOS_Nginx_Install.sh" />
     <EmbeddedResource Include="Resources\CentOS_Caddy_Install.sh" />
+    <EmbeddedResource Include="Resources\RHEL8_Nginx_Install.sh" />
     <EmbeddedResource Include="Resources\IIS_Windows_Install.ps1" />
     <EmbeddedResource Include="Resources\Ubuntu_Nginx_Install.sh" />
     <EmbeddedResource Include="Resources\Ubuntu_Caddy_Install.sh" />

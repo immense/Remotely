@@ -151,6 +151,7 @@ namespace Server.Installer.Services
                 WebServerType.UbuntuNginx => "Ubuntu_Nginx_Install.sh",
                 WebServerType.CentOsCaddy => "CentOS_Caddy_Install.sh",
                 WebServerType.CentOsNginx => "CentOS_Nginx_Install.sh",
+                WebServerType.Rhel8Nginx => "RHEL8_Nginx_Install.sh",
                 WebServerType.IisWindows => "IIS_Windows_Install.ps1",
                 _ => throw new Exception("Unrecognized reverse proxy type."),
             };
