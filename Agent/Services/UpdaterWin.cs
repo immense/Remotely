@@ -15,19 +15,18 @@ namespace Remotely.Agent.Services
     {
         private readonly SemaphoreSlim _checkForUpdatesLock = new(1, 1);
         private readonly ConfigService _configService;
-        private readonly IWebClientEx _webClientEx;
+        private readonly IUpdateDownloader _updateDownloader;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly SemaphoreSlim _installLatestVersionLock = new(1, 1);
         private readonly System.Timers.Timer _updateTimer = new(TimeSpan.FromHours(6).TotalMilliseconds);
         private DateTimeOffset _lastUpdateFailure;
 
 
-        public UpdaterWin(ConfigService configService, IWebClientEx webClientEx, IHttpClientFactory httpClientFactory)
+        public UpdaterWin(ConfigService configService, IUpdateDownloader updateDownloader, IHttpClientFactory httpClientFactory)
         {
             _configService = configService;
-            _webClientEx = webClientEx;
+            _updateDownloader = updateDownloader;
             _httpClientFactory = httpClientFactory;
-            _webClientEx.SetRequestTimeout((int)_updateTimer.Interval);
         }
 
         public async Task BeginChecking()
@@ -44,9 +43,13 @@ namespace Remotely.Agent.Services
 
         public async Task CheckForUpdates()
         {
+            if (!await _checkForUpdatesLock.WaitAsync(0))
+            {
+                return;
+            }
+
             try
             {
-                await _checkForUpdatesLock.WaitAsync();
 
                 if (EnvironmentHelper.IsDebug)
                 {
@@ -72,9 +75,10 @@ namespace Remotely.Agent.Services
                 if (File.Exists("etag.txt"))
                 {
                     var lastEtag = await File.ReadAllTextAsync("etag.txt");
-                    if (!string.IsNullOrEmpty(lastEtag))
+                    if (!string.IsNullOrWhiteSpace(lastEtag) &&
+                       EntityTagHeaderValue.TryParse(lastEtag.Trim(), out var etag))
                     {
-                        request.Headers.IfNoneMatch.Add(new EntityTagHeaderValue(lastEtag.Trim()));
+                        request.Headers.IfNoneMatch.Add(etag);
                     }
                 }
 
@@ -106,12 +110,6 @@ namespace Remotely.Agent.Services
             }
         }
 
-        public void Dispose()
-        {
-            _webClientEx?.Dispose();
-            GC.SuppressFinalize(this);
-        }
-
         public async Task InstallLatestVersion()
         {
             try
@@ -129,12 +127,12 @@ namespace Remotely.Agent.Services
                 var installerPath = Path.Combine(Path.GetTempPath(), "Remotely_Installer.exe");
                 var platform = Environment.Is64BitOperatingSystem ? "x64" : "x86";
 
-                await _webClientEx.DownloadFileTaskAsync(
-                     serverUrl + $"/Content/Remotely_Installer.exe",
+                await _updateDownloader.DownloadFile(
+                     $"{serverUrl}/Content/Remotely_Installer.exe",
                      installerPath);
 
-                await _webClientEx.DownloadFileTaskAsync(
-                   serverUrl + $"/api/AgentUpdate/DownloadPackage/win-{platform}/{downloadId}",
+                await _updateDownloader.DownloadFile(
+                   $"{serverUrl}/api/AgentUpdate/DownloadPackage/win-{platform}/{downloadId}",
                    zipPath);
 
                 using var httpClient = _httpClientFactory.CreateClient();

@@ -5,7 +5,10 @@ const ImagePartials = {};
 let CanvasLock = 1;
 let NextSequence = 0;
 export function HandleCaptureReceived(captureFrame) {
-    // TODO: Move to OffscreenCanvas after it's fully supported.
+    if (!ImagePartials[captureFrame.Sequence]) {
+        ImagePartials[captureFrame.Sequence] = [];
+    }
+    ImagePartials[captureFrame.Sequence].push(captureFrame.ImageBytes);
     if (captureFrame.EndOfFrame) {
         var partials = ImagePartials[captureFrame.Sequence];
         let completedFrame = new Blob(partials);
@@ -31,12 +34,6 @@ export function HandleCaptureReceived(captureFrame) {
         //        captureFrame.Height);
         //    window.URL.revokeObjectURL(url);
         //};
-    }
-    else {
-        if (!ImagePartials[captureFrame.Sequence]) {
-            ImagePartials[captureFrame.Sequence] = [];
-        }
-        ImagePartials[captureFrame.Sequence].push(captureFrame.ImageBytes);
     }
 }
 function processQueue() {

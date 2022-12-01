@@ -21,8 +21,7 @@ namespace Remotely.Desktop.Core.Services
 {
     public class Viewer : IDisposable
     {
-        public const int DefaultQuality = 75;
-        private const int MinQuality = 20;
+        public const int DefaultQuality = 80;
 
         private readonly ConcurrentQueue<DateTimeOffset> _fpsQueue = new();
         private readonly ConcurrentQueue<SentFrame> _receivedFrames = new();
@@ -279,37 +278,28 @@ namespace Remotely.Desktop.Core.Services
             var width = screenFrame.Width;
             var height = screenFrame.Height;
 
-            for (var i = 0; i < screenFrame.EncodedImageBytes.Length; i += 50_000)
+            var chunks = screenFrame.EncodedImageBytes.Chunk(50_000).ToArray();
+            var chunkCount = chunks.Length;
+
+            for (var i = 0; i < chunkCount; i++)
             {
+                var chunk = chunks[i];
+
                 var dto = new CaptureFrameDto()
                 {
                     Left = left,
                     Top = top,
                     Width = width,
                     Height = height,
-                    EndOfFrame = false,
+                    EndOfFrame = i == chunkCount - 1,
                     Sequence = screenFrame.Sequence,
-                    ImageBytes = screenFrame.EncodedImageBytes.Skip(i).Take(50_000).ToArray()
+                    ImageBytes = chunk
                 };
 
                 await SendToViewer(
                       () => RtcSession.SendDto(dto),
                       () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
             }
-
-            var endOfFrameDto = new CaptureFrameDto()
-            {
-                Left = left,
-                Top = top,
-                Width = width,
-                Height = height,
-                EndOfFrame = true,
-                Sequence = screenFrame.Sequence,
-            };
-
-            await SendToViewer(
-                       () => RtcSession.SendDto(endOfFrameDto),
-                       () => CasterSocket.SendDtoToViewer(endOfFrameDto, ViewerConnectionID));
         }
 
         public async Task SendScreenData(

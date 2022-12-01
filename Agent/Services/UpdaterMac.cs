@@ -22,17 +22,16 @@ namespace Remotely.Agent.Services
         private readonly SemaphoreSlim _checkForUpdatesLock = new(1, 1);
         private readonly ConfigService _configService;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IWebClientEx _webClientEx;
+        private readonly IUpdateDownloader _updateDownloader;
         private readonly SemaphoreSlim _installLatestVersionLock = new(1, 1);
         private DateTimeOffset _lastUpdateFailure;
         private readonly System.Timers.Timer _updateTimer = new(TimeSpan.FromHours(6).TotalMilliseconds);
 
-        public UpdaterMac(ConfigService configService, IWebClientEx webClientEx, IHttpClientFactory httpClientFactory)
+        public UpdaterMac(ConfigService configService, IUpdateDownloader updateDownloader, IHttpClientFactory httpClientFactory)
         {
             _configService = configService;
             _httpClientFactory = httpClientFactory;
-            _webClientEx = webClientEx;
-            _webClientEx.SetRequestTimeout((int)_updateTimer.Interval);
+            _updateDownloader = updateDownloader;
         }
 
 
@@ -50,10 +49,13 @@ namespace Remotely.Agent.Services
 
         public async Task CheckForUpdates()
         {
+            if (!await _checkForUpdatesLock.WaitAsync(0))
+            {
+                return;
+            }
+
             try
             {
-                await _checkForUpdatesLock.WaitAsync();
-
                 if (EnvironmentHelper.IsDebug)
                 {
                     return;
@@ -77,9 +79,10 @@ namespace Remotely.Agent.Services
                 if (File.Exists("etag.txt"))
                 {
                     var lastEtag = await File.ReadAllTextAsync("etag.txt");
-                    if (!string.IsNullOrEmpty(lastEtag))
+                    if (!string.IsNullOrWhiteSpace(lastEtag) &&
+                       EntityTagHeaderValue.TryParse(lastEtag.Trim(), out var etag))
                     {
-                        request.Headers.IfNoneMatch.Add(new EntityTagHeaderValue(lastEtag.Trim()));
+                        request.Headers.IfNoneMatch.Add(etag);
                     }
                 }
 
@@ -111,12 +114,6 @@ namespace Remotely.Agent.Services
             }
         }
 
-        public void Dispose()
-        {
-            _webClientEx?.Dispose();
-            GC.SuppressFinalize(this);
-        }
-
         public async Task InstallLatestVersion()
         {
             try
@@ -133,12 +130,12 @@ namespace Remotely.Agent.Services
 
                 var installerPath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.sh");
 
-                await _webClientEx.DownloadFileTaskAsync(
-                       serverUrl + $"/API/ClientDownloads/{connectionInfo.OrganizationID}/MacOSInstaller-{_achitecture}",
+                await _updateDownloader.DownloadFile(
+                       $"{serverUrl}/API/ClientDownloads/{connectionInfo.OrganizationID}/MacOSInstaller-{_achitecture}",
                        installerPath);
 
-                await _webClientEx.DownloadFileTaskAsync(
-                   serverUrl + $"/API/AgentUpdate/DownloadPackage/macos-{_achitecture}/{downloadId}",
+                await _updateDownloader.DownloadFile(
+                   $"{serverUrl}/API/AgentUpdate/DownloadPackage/macos-{_achitecture}/{downloadId}",
                    zipPath);
 
                 using var httpClient = _httpClientFactory.CreateClient();

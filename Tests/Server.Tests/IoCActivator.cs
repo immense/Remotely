@@ -7,8 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Remotely.Agent.Interfaces;
-using Remotely.Agent.Services;
 using Remotely.Server.API;
 using Remotely.Server.Data;
 using Remotely.Server.Services;
@@ -68,15 +66,6 @@ namespace Remotely.Tests
             services.AddTransient<IDataService, DataService>();
             services.AddTransient<IApplicationConfig, ApplicationConfig>();
             services.AddTransient<IEmailSenderEx, EmailSenderEx>();
-
-            if (EnvironmentHelper.IsWindows)
-            {
-                services.AddTransient<IDeviceInformationService, DeviceInformationServiceWin>();
-            }
-            else if (EnvironmentHelper.IsLinux)
-            {
-                services.AddTransient<IDeviceInformationService, DeviceInformationServiceLinux>();
-            }
 
             IoCActivator.ServiceProvider = services.BuildServiceProvider();
         }

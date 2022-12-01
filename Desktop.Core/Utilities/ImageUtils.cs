@@ -1,8 +1,13 @@
-﻿using System;
+﻿using Microsoft.IO;
+using Remotely.Desktop.Core.Extensions;
+using Remotely.Shared;
+using Remotely.Shared.Utilities;
+using SkiaSharp;
+using SkiaSharp.Views.Desktop;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -12,82 +17,138 @@ namespace Remotely.Desktop.Core.Utilities
 {
     public class ImageUtils
     {
-        private static readonly ImageCodecInfo _jpegEncoder = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == ImageFormat.Jpeg.Guid);
+        private static readonly RecyclableMemoryStreamManager _recycleManager = new();
 
-        //public static byte[] EncodeWithSkia(Bitmap bitmap, SKEncodedImageFormat format, int quality)
-        //{
-        //    using var ms = new MemoryStream();
-        //    var info = new SKImageInfo(bitmap.Width, bitmap.Height);
-        //    var skBitmap = new SKBitmap(info);
-        //    using (var pixmap = skBitmap.PeekPixels())
-        //    {
-        //        bitmap.ToSKPixmap(pixmap);
-        //    }
-
-        //    skBitmap.Encode(ms, format, quality);
-
-        //    return ms.ToArray();
-        //}
-
-        public static byte[] EncodeJpeg(Bitmap bitmap)
+        public static byte[] EncodeBitmap(SKBitmap bitmap, SKEncodedImageFormat format, int quality)
         {
-            using var ms = new MemoryStream();
-            bitmap.Save(ms, ImageFormat.Jpeg);
+            using var ms = _recycleManager.GetStream();
+            bitmap.Encode(ms, format, quality);
             return ms.ToArray();
         }
 
-        public static byte[] EncodeJpeg(Bitmap bitmap, int quality)
+        public static SKBitmap CropBitmap(SKBitmap bitmap, SKRect cropArea)
         {
-            using var ms = new MemoryStream();
-            using var encoderParams = new EncoderParameters(1)
-            {
-                Param = new[] { new EncoderParameter(Encoder.Quality, quality) }
-            };
-            bitmap.Save(ms, _jpegEncoder, encoderParams);
-            return ms.ToArray();
+            var cropped = new SKBitmap((int)cropArea.Width, (int)cropArea.Height);
+            using var canvas = new SKCanvas(cropped);
+            canvas.DrawBitmap(
+                bitmap,
+                cropArea,
+                new SKRect(0, 0, cropArea.Width, cropArea.Height));
+            return cropped;
         }
 
-        public static Rectangle GetDiffArea(Bitmap currentFrame, Bitmap previousFrame, bool captureFullscreen)
+        public static Result<SKBitmap> GetImageDiff(SKBitmap currentFrame, SKBitmap previousFrame, bool forceFullscreen = false)
         {
-            if (currentFrame == null || previousFrame == null)
-            {
-                return Rectangle.Empty;
-            }
-
-            if (captureFullscreen)
-            {
-                return new Rectangle(new Point(0, 0), currentFrame.Size);
-            }
-            if (currentFrame.Height != previousFrame.Height || currentFrame.Width != previousFrame.Width)
-            {
-                throw new Exception("Bitmaps are not of equal dimensions.");
-            }
-            if (currentFrame.PixelFormat != previousFrame.PixelFormat)
-            {
-                throw new Exception("Bitmaps are not the same format.");
-            }
-            var width = currentFrame.Width;
-            var height = currentFrame.Height;
-            int left = int.MaxValue;
-            int top = int.MaxValue;
-            int right = int.MinValue;
-            int bottom = int.MinValue;
-
-            BitmapData bd1 = null;
-            BitmapData bd2 = null;
-
             try
             {
-                bd1 = previousFrame.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, currentFrame.PixelFormat);
-                bd2 = currentFrame.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, previousFrame.PixelFormat);
+                if (currentFrame is null)
+                {
+                    return Result.Fail<SKBitmap>("Current frame cannot be null.");
+                }
 
-                var bytesPerPixel = Bitmap.GetPixelFormatSize(currentFrame.PixelFormat) / 8;
-                var totalSize = bd1.Height * bd1.Width * bytesPerPixel;
+                if (previousFrame is null || forceFullscreen)
+                {
+                    return Result.Ok(currentFrame.Copy());
+                }
+
+
+                if (currentFrame.Height != previousFrame.Height ||
+                    currentFrame.Width != previousFrame.Width ||
+                    currentFrame.BytesPerPixel != previousFrame.BytesPerPixel)
+                {
+                    return Result.Fail<SKBitmap>("Frames are not of equal size.");
+                }
+
+                var width = currentFrame.Width;
+                var height = currentFrame.Height;
+                var anyChanges = false;
+                var diffFrame = new SKBitmap(width, height);
+
+                var bytesPerPixel = currentFrame.BytesPerPixel;
+                var totalSize = currentFrame.ByteCount;
 
                 unsafe
                 {
-                    byte* scan1 = (byte*)bd1.Scan0.ToPointer();
-                    byte* scan2 = (byte*)bd2.Scan0.ToPointer();
+                    byte* scan1 = (byte*)currentFrame.GetPixels().ToPointer();
+                    byte* scan2 = (byte*)previousFrame.GetPixels().ToPointer();
+                    byte* scan3 = (byte*)diffFrame.GetPixels().ToPointer();
+
+                    for (var row = 0; row < height; row++)
+                    {
+                        for (var column = 0; column < width; column++)
+                        {
+                            var index = (row * width * bytesPerPixel) + (column * bytesPerPixel);
+
+                            byte* data1 = scan1 + index;
+                            byte* data2 = scan2 + index;
+                            byte* data3 = scan3 + index;
+
+                            if (data1[0] != data2[0] ||
+                                data1[1] != data2[1] ||
+                                data1[2] != data2[2] ||
+                                data1[3] != data2[3])
+                            {
+                                anyChanges = true;
+                                data3[0] = data2[0];
+                                data3[1] = data2[1];
+                                data3[2] = data2[2];
+                                data3[3] = data2[3];
+                            }
+
+                        }
+                    }
+                }
+
+                if (anyChanges)
+                {
+                    return Result.Ok(diffFrame);
+                }
+
+                diffFrame.Dispose();
+                return Result.Fail<SKBitmap>("No difference found.");
+            }
+            catch (Exception ex)
+            {
+                Logger.Write(ex, "Error while getting image diff.");
+                return Result.Fail<SKBitmap>(ex);
+            }
+        }
+        public static SKRect GetDiffArea(SKBitmap currentFrame, SKBitmap previousFrame, bool forceFullscreen = false)
+        {
+            try
+            {
+                if (currentFrame is null)
+                {
+                    return SKRect.Empty;
+                }
+
+                if (previousFrame is null || forceFullscreen)
+                {
+                    return currentFrame.ToRectangle();
+                }
+
+
+                if (currentFrame.Height != previousFrame.Height ||
+                    currentFrame.Width != previousFrame.Width ||
+                    currentFrame.BytesPerPixel != previousFrame.BytesPerPixel)
+                {
+                    return SKRect.Empty;
+                }
+
+                var width = currentFrame.Width;
+                var height = currentFrame.Height;
+                int left = int.MaxValue;
+                int top = int.MaxValue;
+                int right = int.MinValue;
+                int bottom = int.MinValue;
+
+                var bytesPerPixel = currentFrame.BytesPerPixel;
+                var totalSize = currentFrame.ByteCount;
+
+                unsafe
+                {
+                    byte* scan1 = (byte*)currentFrame.GetPixels().ToPointer();
+                    byte* scan2 = (byte*)previousFrame.GetPixels().ToPointer();
 
                     for (var row = 0; row < height; row++)
                     {
@@ -124,106 +185,23 @@ namespace Remotely.Desktop.Core.Utilities
                         }
                     }
 
+                    // Check for valid bounding box.
                     if (left <= right && top <= bottom)
                     {
-                        // Bounding box is valid.  Padding is necessary to prevent artifacts from
-                        // moving windows.
                         left = Math.Max(left - 2, 0);
                         top = Math.Max(top - 2, 0);
                         right = Math.Min(right + 2, width);
                         bottom = Math.Min(bottom + 2, height);
+                        return new SKRect(left, top, right, bottom);
+                    }
 
-                        return new Rectangle(left, top, right - left, bottom - top);
-                    }
-                    else
-                    {
-                        return Rectangle.Empty;
-                    }
+                    return SKRect.Empty;
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                return Rectangle.Empty;
-            }
-            finally
-            {
-                currentFrame.UnlockBits(bd1);
-                previousFrame.UnlockBits(bd2);
-            }
-        }
-
-        public static Bitmap GetImageDiff(Bitmap currentFrame, Bitmap previousFrame, bool captureFullscreen, out bool hadChanges)
-        {
-            hadChanges = false;
-            if (currentFrame is null || previousFrame is null)
-            {
-                hadChanges = false;
-                return null;
-            }
-            if (captureFullscreen)
-            {
-                hadChanges = true;
-                return (Bitmap)currentFrame.Clone();
-            }
-
-            if (currentFrame.Height != previousFrame.Height || currentFrame.Width != previousFrame.Width)
-            {
-                throw new Exception("Bitmaps are not of equal dimensions.");
-            }
-
-            var width = currentFrame.Width;
-            var height = currentFrame.Height;
-
-            var mergedFrame = new Bitmap(width, height);
-
-            var bd1 = previousFrame.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, currentFrame.PixelFormat);
-            var bd2 = currentFrame.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, previousFrame.PixelFormat);
-            var bd3 = mergedFrame.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, currentFrame.PixelFormat);
-
-            try
-            {
-                var bytesPerPixel = Bitmap.GetPixelFormatSize(currentFrame.PixelFormat) / 8;
-                var totalSize = bd1.Height * bd1.Width * bytesPerPixel;
-
-                unsafe
-                {
-                    byte* scan1 = (byte*)bd1.Scan0.ToPointer();
-                    byte* scan2 = (byte*)bd2.Scan0.ToPointer();
-                    byte* scan3 = (byte*)bd3.Scan0.ToPointer();
-
-                    for (int counter = 0; counter < totalSize - bytesPerPixel; counter += bytesPerPixel)
-                    {
-                        byte* data1 = scan1 + counter;
-                        byte* data2 = scan2 + counter;
-                        byte* data3 = scan3 + counter;
-
-                        if (data1[0] != data2[0] ||
-                            data1[1] != data2[1] ||
-                            data1[2] != data2[2] ||
-                            data1[3] != data2[3])
-                        {
-                            hadChanges = true;
-                            data3[0] = data2[0];
-                            data3[1] = data2[1];
-                            data3[2] = data2[2];
-                            data3[3] = data2[3];
-                        }
-                    }
-                }
-
-
-                return mergedFrame;
-
-            }
-            catch
-            {
-                return mergedFrame;
-            }
-            finally
-            {
-                previousFrame.UnlockBits(bd1);
-                currentFrame.UnlockBits(bd2);
-                mergedFrame.UnlockBits(bd3);
+                Logger.Write(ex, "Error while getting area diff.");
+                return SKRect.Empty;
             }
         }
     }

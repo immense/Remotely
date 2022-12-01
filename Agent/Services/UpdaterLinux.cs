@@ -20,18 +20,17 @@ namespace Remotely.Agent.Services
     {
         private readonly SemaphoreSlim _checkForUpdatesLock = new(1, 1);
         private readonly ConfigService _configService;
-        private readonly IWebClientEx _webClientEx;
+        private readonly IUpdateDownloader _updateDownloader;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly SemaphoreSlim _installLatestVersionLock = new(1, 1);
-        private DateTimeOffset _lastUpdateFailure;
         private readonly System.Timers.Timer _updateTimer = new(TimeSpan.FromHours(6).TotalMilliseconds);
+        private DateTimeOffset _lastUpdateFailure;
         
-        public UpdaterLinux(ConfigService configService, IWebClientEx webClientEx, IHttpClientFactory httpClientFactory)
+        public UpdaterLinux(ConfigService configService, IUpdateDownloader updateDownloader, IHttpClientFactory httpClientFactory)
         {
             _configService = configService;
-            _webClientEx = webClientEx;
+            _updateDownloader = updateDownloader;
             _httpClientFactory = httpClientFactory;
-            _webClientEx.SetRequestTimeout((int)_updateTimer.Interval);
         }
 
 
@@ -49,10 +48,13 @@ namespace Remotely.Agent.Services
 
         public async Task CheckForUpdates()
         {
+            if (!await _checkForUpdatesLock.WaitAsync(0))
+            {
+                return;
+            }
+
             try
             {
-                await _checkForUpdatesLock.WaitAsync();
-
                 if (EnvironmentHelper.IsDebug)
                 {
                     return;
@@ -76,10 +78,10 @@ namespace Remotely.Agent.Services
                 if (File.Exists("etag.txt"))
                 {
                     var lastEtag = await File.ReadAllTextAsync("etag.txt");
-                    if (!string.IsNullOrEmpty(lastEtag))
+                    if (!string.IsNullOrWhiteSpace(lastEtag) &&
+                       EntityTagHeaderValue.TryParse(lastEtag.Trim(), out var etag))
                     {
-                        var etagValue = new EntityTagHeaderValue(lastEtag.Trim());
-                        request.Headers.IfNoneMatch.Add(etagValue);
+                        request.Headers.IfNoneMatch.Add(etag);
                     }
                 }
 
@@ -109,12 +111,6 @@ namespace Remotely.Agent.Services
             {
                 _checkForUpdatesLock.Release();
             }
-        }
-
-        public void Dispose()
-        {
-            _webClientEx?.Dispose();
-            GC.SuppressFinalize(this);
         }
 
         public async Task InstallLatestVersion()
@@ -148,12 +144,12 @@ namespace Remotely.Agent.Services
                     throw new PlatformNotSupportedException();
                 }
 
-                await _webClientEx.DownloadFileTaskAsync(
-                       serverUrl + $"/API/ClientDownloads/{connectionInfo.OrganizationID}/{platform}",
+                await _updateDownloader.DownloadFile(
+                       $"{serverUrl}/API/ClientDownloads/{connectionInfo.OrganizationID}/{platform}",
                        installerPath);
 
-                await _webClientEx.DownloadFileTaskAsync(
-                   serverUrl + $"/API/AgentUpdate/DownloadPackage/linux/{downloadId}",
+                await _updateDownloader.DownloadFile(
+                   $"{serverUrl}/API/AgentUpdate/DownloadPackage/linux/{downloadId}",
                    zipPath);
 
                 using var httpClient = _httpClientFactory.CreateClient();

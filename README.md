@@ -2,7 +2,7 @@
 A remote control and remote scripting solution, built with .NET 6, Blazor, SignalR Core, and WebRTC.
 
 [![Build Status](https://dev.azure.com/translucency/Remotely/_apis/build/status/Remotely-ReleaseBuild?branchName=master)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=17&branchName=master)
-![GitHub Build](https://github.com/lucent-sea/Remotely/workflows/GitHub%20Build/badge.svg)
+![GitHub Build](https://github.com/immense/Remotely/workflows/GitHub%20Build/badge.svg)
 
 
 # Status 
@@ -24,7 +24,7 @@ Subreddit: https://www.reddit.com/r/remotely_app/
 Docker: https://hub.docker.com/r/translucency/remotely  
 Video Tutorials: https://remotely.one/Tutorials  
 
-![image](https://remotely.one/media/ask-remote.png)
+![image](.github/media/ask-remote.png)
 
 ## Disclaimer
 Hosting a Remotely server requires running an ASP.NET Core web app behind IIS (Windows), Nginx (Ubuntu), or Caddy Server (any OS).  It's expected that the person deploying and maintaining the server is familiar with this process.  Since this is a hobby project that I develop in between working full time and raising a family, there simply isn't time available to provide support in this capacity.
@@ -248,7 +248,7 @@ Remotely has a basic API, which can be browsed at https://remotely.lucency.co/sw
 
 When accessing the API from the browser on another website, you'll need to set up CORS in appsettings by adding the website origin URL to the TrustedCorsOrigins array.  If you're not familiar with how CORS works, I recommend reading up on it before proceeding.  For example, if I wanted to create a login form on https://lucency.co that logged into the Remotely API, I'd need to add "https://lucency.co" to the TrustedCorsOrigins.
 
-The API key and secret must be added to the request's Authorization header in the following format: [ApiKey]:[ApiSecret]
+The API key and secret must first be combined [ApiKey]:[ApiSecret] and then encoded with Base64 as [EncodedAuhorization]. After that you can add the encoded string to the request's Authorization header in the form "Basic [EncodedAuhorization]"
 
 Below is an example API request:
 
@@ -272,7 +272,7 @@ Below are examples of using the cookie-based login API (JavaScript):
 		method: "post",
 		credentials: "include",
 		mode: "cors",
-		body: '{"Email":"email@example.com", "Password":"P@ssword1"}',
+		body: '{"email":"email@example.com", "password":"P@ssword1"}',
 		headers: {
 			"Content-Type": "application/json",
 		}
@@ -297,7 +297,7 @@ Below are examples of using the cookie-based login API (JavaScript):
 		method: "post",
 		credentials: "include",
 		mode: "cors",
-		body: '{"Email":"email@example.com", "Password":"P@ssword1", "DeviceID":"b68c24b0-2c67-4524-ad28-dadea7a576a4"}',
+		body: '{"email":"email@example.com", "password":"P@ssword1", "deviceID":"b68c24b0-2c67-4524-ad28-dadea7a576a4"}',
 		headers: {
 			"Content-Type": "application/json",
 		}

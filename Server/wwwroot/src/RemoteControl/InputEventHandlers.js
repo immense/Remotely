@@ -19,6 +19,10 @@ var startMenuDraggingY;
 var startLongPressTimeout;
 var lastPinchCenterX;
 var lastPinchCenterY;
+var isScrolling;
+var lastScrollTime;
+var lastScrollTouchY1;
+var lastScrollTouchY2;
 export function ApplyInputHandlers() {
     AudioButton.addEventListener("click", (ev) => {
         AudioButton.classList.toggle("toggled");
@@ -261,6 +265,8 @@ export function ApplyInputHandlers() {
                 cancelNextViewerClick = true;
             }
             if (currentTouchCount == 2) {
+                lastScrollTouchY1 = e.touches[0].pageY;
+                lastScrollTouchY2 = e.touches[1].pageY;
                 startPinchPoint1 = { X: e.touches[0].pageX, Y: e.touches[0].pageY, IsEmpty: false };
                 startPinchPoint2 = { X: e.touches[1].pageX, Y: e.touches[1].pageY, IsEmpty: false };
                 lastPinchDistance = GetDistanceBetween(startPinchPoint1.X, startPinchPoint1.Y, startPinchPoint2.X, startPinchPoint2.Y);
@@ -278,6 +284,29 @@ export function ApplyInputHandlers() {
             currentTouchCount = e.touches.length;
             clearTimeout(startLongPressTimeout);
             if (e.touches.length == 2) {
+                let touchMove1 = lastScrollTouchY1 - e.touches[0].pageY;
+                let touchMove2 = lastScrollTouchY2 - e.touches[1].pageY;
+                if (!isPinchZooming && (isScrolling || touchMove1 * touchMove2 > 0)) {
+                    // Both touch points are moving in the same direction.  We're doing a scroll.
+                    if (!isScrolling) {
+                        // If this is the start of scrolling, move the mouse to our touch point so
+                        // the scroll wheel action will target the intended element on screen.
+                        var screenViewerLeft = viewer.getBoundingClientRect().left;
+                        var screenViewerTop = viewer.getBoundingClientRect().top;
+                        var pagePercentX = (e.touches[0].pageX - screenViewerLeft) / viewer.clientWidth;
+                        var pagePercentY = (e.touches[0].pageY - screenViewerTop) / viewer.clientHeight;
+                        ViewerApp.MessageSender.SendMouseMove(pagePercentX, pagePercentY);
+                    }
+                    isScrolling = true;
+                    if (Date.now() - lastScrollTime < 100) {
+                        return;
+                    }
+                    lastScrollTime = Date.now();
+                    let yMove = Math.max(-1, Math.min(touchMove1, 1));
+                    ViewerApp.MessageSender.SendMouseWheel(0, yMove);
+                    lastScrollTouchY1 = e.touches[0].pageY;
+                    return;
+                }
                 var pinchPoint1 = {
                     X: e.touches[0].pageX,
                     Y: e.touches[0].pageY,
@@ -334,7 +363,7 @@ export function ApplyInputHandlers() {
         viewer.addEventListener("touchend", function (e) {
             currentTouchCount = e.touches.length;
             clearTimeout(startLongPressTimeout);
-            if (e.touches.length == 1 && !isPinchZooming) {
+            if (e.touches.length == 1 && !isPinchZooming && !isScrolling) {
                 if (ViewerApp.ViewOnlyMode) {
                     return;
                 }
@@ -348,6 +377,9 @@ export function ApplyInputHandlers() {
             if (currentTouchCount == 0) {
                 cancelNextViewerClick = false;
                 isPinchZooming = false;
+                isScrolling = false;
+                lastScrollTouchY1 = null;
+                lastScrollTouchY2 = null;
                 startPinchPoint1 = null;
                 startPinchPoint2 = null;
             }
