@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System;
 using Immense.RemoteControl.Desktop.Windows;
-using Remotely.Desktop.Win.Services;
+using Remotely.Desktop.Shared.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Services;

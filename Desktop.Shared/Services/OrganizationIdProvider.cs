@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely.Desktop.Win.Services
+namespace Remotely.Desktop.Shared.Services
 {
     public interface IOrganizationIdProvider
     {

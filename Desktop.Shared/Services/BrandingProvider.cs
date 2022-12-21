@@ -2,6 +2,7 @@
 using Immense.RemoteControl.Desktop.Shared.Services;
 using Immense.RemoteControl.Shared.Models;
 using Remotely.Shared;
+using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
@@ -14,7 +15,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely.Desktop.Win.Services
+namespace Remotely.Desktop.Shared.Services
 {
     public class BrandingProvider : IBrandingProvider
     {
@@ -110,7 +111,7 @@ namespace Remotely.Desktop.Win.Services
             }
             catch (Exception ex)
             {
-                Logger.Write(ex, "Failed to resolve init params.", Shared.Enums.EventType.Warning);
+                Logger.Write(ex, "Failed to resolve init params.", EventType.Warning);
             }
         }
 
