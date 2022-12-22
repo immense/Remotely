@@ -27,6 +27,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
+        submodules: recursive
         fetch-depth: 0
 
     # Install the .NET Core workload
