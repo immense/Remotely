@@ -375,7 +375,7 @@ namespace Remotely.Agent.Installer.Win.Services
                 var serviceInstaller = new ServiceInstaller()
                 {
                     Context = context,
-                    DisplayName = "Rem",
+                    DisplayName = "Rems",
                     Description = "Background service that maintains a connection to the Remotely server.  The service is used for remote support and maintenance by this computer's administrators.",
                     ServiceName = "Remotely_Service",
                     StartType = ServiceStartMode.Automatic,
