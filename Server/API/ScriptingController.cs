@@ -12,6 +12,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Remotely.Shared.Enums;
 using Remotely.Server.Auth;
+using Immense.RemoteControl.Server.Abstractions;
+using Immense.RemoteControl.Shared.Helpers;
+using Remotely.Shared;
 
 namespace Remotely.Server.API
 {
@@ -19,20 +22,22 @@ namespace Remotely.Server.API
     [Route("api/[controller]")]
     public class ScriptingController : ControllerBase
     {
-        private readonly IHubContext<AgentHub> _agentHubContext;
+        private readonly IHubContext<ServiceHub> _agentHubContext;
 
         private readonly IDataService _dataService;
-
+        private readonly IServiceHubSessionCache _serviceSessionCache;
         private readonly IExpiringTokenService _expiringTokenService;
 
         private readonly UserManager<RemotelyUser> _userManager;
 
         public ScriptingController(UserManager<RemotelyUser> userManager,
-                                            IDataService dataService,
+            IDataService dataService,
+            IServiceHubSessionCache serviceSessionCache,
             IExpiringTokenService expiringTokenService,
-            IHubContext<AgentHub> agentHub)
+            IHubContext<ServiceHub> agentHub)
         {
             _dataService = dataService;
+            _serviceSessionCache = serviceSessionCache;
             _expiringTokenService = expiringTokenService;
             _userManager = userManager;
             _agentHubContext = agentHub;
@@ -68,27 +73,33 @@ namespace Remotely.Server.API
 
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
 
-            KeyValuePair<string, Device> connection = AgentHub.ServiceConnections.FirstOrDefault(x =>
-                x.Value.OrganizationID == orgID &&
-                x.Value.ID == deviceID);
-
-            if (string.IsNullOrWhiteSpace(connection.Key))
+            if (!_serviceSessionCache.TryGetByDeviceId(deviceID, out var device))
             {
                 return NotFound();
+            }
+
+            if (!_serviceSessionCache.TryGetConnectionId(deviceID, out var connectionId))
+            {
+                return NotFound();
+            }
+
+            if (device.OrganizationID != orgID)
+            {
+                return Unauthorized();
             }
 
             var requestID = Guid.NewGuid().ToString();
             var authToken = _expiringTokenService.GetToken(Time.Now.AddMinutes(AppConstants.ScriptRunExpirationMinutes));
 
-            await _agentHubContext.Clients.Client(connection.Key).SendAsync("ExecuteCommandFromApi", shell, authToken, requestID, command, User?.Identity?.Name);
+            await _agentHubContext.Clients.Client(connectionId).SendAsync("ExecuteCommandFromApi", shell, authToken, requestID, command, User?.Identity?.Name);
 
-            var success = await TaskHelper.DelayUntilAsync(() => AgentHub.ApiScriptResults.TryGetValue(requestID, out _), TimeSpan.FromSeconds(30));
+            var success = await WaitHelper.WaitForAsync(() => ServiceHub.ApiScriptResults.TryGetValue(requestID, out _), TimeSpan.FromSeconds(30));
             if (!success)
             {
                 return NotFound();
             }
-            AgentHub.ApiScriptResults.TryGetValue(requestID, out var commandID);
-            AgentHub.ApiScriptResults.Remove(requestID);
+            ServiceHub.ApiScriptResults.TryGetValue(requestID, out var commandID);
+            ServiceHub.ApiScriptResults.Remove(requestID);
             var result = _dataService.GetScriptResult(commandID.ToString(), orgID);
             return result;
         }

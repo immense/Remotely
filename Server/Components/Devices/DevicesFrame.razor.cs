@@ -31,7 +31,6 @@ namespace Remotely.Server.Components.Devices
         private readonly List<Device> _devicesForPage = new();
         private readonly object _devicesLock = new();
         private readonly List<Device> _filteredDevices = new();
-        private readonly ConcurrentDictionary<string, RemoteControlTarget> _remoteControlTargetLookup = new();
         private readonly List<PropertyInfo> _sortableProperties = new();
         private int _currentPage = 1;
         private int _devicesPerPage = 25;
@@ -179,18 +178,12 @@ namespace Remotely.Server.Components.Devices
                     break;
                 case CircuitEventName.UnattendedSessionReady:
                     {
-                        var casterId = (string)args.Params[0];
-                        var deviceId = (string)args.Params[1];
-                        if (_remoteControlTargetLookup.TryGetValue(deviceId, out var target))
-                        {
-                            var serviceId = target.ServiceConnectionId;
-                            var viewOnly = target.ViewOnlyMode;
-                            JsInterop.OpenWindow($"/RemoteControl?casterID={casterId}&serviceID={serviceId}&viewonly={viewOnly}", "_blank");
-                        }
-                        else
-                        {
-                            Logger.LogWarning("Device not found for unattended session: {deviceId}", deviceId);
-                        }
+                        var sessionId = (string)args.Params[0];
+                        var accessKey = (string)args.Params[1];
+                        var deviceId = (string)args.Params[2];
+                        var viewOnly = (bool)args.Params[3];
+
+                        JsInterop.OpenWindow($"/RemoteControl/Viewer?mode=Unattended&sessionId={sessionId}&accessKey={accessKey}&viewonly={viewOnly}", "_blank");
                     }
                     break;
                 default:

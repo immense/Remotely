@@ -158,8 +158,7 @@ namespace Remotely.Server.Pages
                   Device.Tags,
                   Device.Alias,
                   Device.DeviceGroupID,
-                  Device.Notes,
-                  Device.WebRtcSetting);
+                  Device.Notes);
 
             _alertMessage = "Device details saved.";
             ToastService.ShowToast("Device details saved.");

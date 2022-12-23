@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Immense.RemoteControl.Server.Abstractions;
+using Microsoft.Extensions.Logging;
 using Remotely.Server.Hubs;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
@@ -18,14 +19,17 @@ namespace Remotely.Server.Services
     public class ScriptScheduleDispatcher : IScriptScheduleDispatcher
     {
         private readonly IDataService _dataService;
+        private readonly IServiceHubSessionCache _serviceSessionCache;
         private readonly ICircuitConnection _circuitConnection;
         private readonly ILogger<ScriptScheduleDispatcher> _logger;
 
         public ScriptScheduleDispatcher(IDataService dataService,
+            IServiceHubSessionCache serviceSessionCache,
             ICircuitConnection circuitConnection,
             ILogger<ScriptScheduleDispatcher> logger)
         {
             _dataService = dataService;
+            _serviceSessionCache = serviceSessionCache;
             _circuitConnection = circuitConnection;
             _logger = logger;
         }
@@ -59,7 +63,7 @@ namespace Remotely.Server.Services
                             continue;
                         }
 
-                        _logger.LogInformation($"Creating script run for schedule {schedule.Name}.");
+                        _logger.LogInformation("Creating script run for schedule {scheduleName}.", schedule.Name);
 
                         var scriptRun = new ScriptRun()
                         {
@@ -81,9 +85,7 @@ namespace Remotely.Server.Services
                             .Distinct()
                             .ToArray();
 
-                        var onlineDevices = AgentHub.ServiceConnections
-                            .Where(x => deviceIds.Contains(x.Value.ID))
-                            .Select(x => x.Value.ID);
+                        var onlineDevices = _serviceSessionCache.GetConnectionIdsByDeviceIds(deviceIds);
 
                         if (schedule.RunOnNextConnect)
                         {
@@ -98,7 +100,7 @@ namespace Remotely.Server.Services
 
                         await _circuitConnection.RunScript(onlineDevices, schedule.SavedScriptId, scriptRun.Id, ScriptInputType.ScheduledScript, true);
 
-                        _logger.LogInformation($"Created script run for schedule {schedule.Name}.");
+                        _logger.LogInformation("Created script run for schedule {scheduleName}.", schedule.Name);
 
                         schedule.LastRun = Time.Now;
                         await _dataService.AddOrUpdateScriptSchedule(schedule);

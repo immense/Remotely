@@ -40,6 +40,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
       - name: Install .NET Core
         uses: actions/setup-dotnet@v1.9.0
@@ -109,7 +111,8 @@ jobs:
       with:
         # Comment out the below 'repository' line if you want to build from
         # your fork instead of the author's.
-        repository: lucent-sea/Remotely
+        repository: immense/Remotely
+        submodules: recursive
         fetch-depth: 0
 
     # Test the Server URL to make sure it's valid

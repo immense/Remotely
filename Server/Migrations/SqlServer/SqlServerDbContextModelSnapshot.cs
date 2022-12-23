@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Remotely.Server.Data;
 
+#nullable disable
+
 namespace Remotely.Server.Migrations.SqlServer
 {
     [DbContext(typeof(SqlServerDbContext))]
@@ -15,9 +17,10 @@ namespace Remotely.Server.Migrations.SqlServer
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.5")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "6.0.9")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("DeviceGroupRemotelyUser", b =>
                 {
@@ -118,15 +121,16 @@ namespace Remotely.Server.Migrations.SqlServer
                         .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("AspNetRoles");
+                    b.ToTable("AspNetRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -142,7 +146,7 @@ namespace Remotely.Server.Migrations.SqlServer
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims");
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
@@ -211,7 +215,7 @@ namespace Remotely.Server.Migrations.SqlServer
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("RemotelyUsers");
+                    b.ToTable("RemotelyUsers", (string)null);
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
                 });
@@ -220,8 +224,9 @@ namespace Remotely.Server.Migrations.SqlServer
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -237,18 +242,16 @@ namespace Remotely.Server.Migrations.SqlServer
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims");
+                    b.ToTable("AspNetUserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -261,7 +264,7 @@ namespace Remotely.Server.Migrations.SqlServer
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins");
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -276,7 +279,7 @@ namespace Remotely.Server.Migrations.SqlServer
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles");
+                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -285,19 +288,17 @@ namespace Remotely.Server.Migrations.SqlServer
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens");
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.Alert", b =>
@@ -377,9 +378,14 @@ namespace Remotely.Server.Migrations.SqlServer
                         .HasColumnType("tinyint");
 
                     b.Property<byte[]>("Icon")
+                        .IsRequired()
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<string>("OrganizationId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Product")
+                        .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
 
@@ -403,7 +409,11 @@ namespace Remotely.Server.Migrations.SqlServer
 
                     b.HasKey("Id");
 
-                    b.ToTable("BrandingInfo");
+                    b.HasIndex("OrganizationId")
+                        .IsUnique()
+                        .HasFilter("[OrganizationId] IS NOT NULL");
+
+                    b.ToTable("BrandingInfos");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.Device", b =>
@@ -482,9 +492,6 @@ namespace Remotely.Server.Migrations.SqlServer
 
                     b.Property<double>("UsedStorage")
                         .HasColumnType("float");
-
-                    b.Property<int>("WebRtcSetting")
-                        .HasColumnType("int");
 
                     b.HasKey("ID");
 
@@ -582,9 +589,6 @@ namespace Remotely.Server.Migrations.SqlServer
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("BrandingInfoId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<bool>("IsDefaultOrganization")
                         .HasColumnType("bit");
 
@@ -596,8 +600,6 @@ namespace Remotely.Server.Migrations.SqlServer
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("BrandingInfoId");
 
                     b.ToTable("Organizations");
                 });
@@ -722,8 +724,9 @@ namespace Remotely.Server.Migrations.SqlServer
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Initiator")
                         .HasColumnType("nvarchar(max)");
@@ -762,8 +765,9 @@ namespace Remotely.Server.Migrations.SqlServer
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
@@ -1014,6 +1018,15 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.Navigation("Organization");
                 });
 
+            modelBuilder.Entity("Remotely.Shared.Models.BrandingInfo", b =>
+                {
+                    b.HasOne("Remotely.Shared.Models.Organization", "Organization")
+                        .WithOne("BrandingInfo")
+                        .HasForeignKey("Remotely.Shared.Models.BrandingInfo", "OrganizationId");
+
+                    b.Navigation("Organization");
+                });
+
             modelBuilder.Entity("Remotely.Shared.Models.Device", b =>
                 {
                     b.HasOne("Remotely.Shared.Models.DeviceGroup", "DeviceGroup")
@@ -1054,15 +1067,6 @@ namespace Remotely.Server.Migrations.SqlServer
                         .HasForeignKey("OrganizationID");
 
                     b.Navigation("Organization");
-                });
-
-            modelBuilder.Entity("Remotely.Shared.Models.Organization", b =>
-                {
-                    b.HasOne("Remotely.Shared.Models.BrandingInfo", "BrandingInfo")
-                        .WithMany()
-                        .HasForeignKey("BrandingInfoId");
-
-                    b.Navigation("BrandingInfo");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.SavedScript", b =>
@@ -1168,6 +1172,8 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.Navigation("Alerts");
 
                     b.Navigation("ApiTokens");
+
+                    b.Navigation("BrandingInfo");
 
                     b.Navigation("DeviceGroups");
 

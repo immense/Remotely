@@ -83,7 +83,7 @@
         @foreach (var device in _devicesForPage)
         {
             <CascadingValue Value="this">
-                <DeviceCard @key="device.ID" Device="device" RemoteControlTargetLookup="_remoteControlTargetLookup" />
+                <DeviceCard @key="device.ID" Device="device" />
             </CascadingValue>
         }
     </div>

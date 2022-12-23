@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Remotely.Shared.Utilities
 {
+    // TODO: Replace with ISystemTime.
     public static class Time
     {
         private static TimeSpan? _adjustBy;

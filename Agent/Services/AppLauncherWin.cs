@@ -7,43 +7,46 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.Versioning;
+using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Threading.Tasks;
 
 namespace Remotely.Agent.Services
 {
-
+    [SupportedOSPlatform("windows")]
     public class AppLauncherWin : IAppLauncher
     {
+        private readonly ConnectionInfo _connectionInfo;
         private readonly string _rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Desktop", EnvironmentHelper.DesktopExecutableFileName);
 
         public AppLauncherWin(ConfigService configService)
         {
-            ConnectionInfo = configService.GetConnectionInfo();
+            _connectionInfo = configService.GetConnectionInfo();
         }
 
-        private ConnectionInfo ConnectionInfo { get; }
-
-        public async Task<int> LaunchChatService(string orgName, string requesterID, HubConnection hubConnection)
+        public async Task<int> LaunchChatService(string pipeName, string userConnectionId, string requesterName, string orgName, string orgId, HubConnection hubConnection)
         {
             try
             {
                 if (!File.Exists(_rcBinaryPath))
                 {
-                    await hubConnection.SendAsync("DisplayMessage", "Chat executable not found on target device.", "Executable not found on device.", "bg-danger", requesterID);
+                    await hubConnection.SendAsync("DisplayMessage", "Chat executable not found on target device.", "Executable not found on device.", "bg-danger", userConnectionId);
                 }
 
 
                 // Start Desktop app.
-                await hubConnection.SendAsync("DisplayMessage", $"Starting chat service.", "Starting chat service.", "bg-success", requesterID);
+                await hubConnection.SendAsync("DisplayMessage", $"Starting chat service.", "Starting chat service.", "bg-success", userConnectionId);
                 if (WindowsIdentity.GetCurrent().IsSystem)
                 {
-                    var result = Win32Interop.OpenInteractiveProcess($"{_rcBinaryPath} " +
-                            $"-mode Chat " +
-                            $"-requester \"{requesterID}\" " +
-                            $"-organization \"{orgName}\" " +
-                            $"-host \"{ConnectionInfo.Host}\" " +
-                            $"-orgid \"{ConnectionInfo.OrganizationID}\"",
+                    var result = Win32Interop.OpenInteractiveProcess(
+                        _rcBinaryPath +
+                            $" --mode Chat" +
+                            $" --host \"{_connectionInfo.Host}\"" +
+                            $" --pipe-name {pipeName}" +
+                            $" --requester-name \"{requesterName}\"" +
+                            $" --org-name \"{orgName}\"" +
+                            $" --org-id \"{orgId}\"",
                         targetSessionId: -1,
                         forceConsoleSession: false,
                         desktopName: "default",
@@ -55,7 +58,7 @@ namespace Remotely.Agent.Services
                             "Chat service failed to start on target device.", 
                             "Failed to start chat service.", 
                             "bg-danger",
-                            requesterID);
+                            userConnectionId);
                     }
                     else
                     {
@@ -64,12 +67,13 @@ namespace Remotely.Agent.Services
                 }
                 else
                 {
-                    return Process.Start(_rcBinaryPath, 
-                        $"-mode Chat " +
-                        $"-requester \"{requesterID}\" " +
-                        $"-organization \"{orgName}\" " +
-                         $"-host \"{ConnectionInfo.Host}\" " +
-                        $"-orgid \"{ConnectionInfo.OrganizationID}\"").Id;
+                    return Process.Start(_rcBinaryPath,
+                        $" --mode Chat" +
+                        $" --host \"{_connectionInfo.Host}\"" +
+                        $" --requester-name \"{userConnectionId}\"" +
+                        $" --org-name \"{orgName}\"" +
+                        $" --org-id \"{orgId}\"" +
+                        $" --pipe-name {pipeName}").Id;
                 }
             }
             catch (Exception ex)
@@ -79,12 +83,12 @@ namespace Remotely.Agent.Services
                     "Chat service failed to start on target device.",
                     "Failed to start chat service.",
                     "bg-danger",
-                    requesterID);
+                    userConnectionId);
             }
             return -1;
         }
 
-        public async Task LaunchRemoteControl(int targetSessionId, string requesterID, string serviceID, HubConnection hubConnection)
+        public async Task LaunchRemoteControl(int targetSessionId, string sessionId, string accessKey, string userConnectionId, string requesterName, string orgName, string orgId, HubConnection hubConnection)
         {
             try
             {
@@ -94,7 +98,7 @@ namespace Remotely.Agent.Services
                         "Remote control executable not found on target device.", 
                         "Executable not found on device.", 
                         "bg-danger",
-                        requesterID);
+                        userConnectionId);
                     return;
                 }
 
@@ -104,16 +108,18 @@ namespace Remotely.Agent.Services
                     "Starting remote control.",
                     "Starting remote control.",
                     "bg-success",
-                    requesterID);
+                    userConnectionId);
                 if (WindowsIdentity.GetCurrent().IsSystem)
                 {
-                    var result = Win32Interop.OpenInteractiveProcess(_rcBinaryPath +
-                            $" -mode Unattended" +
-                            $" -requester \"{requesterID}\"" +
-                            $" -serviceid \"{serviceID}\"" +
-                            $" -deviceid {ConnectionInfo.DeviceID}" +
-                            $" -host {ConnectionInfo.Host}" +
-                            $" -orgid \"{ConnectionInfo.OrganizationID}\"",
+                    var result = Win32Interop.OpenInteractiveProcess(
+                        _rcBinaryPath +
+                            $" --mode Unattended" +
+                            $" --host {_connectionInfo.Host}" +
+                            $" --requester-name \"{requesterName}\"" +
+                            $" --org-name \"{orgName}\"" +
+                            $" --org-id \"{orgId}\"" +
+                            $" --session-id \"{sessionId}\"" +
+                            $" --access-key \"{accessKey}\"",
                         targetSessionId: targetSessionId,
                         forceConsoleSession: Shlwapi.IsOS(OsType.OS_ANYSERVER) && targetSessionId == -1,
                         desktopName: "default",
@@ -125,19 +131,19 @@ namespace Remotely.Agent.Services
                             "Remote control failed to start on target device.",
                             "Failed to start remote control.",
                             "bg-danger",
-                            requesterID);
+                            userConnectionId);
                     }
                 }
                 else
                 {
-                    // SignalR Connection IDs might start with a hyphen.  We surround them
-                    // with quotes so the command line will be parsed correctly.
-                    Process.Start(_rcBinaryPath, $"-mode Unattended " +
-                        $"-requester \"{requesterID}\" " +
-                        $"-serviceid \"{serviceID}\" " +
-                        $"-deviceid {ConnectionInfo.DeviceID} " +
-                        $"-host {ConnectionInfo.Host} " +
-                        $"-orgid \"{ConnectionInfo.OrganizationID}\"");
+                    Process.Start(_rcBinaryPath,
+                            $" --mode Unattended" +
+                            $" --host {_connectionInfo.Host}" +
+                            $" --requester-name \"{requesterName}\"" +
+                            $" --org-name \"{orgName}\"" +
+                            $" --org-id \"{orgId}\"" +
+                            $" --session-id \"{sessionId}\"" +
+                            $" --access-key \"{accessKey}\"");
                 }
             }
             catch (Exception ex)
@@ -147,10 +153,10 @@ namespace Remotely.Agent.Services
                     "Remote control failed to start on target device.", 
                     "Failed to start remote control.",
                     "bg-danger",
-                    requesterID);
+                    userConnectionId);
             }
         }
-        public async Task RestartScreenCaster(List<string> viewerIDs, string serviceID, string requesterID, HubConnection hubConnection, int targetSessionID = -1)
+        public async Task RestartScreenCaster(List<string> viewerIDs, string sessionId, string accessKey, string userConnectionId, string requesterName, string orgName, string orgId, HubConnection hubConnection, int targetSessionID = -1)
         {
             try
             {
@@ -162,14 +168,15 @@ namespace Remotely.Agent.Services
                     await Task.Delay(1000);
 
                     var result = Win32Interop.OpenInteractiveProcess(_rcBinaryPath + 
-                            $" -mode Unattended" +
-                            $" -requester \"{requesterID}\"" +
-                            $" -serviceid \"{serviceID}\"" +
-                            $" -deviceid {ConnectionInfo.DeviceID}" +
-                            $" -host {ConnectionInfo.Host}" +
-                            $" -orgid \"{ConnectionInfo.OrganizationID}\"" +
-                            $" -relaunch true" +
-                            $" -viewers {String.Join(",", viewerIDs)}",
+                            $" --mode Unattended" +
+                            $" --relaunch true" +
+                            $" --host {_connectionInfo.Host}" +
+                            $" --requester-name \"{requesterName}\"" +
+                            $" --org-name \"{orgName}\"" +
+                            $" --org-id \"{orgId}\"" +
+                            $" --session-id \"{sessionId}\"" +
+                            $" --access-key \"{accessKey}\"" +
+                            $" --viewers {string.Join(",", viewerIDs)}",
 
                         targetSessionId: targetSessionID,
                         forceConsoleSession: Shlwapi.IsOS(OsType.OS_ANYSERVER) && targetSessionID == -1,
@@ -185,22 +192,21 @@ namespace Remotely.Agent.Services
                             "Remote control failed to start on target device.",
                             "Failed to start remote control.",
                             "bg-danger",
-                            requesterID);
+                            userConnectionId);
                     }
                 }
                 else
                 {
-                    // SignalR Connection IDs might start with a hyphen.  We surround them
-                    // with quotes so the command line will be parsed correctly.
-                    Process.Start(_rcBinaryPath, 
-                        $"-mode Unattended " +
-                        $"-requester \"{requesterID}\" " +
-                        $"-serviceid \"{serviceID}\" " +
-                        $"-deviceid {ConnectionInfo.DeviceID} " +
-                        $"-host {ConnectionInfo.Host} " +
-                        $" -orgid \"{ConnectionInfo.OrganizationID}\"" +
-                        $"-relaunch true " +
-                        $"-viewers {String.Join(",", viewerIDs)}");
+                    Process.Start(_rcBinaryPath,
+                        $" --mode Unattended" +
+                        $" --relaunch true" +
+                        $" --host {_connectionInfo.Host}" +
+                        $" --requester-name \"{requesterName}\"" +
+                        $" --org-name \"{orgName}\"" +
+                        $" --org-id \"{orgId}\"" +
+                        $" --session-id \"{sessionId}\"" +
+                        $" --access-key \"{accessKey}\"" +
+                        $" --viewers {string.Join(",", viewerIDs)}");
                 }
             }
             catch (Exception ex)

@@ -14,6 +14,8 @@ namespace Remotely.Server.Models
         }
 
         public CircuitEventName EventName { get; set; }
+
+        // TODO: This is a bad shortcut.  Make events for each type.
         public object[] Params { get; set; }
     }
 }

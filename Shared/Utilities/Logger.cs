@@ -11,9 +11,11 @@ using System.Threading.Tasks;
 
 namespace Remotely.Shared.Utilities
 {
+    // TODO: Replace this with ILogger<T>.
     public static class Logger
     {
-        private static string LogPath => Path.Combine(Path.GetTempPath(), "Remotely_Logs.log");
+        private static string LogDir => Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "Remotely", "Logs")).FullName;
+        private static string LogPath => Path.Combine(LogDir, $"LogFile_{DateTime.Now:yyyy-MM-dd}.log");
         private static SemaphoreSlim WriteLock { get; } = new(1, 1);
         public static void Debug(string message, [CallerMemberName] string callerName = "")
         {

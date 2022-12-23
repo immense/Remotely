@@ -1,4 +1,5 @@
 ﻿using Castle.Core.Logging;
+using Immense.RemoteControl.Server.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -21,6 +22,7 @@ namespace Remotely.Tests
         private ScriptSchedule _schedule1;
         private Mock<IDataService> _dataService;
         private Mock<ICircuitConnection> _circuitConnection;
+        private Mock<IServiceHubSessionCache> _serviceSessionCache;
         private Mock<ILogger<ScriptScheduleDispatcher>> _logger;
         private ScriptScheduleDispatcher _dispatcher;
         private TestData _testData;
@@ -75,8 +77,9 @@ namespace Remotely.Tests
             ))).Returns(new List<Device>() { _testData.Device1, _testData.Device2 });
 
             _circuitConnection = new Mock<ICircuitConnection>();
+            _serviceSessionCache = new Mock<IServiceHubSessionCache>();
             _logger = new Mock<ILogger<ScriptScheduleDispatcher>>();
-            _dispatcher = new ScriptScheduleDispatcher(_dataService.Object, _circuitConnection.Object, _logger.Object);
+            _dispatcher = new ScriptScheduleDispatcher(_dataService.Object, _serviceSessionCache.Object, _circuitConnection.Object, _logger.Object);
         }
 
         [TestMethod]

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
@@ -24,7 +25,7 @@ namespace Remotely.Server.Data
         public DbSet<Alert> Alerts { get; set; }
 
         public DbSet<ApiToken> ApiTokens { get; set; }
-
+        public DbSet<BrandingInfo> BrandingInfos { get; set; }
         public DbSet<DeviceGroup> DeviceGroups { get; set; }
         public DbSet<Device> Devices { get; set; }
         public DbSet<EventLog> EventLogs { get; set; }
@@ -87,6 +88,10 @@ namespace Remotely.Server.Data
             builder.Entity<Organization>()
                 .HasMany(x => x.SavedScripts)
                 .WithOne(x => x.Organization);
+            builder.Entity<Organization>()
+                .HasOne(x => x.BrandingInfo)
+                .WithOne(x => x.Organization)
+                .HasForeignKey<BrandingInfo>(x => x.OrganizationId);
 
             builder.Entity<RemotelyUser>()
                .HasOne(x => x.Organization)

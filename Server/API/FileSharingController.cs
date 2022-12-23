@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Remotely.Server.Auth;
 using Remotely.Server.Services;
-using Remotely.Shared.Utilities;
+using Remotely.Shared;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

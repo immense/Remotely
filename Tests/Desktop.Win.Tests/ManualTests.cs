@@ -1,12 +1,12 @@
 ﻿#nullable disable
+using Immense.RemoteControl.Desktop.Shared.Abstractions;
+using Immense.RemoteControl.Desktop.Shared.Services;
+using Immense.RemoteControl.Desktop.Windows.Services;
+using Immense.RemoteControl.Shared.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Remotely.Desktop.Core;
-using Remotely.Desktop.Core.Interfaces;
-using Remotely.Desktop.Core.Services;
-using Remotely.Desktop.Core.Utilities;
 using Remotely.Desktop.Win.Services;
 using Remotely.Shared.Models;
 using Remotely.Shared.Models.RemoteControlDtos;
@@ -25,27 +25,27 @@ using System.Threading.Tasks;
 namespace Remotely.Tests
 {
     [TestClass]
+    [Ignore("Manual test.")]
     public class ManualTests
     {
         private const int RoundtripLatency = 25;
 
+        private readonly ImageHelper _imageUtils = new(Mock.Of<ILogger<ImageHelper>>());
         private double _bytesSent;
         private double _frameCount;
         private Mock<IAudioCapturer> _audio;
         private ScreenCapturerWin _capturer;
-        private Mock<ICasterSocket> _casterSocket;
+        private Mock<IDesktopHubConnection> _casterSocket;
         private Mock<IClipboardService> _clipboard;
-        private Conductor _conductor;
+        private AppState _appState;
         private Mock<ICursorIconWatcher> _cursorWatcher;
         private ScreenCaster _screenCaster;
         private Mock<ISessionIndicator> _sessionIndicator;
         private Mock<IShutdownService> _shutdown;
-        private Mock<IWebRtcSessionFactory> _webrtcFactory;
         private Viewer _viewer;
 
 
         [TestMethod]
-        [Ignore("Manual test.")]
         public async Task CaptureTest()
         {
             var request = new ScreenCastRequest()
@@ -71,7 +71,6 @@ namespace Remotely.Tests
 
 
         [TestMethod]
-        [Ignore("Manual test.")]
         public void EncodingTests()
         {
             for (var i = 0; i < 2; i++)
@@ -84,13 +83,13 @@ namespace Remotely.Tests
 
 
                 sw.Restart();
-                var diff = ImageUtils.GetDiffArea(frame1, frame2, false);
+                var diff = _imageUtils.GetDiffArea(frame1, frame2, false);
 
                 var diffSize = 0;
 
-                using (var tempImage = ImageUtils.CropBitmap(frame1, diff))
+                using (var tempImage = _imageUtils.CropBitmap(frame1, diff))
                 {
-                    imageBytes = ImageUtils.EncodeBitmap(tempImage, SKEncodedImageFormat.Jpeg, 60);
+                    imageBytes = _imageUtils.EncodeBitmap(tempImage, SKEncodedImageFormat.Jpeg, 60);
                     diffSize = imageBytes.Length;
                 }
                 Debug.WriteLine($"Diff area size: {diffSize}");
@@ -98,7 +97,7 @@ namespace Remotely.Tests
 
 
                 sw.Restart();
-                var diffImage = ImageUtils.GetImageDiff(frame1, frame2, false);
+                var diffImage = _imageUtils.GetImageDiff(frame1, frame2, false);
 
 
                 using (var ms = new MemoryStream())
@@ -132,8 +131,8 @@ namespace Remotely.Tests
                 currentFrame.Dispose();
                 
                 currentFrame = _capturer.GetNextFrame().Value;
-                var diffArea = ImageUtils.GetDiffArea(currentFrame, previousFrame);
-                using var cropped = ImageUtils.CropBitmap(currentFrame, diffArea);
+                var diffArea = _imageUtils.GetDiffArea(currentFrame, previousFrame);
+                using var cropped = _imageUtils.CropBitmap(currentFrame, diffArea);
                 using var skData = cropped.Encode(SKEncodedImageFormat.Webp, quality);
             }
             sw.Stop();
@@ -147,56 +146,14 @@ namespace Remotely.Tests
                 currentFrame.Dispose();
 
                 currentFrame = _capturer.GetNextFrame().Value;
-                var diffArea = ImageUtils.GetDiffArea(currentFrame, previousFrame);
-                using var cropped = ImageUtils.CropBitmap(currentFrame, diffArea);
+                var diffArea = _imageUtils.GetDiffArea(currentFrame, previousFrame);
+                using var cropped = _imageUtils.CropBitmap(currentFrame, diffArea);
                 using var skData = cropped.Encode(SKEncodedImageFormat.Jpeg, quality);
             }
             sw.Stop();
             Console.WriteLine($"GetNextFrame & JPEG: {GetAverage(sw, iterations)}ms per iteration");
         }
 
-        [TestMethod]
-        public void CaptureSpeedTest()
-        {
-            var iterations = 30;
-            var sw = Stopwatch.StartNew();
-
-            for (var i = 0; i < iterations; i++)
-            {
-                using var bitmap = _capturer.GetNextFrame().Value;
-            }
-
-            sw.Stop();
-
-            Console.WriteLine($"GetNextFrame: {GetAverage(sw, iterations)}ms per capture");
-
-
-
-            sw.Restart();
-
-            for (var i = 0; i < iterations; i++)
-            {
-                using var bitmap = _capturer.GetDirectXFrame().Value;
-            }
-
-            sw.Stop();
-
-            Console.WriteLine($"DirectX: {GetAverage(sw, iterations)}ms per capture");
-
-
-
-            sw.Restart();
-
-            for (var i = 0; i < iterations; i++)
-            {
-                using var bitmap = _capturer.GetBitBltFrame().Value;
-            }
-
-            sw.Stop();
-
-            Console.WriteLine($"BitBlt: {GetAverage(sw, iterations)}ms per capture");
-
-        }
 
         [TestMethod]
         public void DiffSpeedTests()
@@ -297,17 +254,16 @@ namespace Remotely.Tests
         [TestInitialize]
         public void Init()
         {
-            _conductor = new Conductor();
+            _appState = new Conductor();
             _cursorWatcher = new Mock<ICursorIconWatcher>();
             _sessionIndicator = new Mock<ISessionIndicator>();
             _clipboard = new Mock<IClipboardService>();
             _casterSocket = new Mock<ICasterSocket>();
             _audio = new Mock<IAudioCapturer>();
             _shutdown = new Mock<IShutdownService>();
-            _webrtcFactory = new Mock<IWebRtcSessionFactory>();
             _capturer = new ScreenCapturerWin();
-            _screenCaster = new ScreenCaster(_conductor, _cursorWatcher.Object, _sessionIndicator.Object, _shutdown.Object);
-            _viewer = new Viewer(_casterSocket.Object, _capturer, _clipboard.Object, _webrtcFactory.Object, _audio.Object);
+            _screenCaster = new ScreenCaster(_appState, _cursorWatcher.Object, _sessionIndicator.Object, _shutdown.Object);
+            _viewer = new Viewer(_casterSocket.Object, _capturer, _clipboard.Object, _audio.Object);
 
             _casterSocket
                 .Setup(x => x.SendDtoToViewer(It.IsAny<CaptureFrameDto>(), It.IsAny<string>()))

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
+﻿using Immense.RemoteControl.Shared.Models;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Remotely.Server.Data;
 using Remotely.Server.Models;
+using Remotely.Shared;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
@@ -216,7 +218,7 @@ namespace Remotely.Server.Services
 
         Task<Device> UpdateDevice(DeviceSetupOptions deviceOptions, string organizationId);
 
-        void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes, WebRtcSetting webRtcSetting);
+        void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes);
 
         void UpdateOrganizationName(string orgID, string organizationName);
 
@@ -1167,7 +1169,14 @@ namespace Remotely.Server.Services
 
             if (organization.BrandingInfo is null)
             {
-                organization.BrandingInfo = new BrandingInfo();
+                var brandingInfo = new BrandingInfo()
+                {
+                    OrganizationId = organizationId
+                };
+
+                dbContext.BrandingInfos.Add(brandingInfo);
+                organization.BrandingInfo = brandingInfo;
+
                 await dbContext.SaveChangesAsync();
             }
             return organization.BrandingInfo;
@@ -1728,13 +1737,14 @@ namespace Remotely.Server.Services
                .Include(x => x.BrandingInfo)
                .FirstOrDefaultAsync(x => x.ID == organizationId);
 
-            if (organization is null)
+            if (organization?.BrandingInfo is null)
             {
                 return;
             }
 
-            organization.BrandingInfo = new BrandingInfo();
-
+            var entry = dbContext.Entry(organization.BrandingInfo);
+            entry.CurrentValues.SetValues(BrandingInfoBase.Default);
+            
             await dbContext.SaveChangesAsync();
         }
 
@@ -1860,10 +1870,7 @@ namespace Remotely.Server.Services
                 return;
             }
 
-            if (organization.BrandingInfo is null)
-            {
-                organization.BrandingInfo = new BrandingInfo();
-            }
+            organization.BrandingInfo ??= new BrandingInfo();
 
             organization.BrandingInfo.Product = productName;
 
@@ -1887,7 +1894,7 @@ namespace Remotely.Server.Services
             await dbContext.SaveChangesAsync();
         }
 
-        public void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes, WebRtcSetting webRtcSetting)
+        public void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes)
         {
             using var dbContext = _appDbFactory.GetContext();
 
@@ -1913,7 +1920,6 @@ namespace Remotely.Server.Services
             device.Tags = tag;
             device.Alias = alias;
             device.Notes = notes;
-            device.WebRtcSetting = webRtcSetting;
             dbContext.SaveChanges();
         }
 

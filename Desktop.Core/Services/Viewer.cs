@@ -28,12 +28,10 @@ namespace Remotely.Desktop.Core.Services
         public Viewer(ICasterSocket casterSocket,
             IScreenCapturer screenCapturer,
             IClipboardService clipboardService,
-            IWebRtcSessionFactory webRtcSessionFactory,
             IAudioCapturer audioCapturer)
         {
             Capturer = screenCapturer;
             CasterSocket = casterSocket;
-            WebRtcSessionFactory = webRtcSessionFactory;
             ClipboardService = clipboardService;
             ClipboardService.ClipboardTextChanged += ClipboardService_ClipboardTextChanged;
             AudioCapturer = audioCapturer;
@@ -55,26 +53,9 @@ namespace Remotely.Desktop.Core.Services
             }
         }
 
-        public bool IsUsingWebRtc
-        {
-            get
-            {
-                return RtcSession?.IsPeerConnected == true && RtcSession?.IsDataChannelOpen == true;
-            }
-        }
-
-        public bool IsUsingWebRtcVideo
-        {
-            get
-            {
-                return RtcSession?.IsPeerConnected == true && RtcSession?.IsVideoTrackConnected == true;
-            }
-        }
-
         public string Name { get; set; }
         public ConcurrentQueue<SentFrame> PendingSentFrames { get; } = new();
         public TimeSpan RoundTripLatency { get; private set; }
-        public WebRtcSession RtcSession { get; set; }
 
         public string ViewerConnectionID { get; set; }
         private IAudioCapturer AudioCapturer { get; }
@@ -83,8 +64,6 @@ namespace Remotely.Desktop.Core.Services
         private ICasterSocket CasterSocket { get; }
 
         private IClipboardService ClipboardService { get; }
-
-        private IWebRtcSessionFactory WebRtcSessionFactory { get; }
 
         public void ApplyAutoQuality()
         {
@@ -146,52 +125,20 @@ namespace Remotely.Desktop.Core.Services
         public void Dispose()
         {
             DisconnectRequested = true;
-            Disposer.TryDisposeAll(RtcSession, Capturer);
+            Disposer.TryDisposeAll(Capturer);
             GC.SuppressFinalize(this);
-        }
-
-        public async Task InitializeWebRtc()
-        {
-            try
-            {
-                var iceServers = await CasterSocket.GetIceServers();
-
-                RtcSession = WebRtcSessionFactory.GetNewSession(this);
-
-                if (RtcSession is null)
-                {
-                    return;
-                }
-
-                RtcSession.LocalSdpReady += async (sender, sdp) =>
-                {
-                    await CasterSocket.SendRtcOfferToBrowser(sdp.Content, ViewerConnectionID, iceServers);
-                };
-                RtcSession.IceCandidateReady += async (sender, candidate) =>
-                {
-                    await CasterSocket.SendIceCandidateToBrowser(candidate.Content, candidate.SdpMlineIndex, candidate.SdpMid, ViewerConnectionID);
-                };
-
-                await RtcSession.Init(iceServers);
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
-            }
         }
 
         public async Task SendAudioSample(byte[] audioSample)
         {
             var dto = new AudioSampleDto(audioSample);
-            await SendToViewer(() => RtcSession.SendDto(dto),
-                () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
+            await TrySendToViewer(() => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
         }
 
         public async Task SendClipboardText(string clipboardText)
         {
             var dto = new ClipboardTextDto(clipboardText);
-            await SendToViewer(() => RtcSession.SendDto(dto),
-                () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
+            await TrySendToViewer(() => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
         }
 
         public async Task SendCtrlAltDel()
@@ -207,8 +154,7 @@ namespace Remotely.Desktop.Core.Services
             }
 
             var dto = new CursorChangeDto(cursorInfo.ImageBytes, cursorInfo.HotSpot.X, cursorInfo.HotSpot.Y, cursorInfo.CssOverride);
-            await SendToViewer(() => RtcSession.SendDto(dto),
-                () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
+            await TrySendToViewer(() => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
         }
         public async Task SendFile(FileUpload fileUpload, CancellationToken cancelToken, Action<double> progressUpdateCallback)
         {
@@ -223,8 +169,7 @@ namespace Remotely.Desktop.Core.Services
                     StartOfFile = true
                 };
 
-                await SendToViewer(async () => await RtcSession.SendDto(fileDto),
-                    async () => await CasterSocket.SendDtoToViewer(fileDto, ViewerConnectionID));
+                await TrySendToViewer(async () => await CasterSocket.SendDtoToViewer(fileDto, ViewerConnectionID));
 
                 using var fs = File.OpenRead(fileUpload.FilePath);
                 using var br = new BinaryReader(fs);
@@ -242,9 +187,7 @@ namespace Remotely.Desktop.Core.Services
                         MessageId = messageId
                     };
 
-                    await SendToViewer(
-                        async () => await RtcSession.SendDto(fileDto),
-                        async () => await CasterSocket.SendDtoToViewer(fileDto, ViewerConnectionID));
+                    await TrySendToViewer(async () => await CasterSocket.SendDtoToViewer(fileDto, ViewerConnectionID));
 
                     progressUpdateCallback((double)fs.Position / fs.Length);
                 }
@@ -257,8 +200,7 @@ namespace Remotely.Desktop.Core.Services
                     StartOfFile = false
                 };
 
-                await SendToViewer(async () => await RtcSession.SendDto(fileDto),
-                    async () => await CasterSocket.SendDtoToViewer(fileDto, ViewerConnectionID));
+                await TrySendToViewer(async () => await CasterSocket.SendDtoToViewer(fileDto, ViewerConnectionID));
 
                 progressUpdateCallback(1);
             }
@@ -296,9 +238,7 @@ namespace Remotely.Desktop.Core.Services
                     ImageBytes = chunk
                 };
 
-                await SendToViewer(
-                      () => RtcSession.SendDto(dto),
-                      () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
+                await TrySendToViewer(() => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
             }
         }
 
@@ -316,15 +256,13 @@ namespace Remotely.Desktop.Core.Services
                 ScreenWidth = screenWidth,
                 ScreenHeight = screenHeight
             };
-            await SendToViewer(() => RtcSession.SendDto(dto),
-                () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
+            await TrySendToViewer(() => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
         }
 
         public async Task SendScreenSize(int width, int height)
         {
             var dto = new ScreenSizeDto(width, height);
-            await SendToViewer(() => RtcSession.SendDto(dto),
-                 () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
+            await TrySendToViewer(() => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
         }
 
         public async Task SendViewerConnected()
@@ -337,13 +275,8 @@ namespace Remotely.Desktop.Core.Services
             if (EnvironmentHelper.IsWindows)
             {
                 var dto = new WindowsSessionsDto(Win32Interop.GetActiveSessions());
-                await SendToViewer(() => RtcSession.SendDto(dto),
-                    () => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
+                await TrySendToViewer(() => CasterSocket.SendDtoToViewer(dto, ViewerConnectionID));
             }
-        }
-        public void ToggleWebRtcVideo(bool toggleOn)
-        {
-            RtcSession.ToggleWebRtcVideo(toggleOn);
         }
 
         private async void AudioCapturer_AudioSampleReady(object sender, byte[] sample)
@@ -356,18 +289,11 @@ namespace Remotely.Desktop.Core.Services
             await SendClipboardText(clipboardText);
         }
 
-        private Task SendToViewer(Func<Task> webRtcSend, Func<Task> websocketSend)
+        private Task TrySendToViewer(Func<Task> websocketSend)
         {
             try
             {
-                if (IsUsingWebRtc)
-                {
-                    return webRtcSend();
-                }
-                else
-                {
-                    return websocketSend();
-                }
+                return websocketSend();
             }
             catch (Exception ex)
             {

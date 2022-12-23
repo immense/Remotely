@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using Immense.RemoteControl.Shared.Models;
+using Microsoft.AspNetCore.SignalR.Client;
 using Remotely.Agent.Interfaces;
 using Remotely.Agent.Models;
 using Remotely.Shared.Models;
@@ -16,13 +17,15 @@ namespace Remotely.Agent.Services
 {
     public class ChatClientService
     {
+        private readonly IAppLauncher _appLauncher;
+        private readonly MemoryCache _chatClients = new("ChatClients");
+        private readonly SemaphoreSlim _messageLock = new(1,1);
+
         public ChatClientService(IAppLauncher appLauncher)
         {
-            AppLauncher = appLauncher;
+            _appLauncher = appLauncher;
         }
 
-        private SemaphoreSlim MessageLock { get; } = new(1,1);
-        private IAppLauncher AppLauncher { get; }
         private CacheItemPolicy CacheItemPolicy { get; } = new()
         {
             SlidingExpiration = TimeSpan.FromMinutes(10),
@@ -34,16 +37,17 @@ namespace Remotely.Agent.Services
             })
         };
 
-        private MemoryCache ChatClients { get; } = new("ChatClients");
 
-        public async Task SendMessage(string senderName,
+        public async Task SendMessage(
+            string senderName,
             string message,
             string orgName,
+            string orgId,
             bool disconnected,
             string senderConnectionID,
             HubConnection hubConnection)
         {
-            if (!await MessageLock.WaitAsync(30000))
+            if (!await _messageLock.WaitAsync(30000))
             {
                 Logger.Write("Timed out waiting for chat message lock.", Shared.Enums.EventType.Warning);
                 return;
@@ -52,7 +56,7 @@ namespace Remotely.Agent.Services
             try
             {
                 ChatSession chatSession;
-                if (!ChatClients.Contains(senderConnectionID))
+                if (!_chatClients.Contains(senderConnectionID))
                 {
                     if (disconnected)
                     {
@@ -60,7 +64,8 @@ namespace Remotely.Agent.Services
                         return;
                     }
 
-                    var procID = await AppLauncher.LaunchChatService(orgName, senderConnectionID, hubConnection);
+                    var pipeName = Guid.NewGuid().ToString();
+                    var procID = await _appLauncher.LaunchChatService(pipeName, senderConnectionID, senderName, orgName, orgId, hubConnection);
 
                     if (procID > 0)
                     {
@@ -72,7 +77,7 @@ namespace Remotely.Agent.Services
                         return;
                     }
 
-                    var clientPipe = new NamedPipeClientStream(".", "Remotely_Chat" + senderConnectionID, PipeDirection.InOut, PipeOptions.Asynchronous);
+                    var clientPipe = new NamedPipeClientStream(".", pipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
                     clientPipe.Connect(15000);
                     if (!clientPipe.IsConnected)
                     {
@@ -81,14 +86,14 @@ namespace Remotely.Agent.Services
                     }
                     chatSession = new ChatSession() { PipeStream = clientPipe, ProcessID = procID };
                     _ = Task.Run(async () => { await ReadFromStream(chatSession.PipeStream, senderConnectionID, hubConnection); });
-                    ChatClients.Add(senderConnectionID, chatSession, CacheItemPolicy);
+                    _chatClients.Add(senderConnectionID, chatSession, CacheItemPolicy);
                 }
 
-                chatSession = (ChatSession)ChatClients.Get(senderConnectionID);
+                chatSession = (ChatSession)_chatClients.Get(senderConnectionID);
 
                 if (!chatSession.PipeStream.IsConnected)
                 {
-                    ChatClients.Remove(senderConnectionID);
+                    _chatClients.Remove(senderConnectionID);
                     await hubConnection.SendAsync("DisplayMessage", "Chat disconnected.  Please try again.", "Chat disconnected.", "bg-warning", senderConnectionID);
                     return;
                 }
@@ -104,7 +109,7 @@ namespace Remotely.Agent.Services
             }
             finally
             {
-                MessageLock.Release();
+                _messageLock.Release();
             }
         }
 
@@ -121,7 +126,7 @@ namespace Remotely.Agent.Services
                 }
             }
             await hubConnection.SendAsync("Chat", string.Empty, true, senderConnectionID);
-            ChatClients.Remove(senderConnectionID);
+            _chatClients.Remove(senderConnectionID);
         }
     }
 }

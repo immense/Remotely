@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Immense.RemoteControl.Server.Abstractions;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Build.Framework;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Remotely.Server.Components;
 using Remotely.Server.Hubs;
 using Remotely.Server.Services;
@@ -13,6 +16,7 @@ using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -105,9 +109,6 @@ namespace Remotely.Server.Pages
 
         [Display(Name = "Use HSTS")]
         public bool UseHsts { get; set; }
-
-        [Display(Name = "Use WebRTC")]
-        public bool UseWebRtc { get; set; }
     }
 
     public class ConnectionStringsModel
@@ -141,7 +142,7 @@ namespace Remotely.Server.Pages
 
 
         [Inject]
-        private IHubContext<AgentHub> AgentHubContext { get; set; }
+        private IHubContext<ServiceHub> AgentHubContext { get; set; }
 
         [Inject]
         private IConfiguration Configuration { get; set; }
@@ -156,6 +157,12 @@ namespace Remotely.Server.Pages
 
         [Inject]
         private IWebHostEnvironment HostEnv { get; set; }
+
+        [Inject]
+        private ILogger<ServerConfig> Logger { get; set; }
+
+        [Inject]
+        private IServiceHubSessionCache ServiceSessionCache { get; init; }
 
         private AppSettingsModel Input { get; } = new();
 
@@ -229,12 +236,28 @@ namespace Remotely.Server.Pages
 
         private IEnumerable<string> GetOutdatedDevices()
         {
-            var highestVersion = AgentHub.ServiceConnections.Values.Max(x =>
-                Version.TryParse(x.AgentVersion, out var result) ? result : default);
+            try
+            {
+                if (!System.IO.File.Exists("Remotely_Server.dll"))
+                {
+                    return Enumerable.Empty<string>();
+                }
 
-            return AgentHub.ServiceConnections.Values
-                .Where(x => Version.TryParse(x.AgentVersion, out var result) && result != highestVersion)
-                .Select(x => x.ID);
+                if (!Version.TryParse(FileVersionInfo.GetVersionInfo("Remotely_Server.dll").FileVersion, out var serverVersion))
+                {
+                    return Enumerable.Empty<string>();
+                }
+
+                return ServiceSessionCache.GetAllDevices()
+                    .Where(x => Version.TryParse(x.AgentVersion, out var result) && result < serverVersion)
+                    .Select(x => x.ID);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error while getting outdated devices.");
+            }
+
+            return Enumerable.Empty<string>();
         }
 
         private void HandleBannedDeviceKeyDown(KeyboardEventArgs args)
@@ -393,17 +416,15 @@ namespace Remotely.Server.Pages
                 return;
             }
 
-            var outdatedDevices = OutdatedDevices;
-
-            if (!outdatedDevices.Any())
+            if (!OutdatedDevices.Any())
             {
                 ToastService.ShowToast("No agents need updating.");
                 return;
             }
 
-            var agentConnections = AgentHub.ServiceConnections.Where(x => outdatedDevices.Contains(x.Value.ID));
+            var agentConnections = ServiceSessionCache.GetConnectionIdsByDeviceIds(OutdatedDevices);
 
-            await AgentHubContext.Clients.Clients(agentConnections.Select(x => x.Key)).SendAsync("ReinstallAgent");
+            await AgentHubContext.Clients.Clients(agentConnections).SendAsync("ReinstallAgent");
             ToastService.ShowToast("Update command sent.");
         }
     }

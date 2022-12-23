@@ -16,7 +16,7 @@
     <Product>Remotely Desktop</Product>
     <PackageProjectUrl>https://remotely.one</PackageProjectUrl>
     <Platforms>AnyCPU;x86;x64</Platforms>
-    <StartupObject>Remotely.Desktop.Win.App</StartupObject>
+    <StartupObject></StartupObject>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
@@ -38,7 +38,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.MixedReality.WebRTC" Version="2.0.2" />
     <PackageReference Include="NAudio" Version="2.1.0" />
     <PackageReference Include="SharpDX" Version="4.2.0" />
     <PackageReference Include="SharpDX.Direct3D11" Version="4.2.0" />
@@ -46,43 +45,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Desktop.Core\Desktop.Core.csproj" />
+    <ProjectReference Include="..\Desktop.Shared\Desktop.Shared.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
+    <ProjectReference Include="..\submodules\Immense.RemoteControl\Desktop.Windows\Desktop.Windows.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Assets\favicon.ico" />
     <EmbeddedResource Include="Assets\Remotely_Icon.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ApplicationDefinition Update="App.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </ApplicationDefinition>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="App.xaml.cs">
-      <SubType>Code</SubType>
-      <DependentUpon>App.xaml</DependentUpon>
-    </Compile>
-    <Compile Update="Views\HostNamePrompt.xaml.cs">
-      <DependentUpon>HostNamePrompt.xaml</DependentUpon>
-    </Compile>
-    <Compile Update="Views\MainWindow.xaml.cs">
-      <SubType>Code</SubType>
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Update="Views\HostNamePrompt.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Views\MainWindow.xaml">
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

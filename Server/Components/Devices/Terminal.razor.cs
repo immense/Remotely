@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Immense.RemoteControl.Server.Abstractions;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Logging;
@@ -54,6 +55,7 @@ namespace Remotely.Server.Components.Devices
 
         [Inject]
         private ILogger<Terminal> Logger { get; set; }
+
 
         [Inject]
         private IModalService ModalService { get; set; }
@@ -161,7 +163,7 @@ namespace Remotely.Server.Components.Devices
         private void DisplayCompletions(List<PwshCompletionResult> completionMatches)
         {
             var deviceId = AppState.DevicesFrameSelectedDevices.FirstOrDefault();
-            var device = AgentHub.GetDevice(deviceId);
+            var device = DataService.GetDevice(deviceId);
 
             AppState.AddTerminalLine($"Completions for {device?.DeviceName}", className: "font-weight-bold");
 

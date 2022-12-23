@@ -1,21 +1,26 @@
 ﻿@page
+@using Immense.RemoteControl.Server.Services
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.SignalR
 @using Remotely.Server.Hubs
+@using Immense.RemoteControl.Server.Hubs
+
 @attribute [IgnoreAntiforgeryToken]
 @inject SignInManager<RemotelyUser> SignInManager
-@inject IHubContext<CasterHub> CasterHubContext
+@inject IHubContext<DesktopHub> DesktopHubContext
 @inject IHubContext<ViewerHub> ViewerHubContext
+@inject IDesktopHubSessionCache DesktopSessionCache
+
 @functions {
     public async Task<IActionResult> OnPost()
     {
         if (SignInManager.IsSignedIn(User))
         {
-            var activeSessions = CasterHub.SessionInfoList.Where(x => x.Value.RequesterUserName == HttpContext.User.Identity.Name);
+            var activeSessions = DesktopSessionCache.Sessions.Where(x => x.Value.RequesterUserName == HttpContext.User.Identity.Name);
             foreach (var session in activeSessions)
             {
-                await CasterHubContext.Clients.Client(session.Value.CasterSocketID).SendAsync("Disconnect", "User logged out.");
-                await ViewerHubContext.Clients.Client(session.Value.RequesterSocketID).SendAsync("ConnectionFailed");
+                await DesktopHubContext.Clients.Client(session.Value.DesktopConnectionId).SendAsync("Disconnect", "User logged out.");
+                await ViewerHubContext.Clients.Clients(session.Value.ViewerList).SendAsync("ConnectionFailed");
             }
 
             await SignInManager.SignOutAsync();

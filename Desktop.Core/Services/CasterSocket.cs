@@ -19,7 +19,6 @@ namespace Remotely.Desktop.Core.Services
         Task Disconnect();
         Task DisconnectAllViewers();
         Task DisconnectViewer(Viewer viewer, bool notifyViewer);
-        Task<IceServerModel[]> GetIceServers();
         Task<string> GetSessionID();
         Task NotifyRequesterUnattendedReady(string requesterID);
         Task NotifyViewersRelaunchedScreenCasterReady(string[] viewerIDs);
@@ -28,9 +27,7 @@ namespace Remotely.Desktop.Core.Services
         Task SendCtrlAltDelToAgent();
         Task SendDeviceInfo(string serviceID, string machineName, string deviceID);
         Task SendDtoToViewer<T>(T dto, string viewerId);
-        Task SendIceCandidateToBrowser(string candidate, int sdpMlineIndex, string sdpMid, string viewerConnectionID);
         Task SendMessageToViewer(string viewerID, string message);
-        Task SendRtcOfferToBrowser(string sdp, string viewerID, IceServerModel[] iceServers);
         Task SendViewerConnected(string viewerConnectionId);
     }
 
@@ -69,7 +66,7 @@ namespace Remotely.Desktop.Core.Services
                     catch { }
                 }
                 Connection = new HubConnectionBuilder()
-                    .WithUrl($"{host.Trim().TrimEnd('/')}/CasterHub")
+                    .WithUrl($"{host.Trim().TrimEnd('/')}/hubs/desktop")
                     .AddMessagePackProtocol()
                     .WithAutomaticReconnect()
                     .Build();
@@ -113,11 +110,6 @@ namespace Remotely.Desktop.Core.Services
             viewer.DisconnectRequested = true;
             viewer.Dispose();
             return Connection.SendAsync("DisconnectViewer", viewer.ViewerConnectionID, notifyViewer);
-        }
-
-        public async Task<IceServerModel[]> GetIceServers()
-        {
-            return await Connection.InvokeAsync<IceServerModel[]>("GetIceServers");
         }
 
         public async Task<string> GetSessionID()
@@ -164,15 +156,7 @@ namespace Remotely.Desktop.Core.Services
             var serializedDto = MessagePack.MessagePackSerializer.Serialize(dto);
             return Connection.SendAsync("SendDtoToBrowser", serializedDto, viewerId);
         }
-        public Task SendIceCandidateToBrowser(string candidate, int sdpMlineIndex, string sdpMid, string viewerConnectionID)
-        {
-            return Connection.SendAsync("SendIceCandidateToBrowser", candidate, sdpMlineIndex, sdpMid, viewerConnectionID);
-        }
 
-        public Task SendRtcOfferToBrowser(string sdp, string viewerID, IceServerModel[] iceServers)
-        {
-            return Connection.SendAsync("SendRtcOfferToBrowser", sdp, viewerID, iceServers);
-        }
         public Task SendViewerConnected(string viewerConnectionId)
         {
             return Connection.SendAsync("ViewerConnected", viewerConnectionId);
@@ -200,7 +184,6 @@ namespace Remotely.Desktop.Core.Services
                 string requesterName,
                 bool notifyUser,
                 bool enforceAttendedAccess,
-                bool useWebRtc,
                 string organizationName) =>
             {
                 try
@@ -224,8 +207,7 @@ namespace Remotely.Desktop.Core.Services
                     {
                         NotifyUser = notifyUser,
                         ViewerID = viewerID,
-                        RequesterName = requesterName,
-                        UseWebRtc = useWebRtc
+                        RequesterName = requesterName
                     });
                 }
                 catch (Exception ex)
@@ -235,45 +217,13 @@ namespace Remotely.Desktop.Core.Services
             });
 
 
-            Connection.On("ReceiveIceCandidate", (string candidate, int sdpMlineIndex, string sdpMid, string viewerID) =>
-            {
-                try
-                {
-                    if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
-                    {
-                        viewer.RtcSession.AddIceCandidate(sdpMid, sdpMlineIndex, candidate);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.Write(ex);
-                }
-
-            });
-
-            Connection.On("ReceiveRtcAnswer", async (string sdp, string viewerID) =>
-            {
-                try
-                {
-                    if (conductor.Viewers.TryGetValue(viewerID, out var viewer))
-                    {
-                        await viewer.RtcSession.SetRemoteDescription("answer", sdp);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.Write(ex);
-                }
-            });
-
-            Connection.On("RequestScreenCast", (string viewerID, string requesterName, bool notifyUser, bool useWebRtc) =>
+            Connection.On("RequestScreenCast", (string viewerID, string requesterName, bool notifyUser) =>
             {
                 conductor.InvokeScreenCastRequested(new ScreenCastRequest()
                 {
                     NotifyUser = notifyUser,
                     ViewerID = viewerID,
-                    RequesterName = requesterName,
-                    UseWebRtc = useWebRtc
+                    RequesterName = requesterName
                 });
             });
 

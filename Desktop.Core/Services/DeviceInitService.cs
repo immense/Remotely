@@ -18,15 +18,13 @@ namespace Remotely.Desktop.Core.Services
 {
     public interface IDeviceInitService
     {
-        BrandingInfo BrandingInfo { get; }
-
-        Task GetInitParams();
+        Task<BrandingInfo> GetBrandingInfo();
         void SetBrandingInfo(BrandingInfo branding);
     }
 
     public class DeviceInitService : IDeviceInitService
     {
-        private static BrandingInfo _brandingInfo;
+        private static BrandingInfo _brandingInfo = new();
 
         private readonly Conductor _conductor;
         private readonly IConfigService _configService;
@@ -36,14 +34,13 @@ namespace Remotely.Desktop.Core.Services
             _configService = configService;
         }
 
-        public BrandingInfo BrandingInfo => _brandingInfo;
-        public async Task GetInitParams()
+        public async Task<BrandingInfo> GetBrandingInfo()
         {
             try
             {
-                if (_brandingInfo != null)
+                if (_brandingInfo is not null)
                 {
-                    return;
+                    return _brandingInfo;
                 }
 
                 using var httpClient = new HttpClient();
@@ -81,7 +78,7 @@ namespace Remotely.Desktop.Core.Services
 
                                 var brandingUrl = $"{config.Host.TrimEnd('/')}/api/branding/{config.OrganizationId}";
                                 _brandingInfo = await httpClient.GetFromJsonAsync<BrandingInfo>(brandingUrl).ConfigureAwait(false);
-                                return;
+                                return _brandingInfo;
                             }
                         }
                     }
@@ -100,6 +97,8 @@ namespace Remotely.Desktop.Core.Services
             {
                 Logger.Write(ex, "Failed to resolve init params.", Shared.Enums.EventType.Warning);
             }
+
+            return _brandingInfo;
         }
 
         public void SetBrandingInfo(BrandingInfo branding)

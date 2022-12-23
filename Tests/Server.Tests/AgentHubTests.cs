@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http.Features;
+﻿using Immense.RemoteControl.Server.Abstractions;
+using Immense.RemoteControl.Server.Hubs;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -36,10 +38,11 @@ namespace Remotely.Tests
             var appConfig = new Mock<IApplicationConfig>();
             var viewerHub = new Mock<IHubContext<ViewerHub>>();
             var expiringTokenService = new Mock<IExpiringTokenService>();
+            var serviceSessionCache = new Mock<IServiceHubSessionCache>();
 
             appConfig.Setup(x => x.BannedDevices).Returns(new string[] { _testData.Device1.DeviceName });
 
-            var hub = new AgentHub(DataService, appConfig.Object, viewerHub.Object, circuitManager.Object, expiringTokenService.Object);
+            var hub = new ServiceHub(DataService, appConfig.Object, serviceSessionCache.Object, viewerHub.Object, circuitManager.Object, expiringTokenService.Object);
 
             var hubClients = new Mock<IHubCallerClients>();
             var caller = new Mock<IClientProxy>();
@@ -62,10 +65,11 @@ namespace Remotely.Tests
             var appConfig = new Mock<IApplicationConfig>();
             var viewerHub = new Mock<IHubContext<ViewerHub>>();
             var expiringTokenService = new Mock<IExpiringTokenService>();
+            var serviceSessionCache = new Mock<IServiceHubSessionCache>();
 
             appConfig.Setup(x => x.BannedDevices).Returns(new string[] { _testData.Device1.ID });
 
-            var hub = new AgentHub(DataService, appConfig.Object, viewerHub.Object, circuitManager.Object, expiringTokenService.Object);
+            var hub = new ServiceHub(DataService, appConfig.Object, serviceSessionCache.Object, viewerHub.Object, circuitManager.Object, expiringTokenService.Object);
 
             var hubClients = new Mock<IHubCallerClients>();
             var caller = new Mock<IClientProxy>();
@@ -90,12 +94,13 @@ namespace Remotely.Tests
             circuitConnection.Setup(x => x.User).Returns(_testData.Admin1);
             var browserHubClients = new Mock<IHubClients>();
             var expiringTokenService = new Mock<IExpiringTokenService>();
+            var serviceSessionCache = new Mock<IServiceHubSessionCache>();
 
             var viewerHub = new Mock<IHubContext<ViewerHub>>();
 
             appConfig.Setup(x => x.BannedDevices).Returns(Array.Empty<string>());
 
-            var hub = new AgentHub(DataService, appConfig.Object, viewerHub.Object, circuitManager.Object, expiringTokenService.Object)
+            var hub = new ServiceHub(DataService, appConfig.Object, serviceSessionCache.Object, viewerHub.Object, circuitManager.Object, expiringTokenService.Object)
             {
                 Context = new CallerContext()
             };

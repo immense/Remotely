@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Immense.RemoteControl.Server.Abstractions;
+using Immense.RemoteControl.Server.Services;
+using Immense.RemoteControl.Shared.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.AspNetCore.Identity;
@@ -7,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Remotely.Server.Auth;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
+using Remotely.Shared;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
@@ -36,7 +40,7 @@ namespace Remotely.Server.Hubs
         Task InvokeCircuitEvent(CircuitEventName eventName, params object[] args);
         Task ReinstallAgents(string[] deviceIDs);
 
-        Task<bool> RemoteControl(string deviceID);
+        Task<bool> RemoteControl(string deviceID, bool viewOnly);
 
         Task RemoveDevices(string[] deviceIDs);
 
@@ -54,7 +58,7 @@ namespace Remotely.Server.Hubs
 
     public class CircuitConnection : CircuitHandler, ICircuitConnection
     {
-        private readonly IHubContext<AgentHub> _agentHubContext;
+        private readonly IHubContext<ServiceHub> _agentHubContext;
         private readonly IApplicationConfig _appConfig;
         private readonly IClientAppState _appState;
         private readonly IAuthService _authService;
@@ -62,17 +66,21 @@ namespace Remotely.Server.Hubs
         private readonly IDataService _dataService;
         private readonly ConcurrentQueue<CircuitEvent> _eventQueue = new();
         private readonly IExpiringTokenService _expiringTokenService;
+        private readonly IDesktopHubSessionCache _desktopSessionCache;
+        private readonly IServiceHubSessionCache _serviceSessionCache;
         private readonly ILogger<CircuitConnection> _logger;
         private readonly IToastService _toastService;
         public CircuitConnection(
             IAuthService authService,
             IDataService dataService,
             IClientAppState appState,
-            IHubContext<AgentHub> agentHubContext,
+            IHubContext<ServiceHub> agentHubContext,
             IApplicationConfig appConfig,
             ICircuitManager circuitManager,
             IToastService toastService,
             IExpiringTokenService expiringTokenService,
+            IDesktopHubSessionCache desktopSessionCache,
+            IServiceHubSessionCache serviceSessionCache,
             ILogger<CircuitConnection> logger)
         {
             _dataService = dataService;
@@ -83,6 +91,8 @@ namespace Remotely.Server.Hubs
             _circuitManager = circuitManager;
             _toastService = toastService;
             _expiringTokenService = expiringTokenService;
+            _desktopSessionCache = desktopSessionCache;
+            _serviceSessionCache = serviceSessionCache;
             _logger = logger;
         }
 
@@ -112,7 +122,7 @@ namespace Remotely.Server.Hubs
         public Task ExecuteCommandOnAgent(ScriptingShell shell, string command, string[] deviceIDs)
         {
             deviceIDs = _dataService.FilterDeviceIDsByUserPermission(deviceIDs, User);
-            var connections = GetActiveClientConnections(deviceIDs);
+            var connections = GetActiveConnectionsForUserOrg(deviceIDs);
 
             _logger.LogInformation("Command executed by {username}.  Shell: {shell}.  Command: {command}.  Devices: {deviceIds}",
                   User.UserName,
@@ -124,7 +134,7 @@ namespace Remotely.Server.Hubs
 
             foreach (var connection in connections)
             {
-                _agentHubContext.Clients.Client(connection.Key).SendAsync("ExecuteCommand",
+                _agentHubContext.Clients.Client(connection).SendAsync("ExecuteCommand",
                     shell,
                     command,
                     authTokenForUploadingResults,
@@ -187,32 +197,34 @@ namespace Remotely.Server.Hubs
         public Task ReinstallAgents(string[] deviceIDs)
         {
             deviceIDs = _dataService.FilterDeviceIDsByUserPermission(deviceIDs, User);
-            var connections = GetActiveClientConnections(deviceIDs);
+            var connections = GetActiveConnectionsForUserOrg(deviceIDs);
             foreach (var connection in connections)
             {
-                _agentHubContext.Clients.Client(connection.Key).SendAsync("ReinstallAgent");
+                _agentHubContext.Clients.Client(connection).SendAsync("ReinstallAgent");
             }
             _dataService.RemoveDevices(deviceIDs);
             return Task.CompletedTask;
         }
 
-        public async Task<bool> RemoteControl(string deviceID)
+        public async Task<bool> RemoteControl(string deviceId, bool viewOnly)
         {
-            var targetDevice = AgentHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == deviceID);
-
-            if (targetDevice.Value is null)
+            if (!_serviceSessionCache.TryGetByDeviceId(deviceId, out var targetDevice))
             {
                 MessageReceived?.Invoke(this, new CircuitEvent(CircuitEventName.DisplayMessage,
-                    "The selected device is not online.",
-                    "Device is not online.",
-                    "bg-warning"));
+                     "The selected device is not online.",
+                     "Device is not online.",
+                     "bg-warning"));
                 return false;
             }
+          
 
-            if (_dataService.DoesUserHaveAccessToDevice(deviceID, User))
+            if (_dataService.DoesUserHaveAccessToDevice(deviceId, User))
             {
-                var currentUsers = CasterHub.SessionInfoList.Count(x => x.Value.OrganizationID == User.OrganizationID);
-                if (currentUsers >= _appConfig.RemoteControlSessionLimit)
+                var sessionCount = _desktopSessionCache.Sessions.Values
+                    .OfType<RemoteControlSessionEx>()
+                    .Count(x => x.OrganizationId == User.OrganizationID);
+
+                if (sessionCount >= _appConfig.RemoteControlSessionLimit)
                 {
                     MessageReceived?.Invoke(this, new CircuitEvent(CircuitEventName.DisplayMessage,
                         "There are already the maximum amount of active remote control sessions for your organization.",
@@ -220,12 +232,46 @@ namespace Remotely.Server.Hubs
                         "bg-warning"));
                     return false;
                 }
-                await _agentHubContext.Clients.Client(targetDevice.Key).SendAsync("RemoteControl", ConnectionId, targetDevice.Key);
+
+                if (!_serviceSessionCache.TryGetConnectionId(targetDevice.ID, out var serviceConnectionId))
+                {
+                    MessageReceived?.Invoke(this, new CircuitEvent(CircuitEventName.DisplayMessage,
+                       "Service connection not found.",
+                       "Service connection not found.",
+                       "bg-warning"));
+                    return false;
+                }
+
+                var sessionId = Guid.NewGuid().ToString();
+                var accessKey = RandomGenerator.GenerateAccessKey();
+
+                var session = new RemoteControlSessionEx()
+                {
+                    UnattendedSessionId = sessionId,
+                    UserConnectionId = ConnectionId,
+                    ServiceConnectionId = serviceConnectionId,
+                    DeviceId = deviceId,
+                    ViewOnly = viewOnly,
+                    OrganizationId = User.OrganizationID
+                };
+
+                _desktopSessionCache.Sessions.AddOrUpdate(sessionId, session, (k, v) => session);
+
+                var organization = _dataService.GetOrganizationNameByUserName(User.UserName);
+                await _agentHubContext.Clients.Client(serviceConnectionId).SendAsync("RemoteControl", 
+                    sessionId, 
+                    accessKey, 
+                    ConnectionId, 
+                    User.UserOptions.DisplayName, 
+                    organization, 
+                    User.OrganizationID);
+
                 return true;
             }
             else
             {
-                _dataService.WriteEvent($"Remote control attempted by unauthorized user.  Device ID: {deviceID}.  User Name: {User.UserName}.", EventType.Warning, targetDevice.Value.OrganizationID);
+                var device = _dataService.GetDevice(targetDevice.ID);
+                _dataService.WriteEvent($"Remote control attempted by unauthorized user.  Device ID: {deviceId}.  User Name: {User.UserName}.", EventType.Warning, device?.OrganizationID);
                 return false;
             }
         }
@@ -252,7 +298,7 @@ namespace Remotely.Server.Hubs
            
             var authToken = _expiringTokenService.GetToken(Time.Now.AddMinutes(AppConstants.ScriptRunExpirationMinutes));
 
-            var connectionIds = AgentHub.ServiceConnections.Where(x => deviceIds.Contains(x.Value.ID)).Select(x=>x.Key);
+            var connectionIds = _serviceSessionCache.GetConnectionIdsByDeviceIds(deviceIds).ToArray();
 
             if (connectionIds.Any())
             {
@@ -268,36 +314,37 @@ namespace Remotely.Server.Hubs
                 return Task.CompletedTask;
             }
 
-            var connection = AgentHub.ServiceConnections.FirstOrDefault(x =>
-                x.Value.OrganizationID == User.OrganizationID &&
-                x.Value.ID == deviceId
-            );
-
-            if (connection.Value is null)
+            if (!_serviceSessionCache.TryGetByDeviceId(deviceId, out var device) ||
+                !_serviceSessionCache.TryGetConnectionId(deviceId, out var connectionId))
             {
                 _toastService.ShowToast("Device not found.");
                 return Task.CompletedTask;
             }
 
+            if (device.OrganizationID != User.OrganizationID)
+            {
+                _toastService.ShowToast("Unauthorized.");
+                return Task.CompletedTask;
+            }
+
             var organizationName = _dataService.GetOrganizationNameByUserName(User.UserName);
 
-            return _agentHubContext.Clients.Client(connection.Key).SendAsync("Chat",
+            return _agentHubContext.Clients.Client(connectionId).SendAsync("Chat",
                 User.UserOptions.DisplayName ?? User.UserName,
                 message,
                 organizationName,
+                User.OrganizationID,
                 false,
                 ConnectionId);
         }
 
         public async Task<bool> TransferFileFromBrowserToAgent(string deviceId, string transferId, string[] fileIds)
         {
-            var serviceConnection = AgentHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == deviceId);
-
-            if (serviceConnection.Value is null)
+            if (!_serviceSessionCache.TryGetConnectionId(deviceId, out var connectionId))
             {
                 return false;
             }
-
+            
             if (!_dataService.DoesUserHaveAccessToDevice(deviceId, User))
             {
                 _logger.LogWarning("User {username} does not have access to device ID {deviceId} and attempted file upload.",
@@ -309,7 +356,7 @@ namespace Remotely.Server.Hubs
 
             var authToken = _expiringTokenService.GetToken(Time.Now.AddMinutes(5));
 
-            await _agentHubContext.Clients.Client(serviceConnection.Key).SendAsync(
+            await _agentHubContext.Clients.Client(connectionId).SendAsync(
                 "TransferFileFromBrowserToAgent",
                 transferId,
                 fileIds,
@@ -334,10 +381,10 @@ namespace Remotely.Server.Hubs
         public Task UninstallAgents(string[] deviceIDs)
         {
             deviceIDs = _dataService.FilterDeviceIDsByUserPermission(deviceIDs, User);
-            var connections = GetActiveClientConnections(deviceIDs);
+            var connections = GetActiveConnectionsForUserOrg(deviceIDs);
             foreach (var connection in connections)
             {
-                _agentHubContext.Clients.Client(connection.Key).SendAsync("UninstallAgent");
+                _agentHubContext.Clients.Client(connection).SendAsync("UninstallAgent");
             }
             _dataService.RemoveDevices(deviceIDs);
             return Task.CompletedTask;
@@ -373,10 +420,10 @@ namespace Remotely.Server.Hubs
                 OrganizationID = User.OrganizationID
             });
             deviceIDs = _dataService.FilterDeviceIDsByUserPermission(deviceIDs, User);
-            var connections = GetActiveClientConnections(deviceIDs);
+            var connections = GetActiveConnectionsForUserOrg(deviceIDs);
             foreach (var connection in connections)
             {
-                _agentHubContext.Clients.Client(connection.Key).SendAsync("UploadFiles", transferID, fileIDs, ConnectionId);
+                _agentHubContext.Clients.Client(connection).SendAsync("UploadFiles", transferID, fileIDs, ConnectionId);
             }
             return Task.CompletedTask;
         }
@@ -385,30 +432,40 @@ namespace Remotely.Server.Hubs
         {
             if (string.IsNullOrWhiteSpace(deviceId))
             {
-                return (false, null);
+                return (false, string.Empty);
             }
 
-            var kvp = AgentHub.ServiceConnections.FirstOrDefault(x => x.Value.ID == deviceId);
-
-            if (kvp.Value is null)
+            if (!_serviceSessionCache.TryGetByDeviceId(deviceId, out var device) ||
+                !_dataService.DoesUserHaveAccessToDevice(device.ID, User) ||
+                !_serviceSessionCache.TryGetConnectionId(device.ID, out var connectionId))
             {
-                return (false, null);
+                return (false, string.Empty);
             }
+  
 
-            if (!_dataService.DoesUserHaveAccessToDevice(kvp.Value.ID, User))
-            {
-                return (false, null);
-            }
-
-            return (true, kvp.Key);
+            return (true, connectionId);
         }
 
-        private IEnumerable<KeyValuePair<string, Device>> GetActiveClientConnections(IEnumerable<string> deviceIDs)
+        private IEnumerable<string> GetActiveConnectionsForUserOrg(IEnumerable<string> deviceIds)
         {
-            return AgentHub.ServiceConnections.Where(x =>
-                x.Value.OrganizationID == User.OrganizationID &&
-                deviceIDs.Contains(x.Value.ID)
-            );
+
+            foreach (var deviceId in deviceIds)
+            {
+                if (!_serviceSessionCache.TryGetByDeviceId(deviceId, out var device))
+                {
+                    continue;
+                }
+
+                if (device.OrganizationID != User.OrganizationID)
+                {
+                    continue;
+                }
+
+                if (_serviceSessionCache.TryGetConnectionId(device.ID, out var connectionId))
+                {
+                    yield return connectionId;
+                }
+            }
         }
 
         private void ProcessMessages()
