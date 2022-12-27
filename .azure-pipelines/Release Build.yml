@@ -165,14 +165,6 @@ jobs:
       workingDirectory: Utilities
 
   - task: DotNetCoreCLI@2
-    displayName: dotnet publish win-x64
-    inputs:
-      command: publish
-      publishWebProjects: false
-      projects: '**/Server.csproj'
-      arguments: /p:Version=$(CurrentVersion) /p:FileVersion=$(CurrentVersion) --configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)\win-x64 --runtime win-x64
-
-  - task: DotNetCoreCLI@2
     displayName: dotnet publish linux-x64
     inputs:
       command: publish
