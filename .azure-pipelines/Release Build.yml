@@ -1,6 +1,6 @@
 name: Release Build
 jobs:
-- job: Mac Build
+- job: Mac_Build
   displayName: Mac Build
   timeoutInMinutes: 360
   pool:
@@ -58,10 +58,10 @@ jobs:
       path: $(Build.SourcesDirectory)/Agent/bin/Remotely-MacOS-x64.zip
       artifactName: Mac-x64-Agent
 
-- job: Windows Build
+- job: Windows_Build
   displayName: Windows Build
   timeoutInMinutes: 360
-  dependsOn: Mac Build
+  dependsOn: Mac_Build
   pool:
     vmImage: windows-latest
 
@@ -135,21 +135,23 @@ jobs:
 
   - task: PowerShell@2
     displayName: Create Code Signing Cert
+    env:
+      SigningCertBase64: $(CODE_SIGNING_CERT_BASE64)
     inputs:
       targetType: inline
-        script: >-
-          if (!$(Code_Signing_Cert_Base64)) {
-            Write-Host "Code_Signing_Cert_Base64 variable is empty.  Skipping cert creation."
+      script: >-
+          if (!$env:SigningCertBase64) {
+            Write-Host "CODE_SIGNING_CERT_BASE64 variable is empty.  Skipping cert creation."
             return
           }
-          $CertBytes = [System.Convert]::FromBase64String($Code_Signing_Cert_Base64)
+          $CertBytes = [System.Convert]::FromBase64String($env:SigningCertBase64)
           [System.IO.File]::WriteAllBytes("$(Build.SourcesDirectory)\Utilities\CodeSigningCert.pfx", $CertBytes)
 
   - task: PowerShell@2
     displayName: Publish.ps1
     inputs:
       filePath: Utilities/Publish.ps1
-      arguments: -CertificatePath "$(Build.SourcesDirectory)\Utilities\CodeSigningCert.pfx" -CertificatePassword  "$(Signing_Cert_Password)" -CurrentVersion "$(CurrentVersion)"
+      arguments: -CertificatePath "$(Build.SourcesDirectory)\Utilities\CodeSigningCert.pfx" -CertificatePassword  "$(SIGNING_CERT_PASSWORD)" -CurrentVersion "$(CurrentVersion)"
       failOnStderr: true
       workingDirectory: Utilities
 
