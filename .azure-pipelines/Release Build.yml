@@ -1,0 +1,191 @@
+name: Release Build
+jobs:
+- job: Mac Build
+  displayName: Mac Build
+  timeoutInMinutes: 360
+  pool:
+    vmImage: macos-latest
+  steps:
+
+  - checkout: self
+    clean: true
+    fetchTags: false
+
+  - task: PowerShell@2
+    displayName: Add CurrentVersion Variable
+    inputs:
+      targetType: inline
+      script: >-
+        $VersionString = git show -s --format=%ci $(Build.SourceVersion)
+        $VersionDate = [DateTimeOffset]::Parse($VersionString)
+
+        $Year = $VersionDate.Year.ToString()
+        $Month = $VersionDate.Month.ToString().PadLeft(2, "0")
+        $Day = $VersionDate.Day.ToString().PadLeft(2, "0")
+        $Hour = $VersionDate.Hour.ToString().PadLeft(2, "0")
+        $Minute = $VersionDate.Minute.ToString().PadLeft(2, "0")
+        $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
+
+        [System.Console]::WriteLine("##vso[task.setvariable variable=CurrentVersion]$CurrentVersion")
+
+        Write-Host "Setting current version to $CurrentVersion."
+
+  - task: UseDotNet@2
+    displayName: Use .NET Core sdk 6.x
+    inputs:
+      version: 6.x
+
+  - task: DotNetCoreCLI@2
+    displayName: dotnet publish x64
+    inputs:
+      command: publish
+      publishWebProjects: false
+      projects: '**/Agent.csproj'
+      arguments: -c $(BuildConfiguration) -r osx-x64 -o "$(Build.SourcesDirectory)/Agent/bin/publish" /p:Version=$(CurrentVersion) /p:FileVersion=$(CurrentVersion)
+      zipAfterPublish: false
+      modifyOutputPath: false
+
+  - task: PowerShell@2
+    displayName: PowerShell Script
+    inputs:
+      targetType: inline
+      script: >-
+        Compress-Archive -Path "$(Build.SourcesDirectory)/Agent/bin/publish/*" -DestinationPath "$(Build.SourcesDirectory)/Agent/bin/Remotely-MacOS-x64.zip" -Force
+
+  - task: PublishPipelineArtifact@1
+    displayName: Publish macOS x64 Agent
+    inputs:
+      path: $(Build.SourcesDirectory)/Agent/bin/Remotely-MacOS-x64.zip
+      artifactName: Mac-x64-Agent
+
+- job: Windows Build
+  displayName: Windows Build
+  timeoutInMinutes: 360
+  dependsOn: Mac Build
+  pool:
+    vmImage: windows-latest
+
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+
+  - task: DownloadPipelineArtifact@2
+    displayName: Download macOS x64 Agent
+    inputs:
+      artifact: Mac-x64-Agent
+      path: $(Build.SourcesDirectory)\Server\wwwroot\Content\
+
+  - task: VisualStudioTestPlatformInstaller@1
+    displayName: Visual Studio Test Platform Installer
+
+  - task: PowerShell@2
+    displayName: Add CurrentVersion Variable
+    inputs:
+      targetType: inline
+      script: >-
+        $VersionString = git show -s --format=%ci $(Build.SourceVersion)
+
+        $VersionDate = [DateTimeOffset]::Parse($VersionString)
+
+
+        $Year = $VersionDate.Year.ToString()
+
+        $Month = $VersionDate.Month.ToString().PadLeft(2, "0")
+
+        $Day = $VersionDate.Day.ToString().PadLeft(2, "0")
+
+        $Hour = $VersionDate.Hour.ToString().PadLeft(2, "0")
+
+        $Minute = $VersionDate.Minute.ToString().PadLeft(2, "0")
+
+        $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
+
+
+        [System.Console]::WriteLine("##vso[task.setvariable variable=CurrentVersion]$CurrentVersion")
+
+
+        Write-Host "Setting current version to $CurrentVersion."
+
+  - task: NuGetToolInstaller@1
+    displayName: 'Use NuGet'
+
+  - task: NuGetCommand@2
+    displayName: NuGet restore Agent.Installer.Win
+    inputs:
+      solution: Agent.Installer.Win/packages.config
+      packagesDirectory: $(Build.SourcesDirectory)\packages
+
+  - task: UseDotNet@2
+    displayName: Use .NET Core sdk 6.x
+    inputs:
+      version: 6.x
+
+  - task: DotNetCoreCLI@2
+    displayName: dotnet restore
+    inputs:
+      command: restore
+      projects: '**/*.csproj'
+
+  - task: DotNetCoreCLI@2
+    displayName: dotnet test
+    inputs:
+      command: test
+      projects: Tests\Tests.csproj
+
+  - task: PowerShell@2
+    displayName: Create Code Signing Cert
+    inputs:
+      targetType: inline
+        script: >-
+          if (!$(Code_Signing_Cert_Base64)) {
+            Write-Host "Code_Signing_Cert_Base64 variable is empty.  Skipping cert creation."
+            return
+          }
+          $CertBytes = [System.Convert]::FromBase64String($Code_Signing_Cert_Base64)
+          [System.IO.File]::WriteAllBytes("$(Build.SourcesDirectory)\Utilities\CodeSigningCert.pfx", $CertBytes)
+
+  - task: PowerShell@2
+    displayName: Publish.ps1
+    inputs:
+      filePath: Utilities/Publish.ps1
+      arguments: -CertificatePath "$(Build.SourcesDirectory)\Utilities\CodeSigningCert.pfx" -CertificatePassword  "$(Signing_Cert_Password)" -CurrentVersion "$(CurrentVersion)"
+      failOnStderr: true
+      workingDirectory: Utilities
+
+  - task: DotNetCoreCLI@2
+    displayName: dotnet publish win-x64
+    inputs:
+      command: publish
+      publishWebProjects: false
+      projects: '**/Server.csproj'
+      arguments: /p:Version=$(CurrentVersion) /p:FileVersion=$(CurrentVersion) --configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)\win-x64 --runtime win-x64
+
+  - task: DotNetCoreCLI@2
+    displayName: dotnet publish linux-x64
+    inputs:
+      command: publish
+      publishWebProjects: false
+      projects: '**/Server.csproj'
+      arguments: /p:Version=$(CurrentVersion) /p:FileVersion=$(CurrentVersion) --configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)\linux-x64 --runtime linux-x64
+
+
+  - task: PowerShell@2
+    displayName: Write Version File
+    inputs:
+      targetType: inline
+      script: >-
+        Write-Host "Adding Version to File: $(CurrentVersion)"
+        # This is used in the Release.
+        New-Item -ItemType File -Value "$(CurrentVersion)" -Path "$(build.artifactstagingdirectory)\Version.txt" -Force
+
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Artifact
+    condition: succeededOrFailed()
+    inputs:
+      PathtoPublish: $(build.artifactstagingdirectory)
+      ArtifactName: Server
+      TargetPath: '\\my\share\$(Build.DefinitionName)\$(Build.BuildNumber)'
+
+  - task: PostBuildCleanup@3
+    displayName: Clean Agent Directories
