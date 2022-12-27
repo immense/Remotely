@@ -8,7 +8,7 @@ jobs:
   steps:
 
   - checkout: self
-    submodules: true
+    submodules: recursive
     clean: true
     fetchTags: false
 
@@ -68,7 +68,7 @@ jobs:
 
   steps:
   - checkout: self
-    submodules: true
+    submodules: recursive
     clean: true
     fetchTags: false
 
