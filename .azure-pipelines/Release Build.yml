@@ -15,7 +15,7 @@ jobs:
     displayName: Add CurrentVersion Variable
     inputs:
       targetType: inline
-      script: >-
+      script: |
         $VersionString = git show -s --format=%ci $(Build.SourceVersion)
         $VersionDate = [DateTimeOffset]::Parse($VersionString)
 
@@ -49,7 +49,7 @@ jobs:
     displayName: PowerShell Script
     inputs:
       targetType: inline
-      script: >-
+      script: |
         Compress-Archive -Path "$(Build.SourcesDirectory)/Agent/bin/publish/*" -DestinationPath "$(Build.SourcesDirectory)/Agent/bin/Remotely-MacOS-x64.zip" -Force
 
   - task: PublishPipelineArtifact@1
@@ -83,7 +83,7 @@ jobs:
     displayName: Add CurrentVersion Variable
     inputs:
       targetType: inline
-      script: >-
+      script: |
         $VersionString = git show -s --format=%ci $(Build.SourceVersion)
 
         $VersionDate = [DateTimeOffset]::Parse($VersionString)
@@ -139,7 +139,7 @@ jobs:
       SigningCertBase64: $(CODE_SIGNING_CERT_BASE64)
     inputs:
       targetType: inline
-      script: >-
+      script: |
           if (!$env:SigningCertBase64) {
             Write-Host "CODE_SIGNING_CERT_BASE64 variable is empty.  Skipping cert creation."
             return
@@ -176,7 +176,7 @@ jobs:
     displayName: Write Version File
     inputs:
       targetType: inline
-      script: >-
+      script: |
         Write-Host "Adding Version to File: $(CurrentVersion)"
         # This is used in the Release.
         New-Item -ItemType File -Value "$(CurrentVersion)" -Path "$(build.artifactstagingdirectory)\Version.txt" -Force
