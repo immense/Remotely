@@ -2,8 +2,19 @@
 A remote control and remote scripting solution, built with .NET 6, Blazor, and SignalR Core.
 
 [![Build Status](https://dev.azure.com/translucency/Remotely/_apis/build/status/Remotely-ReleaseBuild?branchName=master)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=17&branchName=master)
-![GitHub Build](https://github.com/immense/Remotely/workflows/GitHub%20Build/badge.svg)
+[![Tests](https://github.com/immense/Remotely/actions/workflows/run_tests.yml/badge.svg?branch=master)](https://github.com/immense/Remotely/actions/workflows/run_tests.yml)
 
+## Update from Author
+### 2022-12-26
+I'm currently working on updates to Remotely's deployment processes.  Once finished, Docker will be the only official method of self-hosting Remotely.  This will help us deliver a consistently reliable deployment experience.
+
+These updates will include a solution for the inability, when using the Docker image, to hardcode your server's URL into the executables.
+
+The `Publish.ps1` script will be used in our workflow and will continue to function the same.  So if you're using this to build and deploy, you won't be affected by these changes.
+
+In the meantime, please don't attempt to deploy changes made to the `master` branch.  When everything is completed, this readme will be updated, and there will be a new release.
+
+Hope everyone is having a wonderful holiday!  Cheers!
 
 # Status 
 ## 2022-05-19
@@ -98,11 +109,6 @@ However, you can also choose to install the pre-built packages that do not have 
 * For Windows, you'll need to shut down the site's Application Pool in IIS before copying the files.
 	* Windows won't let you overwrite files that are in use.
 * The only things that shouldn't be overwritten are the database DB file (if using SQLite) and the `appsettings.Production.json`.  These files should never exist in the publish output.
-
-## Hosting Scenarios
-There are countless ways to host an ASP.NET Core app, and I can't document or automate all of them.  For hosting scenarios aside from the above two, please refer to Microsoft's documentation.
-- https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/
-
 
 ## Build and Debug Instructions (Windows 10)  
 The following steps will configure your Windows 10 machine for building the Remotely server and clients.
