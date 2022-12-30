@@ -242,7 +242,7 @@ namespace Remotely.Agent.Installer.Win.Services
             remotelyKey.SetValue("DisplayName", "Remotely");
             remotelyKey.SetValue("DisplayVersion", version.FileVersion);
             remotelyKey.SetValue("InstallDate", DateTime.Now.ToShortDateString());
-            remotelyKey.SetValue("Publisher", "Translucency Software");
+            remotelyKey.SetValue("Publisher", "Immense Networks");
             remotelyKey.SetValue("VersionMajor", version.FileMajorPart.ToString(), RegistryValueKind.DWord);
             remotelyKey.SetValue("VersionMinor", version.FileMinorPart.ToString(), RegistryValueKind.DWord);
             remotelyKey.SetValue("UninstallString", Path.Combine(InstallPath, "Remotely_Installer.exe -uninstall -quiet"));

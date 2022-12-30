@@ -134,7 +134,7 @@
     <Compile Include="Models\BrandingInfo.cs" />
     <Compile Include="Utilities\CommandLineParser.cs" />
     <Compile Include="Utilities\MessageBoxEx.cs" />
-    <Compile Include="Services\Executor.cs" />
+    <Compile Include="Services\RelayCommand.cs" />
     <Compile Include="Services\InstallerService.cs" />
     <Compile Include="Utilities\Logger.cs" />
     <Compile Include="Utilities\ProcessEx.cs" />

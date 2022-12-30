@@ -77,7 +77,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
         public BitmapImage Icon { get; set; }
         public string InstallButtonText => IsServiceMissing ? "Install" : "Reinstall";
 
-        public ICommand InstallCommand => new Executor(async (param) => { await Install(); });
+        public ICommand InstallCommand => new RelayCommand(async (param) => { await Install(); });
 
         public bool IsProgressVisible => Progress > 0;
 
@@ -115,7 +115,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
         {
             get
             {
-                return new Executor(param =>
+                return new RelayCommand(param =>
                 {
                     var logPath = Path.Combine(Path.GetTempPath(), "Remotely_Installer.log");
                     if (File.Exists(logPath))
@@ -188,7 +188,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
         public SolidColorBrush TitleBackgroundColor { get; set; }
         public SolidColorBrush TitleButtonForegroundColor { get; set; }
         public SolidColorBrush TitleForegroundColor { get; set; }
-        public ICommand UninstallCommand => new Executor(async (param) => { await Uninstall(); });
+        public ICommand UninstallCommand => new RelayCommand(async (param) => { await Uninstall(); });
         private string DeviceAlias { get; set; }
         private string DeviceGroup { get; set; }
         private string DeviceUuid { get; set; }

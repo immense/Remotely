@@ -30,16 +30,18 @@ namespace Remotely.Desktop.Shared.Services
         {
             _appState = appState;
             _orgIdProvider = orgIdProvider;
-
-            using var mrs = typeof(BrandingProvider).Assembly.GetManifestResourceStream("Desktop.Shared.Assets.Remotely_Icon.png");
-            using var ms = new MemoryStream();
-            mrs!.CopyTo(ms);
-
-            _brandingInfo.Icon = ms.ToArray();
         }
 
         public Task<BrandingInfoBase> GetBrandingInfo()
         {
+            if (!_brandingInfo.Icon.Any())
+            {
+                using var mrs = typeof(BrandingProvider).Assembly.GetManifestResourceStream("Desktop.Shared.Assets.Remotely_Icon.png");
+                using var ms = new MemoryStream();
+                mrs!.CopyTo(ms);
+
+                _brandingInfo.Icon = ms.ToArray();
+            }
             return Task.FromResult(_brandingInfo);
         }
 
@@ -52,6 +54,7 @@ namespace Remotely.Desktop.Shared.Services
         {
             try
             {
+
                 if (string.IsNullOrWhiteSpace(_appState.Host))
                 {
                     return;

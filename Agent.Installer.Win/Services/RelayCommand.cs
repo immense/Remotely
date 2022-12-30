@@ -3,12 +3,16 @@ using System.Windows.Input;
 
 namespace Remotely.Agent.Installer.Win.Services
 {
-    public class Executor : ICommand
+    public class RelayCommand : ICommand
     {
-        public Executor(Action<object> executeAction, Predicate<object> isExecutable = null)
+        private readonly Action<object> _action;
+
+        private readonly Predicate<object> _canExecute;
+
+        public RelayCommand(Action<object> action, Predicate<object> canExecute = null)
         {
-            ExecuteAction = executeAction;
-            IsExecutable = isExecutable;
+            _action = action;
+            _canExecute = canExecute;
         }
 
         public event EventHandler CanExecuteChanged
@@ -17,21 +21,18 @@ namespace Remotely.Agent.Installer.Win.Services
             remove { CommandManager.RequerySuggested -= value; }
         }
 
-        private Action<object> ExecuteAction { get; set; }
-
-        private Predicate<object> IsExecutable { get; set; }
         public bool CanExecute(object parameter)
         {
-            if (IsExecutable == null)
+            if (_canExecute is null)
             {
                 return true;
             }
-            return IsExecutable.Invoke(parameter);
+            return _canExecute.Invoke(parameter);
         }
 
         public void Execute(object parameter)
         {
-            ExecuteAction.Invoke(parameter);
+            _action?.Invoke(parameter);
         }
     }
 }

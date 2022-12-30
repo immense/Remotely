@@ -176,16 +176,12 @@ namespace Remotely.Server.API
                                 var relayCode = organization.RelayCode;
                                 return File(fs, "application/octet-stream", $"Remotely_Install-[{relayCode}].exe");
                             }
-                        // TODO: Remove after a few releases.
-                        case "Manjaro-x64":
                         case "ManjaroInstaller-x64":
                             {
                                 var fileName = "Install-Manjaro-x64.sh";
 
                                 return await GetBashInstaller(fileName, organizationId);
                             }
-                        // TODO: Remove after a few releases.
-                        case "Ubuntu-x64":
                         case "UbuntuInstaller-x64":
                             {
                                 var fileName = "Install-Ubuntu-x64.sh";

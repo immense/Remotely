@@ -47,9 +47,6 @@ namespace Remotely.Server.Pages
         [Display(Name = "Enforce Attended Access")]
         public bool EnforceAttendedAccess { get; set; }
 
-        [Display(Name = "Ice Servers")]
-        public IceServerModel[] IceServers { get; set; }
-
         [Display(Name = "Known Proxies")]
         public List<string> KnownProxies { get; set; } = new();
 
@@ -379,7 +376,6 @@ namespace Remotely.Server.Pages
             }
 
             var settingsJson = JsonSerializer.Deserialize<IDictionary<string, object>>(await System.IO.File.ReadAllTextAsync(savePath));
-            Input.IceServers = Configuration.GetSection("ApplicationOptions:IceServers").Get<IceServerModel[]>();
             settingsJson["ApplicationOptions"] = Input;
             settingsJson["ConnectionStrings"] = ConnectionStrings;
 

@@ -13,7 +13,6 @@ namespace Remotely.Server.Services
         string DBProvider { get; }
         bool EnableWindowsEventLog { get; }
         bool EnforceAttendedAccess { get; }
-        IceServerModel[] IceServers { get; }
         string[] KnownProxies { get; }
         int MaxConcurrentUpdates { get; }
         int MaxOrganizationCount { get; }
@@ -39,12 +38,6 @@ namespace Remotely.Server.Services
 
     public class ApplicationConfig : IApplicationConfig
     {
-        private readonly IceServerModel[] fallbackIceServers = new IceServerModel[]
-        {
-            new IceServerModel() { Url = "stun:stun.l.google.com:19302"},
-            new IceServerModel() { Url = "stun:stun4.l.google.com:19302"}
-        };
-
         public ApplicationConfig(IConfiguration config)
         {
             Config = config;
@@ -56,7 +49,6 @@ namespace Remotely.Server.Services
         public string DBProvider => Config["ApplicationOptions:DBProvider"] ?? "SQLite";
         public bool EnableWindowsEventLog => bool.Parse(Config["ApplicationOptions:EnableWindowsEventLog"]);
         public bool EnforceAttendedAccess => bool.Parse(Config["ApplicationOptions:EnforceAttendedAccess"] ?? "false");
-        public IceServerModel[] IceServers => Config.GetSection("ApplicationOptions:IceServers").Get<IceServerModel[]>() ?? fallbackIceServers;
         public string[] KnownProxies => Config.GetSection("ApplicationOptions:KnownProxies").Get<string[]>() ?? System.Array.Empty<string>();
         public int MaxConcurrentUpdates => int.Parse(Config["ApplicationOptions:MaxConcurrentUpdates"] ?? "10");
         public int MaxOrganizationCount => int.Parse(Config["ApplicationOptions:MaxOrganizationCount"] ?? "1");
