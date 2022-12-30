@@ -182,6 +182,14 @@ jobs:
         # This is used in the Release.
         New-Item -ItemType File -Value "$(CurrentVersion)" -Path "$(build.artifactstagingdirectory)\Version.txt" -Force
 
+  - task: PowerShell@2
+    displayName: Copy Docker Files
+    inputs:
+      targetType: inline
+      script: |
+        Copy-Item -Path "$(Build.SourcesDirectory)\.docker\Dockerfile" -Destination "$(build.artifactstagingdirectory)\Dockerfile"
+        Copy-Item -Path "$(Build.SourcesDirectory)\.docker\DockerMain.sh" -Destination "$(build.artifactstagingdirectory)\DockerMain.sh"
+
   - task: PublishBuildArtifacts@1
     displayName: Publish Artifact
     condition: succeededOrFailed()
