@@ -187,8 +187,8 @@ jobs:
     inputs:
       targetType: inline
       script: |
-        Copy-Item -Path "$(Build.SourcesDirectory)\.docker\Dockerfile" -Destination "$(build.artifactstagingdirectory)\Dockerfile"
-        Copy-Item -Path "$(Build.SourcesDirectory)\.docker\DockerMain.sh" -Destination "$(build.artifactstagingdirectory)\DockerMain.sh"
+        Copy-Item -Path "$(Build.SourcesDirectory)\Server\Dockerfile" -Destination "$(build.artifactstagingdirectory)\Dockerfile"
+        Copy-Item -Path "$(Build.SourcesDirectory)\Server\DockerMain.sh" -Destination "$(build.artifactstagingdirectory)\DockerMain.sh"
 
   - task: PublishBuildArtifacts@1
     displayName: Publish Artifact
