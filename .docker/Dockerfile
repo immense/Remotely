@@ -1,5 +1,6 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
-#FROM mcr.microsoft.com/dotnet/sdk:6.0
+
+SHELL ["/bin/bash", "-c"]
 
 EXPOSE 5000
 
@@ -12,9 +13,10 @@ COPY /_immense.Remotely/Server/DockerMain.sh .
 COPY /_immense.Remotely/Server/linux-x64/Server.zip .
 
 RUN \
-  apt-get update && \
-  apt-get -y install unzip && \
-  unzip -o /src/Server.zip -d /app
+  apt -y update && \
+  apt -y install unzip && \
+  unzip -o ./Server.zip -d /app && \
+  rm ./Server.zip
 
 WORKDIR /app
 
