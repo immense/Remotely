@@ -13,8 +13,8 @@ COPY /_immense.Remotely/Server/DockerMain.sh .
 COPY /_immense.Remotely/Server/linux-x64/Server.zip .
 
 RUN \
-  apt -y update && \
-  apt -y install unzip && \
+  apt-get -y update && \
+  apt-get -y install unzip && \
   unzip -o ./Server.zip -d /app && \
   rm ./Server.zip
 
