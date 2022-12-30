@@ -8,8 +8,8 @@ ENV ASPNETCORE_URLS="http://*:5000"
 
 WORKDIR /src
 
-COPY /.docker/DockerMain.sh /src
-COPY /_immense.Remotely/Server/linux-x64/Server.zip /src
+COPY /_immense.Remotely/Server/DockerMain.sh .
+COPY /_immense.Remotely/Server/linux-x64/Server.zip .
 
 RUN \
   apt-get update && \
