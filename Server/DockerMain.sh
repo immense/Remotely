@@ -2,22 +2,21 @@
 
 echo "Entered main script."
 
-ServerDir=/var/www/remotely
 RemotelyData=/remotely-data
 
 AppSettingsVolume=/remotely-data/appsettings.json
-AppSettingsWww=/var/www/remotely/appsettings.json
+AppSettingsSrc=/app/appsettings.json
 
 if [ ! -f "$AppSettingsVolume" ]; then
 	echo "Copying appsettings.json to volume."
-	cp "$AppSettingsWww" "$AppSettingsVolume"
+	cp "$AppSettingsSrc" "$AppSettingsVolume"
 fi
 
-if [ -f "$AppSettingsWww" ]; then
-	rm "$AppSettingsWww"
+if [ -f "$AppSettingsSrc" ]; then
+	rm "$AppSettingsSrc"
 fi
 
-ln -s "$AppSettingsVolume" "$AppSettingsWww"
+ln -s "$AppSettingsVolume" "$AppSettingsSrc"
 
 echo "Starting Remotely server."
-exec /usr/bin/dotnet /var/www/remotely/Remotely_Server.dll
+exec /usr/bin/dotnet /app/Remotely_Server.dll

@@ -169,7 +169,7 @@ jobs:
     inputs:
       command: publish
       publishWebProjects: false
-      projects: '**/Server.csproj'
+      projects: '$(Build.SourcesDirectory)/Server/Server.csproj'
       arguments: /p:Version=$(CurrentVersion) /p:FileVersion=$(CurrentVersion) --configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)\linux-x64 --runtime linux-x64
 
 

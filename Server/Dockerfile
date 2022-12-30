@@ -1,40 +1,29 @@
-FROM ubuntu:jammy
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
 
 EXPOSE 5000
 
 ENV ASPNETCORE_ENVIRONMENT="Production"
 ENV ASPNETCORE_URLS="http://*:5000"
 
-RUN \
-  apt-get -y update && \
-  apt-get -y install \
-  apt-utils \
-  wget \
-  apt-transport-https \
-  unzip \
-  acl \
-  libssl1.0
+WORKDIR /src
 
 RUN \
-  apt-get -y install aspnetcore-runtime-6.0
+  if [ ! -f ./_immense.Remotely/Server/linux-x64/Server.zip ] \
+  then \
+    echo "Build artifact not found at path './_immense.Remotely/Server/linux-x64/Server.zip'" \
+    exit 1 \
+  fi \
 
-RUN \
-  mkdir -p /var/www/remotely && \
-  mkdir /config && \
-  wget -q https://github.com/immense/Remotely/releases/latest/download/Remotely_Server_Linux-x64.zip && \
-  unzip -o Remotely_Server_Linux-x64.zip -d /var/www/remotely && \
-  rm Remotely_Server_Linux-x64.zip
+RUN apt-get -y install unzip
+RUN unzip -o ./_immense.Remotely/Server/linux-x64/Server.zip -d /app
+
+WORKDIR /app
 
 RUN \
   mkdir -p /remotely-data && \
-  sed -i 's/DataSource=Remotely.db/DataSource=\/remotely-data\/Remotely.db/' /var/www/remotely/appsettings.json
+  sed -i 's/DataSource=Remotely.db/DataSource=\/remotely-data\/Remotely.db/' ./appsettings.json
 
 VOLUME "/remotely-data"
 
-WORKDIR /var/www/remotely
-
-COPY DockerMain.sh /
-
-RUN chmod 755 /DockerMain.sh
-
-ENTRYPOINT ["/DockerMain.sh"]
+COPY --from=build /src/Server/DockerMain.sh ./DockerMain.sh
+ENTRYPOINT ["DockerMain.sh"]
