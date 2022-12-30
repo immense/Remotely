@@ -26,4 +26,6 @@ RUN \
 
 VOLUME "/remotely-data"
 
+RUN chmod +x /src/DockerMain.sh && chmod 755 /src/DockerMain.sh
+
 ENTRYPOINT ["/src/DockerMain.sh"]
