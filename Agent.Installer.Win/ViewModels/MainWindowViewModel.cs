@@ -395,8 +395,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
                 OrganizationID = embeddedData.OrganizationId;
                 ServerUrl = embeddedData.ServerUrl.AbsoluteUri;
 
-                if (!string.IsNullOrWhiteSpace(OrganizationID) &&
-                    !string.IsNullOrWhiteSpace(ServerUrl))
+                if (!string.IsNullOrWhiteSpace(ServerUrl))
                 {
                     using (var httpClient = new HttpClient())
                     {

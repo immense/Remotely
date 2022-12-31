@@ -100,11 +100,6 @@ namespace Remotely.Desktop.Shared.Services
                     return Result.Fail<BrandingInfo>("ServerUrl is empty.");
                 }
 
-                if (string.IsNullOrWhiteSpace(_orgIdProvider.OrganizationId))
-                {
-                    return Result.Fail<BrandingInfo>("OrganizationId is empty.");
-                }
-
                 using var httpClient = new HttpClient();
 
                 var brandingUrl = $"{_appState.Host.TrimEnd('/')}/api/branding/{_orgIdProvider.OrganizationId}";
