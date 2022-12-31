@@ -75,28 +75,32 @@ namespace Remotely.Desktop.Shared.Services
         {
             try
             {
-                var filePath = Process.GetCurrentProcess()?.MainModule?.FileName;
-
-                if (string.IsNullOrWhiteSpace(filePath))
+                if (string.IsNullOrWhiteSpace(_orgIdProvider.OrganizationId) ||
+                    string.IsNullOrWhiteSpace(_appState.Host))
                 {
-                    return Result.Fail<BrandingInfo>("Failed to retrieve executing file name.");
-                }
+                    var filePath = Process.GetCurrentProcess()?.MainModule?.FileName;
 
-                var result = await _embeddedDataSearcher.TryGetEmbeddedData(filePath);
+                    if (string.IsNullOrWhiteSpace(filePath))
+                    {
+                        return Result.Fail<BrandingInfo>("Failed to retrieve executing file name.");
+                    }
 
-                if (!result.IsSuccess)
-                {
-                    return Result.Fail<BrandingInfo>(result.Exception);
-                }
+                    var result = await _embeddedDataSearcher.TryGetEmbeddedData(filePath);
 
-                if (!string.IsNullOrWhiteSpace(result.Value.OrganizationId))
-                {
-                    _orgIdProvider.OrganizationId = result.Value.OrganizationId;
-                }
+                    if (!result.IsSuccess)
+                    {
+                        return Result.Fail<BrandingInfo>(result.Exception);
+                    }
 
-                if (result.Value.ServerUrl is not null)
-                {
-                    _appState.Host = result.Value.ServerUrl.AbsoluteUri;
+                    if (!string.IsNullOrWhiteSpace(result.Value.OrganizationId))
+                    {
+                        _orgIdProvider.OrganizationId = result.Value.OrganizationId;
+                    }
+
+                    if (result.Value.ServerUrl is not null)
+                    {
+                        _appState.Host = result.Value.ServerUrl.AbsoluteUri;
+                    }
                 }
 
                 if (string.IsNullOrWhiteSpace(_appState.Host))

@@ -1,4 +1,6 @@
-﻿using Remotely.Shared.Models;
+﻿#nullable enable
+
+using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
@@ -19,6 +21,8 @@ namespace Remotely.Shared.Services
 
     public class EmbeddedServerDataSearcher : IEmbeddedServerDataSearcher
     {
+        public static EmbeddedServerDataSearcher Instance { get; } = new();
+
         public async Task<Result<EmbeddedServerData>> TryGetEmbeddedData(string filePath)
         {
             try
@@ -47,6 +51,11 @@ namespace Remotely.Shared.Services
                 using var reader = new BinaryReader(fs);
                 var serializedData = reader.ReadString();
                 var embeddedData = JsonSerializer.Deserialize<EmbeddedServerData>(serializedData);
+
+                if (embeddedData is null)
+                {
+                    return Result.Fail<EmbeddedServerData>("Embedded data is empty.");
+                }
 
                 return Result.Ok(embeddedData);
             }

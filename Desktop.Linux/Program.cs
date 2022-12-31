@@ -14,6 +14,14 @@ using Immense.RemoteControl.Desktop.UI.Services;
 using Remotely.Shared;
 using System.Diagnostics;
 
+var filePath = Process.GetCurrentProcess()?.MainModule?.FileName;
+var serverUrl = Debugger.IsAttached ? "https://localhost:5001" : string.Empty;
+var getEmbeddedResult = await EmbeddedServerDataSearcher.Instance.TryGetEmbeddedData(filePath);
+if (getEmbeddedResult.IsSuccess)
+{
+    serverUrl = getEmbeddedResult.Value.ServerUrl.AbsoluteUri;
+}
+
 var provider = await Startup.UseRemoteControlClient(
     args,
     config =>
@@ -43,7 +51,7 @@ var provider = await Startup.UseRemoteControlClient(
         }
         return Task.CompletedTask;
     },
-    Debugger.IsAttached ? "https://localhost:5001" : null);
+    serverUrl);
 
 
 Console.WriteLine("Press Ctrl + C to exit.");
