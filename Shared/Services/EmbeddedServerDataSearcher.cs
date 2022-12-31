@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using Microsoft.Extensions.Logging;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
@@ -39,17 +40,11 @@ namespace Remotely.Shared.Services
                     return Result.Fail<EmbeddedServerData>("Signature not found in file buffer.");
                 }
 
-                var sizeBytes = new byte[sizeof(int)];
-                fs.Seek(result, SeekOrigin.Begin);
-                await fs.ReadAsync(sizeBytes);
-                var dataSize = BitConverter.ToInt32(sizeBytes);
-
-                var dataBlock = new byte[dataSize];
-                fs.Seek(result + sizeof(int), SeekOrigin.Begin);
-                await fs.ReadAsync(dataBlock);
+                fs.Seek(result + AppConstants.EmbeddedImmySignature.Length, SeekOrigin.Begin);
 
                 using var reader = new BinaryReader(fs);
                 var serializedData = reader.ReadString();
+
                 var embeddedData = JsonSerializer.Deserialize<EmbeddedServerData>(serializedData);
 
                 if (embeddedData is null)
@@ -73,10 +68,12 @@ namespace Remotely.Shared.Services
                 using var writer = new BinaryWriter(dataStream, Encoding.UTF8, true);
                 var serializedData = JsonSerializer.Serialize(serverData);
                 writer.Write(serializedData);
-                dataStream.Seek(0, SeekOrigin.Begin);
-
                 var dataBytes = dataStream.ToArray();
-                var sizeBytes = BitConverter.GetBytes(dataBytes.Length);
+
+                if (dataBytes.Length > AppConstants.EmbeddedDataBlockLength)
+                {
+                    throw new Exception($"Embedded data size exceeds the maximum of {AppConstants.EmbeddedDataBlockLength}");
+                }
 
                 var fs = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
@@ -89,11 +86,6 @@ namespace Remotely.Shared.Services
 
                 var rewriteMap = new Dictionary<long, byte>();
                 var rewriteIndex = result + AppConstants.EmbeddedImmySignature.Length;
-
-                for (var i = 0; i < sizeBytes.Length; i++)
-                {
-                    rewriteMap.TryAdd(rewriteIndex++, sizeBytes[i]);
-                }
 
                 for (var i = 0; i < dataBytes.Length; i++)
                 {

@@ -33,15 +33,7 @@ namespace Remotely.Agent.Installer.Win.Services
                         throw new Exception("Signature not found in file buffer.");
                     }
 
-                    var sizeBytes = new byte[sizeof(int)];
-                    fs.Seek(result, SeekOrigin.Begin);
-                    await fs.ReadAsync(sizeBytes, 0, sizeBytes.Length);
-                    var dataSize = BitConverter.ToInt32(sizeBytes, 0);
-
-                    var dataBlock = new byte[dataSize];
-                    fs.Seek(result + sizeof(int), SeekOrigin.Begin);
-                    await fs.ReadAsync(dataBlock, 0, dataBlock.Length);
-
+                    fs.Seek(result + AppConstants.EmbeddedImmySignature.Length, SeekOrigin.Begin);
                     using (var reader = new BinaryReader(fs))
                     {
                         var serializedData = reader.ReadString();

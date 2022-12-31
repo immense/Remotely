@@ -76,14 +76,12 @@ function Replace-LineInFile($FilePath, $MatchPattern, $ReplaceLineWith, $MaxCoun
 
 function Add-DataBlock($FilePath) {
     [System.Byte[]]$ImmySignature = @(73, 109, 109, 121, 66, 111, 116, 32, 114, 111, 99, 107, 115, 32, 116, 104, 101, 32, 115, 111, 99, 107, 115, 32, 117, 110, 116, 105, 108, 32, 116, 104, 101, 32, 101, 113, 117, 105, 110, 111, 120, 33)
-    $SizeBlock = New-Object System.Byte[] 4
     $DataBlock = New-Object System.Byte[] 256
 
     $FS = [System.IO.File]::OpenWrite($FilePath)
     $FS.Seek(0, [System.IO.SeekOrigin]::End)
 
     $FS.Write($ImmySignature, 0, $ImmySignature.Length)
-    $FS.Write($SizeBlock, 0, $SizeBlock.Length)
     $FS.Write($DataBlock, 0, $DataBlock.Length)
     $FS.Close()
 }
