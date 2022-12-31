@@ -14,14 +14,6 @@
                 <label class="mb-1">Organization ID</label>
                 <input readonly class="form-control" value="@_organization?.ID" />
             </div>
-            <div class="form-group mw">
-                <label class="mb-1">Relay Code</label>
-                <button class="btn btn-sm btn-secondary ml-2" @onclick="ShowRelayCodeHelp">
-                    <span id="relayCodeHelp" class="oi oi-question-mark"></span>
-                </button>
-                <br />
-                <input readonly class="form-control" value="@_organization?.RelayCode" />
-            </div>
         </div>
     </div>
 
@@ -49,7 +41,7 @@
                 <div class="form-group">
                     <label class="mb-1">Default Organization For Server</label>
                     <button class="btn btn-sm btn-secondary ml-2" @onclick="ShowDefaultOrgHelp">
-                        <span id="relayCodeHelp" class="oi oi-question-mark"></span>
+                        <span class="oi oi-question-mark"></span>
                     </button>
                     <br />
                     <input type="checkbox" checked="@_organization?.IsDefaultOrganization" @onchange="DefaultOrgCheckChanged" />
@@ -64,7 +56,7 @@
             <div class="form-group">
                 <label class="mb-1">Device Groups</label>
                 <button class="btn btn-sm btn-secondary ml-2" @onclick="ShowDeviceGroupHelp">
-                    <span id="relayCodeHelp" class="oi oi-question-mark"></span>
+                    <span class="oi oi-question-mark"></span>
                 </button>
 
                 <select class="form-control mb-1" @bind="_selectedDeviceGroupId" size="4">
@@ -96,7 +88,7 @@
             <div class="form-group">
                 <label class="control-label">Users</label>
                 <button class="btn btn-sm btn-secondary ml-2" @onclick="ShowUsersHelp">
-                    <span id="relayCodeHelp" class="oi oi-question-mark"></span>
+                    <span class="oi oi-question-mark"></span>
                 </button>
                 <table class="table table-striped table-hover" style="max-height: 400px">
                     <thead>
@@ -142,7 +134,7 @@
             <div class="form-group">
                 <label class="control-label">Invitations</label>
                 <button class="btn btn-sm btn-secondary ml-2" @onclick="ShowInvitesHelp">
-                    <span id="relayCodeHelp" class="oi oi-question-mark"></span>
+                    <span class="oi oi-question-mark"></span>
                 </button>
                 <table id="invitesTable" class="table table-striped table-hover" style="max-height: 400px">
                     <thead>

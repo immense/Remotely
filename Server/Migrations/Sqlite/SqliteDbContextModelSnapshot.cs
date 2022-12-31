@@ -588,9 +588,6 @@ namespace Remotely.Server.Migrations.Sqlite
                         .HasMaxLength(25)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("RelayCode")
-                        .HasColumnType("TEXT");
-
                     b.HasKey("ID");
 
                     b.ToTable("Organizations");
