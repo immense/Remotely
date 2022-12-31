@@ -36,7 +36,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
 
         private int _progress;
 
-        private string _serverUrl = AppConstants.ServerUrl;
+        private string _serverUrl = string.Empty;
 
         private string _statusMessage;
         public MainWindowViewModel()
@@ -239,10 +239,10 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             try
             {
                 var connectionInfoPath = Path.Combine(
-               Path.GetPathRoot(Environment.SystemDirectory),
-                   "Program Files",
-                   "Remotely",
-                   "ConnectionInfo.json");
+                Path.GetPathRoot(Environment.SystemDirectory),
+                    "Program Files",
+                    "Remotely",
+                    "ConnectionInfo.json");
 
                 if (File.Exists(connectionInfoPath))
                 {
@@ -382,9 +382,15 @@ namespace Remotely.Agent.Installer.Win.ViewModels
 
             try
             {
-                var fileName = Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location);
+                var filePath = Process.GetCurrentProcess()?.MainModule?.FileName;
 
-                var embeddedData = await _embeddedDataReader.TryGetEmbeddedData(fileName);
+                if (string.IsNullOrWhiteSpace(filePath))
+                {
+                    Logger.Write("Failed to retrieve executing file name.");
+                    return;
+                }
+
+                var embeddedData = await _embeddedDataReader.TryGetEmbeddedData(filePath);
 
                 if (embeddedData == EmbeddedServerData.Empty)
                 {
@@ -405,7 +411,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
                         {
                             var responseString = await response.Content.ReadAsStringAsync();
                             _brandingInfo = serializer.Deserialize<BrandingInfo>(responseString);
-                            
+
                         }
                     }
                 }

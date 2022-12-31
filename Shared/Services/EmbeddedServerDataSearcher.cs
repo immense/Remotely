@@ -19,8 +19,6 @@ namespace Remotely.Shared.Services
 
     public class EmbeddedServerDataSearcher : IEmbeddedServerDataSearcher
     {
-        public static EmbeddedServerDataSearcher Instance { get; } = new();
-
         public async Task<Result<EmbeddedServerData>> TryGetEmbeddedData(string filePath)
         {
             try

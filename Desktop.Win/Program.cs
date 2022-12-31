@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Services;
 using Immense.RemoteControl.Desktop.Shared.Services;
-using Remotely.Shared;
+using System.Diagnostics;
 
 var provider = await Startup.UseRemoteControlClient(
     args,
@@ -38,9 +38,10 @@ var provider = await Startup.UseRemoteControlClient(
             var orgIdProvider = services.GetRequiredService<IOrganizationIdProvider>();
             orgIdProvider.OrganizationId = orgId;
         }
+
         return Task.CompletedTask;
     },
-    AppConstants.ServerUrl);
+    Debugger.IsAttached ? "https://localhost:5001" : null);
 
 var dispatcher = provider.GetRequiredService<IWindowsUiDispatcher>();
 try

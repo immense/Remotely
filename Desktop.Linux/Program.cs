@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Immense.RemoteControl.Desktop.Shared.Enums;
 using Immense.RemoteControl.Desktop.UI.Services;
 using Remotely.Shared;
+using System.Diagnostics;
 
 var provider = await Startup.UseRemoteControlClient(
     args,
@@ -42,7 +43,7 @@ var provider = await Startup.UseRemoteControlClient(
         }
         return Task.CompletedTask;
     },
-    AppConstants.ServerUrl);
+    Debugger.IsAttached ? "https://localhost:5001" : null);
 
 
 Console.WriteLine("Press Ctrl + C to exit.");

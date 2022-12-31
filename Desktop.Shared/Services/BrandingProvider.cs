@@ -50,6 +50,10 @@ namespace Remotely.Desktop.Shared.Services
             {
                 _brandingInfo = result.Value;
             }
+            else
+            {
+                _logger.LogWarning(result.Exception, "Failed to extract embedded service data.");
+            }
 
             if (!_brandingInfo.Icon.Any())
             {
@@ -71,14 +75,14 @@ namespace Remotely.Desktop.Shared.Services
         {
             try
             {
-                var fileName = Path.GetFileNameWithoutExtension(Process.GetCurrentProcess()?.MainModule?.FileName);
+                var filePath = Process.GetCurrentProcess()?.MainModule?.FileName;
 
-                if (string.IsNullOrWhiteSpace(fileName))
+                if (string.IsNullOrWhiteSpace(filePath))
                 {
                     return Result.Fail<BrandingInfo>("Failed to retrieve executing file name.");
                 }
 
-                var result = await _embeddedDataSearcher.TryGetEmbeddedData(fileName);
+                var result = await _embeddedDataSearcher.TryGetEmbeddedData(filePath);
 
                 if (!result.IsSuccess)
                 {
