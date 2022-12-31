@@ -1,5 +1,4 @@
-﻿using MessagePack;
-using Remotely.Shared.Models;
+﻿using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
@@ -7,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Remotely.Shared.Services
@@ -46,7 +46,10 @@ namespace Remotely.Shared.Services
                 fs.Seek(result + sizeof(int), SeekOrigin.Begin);
                 await fs.ReadAsync(dataBlock);
 
-                var embeddedData = MessagePackSerializer.Deserialize<EmbeddedServerData>(dataBlock);
+                using var reader = new BinaryReader(fs);
+                var serializedData = reader.ReadString();
+                var embeddedData = JsonSerializer.Deserialize<EmbeddedServerData>(serializedData);
+
                 return Result.Ok(embeddedData);
             }
             catch (Exception ex)
@@ -59,7 +62,13 @@ namespace Remotely.Shared.Services
         {
             try
             {
-                var dataBytes = MessagePackSerializer.Serialize(serverData);
+                using var dataStream = new MemoryStream();
+                using var writer = new BinaryWriter(dataStream, Encoding.UTF8, true);
+                var serializedData = JsonSerializer.Serialize(serverData);
+                writer.Write(serializedData);
+                dataStream.Seek(0, SeekOrigin.Begin);
+
+                var dataBytes = dataStream.ToArray();
                 var sizeBytes = BitConverter.GetBytes(dataBytes.Length);
 
                 var fs = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -81,9 +90,10 @@ namespace Remotely.Shared.Services
 
                 for (var i = 0; i < dataBytes.Length; i++)
                 {
-                    rewriteMap.TryAdd(rewriteIndex++, sizeBytes[i]);
+                    rewriteMap.TryAdd(rewriteIndex++, dataBytes[i]);
                 }
 
+                fs.Seek(0, SeekOrigin.Begin);
                 var rewriteStream = new RewritableStream(fs, rewriteMap);
                 return Result.Ok(rewriteStream);
 
@@ -94,7 +104,7 @@ namespace Remotely.Shared.Services
             }
         }
 
-        private int SearchBuffer(FileStream fileStream, byte[] matchPattern)
+        private long SearchBuffer(FileStream fileStream, byte[] matchPattern)
         {
             var matchSize = matchPattern.Length;
             var limit = fileStream.Length - matchSize;
@@ -113,7 +123,7 @@ namespace Remotely.Shared.Services
 
                 if (k == matchSize)
                 {
-                    return i;
+                    return fileStream.Position - matchSize;
                 }
             }
             return -1;

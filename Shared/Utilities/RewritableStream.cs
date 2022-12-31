@@ -64,20 +64,21 @@ namespace Remotely.Shared.Utilities
         {
             _underlyingStream.Flush();
         }
+
         
         public override int Read(byte[] buffer, int offset, int count)
         {
             var i = 0;
             for (; i < count; i++)
             {
-                if (_rewriteMap.TryGetValue(Position + i, out var newValue))
+                if (_rewriteMap.TryGetValue(Position, out var newValue))
                 {
                     buffer[offset + i] = newValue;
                     Seek(1, SeekOrigin.Current);
                 }
                 else
                 {
-                    var current = ReadByte();
+                    var current = _underlyingStream.ReadByte();
                     if (current == -1)
                     {
                         break;

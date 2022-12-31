@@ -30,8 +30,9 @@ var provider = await Startup.UseRemoteControlClient(
         });
 
         services.AddSingleton<IOrganizationIdProvider, OrganizationIdProvider>();
+        services.AddSingleton<IEmbeddedServerDataSearcher, EmbeddedServerDataSearcher>();
     },
-    async services =>
+    services =>
     {
         var appState = services.GetRequiredService<IAppState>();
         if (appState.ArgDict.TryGetValue("org-id", out var orgId))
@@ -39,13 +40,7 @@ var provider = await Startup.UseRemoteControlClient(
             var orgIdProvider = services.GetRequiredService<IOrganizationIdProvider>();
             orgIdProvider.OrganizationId = orgId;
         }
-
-        var brandingProvider = services.GetRequiredService<IBrandingProvider>();
-        if (brandingProvider is BrandingProvider branding)
-        {
-            await branding.TrySetFromApi();
-        }
-
+        return Task.CompletedTask;
     },
     AppConstants.ServerUrl);
 

@@ -18,15 +18,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Net;
 using Remotely.Shared;
+using Remotely.Agent.Installer.Models;
 
 namespace Remotely.Agent.Installer.Win.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
+        private readonly InstallerService _installer;
+        private readonly EmbeddedServerDataReader _embeddedDataReader;
         private BrandingInfo _brandingInfo;
         private bool _createSupportShortcut;
         private string _headerMessage = "Install the service.";
-
         private bool _isReadyState = true;
         private bool _isServiceInstalled;
 
@@ -39,11 +41,12 @@ namespace Remotely.Agent.Installer.Win.ViewModels
         private string _statusMessage;
         public MainWindowViewModel()
         {
-            Installer = new InstallerService();
+            _installer = new InstallerService();
+            _embeddedDataReader = new EmbeddedServerDataReader();
 
             CopyCommandLineArgs();
 
-            ExtractDeviceInitInfo().Wait();
+            ExtractEmbeddedServerData().Wait();
 
             AddExistingConnectionInfo();
         }
@@ -192,15 +195,14 @@ namespace Remotely.Agent.Installer.Win.ViewModels
         private string DeviceAlias { get; set; }
         private string DeviceGroup { get; set; }
         private string DeviceUuid { get; set; }
-        private InstallerService Installer { get; }
         public async Task Init()
         {
-            Installer.ProgressMessageChanged += (sender, arg) =>
+            _installer.ProgressMessageChanged += (sender, arg) =>
             {
                 StatusMessage = arg;
             };
 
-            Installer.ProgressValueChanged += (sender, arg) =>
+            _installer.ProgressValueChanged += (sender, arg) =>
             {
                 Progress = arg;
             };
@@ -375,43 +377,23 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             }
         }
 
-        private async Task ExtractDeviceInitInfo()
+        private async Task ExtractEmbeddedServerData()
         {
 
             try
             {
                 var fileName = Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location);
-                var codeLength = AppConstants.RelayCodeLength + 2;
 
-                for (var i = 0; i < fileName.Length; i++)
+                var embeddedData = await _embeddedDataReader.TryGetEmbeddedData(fileName);
+
+                if (embeddedData == EmbeddedServerData.Empty)
                 {
-                    var guid = string.Join("", fileName.Skip(i).Take(36));
-                    if (Guid.TryParse(guid, out _))
-                    {
-                        OrganizationID = guid;
-                        break;
-                    }
-
-
-                    var codeSection = string.Join("", fileName.Skip(i).Take(codeLength));
-
-                    if (codeSection.StartsWith("[") &&
-                        codeSection.EndsWith("]") && 
-                        !string.IsNullOrWhiteSpace(ServerUrl))
-                    {
-                        var relayCode = codeSection.Substring(1, 4);
-                        using (var httpClient = new HttpClient())
-                        {
-                            var response = await httpClient.GetAsync($"{ServerUrl.TrimEnd('/')}/api/relay/{relayCode}").ConfigureAwait(false);
-                            if (response.IsSuccessStatusCode)
-                            {
-                                var organizationId = await response.Content.ReadAsStringAsync();
-                                OrganizationID = organizationId;
-                                break;
-                            }
-                        }
-                    }
+                    Logger.Write("Embedded server data is empty.  Aborting.");
+                    return;
                 }
+
+                OrganizationID = embeddedData.OrganizationId;
+                ServerUrl = embeddedData.ServerUrl.AbsoluteUri;
 
                 if (!string.IsNullOrWhiteSpace(OrganizationID) &&
                     !string.IsNullOrWhiteSpace(ServerUrl))
@@ -472,7 +454,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
 
                 HeaderMessage = "Installing Remotely...";
 
-                if (await Installer.Install(ServerUrl, OrganizationID, DeviceGroup, DeviceAlias, DeviceUuid, CreateSupportShortcut))
+                if (await _installer.Install(ServerUrl, OrganizationID, DeviceGroup, DeviceAlias, DeviceUuid, CreateSupportShortcut))
                 {
                     IsServiceInstalled = true;
                     Progress = 0;
@@ -508,7 +490,7 @@ namespace Remotely.Agent.Installer.Win.ViewModels
 
                 HeaderMessage = "Uninstalling Remotely...";
 
-                if (await Installer.Uninstall())
+                if (await _installer.Uninstall())
                 {
                     IsServiceInstalled = false;
                     Progress = 0;
