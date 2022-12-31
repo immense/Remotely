@@ -16,7 +16,7 @@ namespace Remotely.Agent.Installer.Win.Services
     {
         private readonly JavaScriptSerializer _serializer = new JavaScriptSerializer();
 
-        public async Task<EmbeddedServerData> TryGetEmbeddedData(string filePath)
+        public Task<EmbeddedServerData> TryGetEmbeddedData(string filePath)
         {
             try
             {
@@ -37,14 +37,14 @@ namespace Remotely.Agent.Installer.Win.Services
                     using (var reader = new BinaryReader(fs))
                     {
                         var serializedData = reader.ReadString();
-                        return _serializer.Deserialize<EmbeddedServerData>(serializedData);
+                        return Task.FromResult(_serializer.Deserialize<EmbeddedServerData>(serializedData));
                     }
                 }
             }
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                return EmbeddedServerData.Empty;
+                return Task.FromResult(EmbeddedServerData.Empty);
             }
         }
 

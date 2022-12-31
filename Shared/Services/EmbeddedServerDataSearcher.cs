@@ -24,20 +24,20 @@ namespace Remotely.Shared.Services
     {
         public static EmbeddedServerDataSearcher Instance { get; } = new();
 
-        public async Task<Result<EmbeddedServerData>> TryGetEmbeddedData(string filePath)
+        public Task<Result<EmbeddedServerData>> TryGetEmbeddedData(string filePath)
         {
             try
             {
                 if (!File.Exists(filePath))
                 {
-                    return Result.Fail<EmbeddedServerData>($"File path does not exist: {filePath}");
+                    return Task.FromResult(Result.Fail<EmbeddedServerData>($"File path does not exist: {filePath}"));
                 }
 
                 using var fs = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
                 var result = SearchBuffer(fs, AppConstants.EmbeddedImmySignature);
                 if (result == -1)
                 {
-                    return Result.Fail<EmbeddedServerData>("Signature not found in file buffer.");
+                    return Task.FromResult(Result.Fail<EmbeddedServerData>("Signature not found in file buffer."));
                 }
 
                 fs.Seek(result + AppConstants.EmbeddedImmySignature.Length, SeekOrigin.Begin);
@@ -49,14 +49,14 @@ namespace Remotely.Shared.Services
 
                 if (embeddedData is null)
                 {
-                    return Result.Fail<EmbeddedServerData>("Embedded data is empty.");
+                    return Task.FromResult(Result.Fail<EmbeddedServerData>("Embedded data is empty."));
                 }
 
-                return Result.Ok(embeddedData);
+                return Task.FromResult(Result.Ok(embeddedData));
             }
             catch (Exception ex)
             {
-                return Result.Fail<EmbeddedServerData>(ex);
+                return Task.FromResult(Result.Fail<EmbeddedServerData>(ex));
             }
         }
 
