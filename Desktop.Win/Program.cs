@@ -11,12 +11,17 @@ using Remotely.Shared.Services;
 using Immense.RemoteControl.Desktop.Shared.Services;
 using System.Diagnostics;
 
+var logger = new FileLogger("Program.cs");
 var filePath = Process.GetCurrentProcess()?.MainModule?.FileName;
 var serverUrl = Debugger.IsAttached ? "https://localhost:5001" : string.Empty;
 var getEmbeddedResult = await EmbeddedServerDataSearcher.Instance.TryGetEmbeddedData(filePath);
 if (getEmbeddedResult.IsSuccess)
 {
     serverUrl = getEmbeddedResult.Value.ServerUrl.AbsoluteUri;
+}
+else
+{
+    logger.LogWarning(getEmbeddedResult.Exception, "Failed to extract embedded server data.");
 }
 
 var provider = await Startup.UseRemoteControlClient(
