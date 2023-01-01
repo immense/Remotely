@@ -13,11 +13,6 @@ I (Darren Kattan) had followed this project since the moment Jared shared it on 
 ImmyBot experienced explosive growth this year and we only have 4 developers which is why there hasn't been much activity here. We did a big push earlier this year to build an integration between Remotely and ImmyBot but ran into some technical challenges trying to keep only one agent on machines, but we don't want to cannibalize Remotely for the gain of ImmyBot. We want to keep Remotely fully operable as a standalone project. When we resume this initiate later this year, you will likely abstraction of the Remotely.Desktop code into a shared library that can be consumed by Remotely as well as other agents like ImmyBot.
 
 
-# Roadmap
-
-* Complete Remotely <-> ImmyBot Integration (2022)
-* Offer a cloud version of Remotely for individuals that do not wish to host it themselves (2023)
-
 ## Project Links
 Subreddit: https://www.reddit.com/r/remotely_app/  
 Docker: https://hub.docker.com/r/immybot/remotely  
