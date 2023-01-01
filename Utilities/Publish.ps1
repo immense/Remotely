@@ -35,12 +35,7 @@ if (!$CurrentVersion) {
     $VersionString = git show -s --format=%ci
     $VersionDate = [DateTimeOffset]::Parse($VersionString)
 
-    $Year = $VersionDate.Year.ToString()
-    $Month = $VersionDate.Month.ToString().PadLeft(2, "0")
-    $Day = $VersionDate.Day.ToString().PadLeft(2, "0")
-    $Hour = $VersionDate.Hour.ToString().PadLeft(2, "0")
-    $Minute = $VersionDate.Minute.ToString().PadLeft(2, "0")
-    $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
+    $CurrentVersion = $VersionDate.ToString("yyyy.MM.dd.HHmm")
 
     Pop-Location
 }

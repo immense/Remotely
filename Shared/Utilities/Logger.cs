@@ -11,10 +11,32 @@ using System.Threading.Tasks;
 
 namespace Remotely.Shared.Utilities
 {
-    // TODO: Replace this with ILogger<T>.
+    [Obsolete("Please use ILogger<T> via dependency injection.")]
     public static class Logger
     {
-        private static string LogDir => Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "Remotely", "Logs")).FullName;
+        private static string _logDir;
+
+        private static string LogDir
+        {
+            get
+            {
+                if (!string.IsNullOrWhiteSpace(_logDir))
+                {
+                    return _logDir;
+                }
+
+                if (OperatingSystem.IsWindows())
+                {
+                    _logDir = Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Remotely", "Logs")).FullName;
+                }
+                else
+                {
+                    _logDir = Directory.CreateDirectory("/var/log/remotely").FullName;
+                }
+                return _logDir;
+            }
+        }
+
         private static string LogPath => Path.Combine(LogDir, $"LogFile_{DateTime.Now:yyyy-MM-dd}.log");
         private static SemaphoreSlim WriteLock { get; } = new(1, 1);
         public static void Debug(string message, [CallerMemberName] string callerName = "")

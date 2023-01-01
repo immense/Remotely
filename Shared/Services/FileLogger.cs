@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
+using Remotely.Shared.Extensions;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Remotely.Shared.Services
 {
@@ -13,20 +15,61 @@ namespace Remotely.Shared.Services
         private static readonly ConcurrentQueue<string> _logQueue = new();
         private static readonly ConcurrentStack<string> _scopeStack = new();
         private static readonly SemaphoreSlim _writeLock = new(1, 1);
+        private static string _logDir;
+        private readonly string _applicationName;
         private readonly string _categoryName;
         private readonly System.Timers.Timer _sinkTimer = new(5000) { AutoReset = false };
-        public FileLogger(string categoryName)
+        public FileLogger(string applicationName, string categoryName)
         {
+            _applicationName = applicationName?.SanitizeFileName() ?? string.Empty;
             _categoryName = categoryName;
             _sinkTimer.Elapsed += SinkTimer_Elapsed;
         }
 
-        private static string LogPath => Path.Combine(Path.GetTempPath(), "Remotely", "Logs", $"LogFile_{DateTime.Now:yyyy-MM-dd}.log");
+        private string LogDir
+        {
+            get
+            {
+                if (!string.IsNullOrWhiteSpace(_logDir))
+                {
+                    return _logDir;
+                }
+
+                if (OperatingSystem.IsWindows())
+                {
+                    _logDir = Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Remotely", "Logs")).FullName;
+                }
+                else
+                {
+                    _logDir = Directory.CreateDirectory("/var/log/remotely").FullName;
+                }
+                return _logDir;
+            }
+        }
+        private string LogPath => Path.Combine(LogDir, $"LogFile_{_applicationName}_{DateTime.Now:yyyy-MM-dd}.log");
 
         public IDisposable BeginScope<TState>(TState state)
         {
             _scopeStack.Push($"{state}");
             return new NoopDisposable();
+        }
+
+        public void DeleteLogs()
+        {
+            try
+            {
+                _writeLock.Wait();
+
+                if (File.Exists(LogPath))
+                {
+                    File.Delete(LogPath);
+                }
+            }
+            catch { }
+            finally
+            {
+                _writeLock.Release();
+            }
         }
 
         public bool IsEnabled(LogLevel logLevel)
@@ -67,7 +110,28 @@ namespace Remotely.Shared.Services
             }
         }
 
-        private static void CheckLogFileExists()
+        public async Task<byte[]> ReadAllBytes()
+        {
+            try
+            {
+                _writeLock.Wait();
+
+                CheckLogFileExists();
+
+                return await File.ReadAllBytesAsync(LogPath);
+            }
+            catch (Exception ex)
+            {
+                this.LogError(ex, "Error while reading all bytes.");
+                return Array.Empty<byte>();
+            }
+            finally
+            {
+                _writeLock.Release();
+            }
+        }
+
+        private void CheckLogFileExists()
         {
             Directory.CreateDirectory(Path.GetDirectoryName(LogPath)!);
             if (!File.Exists(LogPath))
@@ -76,7 +140,7 @@ namespace Remotely.Shared.Services
             }
         }
 
-        private static string FormatLogEntry(LogLevel logLevel, string categoryName, string state, Exception exception, string[] scopeStack)
+        private string FormatLogEntry(LogLevel logLevel, string categoryName, string state, Exception exception, string[] scopeStack)
         {
             var ex = exception;
             var exMessage = exception?.Message;

@@ -50,8 +50,29 @@ docker pull immybot/remotely:latest
 docker run -d --name remotely --restart unless-stopped -p 5000:5000 -v /var/www/remotely:/remotely-data immybot/remotely:latest
 ```
 
-## Build and Debug Instructions (Windows 10)  
-The following steps will configure your Windows 10 machine for building the Remotely server and clients.
+## Alternative Hosting Methods
+Starting in 2023, Docker will be the only supported way of hosting Remotely.  Given the number of Linux distributions and other enviromental unknowns, it will be easier to create a consistently reliable deployment process if we focus on Docker.  Also, the server is now able to dynamically embed the server/organization data into the EXE while it's downloading, so hard-coding the information in a custom build is no longer necessary.
+
+Nevertheless, Remotely can still be hosted using a service manager (e.g. `systemd`) and `dotnet`.  We still provide the Linux x64 binaries in each GitHub release that will work on most major distros.  Please refer to the [official documentation](https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/) that addresses most hosting scenarios.
+
+If you still need to build from source, the `Publish.ps1` script will continue to work, as it's used when building the Docker image.  Below is an example of what I was using to build and publish to my local test server before moving to Docker.
+
+Please note, no further support will be provided for these alternative hosting methods.  If you're unfamiliar with running your own ASP.NET Core app, it's recommended that you use Docker.
+
+```
+$Root = "C:\repos\Remotely"
+Set-Location -Path $Root
+$VersionString = git show -s --format=%ci
+$VersionDate = [DateTimeOffset]::Parse($VersionString)
+$CurrentVersion = $VersionDate.ToString("yyyy.MM.dd.HHmm")
+
+&"$Root\Utilities\Publish.ps1" -rid ubuntu-x64 -outdir "C:\publish"
+scp -r "$Drive\publish\*" "jared@cubey:/var/www/remotely-test/"
+ssh jared@cubey sudo systemctl restart remotely-test
+```
+
+## Build and Debug Instructions (Windows 11)  
+The following steps will configure your Windows 11 machine for building the Remotely server and clients.
 * Install Visual Studio 2022.
     * Link: https://visualstudio.microsoft.com/downloads/
 	* You should have the following Workloads selected:
@@ -68,7 +89,7 @@ The following steps will configure your Windows 10 machine for building the Remo
     * Link: https://git-scm.com/downloads
 * Install the latest LTS Node:
 	* Link: https://nodejs.org/
-* Clone the git repository: `git clone https://github.com/immense/Remotely`
+* Clone the git repository: `git clone https://github.com/immense/Remotely --recurse`
 * When debugging, the agent will use a pre-defined device ID and connect to https://localhost:5001.
 * In development environment, the server will assign all connecting agents to the first organization.
 * The above two allow you to debug the agent and server together, and see your device in the list.
@@ -132,9 +153,9 @@ You can change database by changing `DBProvider` in `ApplicationOptions` to `SQL
 	* More information: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/
 
 ## Remote Control Client Requirements
-* Windows: Only the latest version of Windows 10 is tested.  Windows 7 and 8.1 should work, though performance will be reduced on Windows 7.
-	* Windows 2016/2019 should work as well, but isn't tested regularly.
-* Linux: Only Ubuntu 18.04+ is tested.
+* Windows: Only the latest version of Windows 11 is tested.  Windows 7 and 8.1 should work, though performance will be reduced on Windows 7.
+	* Windows 2019/2022 should work as well, but isn't tested regularly.
+* Linux: Only the latest LTS version of Ubuntu is tested.
 * For the Ubuntu's "quick support" client, you must first install the following dependencies:
     * libx11-dev
 	* libxrandr-dev
