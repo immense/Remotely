@@ -87,15 +87,21 @@ jobs:
     submodules: recursive
     clean: true
     fetchTags: false
+    
+  - task: VisualStudioTestPlatformInstaller@1
+    displayName: Visual Studio Test Platform Installer
+  
+  - task: NodeTool@0
+    inputs:
+      versionSource: 'spec'
+      versionSpec: '6.x'
+      checkLatest: true
 
   - task: DownloadPipelineArtifact@2
     displayName: Download macOS x64 Agent
     inputs:
       artifact: Mac-x64-Agent
       path: $(Build.SourcesDirectory)\Server\wwwroot\Content\
-
-  - task: VisualStudioTestPlatformInstaller@1
-    displayName: Visual Studio Test Platform Installer
 
   - task: PowerShell@2
     displayName: Add CurrentVersion Variable
@@ -163,6 +169,14 @@ jobs:
       arguments: -CertificatePath "$(Build.SourcesDirectory)\Utilities\CodeSigningCert.pfx" -CertificatePassword  "$(SIGNING_CERT_PASSWORD)" -CurrentVersion "$(CurrentVersion)"
       failOnStderr: true
       workingDirectory: Utilities
+
+  # The MSBuild TypeScript task doesn't compiled the TS
+  # files without this build step before publishing.
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'build'
+      projects: '$(Build.SourcesDirectory)/Server/Server.csproj'
+      arguments: '-r linux-x64 -c Release'
 
   - task: DotNetCoreCLI@2
     displayName: dotnet publish linux-x64
