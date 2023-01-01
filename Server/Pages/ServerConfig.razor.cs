@@ -1,10 +1,8 @@
-﻿using Immense.RemoteControl.Server.Abstractions;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Build.Framework;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -16,7 +14,6 @@ using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -375,6 +372,11 @@ namespace Remotely.Server.Pages
             settingsJson["ConnectionStrings"] = ConnectionStrings;
 
             await System.IO.File.WriteAllTextAsync(savePath, JsonSerializer.Serialize(settingsJson, new JsonSerializerOptions() { WriteIndented = true }));
+
+            if (Configuration is IConfigurationRoot root)
+            {
+                root.Reload();
+            }
         }
         private void SetIsServerAdmin(ChangeEventArgs ev, RemotelyUser user)
         {
