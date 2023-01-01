@@ -170,6 +170,14 @@ jobs:
       failOnStderr: true
       workingDirectory: Utilities
 
+  # The MSBuild TypeScript task doesn't compiled the TS
+  # files without this build step before publishing.
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'build'
+      projects: '$(Build.SourcesDirectory)/Server/Server.csproj'
+      arguments: '-r linux-x64 -c Release'
+
   - task: DotNetCoreCLI@2
     displayName: dotnet publish linux-x64
     inputs:
