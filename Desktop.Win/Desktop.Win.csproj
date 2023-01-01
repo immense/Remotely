@@ -9,10 +9,10 @@
     <RootNamespace>Remotely.Desktop.Win</RootNamespace>
     <ApplicationIcon>Assets\favicon.ico</ApplicationIcon>
     <Description>Desktop client for allowing your IT admin to provide remote support.</Description>
-    <Copyright>Copyright ©  2021 Translucency Software</Copyright>
+    <Copyright>Copyright © 2023 Immense Networks</Copyright>
     <PackageId>Remotely Desktop</PackageId>
     <Authors>Jared Goodwin</Authors>
-    <Company>Translucency Software</Company>
+    <Company>Immense Networks</Company>
     <Product>Remotely Desktop</Product>
     <PackageProjectUrl>https://remotely.one</PackageProjectUrl>
     <Platforms>AnyCPU;x86;x64</Platforms>

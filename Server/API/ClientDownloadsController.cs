@@ -1,12 +1,19 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using MailKit.Search;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Remotely.Server.Auth;
 using Remotely.Server.Services;
+using Remotely.Shared;
+using Remotely.Shared.Models;
+using Remotely.Shared.Services;
+using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,16 +25,19 @@ namespace Remotely.Server.API
     {
         private readonly IApplicationConfig _appConfig;
         private readonly IDataService _dataService;
+        private readonly IEmbeddedServerDataSearcher _embeddedDataSearcher;
         private readonly SemaphoreSlim _fileLock = new(1,1);
         private readonly IWebHostEnvironment _hostEnv;
         public ClientDownloadsController(
             IWebHostEnvironment hostEnv,
             IDataService dataService,
-            IApplicationConfig appConfig)
+            IApplicationConfig appConfig,
+            IEmbeddedServerDataSearcher embeddedDataSearcher)
         {
             _hostEnv = hostEnv;
             _appConfig = appConfig;
             _dataService = dataService;
+            _embeddedDataSearcher = embeddedDataSearcher;
         }
 
         [HttpGet("desktop/{platformID}")]
@@ -133,31 +143,16 @@ namespace Remotely.Server.API
 
         private async Task<IActionResult> GetDesktopFile(string filePath, string organizationId = null)
         {
-            string relayCode;
+            var serverUrl = $"{Request.Scheme}://{Request.Host}";
+            var embeddedData = new EmbeddedServerData(new Uri(serverUrl), organizationId);
+            var result = await _embeddedDataSearcher.GetRewrittenStream(filePath, embeddedData);
 
-            if (!string.IsNullOrWhiteSpace(organizationId))
+            if (!result.IsSuccess)
             {
-                var currentOrg = _dataService.GetOrganizationById(organizationId);
-                relayCode = currentOrg.RelayCode;
-            }
-            else
-            {
-                relayCode = await _dataService.GetDefaultRelayCode();
+                throw result.Exception;
             }
 
-            var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filePath);
-
-            if (!string.IsNullOrWhiteSpace(relayCode))
-            {
-                var downloadFileName = fileNameWithoutExtension + $"-[{relayCode}]" + Path.GetExtension(filePath);
-                return File(fs, "application/octet-stream", downloadFileName);
-
-            }
-            else
-            {
-                return File(fs, "application/octet-stream", Path.GetFileName(filePath));
-            }
+            return File(result.Value, "application/octet-stream", Path.GetFileName(filePath));
         }
 
         private async Task<IActionResult> GetInstallFile(string organizationId, string platformID)
@@ -171,21 +166,23 @@ namespace Remotely.Server.API
                         case "WindowsInstaller":
                             {
                                 var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Remotely_Installer.exe");
-                                var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                                var organization = _dataService.GetOrganizationById(organizationId);
-                                var relayCode = organization.RelayCode;
-                                return File(fs, "application/octet-stream", $"Remotely_Install-[{relayCode}].exe");
+                                var serverUrl = $"{Request.Scheme}://{Request.Host}";
+                                var embeddedData = new EmbeddedServerData(new Uri(serverUrl), organizationId);
+                                var result = await _embeddedDataSearcher.GetRewrittenStream(filePath, embeddedData);
+
+                                if (!result.IsSuccess)
+                                {
+                                    throw result.Exception;
+                                }
+
+                                return File(result.Value, "application/octet-stream", "Remotely_Installer.exe");
                             }
-                        // TODO: Remove after a few releases.
-                        case "Manjaro-x64":
                         case "ManjaroInstaller-x64":
                             {
                                 var fileName = "Install-Manjaro-x64.sh";
 
                                 return await GetBashInstaller(fileName, organizationId);
                             }
-                        // TODO: Remove after a few releases.
-                        case "Ubuntu-x64":
                         case "UbuntuInstaller-x64":
                             {
                                 var fileName = "Install-Ubuntu-x64.sh";

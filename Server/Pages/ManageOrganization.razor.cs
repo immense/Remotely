@@ -359,15 +359,6 @@ namespace Remotely.Server.Pages
             });
         }
 
-        private void ShowRelayCodeHelp()
-        {
-            ModalService.ShowModal("Relay Code", new[]
-            {
-                @"This relay code will be appended to EXE filenames.  If the clients were built
-                from source and have the server URL embedded, they will use this code to look
-                up your organization's branding to use."
-            });
-        }
         private void ShowUsersHelp()
         {
             ModalService.ShowModal("Users", new[]

@@ -9,9 +9,20 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Services;
 using Immense.RemoteControl.Desktop.Shared.Services;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Immense.RemoteControl.Desktop.Shared.Enums;
-using Remotely.Shared;
+using System.Diagnostics;
+
+var logger = new FileLogger("Program.cs");
+var filePath = Process.GetCurrentProcess()?.MainModule?.FileName;
+var serverUrl = Debugger.IsAttached ? "https://localhost:5001" : string.Empty;
+var getEmbeddedResult = await EmbeddedServerDataSearcher.Instance.TryGetEmbeddedData(filePath);
+if (getEmbeddedResult.IsSuccess)
+{
+    serverUrl = getEmbeddedResult.Value.ServerUrl.AbsoluteUri;
+}
+else
+{
+    logger.LogWarning(getEmbeddedResult.Exception, "Failed to extract embedded server data.");
+}
 
 var provider = await Startup.UseRemoteControlClient(
     args,
@@ -30,26 +41,31 @@ var provider = await Startup.UseRemoteControlClient(
         });
 
         services.AddSingleton<IOrganizationIdProvider, OrganizationIdProvider>();
+        services.AddSingleton<IEmbeddedServerDataSearcher>(EmbeddedServerDataSearcher.Instance);
     },
-    async services =>
+    services =>
     {
         var appState = services.GetRequiredService<IAppState>();
+        var orgIdProvider = services.GetRequiredService<IOrganizationIdProvider>();
+
+        if (getEmbeddedResult.IsSuccess)
+        {
+            orgIdProvider.OrganizationId = getEmbeddedResult.Value.OrganizationId;
+            appState.Host = getEmbeddedResult.Value.ServerUrl.AbsoluteUri;
+        }
+
         if (appState.ArgDict.TryGetValue("org-id", out var orgId))
         {
-            var orgIdProvider = services.GetRequiredService<IOrganizationIdProvider>();
             orgIdProvider.OrganizationId = orgId;
         }
 
-        var brandingProvider = services.GetRequiredService<IBrandingProvider>();
-        if (brandingProvider is BrandingProvider branding)
-        {
-            await branding.TrySetFromApi();
-        }
-
+        return Task.CompletedTask;
     },
-    AppConstants.ServerUrl);
+    serverUrl);
+
 
 var dispatcher = provider.GetRequiredService<IWindowsUiDispatcher>();
+
 try
 {
     await Task.Delay(Timeout.InfiniteTimeSpan, dispatcher.ApplicationExitingToken);

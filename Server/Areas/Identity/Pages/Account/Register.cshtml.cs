@@ -99,12 +99,6 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
                     IsAdministrator = true
                 };
 
-                do
-                {
-                    user.Organization.RelayCode = new string(Guid.NewGuid().ToString().Take(4).ToArray());
-                }
-                while (await _dataService.GetOrganizationByRelayCode(user.Organization.RelayCode) != null);
-
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {

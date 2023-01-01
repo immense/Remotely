@@ -22,12 +22,13 @@ namespace Remotely.Agent.Installer.Win.Services
 {
     public class InstallerService
     {
+        private readonly string _installPath = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), "Program Files", "Remotely");
+        private readonly string _platform = Environment.Is64BitOperatingSystem ? "x64" : "x86";
+        private readonly JavaScriptSerializer _serializer = new JavaScriptSerializer();
+
         public event EventHandler<string> ProgressMessageChanged;
         public event EventHandler<int> ProgressValueChanged;
 
-        private string InstallPath => Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), "Program Files", "Remotely");
-        private string Platform => Environment.Is64BitOperatingSystem ? "x64" : "x86";
-        private JavaScriptSerializer Serializer { get; } = new JavaScriptSerializer();
         public async Task<bool> Install(string serverUrl,
             string organizationId,
             string deviceGroup,
@@ -55,9 +56,9 @@ namespace Remotely.Agent.Installer.Win.Services
 
                 await DownloadRemotelyAgent(serverUrl);
 
-                FileIO.WriteAllText(Path.Combine(InstallPath, "ConnectionInfo.json"), Serializer.Serialize(connectionInfo));
+                FileIO.WriteAllText(Path.Combine(_installPath, "ConnectionInfo.json"), _serializer.Serialize(connectionInfo));
 
-                FileIO.Copy(Assembly.GetExecutingAssembly().Location, Path.Combine(InstallPath, "Remotely_Installer.exe"));
+                FileIO.Copy(Assembly.GetExecutingAssembly().Location, Path.Combine(_installPath, "Remotely_Installer.exe"));
 
                 await CreateDeviceOnServer(connectionInfo.DeviceID, serverUrl, deviceGroup, deviceAlias, organizationId);
 
@@ -97,7 +98,7 @@ namespace Remotely.Agent.Installer.Win.Services
 
                 ProgressMessageChanged?.Invoke(this, "Deleting files.");
                 ClearInstallDirectory();
-                ProcessEx.StartHidden("cmd.exe", $"/c timeout 5 & rd /s /q \"{InstallPath}\"");
+                ProcessEx.StartHidden("cmd.exe", $"/c timeout 5 & rd /s /q \"{_installPath}\"");
 
                 ProcessEx.StartHidden("netsh", "advfirewall firewall delete rule name=\"Remotely Desktop Unattended\"").WaitForExit();
 
@@ -114,14 +115,14 @@ namespace Remotely.Agent.Installer.Win.Services
 
         private void AddFirewallRule()
         {
-            var desktopExePath = Path.Combine(InstallPath, "Desktop", "Remotely_Desktop.exe");
+            var desktopExePath = Path.Combine(_installPath, "Desktop", "Remotely_Desktop.exe");
             ProcessEx.StartHidden("netsh", "advfirewall firewall delete rule name=\"Remotely Desktop Unattended\"").WaitForExit();
             ProcessEx.StartHidden("netsh", $"advfirewall firewall add rule name=\"Remotely Desktop Unattended\" program=\"{desktopExePath}\" protocol=any dir=in enable=yes action=allow description=\"The agent that allows screen sharing and remote control for Remotely.\"").WaitForExit();
         }
 
         private void BackupDirectory()
         {
-            if (Directory.Exists(InstallPath))
+            if (Directory.Exists(_installPath))
             {
                 Logger.Write("Backing up current installation.");
                 ProgressMessageChanged?.Invoke(this, "Backing up current installation.");
@@ -130,7 +131,7 @@ namespace Remotely.Agent.Installer.Win.Services
                 {
                     FileIO.Delete(backupPath);
                 }
-                ZipFile.CreateFromDirectory(InstallPath, backupPath, CompressionLevel.Fastest, false);
+                ZipFile.CreateFromDirectory(_installPath, backupPath, CompressionLevel.Fastest, false);
             }
         }
 
@@ -148,9 +149,9 @@ namespace Remotely.Agent.Installer.Win.Services
 
         private void ClearInstallDirectory()
         {
-            if (Directory.Exists(InstallPath))
+            if (Directory.Exists(_installPath))
             {
-                foreach (var entry in Directory.GetFileSystemEntries(InstallPath))
+                foreach (var entry in Directory.GetFileSystemEntries(_installPath))
                 {
                     try
                     {
@@ -196,7 +197,7 @@ namespace Remotely.Agent.Installer.Win.Services
                     using (var rs = await wr.GetRequestStreamAsync())
                     using (var sw = new StreamWriter(rs))
                     {
-                        await sw.WriteAsync(Serializer.Serialize(setupOptions));
+                        await sw.WriteAsync(_serializer.Serialize(setupOptions));
                     }
                     using (var response = await wr.GetResponseAsync() as HttpWebResponse)
                     { 
@@ -218,10 +219,10 @@ namespace Remotely.Agent.Installer.Win.Services
         private void CreateSupportShortcut(string serverUrl, string deviceUuid, bool createSupportShortcut)
         {
             var shell = new WshShell();
-            var shortcutLocation = Path.Combine(InstallPath, "Get Support.lnk");
+            var shortcutLocation = Path.Combine(_installPath, "Get Support.lnk");
             var shortcut = (IWshShortcut)shell.CreateShortcut(shortcutLocation);
             shortcut.Description = "Get IT support";
-            shortcut.IconLocation = Path.Combine(InstallPath, "Remotely_Agent.exe");
+            shortcut.IconLocation = Path.Combine(_installPath, "Remotely_Agent.exe");
             shortcut.TargetPath = serverUrl.TrimEnd('/') + $"/GetSupport?deviceID={deviceUuid}";
             shortcut.Save();
 
@@ -234,19 +235,19 @@ namespace Remotely.Agent.Installer.Win.Services
         }
         private void CreateUninstallKey()
         {
-            var version = FileVersionInfo.GetVersionInfo(Path.Combine(InstallPath, "Remotely_Agent.exe"));
+            var version = FileVersionInfo.GetVersionInfo(Path.Combine(_installPath, "Remotely_Agent.exe"));
             var baseKey = GetRegistryBaseKey();
 
             var remotelyKey = baseKey.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Remotely", true);
-            remotelyKey.SetValue("DisplayIcon", Path.Combine(InstallPath, "Remotely_Agent.exe"));
+            remotelyKey.SetValue("DisplayIcon", Path.Combine(_installPath, "Remotely_Agent.exe"));
             remotelyKey.SetValue("DisplayName", "Remotely");
             remotelyKey.SetValue("DisplayVersion", version.FileVersion);
             remotelyKey.SetValue("InstallDate", DateTime.Now.ToShortDateString());
-            remotelyKey.SetValue("Publisher", "Translucency Software");
+            remotelyKey.SetValue("Publisher", "Immense Networks");
             remotelyKey.SetValue("VersionMajor", version.FileMajorPart.ToString(), RegistryValueKind.DWord);
             remotelyKey.SetValue("VersionMinor", version.FileMinorPart.ToString(), RegistryValueKind.DWord);
-            remotelyKey.SetValue("UninstallString", Path.Combine(InstallPath, "Remotely_Installer.exe -uninstall -quiet"));
-            remotelyKey.SetValue("QuietUninstallString", Path.Combine(InstallPath, "Remotely_Installer.exe -uninstall -quiet"));
+            remotelyKey.SetValue("UninstallString", Path.Combine(_installPath, "Remotely_Installer.exe -uninstall -quiet"));
+            remotelyKey.SetValue("QuietUninstallString", Path.Combine(_installPath, "Remotely_Installer.exe -uninstall -quiet"));
         }
 
         private async Task DownloadRemotelyAgent(string serverUrl)
@@ -268,7 +269,7 @@ namespace Remotely.Agent.Installer.Win.Services
                         ProgressValueChanged?.Invoke(this, args.ProgressPercentage);
                     };
 
-                    await client.DownloadFileTaskAsync($"{serverUrl}/Content/Remotely-Win10-{Platform}.zip", targetFile);
+                    await client.DownloadFileTaskAsync($"{serverUrl}/Content/Remotely-Win10-{_platform}.zip", targetFile);
                 }
             }
 
@@ -281,17 +282,17 @@ namespace Remotely.Agent.Installer.Win.Services
                 Directory.Delete(tempDir, true);
             }
 
-            Directory.CreateDirectory(InstallPath);
-            while (!Directory.Exists(InstallPath))
+            Directory.CreateDirectory(_installPath);
+            while (!Directory.Exists(_installPath))
             {
                 await Task.Delay(10);
             }
 
-            var wr = WebRequest.CreateHttp($"{serverUrl}/Content/Remotely-Win10-{Platform}.zip");
+            var wr = WebRequest.CreateHttp($"{serverUrl}/Content/Remotely-Win10-{_platform}.zip");
             wr.Method = "Head";
             using (var response = (HttpWebResponse)await wr.GetResponseAsync())
             {
-                FileIO.WriteAllText(Path.Combine(InstallPath, "etag.txt"), response.Headers["ETag"]);
+                FileIO.WriteAllText(Path.Combine(_installPath, "etag.txt"), response.Headers["ETag"]);
             }
 
             ZipFile.ExtractToDirectory(targetFile, tempDir);
@@ -304,11 +305,11 @@ namespace Remotely.Agent.Installer.Win.Services
                     var entry = fileSystemEntries[i];
                     if (FileIO.Exists(entry))
                     {
-                        FileIO.Copy(entry, Path.Combine(InstallPath, Path.GetFileName(entry)), true);
+                        FileIO.Copy(entry, Path.Combine(_installPath, Path.GetFileName(entry)), true);
                     }
                     else if (Directory.Exists(entry))
                     {
-                        FileSystem.CopyDirectory(entry, Path.Combine(InstallPath, new DirectoryInfo(entry).Name), true);
+                        FileSystem.CopyDirectory(entry, Path.Combine(_installPath, new DirectoryInfo(entry).Name), true);
                     }
                     await Task.Delay(1);
                 }
@@ -323,10 +324,10 @@ namespace Remotely.Agent.Installer.Win.Services
         private ConnectionInfo GetConnectionInfo(string organizationId, string serverUrl, string deviceUuid)
         {
             ConnectionInfo connectionInfo;
-            var connectionInfoPath = Path.Combine(InstallPath, "ConnectionInfo.json");
+            var connectionInfoPath = Path.Combine(_installPath, "ConnectionInfo.json");
             if (FileIO.Exists(connectionInfoPath))
             {
-                connectionInfo = Serializer.Deserialize<ConnectionInfo>(FileIO.ReadAllText(connectionInfoPath));
+                connectionInfo = _serializer.Deserialize<ConnectionInfo>(FileIO.ReadAllText(connectionInfoPath));
                 connectionInfo.ServerVerificationToken = null;
             }
             else
@@ -370,7 +371,7 @@ namespace Remotely.Agent.Installer.Win.Services
             var serv = ServiceController.GetServices().FirstOrDefault(ser => ser.ServiceName == "Remotely_Service");
             if (serv == null)
             {
-                var command = new string[] { "/assemblypath=" + Path.Combine(InstallPath, "Remotely_Agent.exe") };
+                var command = new string[] { "/assemblypath=" + Path.Combine(_installPath, "Remotely_Agent.exe") };
                 var context = new InstallContext("", command);
                 var serviceInstaller = new ServiceInstaller()
                 {
@@ -406,7 +407,7 @@ namespace Remotely.Agent.Installer.Win.Services
                 {
                     Logger.Write("Restoring backup.");
                     ClearInstallDirectory();
-                    ZipFile.ExtractToDirectory(backupPath, InstallPath);
+                    ZipFile.ExtractToDirectory(backupPath, _installPath);
                     var serv = ServiceController.GetServices().FirstOrDefault(ser => ser.ServiceName == "Remotely_Service");
                     if (serv?.Status != ServiceControllerStatus.Running)
                     {

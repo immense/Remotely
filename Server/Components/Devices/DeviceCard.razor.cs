@@ -27,6 +27,7 @@ namespace Remotely.Server.Components.Devices
         private readonly ConcurrentDictionary<string, double> _fileUploadProgressLookup = new();
         private ElementReference _card;
         private Theme _theme;
+        private Version _currentVersion = new();
 
         [Parameter]
         public Device Device { get; set; }
@@ -45,13 +46,16 @@ namespace Remotely.Server.Components.Devices
         private IServiceHubSessionCache ServiceSessionCache { get; init; }
 
         [Inject]
+        private IUpgradeService UpgradeService { get; init; }
+
+        [Inject]
         private IDataService DataService { get; set; }
 
         private bool IsExpanded => GetCardState() == DeviceCardState.Expanded;
 
         private bool IsOutdated =>
             Version.TryParse(Device.AgentVersion, out var result) &&
-            result < ParentFrame.HighestVersion;
+            result < _currentVersion;
 
         private bool IsSelected => AppState.DevicesFrameSelectedDevices.Contains(Device.ID);
 
@@ -74,6 +78,7 @@ namespace Remotely.Server.Components.Devices
         {
             await base.OnInitializedAsync();
             _theme = await AppState.GetEffectiveTheme();
+            _currentVersion = UpgradeService.GetCurrentVersion();
             AppState.PropertyChanged += AppState_PropertyChanged;
             CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
         }

@@ -48,15 +48,20 @@ namespace Remotely.Shared
             IsSuccess = isSuccess;
             Error = error;
             Exception = exception;
+
+            if (string.IsNullOrWhiteSpace(Error) && !string.IsNullOrWhiteSpace(Exception?.Message))
+            {
+                Error = Exception.Message;
+            }
+
+            Exception ??= new Exception(Error ?? string.Empty);
         }
 
         public bool IsSuccess { get; init; }
 
-        public string Error { get; init; }
+        public string Error { get; init; } = string.Empty;
 
         public Exception Exception { get; init; }
-
-
     }
 
     public class Result<T>
@@ -64,15 +69,22 @@ namespace Remotely.Shared
         public Result(bool isSuccess, T value, string error = null, Exception exception = null)
         {
             IsSuccess = isSuccess;
-            Error = error;
             Value = value;
+            Error = error;
             Exception = exception;
+
+            if (string.IsNullOrWhiteSpace(Error) && !string.IsNullOrWhiteSpace(Exception?.Message))
+            {
+                Error = Exception.Message;
+            }
+
+            Exception ??= new Exception(Error ?? string.Empty);
         }
 
 
         public bool IsSuccess { get; init; }
 
-        public string Error { get; init; }
+        public string Error { get; init; } = string.Empty;
 
         public Exception Exception { get; init; }
 

@@ -39,8 +39,6 @@ namespace Remotely.Shared.Models
         [StringLength(25)]
         public string OrganizationName { get; set; }
 
-        public string RelayCode { get; set; }
-
         public ICollection<RemotelyUser> RemotelyUsers { get; set; }
         public ICollection<SharedFile> SharedFiles { get; set; }
     }

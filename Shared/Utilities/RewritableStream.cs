@@ -1,23 +1,22 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Remotely.Shared.Utilities
 {
-    public class AppendableStream : Stream
+    public class RewritableStream : Stream
     {
-        private readonly byte[] _bytesToAppend;
         private readonly Stream _underlyingStream;
-        private bool _bytesAppended;
+        private readonly Dictionary<long, byte> _rewriteMap;
 
-        public AppendableStream(Stream underlyingStream, byte[] bytesToAppend)
+        public RewritableStream(Stream underlyingStream, Dictionary<long, byte> rewriteMap)
         {
             _underlyingStream = underlyingStream;
-            _bytesToAppend = bytesToAppend;
+            _rewriteMap = rewriteMap;
         }
 
         public override bool CanRead => _underlyingStream.CanRead;
@@ -28,7 +27,7 @@ namespace Remotely.Shared.Utilities
 
         public override bool CanWrite => _underlyingStream.CanWrite;
 
-        public override long Length => _underlyingStream.Length + _bytesToAppend.Length;
+        public override long Length => _underlyingStream.Length;
 
         public override long Position
         {
@@ -66,15 +65,28 @@ namespace Remotely.Shared.Utilities
             _underlyingStream.Flush();
         }
 
+        
         public override int Read(byte[] buffer, int offset, int count)
         {
-            if (_underlyingStream.Position == _underlyingStream.Length && !_bytesAppended)
+            var i = 0;
+            for (; i < count; i++)
             {
-                _bytesToAppend.CopyTo(buffer, 0);
-                _bytesAppended = true;
-                return _bytesToAppend.Length;
+                if (_rewriteMap.TryGetValue(Position, out var newValue))
+                {
+                    buffer[offset + i] = newValue;
+                    Seek(1, SeekOrigin.Current);
+                }
+                else
+                {
+                    var current = _underlyingStream.ReadByte();
+                    if (current == -1)
+                    {
+                        break;
+                    }
+                    buffer[offset + i] = current == -1 ? (byte)0 : (byte)current;
+                }
             }
-            return _underlyingStream.Read(buffer, offset, count);
+            return i;
         }
 
         public override long Seek(long offset, SeekOrigin origin)

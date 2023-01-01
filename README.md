@@ -1,20 +1,8 @@
 # Remotely
 A remote control and remote scripting solution, built with .NET 6, Blazor, and SignalR Core.
 
-[![Build Status](https://dev.azure.com/translucency/Remotely/_apis/build/status/Remotely-ReleaseBuild?branchName=master)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=17&branchName=master)
+[![Build Status](https://dev.azure.com/translucency/Remotely/_apis/build/status/immense.Remotely?branchName=master)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=32&branchName=master)
 [![Tests](https://github.com/immense/Remotely/actions/workflows/run_tests.yml/badge.svg?branch=master)](https://github.com/immense/Remotely/actions/workflows/run_tests.yml)
-
-## Update from Author
-### 2022-12-26
-I'm currently working on updates to Remotely's deployment processes.  Once finished, Docker will be the only official method of self-hosting Remotely.  This will help us deliver a consistently reliable deployment experience.
-
-These updates will include a solution for the inability, when using the Docker image, to hardcode your server's URL into the executables.
-
-The `Publish.ps1` script will be used in our workflow and will continue to function the same.  So if you're using this to build and deploy, you won't be affected by these changes.
-
-In the meantime, please don't attempt to deploy changes made to the `master` branch.  When everything is completed, this readme will be updated, and there will be a new release.
-
-Hope everyone is having a wonderful holiday!  Cheers!
 
 # Status 
 ## 2022-05-19
@@ -32,66 +20,24 @@ ImmyBot experienced explosive growth this year and we only have 4 developers whi
 
 ## Project Links
 Subreddit: https://www.reddit.com/r/remotely_app/  
-Docker: https://hub.docker.com/r/translucency/remotely  
+Docker: https://hub.docker.com/r/immybot/remotely  
 Video Tutorials: https://remotely.one/Tutorials  
 
 ![image](.github/media/ask-remote.png)
 
-## Disclaimer
-Hosting a Remotely server requires running an ASP.NET Core web app behind IIS (Windows), Nginx (Ubuntu), or Caddy Server (any OS).  It's expected that the person deploying and maintaining the server is familiar with this process.  Since this is a hobby project that I develop in between working full time and raising a family, there simply isn't time available to provide support in this capacity.
+## Quickstart
+```
+mkdir -p /var/www/remotely
+docker run -d --name remotely --restart unless-stopped -p 5000:5000 -v /var/www/remotely:/remotely-data immybot/remotely:latest
+```
 
-## GitHub Actions
-GitHub Actions allows you to build and deploy Remotely for free from their cloud servers.  Since the Windows agent can only be built on Windows, and the Mac agent can only be built on Mac, using a build platform like GitHub Actions or Azure Pipelines is the only reasonable way to build the whole project.  The definitions for the build processes are located in `/.github/workflows/` folder.
-
-I've created a cross-platform command line tool that can leverage the GitHub Actions REST API to build the project and install it on your private server.  This process will also embed your server's URL into the desktop clients, so that they won't need to prompt the end user to enter it.
-
-Branding will not work for the agent installer or quick support clients (in most cases) unless the server URL is embedded this way.  There is no way for the self-contained EXE to know what server to contact unless it's been compiled into it.
-
-However, you can also choose to install the pre-built packages that do not have any server URLs embedded.  These don't require you to fork the repository on GitHub.
-
-## Installation Instructions:
-- Before attempting installation, verify that your domain name is resolving to your server's IP address.
-  - For example, I can use the command `ping remotely.lucency.co` and see the IP address to which it resolves.
-- Find and download the `Remotely_Server_Installer[.exe]` CLI tool for the latest release on the [Releases page](https://github.com/immense/Remotely/releases).
-  - You will run it on the server where you'll be hosting Remotely.
-  - You need to run it with elevation (e.g. sudo or "Run as admin").
-  - Use `--help` argument to see all the command line arguments.
-    - If values are provided for all arguments, it will run non-interactive.
-  - You can choose between installing the pre-built release package, or entering GitHub credentials to build and install a customized server.
-  - The pre-built package will not have your server's URL embedded in the clients.  End users will need to enter it manually.
-- If you want to use the pre-built package, run the installer now, and you're done!
-  - Otherwise, follow the below steps for setting up the GitHub Actions integration, then run the installer afterward.
-- Fork the repo if you haven't already.
-  - If you've already forked the repo and haven't updated your fork recently, you'll need to do so first.
-  - You can use the following commands to pull the latest changes, merge them, and push them back up to your repo ([git](https://git-scm.com/downloads) required).  Make sure to replace `{your-username}` with your GitHub username.  This example assumes you've added your SSH key to your GitHub account.
-	```
-	git clone git@github.com:{your-username}/remotely
-	cd ./remotely
-	git remote add upstream https://github.com/immense/Remotely
-	git pull upstream master
-	git push origin master
-	```
-- Go to the Actions tab in your forked repo and make sure you can see the Build workflows.
-  - Before you can use Actions for the first time, there will be prompt that you must accept on this page.
-- Create a Personal Access Token that the installer will use to authorize with GitHub.
-  - Located here: https://github.com/settings/tokens
-  - It needs to have the `repo` scope.
-  - Save the PAT when it's displayed.  It will only be shown once.
-- By default, the server will be built from the author's repo.
-  - If you want to build from your fork, comment out the `repository` line in `Build.yml` (in your repo).  There's a comment in the file that points out the line.
-- Now run the installer, as described above.
 
 ## After Installation
-- In the site's content directory, make a copy of the `appsettings.json` file and name it `appsettings.Production.json`.
-  - The server will use this new file for reading/writing its settings, and it won't be overwritten by future ugprades.
-- If using Caddy, a TLS cert will be installed automatically.
-  - When installling on Nginx, the script will use Certbot and prompt you to install a cert.
-  - For Windows IIS, you'll need to use a separate program that integrates with Let's Encrypt.
-    - Resources: https://letsencrypt.org/docs/client-options/#clients-windows-/-iis
-- By default, SQLite is used for the database.
-    - The "Remotely.db" database file is automatically created in the root folder of your site.
-	- You can browse and modify the contents using [DB Browser for SQLite](https://sqlitebrowser.org/).
-- Create your account by clicking the `Register` button on the main page.
+- Data for Remotely will be saved in `/var/www/remotely/` within two files: appsettings.json and Remotely.db.
+  - These files will persist through teardown and setup of new Remotely containers.
+  - If upgrading from a non-Docker version of Remotely, overwrite these files with the ones from your previous installation.
+- Use a reverse proxy like Nginx or Caddy if you want to expose the site to the internet.
+- If this is the first run, create your account by clicking the `Register` button on the main page.
   - This account will be both the server admin and organization admin.
   - An organization is automatically created for the account.
     - Organizations are used to group together users, devices, and other data items into a single pool.
@@ -100,19 +46,18 @@ However, you can also choose to install the pre-built packages that do not have 
     - People will no longer be able to create accounts on their own.
     - To allow self-registration, increase the `MaxOrganizationCount` or set it to -1 (see Configuration section).
 
-## Upgrading
-* To upgrade a server, do any of the below to copy the new Server application files.
-	* Run one of the GitHub Actions workflows, then copy the ZIP contents to the site's content folder.
-	* Build from source as described above and `rsync`/`robocopy` the output files to the server directory.
-	* Build from source and deploy to IIS (e.g. `dotnet publish /p:PublishProfile=MyProfile`)
-* For Linux, you'll need to restart the Remotely service in systemd after overwriting the files.
-* For Windows, you'll need to shut down the site's Application Pool in IIS before copying the files.
-	* Windows won't let you overwrite files that are in use.
-* The only things that shouldn't be overwritten are the database DB file (if using SQLite) and the `appsettings.Production.json`.  These files should never exist in the publish output.
+
+## Update the Docker Container
+```
+docker stop remotely
+docker rm remotely
+docker pull immybot/remotely:latest
+docker run -d --name remotely --restart unless-stopped -p 5000:5000 -v /var/www/remotely:/remotely-data immybot/remotely:latest
+```
 
 ## Build and Debug Instructions (Windows 10)  
 The following steps will configure your Windows 10 machine for building the Remotely server and clients.
-* Install Visual Studio 2019.
+* Install Visual Studio 2022.
     * Link: https://visualstudio.microsoft.com/downloads/
 	* You should have the following Workloads selected:
 	    * ASP.NET and web development

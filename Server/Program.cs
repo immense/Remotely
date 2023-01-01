@@ -32,6 +32,7 @@ using Immense.RemoteControl.Server.Extensions;
 using Remotely.Server.Services.RcImplementations;
 using Immense.RemoteControl.Server.Abstractions;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Remotely.Shared.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -168,7 +169,7 @@ services.AddScoped<ExpiringTokenFilter>();
 services.AddHostedService<DbCleanupService>();
 services.AddHostedService<ScriptScheduler>();
 services.AddHostedService<DesktopHubSessionCleanup>();
-services.AddScoped<IUpgradeService, UpgradeService>();
+services.AddSingleton<IUpgradeService, UpgradeService>();
 services.AddScoped<IToastService, ToastService>();
 services.AddScoped<IModalService, ModalService>();
 services.AddScoped<IJsInterop, JsInterop>();
@@ -180,6 +181,7 @@ services.AddScoped<IClientAppState, ClientAppState>();
 services.AddScoped<IExpiringTokenService, ExpiringTokenService>();
 services.AddScoped<IScriptScheduleDispatcher, ScriptScheduleDispatcher>();
 services.AddSingleton<IOtpProvider, OtpProvider>();
+services.AddSingleton<IEmbeddedServerDataSearcher, EmbeddedServerDataSearcher>();
 
 services.AddRemoteControlServer(config =>
 {

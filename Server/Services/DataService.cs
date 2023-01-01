@@ -119,8 +119,6 @@ namespace Remotely.Server.Services
 
         Task<Organization> GetDefaultOrganization();
 
-        Task<string> GetDefaultRelayCode();
-
         Device GetDevice(string deviceID);
 
         Device GetDevice(string orgID, string deviceID);
@@ -141,8 +139,6 @@ namespace Remotely.Server.Services
         EventLog[] GetEventLogs(string userName, DateTimeOffset from, DateTimeOffset to, EventType? type, string message);
 
         Organization GetOrganizationById(string organizationID);
-
-        Task<Organization> GetOrganizationByRelayCode(string relayCode);
 
         Task<Organization> GetOrganizationByUserName(string userName);
 
@@ -185,8 +181,6 @@ namespace Remotely.Server.Services
         RemotelyUserOptions GetUserOptions(string userName);
 
         bool JoinViaInvitation(string userName, string inviteID);
-
-        void PopulateRelayCodes();
 
         void RemoveDevices(string[] deviceIDs);
 
@@ -1189,18 +1183,6 @@ namespace Remotely.Server.Services
             return await dbContext.Organizations.FirstOrDefaultAsync(x => x.IsDefaultOrganization);
         }
 
-        public async Task<string> GetDefaultRelayCode()
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var relayCode = await dbContext.Organizations
-                .Where(x => x.IsDefaultOrganization)
-                .Select(x => x.RelayCode)
-                .FirstOrDefaultAsync();
-
-            return relayCode;
-        }
-
         public Device GetDevice(string orgID, string deviceID)
         {
             using var dbContext = _appDbFactory.GetContext();
@@ -1384,17 +1366,6 @@ namespace Remotely.Server.Services
             return dbContext.Organizations.Find(organizationID);
         }
 
-        public async Task<Organization> GetOrganizationByRelayCode(string relayCode)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            if (string.IsNullOrWhiteSpace(relayCode))
-            {
-                return null;
-            }
-
-            return await dbContext.Organizations.FirstOrDefaultAsync(x => x.RelayCode == relayCode.ToLower());
-        }
 
         public async Task<Organization> GetOrganizationByUserName(string userName)
         {
@@ -1655,24 +1626,6 @@ namespace Remotely.Server.Services
             dbContext.InviteLinks.Remove(invite);
             dbContext.SaveChanges();
             return true;
-        }
-
-        public void PopulateRelayCodes()
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            foreach (var organization in dbContext.Organizations)
-            {
-                if (string.IsNullOrWhiteSpace(organization.RelayCode))
-                {
-                    do
-                    {
-                        organization.RelayCode = new string(Guid.NewGuid().ToString().Take(4).ToArray());
-                    }
-                    while (dbContext.Organizations.Any(x => x.ID != organization.ID && x.RelayCode == organization.RelayCode));
-                }
-            }
-            dbContext.SaveChanges();
         }
 
         public void RemoveDevices(string[] deviceIDs)

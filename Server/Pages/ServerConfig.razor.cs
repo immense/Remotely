@@ -47,9 +47,6 @@ namespace Remotely.Server.Pages
         [Display(Name = "Enforce Attended Access")]
         public bool EnforceAttendedAccess { get; set; }
 
-        [Display(Name = "Ice Servers")]
-        public IceServerModel[] IceServers { get; set; }
-
         [Display(Name = "Known Proxies")]
         public List<string> KnownProxies { get; set; } = new();
 
@@ -170,6 +167,9 @@ namespace Remotely.Server.Pages
         private IModalService ModalService { get; set; }
 
         [Inject]
+        private IUpgradeService UpgradeService { get; init; }
+
+        [Inject]
         private ICircuitManager CircuitManager { get; set; }
 
         private IEnumerable<string> OutdatedDevices => GetOutdatedDevices();
@@ -238,18 +238,10 @@ namespace Remotely.Server.Pages
         {
             try
             {
-                if (!System.IO.File.Exists("Remotely_Server.dll"))
-                {
-                    return Enumerable.Empty<string>();
-                }
-
-                if (!Version.TryParse(FileVersionInfo.GetVersionInfo("Remotely_Server.dll").FileVersion, out var serverVersion))
-                {
-                    return Enumerable.Empty<string>();
-                }
+                var currentVersion = UpgradeService.GetCurrentVersion();
 
                 return ServiceSessionCache.GetAllDevices()
-                    .Where(x => Version.TryParse(x.AgentVersion, out var result) && result < serverVersion)
+                    .Where(x => Version.TryParse(x.AgentVersion, out var result) && result < currentVersion)
                     .Select(x => x.ID);
             }
             catch (Exception ex)
@@ -379,7 +371,6 @@ namespace Remotely.Server.Pages
             }
 
             var settingsJson = JsonSerializer.Deserialize<IDictionary<string, object>>(await System.IO.File.ReadAllTextAsync(savePath));
-            Input.IceServers = Configuration.GetSection("ApplicationOptions:IceServers").Get<IceServerModel[]>();
             settingsJson["ApplicationOptions"] = Input;
             settingsJson["ConnectionStrings"] = ConnectionStrings;
 

@@ -593,9 +593,6 @@ namespace Remotely.Server.Migrations.PostgreSql
                         .HasMaxLength(25)
                         .HasColumnType("character varying(25)");
 
-                    b.Property<string>("RelayCode")
-                        .HasColumnType("text");
-
                     b.HasKey("ID");
 
                     b.ToTable("Organizations");
