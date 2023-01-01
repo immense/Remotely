@@ -11,7 +11,7 @@ using Remotely.Shared.Services;
 using Immense.RemoteControl.Desktop.Shared.Services;
 using System.Diagnostics;
 
-var logger = new FileLogger("Program.cs");
+var logger = new FileLogger("Remotely_Desktop", "Program.cs");
 var filePath = Process.GetCurrentProcess()?.MainModule?.FileName;
 var serverUrl = Debugger.IsAttached ? "https://localhost:5001" : string.Empty;
 var getEmbeddedResult = await EmbeddedServerDataSearcher.Instance.TryGetEmbeddedData(filePath);
@@ -37,7 +37,7 @@ var provider = await Startup.UseRemoteControlClient(
 #if DEBUG
             builder.SetMinimumLevel(LogLevel.Debug);
 #endif
-            builder.AddProvider(new FileLoggerProvider());
+            builder.AddProvider(new FileLoggerProvider("Remotely_Desktop"));
         });
 
         services.AddSingleton<IOrganizationIdProvider, OrganizationIdProvider>();

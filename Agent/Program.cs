@@ -28,8 +28,6 @@ namespace Remotely.Agent
 
                 await Init();
 
-                _ = Task.Run(Services.GetRequiredService<AgentSocket>().HandleConnection);
-
                 await Task.Delay(-1);
 
             }
@@ -47,8 +45,11 @@ namespace Remotely.Agent
             serviceCollection.AddLogging(builder =>
             {
                 builder.AddConsole().AddDebug();
+                builder.AddProvider(new FileLoggerProvider("Remotely_Agent"));
             });
-            serviceCollection.AddSingleton<AgentSocket>();
+
+            // TODO: All these should be registered as interfaces.
+            serviceCollection.AddSingleton<IAgentHubConnection, AgentHubConnection>();
             serviceCollection.AddScoped<ChatClientService>();
             serviceCollection.AddTransient<PSCore>();
             serviceCollection.AddTransient<ExternalScriptingShell>();
@@ -106,7 +107,7 @@ namespace Remotely.Agent
 
                 await Services.GetRequiredService<IUpdater>().BeginChecking();
 
-                await Services.GetRequiredService<AgentSocket>().Connect();
+                await Services.GetRequiredService<IAgentHubConnection>().Connect();
             }
             catch (Exception ex)
             {

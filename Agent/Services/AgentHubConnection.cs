@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Remotely.Agent.Extensions;
 using Remotely.Agent.Interfaces;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
+using Remotely.Shared.Services;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.Win32;
 using System;
@@ -17,7 +19,15 @@ using System.Timers;
 
 namespace Remotely.Agent.Services
 {
-    public class AgentSocket
+    public interface IAgentHubConnection
+    {
+        bool IsConnected { get; }
+
+        Task Connect();
+        Task SendHeartbeat();
+    }
+
+    public class AgentHubConnection : IAgentHubConnection, IDisposable
     {
         private readonly IAppLauncher _appLauncher;
 
@@ -27,6 +37,7 @@ namespace Remotely.Agent.Services
 
         private readonly IDeviceInformationService _deviceInfoService;
         private readonly IHttpClientFactory _httpFactory;
+        private readonly ILogger<AgentHubConnection> _logger;
         private readonly ScriptExecutor _scriptExecutor;
 
         private readonly Uninstaller _uninstaller;
@@ -35,18 +46,18 @@ namespace Remotely.Agent.Services
 
         private ConnectionInfo _connectionInfo;
         private HubConnection _hubConnection;
-        private System.Timers.Timer HeartbeatTimer;
+        private Timer _heartbeatTimer;
+        private bool _isServerVerified;
 
-        private bool IsServerVerified;
-
-        public AgentSocket(ConfigService configService,
+        public AgentHubConnection(ConfigService configService,
             Uninstaller uninstaller,
             ScriptExecutor scriptExecutor,
             ChatClientService chatService,
             IAppLauncher appLauncher,
             IUpdater updater,
             IDeviceInformationService deviceInfoService,
-            IHttpClientFactory httpFactory)
+            IHttpClientFactory httpFactory,
+            ILogger<AgentHubConnection> logger)
         {
             _configService = configService;
             _uninstaller = uninstaller;
@@ -56,90 +67,88 @@ namespace Remotely.Agent.Services
             _updater = updater;
             _deviceInfoService = deviceInfoService;
             _httpFactory = httpFactory;
+            _logger = logger;
         }
+
         public bool IsConnected => _hubConnection?.State == HubConnectionState.Connected;
+
         public async Task Connect()
-        {
-            try
-            {
-                _connectionInfo = _configService.GetConnectionInfo();
-
-                _hubConnection = new HubConnectionBuilder()
-                    .WithUrl(_connectionInfo.Host + "/hubs/service")
-                    .AddMessagePackProtocol()
-                    .Build();
-
-                RegisterMessageHandlers();
-
-                await _hubConnection.StartAsync();
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex, "Failed to connect to server.  Internet connection may be unavailable.", EventType.Warning);
-                return;
-            }
-
-            try
-            {
-                var device = await _deviceInfoService.CreateDevice(_connectionInfo.DeviceID, _connectionInfo.OrganizationID);
-
-                var result = await _hubConnection.InvokeAsync<bool>("DeviceCameOnline", device);
-
-                if (!result)
-                {
-                    // Orgnanization ID wasn't found, or this device is already connected.
-                    // The above can be caused by temporary issues on the server.  So we'll do
-                    // nothing here and wait for it to get resolved.
-                    Logger.Write("There was an issue registering with the server.  The server might be undergoing maintenance, or the supplied organization ID might be incorrect.");
-                    await Task.Delay(TimeSpan.FromMinutes(1));
-                    await _hubConnection.StopAsync();
-                    return;
-                }
-
-                if (!await VerifyServer())
-                {
-                    return;
-                }
-
-                if (await CheckForServerMigration())
-                {
-                    return;
-                }
-
-                HeartbeatTimer?.Dispose();
-                HeartbeatTimer = new System.Timers.Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
-                HeartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
-                HeartbeatTimer.Start();
-
-                await _hubConnection.SendAsync("CheckForPendingSriptRuns");
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex, "Error starting websocket connection.", EventType.Error);
-            }
-        }
-
-        public async Task HandleConnection()
         {
             while (true)
             {
                 try
                 {
-                    if (!IsConnected)
+                    _logger.LogInformation("Attempting to connect to server.");
+
+                    _connectionInfo = _configService.GetConnectionInfo();
+
+                    if (_hubConnection is not null)
                     {
-                        var waitTime = new Random().Next(1000, 30000);
-                        Logger.Write($"Websocket closed.  Reconnecting in {waitTime / 1000} seconds...");
-                        await Task.Delay(waitTime);
-                        await Program.Services.GetRequiredService<AgentSocket>().Connect();
-                        await Program.Services.GetRequiredService<IUpdater>().CheckForUpdates();
+                        await _hubConnection.DisposeAsync();
                     }
+
+                    _hubConnection = new HubConnectionBuilder()
+                        .WithUrl(_connectionInfo.Host + "/hubs/service")
+                        .WithAutomaticReconnect(new RetryPolicy())
+                        .AddMessagePackProtocol()
+                        .Build();
+
+                    RegisterMessageHandlers();
+
+                    _hubConnection.Reconnected += HubConnection_Reconnected;
+
+                    await _hubConnection.StartAsync();
+
+                    _logger.LogInformation("Connected to server.");
+
+                    var device = await _deviceInfoService.CreateDevice(_connectionInfo.DeviceID, _connectionInfo.OrganizationID);
+
+                    var result = await _hubConnection.InvokeAsync<bool>("DeviceCameOnline", device);
+
+                    if (!result)
+                    {
+                        // Orgnanization ID wasn't found, or this device is already connected.
+                        // The above can be caused by temporary issues on the server.  So we'll do
+                        // nothing here and wait for it to get resolved.
+                        _logger.LogError("There was an issue registering with the server.  The server might be undergoing maintenance, or the supplied organization ID might be incorrect.");
+                        await Task.Delay(TimeSpan.FromMinutes(1));
+                        continue;
+                    }
+
+                    if (!await VerifyServer())
+                    {
+                        await Task.Delay(TimeSpan.FromMinutes(1));
+                        continue;
+                    }
+
+                    if (await CheckForServerMigration())
+                    {
+                        continue;
+                    }
+
+                    _heartbeatTimer?.Dispose();
+                    _heartbeatTimer = new Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
+                    _heartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;
+                    _heartbeatTimer.Start();
+
+                    await _hubConnection.SendAsync("CheckForPendingSriptRuns");
+
+                    break;
                 }
                 catch (Exception ex)
                 {
-                    Logger.Write(ex);
+                    _logger.LogError(ex, "Error while connecting to server.");
+                    await Task.Delay(5_000);
                 }
-                await Task.Delay(1000);
+
+
             }
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            _heartbeatTimer?.Dispose();
         }
 
         public async Task SendHeartbeat()
@@ -171,11 +180,17 @@ namespace Remotely.Agent.Services
             }
             return false;
         }
+
         private async void HeartbeatTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             await SendHeartbeat();
         }
 
+        private async Task HubConnection_Reconnected(string arg)
+        {
+            _logger.LogInformation("Reconnected to server.");
+            await _updater.CheckForUpdates();
+        }
         private void RegisterMessageHandlers()
         {
 
@@ -183,9 +198,9 @@ namespace Remotely.Agent.Services
             {
                 try
                 {
-                    if (!IsServerVerified)
+                    if (!_isServerVerified)
                     {
-                        Logger.Write("Session change attempted before server was verified.", EventType.Warning);
+                        _logger.LogWarning("Session change attempted before server was verified.");
                         return;
                     }
 
@@ -193,7 +208,7 @@ namespace Remotely.Agent.Services
                 }
                 catch (Exception ex)
                 {
-                    Logger.Write(ex);
+                    _logger.LogError(ex, "Error while handling ChangeWindowsSession.");
                 }
             });
 
@@ -201,9 +216,9 @@ namespace Remotely.Agent.Services
             {
                 try
                 {
-                    if (!IsServerVerified)
+                    if (!_isServerVerified)
                     {
-                        Logger.Write("Chat attempted before server was verified.", EventType.Warning);
+                        _logger.LogWarning("Chat attempted before server was verified.");
                         return;
                     }
 
@@ -211,15 +226,15 @@ namespace Remotely.Agent.Services
                 }
                 catch (Exception ex)
                 {
-                    Logger.Write(ex);
+                    _logger.LogError(ex, "Error while handling chat message.");
                 }
             });
 
             _hubConnection.On("CtrlAltDel", () =>
             {
-                if (!IsServerVerified)
+                if (!_isServerVerified)
                 {
-                    Logger.Write("CtrlAltDel attempted before server was verified.", EventType.Warning);
+                    _logger.LogWarning("CtrlAltDel attempted before server was verified.");
                     return;
                 }
                 User32.SendSAS(false);
@@ -227,7 +242,10 @@ namespace Remotely.Agent.Services
 
             _hubConnection.On("DeleteLogs", () =>
            {
-               Logger.DeleteLogs();
+               if (_logger is FileLogger logger)
+               {
+                   logger.DeleteLogs();
+               }
            });
 
 
@@ -235,9 +253,13 @@ namespace Remotely.Agent.Services
             {
                 try
                 {
-                    if (!IsServerVerified)
+                    if (!_isServerVerified)
                     {
-                        Logger.Write($"Command attempted before server was verified.  Shell: {shell}.  Command: {command}.  Sender: {senderConnectionID}", EventType.Warning);
+                        _logger.LogWarning(
+                            "Command attempted before server was verified.  Shell: {shell}.  Command: {command}.  Sender: {senderConnectionID}",
+                            shell,
+                            command,
+                            senderConnectionID);
                         return;
                     }
 
@@ -252,7 +274,7 @@ namespace Remotely.Agent.Services
                 }
                 catch (Exception ex)
                 {
-                    Logger.Write(ex);
+                    _logger.LogError(ex, "Error while executing command.");
                 }
             }));
 
@@ -265,9 +287,13 @@ namespace Remotely.Agent.Services
             {
                 try
                 {
-                    if (!IsServerVerified)
+                    if (!_isServerVerified)
                     {
-                        Logger.Write($"Command attempted before server was verified.  Shell: {shell}.  Command: {command}.  Sender: {senderUsername}", EventType.Warning);
+                        _logger.LogWarning(
+                            "Command attempted before server was verified.  Shell: {shell}.  Command: {command}.  Sender: {senderUsername}",
+                            shell,
+                            command,
+                            senderUsername);
                         return;
                     }
 
@@ -275,27 +301,33 @@ namespace Remotely.Agent.Services
                 }
                 catch (Exception ex)
                 {
-                    Logger.Write(ex);
+                    _logger.LogError(ex, "Error while executing command from API.");
                 }
             });
 
 
             _hubConnection.On("GetLogs", async (string senderConnectionId) =>
             {
-                var logBytes = await Logger.ReadAllLogs();
+                if (_logger is not FileLogger logger)
+                {
+                    await _hubConnection.InvokeAsync("SendLogs", "Logger is not of expected type.", senderConnectionId).ConfigureAwait(false);
+                    return;
+                }
+
+                var logBytes = await logger.ReadAllBytes();
 
                 if (!logBytes.Any())
                 {
                     var message = "There are no log entries written.";
 
-                    await _hubConnection.InvokeAsync("SendLogs", message, senderConnectionId);
+                    await _hubConnection.InvokeAsync("SendLogs", message, senderConnectionId).ConfigureAwait(false);
                     return;
                 }
 
                 for (var i = 0; i < logBytes.Length; i += 50_000)
                 {
                     var chunk = Encoding.UTF8.GetString(logBytes.Skip(i).Take(50_000).ToArray());
-                    await _hubConnection.InvokeAsync("SendLogs", chunk, senderConnectionId);
+                    await _hubConnection.InvokeAsync("SendLogs", chunk, senderConnectionId).ConfigureAwait(false);
                 }
             });
 
@@ -307,11 +339,11 @@ namespace Remotely.Agent.Services
                     var session = PSCore.GetCurrent(senderConnectionId);
                     var completion = session.GetCompletions(inputText, currentIndex, forward);
                     var completionModel = completion.ToPwshCompletion();
-                    await _hubConnection.InvokeAsync("ReturnPowerShellCompletions", completionModel, intent, senderConnectionId);
+                    await _hubConnection.InvokeAsync("ReturnPowerShellCompletions", completionModel, intent, senderConnectionId).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
-                    Logger.Write(ex);
+                    _logger.LogError(ex, "Error while getting PowerShell completions.");
                 }
             });
 
@@ -324,7 +356,7 @@ namespace Remotely.Agent.Services
                 }
                 catch (Exception ex)
                 {
-                    Logger.Write(ex);
+                    _logger.LogError(ex, "Error while reinstalling agent.");
                 }
             });
 
@@ -336,7 +368,7 @@ namespace Remotely.Agent.Services
                 }
                 catch (Exception ex)
                 {
-                    Logger.Write(ex);
+                    _logger.LogError(ex, "Error while uninstalling agent.");
                 }
             });
 
@@ -344,16 +376,16 @@ namespace Remotely.Agent.Services
             {
                 try
                 {
-                    if (!IsServerVerified)
+                    if (!_isServerVerified)
                     {
-                        Logger.Write("Remote control attempted before server was verified.", EventType.Warning);
+                        _logger.LogWarning("Remote control attempted before server was verified.");
                         return;
                     }
                     await _appLauncher.LaunchRemoteControl(-1, sessionId, accessKey, userConnectionId, requesterName, orgName, orgId, _hubConnection);
                 }
                 catch (Exception ex)
                 {
-                    Logger.Write(ex);
+                    _logger.LogError(ex, "Error while starting remote control.");
                 }
             });
 
@@ -361,16 +393,16 @@ namespace Remotely.Agent.Services
             {
                 try
                 {
-                    if (!IsServerVerified)
+                    if (!_isServerVerified)
                     {
-                        Logger.Write("Remote control attempted before server was verified.", EventType.Warning);
+                        _logger.LogWarning("Remote control attempted before server was verified.");
                         return;
                     }
                     await _appLauncher.RestartScreenCaster(viewerIDs, sessionId, accessKey, userConnectionId, requesterName, orgName, orgId, _hubConnection);
                 }
                 catch (Exception ex)
                 {
-                    Logger.Write(ex);
+                    _logger.LogError(ex, "Error while restarting screen caster.");
                 }
             });
 
@@ -379,9 +411,12 @@ namespace Remotely.Agent.Services
             {
                 try
                 {
-                    if (!IsServerVerified)
+                    if (!_isServerVerified)
                     {
-                        Logger.Write($"Script run attempted before server was verified.  Script ID: {savedScriptId}.  Initiator: {initiator}", EventType.Warning);
+                        _logger.LogWarning(
+                            "Script run attempted before server was verified.  Script ID: {savedScriptId}.  Initiator: {initiator}",
+                            savedScriptId,
+                            initiator);
                         return;
                     }
 
@@ -390,7 +425,7 @@ namespace Remotely.Agent.Services
                 }
                 catch (Exception ex)
                 {
-                    Logger.Write(ex);
+                    _logger.LogError(ex, "Error while running script.");
                 }
             });
 
@@ -398,13 +433,14 @@ namespace Remotely.Agent.Services
             {
                 try
                 {
-                    if (!IsServerVerified)
+                    if (!_isServerVerified)
                     {
-                        Logger.Write("File upload attempted before server was verified.", EventType.Warning);
+                        _logger.LogWarning("File upload attempted before server was verified.");
                         return;
                     }
 
-                    Logger.Write($"File upload started by {requesterID}.");
+                    _logger.LogInformation("File upload started by {requesterID}.", requesterID);
+
                     var sharedFilePath = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "RemotelySharedFiles")).FullName;
 
                     foreach (var fileID in fileIDs)
@@ -427,13 +463,13 @@ namespace Remotely.Agent.Services
                 }
                 catch (Exception ex)
                 {
-                    Logger.Write(ex);
+                    _logger.LogError(ex, "Error while transfering file from browser to agent.");
                 }
             });
 
             _hubConnection.On("TriggerHeartbeat", async () =>
             {
-                await SendHeartbeat();
+                await SendHeartbeat().ConfigureAwait(false);
             });
         }
 
@@ -441,9 +477,9 @@ namespace Remotely.Agent.Services
         {
             if (string.IsNullOrWhiteSpace(_connectionInfo.ServerVerificationToken))
             {
-                IsServerVerified = true;
+                _isServerVerified = true;
                 _connectionInfo.ServerVerificationToken = Guid.NewGuid().ToString();
-                await _hubConnection.SendAsync("SetServerVerificationToken", _connectionInfo.ServerVerificationToken);
+                await _hubConnection.SendAsync("SetServerVerificationToken", _connectionInfo.ServerVerificationToken).ConfigureAwait(false);
                 _configService.SaveConnectionInfo(_connectionInfo);
             }
             else
@@ -452,16 +488,30 @@ namespace Remotely.Agent.Services
 
                 if (verificationToken == _connectionInfo.ServerVerificationToken)
                 {
-                    IsServerVerified = true;
+                    _isServerVerified = true;
                 }
                 else
                 {
-                    Logger.Write($"Server sent an incorrect verification token.  Token Sent: {verificationToken}.", EventType.Warning);
+                    _logger.LogWarning("Server sent an incorrect verification token.  Token Sent: {verificationToken}.", verificationToken);
                     return false;
                 }
             }
 
             return true;
+        }
+
+        private class RetryPolicy : IRetryPolicy
+        {
+            public TimeSpan? NextRetryDelay(RetryContext retryContext)
+            {
+                if (retryContext.PreviousRetryCount == 0)
+                {
+                    return TimeSpan.FromSeconds(3);
+                }
+
+                var waitSeconds = Math.Min(30, retryContext.PreviousRetryCount * 5);
+                return TimeSpan.FromSeconds(waitSeconds);
+            }
         }
     }
 }

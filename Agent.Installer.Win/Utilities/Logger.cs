@@ -6,7 +6,8 @@ namespace Remotely.Agent.Installer.Win.Utilities
 {
     public class Logger
     {
-        private static readonly string _logPath = Path.Combine(Path.GetTempPath(), "Remotely", "Installer.log");
+        private static readonly string _logDir = Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Remotely", "Logs")).FullName;
+        private static readonly string _logPath = Path.Combine(_logDir, "Installer.log");
         private static readonly object _writeLock = new object();
 
         public static void Debug(string message)
