@@ -12,6 +12,7 @@ namespace Remotely.Server.Services
 {
     public interface IUpgradeService
     {
+        Version GetCurrentVersion();
         Task<bool> IsNewVersionAvailable();
     }
 
@@ -19,6 +20,7 @@ namespace Remotely.Server.Services
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<UpgradeService> _logger;
+        private Version _currentVersion;
 
         public UpgradeService(IHttpClientFactory httpClientFactory, ILogger<UpgradeService> logger)
         {
@@ -26,6 +28,30 @@ namespace Remotely.Server.Services
             _logger = logger;
         }
 
+        public Version GetCurrentVersion()
+        {
+            try
+            {
+                if (_currentVersion is not null)
+                {
+                    return _currentVersion;
+                }
+
+                var fileVersion = System.Diagnostics.FileVersionInfo.GetVersionInfo("Remotely_Server.dll").FileVersion;
+                if (Version.TryParse(fileVersion, out var result))
+                {
+                    _currentVersion = result;
+                    return _currentVersion;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while getting current version.");
+            }
+
+            _currentVersion = new(1, 0);
+            return _currentVersion;
+        }
         public async Task<bool> IsNewVersionAvailable()
         {
 

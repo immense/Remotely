@@ -14,7 +14,7 @@
 <p>
     Version: @if (System.IO.File.Exists("Remotely_Server.dll"))
     {
-        <span>@System.Diagnostics.FileVersionInfo.GetVersionInfo("Remotely_Server.dll").FileVersion.ToString()</span>
+        <span>@System.Diagnostics.FileVersionInfo.GetVersionInfo("Remotely_Server.dll").FileVersion</span>
     }
     else
     {

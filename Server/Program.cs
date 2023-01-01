@@ -169,7 +169,7 @@ services.AddScoped<ExpiringTokenFilter>();
 services.AddHostedService<DbCleanupService>();
 services.AddHostedService<ScriptScheduler>();
 services.AddHostedService<DesktopHubSessionCleanup>();
-services.AddScoped<IUpgradeService, UpgradeService>();
+services.AddSingleton<IUpgradeService, UpgradeService>();
 services.AddScoped<IToastService, ToastService>();
 services.AddScoped<IModalService, ModalService>();
 services.AddScoped<IJsInterop, JsInterop>();
