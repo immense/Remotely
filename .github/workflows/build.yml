@@ -23,9 +23,6 @@ name: Build
 on:
   workflow_dispatch:
     inputs:
-      serverUrl:
-        description: 'Server URL'     
-        required: true
       rid:
         description: 'Server Runtime Identifier'     
         required: false
@@ -57,12 +54,7 @@ jobs:
           $VersionString = git show -s --format=%ci
           $VersionDate = [DateTimeOffset]::Parse($VersionString)
 
-          $Year = $VersionDate.Year.ToString()
-          $Month = $VersionDate.Month.ToString().PadLeft(2, "0")
-          $Day = $VersionDate.Day.ToString().PadLeft(2, "0")
-          $Hour = $VersionDate.Hour.ToString().PadLeft(2, "0")
-          $Minute = $VersionDate.Minute.ToString().PadLeft(2, "0")
-          $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
+          $CurrentVersion = $VersionDate.ToString("yyyy.MM.dd.HHmm")
 
           echo "CurrentVersion=$CurrentVersion" >> $env:GITHUB_ENV
 
@@ -74,12 +66,7 @@ jobs:
           $VersionString = git show -s --format=%ci
           $VersionDate = [DateTimeOffset]::Parse($VersionString)
 
-          $Year = $VersionDate.Year.ToString()
-          $Month = $VersionDate.Month.ToString().PadLeft(2, "0")
-          $Day = $VersionDate.Day.ToString().PadLeft(2, "0")
-          $Hour = $VersionDate.Hour.ToString().PadLeft(2, "0")
-          $Minute = $VersionDate.Minute.ToString().PadLeft(2, "0")
-          $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
+          $CurrentVersion = $VersionDate.ToString("yyyy.MM.dd.HHmm")
           
           Write-Host "Publishing agent with version $CurrentVersion"
           dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime osx-x64 --configuration Release --output "./Agent/bin/publish/" "./Agent/"
@@ -163,13 +150,8 @@ jobs:
       run: |
         $VersionString = git show -s --format=%ci
         $VersionDate = [DateTimeOffset]::Parse($VersionString)
-
-        $Year = $VersionDate.Year.ToString()
-        $Month = $VersionDate.Month.ToString().PadLeft(2, "0")
-        $Day = $VersionDate.Day.ToString().PadLeft(2, "0")
-        $Hour = $VersionDate.Hour.ToString().PadLeft(2, "0")
-        $Minute = $VersionDate.Minute.ToString().PadLeft(2, "0")
-        $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
+        
+        $CurrentVersion = $VersionDate.ToString("yyyy.MM.dd.HHmm")
         
         echo "CurrentVersion=$CurrentVersion" >> $env:GITHUB_ENV
 
