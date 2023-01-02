@@ -37,15 +37,19 @@ namespace Remotely.Agent.Installer.Win.Services
                     using (var reader = new BinaryReader(fs))
                     {
                         var serializedData = reader.ReadString();
-                        return Task.FromResult(_serializer.Deserialize<EmbeddedServerData>(serializedData));
+                        var embeddedData = _serializer.Deserialize<EmbeddedServerData>(serializedData);
+                        if (embeddedData != null)
+                        {
+                            return Task.FromResult(embeddedData);
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
                 Logger.Write(ex);
-                return Task.FromResult(EmbeddedServerData.Empty);
             }
+            return Task.FromResult(EmbeddedServerData.Empty);
         }
 
         private long SearchBuffer(FileStream fileStream, byte[] matchPattern)

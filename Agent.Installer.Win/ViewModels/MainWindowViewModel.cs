@@ -392,27 +392,30 @@ namespace Remotely.Agent.Installer.Win.ViewModels
 
                 var embeddedData = await _embeddedDataReader.TryGetEmbeddedData(filePath);
 
-                if (embeddedData == EmbeddedServerData.Empty)
+                if (embeddedData is null || embeddedData == EmbeddedServerData.Empty)
                 {
                     Logger.Write("Embedded server data is empty.  Aborting.");
+                    return;
+                }
+
+                if (embeddedData.ServerUrl is null)
+                {
+                    Logger.Write("ServerUrl is empty.  Aborting.");
                     return;
                 }
 
                 OrganizationID = embeddedData.OrganizationId;
                 ServerUrl = embeddedData.ServerUrl.AbsoluteUri;
 
-                if (!string.IsNullOrWhiteSpace(ServerUrl))
+                using (var httpClient = new HttpClient())
                 {
-                    using (var httpClient = new HttpClient())
+                    var serializer = new JavaScriptSerializer();
+                    var brandingUrl = $"{ServerUrl.TrimEnd('/')}/api/branding/{OrganizationID}";
+                    using (var response = await httpClient.GetAsync(brandingUrl).ConfigureAwait(false))
                     {
-                        var serializer = new JavaScriptSerializer();
-                        var brandingUrl = $"{ServerUrl.TrimEnd('/')}/api/branding/{OrganizationID}";
-                        using (var response = await httpClient.GetAsync(brandingUrl).ConfigureAwait(false))
-                        {
-                            var responseString = await response.Content.ReadAsStringAsync();
-                            _brandingInfo = serializer.Deserialize<BrandingInfo>(responseString);
+                        var responseString = await response.Content.ReadAsStringAsync();
+                        _brandingInfo = serializer.Deserialize<BrandingInfo>(responseString);
 
-                        }
                     }
                 }
             }

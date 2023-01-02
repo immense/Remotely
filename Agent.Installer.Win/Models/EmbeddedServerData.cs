@@ -11,20 +11,23 @@ namespace Remotely.Agent.Installer.Models
     [DataContract]
     public class EmbeddedServerData
     {
+        /// <summary>
+        /// Parameterless constructor for JsonSerializer.
+        /// </summary>
+        public EmbeddedServerData() { }
+
         public EmbeddedServerData(Uri serverUrl, string organizationId)
         {
             ServerUrl = serverUrl;
             OrganizationId = organizationId;
         }
 
-        private EmbeddedServerData() { }
-
         public static EmbeddedServerData Empty { get; } = new EmbeddedServerData();
 
         [DataMember]
-        public string OrganizationId { get; }
+        public string OrganizationId { get; private set; } = string.Empty;
 
         [DataMember]
-        public Uri ServerUrl { get; }
+        public Uri ServerUrl { get; private set; }
     }
 }
