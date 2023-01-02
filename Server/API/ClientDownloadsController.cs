@@ -24,21 +24,20 @@ namespace Remotely.Server.API
     public class ClientDownloadsController : ControllerBase
     {
         private readonly IApplicationConfig _appConfig;
-        private readonly IDataService _dataService;
         private readonly IEmbeddedServerDataSearcher _embeddedDataSearcher;
         private readonly SemaphoreSlim _fileLock = new(1,1);
         private readonly IWebHostEnvironment _hostEnv;
         public ClientDownloadsController(
             IWebHostEnvironment hostEnv,
-            IDataService dataService,
             IApplicationConfig appConfig,
             IEmbeddedServerDataSearcher embeddedDataSearcher)
         {
             _hostEnv = hostEnv;
             _appConfig = appConfig;
-            _dataService = dataService;
             _embeddedDataSearcher = embeddedDataSearcher;
         }
+
+        private string EffectiveScheme => _appConfig.RedirectToHttps ? "https" : Request.Scheme;
 
         [HttpGet("desktop/{platformID}")]
         public async Task<IActionResult> GetDesktop(string platformID)
@@ -127,15 +126,13 @@ namespace Remotely.Server.API
 
         private async Task<IActionResult> GetBashInstaller(string fileName, string organizationId)
         {
-            var scheme = _appConfig.RedirectToHttps ? "https" : Request.Scheme;
-
             var fileContents = new List<string>();
             fileContents.AddRange(await System.IO.File.ReadAllLinesAsync(Path.Combine(_hostEnv.WebRootPath, "Content", fileName)));
 
             var hostIndex = fileContents.IndexOf("HostName=");
             var orgIndex = fileContents.IndexOf("Organization=");
 
-            fileContents[hostIndex] = $"HostName=\"{scheme}://{Request.Host}\"";
+            fileContents[hostIndex] = $"HostName=\"{EffectiveScheme}://{Request.Host}\"";
             fileContents[orgIndex] = $"Organization=\"{organizationId}\"";
             var fileBytes = Encoding.UTF8.GetBytes(string.Join("\n", fileContents));
             return File(fileBytes, "application/octet-stream", fileName);
@@ -143,7 +140,7 @@ namespace Remotely.Server.API
 
         private async Task<IActionResult> GetDesktopFile(string filePath, string organizationId = null)
         {
-            var serverUrl = $"{Request.Scheme}://{Request.Host}";
+            var serverUrl = $"{EffectiveScheme}://{Request.Host}";
             var embeddedData = new EmbeddedServerData(new Uri(serverUrl), organizationId);
             var result = await _embeddedDataSearcher.GetRewrittenStream(filePath, embeddedData);
 
@@ -166,7 +163,7 @@ namespace Remotely.Server.API
                         case "WindowsInstaller":
                             {
                                 var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Remotely_Installer.exe");
-                                var serverUrl = $"{Request.Scheme}://{Request.Host}";
+                                var serverUrl = $"{EffectiveScheme}://{Request.Host}";
                                 var embeddedData = new EmbeddedServerData(new Uri(serverUrl), organizationId);
                                 var result = await _embeddedDataSearcher.GetRewrittenStream(filePath, embeddedData);
 
