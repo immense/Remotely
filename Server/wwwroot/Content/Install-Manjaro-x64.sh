@@ -55,7 +55,7 @@ mkdir -p $InstallDir
 
 if [ -z "$UpdatePackagePath" ]; then
     echo  "Downloading client." | tee -a $LogPath
-    wget -O /tmp/Remotely-Linux/zip $HostName/Content/Remotely-Linux.zip
+    wget -q -O /tmp/Remotely-Linux.zip $HostName/Content/Remotely-Linux.zip
 else
     echo  "Copying install files." | tee -a $LogPath
     cp "$UpdatePackagePath" /tmp/Remotely-Linux.zip
