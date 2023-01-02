@@ -26,6 +26,8 @@ mkdir -p /var/www/remotely
 docker run -d --name remotely --restart unless-stopped -p 5000:5000 -v /var/www/remotely:/remotely-data immybot/remotely:latest
 ```
 
+## HTTPS Configuration
+When using HTTPS with a reverse proxy (e.g. Caddy or Nginx), be sure to set `RedirectToHttps` to `true` (which is the default) in `appsettings.json`.  This is needed for the server to set the correct scheme when embedding the server URL in the clients.  The scheme is supposed to be updated by the ForwardedHeaders feature, but it doesn't appear to be working in some scenarios.
 
 ## After Installation
 - Data for Remotely will be saved in `/var/www/remotely/` within two files: appsettings.json and Remotely.db.
