@@ -38,6 +38,7 @@ namespace Remotely.Agent.Services
         private readonly IDeviceInformationService _deviceInfoService;
         private readonly IHttpClientFactory _httpFactory;
         private readonly ILogger<AgentHubConnection> _logger;
+        private readonly ILogger _fileLogger;
         private readonly ScriptExecutor _scriptExecutor;
 
         private readonly Uninstaller _uninstaller;
@@ -57,6 +58,7 @@ namespace Remotely.Agent.Services
             IUpdater updater,
             IDeviceInformationService deviceInfoService,
             IHttpClientFactory httpFactory,
+            IEnumerable<ILoggerProvider> loggerProviders,
             ILogger<AgentHubConnection> logger)
         {
             _configService = configService;
@@ -68,6 +70,10 @@ namespace Remotely.Agent.Services
             _deviceInfoService = deviceInfoService;
             _httpFactory = httpFactory;
             _logger = logger;
+            _fileLogger = loggerProviders
+                .OfType<FileLoggerProvider>()
+                .FirstOrDefault()
+                ?.CreateLogger(nameof(AgentHubConnection));
         }
 
         public bool IsConnected => _hubConnection?.State == HubConnectionState.Connected;
@@ -242,7 +248,7 @@ namespace Remotely.Agent.Services
 
             _hubConnection.On("DeleteLogs", () =>
            {
-               if (_logger is FileLogger logger)
+               if (_fileLogger is FileLogger logger)
                {
                    logger.DeleteLogs();
                }
@@ -308,7 +314,7 @@ namespace Remotely.Agent.Services
 
             _hubConnection.On("GetLogs", async (string senderConnectionId) =>
             {
-                if (_logger is not FileLogger logger)
+                if (_fileLogger is not FileLogger logger)
                 {
                     await _hubConnection.InvokeAsync("SendLogs", "Logger is not of expected type.", senderConnectionId).ConfigureAwait(false);
                     return;
