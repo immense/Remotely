@@ -25,9 +25,9 @@ namespace Remotely.Agent.Installer.Models
         public static EmbeddedServerData Empty { get; } = new EmbeddedServerData();
 
         [DataMember]
-        public string OrganizationId { get; private set; } = string.Empty;
+        public string OrganizationId { get; set; } = string.Empty;
 
         [DataMember]
-        public Uri ServerUrl { get; private set; }
+        public Uri ServerUrl { get; set; }
     }
 }

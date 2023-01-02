@@ -120,14 +120,14 @@ namespace Remotely.Agent.Installer.Win.ViewModels
             {
                 return new RelayCommand(param =>
                 {
-                    var logPath = Path.Combine(Path.GetTempPath(), "Remotely_Installer.log");
-                    if (File.Exists(logPath))
+                    
+                    if (Directory.Exists(Logger.LogsDir))
                     {
-                        Process.Start(logPath);
+                        Process.Start(Logger.LogsDir);
                     }
                     else
                     {
-                        MessageBoxEx.Show("Log file doesn't exist.", "No Logs", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBoxEx.Show("Log directory doesn't exist.", "No Logs", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 });
             }

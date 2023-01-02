@@ -42,7 +42,7 @@ namespace Remotely.Shared.Services
 
                 fs.Seek(result + AppConstants.EmbeddedImmySignature.Length, SeekOrigin.Begin);
 
-                using var reader = new BinaryReader(fs);
+                using var reader = new BinaryReader(fs, Encoding.UTF8, true);
                 var serializedData = reader.ReadString();
 
                 var embeddedData = JsonSerializer.Deserialize<EmbeddedServerData>(serializedData);

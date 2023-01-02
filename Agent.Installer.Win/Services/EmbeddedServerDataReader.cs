@@ -33,10 +33,15 @@ namespace Remotely.Agent.Installer.Win.Services
                         throw new Exception("Signature not found in file buffer.");
                     }
 
+                    Logger.Write($"Found data signature at index {result}.");
+
                     fs.Seek(result + AppConstants.EmbeddedImmySignature.Length, SeekOrigin.Begin);
-                    using (var reader = new BinaryReader(fs))
+                    using (var reader = new BinaryReader(fs, Encoding.UTF8))
                     {
                         var serializedData = reader.ReadString();
+
+                        Logger.Write($"Extracted embedded data from EXE: {serializedData}");
+
                         var embeddedData = _serializer.Deserialize<EmbeddedServerData>(serializedData);
                         if (embeddedData != null)
                         {
