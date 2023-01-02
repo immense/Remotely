@@ -4,6 +4,11 @@ HostName=
 Organization=
 GUID="$(uuidgen)"
 UpdatePackagePath=""
+InstallDir="/usr/local/bin/Remotely"
+ETag=$(curl --head $HostName/Content/Remotely-Linux.zip | grep -i "etag" | cut -d' ' -f 2)
+LogPath="/var/log/remotely/Agent_Install.log"
+
+mkdir -p /var/log/remotely
 
 Args=( "$@" )
 ArgLength=${#Args[@]}
@@ -12,7 +17,7 @@ for (( i=0; i<${ArgLength}; i+=2 ));
 do
     if [ "${Args[$i]}" = "--uninstall" ]; then
         launchctl unload -w /Library/LaunchDaemons/remotely-agent.plist
-        rm -r -f /usr/local/bin/Remotely/
+        rm -r -f $InstallDir/
         rm -f /Library/LaunchDaemons/remotely-agent.plist
         exit
     elif [ "${Args[$i]}" = "--path" ]; then
@@ -20,24 +25,35 @@ do
     fi
 done
 
+if [ -z "$ETag" ]; then
+    echo  "ETag is empty.  Aborting install." | tee -a $LogPath
+    exit 1
+fi
+
 
 # Install Homebrew
-su - $SUDO_USER -c '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
-su - $SUDO_USER -c "brew update"
+
+if [[ -n "$SUDO_USER" && "$SUDO_USER" != "root" ]]; then
+    su - $SUDO_USER -c '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+fi
+
+Owner=$(ls -l /usr/local/bin/brew | awk '{print $3}')
+
+su - $Owner -c "brew update"
 
 # Install .NET Runtime
-su - $SUDO_USER -c "brew install --cask dotnet"
+su - $Owner -c "brew install --cask dotnet"
 
 # Install dependency for System.Drawing.Common
-su - $SUDO_USER -c "brew install mono-libgdiplus"
+su - $Owner -c "brew install mono-libgdiplus"
 
 # Install other dependencies
-su - $SUDO_USER -c "brew install curl"
-su - $SUDO_USER -c "brew install jq"
+su - $Owner -c "brew install curl"
+su - $Owner -c "brew install jq"
 
 
-if [ -f "/usr/local/bin/Remotely/ConnectionInfo.json" ]; then
-    SavedGUID=`cat "/usr/local/bin/Remotely/ConnectionInfo.json" | jq -r '.DeviceID'`
+if [ -f "$InstallDir/ConnectionInfo.json" ]; then
+    SavedGUID=`su - $Owner -c "cat '$InstallDir/ConnectionInfo.json' | jq -r '.DeviceID'"`
     if [[ "$SavedGUID" != "null" && -n "$SavedGUID" ]]; then
         GUID="$SavedGUID"
     fi
@@ -46,21 +62,20 @@ fi
 rm -r -f /Applications/Remotely
 rm -f /Library/LaunchDaemons/remotely-agent.plist
 
-mkdir -p /usr/local/bin/Remotely/
-chmod -R 755 /usr/local/bin/Remotely/
-cd /usr/local/bin/Remotely/
+mkdir -p $InstallDir
+chmod -R 755 $InstallDir
 
 if [ -z "$UpdatePackagePath" ]; then
     echo  "Downloading client..." >> /tmp/Remotely_Install.log
-    curl $HostName/Content/Remotely-MacOS-arm64.zip --output /usr/local/bin/Remotely/Remotely-MacOS-arm64.zip
+    curl $HostName/Content/Remotely-MacOS-arm64.zip --output $InstallDir/Remotely-MacOS-arm64.zip
 else
     echo  "Copying install files..." >> /tmp/Remotely_Install.log
-    cp "$UpdatePackagePath" /usr/local/bin/Remotely/Remotely-MacOS-arm64.zip
+    cp "$UpdatePackagePath" $InstallDir/Remotely-MacOS-arm64.zip
     rm -f "$UpdatePackagePath"
 fi
 
-unzip -o ./Remotely-MacOS-arm64.zip
-rm -f ./Remotely-MacOS-arm64.zip
+unzip -o $InstallDir/Remotely-MacOS-arm64.zip
+rm -f $InstallDir/Remotely-MacOS-arm64.zip
 
 
 connectionInfo="{
@@ -70,9 +85,9 @@ connectionInfo="{
     \"ServerVerificationToken\":\"\"
 }"
 
-echo "$connectionInfo" > ./ConnectionInfo.json
+echo "$connectionInfo" > $InstallDir/ConnectionInfo.json
 
-curl --head $HostName/Content/Remotely-MacOS-arm64.zip | grep -i "etag" | cut -d' ' -f 2 > ./etag.txt
+curl --head $HostName/Content/Remotely-MacOS-arm64.zip | grep -i "etag" | cut -d' ' -f 2 > $InstallDir/etag.txt
 
 
 plistFile="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
@@ -84,7 +99,7 @@ plistFile="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     <key>ProgramArguments</key>
     <array>
         <string>/usr/local/bin/dotnet</string>
-        <string>/usr/local/bin/Remotely/Remotely_Agent.dll</string>
+        <string>$InstallDir/Remotely_Agent.dll</string>
     </array>
     <key>KeepAlive</key>
     <true/>
