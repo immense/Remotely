@@ -122,7 +122,7 @@ namespace Remotely.Shared.Services
             }
             catch (Exception ex)
             {
-                this.LogError(ex, "Error while reading all bytes.");
+                this.LogError(ex, "Error while reading all bytes from logs.");
                 return Array.Empty<byte>();
             }
             finally
