@@ -1,4 +1,11 @@
 name: Release Build
+
+trigger:
+- master
+
+pr:
+- master
+
 jobs:
 - job: Mac_Build
   displayName: Mac Build
@@ -27,13 +34,7 @@ jobs:
       script: |
         $VersionString = git show -s --format=%ci $(Build.SourceVersion)
         $VersionDate = [DateTimeOffset]::Parse($VersionString)
-
-        $Year = $VersionDate.Year.ToString()
-        $Month = $VersionDate.Month.ToString().PadLeft(2, "0")
-        $Day = $VersionDate.Day.ToString().PadLeft(2, "0")
-        $Hour = $VersionDate.Hour.ToString().PadLeft(2, "0")
-        $Minute = $VersionDate.Minute.ToString().PadLeft(2, "0")
-        $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
+        $CurrentVersion = $VersionDate.ToString("yyyy.MM.dd.HHmm")
 
         [System.Console]::WriteLine("##vso[task.setvariable variable=CurrentVersion]$CurrentVersion")
 
@@ -110,13 +111,7 @@ jobs:
       script: |
         $VersionString = git show -s --format=%ci $(Build.SourceVersion)
         $VersionDate = [DateTimeOffset]::Parse($VersionString)
-
-        $Year = $VersionDate.Year.ToString()
-        $Month = $VersionDate.Month.ToString().PadLeft(2, "0")
-        $Day = $VersionDate.Day.ToString().PadLeft(2, "0")
-        $Hour = $VersionDate.Hour.ToString().PadLeft(2, "0")
-        $Minute = $VersionDate.Minute.ToString().PadLeft(2, "0")
-        $CurrentVersion = "$Year.$Month.$Day.$Hour$Minute"
+        $CurrentVersion = $VersionDate.ToString("yyyy.MM.dd.HHmm")
 
         [System.Console]::WriteLine("##vso[task.setvariable variable=CurrentVersion]$CurrentVersion")
 
