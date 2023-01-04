@@ -166,7 +166,7 @@ namespace Remotely.Agent.Services
             }
             catch (Exception ex)
             {
-                Logger.Write(ex, EventType.Warning);
+                _logger.LogWarning(ex, "Error while sending heartbeat.");
             }
         }
 
@@ -195,6 +195,8 @@ namespace Remotely.Agent.Services
         private async Task HubConnection_Reconnected(string arg)
         {
             _logger.LogInformation("Reconnected to server.");
+            var device = await _deviceInfoService.CreateDevice(_connectionInfo.DeviceID, _connectionInfo.OrganizationID);
+            _ = await _hubConnection.InvokeAsync<bool>("DeviceCameOnline", device);
             await _updater.CheckForUpdates();
         }
         private void RegisterMessageHandlers()
