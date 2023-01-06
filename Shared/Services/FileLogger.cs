@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Remotely.Shared.Extensions;
+using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -76,22 +77,12 @@ namespace Remotely.Shared.Services
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            switch (logLevel)
+            return logLevel switch
             {
-#if DEBUG
-                case LogLevel.Trace:
-                case LogLevel.Debug:
-                    return true;
-#endif
-                case LogLevel.Information:
-                case LogLevel.Warning:
-                case LogLevel.Error:
-                case LogLevel.Critical:
-                    return true;
-                case LogLevel.None:
-                default:
-                    return false;
-            }
+                LogLevel.Trace or LogLevel.Debug => EnvironmentHelper.IsDebug,
+                LogLevel.Information or LogLevel.Warning or LogLevel.Error or LogLevel.Critical => true,
+                _ => false,
+            };
         }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)

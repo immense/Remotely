@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Build.Framework;
+using Microsoft.Extensions.Logging;
 using Remotely.Server.Auth;
 using Remotely.Server.Services;
 using Remotely.Shared;
@@ -25,16 +27,20 @@ namespace Remotely.Server.API
     {
         private readonly IApplicationConfig _appConfig;
         private readonly IEmbeddedServerDataSearcher _embeddedDataSearcher;
+        private readonly ILogger<ClientDownloadsController> _logger;
         private readonly SemaphoreSlim _fileLock = new(1,1);
         private readonly IWebHostEnvironment _hostEnv;
+
         public ClientDownloadsController(
             IWebHostEnvironment hostEnv,
             IApplicationConfig appConfig,
-            IEmbeddedServerDataSearcher embeddedDataSearcher)
+            IEmbeddedServerDataSearcher embeddedDataSearcher,
+            ILogger<ClientDownloadsController> logger)
         {
             _hostEnv = hostEnv;
             _appConfig = appConfig;
             _embeddedDataSearcher = embeddedDataSearcher;
+            _logger = logger;
         }
 
         private string EffectiveScheme => _appConfig.RedirectToHttps ? "https" : Request.Scheme;
@@ -114,6 +120,9 @@ namespace Remotely.Server.API
         [HttpGet("{platformID}")]
         public async Task<IActionResult> GetInstaller(string platformID)
         {
+            _logger.LogInformation(
+                "GetInstaller.  Headers: {headers}",
+                JsonSerializer.Serialize(Request.Headers, new JsonSerializerOptions() { WriteIndented = true }));
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
             return await GetInstallFile(orgID, platformID);
         }

@@ -1,4 +1,5 @@
-﻿using Remotely.Agent.Interfaces;
+﻿using Microsoft.Extensions.Logging;
+using Remotely.Agent.Interfaces;
 using Remotely.Shared.Utilities;
 using System;
 using System.Diagnostics;
@@ -17,16 +18,22 @@ namespace Remotely.Agent.Services
         private readonly ConfigService _configService;
         private readonly IUpdateDownloader _updateDownloader;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly ILogger<UpdaterWin> _logger;
         private readonly SemaphoreSlim _installLatestVersionLock = new(1, 1);
         private readonly System.Timers.Timer _updateTimer = new(TimeSpan.FromHours(6).TotalMilliseconds);
         private DateTimeOffset _lastUpdateFailure;
 
 
-        public UpdaterWin(ConfigService configService, IUpdateDownloader updateDownloader, IHttpClientFactory httpClientFactory)
+        public UpdaterWin(
+            ConfigService configService, 
+            IUpdateDownloader updateDownloader, 
+            IHttpClientFactory httpClientFactory,
+            ILogger<UpdaterWin> logger)
         {
             _configService = configService;
             _updateDownloader = updateDownloader;
             _httpClientFactory = httpClientFactory;
+            _logger = logger;
         }
 
         public async Task BeginChecking()
@@ -58,7 +65,7 @@ namespace Remotely.Agent.Services
 
                 if (_lastUpdateFailure.AddDays(1) > DateTimeOffset.Now)
                 {
-                    Logger.Write("Skipping update check due to previous failure.  Updating will be tried again after 24 hours have passed.");
+                    _logger.LogInformation("Skipping update check due to previous failure.  Updating will be tried again after 24 hours have passed.");
                     return;
                 }
 
@@ -85,24 +92,24 @@ namespace Remotely.Agent.Services
                 using var response = await httpClient.SendAsync(request);
                 if (response.StatusCode == HttpStatusCode.NotModified)
                 {
-                    Logger.Write("Service Updater: Version is current.");
+                    _logger.LogInformation("Service Updater: Version is current.");
                     return;
                 }
 
 
-                Logger.Write("Service Updater: Update found.");
+                _logger.LogInformation("Service Updater: Update found.");
 
                 await InstallLatestVersion();
 
             }
             catch (WebException ex) when ((ex.Response as HttpWebResponse).StatusCode == HttpStatusCode.NotModified)
             {
-                Logger.Write("Service Updater: Version is current.");
+                _logger.LogInformation("Service Updater: Version is current.");
                 return;
             }
             catch (Exception ex)
             {
-                Logger.Write(ex);
+                _logger.LogError(ex, "Error while checking for updates.");
             }
             finally
             {
@@ -119,7 +126,7 @@ namespace Remotely.Agent.Services
                 var connectionInfo = _configService.GetConnectionInfo();
                 var serverUrl = connectionInfo.Host;
 
-                Logger.Write("Service Updater: Downloading install package.");
+                _logger.LogInformation("Service Updater: Downloading install package.");
 
                 var downloadId = Guid.NewGuid().ToString();
                 var zipPath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.zip");
@@ -143,18 +150,18 @@ namespace Remotely.Agent.Services
                     proc.Kill();
                 }
 
-                Logger.Write("Launching installer to perform update.");
+                _logger.LogInformation("Launching installer to perform update.");
 
                 Process.Start(installerPath, $"-install -quiet -path {zipPath} -serverurl {serverUrl} -organizationid {connectionInfo.OrganizationID}");
             }
             catch (WebException ex) when (ex.Status == WebExceptionStatus.Timeout)
             {
-                Logger.Write("Timed out while waiting to download update.", Shared.Enums.EventType.Warning);
+                _logger.LogWarning("Timed out while waiting to download update.");
                 _lastUpdateFailure = DateTimeOffset.Now;
             }
             catch (Exception ex)
             {
-                Logger.Write(ex);
+                _logger.LogError(ex, "Error while installing latest version.");
                 _lastUpdateFailure = DateTimeOffset.Now;
             }
             finally
