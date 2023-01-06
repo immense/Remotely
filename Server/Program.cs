@@ -131,6 +131,9 @@ services.Configure<ForwardedHeadersOptions>(options =>
     options.ForwardedHeaders = ForwardedHeaders.All;
     options.ForwardLimit = null;
 
+    // Default Docker host. We want to allow forwarded headers from this address.
+    options.KnownProxies.Add(IPAddress.Parse("172.17.0.1"));
+
     if (knownProxies?.Any() == true)
     {
         foreach (var proxy in knownProxies)

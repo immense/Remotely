@@ -26,8 +26,14 @@ mkdir -p /var/www/remotely
 docker run -d --name remotely --restart unless-stopped -p 5000:5000 -v /var/www/remotely:/remotely-data immybot/remotely:latest
 ```
 
-## HTTPS Configuration
-When using HTTPS with a reverse proxy (e.g. Caddy or Nginx), be sure to set `RedirectToHttps` to `true` (which is the default) in `appsettings.json`.  This is needed for the server to set the correct scheme when embedding the server URL in the clients.  The scheme is supposed to be updated by the ForwardedHeaders feature, but it doesn't appear to be working in some scenarios.
+## Important: HTTPS and Reverse Proxies
+When using a reverse proxy, Remotely uses forwarded headers to determine the scheme (http/https) and host (server URL) to embed in the installers and remote control files when they are downloaded.  To avoid injection attacks, ASP.NET Core defaults to only accepting forwarded headers from loopback addresses.
+
+Remotely will also add the default Docker host IP (172.17.0.1).
+
+**If you are using a non-default configuration, you must add the reverse proxy address to the `KnownProxies` array in appsettings.json.**
+
+Remotely will not work if it receives forwarded requests from addresses that aren't in that list.
 
 ## After Installation
 - Data for Remotely will be saved in `/var/www/remotely/` within two files: appsettings.json and Remotely.db.
