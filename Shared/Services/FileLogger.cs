@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using Remotely.Shared.Extensions;
+using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,6 +21,7 @@ namespace Remotely.Shared.Services
         private readonly string _applicationName;
         private readonly string _categoryName;
         private readonly System.Timers.Timer _sinkTimer = new(5000) { AutoReset = false };
+
         public FileLogger(string applicationName, string categoryName)
         {
             _applicationName = applicationName?.SanitizeFileName() ?? string.Empty;
@@ -74,22 +77,12 @@ namespace Remotely.Shared.Services
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            switch (logLevel)
+            return logLevel switch
             {
-#if DEBUG
-                case LogLevel.Trace:
-                case LogLevel.Debug:
-                    return true;
-#endif
-                case LogLevel.Information:
-                case LogLevel.Warning:
-                case LogLevel.Error:
-                case LogLevel.Critical:
-                    return true;
-                case LogLevel.None:
-                default:
-                    return false;
-            }
+                LogLevel.Trace or LogLevel.Debug => EnvironmentHelper.IsDebug,
+                LogLevel.Information or LogLevel.Warning or LogLevel.Error or LogLevel.Critical => true,
+                _ => false,
+            };
         }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
@@ -106,7 +99,7 @@ namespace Remotely.Shared.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error queueing log entry: {ex.Message}");
+                Debug.WriteLine($"Error queueing log entry: {ex.Message}");
             }
         }
 
@@ -133,10 +126,38 @@ namespace Remotely.Shared.Services
 
         private void CheckLogFileExists()
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(LogPath)!);
+            _ = Directory.CreateDirectory(Path.GetDirectoryName(LogPath)!);
+
             if (!File.Exists(LogPath))
             {
                 File.Create(LogPath).Close();
+
+                try
+                {
+                    if (OperatingSystem.IsWindows())
+                    {
+                        Process.Start("cmd", $"/c icacls \"{LogPath}\" /grant Users:M").WaitForExit(1_000);
+                    }
+                    else if (OperatingSystem.IsLinux())
+                    {
+                        Process.Start("sudo", $"chmod 775 {LogPath}").WaitForExit(1_000);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error modifying log file permissions: {ex.Message}");
+                }
+            }
+
+            if (File.Exists(LogPath))
+            {
+                var fi = new FileInfo(LogPath);
+                while (fi.Length > 1_000_000)
+                {
+                    var content = File.ReadAllLines(LogPath);
+                    File.WriteAllLines(LogPath, content.Skip(10));
+                    fi = new FileInfo(LogPath);
+                }
             }
         }
 
@@ -195,7 +216,7 @@ namespace Remotely.Shared.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error writing log entry: {ex.Message}");
+                Debug.WriteLine($"Error writing log entry: {ex.Message}");
             }
             finally
             {

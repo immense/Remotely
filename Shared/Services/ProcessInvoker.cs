@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using Remotely.Shared.Utilities;
 
 namespace Remotely.Shared.Services
@@ -11,6 +12,13 @@ namespace Remotely.Shared.Services
 
     public class ProcessInvoker : IProcessInvoker
     {
+        private readonly ILogger<ProcessInvoker> _logger;
+
+        public ProcessInvoker(ILogger<ProcessInvoker> logger)
+        {
+            _logger = logger;
+        }
+
         public string InvokeProcessOutput(string command, string arguments)
         {
             try
@@ -30,7 +38,7 @@ namespace Remotely.Shared.Services
             }
             catch (Exception ex)
             {
-                Logger.Write(ex, "Failed to start process.");
+                _logger.LogError(ex, "Failed to start process.");
                 return string.Empty;
             }
         }

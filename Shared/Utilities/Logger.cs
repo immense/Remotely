@@ -1,4 +1,5 @@
 ﻿using Remotely.Shared.Enums;
+using Remotely.Shared.Services;
 using Remotely.Shared.Utilities;
 using System;
 using System.Diagnostics;
@@ -154,7 +155,7 @@ namespace Remotely.Shared.Utilities
                 File.Create(LogPath).Close();
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {
-                    Process.Start("sudo", $"chmod 777 {LogPath}").WaitForExit();
+                    Process.Start("sudo", $"chmod 775 {LogPath}").WaitForExit();
                 }
             }
             if (File.Exists(LogPath))

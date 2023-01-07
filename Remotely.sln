@@ -72,8 +72,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{963B5555-30AE-428E-9686-59C4B6FEC052}"
 	ProjectSection(SolutionItems) = preProject
 		.docker\Dockerfile = .docker\Dockerfile
-		.docker\Dockerfile-old = .docker\Dockerfile-old
-		.docker\Dockerfile-rootless = .docker\Dockerfile-rootless
+		.docker\Dockerfile.old = .docker\Dockerfile.old
+		.docker\Dockerfile.rootless = .docker\Dockerfile.rootless
 		.docker\DockerMain.sh = .docker\DockerMain.sh
 	EndProjectSection
 EndProject

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
@@ -18,11 +19,13 @@ namespace Remotely.Agent.Services
     public class AppLauncherWin : IAppLauncher
     {
         private readonly ConnectionInfo _connectionInfo;
+        private readonly ILogger<AppLauncherWin> _logger;
         private readonly string _rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Desktop", EnvironmentHelper.DesktopExecutableFileName);
 
-        public AppLauncherWin(ConfigService configService)
+        public AppLauncherWin(ConfigService configService, ILogger<AppLauncherWin> logger)
         {
             _connectionInfo = configService.GetConnectionInfo();
+            _logger = logger;
         }
 
         public async Task<int> LaunchChatService(string pipeName, string userConnectionId, string requesterName, string orgName, string orgId, HubConnection hubConnection)
@@ -78,7 +81,7 @@ namespace Remotely.Agent.Services
             }
             catch (Exception ex)
             {
-                Logger.Write(ex);
+                _logger.LogError(ex, "Error while launching chat.");
                 await hubConnection.SendAsync("DisplayMessage", 
                     "Chat service failed to start on target device.",
                     "Failed to start chat service.",
@@ -148,7 +151,7 @@ namespace Remotely.Agent.Services
             }
             catch (Exception ex)
             {
-                Logger.Write(ex);
+                _logger.LogError(ex, "Error while launching remote control.");
                 await hubConnection.SendAsync("DisplayMessage", 
                     "Remote control failed to start on target device.", 
                     "Failed to start remote control.",
@@ -161,7 +164,7 @@ namespace Remotely.Agent.Services
             try
             {
                 // Start Desktop app.                 
-                Logger.Write("Restarting screen caster.");
+                _logger.LogInformation("Restarting screen caster.");
                 if (WindowsIdentity.GetCurrent().IsSystem)
                 {
                     // Give a little time for session changing, etc.
@@ -186,7 +189,7 @@ namespace Remotely.Agent.Services
 
                     if (!result)
                     {
-                        Logger.Write("Failed to relaunch screen caster.");
+                        _logger.LogWarning("Failed to relaunch screen caster.");
                         await hubConnection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
                         await hubConnection.SendAsync("DisplayMessage", 
                             "Remote control failed to start on target device.",
@@ -212,7 +215,7 @@ namespace Remotely.Agent.Services
             catch (Exception ex)
             {
                 await hubConnection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
-                Logger.Write(ex);
+                _logger.LogError(ex, "Error while restarting screen caster.");
                 throw;
             }
         }

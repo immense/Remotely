@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
 using Remotely.Shared.Models;
 using Remotely.Shared.Services;
@@ -20,11 +21,16 @@ namespace Remotely.Agent.Services
         private readonly string _rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Desktop", EnvironmentHelper.DesktopExecutableFileName);
         private readonly IProcessInvoker _processInvoker;
         private readonly ConnectionInfo _connectionInfo;
+        private readonly ILogger<AppLauncherLinux> _logger;
 
-        public AppLauncherLinux(ConfigService configService, IProcessInvoker processInvoker)
+        public AppLauncherLinux(
+            ConfigService configService, 
+            IProcessInvoker processInvoker,
+            ILogger<AppLauncherLinux> logger)
         {
             _processInvoker = processInvoker;
             _connectionInfo = configService.GetConnectionInfo();
+            _logger = logger;
         }
 
 
@@ -52,7 +58,7 @@ namespace Remotely.Agent.Services
                 }
                 catch (Exception ex)
                 {
-                    Logger.Write(ex);
+                    _logger.LogError(ex, "Error while getting current X11 user.");
                 }
             }
 
@@ -64,7 +70,12 @@ namespace Remotely.Agent.Services
 
             psi.Environment.Add("DISPLAY", display);
             psi.Environment.Add("XAUTHORITY", xauthority);
-            Logger.Write($"Attempting to launch screen caster with username {username}, xauthority {xauthority}, display {display}, and args {args}.");
+            _logger.LogInformation(
+                "Attempting to launch screen caster with username {username}, xauthority {xauthority}, display {display}, and args {args}.",
+                username,
+                xauthority,
+                display,
+                args);
             return Process.Start(psi).Id;
         }
 
@@ -123,7 +134,7 @@ namespace Remotely.Agent.Services
             }
             catch (Exception ex)
             {
-                Logger.Write(ex);
+                _logger.LogError(ex, "Error while starting chat.");
                 await hubConnection.SendAsync("DisplayMessage", "Chat service failed to start on target device.", "Failed to start chat service.", "bg-danger", userConnectionId);
             }
             return -1;
@@ -159,7 +170,7 @@ namespace Remotely.Agent.Services
             }
             catch (Exception ex)
             {
-                Logger.Write(ex);
+                _logger.LogError(ex, "Error while launching remote control.");
                 await hubConnection.SendAsync("DisplayMessage", "Remote control failed to start on target device.", "Failed to start remote control.", "bg-danger", userConnectionId);
             }
         }
@@ -182,7 +193,7 @@ namespace Remotely.Agent.Services
             catch (Exception ex)
             {
                 await hubConnection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
-                Logger.Write(ex);
+                _logger.LogError(ex, "Error while restarting screen caster.");
                 throw;
             }
         }
