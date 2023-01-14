@@ -115,6 +115,9 @@ services.AddHttpLogging(options =>
     options.RequestHeaders.Add("X-Forwarded-For");
     options.RequestHeaders.Add("X-Forwarded-Proto");
     options.RequestHeaders.Add("X-Forwarded-Host");
+    options.RequestHeaders.Add("X-Original-For");
+    options.RequestHeaders.Add("X-Original-Proto");
+    options.RequestHeaders.Add("X-Original-Host");
     options.RequestHeaders.Add("Host");
 });
 
