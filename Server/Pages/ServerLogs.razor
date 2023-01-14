@@ -78,7 +78,7 @@
                     <td>
                         @if (!string.IsNullOrWhiteSpace(eventLog.Message))
                         {
-                            foreach (var line in eventLog.Message.Split("\n"))
+                            foreach (var line in eventLog.Message.Split("\n", StringSplitOptions.RemoveEmptyEntries))
                             {
                                 <div>@line</div>
                             }
