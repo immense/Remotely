@@ -143,6 +143,7 @@ For more information on configuring ASP.NET Core, see https://docs.microsoft.com
 * TrustedCorsOrigins: For cross-origin API requests via JavaScript.  The websites listed in this array with be allowed to make requests to the API.  This does not grant authentication, which is still required on most endpoints.
 * UseHsts: Whether ASP.NET Core will use HTTP Strict Transport Security.
 * UseHttpLogging: Enables logging for all HTTP requests.  Also enables additional log entries in `ClientDownloadsController` regarding the effective scheme, host, and remote IP address as a result of processing forwarded headers.
+    * You must explicitly set a log level for `Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware` for this to work.  See the [appsettings.json](https://github.com/immense/Remotely/blob/master/Server/appsettings.json) for an example.
 
 
 ## Changing the Database
