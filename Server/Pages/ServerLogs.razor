@@ -19,13 +19,13 @@
         </div>
         <div>
             <button class="btn btn-primary"
-                    onclick="location.assign('/API/ServerLogs/Download')">
+                    onclick="window.open('/API/ServerLogs/Download', '_blank')">
                 Download Logs
             </button>
         </div>
         <div>
             <button class="btn btn-primary"
-                    onclick="location.assign('/API/ScriptResults')">
+                    onclick="window.open('/API/ScriptResults', '_blank')">
                 Download Script History
             </button>
         </div>
@@ -75,7 +75,15 @@
                 <tr @key="eventLog">
                     <td>@eventLog.EventType</td>
                     <td>@eventLog.TimeStamp</td>
-                    <td>@eventLog.Message</td>
+                    <td>
+                        @if (!string.IsNullOrWhiteSpace(eventLog.Message))
+                        {
+                            foreach (var line in eventLog.Message.Split("\n", StringSplitOptions.RemoveEmptyEntries))
+                            {
+                                <div>@line</div>
+                            }
+                        }
+                    </td>
                     <td>@eventLog.Source</td>
                     <td>@eventLog.StackTrace</td>
                 </tr>

@@ -338,10 +338,12 @@
                     <ValidationMessage For="() => Input.UseHsts" />
                 </div>
 
-                <div class="form-group">
-                    <label>ICE Servers</label>
+                 <div class="form-group">
+                    <label>Use HTTP Logging</label>
                     <br />
-                    <span class="text-muted">Must be edited in appsettings.json.</span>
+                    <InputCheckbox @bind-Value="Input.UseHttpLogging" autocomplete="off" />
+                    <br />
+                    <ValidationMessage For="() => Input.UseHttpLogging" />
                 </div>
 
                 <h4>Connection Strings</h4>

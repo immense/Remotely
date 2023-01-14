@@ -101,7 +101,7 @@ namespace Remotely.Server.Services
 
         Device[] GetAllDevices(string orgID);
 
-        EventLog[] GetAllEventLogs(string orgID);
+        EventLog[] GetAllEventLogs(string username, string orgId);
 
         InviteLink[] GetAllInviteLinks(string organizationId);
 
@@ -1069,12 +1069,27 @@ namespace Remotely.Server.Services
             return dbContext.Devices.Where(x => x.OrganizationID == orgID).ToArray();
         }
 
-        public EventLog[] GetAllEventLogs(string orgID)
+        public EventLog[] GetAllEventLogs(string username, string orgId)
         {
             using var dbContext = _appDbFactory.GetContext();
 
-            return dbContext.EventLogs
-                .Where(x => x.OrganizationID == orgID)
+            var query = dbContext.EventLogs
+                .AsNoTracking()
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(username))
+            {
+                var user = dbContext.Users.FirstOrDefault(x => x.UserName == username);
+                if (user?.IsAdministrator == true)
+                {
+                    return query
+                        .OrderByDescending(x => x.TimeStamp)
+                        .ToArray();
+                }
+            }
+
+            return query
+                .Where(x => x.OrganizationID == orgId)
                 .OrderByDescending(x => x.TimeStamp)
                 .ToArray();
         }

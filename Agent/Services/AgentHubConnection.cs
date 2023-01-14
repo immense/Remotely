@@ -196,7 +196,19 @@ namespace Remotely.Agent.Services
         {
             _logger.LogInformation("Reconnected to server.");
             var device = await _deviceInfoService.CreateDevice(_connectionInfo.DeviceID, _connectionInfo.OrganizationID);
-            _ = await _hubConnection.InvokeAsync<bool>("DeviceCameOnline", device);
+
+            if (!await _hubConnection.InvokeAsync<bool>("DeviceCameOnline", device))
+            {
+                await Connect();
+                return;
+            }
+
+            if (await CheckForServerMigration())
+            {
+                await Connect();
+                return;
+            }
+
             await _updater.CheckForUpdates();
         }
         private void RegisterMessageHandlers()

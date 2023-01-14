@@ -3,6 +3,7 @@ using Remotely.Server.Auth;
 using Remotely.Server.Services;
 using System.Text;
 using System.Text.Json;
+using System;
 
 namespace Remotely.Server.API
 {
@@ -10,20 +11,22 @@ namespace Remotely.Server.API
     [ApiController]
     public class ServerLogsController : ControllerBase
     {
+        private readonly IDataService _dataService;
+        private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions() { WriteIndented = true };
 
         public ServerLogsController(IDataService dataService)
         {
-            DataService = dataService;
+            _dataService = dataService;
         }
-        public IDataService DataService { get; set; }
 
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
         [HttpGet("Download")]
         public ActionResult Download()
         {
-            Request.Headers.TryGetValue("OrganizationID", out var orgID);
-            var logs = DataService.GetAllEventLogs(orgID);
-            var fileBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(logs));
+            Request.Headers.TryGetValue("OrganizationID", out var orgId);
+
+            var logs = _dataService.GetAllEventLogs(User.Identity?.Name, orgId);
+            var fileBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(logs, _jsonOptions));
             return File(fileBytes, "application/octet-stream", "ServerLogs.json");
         }
     }
