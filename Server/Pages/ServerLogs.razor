@@ -75,7 +75,15 @@
                 <tr @key="eventLog">
                     <td>@eventLog.EventType</td>
                     <td>@eventLog.TimeStamp</td>
-                    <td>@eventLog.Message</td>
+                    <td>
+                        @if (!string.IsNullOrWhiteSpace(eventLog.Message))
+                        {
+                            foreach (var line in eventLog.Message.Split("\n"))
+                            {
+                                <div>@line</div>
+                            }
+                        }
+                    </td>
                     <td>@eventLog.Source</td>
                     <td>@eventLog.StackTrace</td>
                 </tr>

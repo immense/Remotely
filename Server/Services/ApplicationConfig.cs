@@ -34,6 +34,7 @@ namespace Remotely.Server.Services
         Theme Theme { get; }
         string[] TrustedCorsOrigins { get; }
         bool UseHsts { get; }
+        bool UseHttpLogging { get; }
     }
 
     public class ApplicationConfig : IApplicationConfig
@@ -70,6 +71,7 @@ namespace Remotely.Server.Services
         public Theme Theme => Enum.Parse<Theme>(Config["ApplicationOptions:Theme"] ?? "Dark", true);
         public string[] TrustedCorsOrigins => Config.GetSection("ApplicationOptions:TrustedCorsOrigins").Get<string[]>() ?? System.Array.Empty<string>();
         public bool UseHsts => bool.Parse(Config["ApplicationOptions:UseHsts"] ?? "false");
+        public bool UseHttpLogging => bool.Parse(Config["ApplicationOptions:UseHttpLogging"] ?? "false");
         private IConfiguration Config { get; set; }
     }
 }

@@ -103,6 +103,9 @@ namespace Remotely.Server.Pages
 
         [Display(Name = "Use HSTS")]
         public bool UseHsts { get; set; }
+
+        [Display(Name = "Use HTTP Logging")]
+        public bool UseHttpLogging { get; set; }
     }
 
     public class ConnectionStringsModel

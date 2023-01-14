@@ -142,6 +142,7 @@ For more information on configuring ASP.NET Core, see https://docs.microsoft.com
 * Theme: The color theme to use for the site.  Values are "Light" or "Dark".  This can also be configured per-user in Account - Options.
 * TrustedCorsOrigins: For cross-origin API requests via JavaScript.  The websites listed in this array with be allowed to make requests to the API.  This does not grant authentication, which is still required on most endpoints.
 * UseHsts: Whether ASP.NET Core will use HTTP Strict Transport Security.
+* UseHttpLogging: Enables logging for all HTTP requests.  Also enables additional log entries in `ClientDownloadsController` regarding the effective scheme, host, and remote IP address as a result of processing forwarded headers.
 
 
 ## Changing the Database

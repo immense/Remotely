@@ -33,6 +33,7 @@ using Remotely.Server.Services.RcImplementations;
 using Immense.RemoteControl.Server.Abstractions;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Remotely.Shared.Services;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -43,7 +44,7 @@ builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 
-if (EnvironmentHelper.IsWindows &&
+if (OperatingSystem.IsWindows() &&
     bool.TryParse(builder.Configuration["ApplicationOptions:EnableWindowsEventLog"], out var enableEventLog) &&
     enableEventLog)
 {
@@ -109,6 +110,13 @@ services.AddRazorPages();
 services.AddServerSideBlazor();
 services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<RemotelyUser>>();
 services.AddDatabaseDeveloperPageExceptionFilter();
+services.AddHttpLogging(options =>
+{
+    options.RequestHeaders.Add("X-Forwarded-For");
+    options.RequestHeaders.Add("X-Forwarded-Proto");
+    options.RequestHeaders.Add("X-Forwarded-Host");
+    options.RequestHeaders.Add("Host");
+});
 
 var trustedOrigins = configuration.GetSection("ApplicationOptions:TrustedCorsOrigins").Get<string[]>();
 
@@ -166,7 +174,7 @@ services.AddScoped<IEmailSenderEx, EmailSenderEx>();
 services.AddScoped<IEmailSender, EmailSender>();
 services.AddScoped<IAppDbFactory, AppDbFactory>();
 services.AddTransient<IDataService, DataService>();
-services.AddScoped<IApplicationConfig, ApplicationConfig>();
+services.AddSingleton<IApplicationConfig, ApplicationConfig>();
 services.AddScoped<ApiAuthorizationFilter>();
 services.AddScoped<ExpiringTokenFilter>();
 services.AddHostedService<DbCleanupService>();
@@ -200,8 +208,14 @@ services.AddScoped<IHubEventHandler>(s => s.GetRequiredService<IHubEventHandlerE
 services.AddSingleton<IServiceHubSessionCache, ServiceHubSessionCache>();
 
 var app = builder.Build();
+var appConfig = app.Services.GetRequiredService<IApplicationConfig>();
 
 app.UseForwardedHeaders();
+
+if (appConfig.UseHttpLogging)
+{
+    app.UseHttpLogging();
+}
 
 if (app.Environment.IsDevelopment())
 {
