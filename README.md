@@ -27,19 +27,21 @@ docker run -d --name remotely --restart unless-stopped -p 5000:5000 -v /var/www/
 ```
 
 ## Important: HTTPS and Reverse Proxies
-When using a reverse proxy, Remotely uses forwarded headers to determine the scheme (http/https) and host (server URL) to embed in the installers and remote control files when they are downloaded.  To avoid injection attacks, ASP.NET Core defaults to only accepting forwarded headers from loopback addresses.
+The only supported reverse proxy is Caddy, and only when it is directly facing the internet.  The default configuration for Caddy provides everything that ASP.NET Core and SignalR need to function correctly.
 
-Remotely will also add the default Docker host IP (172.17.0.1).
+If you are having networking issues with any other setup, such as with an additional firewall or with Nginx, please seek out community support in the Discussions tab, on Reddit, or another social site.  The Remotely maintainers simply can't provide guidance and support for all the possible environment setups.
 
-**If you are using a non-default configuration, you must add the reverse proxy address to the `KnownProxies` array in appsettings.json.**
+With that said, Remotely requires the following headers to be set: `X-Forwarded-Proto`, `X-Forwarded-Host`, and `X-Forwarded-For`.  These correlate to the scheme (http/https), the URL of the original request, and the client's IP address, respectively.  The resulting scheme and host are injected into the installers and desktop clients, so they know where to send requests.  The client IP address is used in the device info.
 
-Remotely will not work if it receives forwarded requests from addresses that aren't in that list.
+The Remotely code does not parse or handle these values.  It is done internally by ASP.NET Core's built-in middleware.  If the values are not appearing as expected, it is because the headers were missing, didn't contain the correct values, were not the correct format, or didn't come through a chain of known proxies (see below).
+
+To avoid injection attacks, ASP.NET Core defaults to only accepting forwarded headers from loopback addresses.  Remotely will also add the default Docker host IP (172.17.0.1).  If you are using a non-default configuration, you must add all fireawll and reverse proxy addresses to the `KnownProxies` array in appsettings.json.
 
 ## After Installation
 - Data for Remotely will be saved in `/var/www/remotely/` within two files: appsettings.json and Remotely.db.
   - These files will persist through teardown and setup of new Remotely containers.
   - If upgrading from a non-Docker version of Remotely, overwrite these files with the ones from your previous installation.
-- Use a reverse proxy like Nginx or Caddy if you want to expose the site to the internet.
+- Use Caddy as a reverse proxy if you want to expose the site to the internet.
 - If this is the first run, create your account by clicking the `Register` button on the main page.
   - This account will be both the server admin and organization admin.
   - An organization is automatically created for the account.
