@@ -213,12 +213,12 @@ services.AddSingleton<IServiceHubSessionCache, ServiceHubSessionCache>();
 var app = builder.Build();
 var appConfig = app.Services.GetRequiredService<IApplicationConfig>();
 
-app.UseForwardedHeaders();
-
 if (appConfig.UseHttpLogging)
 {
     app.UseHttpLogging();
 }
+
+app.UseForwardedHeaders();
 
 if (app.Environment.IsDevelopment())
 {
