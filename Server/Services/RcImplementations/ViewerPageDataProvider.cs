@@ -21,8 +21,19 @@ namespace Remotely.Server.Services.RcImplementations
     
         public string GetUserDisplayName(PageModel pageModel)
         {
+            if (string.IsNullOrWhiteSpace(pageModel?.User?.Identity?.Name))
+            {
+                return string.Empty;
+            }
+
             var user = _dataService.GetUserByNameWithOrg(pageModel.User.Identity.Name);
-            return user.UserOptions?.DisplayName ?? user.UserName;
+
+            if (user is null)
+            {
+                return string.Empty;
+            }
+
+            return user.UserOptions?.DisplayName ?? user.UserName ?? string.Empty;
         }
 
         public ViewerPageTheme GetTheme(PageModel pageModel)
