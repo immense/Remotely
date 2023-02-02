@@ -9,19 +9,19 @@ namespace Remotely.Server.Auth
 {
     public class ApiAuthorizationFilter : IAuthorizationFilter
     {
+        private readonly IDataService _dataService;
+
         public ApiAuthorizationFilter(IDataService dataService)
         {
-            DataService = dataService;
+            _dataService = dataService;
         }
-
-        private IDataService DataService { get; }
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
 
             if (context.HttpContext.User.Identity.IsAuthenticated)
             {
-                var orgID = DataService.GetUserByNameWithOrg(context.HttpContext.User.Identity.Name)?.OrganizationID;
+                var orgID = _dataService.GetUserByNameWithOrg(context.HttpContext.User.Identity.Name)?.OrganizationID;
                 context.HttpContext.Request.Headers["OrganizationID"] = orgID;
                 return;
             }
@@ -56,9 +56,9 @@ namespace Remotely.Server.Auth
 
                         var keyId = authComponents[0]?.Trim();
                         var apiSecret = authComponents[1]?.Trim();
-                        if (DataService.ValidateApiKey(keyId, apiSecret, context.HttpContext.Request.Path, context.HttpContext.Connection.RemoteIpAddress.ToString()))
+                        if (_dataService.ValidateApiKey(keyId, apiSecret, context.HttpContext.Request.Path, context.HttpContext.Connection.RemoteIpAddress.ToString()))
                         {
-                            var orgID = DataService.GetApiKey(keyId)?.OrganizationID;
+                            var orgID = _dataService.GetApiKey(keyId)?.OrganizationID;
                             context.HttpContext.Request.Headers["OrganizationID"] = orgID;
                             return;
                         }

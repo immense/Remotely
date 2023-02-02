@@ -177,6 +177,12 @@ namespace Remotely.Server.Components.Devices
         }
         private async Task HandleValidSubmit()
         {
+            if (!DataService.DoesUserHaveAccessToDevice(Device.ID, User))
+            {
+                ToastService.ShowToast("Unauthorized.", classString: "bg-warning");
+                return;
+            }
+           
             DataService.UpdateDevice(Device.ID,
                   Device.Tags,
                   Device.Alias,

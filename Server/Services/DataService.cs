@@ -992,7 +992,7 @@ namespace Remotely.Server.Services
                     deviceIDs.Contains(device.ID) &&
                     (
                         remotelyUser.IsAdministrator ||
-                        device.DeviceGroup.Users.Count == 0 ||
+                        string.IsNullOrWhiteSpace(device.DeviceGroupID) ||
                         device.DeviceGroup.Users.Any(user => user.Id == remotelyUser.Id
                     )))
                 .Select(x => x.ID)
@@ -1233,7 +1233,6 @@ namespace Remotely.Server.Services
                     (
                         user.IsAdministrator ||
                         string.IsNullOrWhiteSpace(x.DeviceGroupID) ||
-                        !x.DeviceGroup.Users.Any() ||
                         x.DeviceGroup.Users.Any(deviceUser => deviceUser.Id == user.Id)
                     ));
         }
@@ -1263,7 +1262,6 @@ namespace Remotely.Server.Services
                     x.OrganizationID == user.OrganizationID &&
                     (
                         user.IsAdministrator ||
-                        x.Users.Count == 0 ||
                         x.Users.Any(x => x.Id == userId)
                     )
                 )
@@ -1325,7 +1323,6 @@ namespace Remotely.Server.Services
                     (
                         user.IsAdministrator ||
                         string.IsNullOrWhiteSpace(x.DeviceGroupID) ||
-                        !x.DeviceGroup.Users.Any() ||
                         x.DeviceGroup.Users.Any(deviceUser => deviceUser.Id == user.Id)
                     ))
                 .Select(x => x.ID);
