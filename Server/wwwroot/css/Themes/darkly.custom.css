@@ -18,3 +18,7 @@
     font-size: .5em;
     color: deepskyblue;
 }
+
+.form-floating > label {
+    color: #375a7f;
+}
