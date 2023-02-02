@@ -44,6 +44,9 @@ namespace Remotely.Server.Pages
         [Display(Name = "Enforce Attended Access")]
         public bool EnforceAttendedAccess { get; set; }
 
+        [Display(Name = "Force Client HTTPS")]
+        public bool ForceClientHttps { get; set; }
+
         [Display(Name = "Known Proxies")]
         public List<string> KnownProxies { get; set; } = new();
 

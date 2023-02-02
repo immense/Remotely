@@ -151,6 +151,13 @@
                     <ValidationMessage For="() => Input.EnforceAttendedAccess" />
                 </div>
                 <div class="form-group">
+                    <label>Force Client HTTPS</label>
+                    <br />
+                    <InputCheckbox @bind-Value="Input.ForceClientHttps" autocomplete="off" />
+                    <br />
+                    <ValidationMessage For="() => Input.ForceClientHttps" />
+                </div>
+                <div class="form-group">
                     <label class="control-label">Known Proxies</label>
                     <br />
                     <select class="form-control" @bind="_knownProxySelected" size="4">

@@ -135,7 +135,9 @@ namespace Remotely.Server.API
             var hostIndex = fileContents.IndexOf("HostName=");
             var orgIndex = fileContents.IndexOf("Organization=");
 
-            fileContents[hostIndex] = $"HostName=\"{Request.Scheme}://{Request.Host}\"";
+            var effectiveScheme = _appConfig.ForceClientHttps ? "https" : Request.Scheme;
+
+            fileContents[hostIndex] = $"HostName=\"{effectiveScheme}://{Request.Host}\"";
             fileContents[orgIndex] = $"Organization=\"{organizationId}\"";
             var fileBytes = Encoding.UTF8.GetBytes(string.Join("\n", fileContents));
             return File(fileBytes, "application/octet-stream", fileName);
@@ -145,7 +147,8 @@ namespace Remotely.Server.API
         {
             LogRequest(nameof(GetDesktopFile));
 
-            var serverUrl = $"{Request.Scheme}://{Request.Host}";
+            var effectiveScheme = _appConfig.ForceClientHttps ? "https" : Request.Scheme;
+            var serverUrl = $"{effectiveScheme}://{Request.Host}";
             var embeddedData = new EmbeddedServerData(new Uri(serverUrl), organizationId);
             var result = await _embeddedDataSearcher.GetRewrittenStream(filePath, embeddedData);
 
@@ -172,8 +175,9 @@ namespace Remotely.Server.API
                 {
                     case "WindowsInstaller":
                         {
+                            var effectiveScheme = _appConfig.ForceClientHttps ? "https" : Request.Scheme;
+                            var serverUrl = $"{effectiveScheme}://{Request.Host}";
                             var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Remotely_Installer.exe");
-                            var serverUrl = $"{Request.Scheme}://{Request.Host}";
                             var embeddedData = new EmbeddedServerData(new Uri(serverUrl), organizationId);
                             var result = await _embeddedDataSearcher.GetRewrittenStream(filePath, embeddedData);
 
@@ -228,10 +232,12 @@ namespace Remotely.Server.API
                     ip = ip.MapToIPv4();
                 }
 
+                var effectiveScheme = _appConfig.ForceClientHttps ? "https" : Request.Scheme;
+
                 _logger.LogInformation(
                     "Started client download via {methodName}.  Effective Scheme: {scheme}.  Effective Host: {host}.  Remote IP: {ip}.",
                     methodName,
-                    Request.Scheme,
+                    effectiveScheme,
                     Request.Host,
                     $"{ip}");
             }

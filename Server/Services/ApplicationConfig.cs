@@ -13,6 +13,7 @@ namespace Remotely.Server.Services
         string DBProvider { get; }
         bool EnableWindowsEventLog { get; }
         bool EnforceAttendedAccess { get; }
+        bool ForceClientHttps { get; }
         string[] KnownProxies { get; }
         int MaxConcurrentUpdates { get; }
         int MaxOrganizationCount { get; }
@@ -50,6 +51,7 @@ namespace Remotely.Server.Services
         public string DBProvider => Config["ApplicationOptions:DBProvider"] ?? "SQLite";
         public bool EnableWindowsEventLog => bool.Parse(Config["ApplicationOptions:EnableWindowsEventLog"]);
         public bool EnforceAttendedAccess => bool.Parse(Config["ApplicationOptions:EnforceAttendedAccess"] ?? "false");
+        public bool ForceClientHttps => bool.Parse(Config["ApplicationOptions:ForceClientHttps"] ?? "false");
         public string[] KnownProxies => Config.GetSection("ApplicationOptions:KnownProxies").Get<string[]>() ?? System.Array.Empty<string>();
         public int MaxConcurrentUpdates => int.Parse(Config["ApplicationOptions:MaxConcurrentUpdates"] ?? "10");
         public int MaxOrganizationCount => int.Parse(Config["ApplicationOptions:MaxOrganizationCount"] ?? "1");
