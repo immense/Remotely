@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Immense.RemoteControl.Desktop.Windows;
+using Immense.RemoteControl.Desktop.Linux;
 using Remotely.Desktop.Shared.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
