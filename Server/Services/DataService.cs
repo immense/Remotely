@@ -745,7 +745,8 @@ namespace Remotely.Server.Services
                     Email = userEmail.Trim().ToLower(),
                     IsAdministrator = isAdmin,
                     OrganizationID = organizationID,
-                    UserOptions = new RemotelyUserOptions()
+                    UserOptions = new RemotelyUserOptions(),
+                    LockoutEnabled = true
                 };
                 var org = dbContext.Organizations
                     .Include(x => x.RemotelyUsers)
