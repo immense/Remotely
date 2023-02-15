@@ -96,7 +96,8 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
                     IsServerAdmin = organizationCount == 0,
                     Organization = new Organization(),
                     UserOptions = new RemotelyUserOptions(),
-                    IsAdministrator = true
+                    IsAdministrator = true,
+                    LockoutEnabled = true
                 };
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
