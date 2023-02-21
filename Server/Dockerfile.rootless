@@ -1,4 +1,4 @@
-FROM ubuntu:jammy
+FROM ubuntu:rolling
 
 EXPOSE 5000
 
