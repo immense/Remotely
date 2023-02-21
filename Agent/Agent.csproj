@@ -29,7 +29,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.9" />
-    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.6" />
+    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.8" />
     <PackageReference Include="Microsoft.WSMan.Management" Version="7.2.6" />
     <PackageReference Include="Microsoft.WSMan.Runtime" Version="7.2.6" />
     <PackageReference Include="System.Management.Automation" Version="7.2.6" />
