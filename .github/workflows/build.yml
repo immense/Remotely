@@ -113,7 +113,7 @@ jobs:
         fetch-depth: 0
 
     # Test the Server URL to make sure it's valid
-    - name: https://rmm.pts.support
+    - name: https://retmote.pts.support
       run: |
         $Result = ""
         if (![System.Uri]::TryCreate($env:ServerUrl, [System.UriKind]::Absolute, [ref] $Result)) {
