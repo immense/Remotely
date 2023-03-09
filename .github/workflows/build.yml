@@ -24,7 +24,7 @@ on:
   workflow_dispatch:
     inputs:
       serverUrl:
-        description: 'https://rmm.pts.support'     
+        description: 'https://remote.pts.support'     
         required: true
       rid:
         description: 'Server Runtime Identifier'     
