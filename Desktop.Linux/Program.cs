@@ -16,7 +16,7 @@ using System.Diagnostics;
 
 var logger = new FileLogger("Remotely_Deskt", "Program.cs");
 var filePath = Process.GetCurrentProcess()?.MainModule?.FileName;
-var serverUrl = Debugger.IsAttached ? "https://localhost:5001" : string.Empty;
+var serverUrl = Debugger.IsAttached ? "http://localhost:5000" : string.Empty;
 var getEmbeddedResult = await EmbeddedServerDataSearcher.Instance.TryGetEmbeddedData(filePath);
 if (getEmbeddedResult.IsSuccess)
 {
@@ -40,7 +40,7 @@ var provider = await Startup.UseRemoteControlClient(
 #if DEBUG
             builder.SetMinimumLevel(LogLevel.Debug);
 #endif
-            builder.AddProvider(new FileLoggerProvider("Remotely_Deskt"));
+            builder.AddProvider(new FileLoggerProvider("Remotely_Desktop"));
         });
 
         services.AddSingleton<IOrganizationIdProvider, OrganizationIdProvider>();
