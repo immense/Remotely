@@ -18,7 +18,10 @@
     <Platforms>AnyCPU;x86;x64</Platforms>
     <StartupObject></StartupObject>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+  	<ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
