@@ -172,7 +172,6 @@ You can change database by changing `DBProvider` in `ApplicationOptions` to `SQL
     * libx11-dev
 	* libxrandr-dev
     * libc6-dev
-    * libgdiplus
     * libxtst-dev
     * xclip
 

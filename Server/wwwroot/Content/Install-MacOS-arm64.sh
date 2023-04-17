@@ -44,9 +44,6 @@ su - $Owner -c "brew update"
 # Install .NET Runtime
 su - $Owner -c "brew install --cask dotnet"
 
-# Install dependency for System.Drawing.Common
-su - $Owner -c "brew install mono-libgdiplus"
-
 # Install other dependencies
 su - $Owner -c "brew install curl"
 su - $Owner -c "brew install jq"
