@@ -1,4 +1,4 @@
-name: Release Build
+name: $(Build.BuildNumber)
 
 trigger:
 - master
