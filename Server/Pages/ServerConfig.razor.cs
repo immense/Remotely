@@ -142,7 +142,7 @@ namespace Remotely.Server.Pages
 
 
         [Inject]
-        private IHubContext<ServiceHub> AgentHubContext { get; set; }
+        private IHubContext<AgentHub> AgentHubContext { get; set; }
 
         [Inject]
         private IConfiguration Configuration { get; set; }

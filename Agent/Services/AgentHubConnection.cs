@@ -107,6 +107,7 @@ namespace Remotely.Agent.Services
 
                     _logger.LogInformation("Connected to server.");
 
+                    // TODO: Move CPU sampler to background service.
                     var device = await _deviceInfoService.CreateDevice(_connectionInfo.DeviceID, _connectionInfo.OrganizationID);
 
                     var result = await _hubConnection.InvokeAsync<bool>("DeviceCameOnline", device);
@@ -132,6 +133,7 @@ namespace Remotely.Agent.Services
                         continue;
                     }
 
+                    // TODO: Move to background service.
                     _heartbeatTimer?.Dispose();
                     _heartbeatTimer = new Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
                     _heartbeatTimer.Elapsed += HeartbeatTimer_Elapsed;

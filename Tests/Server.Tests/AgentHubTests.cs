@@ -42,7 +42,7 @@ namespace Remotely.Tests
 
             appConfig.Setup(x => x.BannedDevices).Returns(new string[] { _testData.Device1.DeviceName });
 
-            var hub = new ServiceHub(DataService, appConfig.Object, serviceSessionCache.Object, viewerHub.Object, circuitManager.Object, expiringTokenService.Object);
+            var hub = new AgentHub(DataService, appConfig.Object, serviceSessionCache.Object, viewerHub.Object, circuitManager.Object, expiringTokenService.Object);
 
             var hubClients = new Mock<IHubCallerClients>();
             var caller = new Mock<IClientProxy>();
@@ -69,7 +69,7 @@ namespace Remotely.Tests
 
             appConfig.Setup(x => x.BannedDevices).Returns(new string[] { _testData.Device1.ID });
 
-            var hub = new ServiceHub(DataService, appConfig.Object, serviceSessionCache.Object, viewerHub.Object, circuitManager.Object, expiringTokenService.Object);
+            var hub = new AgentHub(DataService, appConfig.Object, serviceSessionCache.Object, viewerHub.Object, circuitManager.Object, expiringTokenService.Object);
 
             var hubClients = new Mock<IHubCallerClients>();
             var caller = new Mock<IClientProxy>();
@@ -100,7 +100,7 @@ namespace Remotely.Tests
 
             appConfig.Setup(x => x.BannedDevices).Returns(Array.Empty<string>());
 
-            var hub = new ServiceHub(DataService, appConfig.Object, serviceSessionCache.Object, viewerHub.Object, circuitManager.Object, expiringTokenService.Object)
+            var hub = new AgentHub(DataService, appConfig.Object, serviceSessionCache.Object, viewerHub.Object, circuitManager.Object, expiringTokenService.Object)
             {
                 Context = new CallerContext()
             };

@@ -27,12 +27,12 @@ namespace Remotely.Server.Services.RcImplementations
         private static readonly ConcurrentDictionary<string, SemaphoreSlim> _sessionWaitHandlers = new();
 
         private readonly ICircuitManager _circuitManager;
-        private readonly IHubContext<ServiceHub> _serviceHub;
+        private readonly IHubContext<AgentHub> _serviceHub;
         private readonly ILogger<HubEventHandlerEx> _logger;
 
         public HubEventHandlerEx(
             ICircuitManager circuitManager,
-            IHubContext<ServiceHub> serviceHub,
+            IHubContext<AgentHub> serviceHub,
             ILogger<HubEventHandlerEx> logger)
         {
             _circuitManager = circuitManager;

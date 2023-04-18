@@ -4,6 +4,7 @@ using System.Diagnostics;
 
 namespace Remotely.Shared.Utilities
 {
+    // TODO: Make instanced and put behind interface.
     public static class EnvironmentHelper
     {
         public static string AgentExecutableFileName

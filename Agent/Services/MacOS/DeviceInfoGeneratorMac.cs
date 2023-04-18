@@ -9,13 +9,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely.Agent.Services
+namespace Remotely.Agent.Services.MacOS
 {
-    public class DeviceInformationServiceMac : DeviceInformationServiceBase, IDeviceInformationService
+    public class DeviceInfoGeneratorMac : DeviceInfoGeneratorBase, IDeviceInformationService
     {
         private readonly IProcessInvoker _processInvoker;
 
-        public DeviceInformationServiceMac(IProcessInvoker processInvoker)
+        public DeviceInfoGeneratorMac(IProcessInvoker processInvoker)
         {
             _processInvoker = processInvoker;
         }

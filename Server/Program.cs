@@ -257,7 +257,7 @@ app.UseRemoteControlServer();
 
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapHub<ServiceHub>("/hubs/service");
+    endpoints.MapHub<AgentHub>("/hubs/service");
     endpoints.MapControllers();
     endpoints.MapBlazorHub();
     endpoints.MapFallbackToPage("/_Host");

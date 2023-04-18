@@ -24,7 +24,7 @@ namespace Remotely.Server.API
     [ApiController]
     public class RemoteControlController : ControllerBase
     {
-        private readonly IHubContext<ServiceHub> _serviceHub;
+        private readonly IHubContext<AgentHub> _serviceHub;
         private readonly IDesktopHubSessionCache _desktopSessionCache;
         private readonly IServiceHubSessionCache _serviceSessionCache;
         private readonly IApplicationConfig _appConfig;
@@ -37,7 +37,7 @@ namespace Remotely.Server.API
             SignInManager<RemotelyUser> signInManager,
             IDataService dataService,
             IDesktopHubSessionCache desktopSessionCache,
-            IHubContext<ServiceHub> serviceHub,
+            IHubContext<AgentHub> serviceHub,
             IServiceHubSessionCache serviceSessionCache,
             IOtpProvider otpProvider,
             IHubEventHandlerEx hubEvents,

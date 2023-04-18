@@ -58,7 +58,7 @@ namespace Remotely.Server.Hubs
 
     public class CircuitConnection : CircuitHandler, ICircuitConnection
     {
-        private readonly IHubContext<ServiceHub> _agentHubContext;
+        private readonly IHubContext<AgentHub> _agentHubContext;
         private readonly IApplicationConfig _appConfig;
         private readonly IClientAppState _appState;
         private readonly IAuthService _authService;
@@ -74,7 +74,7 @@ namespace Remotely.Server.Hubs
             IAuthService authService,
             IDataService dataService,
             IClientAppState appState,
-            IHubContext<ServiceHub> agentHubContext,
+            IHubContext<AgentHub> agentHubContext,
             IApplicationConfig appConfig,
             ICircuitManager circuitManager,
             IToastService toastService,

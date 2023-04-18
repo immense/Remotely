@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely.Agent.Services
+namespace Remotely.Agent.Services.Windows
 {
-    public class DeviceInformationServiceWin : DeviceInformationServiceBase, IDeviceInformationService
+    public class DeviceInfoGeneratorWin : DeviceInfoGeneratorBase, IDeviceInformationService
     {
         public async Task<Device> CreateDevice(string deviceId, string orgId)
         {
@@ -49,8 +49,8 @@ namespace Remotely.Agent.Services
 
                 if (Kernel32.GlobalMemoryStatusEx(memoryStatus))
                 {
-                    freeGB = Math.Round(((double)memoryStatus.ullAvailPhys / 1024 / 1024 / 1024), 2);
-                    totalGB = Math.Round(((double)memoryStatus.ullTotalPhys / 1024 / 1024 / 1024), 2);
+                    freeGB = Math.Round((double)memoryStatus.ullAvailPhys / 1024 / 1024 / 1024, 2);
+                    totalGB = Math.Round((double)memoryStatus.ullTotalPhys / 1024 / 1024 / 1024, 2);
                 }
 
                 return (totalGB - freeGB, totalGB);

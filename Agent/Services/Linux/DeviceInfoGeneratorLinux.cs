@@ -8,13 +8,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely.Agent.Services
+namespace Remotely.Agent.Services.Linux
 {
-    public class DeviceInformationServiceLinux : DeviceInformationServiceBase, IDeviceInformationService
+    public class DeviceInfoGeneratorLinux : DeviceInfoGeneratorBase, IDeviceInformationService
     {
         private readonly IProcessInvoker _processInvoker;
 
-        public DeviceInformationServiceLinux(IProcessInvoker processInvoker)
+        public DeviceInfoGeneratorLinux(IProcessInvoker processInvoker)
         {
             _processInvoker = processInvoker;
         }
@@ -75,8 +75,8 @@ namespace Remotely.Agent.Services
                             .Split(' ')
                             .First(); // 16637468
 
-                var freeGB = Math.Round((double.Parse(freeKB) / 1024 / 1024), 2);
-                var totalGB = Math.Round((double.Parse(totalKB) / 1024 / 1024), 2);
+                var freeGB = Math.Round(double.Parse(freeKB) / 1024 / 1024, 2);
+                var totalGB = Math.Round(double.Parse(totalKB) / 1024 / 1024, 2);
 
                 return (totalGB - freeGB, totalGB);
             }

@@ -1,12 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-using Remotely.Shared.Extensions;
+﻿#nullable enable
+
+using Microsoft.Extensions.Logging;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,42 +13,51 @@ namespace Remotely.Shared.Services
 {
     public class FileLogger : ILogger
     {
-        private static readonly ConcurrentQueue<string> _logQueue = new();
         private static readonly ConcurrentStack<string> _scopeStack = new();
         private static readonly SemaphoreSlim _writeLock = new(1, 1);
-        private static string _logDir;
-        private readonly string _applicationName;
         private readonly string _categoryName;
-        private readonly System.Timers.Timer _sinkTimer = new(5000) { AutoReset = false };
+        private readonly string _componentName;
+        private readonly string _componentVersion;
+        private DateTimeOffset _lastLogCleanup;
 
-        public FileLogger(string applicationName, string categoryName)
+        public FileLogger(string componentName, string componentVersion, string categoryName)
         {
-            _applicationName = applicationName?.SanitizeFileName() ?? string.Empty;
+            _componentName = componentName;
+            _componentVersion = componentVersion;
             _categoryName = categoryName;
-            _sinkTimer.Elapsed += SinkTimer_Elapsed;
         }
 
-        private string LogDir
+        private static string LogsFolderPath
         {
             get
             {
-                if (!string.IsNullOrWhiteSpace(_logDir))
-                {
-                    return _logDir;
-                }
-
                 if (OperatingSystem.IsWindows())
                 {
-                    _logDir = Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Remotely", "Logs")).FullName;
+                    var logsPath = Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                        "Remotely",
+                        "Logs");
+
+                    if (EnvironmentHelper.IsDebug)
+                    {
+                        logsPath += "_Debug";
+                    }
+                    return logsPath;
                 }
-                else
+
+                if (OperatingSystem.IsLinux())
                 {
-                    _logDir = Directory.CreateDirectory("/var/log/remotely").FullName;
+                    if (EnvironmentHelper.IsDebug)
+                    {
+                        return "/var/log/remotely_debug";
+                    }
+                    return "/var/log/remotely";
                 }
-                return _logDir;
+
+                throw new PlatformNotSupportedException();
             }
         }
-        private string LogPath => Path.Combine(LogDir, $"LogFile_{_applicationName}_{DateTime.Now:yyyy-MM-dd}.log");
+        private string LogPath => Path.Combine(LogsFolderPath, _componentName, $"LogFile_{DateTime.Now:yyyy-MM-dd}.log");
 
         public IDisposable BeginScope<TState>(TState state)
         {
@@ -85,21 +93,25 @@ namespace Remotely.Shared.Services
             };
         }
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
+            _writeLock.Wait();
+
             try
             {
-                var scopeStack = _scopeStack.Any() ?
-                    new string[] { _scopeStack.First(), _scopeStack.Last() } :
-                    Array.Empty<string>();
 
-                var message = FormatLogEntry(logLevel, _categoryName, $"{state}", exception, scopeStack);
-                _logQueue.Enqueue(message);
-                _sinkTimer.Start();
+                var message = FormatLogEntry(logLevel, _categoryName, $"{state}", exception, _scopeStack.ToArray());
+                CheckLogFileExists();
+                File.AppendAllText(LogPath, message);
+                CleanupLogs();
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error queueing log entry: {ex.Message}");
+                Console.WriteLine($"Error writing log entry: {ex.Message}");
+            }
+            finally
+            {
+                _writeLock.Release();
             }
         }
 
@@ -126,42 +138,38 @@ namespace Remotely.Shared.Services
 
         private void CheckLogFileExists()
         {
-            _ = Directory.CreateDirectory(Path.GetDirectoryName(LogPath)!);
-
+            Directory.CreateDirectory(Path.GetDirectoryName(LogPath)!);
             if (!File.Exists(LogPath))
             {
                 File.Create(LogPath).Close();
+            }
+        }
+        private void CleanupLogs()
+        {
+            if (DateTimeOffset.Now - _lastLogCleanup < TimeSpan.FromDays(1))
+            {
+                return;
+            }
 
+            _lastLogCleanup = DateTimeOffset.Now;
+
+            var logFiles = Directory.GetFiles(Path.GetDirectoryName(LogPath)!)
+                .Select(x => new FileInfo(x))
+                .Where(x => DateTime.Now - x.CreationTime > TimeSpan.FromDays(7));
+
+            foreach (var file in logFiles)
+            {
                 try
                 {
-                    if (OperatingSystem.IsWindows())
-                    {
-                        Process.Start("cmd", $"/c icacls \"{LogPath}\" /grant Users:M").WaitForExit(1_000);
-                    }
-                    else if (OperatingSystem.IsLinux())
-                    {
-                        Process.Start("sudo", $"chmod 775 {LogPath}").WaitForExit(1_000);
-                    }
+                    file.Delete();
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"Error modifying log file permissions: {ex.Message}");
-                }
-            }
-
-            if (File.Exists(LogPath))
-            {
-                var fi = new FileInfo(LogPath);
-                while (fi.Length > 1_000_000)
-                {
-                    var content = File.ReadAllLines(LogPath);
-                    File.WriteAllLines(LogPath, content.Skip(10));
-                    fi = new FileInfo(LogPath);
+                    Console.WriteLine($"Error while trying to delete log file {file.FullName}.  Message: {ex.Message}");
                 }
             }
         }
-
-        private string FormatLogEntry(LogLevel logLevel, string categoryName, string state, Exception exception, string[] scopeStack)
+        private string FormatLogEntry(LogLevel logLevel, string categoryName, string state, Exception? exception, string[] scopeStack)
         {
             var ex = exception;
             var exMessage = exception?.Message;
@@ -174,13 +182,16 @@ namespace Remotely.Shared.Services
 
             var entry =
                 $"[{logLevel}]\t" +
-                $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}\t";
+                $"[v{_componentVersion}]\t" +
+                $"[Process ID: {Environment.ProcessId}]\t" +
+                $"[Thread ID: {Environment.CurrentManagedThreadId}]\t" +
+                $"[{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}]\t";
 
             entry += scopeStack.Any() ?
-                        $"[{string.Join(" - ", scopeStack)} - {categoryName}]\t" :
+                        $"[{categoryName} => {string.Join(" => ", scopeStack)}]\t" :
                         $"[{categoryName}]\t";
 
-            entry += $"Message: {state}\t";
+            entry += $"{state}\t";
 
             if (!string.IsNullOrWhiteSpace(exMessage))
             {
@@ -197,32 +208,6 @@ namespace Remotely.Shared.Services
             return entry;
         }
 
-        private async void SinkTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            try
-            {
-                await _writeLock.WaitAsync();
-
-                CheckLogFileExists();
-
-                var message = string.Empty;
-
-                while (_logQueue.TryDequeue(out var entry))
-                {
-                    message += entry;
-                }
-
-                File.AppendAllText(LogPath, message);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error writing log entry: {ex.Message}");
-            }
-            finally
-            {
-                _writeLock.Release();
-            }
-        }
         private class NoopDisposable : IDisposable
         {
             public void Dispose()

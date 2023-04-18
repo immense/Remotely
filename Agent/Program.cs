@@ -12,6 +12,9 @@ using System.ServiceProcess;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Runtime.Versioning;
+using Remotely.Agent.Services.Linux;
+using Remotely.Agent.Services.MacOS;
+using Remotely.Agent.Services.Windows;
 
 namespace Remotely.Agent
 {
@@ -24,6 +27,7 @@ namespace Remotely.Agent
         {
             try
             {
+                // TODO: Convert to generic host.
                 BuildServices();
 
                 await Init();
@@ -45,7 +49,8 @@ namespace Remotely.Agent
             serviceCollection.AddLogging(builder =>
             {
                 builder.AddConsole().AddDebug();
-                builder.AddProvider(new FileLoggerProvider("Remotely_Agent"));
+                var version = typeof(Program).Assembly.GetName().Version?.ToString() ?? "0.0.0";
+                builder.AddProvider(new FileLoggerProvider("Remotely_Agent", version));
             });
 
             // TODO: All these should be registered as interfaces.
@@ -59,23 +64,23 @@ namespace Remotely.Agent
             serviceCollection.AddScoped<IProcessInvoker, ProcessInvoker>();
             serviceCollection.AddScoped<IUpdateDownloader, UpdateDownloader>();
 
-            if (EnvironmentHelper.IsWindows)
+            if (OperatingSystem.IsWindows())
             {
                 serviceCollection.AddScoped<IAppLauncher, AppLauncherWin>();
                 serviceCollection.AddSingleton<IUpdater, UpdaterWin>();
-                serviceCollection.AddSingleton<IDeviceInformationService, DeviceInformationServiceWin>();
+                serviceCollection.AddSingleton<IDeviceInformationService, DeviceInfoGeneratorWin>();
             }
-            else if (EnvironmentHelper.IsLinux)
+            else if (OperatingSystem.IsLinux())
             {
                 serviceCollection.AddScoped<IAppLauncher, AppLauncherLinux>();
                 serviceCollection.AddSingleton<IUpdater, UpdaterLinux>();
-                serviceCollection.AddSingleton<IDeviceInformationService, DeviceInformationServiceLinux>();
+                serviceCollection.AddSingleton<IDeviceInformationService, DeviceInfoGeneratorLinux>();
             }
-            else if (EnvironmentHelper.IsMac)
+            else if (OperatingSystem.IsMacOS())
             {
                 serviceCollection.AddScoped<IAppLauncher, AppLauncherMac>();
                 serviceCollection.AddSingleton<IUpdater, UpdaterMac>();
-                serviceCollection.AddSingleton<IDeviceInformationService, DeviceInformationServiceMac>();
+                serviceCollection.AddSingleton<IDeviceInformationService, DeviceInfoGeneratorMac>();
             }
             else
             {

@@ -15,7 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 
-namespace Remotely.Agent.Services
+namespace Remotely.Agent.Services.MacOS
 {
     public class UpdaterMac : IUpdater
     {
@@ -30,8 +30,8 @@ namespace Remotely.Agent.Services
         private readonly System.Timers.Timer _updateTimer = new(TimeSpan.FromHours(6).TotalMilliseconds);
 
         public UpdaterMac(
-            ConfigService configService, 
-            IUpdateDownloader updateDownloader, 
+            ConfigService configService,
+            IUpdateDownloader updateDownloader,
             IHttpClientFactory httpClientFactory,
             ILogger<UpdaterMac> logger)
         {

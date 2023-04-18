@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Remotely.Agent.Services;
+using Remotely.Agent.Services.Windows;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -14,11 +15,11 @@ namespace Remotely.Tests.LoadTester
         private static int _agentCount;
         private static string _organizationId;
         private static string _serverurl;
-        private static DeviceInformationServiceWin _deviceInfo;
+        private static DeviceInfoGeneratorWin _deviceInfo;
 
         private static void Main(string[] args)
         {
-            _deviceInfo = new DeviceInformationServiceWin();
+            _deviceInfo = new DeviceInfoGeneratorWin();
             ConnectAgents();
 
             Console.Write("Press Enter to exit...");

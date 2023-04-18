@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Remotely.Agent.Services
 {
-    public class DeviceInformationServiceBase
+    public class DeviceInfoGeneratorBase
     {
         public Device GetDeviceBase(string deviceID, string orgID)
         {

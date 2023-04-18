@@ -14,9 +14,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Remotely.Agent.Services
+namespace Remotely.Agent.Services.Linux
 {
-    
+
     public class UpdaterLinux : IUpdater
     {
         private readonly SemaphoreSlim _checkForUpdatesLock = new(1, 1);
@@ -27,10 +27,10 @@ namespace Remotely.Agent.Services
         private readonly SemaphoreSlim _installLatestVersionLock = new(1, 1);
         private readonly System.Timers.Timer _updateTimer = new(TimeSpan.FromHours(6).TotalMilliseconds);
         private DateTimeOffset _lastUpdateFailure;
-        
+
         public UpdaterLinux(
-            ConfigService configService, 
-            IUpdateDownloader updateDownloader, 
+            ConfigService configService,
+            IUpdateDownloader updateDownloader,
             IHttpClientFactory httpClientFactory,
             ILogger<UpdaterLinux> logger)
         {

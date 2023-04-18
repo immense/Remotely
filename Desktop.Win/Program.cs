@@ -10,8 +10,11 @@ using Microsoft.Extensions.Logging;
 using Remotely.Shared.Services;
 using Immense.RemoteControl.Desktop.Shared.Services;
 using System.Diagnostics;
+using Remotely.Shared.Utilities;
+using Immense.RemoteControl.Desktop.Windows.Startup;
 
-var logger = new FileLogger("Remotely_Desktop", "Program.cs");
+var version = typeof(Program).Assembly.GetName().Version?.ToString() ?? "0.0.0";
+var logger = new FileLogger("Remotely_Desktop", version, "Program.cs");
 var filePath = Process.GetCurrentProcess()?.MainModule?.FileName;
 var serverUrl = Debugger.IsAttached ? "https://localhost:5001" : string.Empty;
 var getEmbeddedResult = await EmbeddedServerDataSearcher.Instance.TryGetEmbeddedData(filePath);
@@ -24,45 +27,49 @@ else
     logger.LogWarning(getEmbeddedResult.Exception, "Failed to extract embedded server data.");
 }
 
-var provider = await Startup.UseRemoteControlClient(
-    args,
+var services = new ServiceCollection();
+
+services.AddSingleton<IOrganizationIdProvider, OrganizationIdProvider>();
+services.AddSingleton<IEmbeddedServerDataSearcher>(EmbeddedServerDataSearcher.Instance);
+
+services.AddRemoteControlWindows(
     config =>
     {
         config.AddBrandingProvider<BrandingProvider>();
-    },
-    services =>
+    });
+
+services.AddLogging(builder =>
+{
+    if (EnvironmentHelper.IsDebug)
     {
-        services.AddLogging(builder =>
-        {
-#if DEBUG
-            builder.SetMinimumLevel(LogLevel.Debug);
-#endif
-            builder.AddProvider(new FileLoggerProvider("Remotely_Desktop"));
-        });
+        builder.SetMinimumLevel(LogLevel.Debug);
+    }
+    builder.AddProvider(new FileLoggerProvider("Remotely_Desktop", version));
+});
 
-        services.AddSingleton<IOrganizationIdProvider, OrganizationIdProvider>();
-        services.AddSingleton<IEmbeddedServerDataSearcher>(EmbeddedServerDataSearcher.Instance);
-    },
-    services =>
-    {
-        var appState = services.GetRequiredService<IAppState>();
-        var orgIdProvider = services.GetRequiredService<IOrganizationIdProvider>();
+var provider = services.BuildServiceProvider();
 
-        if (getEmbeddedResult.IsSuccess)
-        {
-            orgIdProvider.OrganizationId = getEmbeddedResult.Value.OrganizationId;
-            appState.Host = getEmbeddedResult.Value.ServerUrl.AbsoluteUri;
-        }
+var appState = provider.GetRequiredService<IAppState>();
+var orgIdProvider = provider.GetRequiredService<IOrganizationIdProvider>();
 
-        if (appState.ArgDict.TryGetValue("org-id", out var orgId))
-        {
-            orgIdProvider.OrganizationId = orgId;
-        }
+if (getEmbeddedResult.IsSuccess)
+{
+    orgIdProvider.OrganizationId = getEmbeddedResult.Value.OrganizationId;
+    appState.Host = getEmbeddedResult.Value.ServerUrl.AbsoluteUri;
+}
 
-        return Task.CompletedTask;
-    },
-    serverUrl);
+if (appState.ArgDict.TryGetValue("org-id", out var orgId))
+{
+    orgIdProvider.OrganizationId = orgId;
+}
 
+var result = await provider.UseRemoteControlClientWindows(args, serverUrl);
+
+if (!result.IsSuccess)
+{
+    logger.LogError(result.Exception, "Failed to remote control client.");
+    Environment.Exit(1);
+}
 
 var dispatcher = provider.GetRequiredService<IWindowsUiDispatcher>();
 

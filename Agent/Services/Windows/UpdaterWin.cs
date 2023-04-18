@@ -10,7 +10,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Remotely.Agent.Services
+namespace Remotely.Agent.Services.Windows
 {
     public class UpdaterWin : IUpdater
     {
@@ -25,8 +25,8 @@ namespace Remotely.Agent.Services
 
 
         public UpdaterWin(
-            ConfigService configService, 
-            IUpdateDownloader updateDownloader, 
+            ConfigService configService,
+            IUpdateDownloader updateDownloader,
             IHttpClientFactory httpClientFactory,
             ILogger<UpdaterWin> logger)
         {

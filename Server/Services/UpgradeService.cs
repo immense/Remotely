@@ -37,10 +37,10 @@ namespace Remotely.Server.Services
                     return _currentVersion;
                 }
 
-                var fileVersion = System.Diagnostics.FileVersionInfo.GetVersionInfo("Remotely_Server.dll").FileVersion;
-                if (Version.TryParse(fileVersion, out var result))
+                var asmVersion = typeof(UpgradeService).Assembly.GetName().Version;
+                if (asmVersion is not null)
                 {
-                    _currentVersion = result;
+                    _currentVersion = asmVersion;
                     return _currentVersion;
                 }
             }
