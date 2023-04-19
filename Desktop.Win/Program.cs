@@ -26,7 +26,6 @@ else
 {
     logger.LogWarning(getEmbeddedResult.Exception, "Failed to extract embedded server data.");
 }
-
 var services = new ServiceCollection();
 
 services.AddSingleton<IOrganizationIdProvider, OrganizationIdProvider>();

@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\submodules\Immense.RemoteControl\Shared\Shared.csproj" />
+    <ProjectReference Include="..\submodules\Immense.RemoteControl\Immense.RemoteControl.Shared\Immense.RemoteControl.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
