@@ -7,9 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Services;
 using Immense.RemoteControl.Desktop.Shared.Services;
-using Immense.RemoteControl.Desktop.UI.Services;
+using Immense.RemoteControl.Desktop.Services;
 using System.Diagnostics;
-using Immense.RemoteControl.Desktop.Linux.Startup;
+using Immense.RemoteControl.Desktop.Startup;
 using Remotely.Shared.Utilities;
 
 var version = typeof(Program).Assembly.GetName().Version?.ToString() ?? "0.0.0";

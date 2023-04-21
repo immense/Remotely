@@ -12,6 +12,7 @@ using Immense.RemoteControl.Desktop.Shared.Services;
 using System.Diagnostics;
 using Remotely.Shared.Utilities;
 using Immense.RemoteControl.Desktop.Windows.Startup;
+using Immense.RemoteControl.Desktop.Shared.Startup;
 
 var version = typeof(Program).Assembly.GetName().Version?.ToString() ?? "0.0.0";
 var logger = new FileLogger("Remotely_Desktop", version, "Program.cs");
@@ -62,7 +63,7 @@ if (appState.ArgDict.TryGetValue("org-id", out var orgId))
     orgIdProvider.OrganizationId = orgId;
 }
 
-var result = await provider.UseRemoteControlClientWindows(args, serverUrl);
+var result = await provider.UseRemoteControlClient(args, serverUrl);
 
 if (!result.IsSuccess)
 {
