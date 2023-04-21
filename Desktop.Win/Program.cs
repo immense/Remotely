@@ -63,7 +63,10 @@ if (appState.ArgDict.TryGetValue("org-id", out var orgId))
     orgIdProvider.OrganizationId = orgId;
 }
 
-var result = await provider.UseRemoteControlClient(args, serverUrl);
+var result = await provider.UseRemoteControlClient(
+    args,
+    "The remote control client for Remotely.",
+    serverUrl);
 
 if (!result.IsSuccess)
 {

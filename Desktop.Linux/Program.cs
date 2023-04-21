@@ -11,6 +11,7 @@ using Immense.RemoteControl.Desktop.Services;
 using System.Diagnostics;
 using Immense.RemoteControl.Desktop.Startup;
 using Remotely.Shared.Utilities;
+using Immense.RemoteControl.Desktop.Shared.Startup;
 
 var version = typeof(Program).Assembly.GetName().Version?.ToString() ?? "0.0.0";
 var logger = new FileLogger("Remotely_Desktop", version, "Program.cs");
@@ -61,6 +62,18 @@ if (appState.ArgDict.TryGetValue("org-id", out var orgId))
 {
     orgIdProvider.OrganizationId = orgId;
 }
+
+var result = await provider.UseRemoteControlClient(
+    args, 
+    "The remote control client for Remotely.",
+    serverUrl);
+
+if (!result.IsSuccess)
+{
+    logger.LogError(result.Exception, "Failed to remote control client.");
+    Environment.Exit(1);
+}
+
 
 Console.WriteLine("Press Ctrl + C to exit.");
 

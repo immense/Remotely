@@ -55,8 +55,8 @@
     <EmbeddedResource Include="Assets\Remotely_Icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\immybot\submodules\RemoteControl\Immense.RemoteControl.Desktop\Immense.RemoteControl.Desktop.csproj" />
     <ProjectReference Include="..\Desktop.Shared\Desktop.Shared.csproj" />
     <ProjectReference Include="..\submodules\Immense.RemoteControl\Immense.RemoteControl.Desktop.Shared\Immense.RemoteControl.Desktop.Shared.csproj" />
+    <ProjectReference Include="..\submodules\Immense.RemoteControl\Immense.RemoteControl.Desktop\Immense.RemoteControl.Desktop.csproj" />
   </ItemGroup>
 </Project>
