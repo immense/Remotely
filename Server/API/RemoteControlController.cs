@@ -29,7 +29,7 @@ namespace Remotely.Server.API
         private readonly IServiceHubSessionCache _serviceSessionCache;
         private readonly IApplicationConfig _appConfig;
         private readonly IOtpProvider _otpProvider;
-        private readonly IHubEventHandlerEx _hubEvents;
+        private readonly IHubEventHandler _hubEvents;
         private readonly IDataService _dataService;
         private readonly SignInManager<RemotelyUser> _signInManager;
 
@@ -40,7 +40,7 @@ namespace Remotely.Server.API
             IHubContext<AgentHub> serviceHub,
             IServiceHubSessionCache serviceSessionCache,
             IOtpProvider otpProvider,
-            IHubEventHandlerEx hubEvents,
+            IHubEventHandler hubEvents,
             IApplicationConfig appConfig)
         {
             _dataService = dataService;
@@ -112,7 +112,7 @@ namespace Remotely.Server.API
             }
 
 
-            var sessionCount = _desktopSessionCache.Sessions.Values
+            var sessionCount = _desktopSessionCache.Sessions
                    .OfType<RemoteControlSessionEx>()
                    .Count(x => x.OrganizationId == orgID);
 
@@ -121,7 +121,7 @@ namespace Remotely.Server.API
                 return BadRequest("There are already the maximum amount of active remote control sessions for your organization.");
             }
 
-            var sessionId = Guid.NewGuid().ToString();
+            var sessionId = Guid.NewGuid();
             var accessKey = RandomGenerator.GenerateAccessKey();
 
             var session = new RemoteControlSessionEx()
@@ -133,33 +133,32 @@ namespace Remotely.Server.API
                 OrganizationId = orgID
             };
 
-            _desktopSessionCache.Sessions.AddOrUpdate(sessionId, session, (k, v) =>
+            _desktopSessionCache.AddOrUpdate($"{sessionId}", session, (k, v) =>
             {
                 if (v is RemoteControlSessionEx ex)
                 {
                     ex.ServiceConnectionId = HttpContext.Connection.Id;
                     return ex;
                 }
+                v.Dispose();
                 return session;
             });
 
             var orgName = _dataService.GetOrganizationNameById(orgID);
-            Task CreateSessionFunc()
-            {
-                return _serviceHub.Clients.Client(serviceConnectionId).SendAsync("RemoteControl", 
-                    sessionId,
-                    accessKey,
-                    HttpContext.Connection.Id,
-                    string.Empty,
-                    orgName);
 
-            }
+            await _serviceHub.Clients.Client(serviceConnectionId).SendAsync("RemoteControl", 
+                sessionId,
+                accessKey,
+                HttpContext.Connection.Id,
+                string.Empty,
+                orgName);
 
-            if (!await _hubEvents.TryWaitForSession(sessionId, CreateSessionFunc))
+            var waitResult = await session.WaitForSessionReady(TimeSpan.FromSeconds(30));
+            if (!waitResult)
             {
                 return StatusCode(408, "The remote control process failed to start in time on the remote device.");
             }
-
+           
             var otp = _otpProvider.GetOtp(targetDevice.ID);
 
             return Ok($"{HttpContext.Request.Scheme}://{Request.Host}/RemoteControl/Viewer?mode=Unattended&sessionId={sessionId}&accessKey={accessKey}&otp={otp}");

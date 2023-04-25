@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,15 +10,20 @@ using System.Threading.Tasks;
 
 namespace Remotely.Agent.Services;
 
-
-internal interface ICpuUtilizationSampler : IHostedService
+public interface ICpuUtilizationSampler : IHostedService
 {
     double CurrentUtilization { get; }
 }
 
 internal class CpuUtilizationSampler : BackgroundService, ICpuUtilizationSampler
 {
+    private readonly ILogger<CpuUtilizationSampler> _logger;
     private double _currentUtilization;
+
+    public CpuUtilizationSampler(ILogger<CpuUtilizationSampler> logger)
+    {
+        _logger = logger;
+    }
 
     public double CurrentUtilization => _currentUtilization;
 
@@ -25,8 +31,15 @@ internal class CpuUtilizationSampler : BackgroundService, ICpuUtilizationSampler
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            var currentUtil = await GetCpuUtilization(stoppingToken);
-            Interlocked.Exchange(ref _currentUtilization, currentUtil);
+            try
+            {
+                var currentUtil = await GetCpuUtilization(stoppingToken);
+                Interlocked.Exchange(ref _currentUtilization, currentUtil);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while getting CPU utilization sample.");
+            }
             await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
         }
     }

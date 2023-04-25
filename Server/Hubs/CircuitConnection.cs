@@ -1,5 +1,6 @@
 ﻿using Immense.RemoteControl.Server.Abstractions;
 using Immense.RemoteControl.Server.Services;
+using Immense.RemoteControl.Shared;
 using Immense.RemoteControl.Shared.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -40,7 +41,7 @@ namespace Remotely.Server.Hubs
         Task InvokeCircuitEvent(CircuitEventName eventName, params object[] args);
         Task ReinstallAgents(string[] deviceIDs);
 
-        Task<bool> RemoteControl(string deviceID, bool viewOnly);
+        Task<Result<RemoteControlSessionEx>> RemoteControl(string deviceID, bool viewOnly);
 
         Task RemoveDevices(string[] deviceIDs);
 
@@ -206,7 +207,7 @@ namespace Remotely.Server.Hubs
             return Task.CompletedTask;
         }
 
-        public async Task<bool> RemoteControl(string deviceId, bool viewOnly)
+        public async Task<Result<RemoteControlSessionEx>> RemoteControl(string deviceId, bool viewOnly)
         {
             if (!_serviceSessionCache.TryGetByDeviceId(deviceId, out var targetDevice))
             {
@@ -214,66 +215,65 @@ namespace Remotely.Server.Hubs
                      "The selected device is not online.",
                      "Device is not online.",
                      "bg-warning"));
-                return false;
+                return Result.Fail<RemoteControlSessionEx>("Device is not online.");
             }
           
 
-            if (_dataService.DoesUserHaveAccessToDevice(deviceId, User))
-            {
-                var sessionCount = _desktopSessionCache.Sessions.Values
-                    .OfType<RemoteControlSessionEx>()
-                    .Count(x => x.OrganizationId == User.OrganizationID);
-
-                if (sessionCount >= _appConfig.RemoteControlSessionLimit)
-                {
-                    MessageReceived?.Invoke(this, new CircuitEvent(CircuitEventName.DisplayMessage,
-                        "There are already the maximum amount of active remote control sessions for your organization.",
-                        "Max number of concurrent sessions reached.",
-                        "bg-warning"));
-                    return false;
-                }
-
-                if (!_serviceSessionCache.TryGetConnectionId(targetDevice.ID, out var serviceConnectionId))
-                {
-                    MessageReceived?.Invoke(this, new CircuitEvent(CircuitEventName.DisplayMessage,
-                       "Service connection not found.",
-                       "Service connection not found.",
-                       "bg-warning"));
-                    return false;
-                }
-
-                var sessionId = Guid.NewGuid().ToString();
-                var accessKey = RandomGenerator.GenerateAccessKey();
-
-                var session = new RemoteControlSessionEx()
-                {
-                    UnattendedSessionId = sessionId,
-                    UserConnectionId = ConnectionId,
-                    ServiceConnectionId = serviceConnectionId,
-                    DeviceId = deviceId,
-                    ViewOnly = viewOnly,
-                    OrganizationId = User.OrganizationID
-                };
-
-                _desktopSessionCache.Sessions.AddOrUpdate(sessionId, session, (k, v) => session);
-
-                var organization = _dataService.GetOrganizationNameByUserName(User.UserName);
-                await _agentHubContext.Clients.Client(serviceConnectionId).SendAsync("RemoteControl", 
-                    sessionId, 
-                    accessKey, 
-                    ConnectionId, 
-                    User.UserOptions.DisplayName, 
-                    organization, 
-                    User.OrganizationID);
-
-                return true;
-            }
-            else
+            if (!_dataService.DoesUserHaveAccessToDevice(deviceId, User))
             {
                 var device = _dataService.GetDevice(targetDevice.ID);
                 _dataService.WriteEvent($"Remote control attempted by unauthorized user.  Device ID: {deviceId}.  User Name: {User.UserName}.", EventType.Warning, device?.OrganizationID);
-                return false;
+                return Result.Fail<RemoteControlSessionEx>("Unauthorized.");
+
             }
+
+            var sessionCount = _desktopSessionCache.Sessions
+                   .OfType<RemoteControlSessionEx>()
+                   .Count(x => x.OrganizationId == User.OrganizationID);
+
+            if (sessionCount >= _appConfig.RemoteControlSessionLimit)
+            {
+                MessageReceived?.Invoke(this, new CircuitEvent(CircuitEventName.DisplayMessage,
+                    "There are already the maximum amount of active remote control sessions for your organization.",
+                    "Max number of concurrent sessions reached.",
+                    "bg-warning"));
+                return Result.Fail<RemoteControlSessionEx>("Max number of concurrent sessions reached.");
+            }
+
+            if (!_serviceSessionCache.TryGetConnectionId(targetDevice.ID, out var serviceConnectionId))
+            {
+                MessageReceived?.Invoke(this, new CircuitEvent(CircuitEventName.DisplayMessage,
+                   "Service connection not found.",
+                   "Service connection not found.",
+                   "bg-warning"));
+                return Result.Fail<RemoteControlSessionEx>("Service connection not found.");
+            }
+
+            var sessionId = Guid.NewGuid();
+            var accessKey = RandomGenerator.GenerateAccessKey();
+
+            var session = new RemoteControlSessionEx()
+            {
+                UnattendedSessionId = sessionId,
+                UserConnectionId = ConnectionId,
+                ServiceConnectionId = serviceConnectionId,
+                DeviceId = deviceId,
+                ViewOnly = viewOnly,
+                OrganizationId = User.OrganizationID
+            };
+
+            _desktopSessionCache.AddOrUpdate($"{sessionId}", session);
+
+            var organization = _dataService.GetOrganizationNameByUserName(User.UserName);
+            await _agentHubContext.Clients.Client(serviceConnectionId).SendAsync("RemoteControl",
+                sessionId,
+                accessKey,
+                ConnectionId,
+                User.UserOptions.DisplayName,
+                organization,
+                User.OrganizationID);
+
+            return Result.Ok(session);
         }
 
         public Task RemoveDevices(string[] deviceIDs)

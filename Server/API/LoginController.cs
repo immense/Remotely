@@ -49,11 +49,14 @@ namespace Remotely.Server.API
             if (HttpContext?.User?.Identity?.IsAuthenticated == true)
             {
                 orgId = _dataService.GetUserByNameWithOrg(HttpContext.User.Identity.Name)?.OrganizationID;
-                var activeSessions = _desktopSessionCache.Sessions.Where(x => x.Value.RequesterUserName == HttpContext.User.Identity.Name);
-                foreach (var session in activeSessions.ToList())
+                var activeSessions = _desktopSessionCache
+                    .Sessions
+                    .Where(x => x.RequesterUserName == HttpContext.User.Identity.Name);
+
+                foreach (var session in activeSessions)
                 {
-                    await _desktopHub.Clients.Client(session.Value.DesktopConnectionId).SendAsync("Disconnect", "User logged out.");
-                    await _viewerHub.Clients.Clients(session.Value.ViewerList).SendAsync("ConnectionFailed");
+                    await _desktopHub.Clients.Client(session.DesktopConnectionId).SendAsync("Disconnect", "User logged out.");
+                    await _viewerHub.Clients.Clients(session.ViewerList).SendAsync("ConnectionFailed");
                 }
             }
             await _signInManager.SignOutAsync();

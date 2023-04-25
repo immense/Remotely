@@ -174,16 +174,6 @@ namespace Remotely.Server.Components.Devices
                         AddScriptResult(result);
                     }
                     break;
-                case CircuitEventName.UnattendedSessionReady:
-                    {
-                        var sessionId = (string)args.Params[0];
-                        var accessKey = (string)args.Params[1];
-                        var deviceId = (string)args.Params[2];
-                        var viewOnly = (bool)args.Params[3];
-
-                        JsInterop.OpenWindow($"/RemoteControl/Viewer?mode=Unattended&sessionId={sessionId}&accessKey={accessKey}&viewonly={viewOnly}", "_blank");
-                    }
-                    break;
                 default:
                     break;
             }

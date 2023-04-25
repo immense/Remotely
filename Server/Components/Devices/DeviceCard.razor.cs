@@ -268,15 +268,34 @@ namespace Remotely.Server.Components.Devices
             AppState.InvokePropertyChanged(nameof(AppState.DevicesFrameChatSessions));
         }
 
-        private void StartRemoteControl(bool viewOnly)
+        private async Task StartRemoteControl(bool viewOnly)
         {
-            if (!ServiceSessionCache.TryGetConnectionId(Device.ID, out var connectionId))
+            if (!ServiceSessionCache.TryGetConnectionId(Device.ID, out _))
             {
                 ToastService.ShowToast("Device connection not found", classString: "bg-danger");
                 return;
             }
 
-            CircuitConnection.RemoteControl(Device.ID, viewOnly);
+            var result = await CircuitConnection.RemoteControl(Device.ID, viewOnly);
+            if (!result.IsSuccess)
+            {
+                return;
+            }
+
+            var session = result.Value;
+
+            if (!await session.WaitForSessionReady(TimeSpan.FromSeconds(20)))
+            {
+                ToastService.ShowToast("Session failed to start", classString: "bg-danger");
+                return;
+            }
+
+            JsInterop.OpenWindow(
+                $"/RemoteControl/Viewer" +
+                    $"?mode=Unattended&sessionId={session.UnattendedSessionId}" +
+                    $"&accessKey={session.AccessKey}" +
+                    $"&viewonly={viewOnly}", 
+                "_blank");
         }
 
         private void ToggleIsSelected(ChangeEventArgs args)

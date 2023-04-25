@@ -489,10 +489,7 @@ namespace Remotely.Agent.Services
                 }
             });
 
-            _hubConnection.On("TriggerHeartbeat", async () =>
-            {
-                await SendHeartbeat().ConfigureAwait(false);
-            });
+            _hubConnection.On("TriggerHeartbeat", SendHeartbeat);
         }
 
         private async Task<bool> VerifyServer()

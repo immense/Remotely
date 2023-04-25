@@ -1,4 +1,5 @@
-﻿using Remotely.Agent.Interfaces;
+﻿using Microsoft.Extensions.Logging;
+using Remotely.Agent.Interfaces;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.Win32;
@@ -12,7 +13,17 @@ namespace Remotely.Agent.Services.Windows
 {
     public class DeviceInfoGeneratorWin : DeviceInfoGeneratorBase, IDeviceInformationService
     {
-        public async Task<Device> CreateDevice(string deviceId, string orgId)
+        private readonly ICpuUtilizationSampler _cpuUtilSampler;
+
+        public DeviceInfoGeneratorWin(
+            ICpuUtilizationSampler cpuUtilSampler, 
+            ILogger<DeviceInfoGeneratorWin> logger)
+            : base(logger)
+        { 
+            _cpuUtilSampler = cpuUtilSampler;
+        }
+
+        public Task<Device> CreateDevice(string deviceId, string orgId)
         {
             var device = GetDeviceBase(deviceId, orgId);
 
@@ -28,15 +39,15 @@ namespace Remotely.Agent.Services.Windows
                 device.TotalStorage = totalStorage;
                 device.UsedMemory = usedMemory;
                 device.TotalMemory = totalMemory;
-                device.CpuUtilization = await GetCpuUtilization();
+                device.CpuUtilization = _cpuUtilSampler.CurrentUtilization;
                 device.AgentVersion = GetAgentVersion();
             }
             catch (Exception ex)
             {
-                Logger.Write(ex, "Error getting device info.");
+                _logger.LogError(ex, "Error getting device info.");
             }
 
-            return device;
+            return Task.FromResult(device);
         }
 
         public (double usedGB, double totalGB) GetMemoryInGB()

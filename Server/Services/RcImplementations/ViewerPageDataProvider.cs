@@ -12,31 +12,37 @@ namespace Remotely.Server.Services.RcImplementations
 {
     public class ViewerPageDataProvider : IViewerPageDataProvider
     {
-        private readonly IDataService _dataService;
         private readonly IApplicationConfig _appConfig;
-
+        private readonly IDataService _dataService;
         public ViewerPageDataProvider(IDataService dataService, IApplicationConfig appConfig)
         {
             _dataService = dataService;
             _appConfig = appConfig;
         }
-    
-        public Task<string> GetUserDisplayName(PageModel pageModel)
+
+        public Task<string> GetFaviconUrl(ViewerModel viewerModel)
         {
-            if (string.IsNullOrWhiteSpace(pageModel?.User?.Identity?.Name))
-            {
-                return Task.FromResult(string.Empty);
-            }
+            return Task.FromResult("/_content/Immense.RemoteControl.Server/favicon.ico");
+        }
 
-            var user = _dataService.GetUserByNameWithOrg(pageModel.User.Identity.Name);
+        public Task<string> GetPageDescription(ViewerModel viewerModel)
+        {
+            return Task.FromResult("Open-source remote support tools.");
+        }
 
-            if (user is null)
-            {
-                return Task.FromResult(string.Empty);
-            }
+        public Task<string> GetPageTitle(PageModel pageModel)
+        {
+            return Task.FromResult("Remotely Remote Control");
+        }
 
-            var displayName = user.UserOptions?.DisplayName ?? user.UserName ?? string.Empty;
-            return Task.FromResult(displayName);
+        public Task<string> GetProductName(PageModel pageModel)
+        {
+            return Task.FromResult("Remotely");
+        }
+
+        public Task<string> GetProductSubtitle(PageModel pageModel)
+        {
+            return Task.FromResult("Remote Control");
         }
 
         public Task<ViewerPageTheme> GetTheme(PageModel pageModel)
@@ -63,24 +69,22 @@ namespace Remotely.Server.Services.RcImplementations
             return Task.FromResult(appTheme);
         }
 
-        public Task<string> GetPageTitle(PageModel pageModel)
+        public Task<string> GetUserDisplayName(PageModel pageModel)
         {
-            return Task.FromResult("Remotely Remote Control");
-        }
+            if (string.IsNullOrWhiteSpace(pageModel?.User?.Identity?.Name))
+            {
+                return Task.FromResult(string.Empty);
+            }
 
-        public Task<string> GetProductName(PageModel pageModel)
-        {
-            return Task.FromResult("Remotely");
-        }
+            var user = _dataService.GetUserByNameWithOrg(pageModel.User.Identity.Name);
 
-        public Task<string> GetProductSubtitle(PageModel pageModel)
-        {
-            return Task.FromResult("Remote Control");
-        }
+            if (user is null)
+            {
+                return Task.FromResult(string.Empty);
+            }
 
-        public Task<string> GetPageDescription(ViewerModel viewerModel)
-        {
-            return Task.FromResult("Open-source remote support tools.");
+            var displayName = user.UserOptions?.DisplayName ?? user.UserName ?? string.Empty;
+            return Task.FromResult(displayName);
         }
     }
 }

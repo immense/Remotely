@@ -9,7 +9,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.ServiceProcess;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Runtime.Versioning;
 using Remotely.Agent.Services.Linux;
@@ -55,6 +54,8 @@ namespace Remotely.Agent
 
             // TODO: All these should be registered as interfaces.
             serviceCollection.AddSingleton<IAgentHubConnection, AgentHubConnection>();
+            serviceCollection.AddSingleton<ICpuUtilizationSampler, CpuUtilizationSampler>();
+            serviceCollection.AddHostedService(services => services.GetRequiredService<ICpuUtilizationSampler>());
             serviceCollection.AddScoped<ChatClientService>();
             serviceCollection.AddTransient<PSCore>();
             serviceCollection.AddTransient<ExternalScriptingShell>();

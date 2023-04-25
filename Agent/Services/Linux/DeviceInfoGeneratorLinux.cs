@@ -1,4 +1,5 @@
-﻿using Remotely.Agent.Interfaces;
+﻿using Microsoft.Extensions.Logging;
+using Remotely.Agent.Interfaces;
 using Remotely.Shared.Models;
 using Remotely.Shared.Services;
 using Remotely.Shared.Utilities;
@@ -13,12 +14,19 @@ namespace Remotely.Agent.Services.Linux
     public class DeviceInfoGeneratorLinux : DeviceInfoGeneratorBase, IDeviceInformationService
     {
         private readonly IProcessInvoker _processInvoker;
+        private readonly ICpuUtilizationSampler _cpuUtilSampler;
 
-        public DeviceInfoGeneratorLinux(IProcessInvoker processInvoker)
+        public DeviceInfoGeneratorLinux(
+            IProcessInvoker processInvoker, 
+            ICpuUtilizationSampler cpuUtilSampler,
+            ILogger<DeviceInfoGeneratorLinux> logger)
+            : base(logger)
         {
             _processInvoker = processInvoker;
+            _cpuUtilSampler = cpuUtilSampler;
         }
-        public async Task<Device> CreateDevice(string deviceId, string orgId)
+
+        public Task<Device> CreateDevice(string deviceId, string orgId)
         {
             var device = GetDeviceBase(deviceId, orgId);
 
@@ -34,15 +42,15 @@ namespace Remotely.Agent.Services.Linux
                 device.TotalStorage = totalStorage;
                 device.UsedMemory = usedMemory;
                 device.TotalMemory = totalMemory;
-                device.CpuUtilization = await GetCpuUtilization();
+                device.CpuUtilization = _cpuUtilSampler.CurrentUtilization;
                 device.AgentVersion = GetAgentVersion();
             }
             catch (Exception ex)
             {
-                Logger.Write(ex, "Error getting device info.");
+                _logger.LogError(ex, "Error getting device info.");
             }
 
-            return device;
+            return Task.FromResult(device);
         }
 
         private string GetCurrentUser()

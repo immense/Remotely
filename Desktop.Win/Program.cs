@@ -66,11 +66,12 @@ if (appState.ArgDict.TryGetValue("org-id", out var orgId))
 var result = await provider.UseRemoteControlClient(
     args,
     "The remote control client for Remotely.",
-    serverUrl);
+    serverUrl,
+    false);
 
 if (!result.IsSuccess)
 {
-    logger.LogError(result.Exception, "Failed to remote control client.");
+    logger.LogError(result.Exception, "Failed to start remote control client.");
     Environment.Exit(1);
 }
 

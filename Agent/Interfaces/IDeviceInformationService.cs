@@ -15,6 +15,5 @@ namespace Remotely.Agent.Interfaces
         (double usedGB, double totalGB) GetMemoryInGB();
         string GetAgentVersion();
         List<Drive> GetAllDrives();
-        Task<double> GetCpuUtilization();
     }
 }

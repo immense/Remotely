@@ -380,7 +380,6 @@ namespace Remotely.Agent.Installer.Win.Services
                     Description = "Background service that maintains a connection to the Remotely server.  The service is used for remote support and maintenance by this computer's administrators.",
                     ServiceName = "Remotely_Service",
                     StartType = ServiceStartMode.Automatic,
-                    DelayedAutoStart = true,
                     Parent = new ServiceProcessInstaller()
                 };
 
