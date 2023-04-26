@@ -256,7 +256,7 @@ namespace Remotely.Server.Hubs
             {
                 UnattendedSessionId = sessionId,
                 UserConnectionId = ConnectionId,
-                ServiceConnectionId = serviceConnectionId,
+                AgentConnectionId = serviceConnectionId,
                 DeviceId = deviceId,
                 ViewOnly = viewOnly,
                 OrganizationId = User.OrganizationID

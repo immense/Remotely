@@ -14,131 +14,115 @@ using System.Runtime.Versioning;
 using Remotely.Agent.Services.Linux;
 using Remotely.Agent.Services.MacOS;
 using Remotely.Agent.Services.Windows;
+using Microsoft.Extensions.Hosting;
+using System.Linq;
 
-namespace Remotely.Agent
+namespace Remotely.Agent;
+
+public class Program
 {
-    public class Program
+    [Obsolete("Remove this when all services are in DI behind interfaces.")]
+    public static IServiceProvider Services { get; set; }
+
+    public static async Task Main(string[] args)
     {
-
-        public static IServiceProvider Services { get; set; }
-
-        public static async Task Main(string[] args)
+        try
         {
-            try
-            {
-                // TODO: Convert to generic host.
-                BuildServices();
+            var host = Host
+                .CreateDefaultBuilder(args)
+                .UseWindowsService()
+                .UseSystemd()
+                .ConfigureServices(RegisterServices)
+                .Build();
 
-                await Init();
+            await host.StartAsync();
 
-                await Task.Delay(-1);
+            await Init(host.Services);
 
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
-                throw;
-            }
+            await host.WaitForShutdownAsync();
         }
-
-        private static void BuildServices()
+        catch (Exception ex)
         {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddHttpClient();
-            serviceCollection.AddLogging(builder =>
-            {
-                builder.AddConsole().AddDebug();
-                var version = typeof(Program).Assembly.GetName().Version?.ToString() ?? "0.0.0";
-                builder.AddProvider(new FileLoggerProvider("Remotely_Agent", version));
-            });
+            var version = typeof(Program).Assembly.GetName().Version?.ToString() ?? "0.0.0";
+            var logger = new FileLogger("Remotely_Agent", version, "Main");
+            logger.LogError(ex, "Error during agent startup.");
+            throw;
+        }
+    }
 
-            // TODO: All these should be registered as interfaces.
-            serviceCollection.AddSingleton<IAgentHubConnection, AgentHubConnection>();
-            serviceCollection.AddSingleton<ICpuUtilizationSampler, CpuUtilizationSampler>();
-            serviceCollection.AddHostedService(services => services.GetRequiredService<ICpuUtilizationSampler>());
-            serviceCollection.AddScoped<ChatClientService>();
-            serviceCollection.AddTransient<PSCore>();
-            serviceCollection.AddTransient<ExternalScriptingShell>();
-            serviceCollection.AddScoped<ConfigService>();
-            serviceCollection.AddScoped<Uninstaller>();
-            serviceCollection.AddScoped<ScriptExecutor>();
-            serviceCollection.AddScoped<IProcessInvoker, ProcessInvoker>();
-            serviceCollection.AddScoped<IUpdateDownloader, UpdateDownloader>();
+    private static void RegisterServices(IServiceCollection services)
+    {
+        services.AddHttpClient();
+        services.AddLogging(builder =>
+        {
+            builder.AddConsole().AddDebug();
+            var version = typeof(Program).Assembly.GetName().Version?.ToString() ?? "0.0.0";
+            builder.AddProvider(new FileLoggerProvider("Remotely_Agent", version));
+        });
 
-            if (OperatingSystem.IsWindows())
+        // TODO: All these should be registered as interfaces.
+        services.AddSingleton<IAgentHubConnection, AgentHubConnection>();
+        services.AddSingleton<ICpuUtilizationSampler, CpuUtilizationSampler>();
+        services.AddHostedService(services => services.GetRequiredService<ICpuUtilizationSampler>());
+        services.AddScoped<ChatClientService>();
+        services.AddTransient<PSCore>();
+        services.AddTransient<ExternalScriptingShell>();
+        services.AddScoped<ConfigService>();
+        services.AddScoped<Uninstaller>();
+        services.AddScoped<ScriptExecutor>();
+        services.AddScoped<IProcessInvoker, ProcessInvoker>();
+        services.AddScoped<IUpdateDownloader, UpdateDownloader>();
+
+        if (OperatingSystem.IsWindows())
+        {
+            services.AddScoped<IAppLauncher, AppLauncherWin>();
+            services.AddSingleton<IUpdater, UpdaterWin>();
+            services.AddSingleton<IDeviceInformationService, DeviceInfoGeneratorWin>();
+        }
+        else if (OperatingSystem.IsLinux())
+        {
+            services.AddScoped<IAppLauncher, AppLauncherLinux>();
+            services.AddSingleton<IUpdater, UpdaterLinux>();
+            services.AddSingleton<IDeviceInformationService, DeviceInfoGeneratorLinux>();
+        }
+        else if (OperatingSystem.IsMacOS())
+        {
+            services.AddScoped<IAppLauncher, AppLauncherMac>();
+            services.AddSingleton<IUpdater, UpdaterMac>();
+            services.AddSingleton<IDeviceInformationService, DeviceInfoGeneratorMac>();
+        }
+        else
+        {
+            throw new NotSupportedException("Operating system not supported.");
+        }
+    }
+
+    private static async Task Init(IServiceProvider services)
+    {
+        AppDomain.CurrentDomain.UnhandledException += (sender, ex) =>
+        {
+            var logger = services.GetRequiredService<ILogger<AppDomain>>();
+            if (ex.ExceptionObject is Exception exception)
             {
-                serviceCollection.AddScoped<IAppLauncher, AppLauncherWin>();
-                serviceCollection.AddSingleton<IUpdater, UpdaterWin>();
-                serviceCollection.AddSingleton<IDeviceInformationService, DeviceInfoGeneratorWin>();
-            }
-            else if (OperatingSystem.IsLinux())
-            {
-                serviceCollection.AddScoped<IAppLauncher, AppLauncherLinux>();
-                serviceCollection.AddSingleton<IUpdater, UpdaterLinux>();
-                serviceCollection.AddSingleton<IDeviceInformationService, DeviceInfoGeneratorLinux>();
-            }
-            else if (OperatingSystem.IsMacOS())
-            {
-                serviceCollection.AddScoped<IAppLauncher, AppLauncherMac>();
-                serviceCollection.AddSingleton<IUpdater, UpdaterMac>();
-                serviceCollection.AddSingleton<IDeviceInformationService, DeviceInfoGeneratorMac>();
+                logger.LogError(exception, "Unhandled exception in AppDomain.");
             }
             else
             {
-                throw new NotSupportedException("Operating system not supported.");
+                logger.LogError("Unhandled exception in AppDomain.");
             }
+        };
 
-            Services = serviceCollection.BuildServiceProvider();
-        }
+        SetWorkingDirectory();
 
-        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            Logger.Write(e.ExceptionObject as Exception);
-        }
+        await services.GetRequiredService<IUpdater>().BeginChecking();
 
-        private static async Task Init()
-        {
-            try
-            {
-                AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        await services.GetRequiredService<IAgentHubConnection>().Connect();
+    }
 
-                SetWorkingDirectory();
-
-
-                if (OperatingSystem.IsWindows() &&
-                    Process.GetCurrentProcess().SessionId == 0)
-                {
-                    _ = Task.Run(StartService);
-                }
-
-                await Services.GetRequiredService<IUpdater>().BeginChecking();
-
-                await Services.GetRequiredService<IAgentHubConnection>().Connect();
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex);
-            }
-        }
-
-        private static void SetWorkingDirectory()
-        {
-            var assemblyPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            var assemblyDir = Path.GetDirectoryName(assemblyPath);
-            Directory.SetCurrentDirectory(assemblyDir);
-        }
-
-        [SupportedOSPlatform("windows")]
-        private static void StartService()
-        {
-            try
-            {
-                ServiceBase.Run(new WindowsService());
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex, "Failed to start service.", EventType.Warning);
-            }
-        }
+    private static void SetWorkingDirectory()
+    {
+        var exePath = Environment.ProcessPath ?? Environment.GetCommandLineArgs().First();
+        var exeDir = Path.GetDirectoryName(exePath);
+        Directory.SetCurrentDirectory(exeDir);
     }
 }

@@ -12,10 +12,11 @@ using System.Diagnostics;
 using Immense.RemoteControl.Desktop.Startup;
 using Remotely.Shared.Utilities;
 using Immense.RemoteControl.Desktop.Shared.Startup;
+using System.Linq;
 
 var version = typeof(Program).Assembly.GetName().Version?.ToString() ?? "0.0.0";
 var logger = new FileLogger("Remotely_Desktop", version, "Program.cs");
-var filePath = Process.GetCurrentProcess()?.MainModule?.FileName;
+var filePath = Environment.ProcessPath ?? Environment.GetCommandLineArgs().First();
 var serverUrl = Debugger.IsAttached ? "http://localhost:5000" : string.Empty;
 var getEmbeddedResult = await EmbeddedServerDataSearcher.Instance.TryGetEmbeddedData(filePath);
 if (getEmbeddedResult.IsSuccess)

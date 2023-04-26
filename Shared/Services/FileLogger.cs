@@ -59,7 +59,8 @@ namespace Remotely.Shared.Services
         }
         private string LogPath => Path.Combine(LogsFolderPath, _componentName, $"LogFile_{DateTime.Now:yyyy-MM-dd}.log");
 
-        public IDisposable BeginScope<TState>(TState state)
+        public IDisposable? BeginScope<TState>(TState state) 
+            where TState : notnull
         {
             _scopeStack.Push($"{state}");
             return new NoopDisposable();

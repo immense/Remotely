@@ -39,7 +39,7 @@ namespace Remotely.Server.Services.RcImplementations
             }
 
             return _serviceHub.Clients
-                .Client(ex.ServiceConnectionId)
+                .Client(ex.AgentConnectionId)
                 .SendAsync("ChangeWindowsSession",
                     viewerConnectionId,
                     ex.UnattendedSessionId,
@@ -59,7 +59,7 @@ namespace Remotely.Server.Services.RcImplementations
                 return Task.CompletedTask;
             }
 
-            return _serviceHub.Clients.Client(ex.ServiceConnectionId).SendAsync("CtrlAltDel");
+            return _serviceHub.Clients.Client(ex.AgentConnectionId).SendAsync("CtrlAltDel");
         }
 
         public Task NotifySessionChanged(RemoteControlSession session, SessionSwitchReasonEx reason, int currentSessionId)
@@ -79,7 +79,7 @@ namespace Remotely.Server.Services.RcImplementations
                 case SessionSwitchReasonEx.SessionLock:
                 case SessionSwitchReasonEx.SessionRemoteControl:
                     return _serviceHub.Clients
-                      .Client(ex.ServiceConnectionId)
+                      .Client(ex.AgentConnectionId)
                       .SendAsync("RestartScreenCaster",
                           ex.ViewerList,
                           ex.UnattendedSessionId,
@@ -108,13 +108,13 @@ namespace Remotely.Server.Services.RcImplementations
             }
 
             return _serviceHub.Clients
-                     .Client(ex.ServiceConnectionId)
+                     .Client(ex.AgentConnectionId)
                      .SendAsync("RestartScreenCaster",
                             viewerList,
                             ex.UnattendedSessionId,
                             ex.AccessKey,
                             ex.UserConnectionId,
-                            ex.RequesterUserName,
+                            ex.RequesterName,
                             ex.OrganizationName,
                             ex.OrganizationId);
         }

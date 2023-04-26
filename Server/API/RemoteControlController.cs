@@ -128,7 +128,7 @@ namespace Remotely.Server.API
             {
                 UnattendedSessionId = sessionId,
                 UserConnectionId = HttpContext.Connection.Id,
-                ServiceConnectionId = serviceConnectionId,
+                AgentConnectionId = serviceConnectionId,
                 DeviceId = deviceID,
                 OrganizationId = orgID
             };
@@ -137,7 +137,7 @@ namespace Remotely.Server.API
             {
                 if (v is RemoteControlSessionEx ex)
                 {
-                    ex.ServiceConnectionId = HttpContext.Connection.Id;
+                    ex.AgentConnectionId = HttpContext.Connection.Id;
                     return ex;
                 }
                 v.Dispose();

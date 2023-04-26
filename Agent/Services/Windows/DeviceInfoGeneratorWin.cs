@@ -29,7 +29,6 @@ namespace Remotely.Agent.Services.Windows
 
             try
             {
-
                 var (usedStorage, totalStorage) = GetSystemDriveInfo();
                 var (usedMemory, totalMemory) = GetMemoryInGB();
 

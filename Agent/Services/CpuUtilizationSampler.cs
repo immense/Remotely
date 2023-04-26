@@ -29,6 +29,9 @@ internal class CpuUtilizationSampler : BackgroundService, ICpuUtilizationSampler
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        // Allow host startup to continue immediately.
+        await Task.Yield();
+
         while (!stoppingToken.IsCancellationRequested)
         {
             try
