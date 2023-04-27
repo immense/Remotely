@@ -36,7 +36,7 @@ namespace Remotely.Server.Services.RcImplementations
             {
                 _logger.LogError("Event should have been for RemoteControlSessionEx.");
                 return Task.CompletedTask;
-            }
+            }   
 
             return _serviceHub.Clients
                 .Client(ex.AgentConnectionId)

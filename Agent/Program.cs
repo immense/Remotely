@@ -16,6 +16,7 @@ using Remotely.Agent.Services.MacOS;
 using Remotely.Agent.Services.Windows;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
+using Microsoft.Win32;
 
 namespace Remotely.Agent;
 
@@ -50,6 +51,32 @@ public class Program
         }
     }
 
+    private static async Task Init(IServiceProvider services)
+    {
+        var logger = services.GetRequiredService<ILogger<IHost>>();
+
+        AppDomain.CurrentDomain.UnhandledException += (sender, ex) =>
+        {
+            if (ex.ExceptionObject is Exception exception)
+            {
+                logger.LogError(exception, "Unhandled exception in AppDomain.");
+            }
+            else
+            {
+                logger.LogError("Unhandled exception in AppDomain.");
+            }
+        };
+
+        SetWorkingDirectory();
+
+        if (OperatingSystem.IsWindows())
+        {
+            SetSas(services, logger);
+        }
+        await services.GetRequiredService<IUpdater>().BeginChecking();
+        await services.GetRequiredService<IAgentHubConnection>().Connect();
+    }
+
     private static void RegisterServices(IServiceCollection services)
     {
         services.AddHttpClient();
@@ -78,12 +105,14 @@ public class Program
             services.AddScoped<IAppLauncher, AppLauncherWin>();
             services.AddSingleton<IUpdater, UpdaterWin>();
             services.AddSingleton<IDeviceInformationService, DeviceInfoGeneratorWin>();
+            services.AddSingleton<IElevationDetector, ElevationDetectorWin>();
         }
         else if (OperatingSystem.IsLinux())
         {
             services.AddScoped<IAppLauncher, AppLauncherLinux>();
             services.AddSingleton<IUpdater, UpdaterLinux>();
             services.AddSingleton<IDeviceInformationService, DeviceInfoGeneratorLinux>();
+            services.AddSingleton<IElevationDetector, ElevationDetectorLinux>();
         }
         else if (OperatingSystem.IsMacOS())
         {
@@ -97,26 +126,23 @@ public class Program
         }
     }
 
-    private static async Task Init(IServiceProvider services)
+    [SupportedOSPlatform("windows")]
+    private static void SetSas(IServiceProvider services, ILogger<IHost> logger)
     {
-        AppDomain.CurrentDomain.UnhandledException += (sender, ex) =>
+        try
         {
-            var logger = services.GetRequiredService<ILogger<AppDomain>>();
-            if (ex.ExceptionObject is Exception exception)
+            var elevationDetector = services.GetRequiredService<IElevationDetector>();
+            if (elevationDetector.IsElevated())
             {
-                logger.LogError(exception, "Unhandled exception in AppDomain.");
+                // Set Secure Attention Sequence policy to allow app to simulate Ctrl + Alt + Del.
+                var subkey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", true);
+                subkey?.SetValue("SoftwareSASGeneration", "3", RegistryValueKind.DWord);
             }
-            else
-            {
-                logger.LogError("Unhandled exception in AppDomain.");
-            }
-        };
-
-        SetWorkingDirectory();
-
-        await services.GetRequiredService<IUpdater>().BeginChecking();
-
-        await services.GetRequiredService<IAgentHubConnection>().Connect();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while setting Secure Attention Sequence in the registry.");
+        }
     }
 
     private static void SetWorkingDirectory()
