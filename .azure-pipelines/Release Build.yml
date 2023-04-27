@@ -138,8 +138,10 @@ jobs:
   - task: DotNetCoreCLI@2
     displayName: dotnet test
     inputs:
-      command: test
-      projects: Tests\Tests.csproj
+      command: 'test'
+      projects: |
+        **\Server.Tests.csproj
+        **\Shared.Tests.csproj
 
   - task: PowerShell@2
     displayName: Create Code Signing Cert
