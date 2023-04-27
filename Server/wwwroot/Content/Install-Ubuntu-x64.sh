@@ -4,6 +4,10 @@ Organization=
 GUID=$(cat /proc/sys/kernel/random/uuid)
 UpdatePackagePath=""
 InstallDir="/usr/local/bin/Remotely"
+
+apt-get update
+apt-get -y install curl
+
 ETag=$(curl --head $HostName/Content/Remotely-Linux.zip | grep -i "etag" | cut -d' ' -f 2)
 LogPath="/var/log/remotely/Agent_Install.log"
 
@@ -35,19 +39,16 @@ wget -q https://packages.microsoft.com/config/ubuntu/$UbuntuVersion/packages-mic
 dpkg -i packages-microsoft-prod.deb
 apt-get update
 apt-get -y install apt-transport-https
-apt-get update
-apt-get -y install dotnet-runtime-6.0
+apt-get -y install dotnet-runtime-7.0
 rm packages-microsoft-prod.deb
 
 apt-get -y install libx11-dev
 apt-get -y install libxrandr-dev
 apt-get -y install unzip
 apt-get -y install libc6-dev
-apt-get -y install libgdiplus
 apt-get -y install libxtst-dev
 apt-get -y install xclip
 apt-get -y install jq
-apt-get -y install curl
 
 
 if [ -f "$InstallDir/ConnectionInfo.json" ]; then
