@@ -13,14 +13,6 @@
     <ServerGarbageCollection>false</ServerGarbageCollection>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="bin\**" />
-    <Content Remove="bin\**" />
-    <EmbeddedResource Remove="bin\**" />
-    <None Remove="bin\**" />
-    <TypeScriptCompile Remove="bin\**" />
-    <TypeScriptCompile Remove="node_modules\**" />
-  </ItemGroup>
 
 
   <ItemGroup>

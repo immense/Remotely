@@ -90,12 +90,6 @@ jobs:
   - task: VisualStudioTestPlatformInstaller@1
     displayName: Visual Studio Test Platform Installer
   
-  - task: NodeTool@0
-    inputs:
-      versionSource: 'spec'
-      versionSpec: '6.x'
-      checkLatest: true
-
   - task: DownloadPipelineArtifact@2
     displayName: Download macOS x64 Agent
     inputs:
