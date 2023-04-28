@@ -108,8 +108,8 @@ namespace Remotely.Agent.Services.Windows
 
                 // Start Desktop app.
                 await hubConnection.SendAsync("DisplayMessage",
-                    "Starting remote control.",
-                    "Starting remote control.",
+                    "Starting remote control",
+                    "Starting remote control",
                     "bg-success",
                     userConnectionId);
                 if (WindowsIdentity.GetCurrent().IsSystem)
