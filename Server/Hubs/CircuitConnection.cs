@@ -259,7 +259,9 @@ namespace Remotely.Server.Hubs
                 AgentConnectionId = serviceConnectionId,
                 DeviceId = deviceId,
                 ViewOnly = viewOnly,
-                OrganizationId = User.OrganizationID
+                OrganizationId = User.OrganizationID,
+                RequireConsent = _appConfig.EnforceAttendedAccess,
+                NotifyUserOnStart = _appConfig.RemoteControlNotifyUser
             };
 
             _desktopSessionCache.AddOrUpdate($"{sessionId}", session);
