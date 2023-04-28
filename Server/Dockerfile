@@ -21,3 +21,6 @@ VOLUME "/remotely-data"
 RUN chmod +x "/src/DockerMain.sh"
 
 ENTRYPOINT ["/src/DockerMain.sh"]
+
+HEALTHCHECK --interval=5m --timeout=3s \
+  CMD curl -f http://localhost:5000/ || exit 1
