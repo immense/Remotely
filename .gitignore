@@ -295,3 +295,4 @@ Server.Installer/Properties/launchSettings.json
 /Server/wwwroot/Content/Linux-x64/Remotely_Desktop
 !/.vscode/launch.json
 !/.vscode/tasks.json
+/Server/appsettings.Development.json
