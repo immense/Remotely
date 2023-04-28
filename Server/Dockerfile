@@ -7,7 +7,7 @@ EXPOSE 5000
 ENV ASPNETCORE_ENVIRONMENT="Production"
 ENV ASPNETCORE_URLS="http://*:5000"
 
-COPY /_immense.Remotely/Server/DockerMain.sh .
+COPY /_immense.Remotely/Server/DockerMain.sh /src/DockerMain.sh
 COPY /_immense.Remotely/Server/linux-x64/Server /app
 
 WORKDIR /app
