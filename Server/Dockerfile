@@ -1,11 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:7.0-jammy
-
-SHELL ["/bin/bash", "-c"]
-
-EXPOSE 5000
-
-ENV ASPNETCORE_ENVIRONMENT="Production"
-ENV ASPNETCORE_URLS="http://*:5000"
+FROM mcr.microsoft.com/dotnet/aspnet:7.0-jammy AS setup
 
 WORKDIR /src
 
@@ -18,6 +11,16 @@ RUN \
   unzip -o ./Server.zip -d /app && \
   rm ./Server.zip
 
+
+FROM setup AS execute
+
+SHELL ["/bin/bash", "-c"]
+
+EXPOSE 5000
+
+ENV ASPNETCORE_ENVIRONMENT="Production"
+ENV ASPNETCORE_URLS="http://*:5000"
+
 WORKDIR /app
 
 RUN \
@@ -29,3 +32,6 @@ VOLUME "/remotely-data"
 RUN chmod +x "/src/DockerMain.sh"
 
 ENTRYPOINT ["/src/DockerMain.sh"]
+
+HEALTHCHECK --interval=5m --timeout=3s \
+  CMD curl -f http://localhost:5000/ || exit 1
