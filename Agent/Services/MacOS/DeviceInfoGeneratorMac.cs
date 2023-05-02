@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
 using Remotely.Shared.Models;
 using Remotely.Shared.Services;
@@ -9,13 +10,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely.Agent.Services
+namespace Remotely.Agent.Services.MacOS
 {
-    public class DeviceInformationServiceMac : DeviceInformationServiceBase, IDeviceInformationService
+    public class DeviceInfoGeneratorMac : DeviceInfoGeneratorBase, IDeviceInformationService
     {
         private readonly IProcessInvoker _processInvoker;
 
-        public DeviceInformationServiceMac(IProcessInvoker processInvoker)
+        public DeviceInfoGeneratorMac(IProcessInvoker processInvoker, ILogger<DeviceInfoGeneratorMac> logger)
+            : base(logger)
         {
             _processInvoker = processInvoker;
         }
@@ -40,38 +42,10 @@ namespace Remotely.Agent.Services
             }
             catch (Exception ex)
             {
-                Logger.Write(ex, "Error getting device info.");
+                _logger.LogError(ex, "Error getting device info.");
             }
 
             return device;
-        }
-
-        public new Task<double> GetCpuUtilization()
-        {
-            try
-            {
-                var cpuPercentStrings = _processInvoker.InvokeProcessOutput("zsh", "-c \"ps -A -o %cpu\"");
-
-                double cpuPercent = 0;
-                cpuPercentStrings
-                    .Split(Environment.NewLine)
-                    .ToList()
-                    .ForEach(x =>
-                    {
-                        if (double.TryParse(x, out var result))
-                        {
-                            cpuPercent += result;
-                        }
-                    });
-
-                return Task.FromResult(cpuPercent / Environment.ProcessorCount / 100);
-            }
-            catch (Exception ex)
-            {
-                Logger.Write(ex, "Error while getting CPU utilization.");
-            }
-
-            return Task.FromResult((double)0);
         }
 
         public (double usedGB, double totalGB) GetMemoryInGB()
@@ -114,6 +88,33 @@ namespace Remotely.Agent.Services
             }
         }
 
+        private Task<double> GetCpuUtilization()
+        {
+            try
+            {
+                var cpuPercentStrings = _processInvoker.InvokeProcessOutput("zsh", "-c \"ps -A -o %cpu\"");
+
+                double cpuPercent = 0;
+                cpuPercentStrings
+                    .Split(Environment.NewLine)
+                    .ToList()
+                    .ForEach(x =>
+                    {
+                        if (double.TryParse(x, out var result))
+                        {
+                            cpuPercent += result;
+                        }
+                    });
+
+                return Task.FromResult(cpuPercent / Environment.ProcessorCount / 100);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while getting CPU utilization.");
+            }
+
+            return Task.FromResult((double)0);
+        }
         private string GetCurrentUser()
         {
             var users = _processInvoker.InvokeProcessOutput("users", "");

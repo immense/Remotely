@@ -13,7 +13,7 @@ using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Threading.Tasks;
 
-namespace Remotely.Agent.Services
+namespace Remotely.Agent.Services.Windows
 {
     [SupportedOSPlatform("windows")]
     public class AppLauncherWin : IAppLauncher
@@ -57,9 +57,9 @@ namespace Remotely.Agent.Services
                         out var procInfo);
                     if (!result)
                     {
-                        await hubConnection.SendAsync("DisplayMessage", 
-                            "Chat service failed to start on target device.", 
-                            "Failed to start chat service.", 
+                        await hubConnection.SendAsync("DisplayMessage",
+                            "Chat service failed to start on target device.",
+                            "Failed to start chat service.",
                             "bg-danger",
                             userConnectionId);
                     }
@@ -82,7 +82,7 @@ namespace Remotely.Agent.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while launching chat.");
-                await hubConnection.SendAsync("DisplayMessage", 
+                await hubConnection.SendAsync("DisplayMessage",
                     "Chat service failed to start on target device.",
                     "Failed to start chat service.",
                     "bg-danger",
@@ -97,9 +97,9 @@ namespace Remotely.Agent.Services
             {
                 if (!File.Exists(_rcBinaryPath))
                 {
-                    await hubConnection.SendAsync("DisplayMessage", 
-                        "Remote control executable not found on target device.", 
-                        "Executable not found on device.", 
+                    await hubConnection.SendAsync("DisplayMessage",
+                        "Remote control executable not found on target device.",
+                        "Executable not found on device.",
                         "bg-danger",
                         userConnectionId);
                     return;
@@ -107,9 +107,9 @@ namespace Remotely.Agent.Services
 
 
                 // Start Desktop app.
-                await hubConnection.SendAsync("DisplayMessage", 
-                    "Starting remote control.",
-                    "Starting remote control.",
+                await hubConnection.SendAsync("DisplayMessage",
+                    "Starting remote control",
+                    "Starting remote control",
                     "bg-success",
                     userConnectionId);
                 if (WindowsIdentity.GetCurrent().IsSystem)
@@ -130,7 +130,7 @@ namespace Remotely.Agent.Services
                         out _);
                     if (!result)
                     {
-                        await hubConnection.SendAsync("DisplayMessage", 
+                        await hubConnection.SendAsync("DisplayMessage",
                             "Remote control failed to start on target device.",
                             "Failed to start remote control.",
                             "bg-danger",
@@ -152,8 +152,8 @@ namespace Remotely.Agent.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while launching remote control.");
-                await hubConnection.SendAsync("DisplayMessage", 
-                    "Remote control failed to start on target device.", 
+                await hubConnection.SendAsync("DisplayMessage",
+                    "Remote control failed to start on target device.",
                     "Failed to start remote control.",
                     "bg-danger",
                     userConnectionId);
@@ -170,7 +170,7 @@ namespace Remotely.Agent.Services
                     // Give a little time for session changing, etc.
                     await Task.Delay(1000);
 
-                    var result = Win32Interop.OpenInteractiveProcess(_rcBinaryPath + 
+                    var result = Win32Interop.OpenInteractiveProcess(_rcBinaryPath +
                             $" --mode Unattended" +
                             $" --relaunch true" +
                             $" --host {_connectionInfo.Host}" +
@@ -191,7 +191,7 @@ namespace Remotely.Agent.Services
                     {
                         _logger.LogWarning("Failed to relaunch screen caster.");
                         await hubConnection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
-                        await hubConnection.SendAsync("DisplayMessage", 
+                        await hubConnection.SendAsync("DisplayMessage",
                             "Remote control failed to start on target device.",
                             "Failed to start remote control.",
                             "bg-danger",

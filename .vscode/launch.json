@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/Desktop.Linux/bin/Debug/net6.0/Remotely_Desktop.dll",
+            "program": "${workspaceFolder}/Desktop.Linux/bin/Debug/.net7.0/Remotely_Desktop.dll",
             "args": [],
             "cwd": "${workspaceFolder}/Desktop.Linux",
             "console": "internalConsole",

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <ApplicationIcon>Assets\favicon.ico</ApplicationIcon>
     <AssemblyName>Remotely_Desktop</AssemblyName>
     <RootNamespace>Remotely.Desktop.XPlat</RootNamespace>
@@ -55,14 +55,8 @@
     <EmbeddedResource Include="Assets\Remotely_Icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.18" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.18" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.18" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Desktop.Shared\Desktop.Shared.csproj" />
-    <ProjectReference Include="..\Shared\Shared.csproj" />
-    <ProjectReference Include="..\submodules\Immense.RemoteControl\Desktop.Linux\Desktop.Linux.csproj" />
-    <ProjectReference Include="..\submodules\Immense.RemoteControl\Desktop.Shared\Desktop.Shared.csproj" />
+    <ProjectReference Include="..\submodules\Immense.RemoteControl\Immense.RemoteControl.Desktop.Shared\Immense.RemoteControl.Desktop.Shared.csproj" />
+    <ProjectReference Include="..\submodules\Immense.RemoteControl\Immense.RemoteControl.Desktop\Immense.RemoteControl.Desktop.csproj" />
   </ItemGroup>
 </Project>

@@ -1,5 +1,6 @@
 ﻿using Immense.RemoteControl.Desktop.Shared.Abstractions;
 using Immense.RemoteControl.Desktop.Shared.Services;
+using Immense.RemoteControl.Shared;
 using Immense.RemoteControl.Shared.Models;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared;
@@ -89,7 +90,9 @@ namespace Remotely.Desktop.Shared.Services
 
                     if (!result.IsSuccess)
                     {
-                        return Result.Fail<BrandingInfo>(result.Exception);
+                        return result.HadException ?
+                            Result.Fail<BrandingInfo>(result.Exception) :
+                            Result.Fail<BrandingInfo>(result.Reason);
                     }
 
                     if (!string.IsNullOrWhiteSpace(result.Value.OrganizationId))

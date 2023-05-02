@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using Castle.Core.Logging;
+using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Logging;
+using Moq;
 using Remotely.Agent.Services;
+using Remotely.Agent.Services.Windows;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -14,11 +18,17 @@ namespace Remotely.Tests.LoadTester
         private static int _agentCount;
         private static string _organizationId;
         private static string _serverurl;
-        private static DeviceInformationServiceWin _deviceInfo;
+        private static Mock<ICpuUtilizationSampler> _cpuSampler;
+        private static Mock<ILogger<DeviceInfoGeneratorWin>> _logger;
+        private static DeviceInfoGeneratorWin _deviceInfo;
 
         private static void Main(string[] args)
         {
-            _deviceInfo = new DeviceInformationServiceWin();
+            _cpuSampler = new Mock<ICpuUtilizationSampler>();
+            _cpuSampler.Setup(x => x.CurrentUtilization).Returns(0);
+            _logger = new Mock<ILogger<DeviceInfoGeneratorWin>>();
+
+            _deviceInfo = new DeviceInfoGeneratorWin(_cpuSampler.Object, _logger.Object);
             ConnectAgents();
 
             Console.Write("Press Enter to exit...");

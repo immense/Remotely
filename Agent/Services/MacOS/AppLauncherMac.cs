@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using Remotely.Agent.Interfaces;
 
-namespace Remotely.Agent.Services
+namespace Remotely.Agent.Services.MacOS
 {
     public class AppLauncherMac : IAppLauncher
     {

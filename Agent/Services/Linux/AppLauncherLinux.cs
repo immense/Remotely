@@ -13,7 +13,7 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Web.Services.Description;
 
-namespace Remotely.Agent.Services
+namespace Remotely.Agent.Services.Linux
 {
 
     public class AppLauncherLinux : IAppLauncher
@@ -24,7 +24,7 @@ namespace Remotely.Agent.Services
         private readonly ILogger<AppLauncherLinux> _logger;
 
         public AppLauncherLinux(
-            ConfigService configService, 
+            ConfigService configService,
             IProcessInvoker processInvoker,
             ILogger<AppLauncherLinux> logger)
         {
@@ -157,7 +157,7 @@ namespace Remotely.Agent.Services
 
                 // Start Desktop app.
                 await hubConnection.SendAsync("DisplayMessage", "Starting remote control.", "Starting remote control.", "bg-success", userConnectionId);
-                var args = 
+                var args =
                     _rcBinaryPath +
                     $" --mode Unattended" +
                     $" --host {_connectionInfo.Host}" +

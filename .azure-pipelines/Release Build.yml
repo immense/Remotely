@@ -39,9 +39,9 @@ jobs:
         Write-Host "Setting current version to $CurrentVersion."
 
   - task: UseDotNet@2
-    displayName: Use .NET Core sdk 6.x
+    displayName: Use .NET SDK
     inputs:
-      version: 6.x
+      version: 7.x
 
   - task: DotNetCoreCLI@2
     displayName: dotnet publish x64
@@ -90,12 +90,6 @@ jobs:
   - task: VisualStudioTestPlatformInstaller@1
     displayName: Visual Studio Test Platform Installer
   
-  - task: NodeTool@0
-    inputs:
-      versionSource: 'spec'
-      versionSpec: '6.x'
-      checkLatest: true
-
   - task: DownloadPipelineArtifact@2
     displayName: Download macOS x64 Agent
     inputs:
@@ -125,9 +119,9 @@ jobs:
       packagesDirectory: $(Build.SourcesDirectory)\packages
 
   - task: UseDotNet@2
-    displayName: Use .NET Core sdk 6.x
+    displayName: Use .NET SDK
     inputs:
-      version: 6.x
+      version: 7.x
 
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
@@ -138,8 +132,10 @@ jobs:
   - task: DotNetCoreCLI@2
     displayName: dotnet test
     inputs:
-      command: test
-      projects: Tests\Tests.csproj
+      command: 'test'
+      projects: |
+        **\Server.Tests.csproj
+        **\Shared.Tests.csproj
 
   - task: PowerShell@2
     displayName: Create Code Signing Cert
@@ -166,18 +162,19 @@ jobs:
   # The MSBuild TypeScript task doesn't compiled the TS
   # files without this build step before publishing.
   - task: DotNetCoreCLI@2
+    displayName: Build Server
     inputs:
       command: 'build'
       projects: '$(Build.SourcesDirectory)/Server/Server.csproj'
-      arguments: '-r linux-x64 -c Release'
+      arguments: '-r linux-x64 -c Release --self-contained'
 
   - task: DotNetCoreCLI@2
-    displayName: dotnet publish linux-x64
+    displayName: Publish Server (linux-x64)
     inputs:
       command: publish
       publishWebProjects: false
       projects: '$(Build.SourcesDirectory)/Server/Server.csproj'
-      arguments: /p:Version=$(CurrentVersion) /p:FileVersion=$(CurrentVersion) --configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)\linux-x64 --runtime linux-x64
+      arguments: /p:Version=$(CurrentVersion) /p:FileVersion=$(CurrentVersion) --configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)\linux-x64 --runtime linux-x64 --self-contained
 
 
   - task: PowerShell@2

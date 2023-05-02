@@ -34,6 +34,7 @@ using Immense.RemoteControl.Server.Abstractions;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Remotely.Shared.Services;
 using System;
+using Immense.RemoteControl.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -182,7 +183,6 @@ services.AddScoped<ApiAuthorizationFilter>();
 services.AddScoped<ExpiringTokenFilter>();
 services.AddHostedService<DbCleanupService>();
 services.AddHostedService<ScriptScheduler>();
-services.AddHostedService<DesktopHubSessionCleanup>();
 services.AddSingleton<IUpgradeService, UpgradeService>();
 services.AddScoped<IToastService, ToastService>();
 services.AddScoped<IModalService, ModalService>();
@@ -199,15 +199,11 @@ services.AddSingleton<IEmbeddedServerDataSearcher, EmbeddedServerDataSearcher>()
 
 services.AddRemoteControlServer(config =>
 {
-    config.AddHubEventHandler<HubEventHandlerEx>();
+    config.AddHubEventHandler<HubEventHandler>();
     config.AddViewerAuthorizer<ViewerAuthorizer>();
-    config.AddViewerHubDataProvider<ViewerHubDataProvider>();
     config.AddViewerPageDataProvider<ViewerPageDataProvider>();
 });
 
-services.RemoveAll<IHubEventHandler>();
-services.AddScoped<IHubEventHandlerEx, HubEventHandlerEx>();
-services.AddScoped<IHubEventHandler>(s => s.GetRequiredService<IHubEventHandlerEx>());
 services.AddSingleton<IServiceHubSessionCache, ServiceHubSessionCache>();
 
 var app = builder.Build();
@@ -255,13 +251,11 @@ app.UseCors("TrustedOriginPolicy");
 
 app.UseRemoteControlServer();
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapHub<ServiceHub>("/hubs/service");
-    endpoints.MapControllers();
-    endpoints.MapBlazorHub();
-    endpoints.MapFallbackToPage("/_Host");
-});
+
+app.MapHub<AgentHub>("/hubs/service");
+app.MapControllers();
+app.MapBlazorHub();
+app.MapFallbackToPage("/_Host");
 
 using (var scope = app.Services.CreateScope())
 {
@@ -274,7 +268,7 @@ using (var scope = app.Services.CreateScope())
         context.Database.Migrate();
     }
 
-    dataService.SetAllDevicesNotOnline();
+    await dataService.SetAllDevicesNotOnline();
     dataService.CleanupOldRecords();
 
     loggerFactory.AddProvider(new DbLoggerProvider(app.Environment, app.Services));

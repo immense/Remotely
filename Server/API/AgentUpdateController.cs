@@ -26,7 +26,7 @@ namespace Remotely.Server.API
         { ExpirationScanFrequency = TimeSpan.FromSeconds(10) });
 
 
-        private readonly IHubContext<ServiceHub> _agentHubContext;
+        private readonly IHubContext<AgentHub> _agentHubContext;
 
         private readonly IApplicationConfig _appConfig;
 
@@ -40,7 +40,7 @@ namespace Remotely.Server.API
                                                     IDataService dataService,
             IApplicationConfig appConfig,
             IServiceHubSessionCache serviceSessionCache,
-            IHubContext<ServiceHub> agentHubContext)
+            IHubContext<AgentHub> agentHubContext)
         {
             _hostEnv = hostingEnv;
             _dataService = dataService;

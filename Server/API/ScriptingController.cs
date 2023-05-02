@@ -22,7 +22,7 @@ namespace Remotely.Server.API
     [Route("api/[controller]")]
     public class ScriptingController : ControllerBase
     {
-        private readonly IHubContext<ServiceHub> _agentHubContext;
+        private readonly IHubContext<AgentHub> _agentHubContext;
 
         private readonly IDataService _dataService;
         private readonly IServiceHubSessionCache _serviceSessionCache;
@@ -34,7 +34,7 @@ namespace Remotely.Server.API
             IDataService dataService,
             IServiceHubSessionCache serviceSessionCache,
             IExpiringTokenService expiringTokenService,
-            IHubContext<ServiceHub> agentHub)
+            IHubContext<AgentHub> agentHub)
         {
             _dataService = dataService;
             _serviceSessionCache = serviceSessionCache;
@@ -91,15 +91,16 @@ namespace Remotely.Server.API
             var requestID = Guid.NewGuid().ToString();
             var authToken = _expiringTokenService.GetToken(Time.Now.AddMinutes(AppConstants.ScriptRunExpirationMinutes));
 
+            // TODO: Replace with new invoke capability in .NET 7.
             await _agentHubContext.Clients.Client(connectionId).SendAsync("ExecuteCommandFromApi", shell, authToken, requestID, command, User?.Identity?.Name);
 
-            var success = await WaitHelper.WaitForAsync(() => ServiceHub.ApiScriptResults.TryGetValue(requestID, out _), TimeSpan.FromSeconds(30));
+            var success = await WaitHelper.WaitForAsync(() => AgentHub.ApiScriptResults.TryGetValue(requestID, out _), TimeSpan.FromSeconds(30));
             if (!success)
             {
                 return NotFound();
             }
-            ServiceHub.ApiScriptResults.TryGetValue(requestID, out var commandID);
-            ServiceHub.ApiScriptResults.Remove(requestID);
+            AgentHub.ApiScriptResults.TryGetValue(requestID, out var commandID);
+            AgentHub.ApiScriptResults.Remove(requestID);
             var result = _dataService.GetScriptResult(commandID.ToString(), orgID);
             return result;
         }

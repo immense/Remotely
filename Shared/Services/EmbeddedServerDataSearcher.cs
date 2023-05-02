@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using Immense.RemoteControl.Shared;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;

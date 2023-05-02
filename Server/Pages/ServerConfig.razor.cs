@@ -142,7 +142,7 @@ namespace Remotely.Server.Pages
 
 
         [Inject]
-        private IHubContext<ServiceHub> AgentHubContext { get; set; }
+        private IHubContext<AgentHub> AgentHubContext { get; set; }
 
         [Inject]
         private IConfiguration Configuration { get; set; }
@@ -354,6 +354,7 @@ namespace Remotely.Server.Pages
             string savePath;
             var prodSettings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.Production.json");
             var stagingSettings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.Staging.json");
+            var devSettings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.Development.json");
             var settings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.json");
 
             if (HostEnv.IsProduction() && prodSettings.Exists)
@@ -363,6 +364,10 @@ namespace Remotely.Server.Pages
             else if (HostEnv.IsStaging() && stagingSettings.Exists)
             {
                 savePath = stagingSettings.PhysicalPath;
+            }
+            else if (HostEnv.IsDevelopment() && devSettings.Exists)
+            {
+                savePath = devSettings.PhysicalPath;
             }
             else if (settings.Exists)
             {

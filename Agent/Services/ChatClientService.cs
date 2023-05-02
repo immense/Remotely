@@ -31,9 +31,20 @@ namespace Remotely.Agent.Services
             SlidingExpiration = TimeSpan.FromMinutes(10),
             RemovedCallback = new CacheEntryRemovedCallback(args =>
             {
-                var chatSession = (args.CacheItem.Value as ChatSession);
-                chatSession.PipeStream.Dispose();
-                Process.GetProcessById(chatSession.ProcessID)?.Kill();
+                try
+                {
+                    if (args.CacheItem.Value is not ChatSession chatSession)
+                    {
+                        return;
+                    }
+                    chatSession.PipeStream.Dispose();
+                    var chatProcess = Process.GetProcessById(chatSession.ProcessID);
+                    if (chatProcess?.HasExited == false)
+                    {
+                        chatProcess.Kill();
+                    }
+                }
+                catch { }
             })
         };
 

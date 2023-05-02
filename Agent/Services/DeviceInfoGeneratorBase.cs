@@ -1,4 +1,5 @@
-﻿using Remotely.Shared.Models;
+﻿using Microsoft.Extensions.Logging;
+using Remotely.Shared.Models;
 using Remotely.Shared.Services;
 using Remotely.Shared.Utilities;
 using System;
@@ -12,8 +13,15 @@ using System.Threading.Tasks;
 
 namespace Remotely.Agent.Services
 {
-    public class DeviceInformationServiceBase
+    public class DeviceInfoGeneratorBase
     {
+        protected readonly ILogger<DeviceInfoGeneratorBase> _logger;
+
+        public DeviceInfoGeneratorBase(ILogger<DeviceInfoGeneratorBase> logger) 
+        {
+            _logger = logger;
+        }
+
         public Device GetDeviceBase(string deviceID, string orgID)
         {
 
@@ -63,7 +71,7 @@ namespace Remotely.Agent.Services
             }
             catch (Exception ex)
             {
-                Logger.Write(ex, "Error getting system drive info.");
+                _logger.LogError(ex, "Error getting system drive info.");
             }
 
             return (0, 0);
@@ -80,7 +88,7 @@ namespace Remotely.Agent.Services
             }
             catch (Exception ex)
             {
-                Logger.Write(ex, "Error getting agent version.");
+                _logger.LogError(ex, "Error getting agent version.");
             }
 
             return "0.0.0.0";
@@ -103,55 +111,9 @@ namespace Remotely.Agent.Services
             }
             catch (Exception ex)
             {
-                Logger.Write(ex, "Error getting drive info.");
+                _logger.LogError(ex, "Error getting drive info.");
                 return null;
             }
         }
-
-        public async Task<double> GetCpuUtilization()
-        {
-            double totalUtilization = 0;
-            var utilizations = new Dictionary<int, Tuple<DateTimeOffset, TimeSpan>>();
-            var processes = Process.GetProcesses();
-
-            foreach (var proc in processes)
-            {
-                try
-                {
-                    var startTime = DateTimeOffset.Now;
-                    var startCpuUsage = proc.TotalProcessorTime;
-                    utilizations.Add(proc.Id, new Tuple<DateTimeOffset, TimeSpan>(startTime, startCpuUsage));
-                }
-                catch
-                {
-                    continue;
-                }
-            }
-
-            await Task.Delay(500);
-
-            foreach (var kvp in utilizations)
-            {
-                var endTime = DateTimeOffset.Now;
-                try
-                {
-                    var proc = Process.GetProcessById(kvp.Key);
-                    var startTime = kvp.Value.Item1;
-                    var startCpuUsage = kvp.Value.Item2;
-                    var endCpuUsage = proc.TotalProcessorTime;
-                    var cpuUsedMs = (endCpuUsage - startCpuUsage).TotalMilliseconds;
-                    var totalMsPassed = (endTime - startTime).TotalMilliseconds;
-                    var cpuUsageTotal = cpuUsedMs / (Environment.ProcessorCount * totalMsPassed);
-                    totalUtilization += cpuUsageTotal;
-                }
-                catch
-                {
-                    continue;
-                }
-            }
-
-            return totalUtilization;
-        }
-
     }
 }

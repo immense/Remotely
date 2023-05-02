@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net7.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>Remotely_Desktop</AssemblyName>
@@ -51,7 +51,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Desktop.Shared\Desktop.Shared.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
-    <ProjectReference Include="..\submodules\Immense.RemoteControl\Desktop.Windows\Desktop.Windows.csproj" />
+    <ProjectReference Include="..\submodules\Immense.RemoteControl\Immense.RemoteControl.Desktop.Windows\Immense.RemoteControl.Desktop.Windows.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,7 +60,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if $(SolutionDir) == *Undefined* (&#xD;&#xA;  exit 0&#xD;&#xA;)&#xD;&#xA;if $(ConfigurationName) == Debug (&#xD;&#xA;  if $(PlatformName) == AnyCPU (&#xD;&#xA;      md &quot;$(SolutionDir)Agent\bin\Debug\net6.0\Desktop\&quot;&#xD;&#xA;      xcopy &quot;$(TargetDir)*&quot; &quot;$(SolutionDir)Agent\bin\Debug\net6.0\Desktop\&quot; /y /e /i&#xD;&#xA;  )&#xD;&#xA;  if $(PlatformName) == x64 (&#xD;&#xA;      md &quot;$(SolutionDir)Agent\bin\x64\Debug\net6.0\Desktop\&quot;&#xD;&#xA;      xcopy &quot;$(TargetDir)*&quot; &quot;$(SolutionDir)Agent\bin\x64\Debug\net6.0\Desktop\&quot; /y /e /i&#xD;&#xA;  )&#xD;&#xA;  if $(PlatformName) == x86 (&#xD;&#xA;      md &quot;$(SolutionDir)Agent\bin\x86\Debug\net6.0\Desktop\&quot;&#xD;&#xA;      xcopy &quot;$(TargetDir)*&quot; &quot;$(SolutionDir)Agent\bin\x86\Debug\net6.0\Desktop\&quot; /y /e /i&#xD;&#xA;  )&#xD;&#xA;)" />
+    <Exec Command="if $(SolutionDir) == *Undefined* (&#xD;&#xA;  exit 0&#xD;&#xA;)&#xD;&#xA;if $(ConfigurationName) == Debug (&#xD;&#xA;  if $(PlatformName) == AnyCPU (&#xD;&#xA;      md &quot;$(SolutionDir)Agent\bin\Debug\net7.0\Desktop\&quot;&#xD;&#xA;      xcopy &quot;$(TargetDir)*&quot; &quot;$(SolutionDir)Agent\bin\Debug\net7.0\Desktop\&quot; /y /e /i&#xD;&#xA;  )&#xD;&#xA;  if $(PlatformName) == x64 (&#xD;&#xA;      md &quot;$(SolutionDir)Agent\bin\x64\Debug\net7.0\Desktop\&quot;&#xD;&#xA;      xcopy &quot;$(TargetDir)*&quot; &quot;$(SolutionDir)Agent\bin\x64\Debug\net7.0\Desktop\&quot; /y /e /i&#xD;&#xA;  )&#xD;&#xA;  if $(PlatformName) == x86 (&#xD;&#xA;      md &quot;$(SolutionDir)Agent\bin\x86\Debug\net7.0\Desktop\&quot;&#xD;&#xA;      xcopy &quot;$(TargetDir)*&quot; &quot;$(SolutionDir)Agent\bin\x86\Debug\net7.0\Desktop\&quot; /y /e /i&#xD;&#xA;  )&#xD;&#xA;)" />
   </Target>
 
 </Project>

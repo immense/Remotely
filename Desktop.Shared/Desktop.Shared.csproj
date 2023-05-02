@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Shared\Shared.csproj" />
-    <ProjectReference Include="..\submodules\Immense.RemoteControl\Desktop.Shared\Desktop.Shared.csproj" />
+    <ProjectReference Include="..\submodules\Immense.RemoteControl\Immense.RemoteControl.Desktop.Shared\Immense.RemoteControl.Desktop.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

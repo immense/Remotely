@@ -190,7 +190,7 @@ namespace Remotely.Server.Services
 
         Task ResetBranding(string organizationId);
 
-        void SetAllDevicesNotOnline();
+        Task SetAllDevicesNotOnline();
 
         Task SetDisplayName(RemotelyUser user, string displayName);
 
@@ -1467,6 +1467,7 @@ namespace Remotely.Server.Services
             using var dbContext = _appDbFactory.GetContext();
 
             return await dbContext.SavedScripts
+                .Include(x => x.Creator)
                 .FirstOrDefaultAsync(x =>
                     x.Id == scriptId &&
                     (x.IsPublic || x.CreatorId == userId));
@@ -1714,15 +1715,15 @@ namespace Remotely.Server.Services
             await dbContext.SaveChangesAsync();
         }
 
-        public void SetAllDevicesNotOnline()
+        public async Task SetAllDevicesNotOnline()
         {
             using var dbContext = _appDbFactory.GetContext();
 
-            dbContext.Devices.ForEachAsync(x =>
+            await dbContext.Devices.ForEachAsync(x =>
             {
                 x.IsOnline = false;
-            }).Wait();
-            dbContext.SaveChanges();
+            });
+            await dbContext.SaveChangesAsync();
         }
 
         public async Task SetDisplayName(RemotelyUser user, string displayName)

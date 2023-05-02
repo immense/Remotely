@@ -16,11 +16,11 @@
     {
         if (SignInManager.IsSignedIn(User))
         {
-            var activeSessions = DesktopSessionCache.Sessions.Where(x => x.Value.RequesterUserName == HttpContext.User.Identity.Name);
+            var activeSessions = DesktopSessionCache.Sessions.Where(x => x.RequesterUserName == HttpContext.User.Identity.Name);
             foreach (var session in activeSessions)
             {
-                await DesktopHubContext.Clients.Client(session.Value.DesktopConnectionId).SendAsync("Disconnect", "User logged out.");
-                await ViewerHubContext.Clients.Clients(session.Value.ViewerList).SendAsync("ConnectionFailed");
+                await DesktopHubContext.Clients.Client(session.DesktopConnectionId).SendAsync("Disconnect", "User logged out.");
+                await ViewerHubContext.Clients.Clients(session.ViewerList).SendAsync("ConnectionFailed");
             }
 
             await SignInManager.SignOutAsync();

@@ -8,7 +8,6 @@ namespace Remotely.Server.Models
     public enum CircuitEventName
     {
         DisplayMessage,
-        UnattendedSessionReady,
         ChatReceived,
         CommandResult,
         DeviceUpdate,

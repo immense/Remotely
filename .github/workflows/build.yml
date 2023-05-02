@@ -34,17 +34,17 @@ jobs:
   
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.5.2
         with:
           submodules: recursive
 
       - name: Install .NET Core
-        uses: actions/setup-dotnet@v1.9.0
+        uses: actions/setup-dotnet@v3.0.3
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: 7
         
       - name: Setup NuGet.exe for use with actions
-        uses: NuGet/setup-nuget@v1.0.5
+        uses: NuGet/setup-nuget@v1.2.0
 
       - name: Set current version
         shell: pwsh
@@ -92,7 +92,7 @@ jobs:
     steps:
        
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3.5.2
       with:
         # Comment out the below 'repository' line if you want to build from
         # your fork instead of the author's.
@@ -102,9 +102,9 @@ jobs:
         
     # Install the .NET Core workload
     - name: Install .NET Core
-      uses: actions/setup-dotnet@v1.9.0
+      uses: actions/setup-dotnet@v3.0.3
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 7
       
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
@@ -148,7 +148,7 @@ jobs:
         
         
     - name: Download macOS x64 Agent
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v2.1.1
       with:
         name: Mac-Agent-x64
         path: ./Server/wwwroot/Content/
@@ -161,7 +161,7 @@ jobs:
         
     # Upload build artifact to be deployed from Ubuntu runner
     - name: Upload build artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3.1.2
       with:
         path: ./publish/
         name: Server

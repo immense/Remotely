@@ -17,16 +17,16 @@ using System.Threading.Tasks;
 
 namespace Remotely.Server.Hubs
 {
-    public class ServiceHub : Hub
+    public class AgentHub : Hub
     {
         private readonly IApplicationConfig _appConfig;
         private readonly ICircuitManager _circuitManager;
-        private readonly IExpiringTokenService _expiringTokenService;
         private readonly IDataService _dataService;
+        private readonly IExpiringTokenService _expiringTokenService;
         private readonly IServiceHubSessionCache _serviceSessionCache;
         private readonly IHubContext<ViewerHub> _viewerHubContext;
 
-        public ServiceHub(IDataService dataService,
+        public AgentHub(IDataService dataService,
             IApplicationConfig appConfig,
             IServiceHubSessionCache serviceSessionCache,
             IHubContext<ViewerHub> viewerHubContext,
@@ -41,7 +41,7 @@ namespace Remotely.Server.Hubs
             _expiringTokenService = expiringTokenService;
         }
 
-        // TODO: Move to service behind interface.
+        // TODO: Replace with new invoke capability in .NET 7 in ScriptingController.
         public static IMemoryCache ApiScriptResults { get; } = new MemoryCache(new MemoryCacheOptions());
 
         private Device Device
@@ -92,17 +92,6 @@ namespace Remotely.Server.Hubs
                 {
                     return Task.FromResult(false);
                 }
-
-                //if (_serviceSessionCache.Sessions.Any(x => x.Value == device.ID))
-                //{
-                //    _dataService.WriteEvent(new EventLog()
-                //    {
-                //        EventType = EventType.Info,
-                //        OrganizationID = device.OrganizationID,
-                //        Message = $"Device connection for {device?.DeviceName} was denied because it is already connected."
-                //    });
-                //    return Task.FromResult(false);
-                //}
 
                 var ip = Context.GetHttpContext()?.Connection?.RemoteIpAddress;
                 if (ip != null && ip.IsIPv4MappedToIPv6)
@@ -209,6 +198,16 @@ namespace Remotely.Server.Hubs
             return _circuitManager.InvokeOnConnection(requesterID, CircuitEventName.DownloadFileProgress, progressPercent);
         }
 
+        public string GetServerUrl()
+        {
+            return _appConfig.ServerUrl;
+        }
+
+        public string GetServerVerificationToken()
+        {
+            return Device.ServerVerificationToken;
+        }
+
         public override Task OnDisconnectedAsync(Exception exception)
         {
             try
@@ -266,20 +265,10 @@ namespace Remotely.Server.Hubs
         {
             return _circuitManager.InvokeOnConnection(requesterConnectionId, CircuitEventName.RemoteLogsReceived, logChunk);
         }
-
-        public string GetServerVerificationToken()
-        {
-            return Device.ServerVerificationToken;
-        }
-
         public void SetServerVerificationToken(string verificationToken)
         {
             Device.ServerVerificationToken = verificationToken;
             _dataService.SetServerVerificationToken(Device.ID, verificationToken);
-        }
-        public string GetServerUrl()
-        {
-            return _appConfig.ServerUrl;
         }
         public Task TransferCompleted(string transferID, string requesterID)
         {
