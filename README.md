@@ -1,7 +1,7 @@
 # Remotely
-A remote control and remote scripting solution, built with .NET 6, Blazor, and SignalR Core.
+A remote control and remote scripting solution, built with .NET, Blazor, and SignalR Core.
 
-[![Build Status](https://dev.azure.com/translucency/Remotely/_apis/build/status/immense.Remotely?branchName=master)](https://dev.azure.com/translucency/Remotely/_build/latest?definitionId=32&branchName=master)
+[![Build Status](https://dev.azure.com/immybot/Remotely/_apis/build/status%2Fimmense.Remotely?branchName=master)](https://dev.azure.com/immybot/Remotely/_build/latest?definitionId=2&branchName=master)
 [![Tests](https://github.com/immense/Remotely/actions/workflows/run_tests.yml/badge.svg?branch=master)](https://github.com/immense/Remotely/actions/workflows/run_tests.yml)
 
 # Status 
@@ -16,7 +16,6 @@ ImmyBot experienced explosive growth this year and we only have 4 developers whi
 ## Project Links
 Subreddit: https://www.reddit.com/r/remotely_app/  
 Docker: https://hub.docker.com/r/immybot/remotely  
-Video Tutorials: https://remotely.one/Tutorials  
 
 ![image](.github/media/ask-remote.png)
 
