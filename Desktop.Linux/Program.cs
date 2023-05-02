@@ -14,7 +14,7 @@ using Remotely.Shared.Utilities;
 using Immense.RemoteControl.Desktop.Shared.Startup;
 using System.Linq;
 
-var version = typeof(Program).Assembly.GetName().Version?.ToString() ?? "0.0.0";
+var version = AppVersionHelper.GetAppVersion();
 var logger = new FileLogger("Remotely_Desktop", version, "Program.cs");
 var filePath = Environment.ProcessPath ?? Environment.GetCommandLineArgs().First();
 var serverUrl = Debugger.IsAttached ? "http://localhost:5000" : string.Empty;

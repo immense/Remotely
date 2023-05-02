@@ -12,13 +12,5 @@
     Open-Source Licenses: <a href="/credits">Credits</a>
 </p>
 <p>
-    Version: @if (System.IO.File.Exists("Remotely_Server.dll"))
-    {
-        <span>@System.Diagnostics.FileVersionInfo.GetVersionInfo("Remotely_Server.dll").FileVersion</span>
-    }
-    else
-    {
-        <span>1.0.0.0</span>
-    }
-
+    Version: @(AppVersionHelper.GetAppVersion())
 </p>

@@ -38,13 +38,15 @@ public class Program
 
             await host.StartAsync();
 
+            Services = host.Services;
+
             await Init(host.Services);
 
             await host.WaitForShutdownAsync();
         }
         catch (Exception ex)
         {
-            var version = typeof(Program).Assembly.GetName().Version?.ToString() ?? "0.0.0";
+            var version = AppVersionHelper.GetAppVersion();
             var logger = new FileLogger("Remotely_Agent", version, "Main");
             logger.LogError(ex, "Error during agent startup.");
             throw;
