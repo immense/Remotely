@@ -85,7 +85,7 @@ public class Program
         services.AddLogging(builder =>
         {
             builder.AddConsole().AddDebug();
-            var version = typeof(Program).Assembly.GetName().Version?.ToString() ?? "0.0.0";
+            var version = AppVersionHelper.GetAppVersion();
             builder.AddProvider(new FileLoggerProvider("Remotely_Agent", version));
         });
 
