@@ -268,7 +268,7 @@ using (var scope = app.Services.CreateScope())
         context.Database.Migrate();
     }
 
-    dataService.SetAllDevicesNotOnline();
+    await dataService.SetAllDevicesNotOnline();
     dataService.CleanupOldRecords();
 
     loggerFactory.AddProvider(new DbLoggerProvider(app.Environment, app.Services));

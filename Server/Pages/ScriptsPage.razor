@@ -32,14 +32,47 @@
 
 
 @code {
+    private IEnumerable<ScriptTreeNode>? _filteredScriptNodes;
+    private bool _showOnlyMyScripts = true;
 
     [Parameter]
     public string ActiveTab { get; set; }
 
-    public bool ShowOnlyMyScripts { get; set; } = true;
+    public bool ShowOnlyMyScripts
+    {
+        get => _showOnlyMyScripts;
+        set
+        {
+            _filteredScriptNodes = null;
+            _showOnlyMyScripts = value;
+        }
+    }
 
     public List<ScriptTreeNode> TreeNodes { get; } = new();
 
+    public IEnumerable<ScriptTreeNode> FilteredScriptNodes
+    {
+        get
+        {
+            if (_filteredScriptNodes?.Any() == true)
+            {
+                return _filteredScriptNodes;
+            }
+
+            if (ShowOnlyMyScripts)
+            {
+                _filteredScriptNodes = TreeNodes.Where(x => 
+                    x.Script.CreatorId == User.Id);
+            }
+            else
+            {
+                _filteredScriptNodes = TreeNodes.Where(x => 
+                    x.Script.IsPublic || x.Script.CreatorId == User.Id);
+            }
+
+            return _filteredScriptNodes;
+        }
+    }
 
     public string GetItemIconCss(ScriptTreeNode viewModel)
     {
@@ -53,18 +86,12 @@
     public async Task RefreshScripts()
     {
         TreeNodes.Clear();
+        _filteredScriptNodes = null;
 
         var allScripts = await DataService.GetSavedScriptsWithoutContent(User.Id, User.OrganizationID);
 
         foreach (var script in allScripts)
         {
-            if (ShowOnlyMyScripts &&
-                script.CreatorId != User.Id &&
-                !script.IsPublic)
-            {
-                continue;
-            }
-
             var root = BuildFolderPath(script.FolderPath);
             root.Add(new ScriptTreeNode()
             {

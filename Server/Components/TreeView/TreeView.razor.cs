@@ -9,7 +9,7 @@ namespace Remotely.Server.Components.TreeView
     public partial class TreeView<T> : ComponentBase
     {
         [Parameter]
-        public List<T> DataSource { get; set; }
+        public IEnumerable<T> DataSource { get; set; }
 
         [Parameter]
         public Func<T, List<T>> ChildItemSelector { get; set; }

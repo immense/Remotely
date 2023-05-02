@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.CodeAnalysis.Scripting;
 using Remotely.Server.Pages;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
@@ -36,8 +37,7 @@ namespace Remotely.Server.Components.Scripts
         public IModalService ModalService { get; set; }
 
         private bool CanModifyScript => _selectedScript.Id == Guid.Empty || 
-            _selectedScript.CreatorId == User.Id || 
-            User.IsAdministrator;
+            _selectedScript.CreatorId == User.Id || User.IsAdministrator;
 
         private bool CanDeleteScript => !string.IsNullOrWhiteSpace(_selectedScript.CreatorId) &&
             (_selectedScript.CreatorId == User.Id || User.IsAdministrator);
