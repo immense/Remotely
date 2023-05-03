@@ -15,19 +15,15 @@ namespace Remotely.Shared.Utilities
         {
             try
             {
-                if (File.Exists(Environment.ProcessPath))
+                var filePath = Assembly.GetEntryAssembly()?.Location;
+                if (TryGetFileVersion(filePath, out var asmVersion))
                 {
-                    var versionInfo = FileVersionInfo.GetVersionInfo(Environment.ProcessPath);
-                    if (!string.IsNullOrEmpty(versionInfo.FileVersion))
-                    {
-                        return versionInfo.FileVersion;
-                    }
+                    return asmVersion;
                 }
 
-                var asmVersion = Assembly.GetEntryAssembly()?.GetName().Version;
-                if (asmVersion is not null && asmVersion > new Version(1, 0, 0))
+                if (TryGetFileVersion(Environment.ProcessPath, out var exeVersion))
                 {
-                    return asmVersion.ToString();
+                    return exeVersion;
                 }
 
                 return defaultVersion;
@@ -36,6 +32,29 @@ namespace Remotely.Shared.Utilities
             {
                 return defaultVersion;
             }
+        }
+
+        private static bool TryGetFileVersion(string filePath, out string version)
+        {
+            try
+            {
+                if (File.Exists(filePath))
+                {
+                    var versionInfo = FileVersionInfo.GetVersionInfo(filePath);
+                    if (Version.TryParse(versionInfo.FileVersion, out _))
+                    {
+                        version = versionInfo.FileVersion;
+                        return true;
+                    }
+                }
+            }
+            catch
+            {
+                // Ignored.
+            }
+
+            version = string.Empty;
+            return false;
         }
     }
 }
