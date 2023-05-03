@@ -143,6 +143,7 @@ namespace Remotely.Server.Services
         Task<Organization> GetOrganizationByUserName(string userName);
 
         int GetOrganizationCount();
+        Task<int> GetOrganizationCountAsync();
 
         string GetOrganizationNameById(string organizationID);
 
@@ -1397,6 +1398,13 @@ namespace Remotely.Server.Services
             using var dbContext = _appDbFactory.GetContext();
 
             return dbContext.Organizations.Count();
+        }
+
+        public async Task<int> GetOrganizationCountAsync()
+        {
+            using var dbContext = _appDbFactory.GetContext();
+
+            return await dbContext.Organizations.CountAsync();
         }
 
         public string GetOrganizationNameById(string organizationID)

@@ -13,6 +13,8 @@ COPY /_immense.Remotely/Server/linux-x64/Server /app
 WORKDIR /app
 
 RUN \
+  apt-get -y update && \
+  apt-get -y install curl && \
   mkdir -p /remotely-data && \
   sed -i 's/DataSource=Remotely.db/DataSource=\/remotely-data\/Remotely.db/' /app/appsettings.json
 
@@ -23,4 +25,4 @@ RUN chmod +x "/src/DockerMain.sh"
 ENTRYPOINT ["/src/DockerMain.sh"]
 
 HEALTHCHECK --interval=5m --timeout=3s \
-  CMD curl -f http://localhost:5000/ || exit 1
+  CMD curl -f http://localhost:5000/api/healthcheck || exit 1
