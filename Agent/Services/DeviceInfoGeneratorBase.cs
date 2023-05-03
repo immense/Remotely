@@ -1,15 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using Remotely.Shared.Models;
-using Remotely.Shared.Services;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Remotely.Agent.Services
 {
@@ -22,7 +18,7 @@ namespace Remotely.Agent.Services
             _logger = logger;
         }
 
-        public Device GetDeviceBase(string deviceID, string orgID)
+        protected Device GetDeviceBase(string deviceID, string orgID)
         {
 
             return new Device()
@@ -35,11 +31,12 @@ namespace Remotely.Agent.Services
                 OSDescription = RuntimeInformation.OSDescription,
                 Is64Bit = Environment.Is64BitOperatingSystem,
                 IsOnline = true,
-                OrganizationID = orgID
-            };
+                OrganizationID = orgID,
+                AgentVersion = AppVersionHelper.GetAppVersion()
+        };
         }
 
-        public (double usedStorage, double totalStorage) GetSystemDriveInfo()
+        protected (double usedStorage, double totalStorage) GetSystemDriveInfo()
         {
             try
             {
@@ -77,24 +74,7 @@ namespace Remotely.Agent.Services
             return (0, 0);
         }
 
-        public string GetAgentVersion()
-        {
-            try
-            {
-                if (File.Exists("Remotely_Agent.dll"))
-                {
-                    return FileVersionInfo.GetVersionInfo("Remotely_Agent.dll").FileVersion.ToString().Trim();
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting agent version.");
-            }
-
-            return "0.0.0.0";
-        }
-
-        public List<Drive> GetAllDrives()
+        protected List<Drive> GetAllDrives()
         {
             try
             {

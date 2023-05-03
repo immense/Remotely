@@ -39,7 +39,6 @@ namespace Remotely.Agent.Services.Windows
                 device.UsedMemory = usedMemory;
                 device.TotalMemory = totalMemory;
                 device.CpuUtilization = _cpuUtilSampler.CurrentUtilization;
-                device.AgentVersion = GetAgentVersion();
             }
             catch (Exception ex)
             {

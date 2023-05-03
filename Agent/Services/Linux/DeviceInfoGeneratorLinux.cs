@@ -43,7 +43,6 @@ namespace Remotely.Agent.Services.Linux
                 device.UsedMemory = usedMemory;
                 device.TotalMemory = totalMemory;
                 device.CpuUtilization = _cpuUtilSampler.CurrentUtilization;
-                device.AgentVersion = GetAgentVersion();
             }
             catch (Exception ex)
             {

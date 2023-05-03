@@ -38,7 +38,6 @@ namespace Remotely.Agent.Services.MacOS
                 device.UsedMemory = usedMemory;
                 device.TotalMemory = totalMemory;
                 device.CpuUtilization = await GetCpuUtilization();
-                device.AgentVersion = GetAgentVersion();
             }
             catch (Exception ex)
             {
