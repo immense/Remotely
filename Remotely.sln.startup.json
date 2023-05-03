@@ -74,6 +74,17 @@
           "ProfileName": "Agent"
         }
       }
+    },
+    "Server+Desktop": {
+      "Projects": {
+        "Server\\Server.csproj": {
+          "ProfileName": "Server"
+        },
+        "Desktop.Win": {
+          "ProfileName": "Desktop.Win"
+        }
+      }
     }
+
   }
 }

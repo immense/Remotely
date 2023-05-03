@@ -17,6 +17,7 @@ public interface ICpuUtilizationSampler : IHostedService
 
 internal class CpuUtilizationSampler : BackgroundService, ICpuUtilizationSampler
 {
+    private readonly HashSet<int> _ignoredProcesses = new();
     private readonly ILogger<CpuUtilizationSampler> _logger;
     private double _currentUtilization;
 
@@ -47,7 +48,7 @@ internal class CpuUtilizationSampler : BackgroundService, ICpuUtilizationSampler
         }
     }
 
-    private static async Task<double> GetCpuUtilization(CancellationToken cancelToken)
+    private async Task<double> GetCpuUtilization(CancellationToken cancelToken)
     {
         double totalUtilization = 0;
         var utilizations = new Dictionary<int, Tuple<DateTimeOffset, TimeSpan>>();
@@ -60,14 +61,24 @@ internal class CpuUtilizationSampler : BackgroundService, ICpuUtilizationSampler
                 return 0;
             }
 
+
             try
             {
+                // Processes in other sessions (e.g. session 0) will be inaccessible
+                // when debugging in a non-privileged process.  This prevents errors
+                // from clogging up the output window.
+                if (_ignoredProcesses.Contains(proc.Id))
+                {
+                    continue;
+                }
+
                 var startTime = DateTimeOffset.Now;
                 var startCpuUsage = proc.TotalProcessorTime;
                 utilizations.Add(proc.Id, new Tuple<DateTimeOffset, TimeSpan>(startTime, startCpuUsage));
             }
             catch
             {
+                _ignoredProcesses.Add(proc.Id);
                 continue;
             }
         }

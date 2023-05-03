@@ -2,7 +2,7 @@
   "profiles": {
     "Desktop.Linux": {
       "commandName": "Project",
-      "commandLineArgs": "-m Attended -s some-session-id -a vERyLonGAndCOMpleXKeY -o Immense -r Han"
+      "commandLineArgs": "-m Attended -h https://localhost:5001"
     }
   }
 }
