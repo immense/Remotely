@@ -37,7 +37,7 @@ namespace Remotely.Server.API
         private readonly IServiceHubSessionCache _serviceSessionCache;
 
         public AgentUpdateController(IWebHostEnvironment hostingEnv,
-                                                    IDataService dataService,
+            IDataService dataService,
             IApplicationConfig appConfig,
             IServiceHubSessionCache serviceSessionCache,
             IHubContext<AgentHub> agentHubContext)
