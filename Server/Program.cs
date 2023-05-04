@@ -181,6 +181,7 @@ services.AddScoped<IAppDbFactory, AppDbFactory>();
 services.AddTransient<IDataService, DataService>();
 services.AddSingleton<IApplicationConfig, ApplicationConfig>();
 services.AddScoped<ApiAuthorizationFilter>();
+services.AddScoped<LocalOnlyFilter>();
 services.AddScoped<ExpiringTokenFilter>();
 services.AddHostedService<DbCleanupService>();
 services.AddHostedService<ScriptScheduler>();

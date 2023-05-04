@@ -40,6 +40,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Shared\Shared.csproj" />
+    <ProjectReference Include="..\submodules\Immense.RemoteControl\Immense.RemoteControl.Desktop.Native\Immense.RemoteControl.Desktop.Native.csproj" />
   </ItemGroup>
 
 

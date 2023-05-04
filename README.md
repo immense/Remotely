@@ -16,6 +16,7 @@ ImmyBot experienced explosive growth this year and we only have 4 developers whi
 ## Project Links
 Subreddit: https://www.reddit.com/r/remotely_app/  
 Docker: https://hub.docker.com/r/immybot/remotely  
+Tutorial: https://www.youtube.com/watch?v=t-TFvr7sZ6M (Thanks, @bmcgonag!)
 
 ![image](.github/media/ask-remote.png)
 
