@@ -1,4 +1,5 @@
-﻿using Remotely.Shared.Enums;
+﻿using Immense.RemoteControl.Desktop.Native.DataStructures;
+using Remotely.Shared.Enums;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
