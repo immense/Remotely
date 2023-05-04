@@ -1,12 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Immense.RemoteControl.Desktop.Native.Windows;
+using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
 using Remotely.Shared.Models;
-using Remotely.Shared.Utilities;
-using Remotely.Shared.Win32;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Remotely.Agent.Services.Windows

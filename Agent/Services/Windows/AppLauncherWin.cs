@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using Immense.RemoteControl.Desktop.Native.Windows;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
-using Remotely.Shared.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -42,7 +42,7 @@ namespace Remotely.Agent.Services.Windows
                 await hubConnection.SendAsync("DisplayMessage", $"Starting chat service.", "Starting chat service.", "bg-success", userConnectionId);
                 if (WindowsIdentity.GetCurrent().IsSystem)
                 {
-                    var result = Win32Interop.OpenInteractiveProcess(
+                    var result = Win32Interop.CreateInteractiveSystemProcess(
                         _rcBinaryPath +
                             $" --mode Chat" +
                             $" --host \"{_connectionInfo.Host}\"" +
@@ -114,7 +114,7 @@ namespace Remotely.Agent.Services.Windows
                     userConnectionId);
                 if (WindowsIdentity.GetCurrent().IsSystem)
                 {
-                    var result = Win32Interop.OpenInteractiveProcess(
+                    var result = Win32Interop.CreateInteractiveSystemProcess(
                         _rcBinaryPath +
                             $" --mode Unattended" +
                             $" --host {_connectionInfo.Host}" +
@@ -170,7 +170,7 @@ namespace Remotely.Agent.Services.Windows
                     // Give a little time for session changing, etc.
                     await Task.Delay(1000);
 
-                    var result = Win32Interop.OpenInteractiveProcess(_rcBinaryPath +
+                    var result = Win32Interop.CreateInteractiveSystemProcess(_rcBinaryPath +
                             $" --mode Unattended" +
                             $" --relaunch true" +
                             $" --host {_connectionInfo.Host}" +
