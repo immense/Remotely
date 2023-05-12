@@ -42,7 +42,7 @@ namespace Remotely.Server.Data
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             options.ConfigureWarnings(x => x.Ignore(RelationalEventId.MultipleCollectionIncludeWarning));
-            options.LogTo((message) => System.Diagnostics.Debug.Write(message));
+            //options.LogTo((message) => System.Diagnostics.Debug.Write(message));
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
