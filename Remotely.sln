@@ -73,7 +73,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Immense.RemoteControl.Share
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Immense.RemoteControl.Desktop", "submodules\Immense.RemoteControl\Immense.RemoteControl.Desktop\Immense.RemoteControl.Desktop.csproj", "{034984DC-4B47-42E9-8648-F258C40C7926}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Immense.RemoteControl.Desktop.Native", "submodules\Immense.RemoteControl\Immense.RemoteControl.Desktop.Native\Immense.RemoteControl.Desktop.Native.csproj", "{7A8378BC-8169-4A33-93C6-47C699C5E74D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Immense.RemoteControl.Desktop.Native", "submodules\Immense.RemoteControl\Immense.RemoteControl.Desktop.Native\Immense.RemoteControl.Desktop.Native.csproj", "{7A8378BC-8169-4A33-93C6-47C699C5E74D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E4D83C37-8B98-44FB-898B-9AA1BB223C66}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Immense.RemoteControl.Shared.Tests", "submodules\Immense.RemoteControl\Tests\Immense.RemoteControl.Shared.Tests\Immense.RemoteControl.Shared.Tests.csproj", "{DEF3026F-E669-42F0-8883-56F4F8D0E790}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -289,6 +293,18 @@ Global
 		{7A8378BC-8169-4A33-93C6-47C699C5E74D}.Release|x64.Build.0 = Release|Any CPU
 		{7A8378BC-8169-4A33-93C6-47C699C5E74D}.Release|x86.ActiveCfg = Release|Any CPU
 		{7A8378BC-8169-4A33-93C6-47C699C5E74D}.Release|x86.Build.0 = Release|Any CPU
+		{DEF3026F-E669-42F0-8883-56F4F8D0E790}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEF3026F-E669-42F0-8883-56F4F8D0E790}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEF3026F-E669-42F0-8883-56F4F8D0E790}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DEF3026F-E669-42F0-8883-56F4F8D0E790}.Debug|x64.Build.0 = Debug|Any CPU
+		{DEF3026F-E669-42F0-8883-56F4F8D0E790}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DEF3026F-E669-42F0-8883-56F4F8D0E790}.Debug|x86.Build.0 = Debug|Any CPU
+		{DEF3026F-E669-42F0-8883-56F4F8D0E790}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEF3026F-E669-42F0-8883-56F4F8D0E790}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEF3026F-E669-42F0-8883-56F4F8D0E790}.Release|x64.ActiveCfg = Release|Any CPU
+		{DEF3026F-E669-42F0-8883-56F4F8D0E790}.Release|x64.Build.0 = Release|Any CPU
+		{DEF3026F-E669-42F0-8883-56F4F8D0E790}.Release|x86.ActiveCfg = Release|Any CPU
+		{DEF3026F-E669-42F0-8883-56F4F8D0E790}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -305,6 +321,8 @@ Global
 		{FEF0D431-EB2F-4C08-A125-8DF59AFDA525} = {48C738FB-359E-43DB-B338-FD7CB1CCF6A8}
 		{034984DC-4B47-42E9-8648-F258C40C7926} = {48C738FB-359E-43DB-B338-FD7CB1CCF6A8}
 		{7A8378BC-8169-4A33-93C6-47C699C5E74D} = {48C738FB-359E-43DB-B338-FD7CB1CCF6A8}
+		{E4D83C37-8B98-44FB-898B-9AA1BB223C66} = {48C738FB-359E-43DB-B338-FD7CB1CCF6A8}
+		{DEF3026F-E669-42F0-8883-56F4F8D0E790} = {E4D83C37-8B98-44FB-898B-9AA1BB223C66}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EAE10B28-119B-437C-9E68-06F0EE3F968A}
