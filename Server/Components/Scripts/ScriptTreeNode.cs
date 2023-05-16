@@ -12,6 +12,7 @@ namespace Remotely.Server.Components.Scripts
         public string Id { get; } = Guid.NewGuid().ToString();
         public TreeItemType ItemType { get; set; }
         public string Name { get; init; }
+        public ScriptTreeNode? ParentNode { get; set; }
         public List<ScriptTreeNode> ChildItems { get; } = new();
         public SavedScript Script { get; init; }
     }
