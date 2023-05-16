@@ -655,12 +655,12 @@ namespace Remotely.Server.Services
             {
                 if (currentUser.IsServerAdmin)
                 {
-                    dbContext.EventLogs.RemoveRange(dbContext.EventLogs);
+                    await dbContext.EventLogs.ExecuteDeleteAsync();
                 }
                 else
                 {
                     var eventLogs = dbContext.EventLogs.Where(x => x.OrganizationID == currentUser.OrganizationID);
-                    dbContext.EventLogs.RemoveRange(eventLogs);
+                    await eventLogs.ExecuteDeleteAsync();
                 }
 
                 await dbContext.SaveChangesAsync();
