@@ -111,17 +111,20 @@ services.AddRazorPages();
 services.AddServerSideBlazor();
 services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<RemotelyUser>>();
 services.AddDatabaseDeveloperPageExceptionFilter();
-services.AddHttpLogging(options =>
+if (bool.TryParse(configuration["ApplicationOptions:UseHttpLogging"], out var useHttpLogging) &&
+    useHttpLogging)
 {
-    options.RequestHeaders.Add("X-Forwarded-For");
-    options.RequestHeaders.Add("X-Forwarded-Proto");
-    options.RequestHeaders.Add("X-Forwarded-Host");
-    options.RequestHeaders.Add("X-Original-For");
-    options.RequestHeaders.Add("X-Original-Proto");
-    options.RequestHeaders.Add("X-Original-Host");
-    options.RequestHeaders.Add("Host");
-});
-
+    services.AddHttpLogging(options =>
+    {
+        options.RequestHeaders.Add("X-Forwarded-For");
+        options.RequestHeaders.Add("X-Forwarded-Proto");
+        options.RequestHeaders.Add("X-Forwarded-Host");
+        options.RequestHeaders.Add("X-Original-For");
+        options.RequestHeaders.Add("X-Original-Proto");
+        options.RequestHeaders.Add("X-Original-Host");
+        options.RequestHeaders.Add("Host");
+    });
+}
 var trustedOrigins = configuration.GetSection("ApplicationOptions:TrustedCorsOrigins").Get<string[]>();
 
 if (trustedOrigins != null)
