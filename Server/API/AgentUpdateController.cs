@@ -27,32 +27,28 @@ namespace Remotely.Server.API
 
 
         private readonly IHubContext<AgentHub> _agentHubContext;
-
+        private readonly ILogger<AgentUpdateController> _logger;
         private readonly IApplicationConfig _appConfig;
-
-        private readonly IDataService _dataService;
-
         private readonly IWebHostEnvironment _hostEnv;
-
         private readonly IServiceHubSessionCache _serviceSessionCache;
 
         public AgentUpdateController(IWebHostEnvironment hostingEnv,
-                                                    IDataService dataService,
             IApplicationConfig appConfig,
             IServiceHubSessionCache serviceSessionCache,
-            IHubContext<AgentHub> agentHubContext)
+            IHubContext<AgentHub> agentHubContext,
+            ILogger<AgentUpdateController> logger)
         {
             _hostEnv = hostingEnv;
-            _dataService = dataService;
             _appConfig = appConfig;
             _serviceSessionCache = serviceSessionCache;
             _agentHubContext = agentHubContext;
+            _logger = logger;
         }
 
         [HttpGet("[action]/{downloadId}")]
         public ActionResult ClearDownload(string downloadId)
         {
-            _dataService.WriteEvent($"Clearing download ID {downloadId}.", EventType.Debug, null);
+            _logger.LogDebug("Clearing download ID {downloadId}.", downloadId);
             _downloadingAgents.Remove(downloadId);
             return Ok();
         }
@@ -92,10 +88,16 @@ namespace Remotely.Server.API
                 _downloadingAgents.Set(downloadId, string.Empty, cacheOptions);
 
                 var waitTime = DateTimeOffset.Now - startWait;
-                _dataService.WriteEvent($"Download started after wait time of {waitTime}.  " + 
-                    $"ID: {downloadId}. " +
-                    $"IP: {remoteIp}. " +
-                    $"Current Downloads: {_downloadingAgents.Count}.  Max Allowed: {_appConfig.MaxConcurrentUpdates}", EventType.Debug, null);
+                _logger.LogDebug(
+                    "Download started after wait time of {waitTime}.  " + 
+                    "ID: {downloadId}. " +
+                    "IP: {remoteIp}. " +
+                    "Current Downloads: {_downloadingAgentsCount}.  Max Allowed: {_appConfigMaxConcurrentUpdates}",
+                    waitTime,
+                    downloadId,
+                    remoteIp,
+                    _downloadingAgents.Count,
+                    _appConfig.MaxConcurrentUpdates);
 
 
                 string filePath;
@@ -115,11 +117,13 @@ namespace Remotely.Server.API
                         filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Remotely-MacOS-x64.zip");
                         break;
                     default:
-                        _dataService.WriteEvent($"Unknown platform requested in {nameof(AgentUpdateController)}. " +
-                            $"Platform: {platform}. " +
-                            $"IP: {remoteIp}.",
-                            EventType.Warning,
-                            null);
+                        _logger.LogWarning(
+                            "Unknown platform requested in {className}. " +
+                            "Platform: {platform}. " +
+                            "IP: {remoteIp}.",
+                            nameof(AgentUpdateController),
+                            platform,
+                            remoteIp);
                         return BadRequest();
                 }
 
@@ -130,7 +134,7 @@ namespace Remotely.Server.API
             catch (Exception ex)
             {
                 _downloadingAgents.Remove(downloadId);
-                _dataService.WriteEvent(ex, null);
+                _logger.LogError(ex, "Error while downloading package.");
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }

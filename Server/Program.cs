@@ -35,15 +35,17 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Remotely.Shared.Services;
 using System;
 using Immense.RemoteControl.Server.Services;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var services = builder.Services;
 
-builder.Logging.ClearProviders();
+ConfigureSerilog(builder);
+
+builder.Host.UseSerilog();
+
 builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
-builder.Logging.AddConsole();
-builder.Logging.AddDebug();
 
 if (OperatingSystem.IsWindows() &&
     bool.TryParse(builder.Configuration["ApplicationOptions:EnableWindowsEventLog"], out var enableEventLog) &&
@@ -111,6 +113,7 @@ services.AddRazorPages();
 services.AddServerSideBlazor();
 services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<RemotelyUser>>();
 services.AddDatabaseDeveloperPageExceptionFilter();
+
 if (bool.TryParse(configuration["ApplicationOptions:UseHttpLogging"], out var useHttpLogging) &&
     useHttpLogging)
 {
@@ -125,6 +128,7 @@ if (bool.TryParse(configuration["ApplicationOptions:UseHttpLogging"], out var us
         options.RequestHeaders.Add("Host");
     });
 }
+
 var trustedOrigins = configuration.GetSection("ApplicationOptions:TrustedCorsOrigins").Get<string[]>();
 
 if (trustedOrigins != null)
@@ -265,7 +269,6 @@ using (var scope = app.Services.CreateScope())
 {
     using var context = scope.ServiceProvider.GetRequiredService<AppDb>();
     var dataService = scope.ServiceProvider.GetRequiredService<IDataService>();
-    var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
 
     if (context.Database.IsRelational())
     {
@@ -274,8 +277,6 @@ using (var scope = app.Services.CreateScope())
 
     await dataService.SetAllDevicesNotOnline();
     dataService.CleanupOldRecords();
-
-    loggerFactory.AddProvider(new DbLoggerProvider(app.Environment, app.Services));
 }
 
 await app.RunAsync();
@@ -314,5 +315,46 @@ void ConfigureStaticFiles()
             RequestPath = new PathString("/.well-known"),
             ServeUnknownFileTypes = true
         });
+    }
+}
+
+void ConfigureSerilog(WebApplicationBuilder webAppBuilder)
+{
+    try
+    {
+        var dataRetentionDays = 7;
+        if (int.TryParse(webAppBuilder.Configuration["ApplicationOptions:DataRetentionInDays"], out var retentionSetting))
+        {
+            dataRetentionDays = retentionSetting;
+        }
+
+        var logPath = Directory.Exists("/remotely-data") ? "/remotely-data/logs" : "logs";
+        Directory.CreateDirectory(logPath);
+
+        void ApplySharedLoggerConfig(LoggerConfiguration loggerConfiguration)
+        {
+            loggerConfiguration
+                .Enrich.FromLogContext()
+                .MinimumLevel.Debug()
+                .WriteTo.Console()
+                .WriteTo.File($"{logPath}/Remotely_Server.log", rollingInterval: RollingInterval.Day, retainedFileTimeLimit: TimeSpan.FromDays(dataRetentionDays));
+        }
+
+        var loggerConfig = new LoggerConfiguration();
+        ApplySharedLoggerConfig(loggerConfig);
+        Log.Logger = loggerConfig.CreateBootstrapLogger();
+
+        builder.Host.UseSerilog((context, services, configuration) =>
+        {
+            configuration
+                .ReadFrom.Configuration(context.Configuration)
+                .ReadFrom.Services(services);
+
+            ApplySharedLoggerConfig(configuration);
+        });
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Failed to configure Serilog file logging.  Error: {ex.Message}");
     }
 }

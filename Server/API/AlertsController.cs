@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Build.Framework;
+using Microsoft.Extensions.Logging;
 using Remotely.Server.Auth;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
@@ -20,12 +22,18 @@ namespace Remotely.Server.API
         private readonly IDataService _dataService;
         private readonly IEmailSenderEx _emailSender;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly ILogger<AlertsController> _logger;
 
-        public AlertsController(IDataService dataService, IEmailSenderEx emailSender, IHttpClientFactory httpClientFactory)
+        public AlertsController(
+            IDataService dataService, 
+            IEmailSenderEx emailSender, 
+            IHttpClientFactory httpClientFactory,
+            ILogger<AlertsController> logger)
         {
             _dataService = dataService;
             _emailSender = emailSender;
             _httpClientFactory = httpClientFactory;
+            _logger = logger;
         }
 
         [HttpPost("Create")]
@@ -33,7 +41,7 @@ namespace Remotely.Server.API
         {
             Request.Headers.TryGetValue("OrganizationID", out var orgID);
 
-            _dataService.WriteEvent("Alert created.  Alert Options: " + JsonSerializer.Serialize(alertOptions), orgID);
+            _logger.LogInformation("Alert created.  Alert Options: {options}", JsonSerializer.Serialize(alertOptions));
 
             if (alertOptions.ShouldAlert)
             {
@@ -43,7 +51,7 @@ namespace Remotely.Server.API
                 }
                 catch (Exception ex)
                 {
-                    _dataService.WriteEvent(ex, orgID);
+                    _logger.LogError(ex, "Error while adding alert.");
                 }
             }
 
@@ -58,7 +66,7 @@ namespace Remotely.Server.API
                 }
                 catch (Exception ex)
                 {
-                    _dataService.WriteEvent(ex, orgID);
+                    _logger.LogError(ex, "Error while sending email.");
                 }
 
             }
@@ -81,11 +89,11 @@ namespace Remotely.Server.API
                     }
 
                     using var response = await httpClient.SendAsync(request);
-                    _dataService.WriteEvent($"Alert API Response Status: {response.StatusCode}.", orgID);
+                    _logger.LogInformation("Alert API Response Status: {responseStatusCode}.", response.StatusCode);
                 }
                 catch (Exception ex)
                 {
-                    _dataService.WriteEvent(ex, orgID);
+                    _logger.LogError(ex, "Error while sending alert API request.");
                 }
 
             }

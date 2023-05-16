@@ -28,7 +28,6 @@ namespace Remotely.Server.Data
         public DbSet<BrandingInfo> BrandingInfos { get; set; }
         public DbSet<DeviceGroup> DeviceGroups { get; set; }
         public DbSet<Device> Devices { get; set; }
-        public DbSet<EventLog> EventLogs { get; set; }
         public DbSet<InviteLink> InviteLinks { get; set; }
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<ScriptRun> ScriptRuns { get; set; }
