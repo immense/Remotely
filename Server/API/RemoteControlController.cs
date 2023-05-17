@@ -151,7 +151,8 @@ namespace Remotely.Server.API
                 accessKey,
                 HttpContext.Connection.Id,
                 string.Empty,
-                orgName);
+                orgName,
+                orgID);
 
             var waitResult = await session.WaitForSessionReady(TimeSpan.FromSeconds(30));
             if (!waitResult)
