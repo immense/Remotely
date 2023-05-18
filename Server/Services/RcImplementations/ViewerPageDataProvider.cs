@@ -20,12 +20,19 @@ namespace Remotely.Server.Services.RcImplementations
             _appConfig = appConfig;
         }
 
-        public Task<string> GetFaviconUrl(ViewerModel viewerModel)
+        public Task<string> GetFaviconUrl(PageModel viewerModel)
         {
             return Task.FromResult("/_content/Immense.RemoteControl.Server/favicon.ico");
         }
 
-        public Task<string> GetPageDescription(ViewerModel viewerModel)
+        public async Task<string> GetLogoUrl(PageModel viewerModel)
+        {
+            return await GetTheme(viewerModel) == ViewerPageTheme.Dark ?
+               "/images/viewer/remotely-logo-dark.svg" :
+               "/images/viewer/remotely-logo-light.svg";
+        }
+
+        public Task<string> GetPageDescription(PageModel viewerModel)
         {
             return Task.FromResult("Open-source remote support tools.");
         }
@@ -33,16 +40,6 @@ namespace Remotely.Server.Services.RcImplementations
         public Task<string> GetPageTitle(PageModel pageModel)
         {
             return Task.FromResult("Remotely Remote Control");
-        }
-
-        public Task<string> GetProductName(PageModel pageModel)
-        {
-            return Task.FromResult("Remotely");
-        }
-
-        public Task<string> GetProductSubtitle(PageModel pageModel)
-        {
-            return Task.FromResult("Remote Control");
         }
 
         public Task<ViewerPageTheme> GetTheme(PageModel pageModel)
