@@ -44,26 +44,28 @@ namespace Remotely.Server.Services.RcImplementations
 
         public Task<ViewerPageTheme> GetTheme(PageModel pageModel)
         {
-            if (pageModel.User.Identity.IsAuthenticated)
-            {
-                var user = _dataService.GetUserByNameWithOrg(pageModel.User.Identity.Name);
+            // TODO: Implement light theme in new viewer design.
+            return Task.FromResult(ViewerPageTheme.Dark);
+            //if (pageModel.User.Identity.IsAuthenticated)
+            //{
+            //    var user = _dataService.GetUserByNameWithOrg(pageModel.User.Identity.Name);
 
-                var userTheme = user.UserOptions.Theme switch
-                {
-                    Theme.Light => ViewerPageTheme.Light,
-                    Theme.Dark => ViewerPageTheme.Dark,
-                    _ => ViewerPageTheme.Dark
-                };
-                return Task.FromResult(userTheme);
-            }
+            //    var userTheme = user.UserOptions.Theme switch
+            //    {
+            //        Theme.Light => ViewerPageTheme.Light,
+            //        Theme.Dark => ViewerPageTheme.Dark,
+            //        _ => ViewerPageTheme.Dark
+            //    };
+            //    return Task.FromResult(userTheme);
+            //}
 
-            var appTheme = _appConfig.Theme switch
-            {
-                Theme.Light => ViewerPageTheme.Light,
-                Theme.Dark => ViewerPageTheme.Dark,
-                _ => ViewerPageTheme.Dark
-            };
-            return Task.FromResult(appTheme);
+            //var appTheme = _appConfig.Theme switch
+            //{
+            //    Theme.Light => ViewerPageTheme.Light,
+            //    Theme.Dark => ViewerPageTheme.Dark,
+            //    _ => ViewerPageTheme.Dark
+            //};
+            //return Task.FromResult(appTheme);
         }
 
         public Task<string> GetUserDisplayName(PageModel pageModel)
