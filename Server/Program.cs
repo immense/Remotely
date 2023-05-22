@@ -158,6 +158,7 @@ services.Configure<ForwardedHeadersOptions>(options =>
 services.AddSignalR(options =>
 {
     options.EnableDetailedErrors = builder.Environment.IsDevelopment();
+    options.MaximumParallelInvocationsPerClient = 5;
     options.MaximumReceiveMessageSize = 100_000;
 })
     .AddJsonProtocol(options =>

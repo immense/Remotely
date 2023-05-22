@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
 using Remotely.Shared.Utilities;
 using System;
+using System.Threading.Tasks;
 
 namespace Remotely.Server.Services.RcImplementations
 {
@@ -20,25 +21,25 @@ namespace Remotely.Server.Services.RcImplementations
 
         public string UnauthorizedRedirectUrl { get; } = "/Identity/Account/Login";
 
-        public bool IsAuthorized(AuthorizationFilterContext context)
+        public Task<bool> IsAuthorized(AuthorizationFilterContext context)
         {
             if (!_appConfig.RemoteControlRequiresAuthentication)
             {
-                return true;
+                return Task.FromResult(true);
             }
 
-            if (context.HttpContext.User.Identity.IsAuthenticated)
+            if (context.HttpContext.User.Identity?.IsAuthenticated == true)
             {
-                return true;
+                return Task.FromResult(true);
             }
 
             if (context.HttpContext.Request.Query.TryGetValue("otp", out var otp) &&
                 _otpProvider.Exists($"{otp}"))
             {
-                return true;
+                return Task.FromResult(true);
             }
 
-            return false;
+            return Task.FromResult(false);
         }
     }
 }
