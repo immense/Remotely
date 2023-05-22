@@ -222,7 +222,10 @@ namespace Remotely.Server.Hubs
             if (!_dataService.DoesUserHaveAccessToDevice(deviceId, User))
             {
                 var device = _dataService.GetDevice(targetDevice.ID);
-                _dataService.WriteEvent($"Remote control attempted by unauthorized user.  Device ID: {deviceId}.  User Name: {User.UserName}.", EventType.Warning, device?.OrganizationID);
+                _logger.LogWarning(
+                    "Remote control attempted by unauthorized user.  Device ID: {deviceId}.  User Name: {userName}.",
+                    deviceId,
+                    User.UserName);
                 return Result.Fail<RemoteControlSessionEx>("Unauthorized.");
 
             }
@@ -414,13 +417,11 @@ namespace Remotely.Server.Hubs
 
         public Task UploadFiles(List<string> fileIDs, string transferID, string[] deviceIDs)
         {
-            _dataService.WriteEvent(new EventLog()
-            {
-                EventType = EventType.Info,
-                Message = $"File transfer started by {User.UserName}.  File transfer IDs: {string.Join(", ", fileIDs)}.",
-                TimeStamp = Time.Now,
-                OrganizationID = User.OrganizationID
-            });
+            _logger.LogInformation(
+                "File transfer started by {userName}.  File transfer IDs: {fileIds}.",
+                User.UserName,
+                string.Join(", ", fileIDs));
+
             deviceIDs = _dataService.FilterDeviceIDsByUserPermission(deviceIDs, User);
             var connections = GetActiveConnectionsForUserOrg(deviceIDs);
             foreach (var connection in connections)

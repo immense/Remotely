@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Remotely.Shared.Models;
 using Remotely.Server.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account
 {
@@ -21,14 +22,18 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
         private readonly UserManager<RemotelyUser> _userManager;
         private readonly IEmailSenderEx _emailSender;
         private readonly IDataService _dataService;
+        private readonly ILogger<ForgotPasswordModel> _logger;
 
-        public ForgotPasswordModel(UserManager<RemotelyUser> userManager,
+        public ForgotPasswordModel(
+            UserManager<RemotelyUser> userManager,
             IEmailSenderEx emailSender,
-            IDataService dataService)
+            IDataService dataService,
+            ILogger<ForgotPasswordModel> logger)
         {
             _userManager = userManager;
             _emailSender = emailSender;
             _dataService = dataService;
+            _logger = logger;
         }
 
         [BindProperty]
@@ -62,7 +67,8 @@ namespace Remotely.Server.Areas.Identity.Pages.Account
                     values: new { area = "Identity", code },
                     protocol: Request.Scheme);
 
-                _dataService.WriteEvent($"Sending password reset for user {user.UserName}. Reset URL: {callbackUrl}", user.OrganizationID);
+                _logger.LogInformation(
+                    "Sending password reset for user {username}. Reset URL: {callbackUrl}", user.UserName, callbackUrl);
 
                 var emailResult = await _emailSender.SendEmailAsync(
                     Input.Email,

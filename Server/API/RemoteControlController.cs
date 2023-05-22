@@ -15,6 +15,8 @@ using Immense.RemoteControl.Server.Services;
 using Remotely.Server.Services.RcImplementations;
 using Immense.RemoteControl.Server.Abstractions;
 using Immense.RemoteControl.Shared.Helpers;
+using Microsoft.Build.Framework;
+using Microsoft.Extensions.Logging;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -32,6 +34,7 @@ namespace Remotely.Server.API
         private readonly IHubEventHandler _hubEvents;
         private readonly IDataService _dataService;
         private readonly SignInManager<RemotelyUser> _signInManager;
+        private readonly ILogger<RemoteControlController> _logger;
 
         public RemoteControlController(
             SignInManager<RemotelyUser> signInManager,
@@ -41,7 +44,8 @@ namespace Remotely.Server.API
             IServiceHubSessionCache serviceSessionCache,
             IOtpProvider otpProvider,
             IHubEventHandler hubEvents,
-            IApplicationConfig appConfig)
+            IApplicationConfig appConfig,
+            ILogger<RemoteControlController> logger)
         {
             _dataService = dataService;
             _serviceHub = serviceHub;
@@ -51,6 +55,7 @@ namespace Remotely.Server.API
             _otpProvider = otpProvider;
             _hubEvents = hubEvents;
             _signInManager = signInManager;
+            _logger = logger;
         }
 
         [HttpGet("{deviceID}")]
@@ -75,20 +80,20 @@ namespace Remotely.Server.API
             if (result.Succeeded &&
                 _dataService.DoesUserHaveAccessToDevice(rcRequest.DeviceID, _dataService.GetUserByNameWithOrg(rcRequest.Email)))
             {
-                _dataService.WriteEvent($"API login successful for {rcRequest.Email}.", orgId);
+                _logger.LogInformation("API login successful for {rcRequestEmail}.", rcRequest.Email);
                 return await InitiateRemoteControl(rcRequest.DeviceID, orgId);
             }
             else if (result.IsLockedOut)
             {
-                _dataService.WriteEvent($"API login unsuccessful due to lockout for {rcRequest.Email}.", orgId);
+                _logger.LogInformation("API login successful for {rcRequestEmail}.", rcRequest.Email);
                 return Unauthorized("Account is locked.");
             }
             else if (result.RequiresTwoFactor)
             {
-                _dataService.WriteEvent($"API login unsuccessful due to 2FA for {rcRequest.Email}.", orgId);
+                _logger.LogInformation("API login successful for {rcRequestEmail}.", rcRequest.Email);
                 return Unauthorized("Account requires two-factor authentication.");
             }
-            _dataService.WriteEvent($"API login unsuccessful due to bad attempt for {rcRequest.Email}.", orgId);
+            _logger.LogInformation("API login unsuccessful due to bad attempt for {rcRequestEmail}.", rcRequest.Email);
             return BadRequest();
         }
 

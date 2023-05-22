@@ -5,6 +5,7 @@
 @inject IDataService DataService
 @inject IToastService ToastService
 @inject IJsInterop JsInterop
+@inject ILogsManager LogsManager
 
 <h3 class="mb-3">Server Logs</h3>
 
@@ -109,11 +110,12 @@ else
     {
         get
         {
-            return DataService.GetEventLogs(User.UserName,
-                   _fromDate,
-                   _toDate,
-                   _eventType,
-                   _messageFilter);
+            return Enumerable.Empty<EventLog>();
+            //return DataService.GetEventLogs(User.UserName,
+            //       _fromDate,
+            //       _toDate,
+            //       _eventType,
+            //       _messageFilter);
         }
     }
 
@@ -122,7 +124,7 @@ else
         var result = await JsInterop.Confirm("Are you sure you want to delete all logs?");
         if (result)
         {
-            await DataService.ClearLogs(User.UserName);
+            await LogsManager.DeleteLogs();
             ToastService.ShowToast("Logs deleted.");
         }
     }

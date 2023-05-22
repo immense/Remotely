@@ -23,6 +23,7 @@ namespace Remotely.Server.Hubs
         private readonly ICircuitManager _circuitManager;
         private readonly IDataService _dataService;
         private readonly IExpiringTokenService _expiringTokenService;
+        private readonly ILogger<AgentHub> _logger;
         private readonly IServiceHubSessionCache _serviceSessionCache;
         private readonly IHubContext<ViewerHub> _viewerHubContext;
 
@@ -31,7 +32,8 @@ namespace Remotely.Server.Hubs
             IServiceHubSessionCache serviceSessionCache,
             IHubContext<ViewerHub> viewerHubContext,
             ICircuitManager circuitManager,
-            IExpiringTokenService expiringTokenService)
+            IExpiringTokenService expiringTokenService,
+            ILogger<AgentHub> logger)
         {
             _dataService = dataService;
             _serviceSessionCache = serviceSessionCache;
@@ -39,6 +41,7 @@ namespace Remotely.Server.Hubs
             _appConfig = appConfig;
             _circuitManager = circuitManager;
             _expiringTokenService = expiringTokenService;
+            _logger = logger;
         }
 
         // TODO: Replace with new invoke capability in .NET 7 in ScriptingController.
@@ -133,7 +136,7 @@ namespace Remotely.Server.Hubs
             }
             catch (Exception ex)
             {
-                _dataService.WriteEvent(ex, device?.OrganizationID);
+                _logger.LogError(ex, "Error while setting device to online status.");
             }
 
             Context.Abort();
@@ -286,7 +289,7 @@ namespace Remotely.Server.Hubs
                 if (_appConfig.BannedDevices.Any(x => !string.IsNullOrWhiteSpace(x) &&
                     x.Equals(device, StringComparison.OrdinalIgnoreCase)))
                 {
-                    _dataService.WriteEvent($"Device ID/name/IP ({device}) is banned.  Sending uninstall command.", null);
+                    _logger.LogWarning("Device ID/name/IP ({device}) is banned.  Sending uninstall command.", device);
 
                     _ = Clients.Caller.SendAsync("UninstallAgent");
                     return true;
