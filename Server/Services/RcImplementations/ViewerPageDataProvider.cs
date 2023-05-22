@@ -20,12 +20,19 @@ namespace Remotely.Server.Services.RcImplementations
             _appConfig = appConfig;
         }
 
-        public Task<string> GetFaviconUrl(ViewerModel viewerModel)
+        public Task<string> GetFaviconUrl(PageModel viewerModel)
         {
             return Task.FromResult("/_content/Immense.RemoteControl.Server/favicon.ico");
         }
 
-        public Task<string> GetPageDescription(ViewerModel viewerModel)
+        public async Task<string> GetLogoUrl(PageModel viewerModel)
+        {
+            return await GetTheme(viewerModel) == ViewerPageTheme.Dark ?
+               "/images/viewer/remotely-logo-dark.svg" :
+               "/images/viewer/remotely-logo-light.svg";
+        }
+
+        public Task<string> GetPageDescription(PageModel viewerModel)
         {
             return Task.FromResult("Open-source remote support tools.");
         }
@@ -35,38 +42,30 @@ namespace Remotely.Server.Services.RcImplementations
             return Task.FromResult("Remotely Remote Control");
         }
 
-        public Task<string> GetProductName(PageModel pageModel)
-        {
-            return Task.FromResult("Remotely");
-        }
-
-        public Task<string> GetProductSubtitle(PageModel pageModel)
-        {
-            return Task.FromResult("Remote Control");
-        }
-
         public Task<ViewerPageTheme> GetTheme(PageModel pageModel)
         {
-            if (pageModel.User.Identity.IsAuthenticated)
-            {
-                var user = _dataService.GetUserByNameWithOrg(pageModel.User.Identity.Name);
+            // TODO: Implement light theme in new viewer design.
+            return Task.FromResult(ViewerPageTheme.Dark);
+            //if (pageModel.User.Identity.IsAuthenticated)
+            //{
+            //    var user = _dataService.GetUserByNameWithOrg(pageModel.User.Identity.Name);
 
-                var userTheme = user.UserOptions.Theme switch
-                {
-                    Theme.Light => ViewerPageTheme.Light,
-                    Theme.Dark => ViewerPageTheme.Dark,
-                    _ => ViewerPageTheme.Dark
-                };
-                return Task.FromResult(userTheme);
-            }
+            //    var userTheme = user.UserOptions.Theme switch
+            //    {
+            //        Theme.Light => ViewerPageTheme.Light,
+            //        Theme.Dark => ViewerPageTheme.Dark,
+            //        _ => ViewerPageTheme.Dark
+            //    };
+            //    return Task.FromResult(userTheme);
+            //}
 
-            var appTheme = _appConfig.Theme switch
-            {
-                Theme.Light => ViewerPageTheme.Light,
-                Theme.Dark => ViewerPageTheme.Dark,
-                _ => ViewerPageTheme.Dark
-            };
-            return Task.FromResult(appTheme);
+            //var appTheme = _appConfig.Theme switch
+            //{
+            //    Theme.Light => ViewerPageTheme.Light,
+            //    Theme.Dark => ViewerPageTheme.Dark,
+            //    _ => ViewerPageTheme.Dark
+            //};
+            //return Task.FromResult(appTheme);
         }
 
         public Task<string> GetUserDisplayName(PageModel pageModel)

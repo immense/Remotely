@@ -41,6 +41,14 @@ To avoid injection attacks, ASP.NET Core defaults to only accepting forwarded he
 - Data for Remotely will be saved in `/var/www/remotely/` within two files: appsettings.json and Remotely.db.
   - These files will persist through teardown and setup of new Remotely containers.
   - If upgrading from a non-Docker version of Remotely, overwrite these files with the ones from your previous installation.
+    - In that case, please note that you may need to change _SQLite_ parameter in your non-Docker appsettings.json. You may have something like:
+      ```
+      "SQLite": "DataSource=Remotely.db",
+      ```
+      but this should be changed to reflect the new Remotely.db location (relative to the container):
+      ```
+      "SQLite": "DataSource=/remotely-data/Remotely.db",
+      ```
 - Use Caddy as a reverse proxy if you want to expose the site to the internet.
 - If this is the first run, create your account by clicking the `Register` button on the main page.
   - This account will be both the server admin and organization admin.
