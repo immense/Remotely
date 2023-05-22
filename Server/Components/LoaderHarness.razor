@@ -1,0 +1,29 @@
+﻿@using Nihs.SimpleMessenger;
+@using Remotely.Server.Models.Messages;
+@inject IMessenger Messenger
+
+@if (_loaderShown)
+{
+    <LoadingSignal StatusMessage="@_statusMessage" />
+}
+
+@code {
+    private bool _loaderShown;
+    private string _statusMessage = string.Empty;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Messenger.Register<ShowLoaderMessage>(this, HandleShowLoaderMessage);
+        }
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task HandleShowLoaderMessage(ShowLoaderMessage message)
+    {
+        _loaderShown = message.IsShown;
+        _statusMessage = message.StatusMessage;
+        await InvokeAsync(StateHasChanged);
+    }
+}

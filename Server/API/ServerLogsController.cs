@@ -14,7 +14,6 @@ namespace Remotely.Server.API
     [ApiController]
     public class ServerLogsController : ControllerBase
     {
-        private readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
         private readonly ILogsManager _logsManager;
         private readonly ILogger<ServerLogsController> _logger;
 

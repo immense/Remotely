@@ -1,21 +1,31 @@
 ﻿@inject IClientAppState AppState
 
-
-@if (_theme == Theme.Dark)
-{
-    <div class="signal" style="border-color: whitesmoke"></div>
-}
-else if (_theme == Theme.Light)
-{
-    <div class="signal" style="border-color: #333"></div>
-}
+<div class="signal-background">
+    <div class="signal-wrapper text-center">
+        @if (!string.IsNullOrEmpty(StatusMessage))
+        {
+            <h4>
+                @StatusMessage
+            </h4>
+        }
+        <div class="signal @(GetSignalClass())"></div>
+    </div>
+</div>
 
 @code {
     private Theme _theme;
 
+    [Parameter]
+    public string StatusMessage { get; set; } = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
         _theme = await AppState.GetEffectiveTheme();
+        await base.OnInitializedAsync();
+    }
+
+    private string GetSignalClass()
+    {
+        return _theme == Theme.Dark ? "signal-dark" : "signal-light";
     }
 }

@@ -1,9 +1,16 @@
-﻿using Remotely.Shared.Extensions;
+﻿using Microsoft.Extensions.Logging;
+using Remotely.Shared.Extensions;
 using Serilog;
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Remotely.Server.Services
@@ -13,6 +20,11 @@ namespace Remotely.Server.Services
         string GetLogsDirectory();
         Task<FileInfo> ZipAllLogs();
         Task DeleteLogs();
+        IAsyncEnumerable<string> GetLogs(
+            DateTimeOffset startDate, 
+            DateTimeOffset endDate,
+            string messageFilter,
+            LogLevel? logLevelFilter);
     }
 
     public class LogsManager : ILogsManager
@@ -72,9 +84,123 @@ namespace Remotely.Server.Services
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Failed to delete log file: {filename}.  Message: {exMessage}", file, ex.Message);
+                    Console.WriteLine($"Failed to delete log file: {file}.  Message: {ex.Message}");
+                    try
+                    {
+                        Console.WriteLine("Attempting to zero out log contents.");
+                        using var fs = File.Open(file, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
+                        fs.SetLength(0);
+                    }
+                    catch (Exception ex2)
+                    {
+                        Console.WriteLine($"Failed to clear log contents: {file}.  Message: {ex2.Message}");
+                    }
                 }
             }
         }
+
+        public async IAsyncEnumerable<string> GetLogs(
+            DateTimeOffset startDate, 
+            DateTimeOffset endDate,
+            string messageFilter,
+            LogLevel? logLevelFilter)
+        {
+            var fromDate = startDate.UtcDateTime.Date;
+            var toDate = endDate.UtcDateTime.Date.AddDays(1);
+
+            var result = new StringBuilder();
+            var logsDir = GetLogsDirectory();
+
+            var files = Directory
+                .GetFiles(logsDir)
+                .Select(x => new FileInfo(x))
+                .Where(x =>
+                    x.LastWriteTimeUtc >= fromDate &&
+                    x.LastWriteTimeUtc <= toDate);
+
+            foreach (var file in files)
+            {
+                var linesAsync = GetLines(file, messageFilter, logLevelFilter);
+                await foreach (var line in linesAsync)
+                {
+                    yield return line;
+                }
+              
+            }
+        }
+
+        private async IAsyncEnumerable<string> GetLines(
+            FileInfo file,
+            string messageFilter,
+            LogLevel? logLevelFilter)
+        {
+            LogLevel? currentLogLevel = null;
+
+            using var fs = File.Open(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var sr = new StreamReader(fs);
+
+            while (true)
+            {
+                var currentLine = await sr.ReadLineAsync();
+
+                if (currentLine is null)
+                {
+                    break;
+                }
+
+                if (logLevelFilter is not null)
+                {
+                    if (TryGetLogLevel(currentLine, out var parsedLevel))
+                    {
+                        currentLogLevel = parsedLevel;
+                    }
+
+                    if (currentLogLevel != logLevelFilter)
+                    {
+                        continue;
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(messageFilter) && 
+                    !currentLine.Contains(messageFilter, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                yield return currentLine;
+            }
+        }
+
+        private bool TryGetLogLevel(
+            string lineContent,
+            [NotNullWhen(true)] out LogLevel? logLevel)
+        {
+            try
+            {
+                var logLevelTag = lineContent[31..36];
+                if (_logLevelMap.TryGetValue(logLevelTag, out var result))
+                {
+                    logLevel = result;
+                    return true;
+                }
+            }
+            catch
+            {
+                // Ignored.
+            }
+
+            logLevel = default;
+            return false;
+        }
+
+        private static readonly ReadOnlyDictionary<string, LogLevel> _logLevelMap = new(new Dictionary<string, LogLevel>()
+        {
+            ["[VRB]"] = LogLevel.Trace,
+            ["[DBG]"] = LogLevel.Debug,
+            ["[INF]"] = LogLevel.Information,
+            ["[WRN]"] = LogLevel.Warning,
+            ["[ERR]"] = LogLevel.Error,
+            ["[FTL]"] = LogLevel.Critical
+        });
     }
 }

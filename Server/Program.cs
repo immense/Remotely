@@ -36,14 +36,13 @@ using Remotely.Shared.Services;
 using System;
 using Immense.RemoteControl.Server.Services;
 using Serilog;
+using Nihs.SimpleMessenger;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var services = builder.Services;
 
 ConfigureSerilog(builder);
-
-builder.Host.UseSerilog();
 
 builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
 
@@ -190,13 +189,14 @@ services.AddSingleton<IApplicationConfig, ApplicationConfig>();
 services.AddScoped<ApiAuthorizationFilter>();
 services.AddScoped<LocalOnlyFilter>();
 services.AddScoped<ExpiringTokenFilter>();
-services.AddHostedService<DbCleanupService>();
+services.AddHostedService<DataCleanupService>();
 services.AddHostedService<ScriptScheduler>();
 services.AddSingleton<IUpgradeService, UpgradeService>();
 services.AddScoped<IToastService, ToastService>();
 services.AddScoped<IModalService, ModalService>();
 services.AddScoped<IJsInterop, JsInterop>();
 services.AddScoped<ICircuitConnection, CircuitConnection>();
+services.AddScoped<ILoaderService, LoaderService>();
 services.AddScoped(x => (CircuitHandler)x.GetRequiredService<ICircuitConnection>());
 services.AddSingleton<ICircuitManager, CircuitManager>();
 services.AddScoped<IAuthService, AuthService>();
@@ -206,6 +206,7 @@ services.AddScoped<IScriptScheduleDispatcher, ScriptScheduleDispatcher>();
 services.AddSingleton<IOtpProvider, OtpProvider>();
 services.AddSingleton<IEmbeddedServerDataSearcher, EmbeddedServerDataSearcher>();
 services.AddSingleton<ILogsManager>(LogsManager.Default);
+services.AddSingleton(WeakReferenceMessenger.Default);
 
 services.AddRemoteControlServer(config =>
 {
@@ -336,9 +337,11 @@ void ConfigureSerilog(WebApplicationBuilder webAppBuilder)
         {
             loggerConfiguration
                 .Enrich.FromLogContext()
-                .MinimumLevel.Debug()
                 .WriteTo.Console()
-                .WriteTo.File($"{logPath}/Remotely_Server.log", rollingInterval: RollingInterval.Day, retainedFileTimeLimit: TimeSpan.FromDays(dataRetentionDays));
+                .WriteTo.File($"{logPath}/Remotely_Server.log", 
+                    rollingInterval: RollingInterval.Day, 
+                    retainedFileTimeLimit: TimeSpan.FromDays(dataRetentionDays),
+                    shared: true);
         }
 
         var loggerConfig = new LoggerConfiguration();

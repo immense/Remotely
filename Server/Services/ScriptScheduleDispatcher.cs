@@ -38,13 +38,13 @@ namespace Remotely.Server.Services
         {
             try
             {
-                _logger.LogInformation("Script Schedule Dispatcher started.");
+                _logger.LogDebug("Script Schedule Dispatcher started.");
 
                 var schedules = await _dataService.GetScriptSchedulesDue();
 
                 if (schedules?.Any() != true)
                 {
-                    _logger.LogInformation("No schedules are due.");
+                    _logger.LogDebug("No schedules are due.");
                     return;
                 }
 
@@ -52,18 +52,18 @@ namespace Remotely.Server.Services
                 {
                     try
                     {
-                        _logger.LogInformation("Considering {scheduleName}.  Interval: {interval}. Next Run: {nextRun}.",
+                        _logger.LogDebug("Considering {scheduleName}.  Interval: {interval}. Next Run: {nextRun}.",
                             schedule.Name,
                             schedule.Interval,
                             schedule.NextRun);
 
                         if (!AdvanceSchedule(schedule))
                         {
-                            _logger.LogInformation("Schedule is not due.");
+                            _logger.LogDebug("Schedule is not due.");
                             continue;
                         }
 
-                        _logger.LogInformation("Creating script run for schedule {scheduleName}.", schedule.Name);
+                        _logger.LogDebug("Creating script run for schedule {scheduleName}.", schedule.Name);
 
                         var scriptRun = new ScriptRun()
                         {
@@ -100,7 +100,7 @@ namespace Remotely.Server.Services
 
                         await _circuitConnection.RunScript(onlineDevices, schedule.SavedScriptId, scriptRun.Id, ScriptInputType.ScheduledScript, true);
 
-                        _logger.LogInformation("Created script run for schedule {scheduleName}.", schedule.Name);
+                        _logger.LogDebug("Created script run for schedule {scheduleName}.", schedule.Name);
 
                         schedule.LastRun = Time.Now;
                         await _dataService.AddOrUpdateScriptSchedule(schedule);

@@ -26,8 +26,6 @@ namespace Remotely.Shared.Models
 
         public ICollection<Device> Devices { get; set; }
 
-        public ICollection<EventLog> EventLogs { get; set; }
-
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string ID { get; set; }

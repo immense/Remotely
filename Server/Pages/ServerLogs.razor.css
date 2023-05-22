@@ -4,11 +4,16 @@
     grid-column-gap: 2em;
 }
 
-
 .filters-row {
     display: grid;
     grid-template-columns: auto auto auto 1fr;
     grid-column-gap: 1em;
+}
+
+.logs-content {
+    width: 100%;
+    white-space: pre;
+    height: 500px;
 }
 
 
