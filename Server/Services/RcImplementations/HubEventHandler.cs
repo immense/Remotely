@@ -73,7 +73,7 @@ namespace Remotely.Server.Services.RcImplementations
             _logger.LogDebug("Windows session changed during remote control.  " +
                 "Reason: {reason}.  " +
                 "Current Session ID: {sessionId}.  " +
-                "Session Info: {@sesisonInfo}",
+                "Session Info: {@sessionInfo}",
                 reason,
                 currentSessionId,
                 session);
