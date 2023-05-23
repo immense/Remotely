@@ -15,7 +15,7 @@ namespace Remotely.Server.Migrations.Sqlite
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "6.0.9");
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.5");
 
             modelBuilder.Entity("DeviceGroupRemotelyUser", b =>
                 {
@@ -209,6 +209,8 @@ namespace Remotely.Server.Migrations.Sqlite
                     b.ToTable("RemotelyUsers", (string)null);
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -512,38 +514,6 @@ namespace Remotely.Server.Migrations.Sqlite
                     b.HasIndex("OrganizationID");
 
                     b.ToTable("DeviceGroups");
-                });
-
-            modelBuilder.Entity("Remotely.Shared.Models.EventLog", b =>
-                {
-                    b.Property<string>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("EventType")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Message")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("OrganizationID")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Source")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("StackTrace")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("TimeStamp")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("OrganizationID");
-
-                    b.ToTable("EventLogs");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Models.InviteLink", b =>
@@ -1042,15 +1012,6 @@ namespace Remotely.Server.Migrations.Sqlite
                     b.Navigation("Organization");
                 });
 
-            modelBuilder.Entity("Remotely.Shared.Models.EventLog", b =>
-                {
-                    b.HasOne("Remotely.Shared.Models.Organization", "Organization")
-                        .WithMany("EventLogs")
-                        .HasForeignKey("OrganizationID");
-
-                    b.Navigation("Organization");
-                });
-
             modelBuilder.Entity("Remotely.Shared.Models.InviteLink", b =>
                 {
                     b.HasOne("Remotely.Shared.Models.Organization", "Organization")
@@ -1169,8 +1130,6 @@ namespace Remotely.Server.Migrations.Sqlite
                     b.Navigation("DeviceGroups");
 
                     b.Navigation("Devices");
-
-                    b.Navigation("EventLogs");
 
                     b.Navigation("InviteLinks");
 
