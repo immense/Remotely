@@ -142,7 +142,7 @@ else
 
     private async Task ClearAllLogs()
     {
-        var result = await JsInterop.Confirm("Are you sure you want to delete all logs?");
+        var result = await JsInterop.Confirm("Are you sure you want to delete all previous logs? Today's logs are retained.");
         if (result)
         {
             using (var _ = LoaderService.ShowLoader("Deleting logs"))

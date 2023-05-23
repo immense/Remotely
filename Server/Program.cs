@@ -205,7 +205,7 @@ services.AddScoped<IExpiringTokenService, ExpiringTokenService>();
 services.AddScoped<IScriptScheduleDispatcher, ScriptScheduleDispatcher>();
 services.AddSingleton<IOtpProvider, OtpProvider>();
 services.AddSingleton<IEmbeddedServerDataSearcher, EmbeddedServerDataSearcher>();
-services.AddSingleton<ILogsManager>(LogsManager.Default);
+services.AddSingleton<ILogsManager, LogsManager>();
 services.AddSingleton(WeakReferenceMessenger.Default);
 
 services.AddRemoteControlServer(config =>
@@ -331,7 +331,7 @@ void ConfigureSerilog(WebApplicationBuilder webAppBuilder)
             dataRetentionDays = retentionSetting;
         }
 
-        var logPath = LogsManager.Default.GetLogsDirectory();
+        var logPath = LogsManager.DefaultLogsDirectory;
 
         void ApplySharedLoggerConfig(LoggerConfiguration loggerConfiguration)
         {

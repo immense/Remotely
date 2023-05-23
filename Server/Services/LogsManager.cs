@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Immense.RemoteControl.Shared.Services;
+using Microsoft.Extensions.Logging;
 using Remotely.Shared.Extensions;
 using Serilog;
 using System;
@@ -17,28 +18,105 @@ namespace Remotely.Server.Services
 {
     public interface ILogsManager
     {
-        string GetLogsDirectory();
-        Task<FileInfo> ZipAllLogs();
         Task DeleteLogs();
+
         IAsyncEnumerable<string> GetLogs(
-            DateTimeOffset startDate, 
+            DateTimeOffset startDate,
             DateTimeOffset endDate,
             string messageFilter,
             LogLevel? logLevelFilter);
+
+        string GetLogsDirectory();
+        Task<FileInfo> ZipAllLogs();
     }
 
     public class LogsManager : ILogsManager
     {
-        public static LogsManager Default { get; } = new();
+        private static readonly ReadOnlyDictionary<string, LogLevel> _logLevelMap = new(new Dictionary<string, LogLevel>()
+        {
+            ["[VRB]"] = LogLevel.Trace,
+            ["[DBG]"] = LogLevel.Debug,
+            ["[INF]"] = LogLevel.Information,
+            ["[WRN]"] = LogLevel.Warning,
+            ["[ERR]"] = LogLevel.Error,
+            ["[FTL]"] = LogLevel.Critical
+        });
+
+        public static string DefaultLogsDirectory
+        {
+            get
+            {
+                var logsDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
+                if (Directory.Exists("/remotely-data"))
+                {
+                    logsDir = "/remotely-data/logs";
+                }
+                return logsDir;
+            }
+        }
+
+        public async Task DeleteLogs()
+        {
+            var logsDir = GetLogsDirectory();
+
+            var files = Directory.GetFiles(logsDir);
+
+            if (!files.Any())
+            {
+                return;
+            }
+
+            await foreach (var file in files.ToAsyncEnumerable())
+            {
+                try
+                {
+                    if (new FileInfo(file).LastWriteTime.Date == DateTime.Today)
+                    {
+                        continue;
+                    }
+                    File.Delete(file);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to delete log file: {file}.  Message: {ex.Message}");
+                }
+            }
+        }
+
+        public async IAsyncEnumerable<string> GetLogs(
+            DateTimeOffset startDate,
+            DateTimeOffset endDate,
+            string messageFilter,
+            LogLevel? logLevelFilter)
+        {
+            var fromDate = startDate.UtcDateTime.Date;
+            var toDate = endDate.UtcDateTime.Date.AddDays(1);
+
+            var result = new StringBuilder();
+            var logsDir = GetLogsDirectory();
+
+            var files = Directory
+                .GetFiles(logsDir)
+                .Select(x => new FileInfo(x))
+                .Where(x =>
+                    x.LastWriteTimeUtc >= fromDate &&
+                    x.LastWriteTimeUtc <= toDate)
+                .OrderBy(x => x.LastWriteTimeUtc);
+
+            foreach (var file in files)
+            {
+                var linesAsync = GetLines(file, messageFilter, logLevelFilter);
+                await foreach (var line in linesAsync)
+                {
+                    yield return line;
+                }
+
+            }
+        }
 
         public string GetLogsDirectory()
         {
-            var logsDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
-            if (Directory.Exists("/remotely-data"))
-            {
-                logsDir = "/remotely-data/logs";
-            }
-            return Directory.CreateDirectory(logsDir).FullName;
+            return Directory.CreateDirectory(DefaultLogsDirectory).FullName;
         }
 
         public async Task<FileInfo> ZipAllLogs()
@@ -64,71 +142,6 @@ namespace Remotely.Server.Services
 
             return new FileInfo(zipFilePath);
         }
-
-        public async Task DeleteLogs()
-        {
-            var logsDir = GetLogsDirectory();
-
-            var files = Directory.GetFiles(logsDir);
-            
-            if (!files.Any())
-            {
-                return;
-            }
-
-            await foreach (var file in files.ToAsyncEnumerable())
-            {
-                try
-                {
-                    File.Delete(file);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Failed to delete log file: {file}.  Message: {ex.Message}");
-                    try
-                    {
-                        Console.WriteLine("Attempting to zero out log contents.");
-                        using var fs = File.Open(file, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
-                        fs.SetLength(0);
-                    }
-                    catch (Exception ex2)
-                    {
-                        Console.WriteLine($"Failed to clear log contents: {file}.  Message: {ex2.Message}");
-                    }
-                }
-            }
-        }
-
-        public async IAsyncEnumerable<string> GetLogs(
-            DateTimeOffset startDate, 
-            DateTimeOffset endDate,
-            string messageFilter,
-            LogLevel? logLevelFilter)
-        {
-            var fromDate = startDate.UtcDateTime.Date;
-            var toDate = endDate.UtcDateTime.Date.AddDays(1);
-
-            var result = new StringBuilder();
-            var logsDir = GetLogsDirectory();
-
-            var files = Directory
-                .GetFiles(logsDir)
-                .Select(x => new FileInfo(x))
-                .Where(x =>
-                    x.LastWriteTimeUtc >= fromDate &&
-                    x.LastWriteTimeUtc <= toDate);
-
-            foreach (var file in files)
-            {
-                var linesAsync = GetLines(file, messageFilter, logLevelFilter);
-                await foreach (var line in linesAsync)
-                {
-                    yield return line;
-                }
-              
-            }
-        }
-
         private async IAsyncEnumerable<string> GetLines(
             FileInfo file,
             string messageFilter,
@@ -192,15 +205,5 @@ namespace Remotely.Server.Services
             logLevel = default;
             return false;
         }
-
-        private static readonly ReadOnlyDictionary<string, LogLevel> _logLevelMap = new(new Dictionary<string, LogLevel>()
-        {
-            ["[VRB]"] = LogLevel.Trace,
-            ["[DBG]"] = LogLevel.Debug,
-            ["[INF]"] = LogLevel.Information,
-            ["[WRN]"] = LogLevel.Warning,
-            ["[ERR]"] = LogLevel.Error,
-            ["[FTL]"] = LogLevel.Critical
-        });
     }
 }
