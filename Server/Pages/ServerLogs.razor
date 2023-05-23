@@ -1,10 +1,13 @@
 ﻿@page "/server-logs"
+@using System.Collections.ObjectModel;
 @attribute [Authorize]
 @inherits AuthComponentBase
 
 @inject IDataService DataService
 @inject IToastService ToastService
 @inject IJsInterop JsInterop
+@inject ILogsManager LogsManager
+@inject ILoaderService LoaderService
 
 <h3 class="mb-3">Server Logs</h3>
 
@@ -34,9 +37,9 @@
         <div style="display:inline-block">
             <strong>Type:</strong>
             <br />
-            <select class="form-control-sm" @bind="_eventType">
+            <select class="form-control-sm" @bind="LogLevel">
                 <option value="">All</option>
-                @foreach (var eventType in Enum.GetValues(typeof(EventType)))
+                @foreach (var eventType in Enum.GetValues(typeof(LogLevel)))
                 {
                     <option @key="eventType" value="@eventType">@eventType</option>
                 }
@@ -45,51 +48,23 @@
         <div style="display:inline-block">
             <strong>Filter:</strong>
             <br />
-            <input type="text" @bind="_messageFilter" />
+            <input type="text" @bind="MessageFilter" @bind:event="oninput" />
         </div>
         <div style="display:inline-block">
             <strong>From:</strong>
             <br />
-            <input type="date" @bind="_fromDate" />
+            <input type="date" @bind="FromDate" />
         </div>
         <div style="display:inline-block">
             <strong>To:</strong>
             <br />
-            <input type="date" @bind-value="_toDate" />
+            <input type="date" @bind="ToDate" />
         </div>
     </div>
 
-    <table class="table table-hover table-striped">
-        <thead>
-            <tr>
-                <th>Type</th>
-                <th>Timestamp</th>
-                <th>Message</th>
-                <th>Source</th>
-                <th>Stack Trace</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var eventLog in FilteredLogs)
-            {
-                <tr @key="eventLog">
-                    <td>@eventLog.EventType</td>
-                    <td>@eventLog.TimeStamp</td>
-                    <td>
-                        @if (!string.IsNullOrWhiteSpace(eventLog.Message))
-                        {
-                            foreach (var line in eventLog.Message.Split("\n", StringSplitOptions.RemoveEmptyEntries))
-                            {
-                                <div>@line</div>
-                            }
-                        }
-                    </td>
-                    <td>@eventLog.Source</td>
-                    <td>@eventLog.StackTrace</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <textarea readonly class="logs-content bg-dark text-white">
+        @(string.Join(Environment.NewLine, _filteredLogs))
+    </textarea>
 }
 else
 {
@@ -97,34 +72,104 @@ else
 }
 
 @code {
-    private readonly List<EventLog> _filteredLogs = new();
-    private EventType? _eventType;
-    private string _messageFilter;
+    private readonly string _messageDebounceKey = Guid.NewGuid().ToString();
+    private readonly List<string> _filteredLogs = new();
+    private LogLevel? _logLevel;
+    private string _messageFilter = string.Empty;
+
     private DateTimeOffset _fromDate = DateTimeOffset.Now.AddDays(-7);
     private DateTimeOffset _toDate = DateTimeOffset.Now;
 
-
-
-    private IEnumerable<EventLog> FilteredLogs
+    private DateTimeOffset FromDate
     {
-        get
+        get => _fromDate;
+        set
         {
-            return DataService.GetEventLogs(User.UserName,
-                   _fromDate,
-                   _toDate,
-                   _eventType,
-                   _messageFilter);
+            if (value > _toDate)
+            {
+                ToastService.ShowToast("Invalid date range.", classString: "bg-warning");
+                return;
+            }
+            _fromDate = value;
+            _ = RefreshLogs();
         }
+    }
+
+    private LogLevel? LogLevel
+    {
+        get => _logLevel;
+        set 
+        {
+            _logLevel = value;
+            _ = RefreshLogs();
+        }
+    }
+
+    private string MessageFilter 
+    {
+        get => _messageFilter;
+        set
+        {
+            _messageFilter = value;
+
+            Debouncer.Debounce(
+                TimeSpan.FromSeconds(1), 
+                () => _ = RefreshLogs(),
+                _messageDebounceKey);
+        }
+    }
+
+    private DateTimeOffset ToDate
+    {
+        get => _toDate;
+        set
+        {
+            if (value < _fromDate)
+            {
+                ToastService.ShowToast("Invalid date range.", classString: "bg-warning");
+                return;
+            }
+            _toDate = value;
+            _ = RefreshLogs();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshLogs();
+        await base.OnInitializedAsync();
     }
 
     private async Task ClearAllLogs()
     {
-        var result = await JsInterop.Confirm("Are you sure you want to delete all logs?");
+        var result = await JsInterop.Confirm("Are you sure you want to delete all previous logs? Today's logs are retained.");
         if (result)
         {
-            await DataService.ClearLogs(User.UserName);
+            using (var _ = LoaderService.ShowLoader("Deleting logs"))
+            {
+                await LogsManager.DeleteLogs();
+            }
+            await RefreshLogs();
             ToastService.ShowToast("Logs deleted.");
         }
     }
 
+    private async Task RefreshLogs()
+    {
+        using var _ = await LoaderService.ShowLoader("Refreshing logs");
+        _filteredLogs.Clear();
+
+        var logsAsync = LogsManager.GetLogs(
+               _fromDate,
+               _toDate,
+               _messageFilter,
+               _logLevel);
+
+        await foreach (var line in logsAsync)
+        {
+            _filteredLogs.Add(line);
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
 }

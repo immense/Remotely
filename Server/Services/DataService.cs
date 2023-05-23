@@ -51,8 +51,6 @@ namespace Remotely.Server.Services
 
         void CleanupOldRecords();
 
-        Task ClearLogs(string currentUserName);
-
         Task<ApiToken> CreateApiToken(string userName, string tokenName, string secretHash);
 
         Task<Device> CreateDevice(DeviceSetupOptions options);
@@ -101,8 +99,6 @@ namespace Remotely.Server.Services
 
         Device[] GetAllDevices(string orgID);
 
-        EventLog[] GetAllEventLogs(string username, string orgId);
-
         InviteLink[] GetAllInviteLinks(string organizationId);
 
         ScriptResult[] GetAllScriptResults(string orgId, string deviceId);
@@ -135,8 +131,6 @@ namespace Remotely.Server.Services
         List<Device> GetDevices(IEnumerable<string> deviceIds);
 
         Device[] GetDevicesForUser(string userName);
-
-        EventLog[] GetEventLogs(string userName, DateTimeOffset from, DateTimeOffset to, EventType? type, string message);
 
         Organization GetOrganizationById(string organizationID);
 
@@ -222,16 +216,6 @@ namespace Remotely.Server.Services
         void UpdateUserOptions(string userName, RemotelyUserOptions options);
 
         bool ValidateApiKey(string keyId, string apiSecret, string requestPath, string remoteIP);
-
-        void WriteEvent(EventLog eventLog);
-
-        void WriteEvent(Exception ex, string organizationID);
-
-        void WriteEvent(string message, EventType eventType, string organizationID);
-
-        void WriteEvent(string message, string organizationID);
-
-        void WriteLog(LogLevel logLevel, string category, EventId eventId, string state, Exception exception, string[] scopeStack);
     }
 
     public class DataService : IDataService
@@ -239,15 +223,18 @@ namespace Remotely.Server.Services
         private readonly IApplicationConfig _appConfig;
         private readonly IHostEnvironment _hostEnvironment;
         private readonly IAppDbFactory _appDbFactory;
+        private readonly ILogger<DataService> _logger;
 
         public DataService(
             IApplicationConfig appConfig,
             IHostEnvironment hostEnvironment,
-            IAppDbFactory appDbFactory)
+            IAppDbFactory appDbFactory,
+            ILogger<DataService> logger)
         {
             _appConfig = appConfig;
             _hostEnvironment = hostEnvironment;
             _appDbFactory = appDbFactory;
+            _logger = logger;
         }
 
         public async Task AddAlert(string deviceId, string organizationID, string alertMessage, string details = null)
@@ -375,13 +362,13 @@ namespace Remotely.Server.Services
 
                 if (!dbContext.Organizations.Any(x => x.ID == device.OrganizationID))
                 {
-                    WriteEvent(new EventLog()
-                    {
-                        EventType = EventType.Info,
-                        Message = $"Unable to add device {device.DeviceName} because organization {device.OrganizationID}" +
-                            $"does not exist.  Device ID: {device.ID}.",
-                        Source = "DataService.AddOrUpdateDevice"
-                    });
+                    _logger.LogInformation(
+                        "Unable to add device {deviceName} because organization {organizationID}" +
+                        "does not exist.  Device ID: {ID}.",
+                        device.DeviceName,
+                        device.OrganizationID,
+                        device.ID);
+
                     return false;
                 }
                 dbContext.Devices.Add(device);
@@ -622,11 +609,6 @@ namespace Remotely.Server.Services
 
                 dbContext.RemoveRange(scriptRuns);
 
-                var eventLogs = dbContext.EventLogs
-                                    .Where(x => x.TimeStamp < expirationDate);
-
-                dbContext.RemoveRange(eventLogs);
-
                 var commandResults = dbContext.ScriptResults
                                         .Where(x => x.TimeStamp < expirationDate);
 
@@ -638,36 +620,6 @@ namespace Remotely.Server.Services
                 dbContext.RemoveRange(sharedFiles);
 
                 dbContext.SaveChanges();
-            }
-        }
-
-        public async Task ClearLogs(string currentUserName)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var currentUser = await dbContext.Users.FirstOrDefaultAsync(x => x.UserName == currentUserName);
-            if (currentUser is null)
-            {
-                return;
-            }
-
-            try
-            {
-                if (currentUser.IsServerAdmin)
-                {
-                    await dbContext.EventLogs.ExecuteDeleteAsync();
-                }
-                else
-                {
-                    var eventLogs = dbContext.EventLogs.Where(x => x.OrganizationID == currentUser.OrganizationID);
-                    await eventLogs.ExecuteDeleteAsync();
-                }
-
-                await dbContext.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                WriteEvent(ex, currentUser.OrganizationID);
             }
         }
 
@@ -729,7 +681,7 @@ namespace Remotely.Server.Services
             }
             catch (Exception ex)
             {
-                WriteEvent(ex, options.OrganizationID);
+                _logger.LogError(ex, "error while creating device for organization {id}.", options.OrganizationID);
                 return null;
             }
         }
@@ -759,7 +711,7 @@ namespace Remotely.Server.Services
             }
             catch (Exception ex)
             {
-                WriteEvent(ex, organizationID);
+                _logger.LogError(ex, "Error while creating user for organization {id}.", organizationID);
                 return false;
             }
         }
@@ -1071,31 +1023,6 @@ namespace Remotely.Server.Services
             return dbContext.Devices.Where(x => x.OrganizationID == orgID).ToArray();
         }
 
-        public EventLog[] GetAllEventLogs(string username, string orgId)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var query = dbContext.EventLogs
-                .AsNoTracking()
-                .AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(username))
-            {
-                var user = dbContext.Users.FirstOrDefault(x => x.UserName == username);
-                if (user?.IsAdministrator == true)
-                {
-                    return query
-                        .OrderByDescending(x => x.TimeStamp)
-                        .ToArray();
-                }
-            }
-
-            return query
-                .Where(x => x.OrganizationID == orgId)
-                .OrderByDescending(x => x.TimeStamp)
-                .ToArray();
-        }
-
         public InviteLink[] GetAllInviteLinks(string organizationId)
         {
             using var dbContext = _appDbFactory.GetContext();
@@ -1332,45 +1259,6 @@ namespace Remotely.Server.Services
             return dbContext.Devices
                 .Where(x => deviceIds.Contains(x.ID))
                 .ToArray();
-        }
-
-        public EventLog[] GetEventLogs(string userName, DateTimeOffset from, DateTimeOffset to, EventType? type, string message)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var user = dbContext.Users
-                        .FirstOrDefault(x => x.UserName == userName);
-
-            var query = dbContext.EventLogs
-                .AsNoTracking()
-                .AsQueryable();
-
-            var fromDate = from.Date;
-            var toDate = to.Date.AddDays(1);
-
-            if (user.IsServerAdmin)
-            {
-                query = query.Where(x => x.TimeStamp >= fromDate && x.TimeStamp <= toDate)
-                            .OrderByDescending(x => x.TimeStamp);
-            }
-            else
-            {
-                var orgID = user.OrganizationID;
-                query = query
-                        .Where(x => x.OrganizationID == orgID &&
-                            x.TimeStamp >= fromDate && x.TimeStamp <= toDate)
-                        .OrderByDescending(x => x.TimeStamp);
-            }
-            if (type != null)
-            {
-                query = query.Where(x => x.EventType == type);
-            }
-            if (!string.IsNullOrWhiteSpace(message))
-            {
-                message = message.ToLower();
-                query = query.Where(x => x.Message.ToLower().Contains(message));
-            }
-            return query.ToArray();
         }
 
         public Organization GetOrganizationById(string organizationID)
@@ -1966,116 +1854,14 @@ namespace Remotely.Server.Services
                 dbContext.SaveChanges();
             }
 
-            WriteEvent($"API token used.  Token: {keyId}.  Path: {requestPath}.  Validated: {isValid}.  Remote IP: {remoteIP}", EventType.Info, token?.OrganizationID);
+            _logger.LogInformation(
+                "API token used.  Token: {keyId}.  Path: {requestPath}.  Validated: {isValid}.  Remote IP: {remoteIP}", 
+                keyId,
+                requestPath,
+                isValid,
+                remoteIP);
 
             return isValid;
-        }
-
-        public void WriteEvent(EventLog eventLog)
-        {
-            try
-            {
-                using var dbContext = _appDbFactory.GetContext();
-
-                dbContext.EventLogs.Add(eventLog);
-                dbContext.SaveChanges();
-            }
-            catch { }
-        }
-
-        public void WriteEvent(Exception ex, string organizationID)
-        {
-            try
-            {
-                using var dbContext = _appDbFactory.GetContext();
-
-                dbContext.EventLogs.Add(new EventLog()
-                {
-                    EventType = EventType.Error,
-                    Message = ex.Message,
-                    Source = ex.Source,
-                    StackTrace = ex.StackTrace,
-                    TimeStamp = DateTimeOffset.Now,
-                    OrganizationID = organizationID
-                });
-                dbContext.SaveChanges();
-            }
-            catch { }
-        }
-
-        public void WriteEvent(string message, string organizationID)
-        {
-            WriteEvent(message, EventType.Info, organizationID);
-        }
-
-        public void WriteEvent(string message, EventType eventType, string organizationID)
-        {
-            try
-            {
-                using var dbContext = _appDbFactory.GetContext();
-
-                dbContext.EventLogs.Add(new EventLog()
-                {
-                    EventType = eventType,
-                    Message = message,
-                    TimeStamp = DateTimeOffset.Now,
-                    OrganizationID = organizationID
-                });
-                dbContext.SaveChanges();
-            }
-            catch { }
-        }
-
-        public void WriteLog(LogLevel logLevel, string category, EventId eventId, string state, Exception exception, string[] scopeStack)
-        {
-            // Prevent re-entrancy.
-            if (eventId.Name?.Contains("EntityFrameworkCore") == true)
-            {
-                return;
-            }
-
-            try
-            {
-                // TODO: Refactor EventLog to resemble these params.  Replace WriteEvent with ILogger<T>.
-                using var dbContext = _appDbFactory.GetContext();
-
-                EventType eventType = EventType.Debug;
-                switch (logLevel)
-                {
-                    case LogLevel.None:
-                    case LogLevel.Trace:
-                    case LogLevel.Debug:
-                        eventType = EventType.Debug;
-                        break;
-
-                    case LogLevel.Information:
-                        eventType = EventType.Info;
-                        break;
-
-                    case LogLevel.Warning:
-                        eventType = EventType.Warning;
-                        break;
-
-                    case LogLevel.Error:
-                    case LogLevel.Critical:
-                        eventType = EventType.Error;
-                        break;
-
-                    default:
-                        break;
-                }
-
-                dbContext.EventLogs.Add(new EventLog()
-                {
-                    StackTrace = exception?.StackTrace,
-                    EventType = eventType,
-                    Message = $"[{logLevel}] [{string.Join(" - ", scopeStack)} - {category}] | Message: {state} | Exception: {exception?.Message}",
-                    TimeStamp = DateTimeOffset.Now
-                });
-
-                dbContext.SaveChanges();
-            }
-            catch { }
         }
 
         private async Task<string> AddSharedFileInternal(

@@ -70,32 +70,24 @@ namespace Remotely.Server.Services.RcImplementations
                 return Task.CompletedTask;
             }
 
-            switch (reason)
-            {
-                case SessionSwitchReasonEx.ConsoleDisconnect:
-                case SessionSwitchReasonEx.RemoteConnect:
-                case SessionSwitchReasonEx.RemoteDisconnect:
-                case SessionSwitchReasonEx.SessionLogoff:
-                case SessionSwitchReasonEx.SessionLock:
-                case SessionSwitchReasonEx.SessionRemoteControl:
-                    return _serviceHub.Clients
-                      .Client(ex.AgentConnectionId)
-                      .SendAsync("RestartScreenCaster",
-                          ex.ViewerList,
-                          ex.UnattendedSessionId,
-                          ex.AccessKey,
-                          ex.UserConnectionId,
-                          ex.RequesterUserName,
-                          ex.OrganizationName,
-                          ex.OrganizationId);
-                case SessionSwitchReasonEx.ConsoleConnect:
-                case SessionSwitchReasonEx.SessionUnlock:
-                case SessionSwitchReasonEx.SessionLogon:
-                default:
-                    break;
-            }
+            _logger.LogDebug("Windows session changed during remote control.  " +
+                "Reason: {reason}.  " +
+                "Current Session ID: {sessionId}.  " +
+                "Session Info: {@sesisonInfo}",
+                reason,
+                currentSessionId,
+                session);
 
-            return Task.CompletedTask;
+            return _serviceHub.Clients
+                .Client(ex.AgentConnectionId)
+                .SendAsync("RestartScreenCaster",
+                    ex.ViewerList,
+                    ex.UnattendedSessionId,
+                    ex.AccessKey,
+                    ex.UserConnectionId,
+                    ex.RequesterUserName,
+                    ex.OrganizationName,
+                    ex.OrganizationId);
         }
 
         public Task RestartScreenCaster(RemoteControlSession session, HashSet<string> viewerList)

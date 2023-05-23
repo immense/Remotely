@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Remotely.Server.Auth;
-using Remotely.Server.Services;
 using System.Text;
 using System.Text.Json;
 using System;
+using Microsoft.Extensions.Logging;
+using Remotely.Server.Services;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Remotely.Server.API
 {
@@ -11,23 +14,33 @@ namespace Remotely.Server.API
     [ApiController]
     public class ServerLogsController : ControllerBase
     {
-        private readonly IDataService _dataService;
-        private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions() { WriteIndented = true };
+        private readonly ILogsManager _logsManager;
+        private readonly ILogger<ServerLogsController> _logger;
 
-        public ServerLogsController(IDataService dataService)
+        public ServerLogsController(
+            ILogsManager logsManager,
+            ILogger<ServerLogsController> logger)
         {
-            _dataService = dataService;
+            _logsManager = logsManager;
+            _logger = logger;
         }
 
         [ServiceFilter(typeof(ApiAuthorizationFilter))]
         [HttpGet("Download")]
-        public ActionResult Download()
+        public async Task<IActionResult> Download()
         {
-            Request.Headers.TryGetValue("OrganizationID", out var orgId);
+            _logger.LogInformation(
+                "Downloading server logs. Remote IP: {ip}",
+                HttpContext.Connection.RemoteIpAddress);
 
-            var logs = _dataService.GetAllEventLogs(User.Identity?.Name, orgId);
-            var fileBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(logs, _jsonOptions));
-            return File(fileBytes, "application/octet-stream", "ServerLogs.json");
+            var zipFile = await _logsManager.ZipAllLogs();
+            Response.OnCompleted(() =>
+            {
+                Directory.Delete(zipFile.DirectoryName, true);
+                return Task.CompletedTask;
+            });
+
+            return File(zipFile.OpenRead(), "application/octet-stream", zipFile.Name);
         }
     }
 }

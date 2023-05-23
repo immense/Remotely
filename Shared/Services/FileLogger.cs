@@ -188,6 +188,11 @@ namespace Remotely.Shared.Services
                 $"[Thread ID: {Environment.CurrentManagedThreadId}]\t" +
                 $"[{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}]\t";
 
+            if (exception is not null)
+            {
+                entry += $"[Exception: {exception.GetType().Name}]\t";
+            }
+
             entry += scopeStack.Any() ?
                         $"[{categoryName} => {string.Join(" => ", scopeStack)}]\t" :
                         $"[{categoryName}]\t";

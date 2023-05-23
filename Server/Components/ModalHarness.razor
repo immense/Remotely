@@ -49,8 +49,8 @@
             {
                 _displayStyle = "block";
                 await InvokeAsync(StateHasChanged);
-            // The fade animation won't work without a delay here.
-            await Task.Delay(100);
+                // The fade animation won't work without a delay here.
+                await Task.Delay(100);
                 _showClass = "show";
                 await InvokeAsync(StateHasChanged);
             };

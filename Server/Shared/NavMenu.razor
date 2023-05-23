@@ -83,14 +83,14 @@
                     <span class="oi oi-key" aria-hidden="true"></span> API Keys
                 </NavLink>
             </li>
-            <li class="nav-item px-3">
-                <NavLink class="nav-link" href="server-logs">
-                    <span class="oi oi-document" aria-hidden="true"></span> Server Logs
-                </NavLink>
-            </li>
 
             @if (_user?.IsServerAdmin == true)
             {
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="server-logs">
+                        <span class="oi oi-document" aria-hidden="true"></span> Server Logs
+                    </NavLink>
+                </li>
                 <li class="nav-item px-3">
                     <NavLink class="nav-link" href="server-config">
                         <span class="oi oi-wrench" aria-hidden="true"></span> Server Config
