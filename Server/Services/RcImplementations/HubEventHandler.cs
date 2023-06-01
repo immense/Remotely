@@ -62,6 +62,16 @@ namespace Remotely.Server.Services.RcImplementations
             return _serviceHub.Clients.Client(ex.AgentConnectionId).SendAsync("CtrlAltDel");
         }
 
+        public Task NotifyRemoteControlEnded(RemoteControlSession sessionInfo)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task NotifyRemoteControlStarted(RemoteControlSession sessionInfo)
+        {
+            return Task.CompletedTask;
+        }
+
         public Task NotifySessionChanged(RemoteControlSession session, SessionSwitchReasonEx reason, int currentSessionId)
         {
             if (session is not RemoteControlSessionEx ex)

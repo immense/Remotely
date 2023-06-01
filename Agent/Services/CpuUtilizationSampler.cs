@@ -39,12 +39,16 @@ internal class CpuUtilizationSampler : BackgroundService, ICpuUtilizationSampler
             {
                 var currentUtil = await GetCpuUtilization(stoppingToken);
                 Interlocked.Exchange(ref _currentUtilization, currentUtil);
+                await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+            }
+            catch (TaskCanceledException)
+            {
+                _logger.LogInformation("Task canceled while taking CPU utilization sample.  Application may be shutting down.");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while getting CPU utilization sample.");
             }
-            await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
         }
     }
 
