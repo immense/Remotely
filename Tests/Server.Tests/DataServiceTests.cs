@@ -29,7 +29,7 @@ namespace Remotely.Tests
         }
 
         [TestMethod]
-        public void AddOrUpdateDevice()
+        public async Task AddOrUpdateDevice()
         {
             var storedDevice = _dataService.GetDevice(_newDeviceID);
 
@@ -43,7 +43,8 @@ namespace Remotely.Tests
                 Is64Bit = Environment.Is64BitOperatingSystem
             };
 
-            Assert.IsTrue(_dataService.AddOrUpdateDevice(newDevice, out _));
+            var result = await _dataService.AddOrUpdateDevice(newDevice);
+            Assert.IsTrue(result.IsSuccess);
 
             storedDevice = _dataService.GetDevice(_newDeviceID);
 

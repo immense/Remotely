@@ -94,9 +94,9 @@ namespace Remotely.Tests
             User2 = dataService.GetUserByNameWithOrg("testuser2@test.com");
 
             Device1.OrganizationID = Admin1.OrganizationID;
-            dataService.AddOrUpdateDevice(Device1, out _);
+            await dataService.AddOrUpdateDevice(Device1); ;
             Device2.OrganizationID = Admin1.OrganizationID;
-            dataService.AddOrUpdateDevice(Device2, out _);
+            await dataService.AddOrUpdateDevice(Device2);
 
             dataService.AddDeviceGroup(Admin1.OrganizationID, Group1, out _, out _);
             dataService.AddDeviceGroup(Admin1.OrganizationID, Group2, out _, out _);

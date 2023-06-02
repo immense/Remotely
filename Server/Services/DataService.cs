@@ -1,4 +1,5 @@
-﻿using Immense.RemoteControl.Shared.Models;
+﻿using Immense.RemoteControl.Shared;
+using Immense.RemoteControl.Shared.Models;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -29,7 +30,7 @@ namespace Remotely.Server.Services
 
         InviteLink AddInvite(string orgID, InviteViewModel invite);
 
-        bool AddOrUpdateDevice(Device device, out Device updatedDevice);
+        Task<Result<Device>> AddOrUpdateDevice(Device device);
 
         Task AddOrUpdateSavedScript(SavedScript script, string userId);
 
@@ -322,45 +323,44 @@ namespace Remotely.Server.Services
             return inviteLink;
         }
 
-        public bool AddOrUpdateDevice(Device device, out Device updatedDevice)
+        public async Task<Result<Device>> AddOrUpdateDevice(Device device)
         {
             using var dbContext = _appDbFactory.GetContext();
 
-            var existingDevice = dbContext.Devices.Find(device.ID);
-            if (existingDevice != null)
+            var resultDevice = await dbContext.Devices.FindAsync(device.ID);
+            if (resultDevice != null)
             {
-                existingDevice.CurrentUser = device.CurrentUser;
-                existingDevice.DeviceName = device.DeviceName;
-                existingDevice.Drives = device.Drives;
-                existingDevice.CpuUtilization = device.CpuUtilization;
-                existingDevice.UsedMemory = device.UsedMemory;
-                existingDevice.UsedStorage = device.UsedStorage;
-                existingDevice.Is64Bit = device.Is64Bit;
-                existingDevice.IsOnline = true;
-                existingDevice.OSArchitecture = device.OSArchitecture;
-                existingDevice.OSDescription = device.OSDescription;
-                existingDevice.Platform = device.Platform;
-                existingDevice.ProcessorCount = device.ProcessorCount;
-                existingDevice.PublicIP = device.PublicIP;
-                existingDevice.TotalMemory = device.TotalMemory;
-                existingDevice.TotalStorage = device.TotalStorage;
-                existingDevice.AgentVersion = device.AgentVersion;
-                existingDevice.LastOnline = DateTimeOffset.Now;
-                updatedDevice = existingDevice;
+                resultDevice.CurrentUser = device.CurrentUser;
+                resultDevice.DeviceName = device.DeviceName;
+                resultDevice.Drives = device.Drives;
+                resultDevice.CpuUtilization = device.CpuUtilization;
+                resultDevice.UsedMemory = device.UsedMemory;
+                resultDevice.UsedStorage = device.UsedStorage;
+                resultDevice.Is64Bit = device.Is64Bit;
+                resultDevice.IsOnline = true;
+                resultDevice.OSArchitecture = device.OSArchitecture;
+                resultDevice.OSDescription = device.OSDescription;
+                resultDevice.Platform = device.Platform;
+                resultDevice.ProcessorCount = device.ProcessorCount;
+                resultDevice.PublicIP = device.PublicIP;
+                resultDevice.TotalMemory = device.TotalMemory;
+                resultDevice.TotalStorage = device.TotalStorage;
+                resultDevice.AgentVersion = device.AgentVersion;
+                resultDevice.LastOnline = DateTimeOffset.Now;
             }
             else
             {
                 device.LastOnline = DateTimeOffset.Now;
                 if (_hostEnvironment.IsDevelopment() && dbContext.Organizations.Any())
                 {
-                    var org = dbContext.Organizations.FirstOrDefault();
+                    var org = await dbContext.Organizations.FirstOrDefaultAsync();
                     device.Organization = org;
                     device.OrganizationID = org?.ID;
                 }
 
-                updatedDevice = device;
+                resultDevice = device;
 
-                if (!dbContext.Organizations.Any(x => x.ID == device.OrganizationID))
+                if (!await dbContext.Organizations.AnyAsync(x => x.ID == device.OrganizationID))
                 {
                     _logger.LogInformation(
                         "Unable to add device {deviceName} because organization {organizationID}" +
@@ -369,12 +369,12 @@ namespace Remotely.Server.Services
                         device.OrganizationID,
                         device.ID);
 
-                    return false;
+                    return Result.Fail<Device>("Organization does not exist.");
                 }
-                dbContext.Devices.Add(device);
+                await dbContext.Devices.AddAsync(device);
             }
-            dbContext.SaveChanges();
-            return true;
+            await dbContext.SaveChangesAsync();
+            return Result.Ok(resultDevice);
         }
 
         public async Task AddOrUpdateSavedScript(SavedScript script, string userId)

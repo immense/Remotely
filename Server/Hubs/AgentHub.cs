@@ -87,13 +87,13 @@ namespace Remotely.Server.Hubs
             }
         }
 
-        public Task<bool> DeviceCameOnline(Device device)
+        public async Task<bool> DeviceCameOnline(Device device)
         {
             try
             {
                 if (CheckForDeviceBan(device.ID, device.DeviceName))
                 {
-                    return Task.FromResult(false);
+                    return false;
                 }
 
                 var ip = Context.GetHttpContext()?.Connection?.RemoteIpAddress;
@@ -105,12 +105,13 @@ namespace Remotely.Server.Hubs
 
                 if (CheckForDeviceBan(device.PublicIP))
                 {
-                    return Task.FromResult(false);
+                    return false;
                 }
 
-                if (_dataService.AddOrUpdateDevice(device, out var updatedDevice))
+                var result = await _dataService.AddOrUpdateDevice(device);
+                if (result.IsSuccess)
                 {
-                    Device = updatedDevice;
+                    Device = result.Value;
 
                     _serviceSessionCache.AddOrUpdateByConnectionId(Context.ConnectionId, Device);
 
@@ -124,14 +125,14 @@ namespace Remotely.Server.Hubs
 
                     foreach (var connection in connections)
                     {
-                        connection.InvokeCircuitEvent(CircuitEventName.DeviceUpdate, Device);
+                        await connection.InvokeCircuitEvent(CircuitEventName.DeviceUpdate, Device);
                     }
-                    return Task.FromResult(true);
+                    return true;
                 }
                 else
                 {
                     // Organization wasn't found.
-                    return Task.FromResult(false);
+                    return false;
                 }
             }
             catch (Exception ex)
@@ -140,7 +141,7 @@ namespace Remotely.Server.Hubs
             }
 
             Context.Abort();
-            return Task.FromResult(false);
+            return false;
         }
 
         public async Task DeviceHeartbeat(Device device)
@@ -163,8 +164,14 @@ namespace Remotely.Server.Hubs
             }
 
 
-            _dataService.AddOrUpdateDevice(device, out var updatedDevice);
-            Device = updatedDevice;
+            var result = await _dataService.AddOrUpdateDevice(device);
+
+            if (result.IsSuccess)
+            {
+                return;
+            }
+
+            Device = result.Value;
 
             _serviceSessionCache.AddOrUpdateByConnectionId(Context.ConnectionId, Device);
 
