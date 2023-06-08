@@ -140,7 +140,7 @@ You can change database by changing `DBProvider` in `ApplicationOptions` to `SQL
 
 ## Logging
 * On clients, logs are kept in `%ProgramData%\Remotely\Logs`
-* Within the server container, logs will be written to `/var/www/remotely` which if using our Docker command above will be mounted to `/remotely-data` can be found in /remotely-data
+* Within the server container, logs will be written to `/var/www/remotely` which if using our Docker command above will be mounted to `/remotely-data` 
 * Built-in ASP.NET Core logs are written to the console (stdout).  You can redirect this to a file if desired.
 	* In IIS, this can be done in the web.config file by setting stdoutLogEnabled to true.
 * On Windows Servers, the above logs can also be written to the Windows Event Log.
