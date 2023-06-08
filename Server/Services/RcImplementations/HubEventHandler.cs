@@ -62,6 +62,21 @@ namespace Remotely.Server.Services.RcImplementations
             return _serviceHub.Clients.Client(ex.AgentConnectionId).SendAsync("CtrlAltDel");
         }
 
+        public Task NotifyDesktopSessionAdded(RemoteControlSession sessionInfo)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task NotifyDesktopSessionDisposed(RemoteControlSession sessionInfo)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task NotifyDesktopSessionRemoved(RemoteControlSession sessionInfo)
+        {
+            return Task.CompletedTask;
+        }
+
         public Task NotifyRemoteControlEnded(RemoteControlSession sessionInfo)
         {
             return Task.CompletedTask;
