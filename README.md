@@ -5,14 +5,12 @@ A remote control and remote scripting solution, built with .NET, Blazor, and Sig
 [![Tests](https://github.com/immense/Remotely/actions/workflows/run_tests.yml/badge.svg?branch=master)](https://github.com/immense/Remotely/actions/workflows/run_tests.yml)
 
 # Status 
-## 2022-05-19
-Immense Networks is the proud new owner of Remotely. We intend to keep Remotely fully open-source.
 
-I (Darren Kattan) had followed this project since the moment Jared shared it on r/msp years ago. While Jared was writing Remotely, we were writing our own tool for MSPs called ImmyBot, primarily focused on automation and software deployment. Jared and I had similar goals and he felt that we would be good custodians of the project. 
+This project is alive! Jared has joined the ImmyBot Team and we have implemented Remotely's Remote Control functionality into ImmyBot.
 
-ImmyBot experienced explosive growth this year and we only have 4 developers which is why there hasn't been much activity here. We did a big push earlier this year to build an integration between Remotely and ImmyBot but ran into some technical challenges trying to keep only one agent on machines, but we don't want to cannibalize Remotely for the gain of ImmyBot. We want to keep Remotely fully operable as a standalone project. When we resume this initiate later this year, you will likely abstraction of the Remotely.Desktop code into a shared library that can be consumed by Remotely as well as other agents like ImmyBot.
+The shared functionality has been abstracted into the [Immense Remote Control Library](https://github.com/immense/remotecontrol) repository.
 
-
+This allows both projects to benefit from improvements we make.
 ## Project Links
 Subreddit: https://www.reddit.com/r/remotely_app/  
 Docker: https://hub.docker.com/r/immybot/remotely  
@@ -23,7 +21,7 @@ Tutorial: https://www.youtube.com/watch?v=t-TFvr7sZ6M (Thanks, @bmcgonag!)
 ## Quickstart
 ```
 mkdir -p /var/www/remotely
-docker run -d --name remotely --restart unless-stopped -p 5000:5000 -v /var/www/remotely:/remotely-data immybot/remotely:latest
+docker run -d --name remotely --restart unless-stopped -p 5000:5000 -v /var/www/remotely:/remotely-data immybot/remotely:latest 
 ```
 
 ## Important: HTTPS and Reverse Proxies
@@ -38,7 +36,8 @@ The Remotely code does not parse or handle these values.  It is done internally 
 To avoid injection attacks, ASP.NET Core defaults to only accepting forwarded headers from loopback addresses.  Remotely will also add the default Docker host IP (172.17.0.1).  If you are using a non-default configuration, you must add all fireawll and reverse proxy addresses to the `KnownProxies` array in appsettings.json.
 
 ## After Installation
-- Data for Remotely will be saved in `/var/www/remotely/` within two files: appsettings.json and Remotely.db.
+- Data for Remotely will be saved in the container under `/remotely-data` which will be mounted to `/var/www/remotely/` on your Docker host
+- within two files: appsettings.json and Remotely.db.
   - These files will persist through teardown and setup of new Remotely containers.
   - If upgrading from a non-Docker version of Remotely, overwrite these files with the ones from your previous installation.
     - In that case, please note that you may need to change _SQLite_ parameter in your non-Docker appsettings.json. You may have something like:
@@ -74,27 +73,6 @@ You must explicitly set a log level for `Microsoft.AspNetCore.HttpLogging.HttpLo
 
 After changing the above, you must restart the container for the changes to take effect.
 
-## Alternative Hosting Methods
-Starting in 2023, Docker will be the only supported way of hosting Remotely.  Given the number of Linux distributions and other enviromental unknowns, it will be easier to create a consistently reliable deployment process if we focus on Docker.  Also, the server is now able to dynamically embed the server/organization data into the EXE while it's downloading, so hard-coding the information in a custom build is no longer necessary.
-
-Nevertheless, Remotely can still be hosted using a service manager (e.g. `systemd`) and `dotnet`.  We still provide the Linux x64 binaries in each GitHub release that will work on most major distros.  Please refer to the [official documentation](https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/) that addresses most hosting scenarios.
-
-If you still need to build from source, the `Publish.ps1` script will continue to work, as it's used when building the Docker image.  Below is an example of what I was using to build and publish to my local test server before moving to Docker.
-
-Please note, no further support will be provided for these alternative hosting methods.  If you're unfamiliar with running your own ASP.NET Core app, it's recommended that you use Docker.
-
-```
-$Root = "C:\repos\Remotely"
-Set-Location -Path $Root
-$VersionString = git show -s --format=%ci
-$VersionDate = [DateTimeOffset]::Parse($VersionString)
-$CurrentVersion = $VersionDate.ToString("yyyy.MM.dd.HHmm")
-
-&"$Root\Utilities\Publish.ps1" -rid ubuntu-x64 -outdir "C:\publish"
-scp -r "$Drive\publish\*" "jared@cubey:/var/www/remotely-test/"
-ssh jared@cubey sudo systemctl restart remotely-test
-```
-
 ## Build and Debug Instructions (Windows 11)  
 The following steps will configure your Windows 11 machine for building the Remotely server and clients.
 * Install Visual Studio 2022.
@@ -121,8 +99,7 @@ The following steps will configure your Windows 11 machine for building the Remo
 ## Admin Accounts
 The first account created will be an admin for both the server and the organization that's created for the account.
 
-An organization admin has access to the Organization page and server log entries specific to his/her organization.  A server admin has access to the Server Config page and can see server log entries that don't belong to an organization. 
-
+An organization admin has access to the Organization page and server log entries specific to his/her organization.  A server admin has access to the Server Config page and can see server log entries that don't belong to an organization.
 
 ## Branding
 Within the Account section, there is a tab for branding, which will apply to the quick support clients and Windows installer.
@@ -162,9 +139,8 @@ By default, Remotely uses a SQLite database.  When first run, it creates a file 
 You can change database by changing `DBProvider` in `ApplicationOptions` to `SQLServer` or `PostgreSQL`.
 
 ## Logging
-* On clients, logs are kept in %temp%\Remotely_Logs.log.
-	* For the Agent running as a Windows service, this maps to C:\Windows\Temp\Remotely_Logs.log.
-* On the server, some event information is explicitly written to the EventLogs table in the database.
+* On clients, logs are kept in `%ProgramData%\Remotely\Logs`
+* Within the server container, logs will be written to `/var/www/remotely` which if using our Docker command above will be mounted to `/remotely-data` 
 * Built-in ASP.NET Core logs are written to the console (stdout).  You can redirect this to a file if desired.
 	* In IIS, this can be done in the web.config file by setting stdoutLogEnabled to true.
 * On Windows Servers, the above logs can also be written to the Windows Event Log.
