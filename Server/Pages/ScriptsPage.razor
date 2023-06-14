@@ -1,4 +1,5 @@
 ﻿@page "/scripts/{activeTab?}"
+@attribute [Authorize]
 @inherits AuthComponentBase
 @using System.Collections
 @inject IDataService DataService 

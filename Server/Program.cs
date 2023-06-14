@@ -100,11 +100,24 @@ services.AddIdentity<RemotelyUser, IdentityRole>(options =>
 
 
 services.AddScoped<IAuthorizationHandler, TwoFactorRequiredHandler>();
+services.AddScoped<IAuthorizationHandler, OrganizationAdminRequirementHandler>();
+services.AddScoped<IAuthorizationHandler, ServerAdminRequirementHandler>();
+
 services.AddAuthorization(options =>
 {
-    options.AddPolicy(TwoFactorRequiredRequirement.PolicyName, builder =>
+    options.AddPolicy(PolicyNames.TwoFactorRequired, builder =>
     {
         builder.Requirements.Add(new TwoFactorRequiredRequirement());
+    });
+
+    options.AddPolicy(PolicyNames.OrganizationAdminRequired, builder =>
+    {
+        builder.Requirements.Add(new OrganizationAdminRequirement());
+    });
+
+    options.AddPolicy(PolicyNames.ServerAdminRequired, builder =>
+    {
+        builder.Requirements.Add(new ServerAdminRequirement());
     });
 });
 
@@ -337,13 +350,16 @@ void ConfigureSerilog(WebApplicationBuilder webAppBuilder)
         {
             loggerConfiguration
                 .Enrich.FromLogContext()
-                .WriteTo.Console()
+                .Enrich.WithThreadId()
+                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties}{NewLine}{Exception}")
                 .WriteTo.File($"{logPath}/Remotely_Server.log", 
                     rollingInterval: RollingInterval.Day, 
                     retainedFileTimeLimit: TimeSpan.FromDays(dataRetentionDays),
+                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj} {Properties}{NewLine}{Exception}",
                     shared: true);
         }
 
+        // https://github.com/serilog/serilog-aspnetcore#two-stage-initialization
         var loggerConfig = new LoggerConfiguration();
         ApplySharedLoggerConfig(loggerConfig);
         Log.Logger = loggerConfig.CreateBootstrapLogger();

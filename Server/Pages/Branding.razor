@@ -1,5 +1,6 @@
 ﻿@page "/branding"
 @inherits AuthComponentBase
+@attribute [Authorize(Policy = PolicyNames.OrganizationAdminRequired)]
 @inject IDataService DataService
 @inject IToastService ToastService
 @inject IJsInterop JsInterop 
@@ -8,70 +9,61 @@
 
 <h3 class="mb-3">Branding</h3>
 
+<AlertBanner Message="@_alertMessage" />
 
-@if (User?.IsAdministrator != true)
-{
-    <h5 class="text-muted">Only organization administrators can view this page.</h5>
-}
-else
-{
-    <AlertBanner Message="@_alertMessage" />
+<div class="row">
+    <div class="col-sm-8 col-lg-6 col-xl-5">
+        <div class="form-group">
+            <label class="mb-1">Branding Areas</label>
+            <br />
+            <img class="img-fluid" src="/images/Remotely_Desktop.png" />
+        </div>
+    </div>
+</div>
 
-    <div class="row">
-        <div class="col-sm-8 col-lg-6 col-xl-5">
-            <div class="form-group">
-                <label class="mb-1">Branding Areas</label>
-                <br />
-                <img class="img-fluid" src="/images/Remotely_Desktop.png" />
+<div class="row">
+    <div class="col-sm-8 col-lg-6 col-xl-5">
+        <EditForm OnValidSubmit="HandleValidSubmit" Model="_inputModel">
+            <DataAnnotationsValidator />
+
+            <div class="form-group mb-5">
+                <label class="text-info font-weight-bold">Product Name</label>
+                <InputText class="form-control" @bind-Value="_inputModel.ProductName" />
+                <ValidationMessage For="() => _inputModel.ProductName" />
             </div>
-        </div>
+
+            @if (!string.IsNullOrWhiteSpace(_base64Icon))
+            {
+                <div class="form-group mb-4">
+                    <label class="text-info font-weight-bold">Current Icon</label>
+                    <br />
+                    <img class="img-fluid" src="data:image/png;base64,@_base64Icon" />
+                </div>
+            }
+
+            <div class="form-group mb-5">
+                <label class="text-info font-weight-bold">New Icon</label>
+                <InputFile type="file" accept="image/png" class="form-control" OnChange="IconUploadInputChanged" />
+            </div>
+            <div class="form-group mb-5">
+                <label class="text-info font-weight-bold">Title Foreground</label>
+                <ColorPicker @bind-Color="_inputModel.TitleForegroundColor" />
+            </div>
+            <div class="form-group mb-5">
+                <label class="text-info font-weight-bold">Title Background</label>
+                <ColorPicker @bind-Color="_inputModel.TitleBackgroundColor" />
+            </div>
+            <div class="form-group mb-5">
+                <label class="text-info font-weight-bold">Button Color</label>
+                <ColorPicker @bind-Color="_inputModel.TitleButtonColor" />
+            </div>
+            <div class="form-group text-right">
+                <button class="btn btn-secondary mr-3" type="button" @onclick="ResetBranding">Reset</button>
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </div>
+        </EditForm>
     </div>
-
-    <div class="row">
-        <div class="col-sm-8 col-lg-6 col-xl-5">
-            <EditForm OnValidSubmit="HandleValidSubmit" Model="_inputModel">
-                <DataAnnotationsValidator />
-
-                <div class="form-group mb-5">
-                    <label class="text-info font-weight-bold">Product Name</label>
-                    <InputText class="form-control" @bind-Value="_inputModel.ProductName" />
-                    <ValidationMessage For="() => _inputModel.ProductName" />
-                </div>
-
-                @if (!string.IsNullOrWhiteSpace(_base64Icon))
-                {
-                    <div class="form-group mb-4">
-                        <label class="text-info font-weight-bold">Current Icon</label>
-                        <br />
-                        <img class="img-fluid" src="data:image/png;base64,@_base64Icon" />
-                    </div>
-                }
-
-                <div class="form-group mb-5">
-                    <label class="text-info font-weight-bold">New Icon</label>
-                    <InputFile type="file" accept="image/png" class="form-control" OnChange="IconUploadInputChanged" />
-                </div>
-                <div class="form-group mb-5">
-                    <label class="text-info font-weight-bold">Title Foreground</label>
-                    <ColorPicker @bind-Color="_inputModel.TitleForegroundColor" />
-                </div>
-                <div class="form-group mb-5">
-                    <label class="text-info font-weight-bold">Title Background</label>
-                    <ColorPicker @bind-Color="_inputModel.TitleBackgroundColor" />
-                </div>
-                <div class="form-group mb-5">
-                    <label class="text-info font-weight-bold">Button Color</label>
-                    <ColorPicker @bind-Color="_inputModel.TitleButtonColor" />
-                </div>
-                <div class="form-group text-right">
-                    <button class="btn btn-secondary mr-3" type="button" @onclick="ResetBranding">Reset</button>
-                    <button class="btn btn-primary" type="submit">Submit</button>
-                </div>
-            </EditForm>
-        </div>
-    </div>
-}
-
+</div>
 @code {
     private string _alertMessage;
     private string _base64Icon;

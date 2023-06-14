@@ -2,7 +2,7 @@
 @using Remotely.Server.Auth 
 @inherits LayoutComponentBase
 
-<AuthorizeView Policy="@TwoFactorRequiredRequirement.PolicyName">
+<AuthorizeView Policy="@PolicyNames.TwoFactorRequired">
     <Authorized>
             <div class="page">
                 <div class="sidebar">

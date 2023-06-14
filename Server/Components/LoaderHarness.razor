@@ -11,13 +11,10 @@
     private bool _loaderShown;
     private string _statusMessage = string.Empty;
 
-    protected override Task OnAfterRenderAsync(bool firstRender)
+    protected override Task OnInitializedAsync()
     {
-        if (firstRender)
-        {
-            Messenger.Register<ShowLoaderMessage>(this, HandleShowLoaderMessage);
-        }
-        return base.OnAfterRenderAsync(firstRender);
+        Messenger.Register<ShowLoaderMessage>(this, HandleShowLoaderMessage);
+        return base.OnInitializedAsync();
     }
 
     private async Task HandleShowLoaderMessage(ShowLoaderMessage message)
