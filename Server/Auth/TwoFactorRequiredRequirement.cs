@@ -8,6 +8,6 @@ namespace Remotely.Server.Auth
 {
     public class TwoFactorRequiredRequirement : IAuthorizationRequirement
     {
-        public const string PolicyName = "TwoFactorRequired";
+
     }
 }

@@ -1,5 +1,5 @@
 ﻿@page "/manage-organization"
-@attribute [Authorize]
+@attribute [Authorize(Policy = PolicyNames.OrganizationAdminRequired)]
 @inherits AuthComponentBase
 
 <h3 class="mb-3">Manage Organization</h3>

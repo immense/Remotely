@@ -1,6 +1,6 @@
 ﻿@page "/server-logs"
 @using System.Collections.ObjectModel;
-@attribute [Authorize]
+@attribute [Authorize(Policy = PolicyNames.ServerAdminRequired)]
 @inherits AuthComponentBase
 
 @inject IDataService DataService
@@ -11,65 +11,57 @@
 
 <h3 class="mb-3">Server Logs</h3>
 
-
-@if (User?.IsAdministrator == true)
-{
-    <div class="buttons-row mb-3">
-        <div>
-            <button class="btn btn-danger" type="button" @onclick="ClearAllLogs">
-                Delete Logs
-            </button>
-        </div>
-        <div>
-            <button class="btn btn-primary"
-                    onclick="window.open('/API/ServerLogs/Download', '_blank')">
-                Download Logs
-            </button>
-        </div>
-        <div>
-            <button class="btn btn-primary"
-                    onclick="window.open('/API/ScriptResults', '_blank')">
-                Download Script History
-            </button>
-        </div>
+<div class="buttons-row mb-3">
+    <div>
+        <button class="btn btn-danger" type="button" @onclick="ClearAllLogs">
+            Delete Logs
+        </button>
     </div>
-    <div class="filters-row mb-3">
-        <div style="display:inline-block">
-            <strong>Type:</strong>
-            <br />
-            <select class="form-control-sm" @bind="LogLevel">
-                <option value="">All</option>
-                @foreach (var eventType in Enum.GetValues(typeof(LogLevel)))
-                {
-                    <option @key="eventType" value="@eventType">@eventType</option>
-                }
-            </select>
-        </div>
-        <div style="display:inline-block">
-            <strong>Filter:</strong>
-            <br />
-            <input type="text" @bind="MessageFilter" @bind:event="oninput" />
-        </div>
-        <div style="display:inline-block">
-            <strong>From:</strong>
-            <br />
-            <input type="date" @bind="FromDate" />
-        </div>
-        <div style="display:inline-block">
-            <strong>To:</strong>
-            <br />
-            <input type="date" @bind="ToDate" />
-        </div>
+    <div>
+        <button class="btn btn-primary"
+                onclick="window.open('/API/ServerLogs/Download', '_blank')">
+            Download Logs
+        </button>
     </div>
+    <div>
+        <button class="btn btn-primary"
+                onclick="window.open('/API/ScriptResults', '_blank')">
+            Download Script History
+        </button>
+    </div>
+</div>
+<div class="filters-row mb-3">
+    <div style="display:inline-block">
+        <strong>Type:</strong>
+        <br />
+        <select class="form-control-sm" @bind="LogLevel">
+            <option value="">All</option>
+            @foreach (var eventType in Enum.GetValues(typeof(LogLevel)))
+            {
+                <option @key="eventType" value="@eventType">@eventType</option>
+            }
+        </select>
+    </div>
+    <div style="display:inline-block">
+        <strong>Filter:</strong>
+        <br />
+        <input type="text" @bind="MessageFilter" @bind:event="oninput" />
+    </div>
+    <div style="display:inline-block">
+        <strong>From:</strong>
+        <br />
+        <input type="date" @bind="FromDate" />
+    </div>
+    <div style="display:inline-block">
+        <strong>To:</strong>
+        <br />
+        <input type="date" @bind="ToDate" />
+    </div>
+</div>
 
-    <textarea readonly class="logs-content bg-dark text-white">
-        @(string.Join(Environment.NewLine, _filteredLogs))
-    </textarea>
-}
-else
-{
-    <h5 class="text-muted">Only organization administrators can view this page.</h5>
-}
+<textarea readonly class="logs-content bg-dark text-white">
+    @(string.Join(Environment.NewLine, _filteredLogs))
+</textarea>
 
 @code {
     private readonly string _messageDebounceKey = Guid.NewGuid().ToString();
@@ -98,14 +90,14 @@ else
     private LogLevel? LogLevel
     {
         get => _logLevel;
-        set 
+        set
         {
             _logLevel = value;
             _ = RefreshLogs();
         }
     }
 
-    private string MessageFilter 
+    private string MessageFilter
     {
         get => _messageFilter;
         set
@@ -113,7 +105,7 @@ else
             _messageFilter = value;
 
             Debouncer.Debounce(
-                TimeSpan.FromSeconds(1), 
+                TimeSpan.FromSeconds(1),
                 () => _ = RefreshLogs(),
                 _messageDebounceKey);
         }
@@ -136,9 +128,19 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await RefreshLogs();
         await base.OnInitializedAsync();
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            await RefreshLogs();
+        }
+    }
+
+
 
     private async Task ClearAllLogs()
     {

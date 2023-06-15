@@ -1,5 +1,5 @@
 ﻿@page "/api-keys"
-@attribute [Authorize]
+@attribute [Authorize(Policy = PolicyNames.OrganizationAdminRequired)]
 @inherits AuthComponentBase
 
 @inject IDataService DataService
