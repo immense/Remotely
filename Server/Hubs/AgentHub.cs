@@ -72,7 +72,7 @@ namespace Remotely.Server.Hubs
         }
 
 
-        public async Task CheckForPendingSriptRuns()
+        public async Task CheckForPendingScriptRuns()
         {
             var authToken = _expiringTokenService.GetToken(Time.Now.AddMinutes(AppConstants.ScriptRunExpirationMinutes));
             var scriptRuns = await _dataService.GetPendingScriptRuns(Device.ID);
@@ -166,7 +166,7 @@ namespace Remotely.Server.Hubs
 
             var result = await _dataService.AddOrUpdateDevice(device);
 
-            if (result.IsSuccess)
+            if (!result.IsSuccess)
             {
                 return;
             }
@@ -189,7 +189,7 @@ namespace Remotely.Server.Hubs
             }
 
 
-            await CheckForPendingSriptRuns();
+            await CheckForPendingScriptRuns();
         }
 
 
