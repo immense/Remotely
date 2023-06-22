@@ -206,6 +206,13 @@
                         <input class="form-control" readonly value="@Device.PublicIP" />
                     </div>
 
+                    <div class="font-weight-bold text-info mt-2">
+                        MAC Addresses
+                    </div>
+                    <div>
+                        <input class="form-control" readonly value="@(string.Join(", ", Device.MacAddresses))" />
+                    </div>
+
                     <EditForm Model="Device" OnValidSubmit="HandleValidSubmit">
                         <DataAnnotationsValidator />
 
