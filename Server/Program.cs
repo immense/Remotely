@@ -219,7 +219,7 @@ services.AddScoped<IScriptScheduleDispatcher, ScriptScheduleDispatcher>();
 services.AddSingleton<IOtpProvider, OtpProvider>();
 services.AddSingleton<IEmbeddedServerDataSearcher, EmbeddedServerDataSearcher>();
 services.AddSingleton<ILogsManager, LogsManager>();
-services.AddSingleton(WeakReferenceMessenger.Default);
+services.AddScoped<IMessenger>((services) => new WeakReferenceMessenger());
 
 services.AddRemoteControlServer(config =>
 {
