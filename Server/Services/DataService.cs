@@ -124,7 +124,11 @@ namespace Remotely.Server.Services
 
         int GetDeviceCount(RemotelyUser user);
 
-        Task<DeviceGroup> GetDeviceGroup(string deviceGroupID);
+        Task<DeviceGroup> GetDeviceGroup(
+             string deviceGroupID,
+             bool includeDevices = false,
+             bool includeUsers = false);
+
         DeviceGroup[] GetDeviceGroups(string username);
 
         DeviceGroup[] GetDeviceGroupsForOrganization(string organizationId);
@@ -348,6 +352,7 @@ namespace Remotely.Server.Services
                 resultDevice.TotalStorage = device.TotalStorage;
                 resultDevice.AgentVersion = device.AgentVersion;
                 resultDevice.MacAddresses = device.MacAddresses ?? Array.Empty<string>();
+                resultDevice.DeviceGroupID = device.DeviceGroupID;
                 resultDevice.LastOnline = DateTimeOffset.Now;
             }
             else
@@ -922,7 +927,6 @@ namespace Remotely.Server.Services
                     device.ID == deviceID &&
                     (
                         remotelyUser.IsAdministrator ||
-                        string.IsNullOrWhiteSpace(device.DeviceGroupID) ||
                         device.DeviceGroup.Users.Any(user => user.Id == remotelyUser.Id
                     )));
         }
@@ -948,7 +952,6 @@ namespace Remotely.Server.Services
                     deviceIDs.Contains(device.ID) &&
                     (
                         remotelyUser.IsAdministrator ||
-                        string.IsNullOrWhiteSpace(device.DeviceGroupID) ||
                         device.DeviceGroup.Users.Any(user => user.Id == remotelyUser.Id
                     )))
                 .Select(x => x.ID)
@@ -1168,10 +1171,25 @@ namespace Remotely.Server.Services
                     ));
         }
 
-        public async Task<DeviceGroup> GetDeviceGroup(string deviceGroupID)
+        public async Task<DeviceGroup> GetDeviceGroup(
+            string deviceGroupID,
+            bool includeDevices = false,
+            bool includeUsers = false)
         {
             using var dbContext = _appDbFactory.GetContext();
-            return await dbContext.DeviceGroups.FindAsync(deviceGroupID);
+
+            var query = dbContext.DeviceGroups.AsQueryable();
+
+            if (includeDevices)
+            {
+                query = query.Include(x => x.Devices);
+            }
+            if (includeUsers)
+            {
+                query = query.Include(x => x.Users);
+            }
+
+            return await query.FirstOrDefaultAsync(x => x.ID == deviceGroupID);
         }
 
         public DeviceGroup[] GetDeviceGroups(string username)

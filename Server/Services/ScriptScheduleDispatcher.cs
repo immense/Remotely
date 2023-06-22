@@ -19,12 +19,12 @@ namespace Remotely.Server.Services
     public class ScriptScheduleDispatcher : IScriptScheduleDispatcher
     {
         private readonly IDataService _dataService;
-        private readonly IServiceHubSessionCache _serviceSessionCache;
+        private readonly IAgentHubSessionCache _serviceSessionCache;
         private readonly ICircuitConnection _circuitConnection;
         private readonly ILogger<ScriptScheduleDispatcher> _logger;
 
         public ScriptScheduleDispatcher(IDataService dataService,
-            IServiceHubSessionCache serviceSessionCache,
+            IAgentHubSessionCache serviceSessionCache,
             ICircuitConnection circuitConnection,
             ILogger<ScriptScheduleDispatcher> logger)
         {

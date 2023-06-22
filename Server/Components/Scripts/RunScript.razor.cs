@@ -43,7 +43,7 @@ namespace Remotely.Server.Components.Scripts
         private IToastService ToastService { get; set; }
 
         [Inject]
-        private IServiceHubSessionCache ServiceSessionCache { get; init; }
+        private IAgentHubSessionCache ServiceSessionCache { get; init; }
 
         [Inject]
         private ICircuitConnection CircuitConnection { get; set; }

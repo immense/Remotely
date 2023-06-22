@@ -228,7 +228,7 @@ services.AddRemoteControlServer(config =>
     config.AddViewerPageDataProvider<ViewerPageDataProvider>();
 });
 
-services.AddSingleton<IServiceHubSessionCache, ServiceHubSessionCache>();
+services.AddSingleton<IAgentHubSessionCache, AgentHubSessionCache>();
 
 var app = builder.Build();
 var appConfig = app.Services.GetRequiredService<IApplicationConfig>();

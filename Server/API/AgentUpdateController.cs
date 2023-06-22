@@ -30,11 +30,11 @@ namespace Remotely.Server.API
         private readonly ILogger<AgentUpdateController> _logger;
         private readonly IApplicationConfig _appConfig;
         private readonly IWebHostEnvironment _hostEnv;
-        private readonly IServiceHubSessionCache _serviceSessionCache;
+        private readonly IAgentHubSessionCache _serviceSessionCache;
 
         public AgentUpdateController(IWebHostEnvironment hostingEnv,
             IApplicationConfig appConfig,
-            IServiceHubSessionCache serviceSessionCache,
+            IAgentHubSessionCache serviceSessionCache,
             IHubContext<AgentHub> agentHubContext,
             ILogger<AgentUpdateController> logger)
         {

@@ -59,7 +59,7 @@ namespace Remotely.Server.Components.Devices
         private IModalService ModalService { get; set; }
 
         [Inject]
-        private IServiceHubSessionCache ServiceSessionCache { get; init; }
+        private IAgentHubSessionCache ServiceSessionCache { get; init; }
 
         [Inject]
         private IToastService ToastService { get; set; }

@@ -24,12 +24,12 @@ namespace Remotely.Server.Hubs
         private readonly IDataService _dataService;
         private readonly IExpiringTokenService _expiringTokenService;
         private readonly ILogger<AgentHub> _logger;
-        private readonly IServiceHubSessionCache _serviceSessionCache;
+        private readonly IAgentHubSessionCache _serviceSessionCache;
         private readonly IHubContext<ViewerHub> _viewerHubContext;
 
         public AgentHub(IDataService dataService,
             IApplicationConfig appConfig,
-            IServiceHubSessionCache serviceSessionCache,
+            IAgentHubSessionCache serviceSessionCache,
             IHubContext<ViewerHub> viewerHubContext,
             ICircuitManager circuitManager,
             IExpiringTokenService expiringTokenService,

@@ -83,7 +83,7 @@ namespace Remotely.Server.Hubs
         private readonly ConcurrentQueue<CircuitEvent> _eventQueue = new();
         private readonly IExpiringTokenService _expiringTokenService;
         private readonly ILogger<CircuitConnection> _logger;
-        private readonly IServiceHubSessionCache _serviceSessionCache;
+        private readonly IAgentHubSessionCache _agentSessionCache;
         private readonly IToastService _toastService;
         public CircuitConnection(
             IAuthService authService,
@@ -95,7 +95,7 @@ namespace Remotely.Server.Hubs
             IToastService toastService,
             IExpiringTokenService expiringTokenService,
             IDesktopHubSessionCache desktopSessionCache,
-            IServiceHubSessionCache serviceSessionCache,
+            IAgentHubSessionCache agentSessionCache,
             ILogger<CircuitConnection> logger)
         {
             _dataService = dataService;
@@ -107,7 +107,7 @@ namespace Remotely.Server.Hubs
             _toastService = toastService;
             _expiringTokenService = expiringTokenService;
             _desktopSessionCache = desktopSessionCache;
-            _serviceSessionCache = serviceSessionCache;
+            _agentSessionCache = agentSessionCache;
             _logger = logger;
         }
 
@@ -115,7 +115,7 @@ namespace Remotely.Server.Hubs
         public event EventHandler<CircuitEvent> MessageReceived;
 
         public string ConnectionId { get; set; }
-        public RemotelyUser User { get; set; }
+        public RemotelyUser User { get; internal set; }
 
 
         public Task DeleteRemoteLogs(string deviceId)
@@ -223,7 +223,7 @@ namespace Remotely.Server.Hubs
 
         public async Task<Result<RemoteControlSessionEx>> RemoteControl(string deviceId, bool viewOnly)
         {
-            if (!_serviceSessionCache.TryGetByDeviceId(deviceId, out var targetDevice))
+            if (!_agentSessionCache.TryGetByDeviceId(deviceId, out var targetDevice))
             {
                 MessageReceived?.Invoke(this, new CircuitEvent(CircuitEventName.DisplayMessage,
                      "The selected device is not online.",
@@ -257,7 +257,7 @@ namespace Remotely.Server.Hubs
                 return Result.Fail<RemoteControlSessionEx>("Max number of concurrent sessions reached.");
             }
 
-            if (!_serviceSessionCache.TryGetConnectionId(targetDevice.ID, out var serviceConnectionId))
+            if (!_agentSessionCache.TryGetConnectionId(targetDevice.ID, out var serviceConnectionId))
             {
                 MessageReceived?.Invoke(this, new CircuitEvent(CircuitEventName.DisplayMessage,
                    "Service connection not found.",
@@ -317,7 +317,7 @@ namespace Remotely.Server.Hubs
            
             var authToken = _expiringTokenService.GetToken(Time.Now.AddMinutes(AppConstants.ScriptRunExpirationMinutes));
 
-            var connectionIds = _serviceSessionCache.GetConnectionIdsByDeviceIds(deviceIds).ToArray();
+            var connectionIds = _agentSessionCache.GetConnectionIdsByDeviceIds(deviceIds).ToArray();
 
             if (connectionIds.Any())
             {
@@ -333,8 +333,8 @@ namespace Remotely.Server.Hubs
                 return Task.CompletedTask;
             }
 
-            if (!_serviceSessionCache.TryGetByDeviceId(deviceId, out var device) ||
-                !_serviceSessionCache.TryGetConnectionId(deviceId, out var connectionId))
+            if (!_agentSessionCache.TryGetByDeviceId(deviceId, out var device) ||
+                !_agentSessionCache.TryGetConnectionId(deviceId, out var connectionId))
             {
                 _toastService.ShowToast("Device not found.");
                 return Task.CompletedTask;
@@ -359,7 +359,7 @@ namespace Remotely.Server.Hubs
 
         public async Task<bool> TransferFileFromBrowserToAgent(string deviceId, string transferId, string[] fileIds)
         {
-            if (!_serviceSessionCache.TryGetConnectionId(deviceId, out var connectionId))
+            if (!_agentSessionCache.TryGetConnectionId(deviceId, out var connectionId))
             {
                 return false;
             }
@@ -454,11 +454,11 @@ namespace Remotely.Server.Hubs
                     return Result.Fail("Unauthorized.") ;
                 }
 
-                var availableDevices = _serviceSessionCache
+                var availableDevices = _agentSessionCache
                     .GetAllDevices()
                     .Where(x =>
                          x.OrganizationID == User.OrganizationID &&
-                        (x.DeviceGroup == device.DeviceGroup || x.PublicIP == device.PublicIP))
+                        (x.DeviceGroupID == device.DeviceGroupID || x.PublicIP == device.PublicIP))
                     .ToArray();
 
                 await SendWakeCommand(device, availableDevices);
@@ -480,22 +480,21 @@ namespace Remotely.Server.Hubs
                 var filteredIds = _dataService.FilterDeviceIDsByUserPermission(deviceIds, User);
                 var filteredDevices = devices.Where(x => filteredIds.Contains(x.ID)).ToArray();
 
-                var availableDevices = _serviceSessionCache
+                var availableDevices = _agentSessionCache
                     .GetAllDevices()
                     .Where(x => x.OrganizationID == User.OrganizationID);
 
-                var devicesById = new ConcurrentDictionary<string, Device>();
                 var devicesByGroupId = new ConcurrentDictionary<string, List<Device>>();
                 var devicesByPublicIp = new ConcurrentDictionary<string, List<Device>>();
 
                 foreach (var device in availableDevices)
                 {
-                    devicesById.AddOrUpdate(device.ID, device, (k, v) => device);
-
                     if (!string.IsNullOrWhiteSpace(device.DeviceGroupID))
                     {
                         var group = devicesByGroupId.GetOrAdd(device.DeviceGroupID, key => new());
                         group.Add(device);
+                        // We only need the device in one group.
+                        break;
                     }
 
                     if (!string.IsNullOrWhiteSpace(device.PublicIP))
@@ -536,9 +535,9 @@ namespace Remotely.Server.Hubs
                 return (false, string.Empty);
             }
 
-            if (!_serviceSessionCache.TryGetByDeviceId(deviceId, out var device) ||
+            if (!_agentSessionCache.TryGetByDeviceId(deviceId, out var device) ||
                 !_dataService.DoesUserHaveAccessToDevice(device.ID, User) ||
-                !_serviceSessionCache.TryGetConnectionId(device.ID, out var connectionId))
+                !_agentSessionCache.TryGetConnectionId(device.ID, out var connectionId))
             {
                 return (false, string.Empty);
             }
@@ -552,7 +551,7 @@ namespace Remotely.Server.Hubs
 
             foreach (var deviceId in deviceIds)
             {
-                if (!_serviceSessionCache.TryGetByDeviceId(deviceId, out var device))
+                if (!_agentSessionCache.TryGetByDeviceId(deviceId, out var device))
                 {
                     continue;
                 }
@@ -562,7 +561,7 @@ namespace Remotely.Server.Hubs
                     continue;
                 }
 
-                if (_serviceSessionCache.TryGetConnectionId(device.ID, out var connectionId))
+                if (_agentSessionCache.TryGetConnectionId(device.ID, out var connectionId))
                 {
                     yield return connectionId;
                 }
@@ -593,7 +592,7 @@ namespace Remotely.Server.Hubs
             {
                 foreach (var mac in deviceToWake.MacAddresses ?? Array.Empty<string>())
                 {
-                    if (_serviceSessionCache.TryGetConnectionId(peerDevice.ID, out var connectionId))
+                    if (_agentSessionCache.TryGetConnectionId(peerDevice.ID, out var connectionId))
                     {
                         _logger.LogInformation(
                             "Sending wake command for device {deviceName} ({deviceId}) to " +

@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Remotely.Server.Services
 {
-    public interface IServiceHubSessionCache
+    public interface IAgentHubSessionCache
     {
         void AddOrUpdateByConnectionId(string connectionId, Device device);
         ICollection<Device> GetAllDevices();
@@ -16,7 +16,7 @@ namespace Remotely.Server.Services
         bool TryRemoveByConnectionId(string connectionId, out Device device);
     }
 
-    public class ServiceHubSessionCache : IServiceHubSessionCache
+    public class AgentHubSessionCache : IAgentHubSessionCache
     {
 
         private readonly ConcurrentDictionary<string, Device> _connectionIdToDeviceLookup = new();

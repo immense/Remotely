@@ -22,16 +22,17 @@ namespace Remotely.Tests
         private ScriptSchedule _schedule1;
         private Mock<IDataService> _dataService;
         private Mock<ICircuitConnection> _circuitConnection;
-        private Mock<IServiceHubSessionCache> _serviceSessionCache;
+        private Mock<IAgentHubSessionCache> _serviceSessionCache;
         private Mock<ILogger<ScriptScheduleDispatcher>> _logger;
         private ScriptScheduleDispatcher _dispatcher;
         private TestData _testData;
         private SavedScript _savedScript;
 
         [TestInitialize]
-        public void Init()
+        public async Task Init()
         {
             _testData = new TestData();
+            await _testData.Init();
 
             _savedScript = new SavedScript()
             {
@@ -41,10 +42,10 @@ namespace Remotely.Tests
             _schedule1 = new()
             {
                 CreatedAt = Time.Now,
-                CreatorId = _testData.User1.Id,
+                CreatorId = _testData.Org1User1.Id,
                 Devices = new List<Device>()
                     {
-                        _testData.Device1
+                        _testData.Org1Device1
                     },
                 DeviceGroups = new List<DeviceGroup>()
                 {
@@ -52,7 +53,7 @@ namespace Remotely.Tests
                     {
                         Devices = new List<Device>()
                         {
-                            _testData.Device2
+                            _testData.Org1Device2
                         }
                     }
                 },
@@ -60,7 +61,7 @@ namespace Remotely.Tests
                 Name = "_scheduleName",
                 Id = 5,
                 NextRun = Time.Now.AddMinutes(1),
-                OrganizationID = _testData.User1.OrganizationID,
+                OrganizationID = _testData.Org1User1.OrganizationID,
                 SavedScriptId = _savedScript.Id
             };
 
@@ -72,12 +73,12 @@ namespace Remotely.Tests
             _dataService = new Mock<IDataService>();
             _dataService.Setup(x => x.GetScriptSchedulesDue()).Returns(Task.FromResult(scriptSchedules));
             _dataService.Setup(x => x.GetDevices(It.Is<IEnumerable<string>>(x =>
-                x.Contains(_testData.Device1.ID) &&
-                x.Contains(_testData.Device2.ID)
-            ))).Returns(new List<Device>() { _testData.Device1, _testData.Device2 });
+                x.Contains(_testData.Org1Device1.ID) &&
+                x.Contains(_testData.Org1Device2.ID)
+            ))).Returns(new List<Device>() { _testData.Org1Device1, _testData.Org1Device2 });
 
             _circuitConnection = new Mock<ICircuitConnection>();
-            _serviceSessionCache = new Mock<IServiceHubSessionCache>();
+            _serviceSessionCache = new Mock<IAgentHubSessionCache>();
             _logger = new Mock<ILogger<ScriptScheduleDispatcher>>();
             _dispatcher = new ScriptScheduleDispatcher(_dataService.Object, _serviceSessionCache.Object, _circuitConnection.Object, _logger.Object);
         }
@@ -109,8 +110,8 @@ namespace Remotely.Tests
                 x.Contains(_schedule1.Devices.First().ID))));
             _dataService.Verify(x => x.AddScriptRun(It.Is<ScriptRun>(x => 
                 x.ScheduleId == _schedule1.Id &&
-                x.Devices.Exists(d => d.ID == _testData.Device1.ID) &&
-                x.Devices.Exists(d => d.ID == _testData.Device2.ID))));
+                x.Devices.Exists(d => d.ID == _testData.Org1Device1.ID) &&
+                x.Devices.Exists(d => d.ID == _testData.Org1Device2.ID))));
             _dataService.VerifyNoOtherCalls();
 
             _circuitConnection.Verify(x => x.RunScript(
