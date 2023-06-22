@@ -257,20 +257,6 @@ namespace Remotely.Server.Components.Devices
 
         }
 
-        private IEnumerable<Device> GetDevicesInSelectedGroup()
-        {
-            if (_selectedGroupId == _deviceGroupNone)
-            {
-                return _allDevices.Where(x => x.DeviceGroupID is null);
-            }
-
-            if (_selectedGroupId == _deviceGroupAll)
-            {
-                return _allDevices;
-            }
-
-            return _allDevices.Where(x => x.DeviceGroupID == _selectedGroupId);
-        }
 
         private string GetDisplayName(PropertyInfo propInfo)
         {
@@ -353,8 +339,21 @@ namespace Remotely.Server.Components.Devices
 
         private async Task WakeDevices()
         {
-            var devices = GetDevicesInSelectedGroup();
-            var result = await CircuitConnection.WakeDevices(devices.ToArray());
+            var offlineDevices = DataService
+               .GetDevicesForUser(Username)
+               .Where(x => !x.IsOnline);
+
+            if (_selectedGroupId == _deviceGroupNone)
+            {
+                offlineDevices = offlineDevices.Where(x => x.DeviceGroupID is null);
+            }
+
+            if (_selectedGroupId != _deviceGroupAll)
+            {
+                offlineDevices = offlineDevices.Where(x => x.DeviceGroupID == _selectedGroupId);
+            }
+
+            var result = await CircuitConnection.WakeDevices(offlineDevices.ToArray());
 
             if (result.IsSuccess)
             {

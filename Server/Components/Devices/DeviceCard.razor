@@ -210,7 +210,10 @@
                         MAC Addresses
                     </div>
                     <div>
-                        <input class="form-control" readonly value="@(string.Join(", ", Device.MacAddresses))" />
+                        <input 
+                            class="form-control" 
+                            readonly 
+                            value="@(string.Join(", ", Device.MacAddresses ?? Array.Empty<string>()))" />
                     </div>
 
                     <EditForm Model="Device" OnValidSubmit="HandleValidSubmit">
