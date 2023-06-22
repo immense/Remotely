@@ -328,11 +328,15 @@ namespace Remotely.Server.Components.Devices
             var result = await CircuitConnection.WakeDevice(Device);
             if (result.IsSuccess)
             {
-                ToastService.ShowToast2("Wake command sent.", ToastType.Success);
+                ToastService.ShowToast2(
+                    $"Wake command sent to {result.Value} peer devices.", 
+                    ToastType.Success);
             }
             else
             {
-                ToastService.ShowToast2($"Wake command failed.  Reason: {result.Reason}", ToastType.Error);
+                ToastService.ShowToast2(
+                    $"Wake command failed.  Reason: {result.Reason}", 
+                    ToastType.Error);
             }
         }
     }

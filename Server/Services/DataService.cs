@@ -328,6 +328,7 @@ namespace Remotely.Server.Services
             using var dbContext = _appDbFactory.GetContext();
 
             var resultDevice = await dbContext.Devices.FindAsync(device.ID);
+
             if (resultDevice != null)
             {
                 resultDevice.CurrentUser = device.CurrentUser;
@@ -346,6 +347,7 @@ namespace Remotely.Server.Services
                 resultDevice.TotalMemory = device.TotalMemory;
                 resultDevice.TotalStorage = device.TotalStorage;
                 resultDevice.AgentVersion = device.AgentVersion;
+                resultDevice.MacAddresses = device.MacAddresses;
                 resultDevice.LastOnline = DateTimeOffset.Now;
             }
             else

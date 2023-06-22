@@ -8,17 +8,20 @@
         <div>
             <div>
                 <div>Device Group</div>
-                <select class="form-control" style="width: 200px" @bind="_selectedGroupId">
-                    <option value="@_deviceGroupAll">All</option>
-                    <option value="@_deviceGroupNone">None</option>
-                    @foreach (var group in _deviceGroups)
-                    {
-                        <option @key="group.ID" value="@group.ID">@group.Name</option>
-                    }
-                </select>
-                <button class="btn btn-sm btn-secondary" title="Wake Devices" style="width: 40px; margin-left: 5px;" @onclick="WakeDevices">
-                    <span class="oi oi-eye"></span>
-                </button>
+                <div class="text-nowrap">
+                    <select class="form-control d-inline" style="width: 200px" @bind="_selectedGroupId">
+                        <option value="@_deviceGroupAll">All</option>
+                        <option value="@_deviceGroupNone">None</option>
+                        @foreach (var group in _deviceGroups)
+                        {
+                            <option @key="group.ID" value="@group.ID">@group.Name</option>
+                        }
+                    </select>
+                    <button class="btn btn-sm btn-secondary" title="Wake Devices in Group" style="width: 40px; margin-left: 5px;" @onclick="WakeDevices">
+                        <span class="oi oi-eye"></span>
+                    </button>
+
+                </div>
             </div>
 
             <div>

@@ -358,7 +358,9 @@ namespace Remotely.Server.Components.Devices
 
             if (result.IsSuccess)
             {
-                ToastService.ShowToast2("Wake commands sent.", ToastType.Success);
+                ToastService.ShowToast2(
+                    $"Wake commands sent to {result.Value} peer devices.", 
+                    ToastType.Success);
             }
             else
             {
