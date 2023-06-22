@@ -17,7 +17,7 @@ namespace Remotely.Server.Migrations.PostgreSql
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
+                .HasAnnotation("ProductVersion", "7.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -450,6 +450,9 @@ namespace Remotely.Server.Migrations.PostgreSql
 
                     b.Property<DateTimeOffset>("LastOnline")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("MacAddresses")
+                        .HasColumnType("text");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(5000)

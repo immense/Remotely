@@ -141,7 +141,8 @@ namespace Remotely.Server.Data
                 .Property(x => x.MacAddresses)
                 .HasConversion(
                     x => JsonSerializer.Serialize(x, jsonOptions),
-                    x => DeserializeStringArray(x, jsonOptions));
+                    x => DeserializeStringArray(x, jsonOptions),
+                    valueComparer: _stringArrayComparer);
 
             builder.Entity<DeviceGroup>()
                 .HasMany(x => x.Devices);
