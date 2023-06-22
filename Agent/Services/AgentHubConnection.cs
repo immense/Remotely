@@ -495,6 +495,9 @@ namespace Remotely.Agent.Services
 
             _hubConnection.On("WakeDevice", async (string macAddress) =>
             {
+                _logger.LogInformation(
+                    "Received request to wake device with MAC address {macAddress}.", 
+                    macAddress);
                 await _wakeOnLanService.WakeDevice(macAddress);
             });
         }
