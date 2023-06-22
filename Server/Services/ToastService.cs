@@ -1,4 +1,5 @@
 ﻿using Nihs.ConcurrentList;
+using Remotely.Server.Enums;
 using Remotely.Server.Models;
 using System;
 using System.Timers;
@@ -7,11 +8,20 @@ namespace Remotely.Server.Services
 {
     public interface IToastService
     {
-        ConcurrentList<Toast> Toasts { get; }
-
         event EventHandler OnToastsChanged;
 
-        void ShowToast(string message, int expirationMillisecond = 3000, string classString = null, string styleOverrides = null);
+        ConcurrentList<Toast> Toasts { get; }
+        void ShowToast(
+            string message, 
+            int expirationMillisecond = 3000, 
+            string classString = null, 
+            string styleOverrides = null);
+
+        void ShowToast2(
+            string message,
+             ToastType toastType = ToastType.Info,
+            int expirationMillisecond = 3000,
+            string styleOverrides = null);
     }
 
     public class ToastService : IToastService
@@ -51,6 +61,24 @@ namespace Remotely.Server.Services
                 removeToastTimer.Dispose();
             };
             removeToastTimer.Start();
+        }
+
+        public void ShowToast2(
+            string message, 
+            ToastType toastType,
+            int expirationMillisecond = 3000, 
+            string styleOverrides = null)
+        {
+            var classString = toastType switch
+            {
+                ToastType.Info => "bg-info text-white",
+                ToastType.Success => "bg-success text-white",
+                ToastType.Warning => "bg-warning text-white",
+                ToastType.Error => "bg-danger text-white",
+                _ => "bg-info text-white"
+            };
+
+            ShowToast(message, expirationMillisecond, classString, styleOverrides);
         }
     }
 }

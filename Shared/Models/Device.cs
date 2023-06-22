@@ -49,6 +49,10 @@ namespace Remotely.Shared.Models
         [Display(Name = "Last Online")]
         public DateTimeOffset LastOnline { get; set; }
 
+        [Sortable]
+        [Display(Name = "MAC Addresses")]
+        public string[] MacAddresses { get; set; } = Array.Empty<string>();
+
         [StringLength(5000)]
         public string Notes { get; set; }       
 
@@ -71,19 +75,19 @@ namespace Remotely.Shared.Models
         public int ProcessorCount { get; set; }
 
         public string PublicIP { get; set; }
-        public string ServerVerificationToken { get; set; }
-
         [JsonIgnore]
         public List<ScriptResult> ScriptResults { get; set; }
 
         [JsonIgnore]
         public List<ScriptRun> ScriptRuns { get; set; }
+
         [JsonIgnore]
         public List<ScriptRun> ScriptRunsCompleted { get; set; }
 
         [JsonIgnore]
         public List<ScriptSchedule> ScriptSchedules { get; set; }
 
+        public string ServerVerificationToken { get; set; }
         [StringLength(200)]
         [Sortable]
         [Display(Name = "Tags")]

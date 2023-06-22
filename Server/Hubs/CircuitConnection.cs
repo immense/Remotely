@@ -55,6 +55,8 @@ namespace Remotely.Server.Hubs
         Task UninstallAgents(string[] deviceIDs);
         Task UpdateTags(string deviceID, string tags);
         Task UploadFiles(List<string> fileIDs, string transferID, string[] deviceIDs);
+        Task<Result> WakeDevice(Device device);
+        Task<Result> WakeDevices(Device[] deviceId);
     }
 
     public class CircuitConnection : CircuitHandler, ICircuitConnection
@@ -65,11 +67,11 @@ namespace Remotely.Server.Hubs
         private readonly IAuthService _authService;
         private readonly ICircuitManager _circuitManager;
         private readonly IDataService _dataService;
+        private readonly IDesktopHubSessionCache _desktopSessionCache;
         private readonly ConcurrentQueue<CircuitEvent> _eventQueue = new();
         private readonly IExpiringTokenService _expiringTokenService;
-        private readonly IDesktopHubSessionCache _desktopSessionCache;
-        private readonly IServiceHubSessionCache _serviceSessionCache;
         private readonly ILogger<CircuitConnection> _logger;
+        private readonly IServiceHubSessionCache _serviceSessionCache;
         private readonly IToastService _toastService;
         public CircuitConnection(
             IAuthService authService,
@@ -431,6 +433,89 @@ namespace Remotely.Server.Hubs
             return Task.CompletedTask;
         }
 
+        public async Task<Result> WakeDevice(Device device)
+        {
+            try
+            {
+                if (!_dataService.DoesUserHaveAccessToDevice(device.ID, User.Id))
+                {
+                    return Result.Fail("Unauthorized.") ;
+                }
+
+                var availableDevices = _serviceSessionCache
+                    .GetAllDevices()
+                    .Where(x =>
+                         x.OrganizationID == User.OrganizationID &&
+                        (x.DeviceGroup == device.DeviceGroup || x.PublicIP == device.PublicIP));
+
+                await SendWakeCommand(device, availableDevices);
+
+                return Result.Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error waking device {deviceId}.", device.ID);
+                return Result.Fail(ex);
+            }
+        }
+
+        public async Task<Result> WakeDevices(Device[] devices)
+        {
+            try
+            {
+                var deviceIds = devices.Select(x => x.ID).ToArray();
+                var filteredIds = _dataService.FilterDeviceIDsByUserPermission(deviceIds, User);
+                var filteredDevices = devices.Where(x => filteredIds.Contains(x.ID)).ToArray();
+
+                var availableDevices = _serviceSessionCache
+                    .GetAllDevices()
+                    .Where(x => x.OrganizationID == User.OrganizationID);
+
+                var devicesById = new ConcurrentDictionary<string, Device>();
+                var devicesByGroupId = new ConcurrentDictionary<string, List<Device>>();
+                var devicesByPublicIp = new ConcurrentDictionary<string, List<Device>>();
+
+                foreach (var device in availableDevices)
+                {
+                    devicesById.AddOrUpdate(device.ID, device, (k, v) => device);
+
+                    if (!string.IsNullOrWhiteSpace(device.DeviceGroupID))
+                    {
+                        var group = devicesByGroupId.GetOrAdd(device.DeviceGroupID, key => new());
+                        group.Add(device);
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(device.PublicIP))
+                    {
+                        var group = devicesByPublicIp.GetOrAdd(device.PublicIP, key => new());
+                        group.Add(device);
+                    }
+                }
+
+                foreach (var deviceToWake in filteredDevices)
+                {
+                    if (!string.IsNullOrWhiteSpace(deviceToWake.DeviceGroupID) &&
+                        devicesByGroupId.TryGetValue(deviceToWake.DeviceGroupID, out var groupList))
+                    {
+                        await SendWakeCommand(deviceToWake, groupList);
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(deviceToWake.PublicIP) &&
+                        devicesByGroupId.TryGetValue(deviceToWake.PublicIP, out var ipList))
+                    {
+                        await SendWakeCommand(deviceToWake, ipList);
+                    }
+
+                }
+                return Result.Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while waking devices.");
+                return Result.Fail(ex);
+            }
+        }
+
         private (bool canAccess, string connectionId) CanAccessDevice(string deviceId)
         {
             if (string.IsNullOrWhiteSpace(deviceId))
@@ -444,7 +529,7 @@ namespace Remotely.Server.Hubs
             {
                 return (false, string.Empty);
             }
-  
+
 
             return (true, connectionId);
         }
@@ -484,6 +569,20 @@ namespace Remotely.Server.Hubs
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Error while invoking circuit event.");
+                    }
+                }
+            }
+        }
+
+        private async Task SendWakeCommand(Device deviceToWake, IEnumerable<Device> peerDevices)
+        {
+            foreach (var peerDevice in peerDevices)
+            {
+                foreach (var mac in deviceToWake.MacAddresses)
+                {
+                    if (_serviceSessionCache.TryGetConnectionId(peerDevice.ID, out var connectionId))
+                    {
+                        await _agentHubContext.Clients.Client(connectionId).SendAsync("WakeDevice", mac);
                     }
                 }
             }

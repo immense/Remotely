@@ -36,6 +36,7 @@ namespace Remotely.Agent.Services
 
         private readonly IDeviceInformationService _deviceInfoService;
         private readonly IHttpClientFactory _httpFactory;
+        private readonly IWakeOnLanService _wakeOnLanService;
         private readonly ILogger<AgentHubConnection> _logger;
         private readonly ILogger _fileLogger;
         private readonly ScriptExecutor _scriptExecutor;
@@ -57,6 +58,7 @@ namespace Remotely.Agent.Services
             IUpdater updater,
             IDeviceInformationService deviceInfoService,
             IHttpClientFactory httpFactory,
+            IWakeOnLanService wakeOnLanService,
             IEnumerable<ILoggerProvider> loggerProviders,
             ILogger<AgentHubConnection> logger)
         {
@@ -68,6 +70,7 @@ namespace Remotely.Agent.Services
             _updater = updater;
             _deviceInfoService = deviceInfoService;
             _httpFactory = httpFactory;
+            _wakeOnLanService = wakeOnLanService;
             _logger = logger;
             _fileLogger = loggerProviders
                 .OfType<FileLoggerProvider>()
@@ -489,6 +492,11 @@ namespace Remotely.Agent.Services
             });
 
             _hubConnection.On("TriggerHeartbeat", SendHeartbeat);
+
+            _hubConnection.On("WakeDevice", async (string macAddress) =>
+            {
+                await _wakeOnLanService.WakeDevice(macAddress);
+            });
         }
 
         private async Task<bool> VerifyServer()
