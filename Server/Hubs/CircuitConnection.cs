@@ -61,16 +61,14 @@ namespace Remotely.Server.Hubs
         /// Peer devices are those in the same group or the same public IP.
         /// </summary>
         /// <param name="device"></param>
-        /// <returns>The number of peer devices that broadcasted the WOL packet.</returns>
-        Task<Result<int>> WakeDevice(Device device);
+        Task<Result> WakeDevice(Device device);
 
         /// <summary>
         /// Sends a Wake-On-LAN request for the specified device to its peer devices.
         /// Peer devices are those in the same group or the same public IP.
         /// </summary>
         /// <param name="devices"></param>
-        /// <returns>The number of peer devices that broadcasted the WOL packet.</returns>
-        Task<Result<int>> WakeDevices(Device[] devices);
+        Task<Result> WakeDevices(Device[] devices);
     }
 
     public class CircuitConnection : CircuitHandler, ICircuitConnection
@@ -447,13 +445,13 @@ namespace Remotely.Server.Hubs
             return Task.CompletedTask;
         }
 
-        public async Task<Result<int>> WakeDevice(Device device)
+        public async Task<Result> WakeDevice(Device device)
         {
             try
             {
                 if (!_dataService.DoesUserHaveAccessToDevice(device.ID, User.Id))
                 {
-                    return Result.Fail<int>("Unauthorized.") ;
+                    return Result.Fail("Unauthorized.") ;
                 }
 
                 var availableDevices = _serviceSessionCache
@@ -465,16 +463,16 @@ namespace Remotely.Server.Hubs
 
                 await SendWakeCommand(device, availableDevices);
 
-                return Result.Ok(availableDevices.Length);
+                return Result.Ok();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error waking device {deviceId}.", device.ID);
-                return Result.Fail<int>(ex);
+                return Result.Fail(ex);
             }
         }
 
-        public async Task<Result<int>> WakeDevices(Device[] devices)
+        public async Task<Result> WakeDevices(Device[] devices)
         {
             try
             {
@@ -498,8 +496,6 @@ namespace Remotely.Server.Hubs
                     {
                         var group = devicesByGroupId.GetOrAdd(device.DeviceGroupID, key => new());
                         group.Add(device);
-                        // We only need it added to one group.
-                        continue;
                     }
 
                     if (!string.IsNullOrWhiteSpace(device.PublicIP))
@@ -509,32 +505,27 @@ namespace Remotely.Server.Hubs
                     }
                 }
 
-
-                var peerCount = 0;
-
                 foreach (var deviceToWake in filteredDevices)
                 {
                     if (!string.IsNullOrWhiteSpace(deviceToWake.DeviceGroupID) &&
                         devicesByGroupId.TryGetValue(deviceToWake.DeviceGroupID, out var groupList))
                     {
                         await SendWakeCommand(deviceToWake, groupList);
-                        peerCount += groupList.Count;
                     }
 
                     if (!string.IsNullOrWhiteSpace(deviceToWake.PublicIP) &&
                         devicesByPublicIp.TryGetValue(deviceToWake.PublicIP, out var ipList))
                     {
                         await SendWakeCommand(deviceToWake, ipList);
-                        peerCount += ipList.Count;
                     }
 
                 }
-                return Result.Ok(peerCount);
+                return Result.Ok();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while waking devices.");
-                return Result.Fail<int>(ex);
+                return Result.Fail(ex);
             }
         }
 
@@ -604,6 +595,15 @@ namespace Remotely.Server.Hubs
                 {
                     if (_serviceSessionCache.TryGetConnectionId(peerDevice.ID, out var connectionId))
                     {
+                        _logger.LogInformation(
+                            "Sending wake command for device {deviceName} ({deviceId}) to " +
+                            "peer device {peerDeviceName} ({peerDeviceId}).  " +
+                            "Sender: {username}.",
+                            deviceToWake.DeviceName,
+                            deviceToWake.ID,
+                            peerDevice.DeviceName,
+                            peerDevice.ID,
+                            User.UserName);
                         await _agentHubContext.Clients.Client(connectionId).SendAsync("WakeDevice", mac);
                     }
                 }
