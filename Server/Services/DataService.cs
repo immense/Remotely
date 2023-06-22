@@ -347,7 +347,7 @@ namespace Remotely.Server.Services
                 resultDevice.TotalMemory = device.TotalMemory;
                 resultDevice.TotalStorage = device.TotalStorage;
                 resultDevice.AgentVersion = device.AgentVersion;
-                resultDevice.MacAddresses = device.MacAddresses;
+                resultDevice.MacAddresses = device.MacAddresses ?? Array.Empty<string>();
                 resultDevice.LastOnline = DateTimeOffset.Now;
             }
             else

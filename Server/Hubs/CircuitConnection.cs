@@ -600,7 +600,7 @@ namespace Remotely.Server.Hubs
         {
             foreach (var peerDevice in peerDevices)
             {
-                foreach (var mac in deviceToWake.MacAddresses)
+                foreach (var mac in deviceToWake.MacAddresses ?? Array.Empty<string>())
                 {
                     if (_serviceSessionCache.TryGetConnectionId(peerDevice.ID, out var connectionId))
                     {
