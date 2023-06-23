@@ -1,4 +1,4 @@
-﻿using Immense.RemoteControl.Server.Abstractions;
+﻿using Remotely.Shared.Extensions;
 using Immense.RemoteControl.Server.Hubs;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.SignalR;
@@ -9,6 +9,7 @@ using Moq;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
+using Remotely.Shared.Dtos;
 using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;
@@ -57,7 +58,7 @@ namespace Remotely.Tests
             hubClients.Setup(x => x.Caller).Returns(caller.Object);
             hub.Clients = hubClients.Object;
 
-            Assert.IsFalse(await hub.DeviceCameOnline(_testData.Org1Device1));
+            Assert.IsFalse(await hub.DeviceCameOnline(_testData.Org1Device1.ToDto()));
             hubClients.Verify(x => x.Caller, Times.Once);
             caller.Verify(x => x.SendCoreAsync("UninstallAgent", It.IsAny<object[]>(), It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -94,7 +95,7 @@ namespace Remotely.Tests
             hubClients.Setup(x => x.Caller).Returns(caller.Object);
             hub.Clients = hubClients.Object;
 
-            Assert.IsFalse(await hub.DeviceCameOnline(_testData.Org1Device1));
+            Assert.IsFalse(await hub.DeviceCameOnline(_testData.Org1Device1.ToDto()));
             hubClients.Verify(x => x.Caller, Times.Once);
             caller.Verify(x => x.SendCoreAsync("UninstallAgent", It.IsAny<object[]>(), It.IsAny<CancellationToken>()), Times.Once);
         }

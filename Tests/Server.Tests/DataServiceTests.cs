@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Remotely.Server.Services;
+using Remotely.Shared.Dtos;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
@@ -35,10 +36,10 @@ namespace Remotely.Tests
 
             Assert.IsNull(storedDevice);
 
-            var newDevice = new Device()
+            var newDevice = new DeviceClientDto()
             {
-                ID = _newDeviceID,
-                OrganizationID = _testData.Org1Id,
+                Id = _newDeviceID,
+                OrganizationId = _testData.Org1Id,
                 DeviceName = Environment.MachineName,
                 Is64Bit = Environment.Is64BitOperatingSystem
             };

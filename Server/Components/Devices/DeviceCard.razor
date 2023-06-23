@@ -234,7 +234,7 @@
                             <InputSelect @bind-Value="Device.DeviceGroupID" class="form-control">
                                 <option value="">None</option>
 
-                                @foreach (var group in DataService.GetDeviceGroups(Username))
+                                @foreach (var group in _deviceGroups)
                                 {
                                     <option @key="group.ID" value="@group.ID">@group.Name</option>
                                 }

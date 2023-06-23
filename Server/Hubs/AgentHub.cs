@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
 using Remotely.Shared;
+using Remotely.Shared.Dtos;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
@@ -87,11 +88,11 @@ namespace Remotely.Server.Hubs
             }
         }
 
-        public async Task<bool> DeviceCameOnline(Device device)
+        public async Task<bool> DeviceCameOnline(DeviceClientDto device)
         {
             try
             {
-                if (CheckForDeviceBan(device.ID, device.DeviceName))
+                if (CheckForDeviceBan(device.Id, device.DeviceName))
                 {
                     return false;
                 }
@@ -144,9 +145,9 @@ namespace Remotely.Server.Hubs
             return false;
         }
 
-        public async Task DeviceHeartbeat(Device device)
+        public async Task DeviceHeartbeat(DeviceClientDto device)
         {
-            if (CheckForDeviceBan(device.ID, device.DeviceName))
+            if (CheckForDeviceBan(device.Id, device.DeviceName))
             {
                 return;
             }

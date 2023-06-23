@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Remotely.Server.Areas.Identity.Pages.Account.Manage;
 using Remotely.Server.Data;
 using Remotely.Server.Services;
+using Remotely.Shared.Dtos;
 using Remotely.Shared.Models;
 using System;
 using System.Linq;
@@ -26,19 +28,11 @@ namespace Remotely.Tests
             UserOptions = new RemotelyUserOptions()
         };
 
-        public RemotelyUser Org1Admin2 { get; private set; } 
+        public RemotelyUser Org1Admin2 { get; private set; }
 
-        public Device Org1Device1 { get; private set; } = new Device()
-        {
-            ID = "Org1Device1",
-            DeviceName = "Org1Device1Name"
-        };
+        public Device Org1Device1 { get; private set; }
 
-        public Device Org1Device2 { get; private set; } = new Device()
-        {
-            ID = "Org1Device2",
-            DeviceName = "Org1Device2Name"
-        };
+        public Device Org1Device2 { get; private set; }
 
         public DeviceGroup Org1Group1 { get; private set; } = new DeviceGroup()
         {
@@ -71,17 +65,9 @@ namespace Remotely.Tests
 
         public RemotelyUser Org2Admin2 { get; private set; }
 
-        public Device Org2Device1 { get; private set; } = new Device()
-        {
-            ID = "Org2Device1",
-            DeviceName = "Org2Device1Name"
-        };
+        public Device Org2Device1 { get; private set; }
 
-        public Device Org2Device2 { get; private set; } = new Device()
-        {
-            ID = "Org2Device2",
-            DeviceName = "Org2Device2Name"
-        };
+        public Device Org2Device2 { get; private set; }
 
         public DeviceGroup Org2Group1 { get; private set; } = new DeviceGroup()
         {
@@ -100,17 +86,10 @@ namespace Remotely.Tests
 
         public void ClearData()
         {
-            var dbContext = IoCActivator.ServiceProvider.GetRequiredService<AppDb>();
-            dbContext.Devices.RemoveRange(dbContext.Devices.ToList());
-            dbContext.DeviceGroups.RemoveRange(dbContext.DeviceGroups.ToList());
-            dbContext.Users.RemoveRange(dbContext.Users.ToList());
-            dbContext.Organizations.RemoveRange(dbContext.Organizations.ToList());
-            dbContext.Alerts.RemoveRange(dbContext.Alerts.ToList());
-            dbContext.ScriptResults.RemoveRange(dbContext.ScriptResults.ToList());
-            dbContext.ScriptRuns.RemoveRange(dbContext.ScriptRuns.ToList());
-            dbContext.ScriptSchedules.RemoveRange(dbContext.ScriptSchedules.ToList());
-            dbContext.SavedScripts.RemoveRange(dbContext.SavedScripts.ToList());
-            dbContext.SaveChanges();
+            using var scope = IoCActivator.ServiceProvider.CreateScope();
+            using var dbContext = scope.ServiceProvider.GetRequiredService<AppDb>();
+            dbContext.Database.EnsureDeleted();
+            dbContext.Database.EnsureCreated();
 
         }
 
@@ -118,8 +97,9 @@ namespace Remotely.Tests
         {
             ClearData();
 
+            using var scope = IoCActivator.ServiceProvider.CreateScope();
+            using var userManager = scope.ServiceProvider.GetRequiredService<UserManager<RemotelyUser>>();
             var dataService = IoCActivator.ServiceProvider.GetRequiredService<IDataService>();
-            var userManager = IoCActivator.ServiceProvider.GetRequiredService<UserManager<RemotelyUser>>();
             var emailSender = IoCActivator.ServiceProvider.GetRequiredService<IEmailSenderEx>();
 
             // Organization 1
@@ -134,10 +114,20 @@ namespace Remotely.Tests
             await dataService.CreateUser("org1testuser2@test.com", false, Org1Admin1.OrganizationID);
             Org1User2 = dataService.GetUserByNameWithOrg("org1testuser2@test.com");
 
-            Org1Device1.OrganizationID = Org1Admin1.OrganizationID;
-            await dataService.AddOrUpdateDevice(Org1Device1); ;
-            Org1Device2.OrganizationID = Org1Admin1.OrganizationID;
-            await dataService.AddOrUpdateDevice(Org1Device2);
+            var device1 = new DeviceClientDto()
+            {
+                Id = "Org1Device1",
+                DeviceName = "Org1Device1Name",
+                OrganizationId = Org1Id
+            };
+            var device2 = new DeviceClientDto()
+            {
+                Id = "Org1Device2",
+                DeviceName = "Org1Device2Name",
+                OrganizationId = Org1Id
+            };
+            Org1Device1 = (await dataService.AddOrUpdateDevice(device1)).Value;
+            Org1Device2 = (await dataService.AddOrUpdateDevice(device2)).Value;
 
             dataService.AddDeviceGroup(Org1Admin1.OrganizationID, Org1Group1, out _, out _);
             dataService.AddDeviceGroup(Org1Admin1.OrganizationID, Org1Group2, out _, out _);
@@ -158,10 +148,20 @@ namespace Remotely.Tests
             await dataService.CreateUser("org2testuser2@test.com", false, Org2Admin1.OrganizationID);
             Org2User2 = dataService.GetUserByNameWithOrg("org2testuser2@test.com");
 
-            Org2Device1.OrganizationID = Org2Admin1.OrganizationID;
-            await dataService.AddOrUpdateDevice(Org2Device1); ;
-            Org2Device2.OrganizationID = Org2Admin1.OrganizationID;
-            await dataService.AddOrUpdateDevice(Org2Device2);
+            var device3 = new DeviceClientDto()
+            {
+                Id = "Org2Device1",
+                DeviceName = "Org2Device1Name",
+                OrganizationId = Org2Id
+            };
+            var device4 = new DeviceClientDto()
+            {
+                Id = "Org2Device2",
+                DeviceName = "Org2Device2Name",
+                OrganizationId = Org2Id
+            };
+            Org2Device1 = (await dataService.AddOrUpdateDevice(device3)).Value;
+            Org2Device2 = (await dataService.AddOrUpdateDevice(device4)).Value;
 
             dataService.AddDeviceGroup(Org2Admin1.OrganizationID, Org2Group1, out _, out _);
             dataService.AddDeviceGroup(Org2Admin1.OrganizationID, Org2Group2, out _, out _);

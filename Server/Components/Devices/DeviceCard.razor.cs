@@ -28,6 +28,8 @@ namespace Remotely.Server.Components.Devices
         private ElementReference _card;
         private Version _currentVersion = new();
         private Theme _theme;
+        private DeviceGroup[] _deviceGroups = Array.Empty<DeviceGroup>();
+
         [Parameter]
         public Device Device { get; set; }
 
@@ -78,6 +80,7 @@ namespace Remotely.Server.Components.Devices
             await base.OnInitializedAsync();
             _theme = await AppState.GetEffectiveTheme();
             _currentVersion = UpgradeService.GetCurrentVersion();
+            _deviceGroups = DataService.GetDeviceGroups(Username);
             AppState.PropertyChanged += AppState_PropertyChanged;
             CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
         }

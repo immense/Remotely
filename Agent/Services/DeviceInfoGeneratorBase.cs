@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Remotely.Shared.Dtos;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
@@ -21,21 +22,21 @@ namespace Remotely.Agent.Services
             _logger = logger;
         }
 
-        protected Device GetDeviceBase(string deviceID, string orgID)
+        protected DeviceClientDto GetDeviceBase(string deviceID, string orgID)
         {
 
-            return new Device()
+            return new DeviceClientDto()
             {
-                ID = deviceID,
+                Id = deviceID,
                 DeviceName = Environment.MachineName,
                 Platform = EnvironmentHelper.Platform.ToString(),
                 ProcessorCount = Environment.ProcessorCount,
-                OSArchitecture = RuntimeInformation.OSArchitecture,
-                OSDescription = RuntimeInformation.OSDescription,
+                OsArchitecture = RuntimeInformation.OSArchitecture,
+                OsDescription = RuntimeInformation.OSDescription,
                 Is64Bit = Environment.Is64BitOperatingSystem,
                 IsOnline = true,
                 MacAddresses = GetMacAddresses().ToArray(),
-                OrganizationID = orgID,
+                OrganizationId = orgID,
                 AgentVersion = AppVersionHelper.GetAppVersion()
         };
         }

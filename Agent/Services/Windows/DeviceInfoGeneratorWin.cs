@@ -1,6 +1,7 @@
 ﻿using Immense.RemoteControl.Desktop.Native.Windows;
 using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
+using Remotely.Shared.Dtos;
 using Remotely.Shared.Models;
 using System;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace Remotely.Agent.Services.Windows
             _cpuUtilSampler = cpuUtilSampler;
         }
 
-        public Task<Device> CreateDevice(string deviceId, string orgId)
+        public Task<DeviceClientDto> CreateDevice(string deviceId, string orgId)
         {
             var device = GetDeviceBase(deviceId, orgId);
 

@@ -3,6 +3,7 @@ using Remotely.Shared.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 
@@ -107,7 +108,17 @@ namespace Remotely.Shared.Models
 
         [Sortable]
         [Display(Name = "Memory Used %")]
-        public double UsedMemoryPercent => UsedMemory / TotalMemory;
+        public double UsedMemoryPercent
+        {
+            get
+            {
+                if (TotalMemory == 0)
+                {
+                    return 0;
+                }
+                return UsedMemory / TotalMemory;
+            }
+        }
 
         [Sortable]
         [Display(Name = "Storage Used")]
@@ -115,6 +126,16 @@ namespace Remotely.Shared.Models
 
         [Sortable]
         [Display(Name = "Storage Used %")]
-        public double UsedStoragePercent => UsedStorage / TotalStorage;
+        public double UsedStoragePercent
+        {
+            get
+            {
+                if (TotalStorage == 0)
+                {
+                    return 0;
+                }
+                return UsedStorage / TotalStorage;
+            }
+        }
     }
 }
