@@ -1159,16 +1159,18 @@ namespace Remotely.Server.Services
         {
             using var dbContext = _appDbFactory.GetContext();
 
-            return dbContext.Devices
-                .Include(x => x.DeviceGroup)
-                .ThenInclude(x => x.Users)
-                .Count(x =>
-                    x.OrganizationID == user.OrganizationID &&
-                    (
-                        user.IsAdministrator ||
-                        string.IsNullOrWhiteSpace(x.DeviceGroupID) ||
-                        x.DeviceGroup.Users.Any(deviceUser => deviceUser.Id == user.Id)
-                    ));
+            if (user.IsAdministrator)
+            {
+                return GetDeviceCount();
+            }
+
+            return dbContext.Users
+                .Include(x => x.DeviceGroups)
+                .ThenInclude(x => x.Devices)
+                .Where(x => x.Id == user.Id)
+                .SelectMany(x => x.DeviceGroups)
+                .SelectMany(x => x.Devices)
+                .Count();
         }
 
         public async Task<DeviceGroup> GetDeviceGroup(
@@ -1257,27 +1259,30 @@ namespace Remotely.Server.Services
                 return Array.Empty<Device>();
             }
 
-            var user = dbContext.Users.FirstOrDefault(x => x.UserName == userName);
+            var user = dbContext.Users
+                .AsNoTracking()
+                .FirstOrDefault(x => x.UserName == userName);
 
             if (user is null)
             {
                 return Array.Empty<Device>();
             }
 
-            var deviceIds = dbContext.Devices
-                .Include(x => x.DeviceGroup)
-                .ThenInclude(x => x.Users)
-                .Where(x =>
-                    x.OrganizationID == user.OrganizationID &&
-                    (
-                        user.IsAdministrator ||
-                        string.IsNullOrWhiteSpace(x.DeviceGroupID) ||
-                        x.DeviceGroup.Users.Any(deviceUser => deviceUser.Id == user.Id)
-                    ))
-                .Select(x => x.ID);
+            if (user.IsAdministrator)
+            {
+                return dbContext.Devices
+                    .AsNoTracking()
+                    .Where(x => x.OrganizationID == user.OrganizationID)
+                    .ToArray();
+            }
 
-            return dbContext.Devices
-                .Where(x => deviceIds.Contains(x.ID))
+            return dbContext.Users
+                .AsNoTracking()
+                .Include(x => x.DeviceGroups)
+                .ThenInclude(x => x.Devices)
+                .Where(x => x.UserName == userName)
+                .SelectMany(x => x.DeviceGroups)
+                .SelectMany(x => x.Devices)
                 .ToArray();
         }
 
