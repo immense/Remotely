@@ -9,7 +9,7 @@
             <div>
                 <div>Device Group</div>
                 <div class="text-nowrap">
-                    <select class="form-control d-inline" style="width: 200px" @bind="_selectedGroupId">
+                    <select class="form-control d-inline" style="width: 150px" @bind="_selectedGroupId">
                         <option value="@_deviceGroupAll">All</option>
                         <option value="@_deviceGroupNone">None</option>
                         @foreach (var group in _deviceGroups)
