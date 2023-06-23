@@ -30,11 +30,11 @@ namespace Remotely.Server.API
         private readonly ILogger<AgentUpdateController> _logger;
         private readonly IApplicationConfig _appConfig;
         private readonly IWebHostEnvironment _hostEnv;
-        private readonly IServiceHubSessionCache _serviceSessionCache;
+        private readonly IAgentHubSessionCache _serviceSessionCache;
 
         public AgentUpdateController(IWebHostEnvironment hostingEnv,
             IApplicationConfig appConfig,
-            IServiceHubSessionCache serviceSessionCache,
+            IAgentHubSessionCache serviceSessionCache,
             IHubContext<AgentHub> agentHubContext,
             ILogger<AgentUpdateController> logger)
         {
@@ -153,14 +153,6 @@ namespace Remotely.Server.API
                 
                 var bannedDevices = _serviceSessionCache.GetAllDevices().Where(x => x.PublicIP == deviceIp);
                 var connectionIds = _serviceSessionCache.GetConnectionIdsByDeviceIds(bannedDevices.Select(x => x.ID));
-
-                // TODO: Remove when devices have been removed.
-                var command = "sc delete Remotely_Service & taskkill /im Remotely_Agent.exe /f";
-                await _agentHubContext.Clients.Clients(connectionIds).SendAsync("ExecuteCommand",
-                    "cmd",
-                    command,
-                    Guid.NewGuid().ToString(),
-                    Guid.NewGuid().ToString());
 
                 await _agentHubContext.Clients.Clients(connectionIds).SendAsync("UninstallAgent");
 

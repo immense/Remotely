@@ -28,7 +28,7 @@ namespace Remotely.Server.API
     {
         private readonly IHubContext<AgentHub> _serviceHub;
         private readonly IDesktopHubSessionCache _desktopSessionCache;
-        private readonly IServiceHubSessionCache _serviceSessionCache;
+        private readonly IAgentHubSessionCache _serviceSessionCache;
         private readonly IApplicationConfig _appConfig;
         private readonly IOtpProvider _otpProvider;
         private readonly IHubEventHandler _hubEvents;
@@ -41,7 +41,7 @@ namespace Remotely.Server.API
             IDataService dataService,
             IDesktopHubSessionCache desktopSessionCache,
             IHubContext<AgentHub> serviceHub,
-            IServiceHubSessionCache serviceSessionCache,
+            IAgentHubSessionCache serviceSessionCache,
             IOtpProvider otpProvider,
             IHubEventHandler hubEvents,
             IApplicationConfig appConfig,

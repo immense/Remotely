@@ -1,10 +1,14 @@
 ﻿using Microsoft.Extensions.Logging;
+using Remotely.Shared.Dtos;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 
 namespace Remotely.Agent.Services
@@ -18,20 +22,21 @@ namespace Remotely.Agent.Services
             _logger = logger;
         }
 
-        protected Device GetDeviceBase(string deviceID, string orgID)
+        protected DeviceClientDto GetDeviceBase(string deviceID, string orgID)
         {
 
-            return new Device()
+            return new DeviceClientDto()
             {
-                ID = deviceID,
+                Id = deviceID,
                 DeviceName = Environment.MachineName,
                 Platform = EnvironmentHelper.Platform.ToString(),
                 ProcessorCount = Environment.ProcessorCount,
-                OSArchitecture = RuntimeInformation.OSArchitecture,
-                OSDescription = RuntimeInformation.OSDescription,
+                OsArchitecture = RuntimeInformation.OSArchitecture,
+                OsDescription = RuntimeInformation.OSDescription,
                 Is64Bit = Environment.Is64BitOperatingSystem,
                 IsOnline = true,
-                OrganizationID = orgID,
+                MacAddresses = GetMacAddresses().ToArray(),
+                OrganizationId = orgID,
                 AgentVersion = AppVersionHelper.GetAppVersion()
         };
         }
@@ -94,6 +99,46 @@ namespace Remotely.Agent.Services
                 _logger.LogError(ex, "Error getting drive info.");
                 return null;
             }
+        }
+
+        private IEnumerable<string> GetMacAddresses()
+        {
+            var macAddress = new List<string>();
+
+            try
+            {
+                var nics = NetworkInterface.GetAllNetworkInterfaces();
+
+                if (!nics.Any())
+                {
+                    return macAddress;
+                }
+
+                var onlineNics = nics
+                    .Where(c =>
+                        c.NetworkInterfaceType != NetworkInterfaceType.Loopback &&
+                        c.OperationalStatus == OperationalStatus.Up);
+
+                foreach (var adapter in onlineNics)
+                {
+                    var ipProperties = adapter.GetIPProperties();
+
+                    var unicastAddresses = ipProperties.UnicastAddresses;
+                    if (!unicastAddresses.Any(temp => temp.Address.AddressFamily == AddressFamily.InterNetwork))
+                    {
+                        continue;
+                    }
+
+                    var address = adapter.GetPhysicalAddress();
+                    macAddress.Add(address.ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while getting MAC addresses.");
+            }
+
+            return macAddress;
         }
     }
 }

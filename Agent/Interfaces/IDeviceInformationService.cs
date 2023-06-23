@@ -1,4 +1,5 @@
-﻿using Remotely.Shared.Models;
+﻿using Remotely.Shared.Dtos;
+using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace Remotely.Agent.Interfaces
 {
     public interface IDeviceInformationService
     {
-        Task<Device> CreateDevice(string deviceId, string orgId);
+        Task<DeviceClientDto> CreateDevice(string deviceId, string orgId);
     }
 }

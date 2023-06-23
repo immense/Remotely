@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Remotely.Server.Data;
 using Remotely.Server.Models;
 using Remotely.Shared;
+using Remotely.Shared.Dtos;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
@@ -27,10 +28,10 @@ namespace Remotely.Server.Services
         Task AddAlert(string deviceID, string organizationID, string alertMessage, string details = null);
 
         bool AddDeviceGroup(string orgID, DeviceGroup deviceGroup, out string deviceGroupID, out string errorMessage);
-
+        Task<Result> AddDeviceToGroup(string deviceId, string groupId);
         InviteLink AddInvite(string orgID, InviteViewModel invite);
 
-        Task<Result<Device>> AddOrUpdateDevice(Device device);
+        Task<Result<Device>> AddOrUpdateDevice(DeviceClientDto device);
 
         Task AddOrUpdateSavedScript(SavedScript script, string userId);
 
@@ -124,7 +125,11 @@ namespace Remotely.Server.Services
 
         int GetDeviceCount(RemotelyUser user);
 
-        Task<DeviceGroup> GetDeviceGroup(string deviceGroupID);
+        Task<DeviceGroup> GetDeviceGroup(
+             string deviceGroupID,
+             bool includeDevices = false,
+             bool includeUsers = false);
+
         DeviceGroup[] GetDeviceGroups(string username);
 
         DeviceGroup[] GetDeviceGroupsForOrganization(string organizationId);
@@ -301,6 +306,34 @@ namespace Remotely.Server.Services
             return true;
         }
 
+        public async Task<Result> AddDeviceToGroup(string deviceId, string groupId)
+        {
+            using var context = _appDbFactory.GetContext();
+            var device = await context.Devices.FirstOrDefaultAsync(x => x.ID == deviceId);
+
+            if (device is null)
+            {
+                return Result.Fail("Device not found.");
+            }
+
+            var group = await context.DeviceGroups.FirstOrDefaultAsync(x => 
+                x.OrganizationID == device.OrganizationID &&
+                x.ID == groupId);
+
+            if (group is null)
+            {
+                return Result.Fail("Group not found.");
+            }
+
+            group.Devices ??= new();
+            group.Devices.Add(device);
+            device.DeviceGroup = group;
+            device.DeviceGroupID = group.ID;
+            await context.SaveChangesAsync();
+
+            return Result.Ok();
+        }
+
         public InviteLink AddInvite(string orgID, InviteViewModel invite)
         {
             using var dbContext = _appDbFactory.GetContext();
@@ -323,58 +356,62 @@ namespace Remotely.Server.Services
             return inviteLink;
         }
 
-        public async Task<Result<Device>> AddOrUpdateDevice(Device device)
+        public async Task<Result<Device>> AddOrUpdateDevice(DeviceClientDto deviceDto)
         {
             using var dbContext = _appDbFactory.GetContext();
 
-            var resultDevice = await dbContext.Devices.FindAsync(device.ID);
-            if (resultDevice != null)
+            var device = await dbContext.Devices.FindAsync(deviceDto.Id);
+
+            if (device is null)
             {
-                resultDevice.CurrentUser = device.CurrentUser;
-                resultDevice.DeviceName = device.DeviceName;
-                resultDevice.Drives = device.Drives;
-                resultDevice.CpuUtilization = device.CpuUtilization;
-                resultDevice.UsedMemory = device.UsedMemory;
-                resultDevice.UsedStorage = device.UsedStorage;
-                resultDevice.Is64Bit = device.Is64Bit;
-                resultDevice.IsOnline = true;
-                resultDevice.OSArchitecture = device.OSArchitecture;
-                resultDevice.OSDescription = device.OSDescription;
-                resultDevice.Platform = device.Platform;
-                resultDevice.ProcessorCount = device.ProcessorCount;
-                resultDevice.PublicIP = device.PublicIP;
-                resultDevice.TotalMemory = device.TotalMemory;
-                resultDevice.TotalStorage = device.TotalStorage;
-                resultDevice.AgentVersion = device.AgentVersion;
-                resultDevice.LastOnline = DateTimeOffset.Now;
-            }
-            else
-            {
-                device.LastOnline = DateTimeOffset.Now;
-                if (_hostEnvironment.IsDevelopment() && dbContext.Organizations.Any())
+                device = new Device
                 {
-                    var org = await dbContext.Organizations.FirstOrDefaultAsync();
-                    device.Organization = org;
-                    device.OrganizationID = org?.ID;
-                }
-
-                resultDevice = device;
-
-                if (!await dbContext.Organizations.AnyAsync(x => x.ID == device.OrganizationID))
-                {
-                    _logger.LogInformation(
-                        "Unable to add device {deviceName} because organization {organizationID}" +
-                        "does not exist.  Device ID: {ID}.",
-                        device.DeviceName,
-                        device.OrganizationID,
-                        device.ID);
-
-                    return Result.Fail<Device>("Organization does not exist.");
-                }
+                    OrganizationID = deviceDto.OrganizationId,
+                    ID = deviceDto.Id,
+                };
                 await dbContext.Devices.AddAsync(device);
             }
+
+            device.CurrentUser = deviceDto.CurrentUser;
+            device.DeviceName = deviceDto.DeviceName;
+            device.Drives = deviceDto.Drives;
+            device.CpuUtilization = deviceDto.CpuUtilization;
+            device.UsedMemory = deviceDto.UsedMemory;
+            device.UsedStorage = deviceDto.UsedStorage;
+            device.Is64Bit = deviceDto.Is64Bit;
+            device.IsOnline = true;
+            device.OSArchitecture = deviceDto.OsArchitecture;
+            device.OSDescription = deviceDto.OsDescription;
+            device.Platform = deviceDto.Platform;
+            device.ProcessorCount = deviceDto.ProcessorCount;
+            device.PublicIP = deviceDto.PublicIP;
+            device.TotalMemory = deviceDto.TotalMemory;
+            device.TotalStorage = deviceDto.TotalStorage;
+            device.AgentVersion = deviceDto.AgentVersion;
+            device.MacAddresses = deviceDto.MacAddresses ?? Array.Empty<string>();
+            device.LastOnline = DateTimeOffset.Now;
+
+            if (_hostEnvironment.IsDevelopment() && dbContext.Organizations.Any())
+            {
+                var org = await dbContext.Organizations.FirstOrDefaultAsync();
+                device.Organization = org;
+                device.OrganizationID = org?.ID;
+            }
+
+            if (!await dbContext.Organizations.AnyAsync(x => x.ID == device.OrganizationID))
+            {
+                _logger.LogInformation(
+                    "Unable to add device {deviceName} because organization {organizationID}" +
+                    "does not exist.  Device ID: {ID}.",
+                    device.DeviceName,
+                    device.OrganizationID,
+                    device.ID);
+
+                return Result.Fail<Device>("Organization does not exist.");
+            }
+
             await dbContext.SaveChangesAsync();
-            return Result.Ok(resultDevice);
+            return Result.Ok(device);
         }
 
         public async Task AddOrUpdateSavedScript(SavedScript script, string userId)
@@ -920,7 +957,6 @@ namespace Remotely.Server.Services
                     device.ID == deviceID &&
                     (
                         remotelyUser.IsAdministrator ||
-                        string.IsNullOrWhiteSpace(device.DeviceGroupID) ||
                         device.DeviceGroup.Users.Any(user => user.Id == remotelyUser.Id
                     )));
         }
@@ -946,7 +982,6 @@ namespace Remotely.Server.Services
                     deviceIDs.Contains(device.ID) &&
                     (
                         remotelyUser.IsAdministrator ||
-                        string.IsNullOrWhiteSpace(device.DeviceGroupID) ||
                         device.DeviceGroup.Users.Any(user => user.Id == remotelyUser.Id
                     )))
                 .Select(x => x.ID)
@@ -1154,22 +1189,39 @@ namespace Remotely.Server.Services
         {
             using var dbContext = _appDbFactory.GetContext();
 
-            return dbContext.Devices
-                .Include(x => x.DeviceGroup)
-                .ThenInclude(x => x.Users)
-                .Count(x =>
-                    x.OrganizationID == user.OrganizationID &&
-                    (
-                        user.IsAdministrator ||
-                        string.IsNullOrWhiteSpace(x.DeviceGroupID) ||
-                        x.DeviceGroup.Users.Any(deviceUser => deviceUser.Id == user.Id)
-                    ));
+            if (user.IsAdministrator)
+            {
+                return GetDeviceCount();
+            }
+
+            return dbContext.Users
+                .Include(x => x.DeviceGroups)
+                .ThenInclude(x => x.Devices)
+                .Where(x => x.Id == user.Id)
+                .SelectMany(x => x.DeviceGroups)
+                .SelectMany(x => x.Devices)
+                .Count();
         }
 
-        public async Task<DeviceGroup> GetDeviceGroup(string deviceGroupID)
+        public async Task<DeviceGroup> GetDeviceGroup(
+            string deviceGroupID,
+            bool includeDevices = false,
+            bool includeUsers = false)
         {
             using var dbContext = _appDbFactory.GetContext();
-            return await dbContext.DeviceGroups.FindAsync(deviceGroupID);
+
+            var query = dbContext.DeviceGroups.AsQueryable();
+
+            if (includeDevices)
+            {
+                query = query.Include(x => x.Devices);
+            }
+            if (includeUsers)
+            {
+                query = query.Include(x => x.Users);
+            }
+
+            return await query.FirstOrDefaultAsync(x => x.ID == deviceGroupID);
         }
 
         public DeviceGroup[] GetDeviceGroups(string username)
@@ -1237,27 +1289,30 @@ namespace Remotely.Server.Services
                 return Array.Empty<Device>();
             }
 
-            var user = dbContext.Users.FirstOrDefault(x => x.UserName == userName);
+            var user = dbContext.Users
+                .AsNoTracking()
+                .FirstOrDefault(x => x.UserName == userName);
 
             if (user is null)
             {
                 return Array.Empty<Device>();
             }
 
-            var deviceIds = dbContext.Devices
-                .Include(x => x.DeviceGroup)
-                .ThenInclude(x => x.Users)
-                .Where(x =>
-                    x.OrganizationID == user.OrganizationID &&
-                    (
-                        user.IsAdministrator ||
-                        string.IsNullOrWhiteSpace(x.DeviceGroupID) ||
-                        x.DeviceGroup.Users.Any(deviceUser => deviceUser.Id == user.Id)
-                    ))
-                .Select(x => x.ID);
+            if (user.IsAdministrator)
+            {
+                return dbContext.Devices
+                    .AsNoTracking()
+                    .Where(x => x.OrganizationID == user.OrganizationID)
+                    .ToArray();
+            }
 
-            return dbContext.Devices
-                .Where(x => deviceIds.Contains(x.ID))
+            return dbContext.Users
+                .AsNoTracking()
+                .Include(x => x.DeviceGroups)
+                .ThenInclude(x => x.Devices)
+                .Where(x => x.UserName == userName)
+                .SelectMany(x => x.DeviceGroups)
+                .SelectMany(x => x.Devices)
                 .ToArray();
         }
 

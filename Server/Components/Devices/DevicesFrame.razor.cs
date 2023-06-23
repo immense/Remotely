@@ -257,6 +257,7 @@ namespace Remotely.Server.Components.Devices
 
         }
 
+
         private string GetDisplayName(PropertyInfo propInfo)
         {
             return propInfo.GetCustomAttribute<DisplayAttribute>()?.Name ?? propInfo.Name;
@@ -333,6 +334,38 @@ namespace Remotely.Server.Components.Devices
             else
             {
                 _sortDirection = ListSortDirection.Ascending;
+            }
+        }
+
+        private async Task WakeDevices()
+        {
+            var offlineDevices = DataService
+               .GetDevicesForUser(Username)
+               .Where(x => !x.IsOnline);
+
+            if (_selectedGroupId == _deviceGroupNone)
+            {
+                offlineDevices = offlineDevices.Where(x => x.DeviceGroupID is null);
+            }
+
+            if (_selectedGroupId != _deviceGroupAll)
+            {
+                offlineDevices = offlineDevices.Where(x => x.DeviceGroupID == _selectedGroupId);
+            }
+
+            var result = await CircuitConnection.WakeDevices(offlineDevices.ToArray());
+
+            if (result.IsSuccess)
+            {
+                ToastService.ShowToast2(
+                    $"Wake commands sent to peer devices.", 
+                    ToastType.Success);
+            }
+            else
+            {
+                ToastService.ShowToast2(
+                    $"Failed to send wake commands.  Reason: {result.Reason}", 
+                    ToastType.Error);
             }
         }
     }

@@ -97,6 +97,12 @@
                             </button>
                         </li>
                         <li>
+                            <button class="dropdown-item" @onclick="() => WakeDevice()">
+                                <i class="oi oi-power-standby" title="Wake Device"></i>
+                                <span class="ml-2">Wake</span>
+                            </button>
+                        </li>
+                        <li>
                             <FileInputButton ClassNames="dropdown-item btn btn-primary"
                                              OnChanged="OnFileInputChanged">
                                 <ButtonContent>
@@ -200,6 +206,16 @@
                         <input class="form-control" readonly value="@Device.PublicIP" />
                     </div>
 
+                    <div class="font-weight-bold text-info mt-2">
+                        MAC Addresses
+                    </div>
+                    <div>
+                        <input 
+                            class="form-control" 
+                            readonly 
+                            value="@(string.Join(", ", Device.MacAddresses ?? Array.Empty<string>()))" />
+                    </div>
+
                     <EditForm Model="Device" OnValidSubmit="HandleValidSubmit">
                         <DataAnnotationsValidator />
 
@@ -218,7 +234,7 @@
                             <InputSelect @bind-Value="Device.DeviceGroupID" class="form-control">
                                 <option value="">None</option>
 
-                                @foreach (var group in DataService.GetDeviceGroups(Username))
+                                @foreach (var group in _deviceGroups)
                                 {
                                     <option @key="group.ID" value="@group.ID">@group.Name</option>
                                 }

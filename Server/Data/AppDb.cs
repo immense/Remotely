@@ -46,6 +46,7 @@ namespace Remotely.Server.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            var jsonOptions = JsonSerializerOptions.Default;
 
             base.OnModelCreating(builder);
 
@@ -102,8 +103,8 @@ namespace Remotely.Server.Data
             builder.Entity<RemotelyUser>()
                 .Property(x => x.UserOptions)
                 .HasConversion(
-                    x => JsonSerializer.Serialize(x, (JsonSerializerOptions)null),
-                    x => JsonSerializer.Deserialize<RemotelyUserOptions>(x, (JsonSerializerOptions)null));
+                    x => JsonSerializer.Serialize(x, jsonOptions),
+                    x => JsonSerializer.Deserialize<RemotelyUserOptions>(x, jsonOptions));
             builder.Entity<RemotelyUser>()
                 .HasMany(x => x.SavedScripts)
                 .WithOne(x => x.Creator);
@@ -117,8 +118,8 @@ namespace Remotely.Server.Data
             builder.Entity<Device>()
                 .Property(x => x.Drives)
                 .HasConversion(
-                    x => JsonSerializer.Serialize(x, (JsonSerializerOptions)null),
-                    x => JsonSerializer.Deserialize<List<Drive>>(x, (JsonSerializerOptions)null));
+                    x => JsonSerializer.Serialize(x, jsonOptions),
+                    x => TryDeserializeProperty<List<Drive>>(x, jsonOptions));
             builder.Entity<Device>()
                .Property(x => x.Drives)
                .Metadata.SetValueComparer(new ValueComparer<List<Drive>>(true));
@@ -136,6 +137,12 @@ namespace Remotely.Server.Data
             builder.Entity<Device>()
                 .HasMany(x => x.ScriptSchedules)
                 .WithMany(x => x.Devices);
+            builder.Entity<Device>()
+                .Property(x => x.MacAddresses)
+                .HasConversion(
+                    x => JsonSerializer.Serialize(x, jsonOptions),
+                    x => DeserializeStringArray(x, jsonOptions),
+                    valueComparer: _stringArrayComparer);
 
             builder.Entity<DeviceGroup>()
                 .HasMany(x => x.Devices);
@@ -153,16 +160,16 @@ namespace Remotely.Server.Data
             builder.Entity<ScriptResult>()
               .Property(x => x.ErrorOutput)
               .HasConversion(
-                  x => JsonSerializer.Serialize(x, (JsonSerializerOptions)null),
-                  x => JsonSerializer.Deserialize<string[]>(x, (JsonSerializerOptions)null))
+                  x => JsonSerializer.Serialize(x, jsonOptions),
+                  x => DeserializeStringArray(x, jsonOptions))
               .Metadata
               .SetValueComparer(_stringArrayComparer);
 
             builder.Entity<ScriptResult>()
               .Property(x => x.StandardOutput)
               .HasConversion(
-                  x => JsonSerializer.Serialize(x, (JsonSerializerOptions)null),
-                  x => JsonSerializer.Deserialize<string[]>(x, (JsonSerializerOptions)null))
+                  x => JsonSerializer.Serialize(x, jsonOptions),
+                  x => DeserializeStringArray(x, jsonOptions))
               .Metadata
               .SetValueComparer(_stringArrayComparer);
 
@@ -197,6 +204,39 @@ namespace Remotely.Server.Data
                 }
             }
 
+        }
+
+        private static string[] DeserializeStringArray(string value, JsonSerializerOptions jsonOptions)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    return Array.Empty<string>();
+                }
+                return JsonSerializer.Deserialize<string[]>(value, jsonOptions) ?? Array.Empty<string>();
+            }
+            catch
+            {
+                return Array.Empty<string>();
+            }
+        }
+
+        private static T TryDeserializeProperty<T>(string value, JsonSerializerOptions jsonOptions)
+            where T: new()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    return new();
+                }
+                return JsonSerializer.Deserialize<T>(value, jsonOptions) ?? new();
+            }
+            catch
+            {
+                return new();
+            }
         }
     }
 }

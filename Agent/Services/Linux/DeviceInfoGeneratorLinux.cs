@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
+using Remotely.Shared.Dtos;
 using Remotely.Shared.Models;
 using Remotely.Shared.Services;
 using Remotely.Shared.Utilities;
@@ -26,7 +27,7 @@ namespace Remotely.Agent.Services.Linux
             _cpuUtilSampler = cpuUtilSampler;
         }
 
-        public Task<Device> CreateDevice(string deviceId, string orgId)
+        public Task<DeviceClientDto> CreateDevice(string deviceId, string orgId)
         {
             var device = GetDeviceBase(deviceId, orgId);
 

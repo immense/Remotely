@@ -25,14 +25,14 @@ namespace Remotely.Server.API
         private readonly IHubContext<AgentHub> _agentHubContext;
 
         private readonly IDataService _dataService;
-        private readonly IServiceHubSessionCache _serviceSessionCache;
+        private readonly IAgentHubSessionCache _serviceSessionCache;
         private readonly IExpiringTokenService _expiringTokenService;
 
         private readonly UserManager<RemotelyUser> _userManager;
 
         public ScriptingController(UserManager<RemotelyUser> userManager,
             IDataService dataService,
-            IServiceHubSessionCache serviceSessionCache,
+            IAgentHubSessionCache serviceSessionCache,
             IExpiringTokenService expiringTokenService,
             IHubContext<AgentHub> agentHub)
         {

@@ -92,6 +92,7 @@ public class Program
         // TODO: All these should be registered as interfaces.
         services.AddSingleton<IAgentHubConnection, AgentHubConnection>();
         services.AddSingleton<ICpuUtilizationSampler, CpuUtilizationSampler>();
+        services.AddSingleton<IWakeOnLanService, WakeOnLanService>();
         services.AddHostedService(services => services.GetRequiredService<ICpuUtilizationSampler>());
         services.AddScoped<ChatClientService>();
         services.AddTransient<PSCore>();

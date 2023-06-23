@@ -219,7 +219,7 @@ services.AddScoped<IScriptScheduleDispatcher, ScriptScheduleDispatcher>();
 services.AddSingleton<IOtpProvider, OtpProvider>();
 services.AddSingleton<IEmbeddedServerDataSearcher, EmbeddedServerDataSearcher>();
 services.AddSingleton<ILogsManager, LogsManager>();
-services.AddSingleton(WeakReferenceMessenger.Default);
+services.AddScoped<IMessenger>((services) => new WeakReferenceMessenger());
 
 services.AddRemoteControlServer(config =>
 {
@@ -228,7 +228,7 @@ services.AddRemoteControlServer(config =>
     config.AddViewerPageDataProvider<ViewerPageDataProvider>();
 });
 
-services.AddSingleton<IServiceHubSessionCache, ServiceHubSessionCache>();
+services.AddSingleton<IAgentHubSessionCache, AgentHubSessionCache>();
 
 var app = builder.Build();
 var appConfig = app.Services.GetRequiredService<IApplicationConfig>();

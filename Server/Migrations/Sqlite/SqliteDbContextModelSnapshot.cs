@@ -15,7 +15,7 @@ namespace Remotely.Server.Migrations.Sqlite
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.5");
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.7");
 
             modelBuilder.Entity("DeviceGroupRemotelyUser", b =>
                 {
@@ -442,6 +442,9 @@ namespace Remotely.Server.Migrations.Sqlite
 
                     b.Property<string>("LastOnline")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MacAddresses")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Notes")

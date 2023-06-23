@@ -26,8 +26,9 @@ namespace Remotely.Server.Components.Devices
     {
         private readonly ConcurrentDictionary<string, double> _fileUploadProgressLookup = new();
         private ElementReference _card;
-        private Theme _theme;
         private Version _currentVersion = new();
+        private Theme _theme;
+        private DeviceGroup[] _deviceGroups = Array.Empty<DeviceGroup>();
 
         [Parameter]
         public Device Device { get; set; }
@@ -41,12 +42,6 @@ namespace Remotely.Server.Components.Devices
 
         [Inject]
         private ICircuitConnection CircuitConnection { get; set; }
-
-        [Inject]
-        private IServiceHubSessionCache ServiceSessionCache { get; init; }
-
-        [Inject]
-        private IUpgradeService UpgradeService { get; init; }
 
         [Inject]
         private IDataService DataService { get; set; }
@@ -64,9 +59,15 @@ namespace Remotely.Server.Components.Devices
 
         [Inject]
         private IModalService ModalService { get; set; }
+
+        [Inject]
+        private IAgentHubSessionCache ServiceSessionCache { get; init; }
+
         [Inject]
         private IToastService ToastService { get; set; }
 
+        [Inject]
+        private IUpgradeService UpgradeService { get; init; }
         public void Dispose()
         {
             AppState.PropertyChanged -= AppState_PropertyChanged;
@@ -79,6 +80,7 @@ namespace Remotely.Server.Components.Devices
             await base.OnInitializedAsync();
             _theme = await AppState.GetEffectiveTheme();
             _currentVersion = UpgradeService.GetCurrentVersion();
+            _deviceGroups = DataService.GetDeviceGroups(Username);
             AppState.PropertyChanged += AppState_PropertyChanged;
             CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
         }
@@ -321,6 +323,23 @@ namespace Remotely.Server.Components.Devices
                 AppState.DevicesFrameFocusedDevice = null;
                 AppState.DevicesFrameFocusedCardState = DeviceCardState.Normal;
                 ParentFrame.Refresh();
+            }
+        }
+
+        private async Task WakeDevice()
+        {
+            var result = await CircuitConnection.WakeDevice(Device);
+            if (result.IsSuccess)
+            {
+                ToastService.ShowToast2(
+                    $"Wake command sent to peer devices.", 
+                    ToastType.Success);
+            }
+            else
+            {
+                ToastService.ShowToast2(
+                    $"Wake command failed.  Reason: {result.Reason}", 
+                    ToastType.Error);
             }
         }
     }

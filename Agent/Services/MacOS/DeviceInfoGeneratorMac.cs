@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
+using Remotely.Shared.Dtos;
 using Remotely.Shared.Models;
 using Remotely.Shared.Services;
 using System;
@@ -17,7 +18,7 @@ namespace Remotely.Agent.Services.MacOS
         {
             _processInvoker = processInvoker;
         }
-        public async Task<Device> CreateDevice(string deviceId, string orgId)
+        public async Task<DeviceClientDto> CreateDevice(string deviceId, string orgId)
         {
             var device = GetDeviceBase(deviceId, orgId);
 

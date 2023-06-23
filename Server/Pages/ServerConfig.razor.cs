@@ -162,7 +162,7 @@ namespace Remotely.Server.Pages
         private ILogger<ServerConfig> Logger { get; set; }
 
         [Inject]
-        private IServiceHubSessionCache ServiceSessionCache { get; init; }
+        private IAgentHubSessionCache ServiceSessionCache { get; init; }
 
         private AppSettingsModel Input { get; } = new();
 

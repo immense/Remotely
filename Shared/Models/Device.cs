@@ -3,6 +3,7 @@ using Remotely.Shared.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 
@@ -49,6 +50,10 @@ namespace Remotely.Shared.Models
         [Display(Name = "Last Online")]
         public DateTimeOffset LastOnline { get; set; }
 
+        [Sortable]
+        [Display(Name = "MAC Addresses")]
+        public string[] MacAddresses { get; set; } = Array.Empty<string>();
+
         [StringLength(5000)]
         public string Notes { get; set; }       
 
@@ -71,19 +76,19 @@ namespace Remotely.Shared.Models
         public int ProcessorCount { get; set; }
 
         public string PublicIP { get; set; }
-        public string ServerVerificationToken { get; set; }
-
         [JsonIgnore]
         public List<ScriptResult> ScriptResults { get; set; }
 
         [JsonIgnore]
         public List<ScriptRun> ScriptRuns { get; set; }
+
         [JsonIgnore]
         public List<ScriptRun> ScriptRunsCompleted { get; set; }
 
         [JsonIgnore]
         public List<ScriptSchedule> ScriptSchedules { get; set; }
 
+        public string ServerVerificationToken { get; set; }
         [StringLength(200)]
         [Sortable]
         [Display(Name = "Tags")]
@@ -103,7 +108,17 @@ namespace Remotely.Shared.Models
 
         [Sortable]
         [Display(Name = "Memory Used %")]
-        public double UsedMemoryPercent => UsedMemory / TotalMemory;
+        public double UsedMemoryPercent
+        {
+            get
+            {
+                if (TotalMemory == 0)
+                {
+                    return 0;
+                }
+                return UsedMemory / TotalMemory;
+            }
+        }
 
         [Sortable]
         [Display(Name = "Storage Used")]
@@ -111,6 +126,16 @@ namespace Remotely.Shared.Models
 
         [Sortable]
         [Display(Name = "Storage Used %")]
-        public double UsedStoragePercent => UsedStorage / TotalStorage;
+        public double UsedStoragePercent
+        {
+            get
+            {
+                if (TotalStorage == 0)
+                {
+                    return 0;
+                }
+                return UsedStorage / TotalStorage;
+            }
+        }
     }
 }

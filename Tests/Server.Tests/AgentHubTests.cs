@@ -1,4 +1,4 @@
-﻿using Immense.RemoteControl.Server.Abstractions;
+﻿using Remotely.Shared.Extensions;
 using Immense.RemoteControl.Server.Hubs;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.SignalR;
@@ -9,6 +9,7 @@ using Moq;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
+using Remotely.Shared.Dtos;
 using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;
@@ -34,14 +35,14 @@ namespace Remotely.Tests
             var circuitManager = new Mock<ICircuitManager>();
             var circuitConnection = new Mock<ICircuitConnection>();
             circuitManager.Setup(x => x.Connections).Returns(new[] { circuitConnection.Object });
-            circuitConnection.Setup(x => x.User).Returns(_testData.Admin1);
+            circuitConnection.Setup(x => x.User).Returns(_testData.Org1Admin1);
             var appConfig = new Mock<IApplicationConfig>();
             var viewerHub = new Mock<IHubContext<ViewerHub>>();
             var expiringTokenService = new Mock<IExpiringTokenService>();
-            var serviceSessionCache = new Mock<IServiceHubSessionCache>();
+            var serviceSessionCache = new Mock<IAgentHubSessionCache>();
             var logger = new Mock<ILogger<AgentHub>>();
 
-            appConfig.Setup(x => x.BannedDevices).Returns(new string[] { _testData.Device1.DeviceName });
+            appConfig.Setup(x => x.BannedDevices).Returns(new string[] { _testData.Org1Device1.DeviceName });
 
             var hub = new AgentHub(
                 DataService, 
@@ -57,7 +58,7 @@ namespace Remotely.Tests
             hubClients.Setup(x => x.Caller).Returns(caller.Object);
             hub.Clients = hubClients.Object;
 
-            Assert.IsFalse(await hub.DeviceCameOnline(_testData.Device1));
+            Assert.IsFalse(await hub.DeviceCameOnline(_testData.Org1Device1.ToDto()));
             hubClients.Verify(x => x.Caller, Times.Once);
             caller.Verify(x => x.SendCoreAsync("UninstallAgent", It.IsAny<object[]>(), It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -71,14 +72,14 @@ namespace Remotely.Tests
             var circuitManager = new Mock<ICircuitManager>();
             var circuitConnection = new Mock<ICircuitConnection>();
             circuitManager.Setup(x => x.Connections).Returns(new[] { circuitConnection.Object });
-            circuitConnection.Setup(x => x.User).Returns(_testData.Admin1);
+            circuitConnection.Setup(x => x.User).Returns(_testData.Org1Admin1);
             var appConfig = new Mock<IApplicationConfig>();
             var viewerHub = new Mock<IHubContext<ViewerHub>>();
             var expiringTokenService = new Mock<IExpiringTokenService>();
-            var serviceSessionCache = new Mock<IServiceHubSessionCache>();
+            var serviceSessionCache = new Mock<IAgentHubSessionCache>();
             var logger = new Mock<ILogger<AgentHub>>();
 
-            appConfig.Setup(x => x.BannedDevices).Returns(new string[] { _testData.Device1.ID });
+            appConfig.Setup(x => x.BannedDevices).Returns(new string[] { _testData.Org1Device1.ID });
 
             var hub = new AgentHub(
                 DataService,
@@ -94,7 +95,7 @@ namespace Remotely.Tests
             hubClients.Setup(x => x.Caller).Returns(caller.Object);
             hub.Clients = hubClients.Object;
 
-            Assert.IsFalse(await hub.DeviceCameOnline(_testData.Device1));
+            Assert.IsFalse(await hub.DeviceCameOnline(_testData.Org1Device1.ToDto()));
             hubClients.Verify(x => x.Caller, Times.Once);
             caller.Verify(x => x.SendCoreAsync("UninstallAgent", It.IsAny<object[]>(), It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -106,9 +107,10 @@ namespace Remotely.Tests
         }
 
         [TestInitialize]
-        public void TestInit()
+        public async Task TestInit()
         {
             _testData = new TestData();
+            await _testData.Init();
             DataService = IoCActivator.ServiceProvider.GetRequiredService<IDataService>();
         }
 

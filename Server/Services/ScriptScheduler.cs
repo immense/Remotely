@@ -61,9 +61,7 @@ namespace Remotely.Server.Services
         {
             using var scope = _serviceProvider.CreateScope();
             var scriptScheduleDispatcher = scope.ServiceProvider.GetRequiredService<IScriptScheduleDispatcher>();
-            var dataService = scope.ServiceProvider.GetRequiredService<IDataService>();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<ScriptScheduler>>();
-            var circuitConnection = scope.ServiceProvider.GetRequiredService<ICircuitConnection>();
 
             try
             {
