@@ -85,7 +85,7 @@ namespace Remotely.Server.Services
                             .Distinct()
                             .ToArray();
 
-                        var onlineDevices = _serviceSessionCache.GetConnectionIdsByDeviceIds(deviceIds);
+                        var onlineDevices = _serviceSessionCache.FilterDevicesByOnlineStatus(deviceIds, true);
 
                         if (schedule.RunOnNextConnect)
                         {

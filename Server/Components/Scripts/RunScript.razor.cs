@@ -123,7 +123,7 @@ namespace Remotely.Server.Components.Scripts
 
             var filteredDevices = DataService.FilterDeviceIDsByUserPermission(deviceIds.ToArray(), User);
 
-            var onlineDevices = ServiceSessionCache.GetConnectionIdsByDeviceIds(filteredDevices);
+            var onlineDevices = ServiceSessionCache.FilterDevicesByOnlineStatus(filteredDevices, true);
 
             var scriptRun = new ScriptRun()
             {

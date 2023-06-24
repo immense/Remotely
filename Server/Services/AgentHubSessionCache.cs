@@ -9,6 +9,8 @@ namespace Remotely.Server.Services
     public interface IAgentHubSessionCache
     {
         void AddOrUpdateByConnectionId(string connectionId, Device device);
+        IEnumerable<string> FilterDevicesByOnlineStatus(IEnumerable<string> deviceIds, bool isOnline);
+
         ICollection<Device> GetAllDevices();
         IEnumerable<string> GetConnectionIdsByDeviceIds(IEnumerable<string> deviceIds);
         bool TryGetByDeviceId(string deviceId, out Device device);
@@ -26,6 +28,18 @@ namespace Remotely.Server.Services
         {
             _connectionIdToDeviceLookup.AddOrUpdate(connectionId, device, (k, v) => device);
             _deviceIdToConnectionIdLookup.AddOrUpdate(device.ID, connectionId, (k, v) => connectionId);
+        }
+
+        public IEnumerable<string> FilterDevicesByOnlineStatus(IEnumerable<string> deviceIds, bool isOnline)
+        {
+            foreach (var deviceId in deviceIds)
+            {
+                var result = TryGetConnectionId(deviceId, out _);
+                if (result == isOnline)
+                {
+                    yield return deviceId;
+                }
+            }
         }
 
         public ICollection<Device> GetAllDevices() => _connectionIdToDeviceLookup.Values;
