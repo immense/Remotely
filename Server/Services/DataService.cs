@@ -360,14 +360,14 @@ namespace Remotely.Server.Services
         {
             using var dbContext = _appDbFactory.GetContext();
 
-            var device = await dbContext.Devices.FindAsync(deviceDto.Id);
+            var device = await dbContext.Devices.FindAsync(deviceDto.ID);
 
             if (device is null)
             {
                 device = new Device
                 {
-                    OrganizationID = deviceDto.OrganizationId,
-                    ID = deviceDto.Id,
+                    OrganizationID = deviceDto.OrganizationID,
+                    ID = deviceDto.ID,
                 };
                 await dbContext.Devices.AddAsync(device);
             }
@@ -380,8 +380,8 @@ namespace Remotely.Server.Services
             device.UsedStorage = deviceDto.UsedStorage;
             device.Is64Bit = deviceDto.Is64Bit;
             device.IsOnline = true;
-            device.OSArchitecture = deviceDto.OsArchitecture;
-            device.OSDescription = deviceDto.OsDescription;
+            device.OSArchitecture = deviceDto.OSArchitecture;
+            device.OSDescription = deviceDto.OSDescription;
             device.Platform = deviceDto.Platform;
             device.ProcessorCount = deviceDto.ProcessorCount;
             device.PublicIP = deviceDto.PublicIP;

@@ -116,7 +116,7 @@ internal class Program
                     {
                         try
                         {
-                            var currentInfo = await _deviceInfo.CreateDevice(device.Id, _organizationId);
+                            var currentInfo = await _deviceInfo.CreateDevice(device.ID, _organizationId);
                             currentInfo.DeviceName = device.DeviceName;
                             await hubConnection.SendAsync("DeviceHeartbeat", currentInfo);
                         }

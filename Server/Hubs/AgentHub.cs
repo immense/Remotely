@@ -92,7 +92,7 @@ namespace Remotely.Server.Hubs
         {
             try
             {
-                if (CheckForDeviceBan(device.Id, device.DeviceName))
+                if (CheckForDeviceBan(device.ID, device.DeviceName))
                 {
                     return false;
                 }
@@ -147,7 +147,7 @@ namespace Remotely.Server.Hubs
 
         public async Task DeviceHeartbeat(DeviceClientDto device)
         {
-            if (CheckForDeviceBan(device.Id, device.DeviceName))
+            if (CheckForDeviceBan(device.ID, device.DeviceName))
             {
                 return;
             }

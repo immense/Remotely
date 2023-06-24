@@ -29,7 +29,7 @@ namespace Remotely.Shared.Dtos
         public List<Drive> Drives { get; set; } = new();
 
         [DataMember]
-        public string Id { get; set; } = string.Empty;
+        public string ID { get; set; } = string.Empty;
 
         [DataMember]
         public bool Is64Bit { get; set; }
@@ -41,13 +41,13 @@ namespace Remotely.Shared.Dtos
         public string[] MacAddresses { get; set; } = Array.Empty<string>();
 
         [DataMember]
-        public string OrganizationId { get; set; } = string.Empty;
+        public string OrganizationID { get; set; } = string.Empty;
 
         [DataMember]
-        public Architecture OsArchitecture { get; set; }
+        public Architecture OSArchitecture { get; set; }
 
         [DataMember]
-        public string OsDescription { get; set; } = string.Empty;
+        public string OSDescription { get; set; } = string.Empty;
 
         [DataMember]
         public string Platform { get; set; } = string.Empty;

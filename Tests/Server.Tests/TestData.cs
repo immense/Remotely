@@ -116,15 +116,15 @@ namespace Remotely.Tests
 
             var device1 = new DeviceClientDto()
             {
-                Id = "Org1Device1",
+                ID = "Org1Device1",
                 DeviceName = "Org1Device1Name",
-                OrganizationId = Org1Id
+                OrganizationID = Org1Id
             };
             var device2 = new DeviceClientDto()
             {
-                Id = "Org1Device2",
+                ID = "Org1Device2",
                 DeviceName = "Org1Device2Name",
-                OrganizationId = Org1Id
+                OrganizationID = Org1Id
             };
             Org1Device1 = (await dataService.AddOrUpdateDevice(device1)).Value;
             Org1Device2 = (await dataService.AddOrUpdateDevice(device2)).Value;
@@ -150,15 +150,15 @@ namespace Remotely.Tests
 
             var device3 = new DeviceClientDto()
             {
-                Id = "Org2Device1",
+                ID = "Org2Device1",
                 DeviceName = "Org2Device1Name",
-                OrganizationId = Org2Id
+                OrganizationID = Org2Id
             };
             var device4 = new DeviceClientDto()
             {
-                Id = "Org2Device2",
+                ID = "Org2Device2",
                 DeviceName = "Org2Device2Name",
-                OrganizationId = Org2Id
+                OrganizationID = Org2Id
             };
             Org2Device1 = (await dataService.AddOrUpdateDevice(device3)).Value;
             Org2Device2 = (await dataService.AddOrUpdateDevice(device4)).Value;
