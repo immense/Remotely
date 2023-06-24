@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Logging;
 using Remotely.Shared;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
@@ -14,14 +15,24 @@ using System.Threading.Tasks;
 
 namespace Remotely.Agent.Services
 {
-    public class ScriptExecutor
+    public interface IScriptExecutor
     {
-        public ScriptExecutor(ConfigService configService)
+        Task RunCommandFromApi(ScriptingShell shell, string requestID, string command, string senderUsername, string authToken, HubConnection hubConnection);
+        Task RunCommandFromTerminal(ScriptingShell shell, string command, string authToken, string senderUsername, string senderConnectionID, ScriptInputType scriptInputType, TimeSpan timeout, HubConnection hubConnection);
+        Task RunScript(Guid savedScriptId, int scriptRunId, string initiator, ScriptInputType scriptInputType, string authToken);
+    }
+
+    public class ScriptExecutor : IScriptExecutor
+    {
+        private readonly IConfigService _configService;
+        private readonly ILogger<ScriptExecutor> _logger;
+
+        public ScriptExecutor(IConfigService configService, ILogger<ScriptExecutor> logger)
         {
-            ConfigService = configService;
+            _configService = configService;
+            _logger = logger;
         }
 
-        private ConfigService ConfigService { get; }
 
         public async Task RunCommandFromApi(ScriptingShell shell,
             string requestID,
@@ -43,7 +54,7 @@ namespace Remotely.Agent.Services
             }
             catch (Exception ex)
             {
-                Logger.Write(ex);
+                _logger.LogError(ex, "Error while running command from API.");
             }
         }
 
@@ -72,7 +83,7 @@ namespace Remotely.Agent.Services
             }
             catch (Exception ex)
             {
-                Logger.Write(ex);
+                _logger.LogError(ex, "Error while running command from terminal.");
                 await hubConnection.SendAsync("DisplayMessage",
                     "There was an error executing the command. It has been logged on the client device.",
                     "Error executing command.",
@@ -89,9 +100,13 @@ namespace Remotely.Agent.Services
         {
             try
             {
-                Logger.Write($"Script run started.  Script ID: {savedScriptId}. Script Run: {scriptRunId}. Initiator: {initiator}.");
+                _logger.LogInformation(
+                    "Script run started.  Script ID: {savedScriptId}. Script Run: {scriptRunId}. Initiator: {initiator}.",
+                    savedScriptId,
+                    scriptRunId,
+                    initiator);
 
-                var connectionInfo = ConfigService.GetConnectionInfo();
+                var connectionInfo = _configService.GetConnectionInfo();
                 var url = $"{connectionInfo.Host}/API/SavedScripts/{savedScriptId}";
                 using var hc = new HttpClient();
                 hc.DefaultRequestHeaders.Add("Authorization", authToken);
@@ -111,7 +126,7 @@ namespace Remotely.Agent.Services
             }
             catch (Exception ex)
             {
-                Logger.Write(ex);
+                _logger.LogError(ex, "Error while running script.");
             }
         }
 
@@ -156,7 +171,7 @@ namespace Remotely.Agent.Services
         }
         private async Task<ScriptResult> SendResultsToApi(object result, string authToken)
         {
-            var targetURL = ConfigService.GetConnectionInfo().Host + $"/API/ScriptResults";
+            var targetURL = _configService.GetConnectionInfo().Host + $"/API/ScriptResults";
 
             using var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Add("Authorization", authToken);
@@ -165,7 +180,7 @@ namespace Remotely.Agent.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                Logger.Write($"Failed to send script results.  Status Code: {response.StatusCode}");
+                _logger.LogError("Failed to send script results.  Status Code: {responseStatusCode}", response.StatusCode);
                 return default;
             }
 

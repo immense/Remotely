@@ -1,5 +1,6 @@
 ﻿using Immense.RemoteControl.Shared.Models;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
 using Remotely.Agent.Models;
 using Remotely.Shared.Models;
@@ -15,18 +16,19 @@ using System.Threading.Tasks;
 
 namespace Remotely.Agent.Services
 {
-    public class ChatClientService
+    public interface IChatClientService
+    {
+        Task SendMessage(string senderName, string message, string orgName, string orgId, bool disconnected, string senderConnectionID, HubConnection hubConnection);
+    }
+
+    public class ChatClientService : IChatClientService
     {
         private readonly IAppLauncher _appLauncher;
+        private readonly ILogger<ChatClientService> _logger;
         private readonly MemoryCache _chatClients = new("ChatClients");
-        private readonly SemaphoreSlim _messageLock = new(1,1);
+        private readonly SemaphoreSlim _messageLock = new(1, 1);
 
-        public ChatClientService(IAppLauncher appLauncher)
-        {
-            _appLauncher = appLauncher;
-        }
-
-        private CacheItemPolicy CacheItemPolicy { get; } = new()
+        private readonly CacheItemPolicy _cacheItemPolicy = new()
         {
             SlidingExpiration = TimeSpan.FromMinutes(10),
             RemovedCallback = new CacheEntryRemovedCallback(args =>
@@ -48,6 +50,13 @@ namespace Remotely.Agent.Services
             })
         };
 
+        public ChatClientService(
+            IAppLauncher appLauncher,
+            ILogger<ChatClientService> logger)
+        {
+            _appLauncher = appLauncher;
+            _logger = logger;
+        }
 
         public async Task SendMessage(
             string senderName,
@@ -60,7 +69,7 @@ namespace Remotely.Agent.Services
         {
             if (!await _messageLock.WaitAsync(30000))
             {
-                Logger.Write("Timed out waiting for chat message lock.", Shared.Enums.EventType.Warning);
+                _logger.LogWarning("Timed out waiting for chat message lock.");
                 return;
             }
 
@@ -80,11 +89,11 @@ namespace Remotely.Agent.Services
 
                     if (procID > 0)
                     {
-                        Logger.Write($"Chat app started.  Process ID: {procID}");
+                        _logger.LogInformation("Chat app started.  Process ID: {procID}", procID);
                     }
                     else
                     {
-                        Logger.Write($"Chat app did not start successfully.");
+                        _logger.LogError($"Chat app did not start successfully.");
                         return;
                     }
 
@@ -92,12 +101,12 @@ namespace Remotely.Agent.Services
                     clientPipe.Connect(15000);
                     if (!clientPipe.IsConnected)
                     {
-                        Logger.Write("Failed to connect to chat host.");
+                        _logger.LogError("Failed to connect to chat host.");
                         return;
                     }
                     chatSession = new ChatSession() { PipeStream = clientPipe, ProcessID = procID };
                     _ = Task.Run(async () => { await ReadFromStream(chatSession.PipeStream, senderConnectionID, hubConnection); });
-                    _chatClients.Add(senderConnectionID, chatSession, CacheItemPolicy);
+                    _chatClients.Add(senderConnectionID, chatSession, _cacheItemPolicy);
                 }
 
                 chatSession = (ChatSession)_chatClients.Get(senderConnectionID);
@@ -116,7 +125,7 @@ namespace Remotely.Agent.Services
             }
             catch (Exception ex)
             {
-                Logger.Write(ex);
+                _logger.LogError(ex, "Error while sending chat message.");
             }
             finally
             {

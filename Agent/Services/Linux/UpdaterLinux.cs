@@ -20,7 +20,7 @@ namespace Remotely.Agent.Services.Linux
     public class UpdaterLinux : IUpdater
     {
         private readonly SemaphoreSlim _checkForUpdatesLock = new(1, 1);
-        private readonly ConfigService _configService;
+        private readonly IConfigService _configService;
         private readonly IUpdateDownloader _updateDownloader;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<UpdaterLinux> _logger;
@@ -29,7 +29,7 @@ namespace Remotely.Agent.Services.Linux
         private DateTimeOffset _lastUpdateFailure;
 
         public UpdaterLinux(
-            ConfigService configService,
+            IConfigService configService,
             IUpdateDownloader updateDownloader,
             IHttpClientFactory httpClientFactory,
             ILogger<UpdaterLinux> logger)

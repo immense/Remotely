@@ -1,4 +1,5 @@
-﻿using Remotely.Shared.Models;
+﻿using Microsoft.Extensions.Logging;
+using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
@@ -8,11 +9,23 @@ using System.Text.Json;
 
 namespace Remotely.Agent.Services
 {
-    public class ConfigService
+    public interface IConfigService
+    {
+        ConnectionInfo GetConnectionInfo();
+        void SaveConnectionInfo(ConnectionInfo connectionInfo);
+    }
+
+    public class ConfigService : IConfigService
     {
         private static readonly object _fileLock = new();
         private ConnectionInfo _connectionInfo;
         private readonly string _debugGuid = "f2b0a595-5ea8-471b-975f-12e70e0f3497";
+        private readonly ILogger<ConfigService> _logger;
+
+        public ConfigService(ILogger<ConfigService> logger)
+        {
+            _logger = logger;
+        }
 
         private Dictionary<string, string> _commandLineArgs;
         private Dictionary<string, string> CommandLineArgs
@@ -74,7 +87,7 @@ namespace Remotely.Agent.Services
                 {
                     if (!File.Exists("ConnectionInfo.json"))
                     {
-                        Logger.Write(new Exception("No connection info available.  Please create ConnectionInfo.json file with appropriate values."));
+                        _logger.LogError("No connection info available.  Please create ConnectionInfo.json file with appropriate values.");
                         return null;
                     }
                     _connectionInfo = JsonSerializer.Deserialize<ConnectionInfo>(File.ReadAllText("ConnectionInfo.json"));

@@ -29,20 +29,15 @@ namespace Remotely.Agent.Services
     public class AgentHubConnection : IAgentHubConnection, IDisposable
     {
         private readonly IAppLauncher _appLauncher;
-
-        private readonly ChatClientService _chatService;
-
-        private readonly ConfigService _configService;
-
+        private readonly IChatClientService _chatService;
+        private readonly IConfigService _configService;
         private readonly IDeviceInformationService _deviceInfoService;
         private readonly IHttpClientFactory _httpFactory;
         private readonly IWakeOnLanService _wakeOnLanService;
         private readonly ILogger<AgentHubConnection> _logger;
         private readonly ILogger _fileLogger;
-        private readonly ScriptExecutor _scriptExecutor;
-
-        private readonly Uninstaller _uninstaller;
-
+        private readonly IScriptExecutor _scriptExecutor;
+        private readonly IUninstaller _uninstaller;
         private readonly IUpdater _updater;
 
         private ConnectionInfo _connectionInfo;
@@ -50,10 +45,11 @@ namespace Remotely.Agent.Services
         private Timer _heartbeatTimer;
         private bool _isServerVerified;
 
-        public AgentHubConnection(ConfigService configService,
-            Uninstaller uninstaller,
-            ScriptExecutor scriptExecutor,
-            ChatClientService chatService,
+        public AgentHubConnection(
+            IConfigService configService,
+            IUninstaller uninstaller,
+            IScriptExecutor scriptExecutor,
+            IChatClientService chatService,
             IAppLauncher appLauncher,
             IUpdater updater,
             IDeviceInformationService deviceInfoService,

@@ -21,7 +21,7 @@ namespace Remotely.Agent.Services.MacOS
     {
         private readonly string _achitecture = RuntimeInformation.OSArchitecture.ToString().ToLower();
         private readonly SemaphoreSlim _checkForUpdatesLock = new(1, 1);
-        private readonly ConfigService _configService;
+        private readonly IConfigService _configService;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IUpdateDownloader _updateDownloader;
         private readonly ILogger<UpdaterMac> _logger;
@@ -30,7 +30,7 @@ namespace Remotely.Agent.Services.MacOS
         private readonly System.Timers.Timer _updateTimer = new(TimeSpan.FromHours(6).TotalMilliseconds);
 
         public UpdaterMac(
-            ConfigService configService,
+            IConfigService configService,
             IUpdateDownloader updateDownloader,
             IHttpClientFactory httpClientFactory,
             ILogger<UpdaterMac> logger)

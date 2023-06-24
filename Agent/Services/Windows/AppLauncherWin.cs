@@ -22,7 +22,7 @@ namespace Remotely.Agent.Services.Windows
         private readonly ILogger<AppLauncherWin> _logger;
         private readonly string _rcBinaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Desktop", EnvironmentHelper.DesktopExecutableFileName);
 
-        public AppLauncherWin(ConfigService configService, ILogger<AppLauncherWin> logger)
+        public AppLauncherWin(IConfigService configService, ILogger<AppLauncherWin> logger)
         {
             _connectionInfo = configService.GetConnectionInfo();
             _logger = logger;
