@@ -27,16 +27,16 @@ namespace Remotely.Agent.Services
 
             return new DeviceClientDto()
             {
-                Id = deviceID,
+                ID = deviceID,
                 DeviceName = Environment.MachineName,
                 Platform = EnvironmentHelper.Platform.ToString(),
                 ProcessorCount = Environment.ProcessorCount,
-                OsArchitecture = RuntimeInformation.OSArchitecture,
-                OsDescription = RuntimeInformation.OSDescription,
+                OSArchitecture = RuntimeInformation.OSArchitecture,
+                OSDescription = RuntimeInformation.OSDescription,
                 Is64Bit = Environment.Is64BitOperatingSystem,
                 IsOnline = true,
                 MacAddresses = GetMacAddresses().ToArray(),
-                OrganizationId = orgID,
+                OrganizationID = orgID,
                 AgentVersion = AppVersionHelper.GetAppVersion()
         };
         }

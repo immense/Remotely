@@ -109,7 +109,6 @@ namespace Remotely.Agent.Services
 
                     _logger.LogInformation("Connected to server.");
 
-                    // TODO: Move CPU sampler to background service.
                     var device = await _deviceInfoService.CreateDevice(_connectionInfo.DeviceID, _connectionInfo.OrganizationID);
 
                     var result = await _hubConnection.InvokeAsync<bool>("DeviceCameOnline", device);
@@ -199,6 +198,8 @@ namespace Remotely.Agent.Services
         private async Task HubConnection_Reconnected(string arg)
         {
             _logger.LogInformation("Reconnected to server.");
+            await _updater.CheckForUpdates();
+
             var device = await _deviceInfoService.CreateDevice(_connectionInfo.DeviceID, _connectionInfo.OrganizationID);
 
             if (!await _hubConnection.InvokeAsync<bool>("DeviceCameOnline", device))
@@ -212,9 +213,8 @@ namespace Remotely.Agent.Services
                 await Connect();
                 return;
             }
-
-            await _updater.CheckForUpdates();
         }
+
         private void RegisterMessageHandlers()
         {
 

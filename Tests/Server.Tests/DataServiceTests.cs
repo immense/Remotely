@@ -38,8 +38,8 @@ namespace Remotely.Tests
 
             var newDevice = new DeviceClientDto()
             {
-                Id = _newDeviceID,
-                OrganizationId = _testData.Org1Id,
+                ID = _newDeviceID,
+                OrganizationID = _testData.Org1Id,
                 DeviceName = Environment.MachineName,
                 Is64Bit = Environment.Is64BitOperatingSystem
             };
