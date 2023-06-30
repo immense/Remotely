@@ -79,7 +79,7 @@ namespace Remotely.Server.Hubs
         private readonly IAuthService _authService;
         private readonly ICircuitManager _circuitManager;
         private readonly IDataService _dataService;
-        private readonly IDesktopHubSessionCache _desktopSessionCache;
+        private readonly IRemoteControlSessionCache _remoteControlSessionCache;
         private readonly ConcurrentQueue<CircuitEvent> _eventQueue = new();
         private readonly IExpiringTokenService _expiringTokenService;
         private readonly ILogger<CircuitConnection> _logger;
@@ -94,7 +94,7 @@ namespace Remotely.Server.Hubs
             ICircuitManager circuitManager,
             IToastService toastService,
             IExpiringTokenService expiringTokenService,
-            IDesktopHubSessionCache desktopSessionCache,
+            IRemoteControlSessionCache remoteControlSessionCache,
             IAgentHubSessionCache agentSessionCache,
             ILogger<CircuitConnection> logger)
         {
@@ -106,7 +106,7 @@ namespace Remotely.Server.Hubs
             _circuitManager = circuitManager;
             _toastService = toastService;
             _expiringTokenService = expiringTokenService;
-            _desktopSessionCache = desktopSessionCache;
+            _remoteControlSessionCache = remoteControlSessionCache;
             _agentSessionCache = agentSessionCache;
             _logger = logger;
         }
@@ -244,7 +244,7 @@ namespace Remotely.Server.Hubs
 
             }
 
-            var sessionCount = _desktopSessionCache.Sessions
+            var sessionCount = _remoteControlSessionCache.Sessions
                    .OfType<RemoteControlSessionEx>()
                    .Count(x => x.OrganizationId == User.OrganizationID);
 
@@ -281,7 +281,7 @@ namespace Remotely.Server.Hubs
                 NotifyUserOnStart = _appConfig.RemoteControlNotifyUser
             };
 
-            _desktopSessionCache.AddOrUpdate($"{sessionId}", session);
+            _remoteControlSessionCache.AddOrUpdate($"{sessionId}", session);
 
             var organization = _dataService.GetOrganizationNameByUserName(User.UserName);
             await _agentHubContext.Clients.Client(serviceConnectionId).SendAsync("RemoteControl",

@@ -11,6 +11,7 @@ namespace Remotely.Server.Services
         string[] BannedDevices { get; }
         double DataRetentionInDays { get; }
         string DBProvider { get; }
+        bool EnableRemoteControlRecording { get; }
         bool EnableWindowsEventLog { get; }
         bool EnforceAttendedAccess { get; }
         bool ForceClientHttps { get; }
@@ -40,40 +41,42 @@ namespace Remotely.Server.Services
 
     public class ApplicationConfig : IApplicationConfig
     {
+        private readonly IConfiguration _config;
+
         public ApplicationConfig(IConfiguration config)
         {
-            Config = config;
+            _config = config;
         }
 
-        public bool AllowApiLogin => bool.Parse(Config["ApplicationOptions:AllowApiLogin"] ?? "false");
-        public string[] BannedDevices => Config.GetSection("ApplicationOptions:BannedDevices").Get<string[]>() ?? System.Array.Empty<string>();
-        public double DataRetentionInDays => double.Parse(Config["ApplicationOptions:DataRetentionInDays"] ?? "30");
-        public string DBProvider => Config["ApplicationOptions:DBProvider"] ?? "SQLite";
-        public bool EnableWindowsEventLog => bool.Parse(Config["ApplicationOptions:EnableWindowsEventLog"]);
-        public bool EnforceAttendedAccess => bool.Parse(Config["ApplicationOptions:EnforceAttendedAccess"] ?? "false");
-        public bool ForceClientHttps => bool.Parse(Config["ApplicationOptions:ForceClientHttps"] ?? "false");
-        public string[] KnownProxies => Config.GetSection("ApplicationOptions:KnownProxies").Get<string[]>() ?? System.Array.Empty<string>();
-        public int MaxConcurrentUpdates => int.Parse(Config["ApplicationOptions:MaxConcurrentUpdates"] ?? "10");
-        public int MaxOrganizationCount => int.Parse(Config["ApplicationOptions:MaxOrganizationCount"] ?? "1");
-        public string MessageOfTheDay => Config["ApplicationOptions:MessageOfTheDay"];
-        public bool RedirectToHttps => bool.Parse(Config["ApplicationOptions:RedirectToHttps"] ?? "true");
-        public bool RemoteControlNotifyUser => bool.Parse(Config["ApplicationOptions:RemoteControlNotifyUser"] ?? "true");
-        public bool RemoteControlRequiresAuthentication => bool.Parse(Config["ApplicationOptions:RemoteControlRequiresAuthentication"] ?? "true");
-        public int RemoteControlSessionLimit => int.Parse(Config["ApplicationOptions:RemoteControlSessionLimit"] ?? "3");
-        public bool Require2FA => bool.Parse(Config["ApplicationOptions:Require2FA"] ?? "false");
-        public string ServerUrl => Config["ApplicationOptions:ServerUrl"];
-        public bool SmtpCheckCertificateRevocation => bool.Parse(Config["ApplicationOptions:SmtpCheckCertificateRevocation"] ?? "true");
-        public string SmtpDisplayName => Config["ApplicationOptions:SmtpDisplayName"];
-        public string SmtpEmail => Config["ApplicationOptions:SmtpEmail"];
-        public string SmtpHost => Config["ApplicationOptions:SmtpHost"];
-        public string SmtpLocalDomain => Config["ApplicationOptions:SmtpLocalDomain"];
-        public string SmtpPassword => Config["ApplicationOptions:SmtpPassword"];
-        public int SmtpPort => int.Parse(Config["ApplicationOptions:SmtpPort"] ?? "25");
-        public string SmtpUserName => Config["ApplicationOptions:SmtpUserName"];
-        public Theme Theme => Enum.Parse<Theme>(Config["ApplicationOptions:Theme"] ?? "Dark", true);
-        public string[] TrustedCorsOrigins => Config.GetSection("ApplicationOptions:TrustedCorsOrigins").Get<string[]>() ?? System.Array.Empty<string>();
-        public bool UseHsts => bool.Parse(Config["ApplicationOptions:UseHsts"] ?? "false");
-        public bool UseHttpLogging => bool.Parse(Config["ApplicationOptions:UseHttpLogging"] ?? "false");
-        private IConfiguration Config { get; set; }
+        public bool AllowApiLogin => bool.TryParse(_config["ApplicationOptions:AllowApiLogin"], out var result) && result;
+        public string[] BannedDevices => _config.GetSection("ApplicationOptions:BannedDevices").Get<string[]>() ?? System.Array.Empty<string>();
+        public double DataRetentionInDays => double.TryParse(_config["ApplicationOptions:DataRetentionInDays"], out var result) ? result : 30;
+        public string DBProvider => _config["ApplicationOptions:DBProvider"] ?? "SQLite";
+        public bool EnableRemoteControlRecording => bool.TryParse(_config["ApplicationOptions:EnableRemoteControlRecording"], out var result) && result;
+        public bool EnableWindowsEventLog => bool.TryParse(_config["ApplicationOptions:EnableWindowsEventLog"], out var result) && result;
+        public bool EnforceAttendedAccess => bool.TryParse(_config["ApplicationOptions:EnforceAttendedAccess"], out var result) && result;
+        public bool ForceClientHttps => bool.TryParse(_config["ApplicationOptions:ForceClientHttps"], out var result) && result;
+        public string[] KnownProxies => _config.GetSection("ApplicationOptions:KnownProxies").Get<string[]>() ?? System.Array.Empty<string>();
+        public int MaxConcurrentUpdates => int.TryParse(_config["ApplicationOptions:MaxConcurrentUpdates"], out var result) ? result : 10;
+        public int MaxOrganizationCount => int.TryParse(_config["ApplicationOptions:MaxOrganizationCount"], out var result) ? result : 1;
+        public string MessageOfTheDay => _config["ApplicationOptions:MessageOfTheDay"];
+        public bool RedirectToHttps => bool.TryParse(_config["ApplicationOptions:RedirectToHttps"], out var result) && result;
+        public bool RemoteControlNotifyUser => bool.TryParse(_config["ApplicationOptions:RemoteControlNotifyUser"], out var result) && result;
+        public bool RemoteControlRequiresAuthentication => bool.TryParse(_config["ApplicationOptions:RemoteControlRequiresAuthentication"], out var result) && result;
+        public int RemoteControlSessionLimit => int.TryParse(_config["ApplicationOptions:RemoteControlSessionLimit"], out var result) ? result : 3;
+        public bool Require2FA => bool.TryParse(_config["ApplicationOptions:Require2FA"], out var result) && result;
+        public string ServerUrl => _config["ApplicationOptions:ServerUrl"];
+        public bool SmtpCheckCertificateRevocation => !bool.TryParse(_config["ApplicationOptions:SmtpCheckCertificateRevocation"], out var result) || result;
+        public string SmtpDisplayName => _config["ApplicationOptions:SmtpDisplayName"];
+        public string SmtpEmail => _config["ApplicationOptions:SmtpEmail"];
+        public string SmtpHost => _config["ApplicationOptions:SmtpHost"];
+        public string SmtpLocalDomain => _config["ApplicationOptions:SmtpLocalDomain"];
+        public string SmtpPassword => _config["ApplicationOptions:SmtpPassword"];
+        public int SmtpPort => int.TryParse(_config["ApplicationOptions:SmtpPort"], out var result) ? result : 25;
+        public string SmtpUserName => _config["ApplicationOptions:SmtpUserName"];
+        public Theme Theme => Enum.TryParse<Theme>(_config["ApplicationOptions:Theme"], out var result) ? result : Theme.Dark;
+        public string[] TrustedCorsOrigins => _config.GetSection("ApplicationOptions:TrustedCorsOrigins").Get<string[]>() ?? System.Array.Empty<string>();
+        public bool UseHsts => bool.TryParse(_config["ApplicationOptions:UseHsts"], out var result) && result;
+        public bool UseHttpLogging => bool.TryParse(_config["ApplicationOptions:UseHttpLogging"], out var result) && result;
     }
 }

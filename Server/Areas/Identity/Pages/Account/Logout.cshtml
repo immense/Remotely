@@ -9,14 +9,14 @@
 @inject SignInManager<RemotelyUser> SignInManager
 @inject IHubContext<DesktopHub> DesktopHubContext
 @inject IHubContext<ViewerHub> ViewerHubContext
-@inject IDesktopHubSessionCache DesktopSessionCache
+@inject IRemoteControlSessionCache RemoteControlSessionCache
 
 @functions {
     public async Task<IActionResult> OnPost()
     {
         if (SignInManager.IsSignedIn(User))
         {
-            var activeSessions = DesktopSessionCache.Sessions.Where(x => x.RequesterUserName == HttpContext.User.Identity.Name);
+            var activeSessions = RemoteControlSessionCache.Sessions.Where(x => x.RequesterUserName == HttpContext.User.Identity.Name);
             foreach (var session in activeSessions)
             {
                 await DesktopHubContext.Clients.Client(session.DesktopConnectionId).SendAsync("Disconnect", "User logged out.");

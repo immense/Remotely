@@ -27,7 +27,7 @@ namespace Remotely.Server.API
     public class RemoteControlController : ControllerBase
     {
         private readonly IHubContext<AgentHub> _serviceHub;
-        private readonly IDesktopHubSessionCache _desktopSessionCache;
+        private readonly IRemoteControlSessionCache _remoteControlSessionCache;
         private readonly IAgentHubSessionCache _serviceSessionCache;
         private readonly IApplicationConfig _appConfig;
         private readonly IOtpProvider _otpProvider;
@@ -39,7 +39,7 @@ namespace Remotely.Server.API
         public RemoteControlController(
             SignInManager<RemotelyUser> signInManager,
             IDataService dataService,
-            IDesktopHubSessionCache desktopSessionCache,
+            IRemoteControlSessionCache remoteControlSessionCache,
             IHubContext<AgentHub> serviceHub,
             IAgentHubSessionCache serviceSessionCache,
             IOtpProvider otpProvider,
@@ -49,7 +49,7 @@ namespace Remotely.Server.API
         {
             _dataService = dataService;
             _serviceHub = serviceHub;
-            _desktopSessionCache = desktopSessionCache;
+            _remoteControlSessionCache = remoteControlSessionCache;
             _serviceSessionCache = serviceSessionCache;
             _appConfig = appConfig;
             _otpProvider = otpProvider;
@@ -117,7 +117,7 @@ namespace Remotely.Server.API
             }
 
 
-            var sessionCount = _desktopSessionCache.Sessions
+            var sessionCount = _remoteControlSessionCache.Sessions
                    .OfType<RemoteControlSessionEx>()
                    .Count(x => x.OrganizationId == orgID);
 
@@ -138,7 +138,7 @@ namespace Remotely.Server.API
                 OrganizationId = orgID
             };
 
-            _desktopSessionCache.AddOrUpdate($"{sessionId}", session, (k, v) =>
+            _remoteControlSessionCache.AddOrUpdate($"{sessionId}", session, (k, v) =>
             {
                 if (v is RemoteControlSessionEx ex)
                 {

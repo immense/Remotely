@@ -37,6 +37,8 @@ namespace Remotely.Server.Pages
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public DbProvider DBProvider { get; set; }
 
+        [Display(Name = "Enable Remote Control Recording")]
+        public bool EnableRemoteControlRecording { get; set; }
 
         [Display(Name = "Enable Windows Event Log")]
         public bool EnableWindowsEventLog { get; set; }
