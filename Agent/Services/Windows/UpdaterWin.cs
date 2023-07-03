@@ -15,7 +15,7 @@ namespace Remotely.Agent.Services.Windows
     public class UpdaterWin : IUpdater
     {
         private readonly SemaphoreSlim _checkForUpdatesLock = new(1, 1);
-        private readonly ConfigService _configService;
+        private readonly IConfigService _configService;
         private readonly IUpdateDownloader _updateDownloader;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<UpdaterWin> _logger;
@@ -25,7 +25,7 @@ namespace Remotely.Agent.Services.Windows
 
 
         public UpdaterWin(
-            ConfigService configService,
+            IConfigService configService,
             IUpdateDownloader updateDownloader,
             IHttpClientFactory httpClientFactory,
             ILogger<UpdaterWin> logger)

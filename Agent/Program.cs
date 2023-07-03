@@ -94,12 +94,12 @@ public class Program
         services.AddSingleton<ICpuUtilizationSampler, CpuUtilizationSampler>();
         services.AddSingleton<IWakeOnLanService, WakeOnLanService>();
         services.AddHostedService(services => services.GetRequiredService<ICpuUtilizationSampler>());
-        services.AddScoped<ChatClientService>();
-        services.AddTransient<PSCore>();
-        services.AddTransient<ExternalScriptingShell>();
-        services.AddScoped<ConfigService>();
-        services.AddScoped<Uninstaller>();
-        services.AddScoped<ScriptExecutor>();
+        services.AddScoped<IChatClientService, ChatClientService>();
+        services.AddTransient<IPSCore, PSCore>();
+        services.AddTransient<IExternalScriptingShell, ExternalScriptingShell>();
+        services.AddScoped<IConfigService, ConfigService>();
+        services.AddScoped<IUninstaller, Uninstaller>();
+        services.AddScoped<IScriptExecutor, ScriptExecutor>();
         services.AddScoped<IProcessInvoker, ProcessInvoker>();
         services.AddScoped<IUpdateDownloader, UpdateDownloader>();
 

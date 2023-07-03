@@ -24,7 +24,7 @@ namespace Remotely.Agent.Services.Linux
         private readonly ILogger<AppLauncherLinux> _logger;
 
         public AppLauncherLinux(
-            ConfigService configService,
+            IConfigService configService,
             IProcessInvoker processInvoker,
             ILogger<AppLauncherLinux> logger)
         {

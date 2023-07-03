@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
 
 namespace Remotely.Agent.Services
 {
-    public class DeviceInfoGeneratorBase
+    public abstract class DeviceInfoGeneratorBase
     {
         protected readonly ILogger<DeviceInfoGeneratorBase> _logger;
 

@@ -6,7 +6,12 @@ using System.IO;
 
 namespace Remotely.Agent.Services
 {
-    public class Uninstaller
+    public interface IUninstaller
+    {
+        void UninstallAgent();
+    }
+
+    public class Uninstaller : IUninstaller
     {
         public void UninstallAgent()
         {

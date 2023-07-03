@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
@@ -15,19 +16,23 @@ namespace Remotely.Agent.Services
 {
     public interface IExternalScriptingShell
     {
-       
+        ScriptResult WriteInput(string input, TimeSpan timeout);
     }
 
     public class ExternalScriptingShell : IExternalScriptingShell
     {
         private static readonly ConcurrentDictionary<string, ExternalScriptingShell> _sessions = new();
-        private readonly ConfigService _configService;
+        private readonly IConfigService _configService;
+        private readonly ILogger<ExternalScriptingShell> _logger;
         private string _lineEnding;
         private ScriptingShell _shell;
 
-        public ExternalScriptingShell(ConfigService configService)
+        public ExternalScriptingShell(
+            IConfigService configService,
+            ILogger<ExternalScriptingShell> logger)
         {
             _configService = configService;
+            _logger = logger;
         }
 
         private string ErrorOut { get; set; }
@@ -46,6 +51,7 @@ namespace Remotely.Agent.Services
 
         private Stopwatch Stopwatch { get; set; }
 
+        // TODO: Turn into cache and factory.
         public static ExternalScriptingShell GetCurrent(ScriptingShell shell, string senderConnectionId)
         {
             if (_sessions.TryGetValue($"{shell}-{senderConnectionId}", out var session) &&
@@ -112,7 +118,7 @@ namespace Remotely.Agent.Services
             }
             catch (Exception ex)
             {
-                Logger.Write(ex);
+                _logger.LogError(ex, "Error while writing input to scripting shell.");
                 ErrorOut += Environment.NewLine + ex.Message;
 
                 // Something's wrong.  Let the next command start a new session.
