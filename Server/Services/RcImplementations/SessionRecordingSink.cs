@@ -18,7 +18,7 @@ namespace Remotely.Server.Services.RcImplementations
             _logger = logger;
         }
 
-        private static string RecordingsDirectory
+        public static string RecordingsDirectory
         {
             get
             {

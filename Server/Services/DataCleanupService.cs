@@ -1,62 +1,113 @@
-﻿using Microsoft.Build.Framework;
+﻿using Immense.RemoteControl.Shared.Services;
+using Microsoft.Build.Framework;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Client;
+using Remotely.Server.Services.RcImplementations;
 using System;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace Remotely.Server.Services
 {
-    public class DataCleanupService : IHostedService, IDisposable
+    public class DataCleanupService : BackgroundService, IDisposable
     {
         private readonly ILogger<DataCleanupService> _logger;
-
-        private readonly IServiceProvider _services;
-
-        private System.Timers.Timer _cleanupTimer = new(TimeSpan.FromDays(1));
-
+        private readonly IServiceScopeFactory _scopeFactory;
+        private readonly ISystemTime _systemTime;
+        private readonly IApplicationConfig _appConfig;
 
         public DataCleanupService(
-            IServiceProvider serviceProvider,
+            IServiceScopeFactory scopeFactory,
+            ISystemTime systemTime,
+            IApplicationConfig appConfig,
             ILogger<DataCleanupService> logger)
         {
-            _services = serviceProvider;
+            _scopeFactory = scopeFactory;
+            _systemTime = systemTime;
+            _appConfig = appConfig;
             _logger = logger;
-
-            _cleanupTimer.Elapsed += CleanupTimer_Elapsed;
         }
-        public void Dispose()
+
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _cleanupTimer?.Dispose();
-            GC.SuppressFinalize(this);
+            await Task.Yield();
+
+            await PerformCleanup();
+
+            using var timer = new PeriodicTimer(TimeSpan.FromDays(1));
+
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                try
+                {
+                    _ = await timer.WaitForNextTickAsync(stoppingToken);
+                    await PerformCleanup();
+                }
+                catch (OperationCanceledException)
+                {
+                    _logger.LogInformation("Application is shutting down.  Stopping data cleanup service.");
+                }
+
+            }
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            _cleanupTimer.Start();
-            return Task.CompletedTask;
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            _cleanupTimer.Stop();
-            _cleanupTimer.Dispose();
-            return Task.CompletedTask;
-        }
-
-        private void CleanupTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private async Task PerformCleanup()
         {
             try
             {
-                using var scope = _services.CreateScope();
-                var dataService = scope.ServiceProvider.GetRequiredService<IDataService>();
-                dataService.CleanupOldRecords();
+                await RemoveExpiredDbRecords();
+                await RemoveExpiredRecordings();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error during data cleanup.");
             }
+        }
+
+        private async Task RemoveExpiredDbRecords()
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var dataService = scope.ServiceProvider.GetRequiredService<IDataService>();
+            await dataService.CleanupOldRecords();
+        }
+
+        private Task RemoveExpiredRecordings()
+        {
+            if (!Directory.Exists(SessionRecordingSink.RecordingsDirectory))
+            {
+                return Task.CompletedTask;
+            }
+
+            var expirationDate = _systemTime.Now.UtcDateTime - TimeSpan.FromDays(_appConfig.DataRetentionInDays);
+
+            var files = Directory
+                .GetFiles(
+                    SessionRecordingSink.RecordingsDirectory,
+                    "*.webm",
+                    SearchOption.AllDirectories)
+                .Select(x => new FileInfo(x))
+                .Where(x => x.CreationTimeUtc < expirationDate)
+                .ToList();
+
+            foreach (var file in files)
+            {
+                try
+                {
+                    file.Delete();
+                    _logger.LogInformation("Expired recording deleted: {file}", file.FullName);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error while deleting expired recording: {file}", file);
+                }
+            }
+
+            return Task.CompletedTask;
         }
     }
 }
