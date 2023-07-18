@@ -294,7 +294,7 @@ using (var scope = app.Services.CreateScope())
     }
 
     await dataService.SetAllDevicesNotOnline();
-    dataService.CleanupOldRecords();
+    await dataService.CleanupOldRecords();
 }
 
 await app.RunAsync();
