@@ -135,6 +135,13 @@
                 <ValidationMessage For="() => Input.DBProvider" />
             </div>
             <div class="form-group">
+                <label>Enable Remote Control Recording</label>
+                <br />
+                <InputCheckbox @bind-Value="Input.EnableRemoteControlRecording" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.EnableRemoteControlRecording" />
+            </div>
+            <div class="form-group">
                 <label>Enable Windows Event Log</label>
                 <br />
                 <InputCheckbox @bind-Value="Input.EnableWindowsEventLog" autocomplete="off" />

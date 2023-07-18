@@ -23,7 +23,7 @@ namespace Remotely.Server.API
         private readonly IApplicationConfig _appConfig;
         private readonly IDataService _dataService;
         private readonly IHubContext<DesktopHub> _desktopHub;
-        private readonly IDesktopHubSessionCache _desktopSessionCache;
+        private readonly IRemoteControlSessionCache _remoteControlSessionCache;
         private readonly SignInManager<RemotelyUser> _signInManager;
         private readonly IHubContext<ViewerHub> _viewerHub;
         private readonly ILogger<LoginController> _logger;
@@ -33,7 +33,7 @@ namespace Remotely.Server.API
             IDataService dataService,
             IApplicationConfig appConfig,
             IHubContext<DesktopHub> casterHubContext,
-            IDesktopHubSessionCache desktopSessionCache,
+            IRemoteControlSessionCache remoteControlSessionCache,
             IHubContext<ViewerHub> viewerHubContext,
             ILogger<LoginController> logger)
         {
@@ -41,7 +41,7 @@ namespace Remotely.Server.API
             _dataService = dataService;
             _appConfig = appConfig;
             _desktopHub = casterHubContext;
-            _desktopSessionCache = desktopSessionCache;
+            _remoteControlSessionCache = remoteControlSessionCache;
             _viewerHub = viewerHubContext;
             _logger = logger;
         }
@@ -54,7 +54,7 @@ namespace Remotely.Server.API
             if (HttpContext?.User?.Identity?.IsAuthenticated == true)
             {
                 orgId = _dataService.GetUserByNameWithOrg(HttpContext.User.Identity.Name)?.OrganizationID;
-                var activeSessions = _desktopSessionCache
+                var activeSessions = _remoteControlSessionCache
                     .Sessions
                     .Where(x => x.RequesterUserName == HttpContext.User.Identity.Name);
 

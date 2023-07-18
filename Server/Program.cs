@@ -226,6 +226,8 @@ services.AddRemoteControlServer(config =>
     config.AddHubEventHandler<HubEventHandler>();
     config.AddViewerAuthorizer<ViewerAuthorizer>();
     config.AddViewerPageDataProvider<ViewerPageDataProvider>();
+    config.AddViewerOptionsProvider<ViewerOptionsProvider>();
+    config.AddSessionRecordingSink<SessionRecordingSink>();
 });
 
 services.AddSingleton<IAgentHubSessionCache, AgentHubSessionCache>();
@@ -292,7 +294,7 @@ using (var scope = app.Services.CreateScope())
     }
 
     await dataService.SetAllDevicesNotOnline();
-    dataService.CleanupOldRecords();
+    await dataService.CleanupOldRecords();
 }
 
 await app.RunAsync();

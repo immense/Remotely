@@ -51,7 +51,7 @@ namespace Remotely.Server.Services
 
         void ChangeUserIsAdmin(string organizationID, string targetUserID, bool isAdmin);
 
-        void CleanupOldRecords();
+        Task CleanupOldRecords();
 
         Task<ApiToken> CreateApiToken(string userName, string tokenName, string secretHash);
 
@@ -623,7 +623,7 @@ namespace Remotely.Server.Services
             }
         }
 
-        public void CleanupOldRecords()
+        public async Task CleanupOldRecords()
         {
             using var dbContext = _appDbFactory.GetContext();
 
@@ -631,11 +631,12 @@ namespace Remotely.Server.Services
             {
                 var expirationDate = DateTimeOffset.Now - TimeSpan.FromDays(_appConfig.DataRetentionInDays);
 
-                var scriptRuns = dbContext.ScriptRuns
+                var scriptRuns = await dbContext.ScriptRuns
                     .Include(x => x.Results)
                     .Include(x => x.Devices)
                     .Include(x => x.DevicesCompleted)
-                    .Where(x => x.RunAt < expirationDate);
+                    .Where(x => x.RunAt < expirationDate)
+                    .ToArrayAsync();
 
                 foreach (var run in scriptRuns)
                 {
@@ -656,7 +657,7 @@ namespace Remotely.Server.Services
 
                 dbContext.RemoveRange(sharedFiles);
 
-                dbContext.SaveChanges();
+                await dbContext.SaveChangesAsync();
             }
         }
 

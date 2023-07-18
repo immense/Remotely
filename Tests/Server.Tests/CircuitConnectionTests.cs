@@ -35,7 +35,7 @@ namespace Remotely.Server.Tests
         private Mock<ICircuitManager> _circuitManager;
         private Mock<IToastService> _toastService;
         private Mock<IExpiringTokenService> _expiringTokenService;
-        private Mock<IDesktopHubSessionCache> _desktopSessionCache;
+        private Mock<IRemoteControlSessionCache> _remoteControlSessionCache;
         private Mock<IAgentHubSessionCache> _agentSessionCache;
         private Mock<ILogger<CircuitConnection>> _logger;
         private CircuitConnection _circuitConnection;
@@ -55,7 +55,7 @@ namespace Remotely.Server.Tests
             _circuitManager = new Mock<ICircuitManager>();
             _toastService = new Mock<IToastService>();
             _expiringTokenService = new Mock<IExpiringTokenService>();
-            _desktopSessionCache = new Mock<IDesktopHubSessionCache>();
+            _remoteControlSessionCache = new Mock<IRemoteControlSessionCache>();
             _agentSessionCache = new Mock<IAgentHubSessionCache>();
             _logger = new Mock<ILogger<CircuitConnection>>();
 
@@ -68,7 +68,7 @@ namespace Remotely.Server.Tests
                 _circuitManager.Object,
                 _toastService.Object,
                 _expiringTokenService.Object,
-                _desktopSessionCache.Object,
+                _remoteControlSessionCache.Object,
                 _agentSessionCache.Object,
                 _logger.Object);
         }
