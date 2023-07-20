@@ -5,9 +5,6 @@ using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
-using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -44,7 +41,7 @@ namespace Remotely.Agent.Services
             try
             {
 
-                var result = ExecuteScriptContent(shell, requestID, command, TimeSpan.FromMinutes(AppConstants.ScriptRunExpirationMinutes));
+                var result = await ExecuteScriptContent(shell, requestID, command, TimeSpan.FromMinutes(AppConstants.ScriptRunExpirationMinutes));
 
                 result.InputType = ScriptInputType.Api;
                 result.SenderUserName = senderUsername;
@@ -69,7 +66,7 @@ namespace Remotely.Agent.Services
         {
             try
             {
-                var result = ExecuteScriptContent(shell, senderConnectionID, command, timeout);
+                var result = await ExecuteScriptContent(shell, senderConnectionID, command, timeout);
 
                 result.InputType = scriptInputType;
                 result.SenderUserName = senderUsername;
@@ -112,7 +109,7 @@ namespace Remotely.Agent.Services
                 hc.DefaultRequestHeaders.Add("Authorization", authToken);
                 var savedScript = await hc.GetFromJsonAsync<SavedScript>(url);
 
-                var result = ExecuteScriptContent(savedScript.Shell,
+                var result = await ExecuteScriptContent(savedScript.Shell,
                     Guid.NewGuid().ToString(),
                     savedScript.Content,
                     TimeSpan.FromMinutes(AppConstants.ScriptRunExpirationMinutes));
@@ -130,8 +127,8 @@ namespace Remotely.Agent.Services
             }
         }
 
-        // TODO: Async/await.
-        private ScriptResult ExecuteScriptContent(ScriptingShell shell,
+        private async Task<ScriptResult> ExecuteScriptContent(
+            ScriptingShell shell,
             string terminalSessionId,
             string command,
             TimeSpan timeout)
@@ -139,31 +136,37 @@ namespace Remotely.Agent.Services
             switch (shell)
             {
                 case ScriptingShell.PSCore:
-                    return PSCore.GetCurrent(terminalSessionId).WriteInput(command);
+                    return await PsCoreShell
+                        .GetCurrent(terminalSessionId)
+                        .WriteInput(command);
 
                 case ScriptingShell.WinPS:
                     if (EnvironmentHelper.IsWindows)
                     {
-                        return ExternalScriptingShell
-                          .GetCurrent(ScriptingShell.WinPS, terminalSessionId)
-                          .WriteInput(command, timeout);
+                        var instance = await ExternalScriptingShell
+                          .GetCurrent(ScriptingShell.WinPS, terminalSessionId);
 
+                        return await instance.WriteInput(command, timeout);
                     }
                     break;
 
                 case ScriptingShell.CMD:
                     if (EnvironmentHelper.IsWindows)
                     {
-                        return ExternalScriptingShell
-                             .GetCurrent(ScriptingShell.CMD, terminalSessionId)
-                             .WriteInput(command, timeout);
+                        var instance = await ExternalScriptingShell
+                             .GetCurrent(ScriptingShell.CMD, terminalSessionId);
+
+                        return await instance.WriteInput(command, timeout);
                     }
                     break;
 
                 case ScriptingShell.Bash:
-                    return ExternalScriptingShell
-                        .GetCurrent(ScriptingShell.Bash, terminalSessionId)
-                        .WriteInput(command, timeout);
+                    {
+                        var instance = await ExternalScriptingShell
+                            .GetCurrent(ScriptingShell.Bash, terminalSessionId);
+
+                        return await instance.WriteInput(command, timeout);
+                    }
                 default:
                     break;
             }

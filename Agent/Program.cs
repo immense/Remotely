@@ -95,7 +95,7 @@ public class Program
         services.AddSingleton<IWakeOnLanService, WakeOnLanService>();
         services.AddHostedService(services => services.GetRequiredService<ICpuUtilizationSampler>());
         services.AddScoped<IChatClientService, ChatClientService>();
-        services.AddTransient<IPSCore, PSCore>();
+        services.AddTransient<IPsCoreShell, PsCoreShell>();
         services.AddTransient<IExternalScriptingShell, ExternalScriptingShell>();
         services.AddScoped<IConfigService, ConfigService>();
         services.AddScoped<IUninstaller, Uninstaller>();

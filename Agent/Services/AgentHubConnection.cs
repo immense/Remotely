@@ -356,7 +356,7 @@ namespace Remotely.Agent.Services
             {
                 try
                 {
-                    var session = PSCore.GetCurrent(senderConnectionId);
+                    var session = PsCoreShell.GetCurrent(senderConnectionId);
                     var completion = session.GetCompletions(inputText, currentIndex, forward);
                     var completionModel = completion.ToPwshCompletion();
                     await _hubConnection.InvokeAsync("ReturnPowerShellCompletions", completionModel, intent, senderConnectionId).ConfigureAwait(false);

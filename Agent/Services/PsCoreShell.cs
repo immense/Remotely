@@ -6,32 +6,30 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
 using System.Management.Automation;
-using System.Management.Automation.Runspaces;
-using System.Timers;
-using static Immense.RemoteControl.Desktop.Native.Windows.User32;
+using System.Threading.Tasks;
 
 namespace Remotely.Agent.Services
 {
-    public interface IPSCore
+    public interface IPsCoreShell
     {
-        string SenderConnectionId { get; }
+        string SenderConnectionId { get; set; }
 
         CommandCompletion GetCompletions(string inputText, int currentIndex, bool? forward);
-        ScriptResult WriteInput(string input);
+        Task<ScriptResult> WriteInput(string input);
     }
 
-    public class PSCore : IPSCore
+    public class PsCoreShell : IPsCoreShell
     {
-        private static readonly ConcurrentDictionary<string, PSCore> _sessions = new ConcurrentDictionary<string, PSCore>();
+        private static readonly ConcurrentDictionary<string, IPsCoreShell> _sessions = new();
         private readonly IConfigService _configService;
         private readonly ConnectionInfo _connectionInfo;
-        private readonly ILogger<PSCore> _logger;
+        private readonly ILogger<PsCoreShell> _logger;
         private readonly PowerShell _powershell;
         private CommandCompletion _lastCompletion;
         private string _lastInputText;
-        public PSCore(
+        public PsCoreShell(
             IConfigService configService,
-            ILogger<PSCore> logger)
+            ILogger<PsCoreShell> logger)
         {
             _configService = configService;
             _logger = logger;
@@ -49,9 +47,9 @@ namespace Remotely.Agent.Services
             _powershell.Invoke();
         }
 
-        public string SenderConnectionId { get; private set; }
+        public string SenderConnectionId { get; set; }
         // TODO: Turn into cache and factory.
-        public static PSCore GetCurrent(string senderConnectionId)
+        public static IPsCoreShell GetCurrent(string senderConnectionId)
         {
             if (_sessions.TryGetValue(senderConnectionId, out var session))
             {
@@ -59,7 +57,7 @@ namespace Remotely.Agent.Services
             }
             else
             {
-                session = Program.Services.GetRequiredService<PSCore>();
+                session = Program.Services.GetRequiredService<IPsCoreShell>();
                 session.SenderConnectionId = senderConnectionId;
                 _sessions.AddOrUpdate(senderConnectionId, session, (id, b) => session);
                 return session;
@@ -83,7 +81,7 @@ namespace Remotely.Agent.Services
             return _lastCompletion;
         }
 
-        public ScriptResult WriteInput(string input)
+        public async Task<ScriptResult> WriteInput(string input)
         {
             var deviceId = _configService.GetConnectionInfo().DeviceID;
             var sw = Stopwatch.StartNew();
@@ -100,7 +98,8 @@ namespace Remotely.Agent.Services
                 using var ps = PowerShell.Create();
                 ps.AddScript("$args[0] | Out-String");
                 ps.AddArgument(results);
-                var hostOutput = (string)ps.Invoke()[0].BaseObject;
+                var result = await ps.InvokeAsync();
+                var hostOutput = result[0].BaseObject.ToString();
 
                 var verboseOut = _powershell.Streams.Verbose.ReadAll().Select(x => x.Message);
                 var debugOut = _powershell.Streams.Debug.ReadAll().Select(x => x.Message);
