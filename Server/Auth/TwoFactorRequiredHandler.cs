@@ -7,31 +7,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Remotely.Server.Auth
+namespace Remotely.Server.Auth;
+
+public class TwoFactorRequiredHandler : AuthorizationHandler<TwoFactorRequiredRequirement>
 {
-    public class TwoFactorRequiredHandler : AuthorizationHandler<TwoFactorRequiredRequirement>
+    private readonly UserManager<RemotelyUser> _userManager;
+    private readonly IApplicationConfig _appConfig;
+
+    public TwoFactorRequiredHandler(UserManager<RemotelyUser> userManager, IApplicationConfig appConfig)
     {
-        private readonly UserManager<RemotelyUser> _userManager;
-        private readonly IApplicationConfig _appConfig;
+        _userManager = userManager;
+        _appConfig = appConfig;
+    }
 
-        public TwoFactorRequiredHandler(UserManager<RemotelyUser> userManager, IApplicationConfig appConfig)
+    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, TwoFactorRequiredRequirement requirement)
+    {
+        if (context.User.Identity.IsAuthenticated && _appConfig.Require2FA)
         {
-            _userManager = userManager;
-            _appConfig = appConfig;
-        }
-
-        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, TwoFactorRequiredRequirement requirement)
-        {
-            if (context.User.Identity.IsAuthenticated && _appConfig.Require2FA)
+            var user = await _userManager.GetUserAsync(context.User);
+            if (!user.TwoFactorEnabled)
             {
-                var user = await _userManager.GetUserAsync(context.User);
-                if (!user.TwoFactorEnabled)
-                {
-                    context.Fail();
-                    return;
-                }
+                context.Fail();
+                return;
             }
-            context.Succeed(requirement);
         }
+        context.Succeed(requirement);
     }
 }

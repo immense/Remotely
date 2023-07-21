@@ -7,35 +7,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Remotely.Server.API
+namespace Remotely.Server.API;
+
+[Route("api/[controller]")]
+[ApiController]
+public class BrandingController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class BrandingController : ControllerBase
+    private readonly IDataService _dataService;
+
+    public BrandingController(IDataService dataService)
     {
-        private readonly IDataService _dataService;
+        _dataService = dataService;
+    }
 
-        public BrandingController(IDataService dataService)
+
+    [HttpGet("{organizationId}")]
+    public async Task<BrandingInfo> Get(string organizationId)
+    {
+        return await _dataService.GetBrandingInfo(organizationId);
+    }
+
+    [HttpGet]
+    public async Task<BrandingInfo> GetDefault()
+    {
+        var defaultOrg = await _dataService.GetDefaultOrganization();
+        if (defaultOrg is null)
         {
-            _dataService = dataService;
+            return new BrandingInfo();
         }
-
-
-        [HttpGet("{organizationId}")]
-        public async Task<BrandingInfo> Get(string organizationId)
-        {
-            return await _dataService.GetBrandingInfo(organizationId);
-        }
-
-        [HttpGet]
-        public async Task<BrandingInfo> GetDefault()
-        {
-            var defaultOrg = await _dataService.GetDefaultOrganization();
-            if (defaultOrg is null)
-            {
-                return new BrandingInfo();
-            }
-            return await _dataService.GetBrandingInfo(defaultOrg.ID);
-        }
+        return await _dataService.GetBrandingInfo(defaultOrg.ID);
     }
 }

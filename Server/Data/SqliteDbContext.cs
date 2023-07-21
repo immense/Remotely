@@ -7,21 +7,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Remotely.Server.Data
+namespace Remotely.Server.Data;
+
+public class SqliteDbContext : AppDb
 {
-    public class SqliteDbContext : AppDb
+    private readonly IConfiguration _configuration;
+
+    public SqliteDbContext(IConfiguration configuration)
     {
-        private readonly IConfiguration _configuration;
+        _configuration = configuration;
+    }
 
-        public SqliteDbContext(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-        {
-            options.UseSqlite(_configuration.GetConnectionString("SQLite"));
-            base.OnConfiguring(options);
-        }
+    protected override void OnConfiguring(DbContextOptionsBuilder options)
+    {
+        options.UseSqlite(_configuration.GetConnectionString("SQLite"));
+        base.OnConfiguring(options);
     }
 }

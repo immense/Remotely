@@ -6,49 +6,48 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Remotely.Server.API
+namespace Remotely.Server.API;
+
+[Route("api/[controller]")]
+[ApiController]
+public class FileSharingController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class FileSharingController : ControllerBase
+    private readonly IDataService _dataService;
+
+    public FileSharingController(IDataService dataService)
     {
-        private readonly IDataService _dataService;
+        _dataService = dataService;
+    }
 
-        public FileSharingController(IDataService dataService)
+    [HttpGet("{id}")]
+    [ServiceFilter(typeof(ExpiringTokenFilter))]
+    public ActionResult Get(string id)
+    {
+        var sharedFile = _dataService.GetSharedFiled(id);
+        if (sharedFile != null)
         {
-            _dataService = dataService;
+            return File(sharedFile.FileContents, sharedFile.ContentType, sharedFile.FileName);
+        }
+        return NotFound();
+    }
+
+    [HttpPost]
+    [ServiceFilter(typeof(ExpiringTokenFilter))]
+    [RequestSizeLimit(AppConstants.MaxUploadFileSize)]
+    public async Task<IEnumerable<string>> Post()
+    {
+        if (Request?.Form?.Files?.Count !> 0)
+        {
+            return Array.Empty<string>();
         }
 
-        [HttpGet("{id}")]
-        [ServiceFilter(typeof(ExpiringTokenFilter))]
-        public ActionResult Get(string id)
+        var fileIDs = new List<string>();
+        foreach (var file in Request.Form.Files)
         {
-            var sharedFile = _dataService.GetSharedFiled(id);
-            if (sharedFile != null)
-            {
-                return File(sharedFile.FileContents, sharedFile.ContentType, sharedFile.FileName);
-            }
-            return NotFound();
+            var orgID = User.Identity.IsAuthenticated ? _dataService.GetUserByNameWithOrg(User.Identity.Name).OrganizationID : null;
+            var id = await _dataService.AddSharedFile(file, orgID);
+            fileIDs.Add(id);
         }
-
-        [HttpPost]
-        [ServiceFilter(typeof(ExpiringTokenFilter))]
-        [RequestSizeLimit(AppConstants.MaxUploadFileSize)]
-        public async Task<IEnumerable<string>> Post()
-        {
-            if (Request?.Form?.Files?.Count !> 0)
-            {
-                return Array.Empty<string>();
-            }
-
-            var fileIDs = new List<string>();
-            foreach (var file in Request.Form.Files)
-            {
-                var orgID = User.Identity.IsAuthenticated ? _dataService.GetUserByNameWithOrg(User.Identity.Name).OrganizationID : null;
-                var id = await _dataService.AddSharedFile(file, orgID);
-                fileIDs.Add(id);
-            }
-            return fileIDs;
-        }
+        return fileIDs;
     }
 }

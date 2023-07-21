@@ -4,10 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Remotely.Server.Auth
-{
-    public class TwoFactorRequiredRequirement : IAuthorizationRequirement
-    {
+namespace Remotely.Server.Auth;
 
-    }
+public class TwoFactorRequiredRequirement : IAuthorizationRequirement
+{
+
 }

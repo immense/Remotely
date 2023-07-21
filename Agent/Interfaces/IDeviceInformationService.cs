@@ -6,10 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely.Agent.Interfaces
+namespace Remotely.Agent.Interfaces;
+
+public interface IDeviceInformationService
 {
-    public interface IDeviceInformationService
-    {
-        Task<DeviceClientDto> CreateDevice(string deviceId, string orgId);
-    }
+    Task<DeviceClientDto> CreateDevice(string deviceId, string orgId);
 }

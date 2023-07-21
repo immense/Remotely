@@ -4,13 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely.Shared.Enums
+namespace Remotely.Shared.Enums;
+
+public enum ScriptInputType
 {
-    public enum ScriptInputType
-    {
-        Terminal,
-        OneTimeScript,
-        ScheduledScript,
-        Api
-    }
+    Terminal,
+    OneTimeScript,
+    ScheduledScript,
+    Api
 }

@@ -3,44 +3,43 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Utilities;
 
-namespace Remotely.Shared.Services
+namespace Remotely.Shared.Services;
+
+public interface IProcessInvoker
 {
-    public interface IProcessInvoker
+    string InvokeProcessOutput(string command, string arguments);
+}
+
+public class ProcessInvoker : IProcessInvoker
+{
+    private readonly ILogger<ProcessInvoker> _logger;
+
+    public ProcessInvoker(ILogger<ProcessInvoker> logger)
     {
-        string InvokeProcessOutput(string command, string arguments);
+        _logger = logger;
     }
 
-    public class ProcessInvoker : IProcessInvoker
+    public string InvokeProcessOutput(string command, string arguments)
     {
-        private readonly ILogger<ProcessInvoker> _logger;
-
-        public ProcessInvoker(ILogger<ProcessInvoker> logger)
+        try
         {
-            _logger = logger;
+            var psi = new ProcessStartInfo(command, arguments)
+            {
+                WindowStyle = ProcessWindowStyle.Hidden,
+                Verb = "RunAs",
+                UseShellExecute = false,
+                RedirectStandardOutput = true
+            };
+
+            var proc = Process.Start(psi);
+            proc.WaitForExit();
+
+            return proc.StandardOutput.ReadToEnd();
         }
-
-        public string InvokeProcessOutput(string command, string arguments)
+        catch (Exception ex)
         {
-            try
-            {
-                var psi = new ProcessStartInfo(command, arguments)
-                {
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    Verb = "RunAs",
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true
-                };
-
-                var proc = Process.Start(psi);
-                proc.WaitForExit();
-
-                return proc.StandardOutput.ReadToEnd();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to start process.");
-                return string.Empty;
-            }
+            _logger.LogError(ex, "Failed to start process.");
+            return string.Empty;
         }
     }
 }

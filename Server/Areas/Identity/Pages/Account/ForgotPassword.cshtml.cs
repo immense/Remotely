@@ -14,77 +14,76 @@ using Remotely.Shared.Models;
 using Remotely.Server.Services;
 using Microsoft.Extensions.Logging;
 
-namespace Remotely.Server.Areas.Identity.Pages.Account
+namespace Remotely.Server.Areas.Identity.Pages.Account;
+
+[AllowAnonymous]
+public class ForgotPasswordModel : PageModel
 {
-    [AllowAnonymous]
-    public class ForgotPasswordModel : PageModel
+    private readonly UserManager<RemotelyUser> _userManager;
+    private readonly IEmailSenderEx _emailSender;
+    private readonly IDataService _dataService;
+    private readonly ILogger<ForgotPasswordModel> _logger;
+
+    public ForgotPasswordModel(
+        UserManager<RemotelyUser> userManager,
+        IEmailSenderEx emailSender,
+        IDataService dataService,
+        ILogger<ForgotPasswordModel> logger)
     {
-        private readonly UserManager<RemotelyUser> _userManager;
-        private readonly IEmailSenderEx _emailSender;
-        private readonly IDataService _dataService;
-        private readonly ILogger<ForgotPasswordModel> _logger;
+        _userManager = userManager;
+        _emailSender = emailSender;
+        _dataService = dataService;
+        _logger = logger;
+    }
 
-        public ForgotPasswordModel(
-            UserManager<RemotelyUser> userManager,
-            IEmailSenderEx emailSender,
-            IDataService dataService,
-            ILogger<ForgotPasswordModel> logger)
+    [BindProperty]
+    public InputModel Input { get; set; }
+
+    public class InputModel
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+    }
+
+    public async Task<IActionResult> OnPostAsync()
+    {
+        if (ModelState.IsValid)
         {
-            _userManager = userManager;
-            _emailSender = emailSender;
-            _dataService = dataService;
-            _logger = logger;
-        }
-
-        [BindProperty]
-        public InputModel Input { get; set; }
-
-        public class InputModel
-        {
-            [Required]
-            [EmailAddress]
-            public string Email { get; set; }
-        }
-
-        public async Task<IActionResult> OnPostAsync()
-        {
-            if (ModelState.IsValid)
+            var user = await _userManager.FindByEmailAsync(Input.Email);
+            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
             {
-                var user = await _userManager.FindByEmailAsync(Input.Email);
-                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
-                {
-                    // Don't reveal that the user does not exist or is not confirmed
-                    return RedirectToPage("./ForgotPasswordConfirmation");
-                }
-
-                // For more information on how to enable account confirmation and password reset please 
-                // visit https://go.microsoft.com/fwlink/?LinkID=532713
-                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                var callbackUrl = Url.Page(
-                    "/Account/ResetPassword",
-                    pageHandler: null,
-                    values: new { area = "Identity", code },
-                    protocol: Request.Scheme);
-
-                _logger.LogInformation(
-                    "Sending password reset for user {username}. Reset URL: {callbackUrl}", user.UserName, callbackUrl);
-
-                var emailResult = await _emailSender.SendEmailAsync(
-                    Input.Email,
-                    "Reset Password",
-                    $"<img src='{Request.Scheme}://{Request.Host}/images/Remotely_Logo.png'/><br><br>Please reset your Remotely password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-                if (!emailResult)
-                {
-                    ModelState.AddModelError("EmailError", "Error sending email.");
-                    return Page();
-                }
-
+                // Don't reveal that the user does not exist or is not confirmed
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }
 
-            return Page();
+            // For more information on how to enable account confirmation and password reset please 
+            // visit https://go.microsoft.com/fwlink/?LinkID=532713
+            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            var callbackUrl = Url.Page(
+                "/Account/ResetPassword",
+                pageHandler: null,
+                values: new { area = "Identity", code },
+                protocol: Request.Scheme);
+
+            _logger.LogInformation(
+                "Sending password reset for user {username}. Reset URL: {callbackUrl}", user.UserName, callbackUrl);
+
+            var emailResult = await _emailSender.SendEmailAsync(
+                Input.Email,
+                "Reset Password",
+                $"<img src='{Request.Scheme}://{Request.Host}/images/Remotely_Logo.png'/><br><br>Please reset your Remotely password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+            if (!emailResult)
+            {
+                ModelState.AddModelError("EmailError", "Error sending email.");
+                return Page();
+            }
+
+            return RedirectToPage("./ForgotPasswordConfirmation");
         }
+
+        return Page();
     }
 }

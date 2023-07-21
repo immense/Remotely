@@ -1,24 +1,23 @@
 ﻿using System;
 
-namespace Remotely.Shared.Utilities
-{
-    public static class Disposer
-    {
-        public static void TryDisposeAll(params IDisposable[] disposables)
-        {
-            if (disposables is null)
-            {
-                return;
-            }
+namespace Remotely.Shared.Utilities;
 
-            foreach (var disposable in disposables)
+public static class Disposer
+{
+    public static void TryDisposeAll(params IDisposable[] disposables)
+    {
+        if (disposables is null)
+        {
+            return;
+        }
+
+        foreach (var disposable in disposables)
+        {
+            try
             {
-                try
-                {
-                    disposable?.Dispose();
-                }
-                catch { }
+                disposable?.Dispose();
             }
+            catch { }
         }
     }
 }

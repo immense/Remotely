@@ -9,74 +9,73 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Remotely.Server.Components.Devices
+namespace Remotely.Server.Components.Devices;
+
+public partial class ChatFrame : AuthComponentBase, IDisposable
 {
-    public partial class ChatFrame : AuthComponentBase, IDisposable
+
+    [Inject]
+    private IClientAppState AppState { get; set; }
+
+    [Inject]
+    private ICircuitConnection CircuitConnection { get; set; }
+
+    public void Dispose()
     {
+        AppState.PropertyChanged -= AppState_PropertyChanged;
+        CircuitConnection.MessageReceived -= CircuitConnection_MessageReceived;
+        GC.SuppressFinalize(this);
+    }
 
-        [Inject]
-        private IClientAppState AppState { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        AppState.PropertyChanged += AppState_PropertyChanged;
+        CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
+    }
 
-        [Inject]
-        private ICircuitConnection CircuitConnection { get; set; }
-
-        public void Dispose()
+    private void CircuitConnection_MessageReceived(object sender, Models.CircuitEvent e)
+    {
+        if (e.EventName == Models.CircuitEventName.ChatReceived)
         {
-            AppState.PropertyChanged -= AppState_PropertyChanged;
-            CircuitConnection.MessageReceived -= CircuitConnection_MessageReceived;
-            GC.SuppressFinalize(this);
-        }
+            var deviceId = (string)e.Params[0];
 
-        protected override async Task OnInitializedAsync()
-        {
-            await base.OnInitializedAsync();
-            AppState.PropertyChanged += AppState_PropertyChanged;
-            CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
-        }
-
-        private void CircuitConnection_MessageReceived(object sender, Models.CircuitEvent e)
-        {
-            if (e.EventName == Models.CircuitEventName.ChatReceived)
+            if (!AppState.DevicesFrameChatSessions.Exists(x => x.DeviceId == deviceId))
             {
-                var deviceId = (string)e.Params[0];
+                var deviceName = (string)e.Params[1];
+                var message = (string)e.Params[2];
+                var disconnected = (bool)e.Params[3];
 
-                if (!AppState.DevicesFrameChatSessions.Exists(x => x.DeviceId == deviceId))
+                if (disconnected)
                 {
-                    var deviceName = (string)e.Params[1];
-                    var message = (string)e.Params[2];
-                    var disconnected = (bool)e.Params[3];
-
-                    if (disconnected)
-                    {
-                        return;
-                    }
-
-                    var newChat = new ChatSession()
-                    {
-                        DeviceId = deviceId,
-                        DeviceName = deviceName,
-                        IsExpanded = true
-                    };
-
-                    newChat.ChatHistory.Add(new ChatHistoryItem()
-                    {
-                        Message = message,
-                        Origin = ChatHistoryItemOrigin.Device
-                    });
-
-                    AppState.DevicesFrameChatSessions.Add(newChat);
-
-                    InvokeAsync(StateHasChanged);
+                    return;
                 }
-            }
-        }
 
-        private void AppState_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(AppState.DevicesFrameChatSessions))
-            {
+                var newChat = new ChatSession()
+                {
+                    DeviceId = deviceId,
+                    DeviceName = deviceName,
+                    IsExpanded = true
+                };
+
+                newChat.ChatHistory.Add(new ChatHistoryItem()
+                {
+                    Message = message,
+                    Origin = ChatHistoryItemOrigin.Device
+                });
+
+                AppState.DevicesFrameChatSessions.Add(newChat);
+
                 InvokeAsync(StateHasChanged);
             }
+        }
+    }
+
+    private void AppState_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(AppState.DevicesFrameChatSessions))
+        {
+            InvokeAsync(StateHasChanged);
         }
     }
 }

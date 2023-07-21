@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Remotely.Shared.Enums
+namespace Remotely.Shared.Enums;
+
+public enum ChatHistoryItemOrigin
 {
-    public enum ChatHistoryItemOrigin
-    {
-        System,
-        Self,
-        Device
-    }
+    System,
+    Self,
+    Device
 }

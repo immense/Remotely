@@ -16,93 +16,92 @@ using Immense.RemoteControl.Server.Abstractions;
 using Immense.RemoteControl.Shared.Helpers;
 using Remotely.Shared;
 
-namespace Remotely.Server.API
+namespace Remotely.Server.API;
+
+[ApiController]
+[Route("api/[controller]")]
+public class ScriptingController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ScriptingController : ControllerBase
+    private readonly IHubContext<AgentHub> _agentHubContext;
+
+    private readonly IDataService _dataService;
+    private readonly IAgentHubSessionCache _serviceSessionCache;
+    private readonly IExpiringTokenService _expiringTokenService;
+
+    private readonly UserManager<RemotelyUser> _userManager;
+
+    public ScriptingController(UserManager<RemotelyUser> userManager,
+        IDataService dataService,
+        IAgentHubSessionCache serviceSessionCache,
+        IExpiringTokenService expiringTokenService,
+        IHubContext<AgentHub> agentHub)
     {
-        private readonly IHubContext<AgentHub> _agentHubContext;
+        _dataService = dataService;
+        _serviceSessionCache = serviceSessionCache;
+        _expiringTokenService = expiringTokenService;
+        _userManager = userManager;
+        _agentHubContext = agentHub;
+    }
 
-        private readonly IDataService _dataService;
-        private readonly IAgentHubSessionCache _serviceSessionCache;
-        private readonly IExpiringTokenService _expiringTokenService;
-
-        private readonly UserManager<RemotelyUser> _userManager;
-
-        public ScriptingController(UserManager<RemotelyUser> userManager,
-            IDataService dataService,
-            IAgentHubSessionCache serviceSessionCache,
-            IExpiringTokenService expiringTokenService,
-            IHubContext<AgentHub> agentHub)
+    [ServiceFilter(typeof(ApiAuthorizationFilter))]
+    [HttpPost("[action]/{mode}/{deviceID}")]
+    public async Task<ActionResult<ScriptResult>> ExecuteCommand(string mode, string deviceID)
+    {
+        if (!Enum.TryParse<ScriptingShell>(mode, true, out var shell))
         {
-            _dataService = dataService;
-            _serviceSessionCache = serviceSessionCache;
-            _expiringTokenService = expiringTokenService;
-            _userManager = userManager;
-            _agentHubContext = agentHub;
+            return BadRequest("Unable to parse shell type.  Use either PSCore, WinPS, Bash, or CMD.");
         }
 
-        [ServiceFilter(typeof(ApiAuthorizationFilter))]
-        [HttpPost("[action]/{mode}/{deviceID}")]
-        public async Task<ActionResult<ScriptResult>> ExecuteCommand(string mode, string deviceID)
+        var command = string.Empty;
+        using (var sr = new StreamReader(Request.Body))
         {
-            if (!Enum.TryParse<ScriptingShell>(mode, true, out var shell))
-            {
-                return BadRequest("Unable to parse shell type.  Use either PSCore, WinPS, Bash, or CMD.");
-            }
+            command = await sr.ReadToEndAsync();
+        }
 
-            var command = string.Empty;
-            using (var sr = new StreamReader(Request.Body))
-            {
-                command = await sr.ReadToEndAsync();
-            }
-
-            var userID = string.Empty;
-            if (Request.HttpContext.User.Identity.IsAuthenticated)
-            {
-                var username = Request.HttpContext.User.Identity.Name;
-                var user = await _userManager.FindByNameAsync(username);
-                userID = user.Id;
-                if (!_dataService.DoesUserHaveAccessToDevice(deviceID, user))
-                {
-                    return Unauthorized();
-                }
-
-            }
-
-            Request.Headers.TryGetValue("OrganizationID", out var orgID);
-
-            if (!_serviceSessionCache.TryGetByDeviceId(deviceID, out var device))
-            {
-                return NotFound();
-            }
-
-            if (!_serviceSessionCache.TryGetConnectionId(deviceID, out var connectionId))
-            {
-                return NotFound();
-            }
-
-            if (device.OrganizationID != orgID)
+        var userID = string.Empty;
+        if (Request.HttpContext.User.Identity.IsAuthenticated)
+        {
+            var username = Request.HttpContext.User.Identity.Name;
+            var user = await _userManager.FindByNameAsync(username);
+            userID = user.Id;
+            if (!_dataService.DoesUserHaveAccessToDevice(deviceID, user))
             {
                 return Unauthorized();
             }
 
-            var requestID = Guid.NewGuid().ToString();
-            var authToken = _expiringTokenService.GetToken(Time.Now.AddMinutes(AppConstants.ScriptRunExpirationMinutes));
-
-            // TODO: Replace with new invoke capability in .NET 7.
-            await _agentHubContext.Clients.Client(connectionId).SendAsync("ExecuteCommandFromApi", shell, authToken, requestID, command, User?.Identity?.Name);
-
-            var success = await WaitHelper.WaitForAsync(() => AgentHub.ApiScriptResults.TryGetValue(requestID, out _), TimeSpan.FromSeconds(30));
-            if (!success)
-            {
-                return NotFound();
-            }
-            AgentHub.ApiScriptResults.TryGetValue(requestID, out var commandID);
-            AgentHub.ApiScriptResults.Remove(requestID);
-            var result = _dataService.GetScriptResult(commandID.ToString(), orgID);
-            return result;
         }
+
+        Request.Headers.TryGetValue("OrganizationID", out var orgID);
+
+        if (!_serviceSessionCache.TryGetByDeviceId(deviceID, out var device))
+        {
+            return NotFound();
+        }
+
+        if (!_serviceSessionCache.TryGetConnectionId(deviceID, out var connectionId))
+        {
+            return NotFound();
+        }
+
+        if (device.OrganizationID != orgID)
+        {
+            return Unauthorized();
+        }
+
+        var requestID = Guid.NewGuid().ToString();
+        var authToken = _expiringTokenService.GetToken(Time.Now.AddMinutes(AppConstants.ScriptRunExpirationMinutes));
+
+        // TODO: Replace with new invoke capability in .NET 7.
+        await _agentHubContext.Clients.Client(connectionId).SendAsync("ExecuteCommandFromApi", shell, authToken, requestID, command, User?.Identity?.Name);
+
+        var success = await WaitHelper.WaitForAsync(() => AgentHub.ApiScriptResults.TryGetValue(requestID, out _), TimeSpan.FromSeconds(30));
+        if (!success)
+        {
+            return NotFound();
+        }
+        AgentHub.ApiScriptResults.TryGetValue(requestID, out var commandID);
+        AgentHub.ApiScriptResults.Remove(requestID);
+        var result = _dataService.GetScriptResult(commandID.ToString(), orgID);
+        return result;
     }
 }

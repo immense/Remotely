@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely.Shared.Services
+namespace Remotely.Shared.Services;
+
+public interface IElevationDetector
 {
-    public interface IElevationDetector
-    {
-        bool IsElevated();
-    }
+    bool IsElevated();
 }

@@ -12,162 +12,161 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Remotely.Tests
+namespace Remotely.Tests;
+
+public class TestData
 {
-    public class TestData
+    #region Organization1
+    public Organization Org1 => Org1Admin1.Organization;
+
+    public RemotelyUser Org1Admin1 { get; } = new()
     {
-        #region Organization1
-        public Organization Org1 => Org1Admin1.Organization;
+        UserName = "org1admin1@test.com",
+        IsAdministrator = true,
+        IsServerAdmin = true,
+        Organization = new Organization(),
+        UserOptions = new RemotelyUserOptions()
+    };
 
-        public RemotelyUser Org1Admin1 { get; } = new()
+    public RemotelyUser Org1Admin2 { get; private set; }
+
+    public Device Org1Device1 { get; private set; }
+
+    public Device Org1Device2 { get; private set; }
+
+    public DeviceGroup Org1Group1 { get; private set; } = new DeviceGroup()
+    {
+        Name = "Org1Group1"
+    };
+
+    public DeviceGroup Org1Group2 { get; private set; } = new DeviceGroup()
+    {
+        Name = "Org1Group2"
+    };
+
+    public string Org1Id => Org1.ID;
+    public RemotelyUser Org1User1 { get; private set; }
+    public RemotelyUser Org1User2 { get; private set; }
+    #endregion
+
+
+
+    #region Organization2
+    public Organization Org2 => Org2Admin1.Organization;
+
+    public RemotelyUser Org2Admin1 { get; } = new()
+    {
+        UserName = "org2admin1@test.com",
+        IsAdministrator = true,
+        IsServerAdmin = false,
+        Organization = new Organization(),
+        UserOptions = new RemotelyUserOptions()
+    };
+
+    public RemotelyUser Org2Admin2 { get; private set; }
+
+    public Device Org2Device1 { get; private set; }
+
+    public Device Org2Device2 { get; private set; }
+
+    public DeviceGroup Org2Group1 { get; private set; } = new DeviceGroup()
+    {
+        Name = "Org2Group1"
+    };
+
+    public DeviceGroup Org2Group2 { get; private set; } = new DeviceGroup()
+    {
+        Name = "Org2Group2"
+    };
+
+    public string Org2Id => Org2.ID;
+    public RemotelyUser Org2User1 { get; private set; }
+    public RemotelyUser Org2User2 { get; private set; }
+    #endregion
+
+    public void ClearData()
+    {
+        using var scope = IoCActivator.ServiceProvider.CreateScope();
+        using var dbContext = scope.ServiceProvider.GetRequiredService<AppDb>();
+        dbContext.Database.EnsureDeleted();
+        dbContext.Database.EnsureCreated();
+
+    }
+
+    public async Task Init()
+    {
+        ClearData();
+
+        using var scope = IoCActivator.ServiceProvider.CreateScope();
+        using var userManager = scope.ServiceProvider.GetRequiredService<UserManager<RemotelyUser>>();
+        var dataService = IoCActivator.ServiceProvider.GetRequiredService<IDataService>();
+        var emailSender = IoCActivator.ServiceProvider.GetRequiredService<IEmailSenderEx>();
+
+        // Organization 1
+        await userManager.CreateAsync(Org1Admin1);
+
+        await dataService.CreateUser("org1admin2@test.com", true, Org1Admin1.OrganizationID);
+        Org1Admin2 = dataService.GetUserByNameWithOrg("org1admin2@test.com");
+
+        await dataService.CreateUser("org1testuser1@test.com", false, Org1Admin1.OrganizationID);
+        Org1User1 = dataService.GetUserByNameWithOrg("org1testuser1@test.com");
+
+        await dataService.CreateUser("org1testuser2@test.com", false, Org1Admin1.OrganizationID);
+        Org1User2 = dataService.GetUserByNameWithOrg("org1testuser2@test.com");
+
+        var device1 = new DeviceClientDto()
         {
-            UserName = "org1admin1@test.com",
-            IsAdministrator = true,
-            IsServerAdmin = true,
-            Organization = new Organization(),
-            UserOptions = new RemotelyUserOptions()
+            ID = "Org1Device1",
+            DeviceName = "Org1Device1Name",
+            OrganizationID = Org1Id
         };
-
-        public RemotelyUser Org1Admin2 { get; private set; }
-
-        public Device Org1Device1 { get; private set; }
-
-        public Device Org1Device2 { get; private set; }
-
-        public DeviceGroup Org1Group1 { get; private set; } = new DeviceGroup()
+        var device2 = new DeviceClientDto()
         {
-            Name = "Org1Group1"
+            ID = "Org1Device2",
+            DeviceName = "Org1Device2Name",
+            OrganizationID = Org1Id
         };
+        Org1Device1 = (await dataService.AddOrUpdateDevice(device1)).Value;
+        Org1Device2 = (await dataService.AddOrUpdateDevice(device2)).Value;
 
-        public DeviceGroup Org1Group2 { get; private set; } = new DeviceGroup()
+        dataService.AddDeviceGroup(Org1Admin1.OrganizationID, Org1Group1, out _, out _);
+        dataService.AddDeviceGroup(Org1Admin1.OrganizationID, Org1Group2, out _, out _);
+        var deviceGroups1 = dataService.GetDeviceGroups(Org1Admin1.UserName);
+        Org1Group1 = deviceGroups1.First(x => x.Name == Org1Group1.Name);
+        Org1Group2 = deviceGroups1.First(x => x.Name == Org1Group2.Name);
+
+
+        // Organization 2
+        await userManager.CreateAsync(Org2Admin1);
+
+        await dataService.CreateUser("org2admin2@test.com", true, Org2Admin1.OrganizationID);
+        Org2Admin2 = dataService.GetUserByNameWithOrg("org2admin2@test.com");
+
+        await dataService.CreateUser("org2testuser1@test.com", false, Org2Admin1.OrganizationID);
+        Org2User1 = dataService.GetUserByNameWithOrg("org2testuser1@test.com");
+
+        await dataService.CreateUser("org2testuser2@test.com", false, Org2Admin1.OrganizationID);
+        Org2User2 = dataService.GetUserByNameWithOrg("org2testuser2@test.com");
+
+        var device3 = new DeviceClientDto()
         {
-            Name = "Org1Group2"
+            ID = "Org2Device1",
+            DeviceName = "Org2Device1Name",
+            OrganizationID = Org2Id
         };
-
-        public string Org1Id => Org1.ID;
-        public RemotelyUser Org1User1 { get; private set; }
-        public RemotelyUser Org1User2 { get; private set; }
-        #endregion
-
-
-
-        #region Organization2
-        public Organization Org2 => Org2Admin1.Organization;
-
-        public RemotelyUser Org2Admin1 { get; } = new()
+        var device4 = new DeviceClientDto()
         {
-            UserName = "org2admin1@test.com",
-            IsAdministrator = true,
-            IsServerAdmin = false,
-            Organization = new Organization(),
-            UserOptions = new RemotelyUserOptions()
+            ID = "Org2Device2",
+            DeviceName = "Org2Device2Name",
+            OrganizationID = Org2Id
         };
+        Org2Device1 = (await dataService.AddOrUpdateDevice(device3)).Value;
+        Org2Device2 = (await dataService.AddOrUpdateDevice(device4)).Value;
 
-        public RemotelyUser Org2Admin2 { get; private set; }
-
-        public Device Org2Device1 { get; private set; }
-
-        public Device Org2Device2 { get; private set; }
-
-        public DeviceGroup Org2Group1 { get; private set; } = new DeviceGroup()
-        {
-            Name = "Org2Group1"
-        };
-
-        public DeviceGroup Org2Group2 { get; private set; } = new DeviceGroup()
-        {
-            Name = "Org2Group2"
-        };
-
-        public string Org2Id => Org2.ID;
-        public RemotelyUser Org2User1 { get; private set; }
-        public RemotelyUser Org2User2 { get; private set; }
-        #endregion
-
-        public void ClearData()
-        {
-            using var scope = IoCActivator.ServiceProvider.CreateScope();
-            using var dbContext = scope.ServiceProvider.GetRequiredService<AppDb>();
-            dbContext.Database.EnsureDeleted();
-            dbContext.Database.EnsureCreated();
-
-        }
-
-        public async Task Init()
-        {
-            ClearData();
-
-            using var scope = IoCActivator.ServiceProvider.CreateScope();
-            using var userManager = scope.ServiceProvider.GetRequiredService<UserManager<RemotelyUser>>();
-            var dataService = IoCActivator.ServiceProvider.GetRequiredService<IDataService>();
-            var emailSender = IoCActivator.ServiceProvider.GetRequiredService<IEmailSenderEx>();
-
-            // Organization 1
-            await userManager.CreateAsync(Org1Admin1);
-
-            await dataService.CreateUser("org1admin2@test.com", true, Org1Admin1.OrganizationID);
-            Org1Admin2 = dataService.GetUserByNameWithOrg("org1admin2@test.com");
-
-            await dataService.CreateUser("org1testuser1@test.com", false, Org1Admin1.OrganizationID);
-            Org1User1 = dataService.GetUserByNameWithOrg("org1testuser1@test.com");
-
-            await dataService.CreateUser("org1testuser2@test.com", false, Org1Admin1.OrganizationID);
-            Org1User2 = dataService.GetUserByNameWithOrg("org1testuser2@test.com");
-
-            var device1 = new DeviceClientDto()
-            {
-                ID = "Org1Device1",
-                DeviceName = "Org1Device1Name",
-                OrganizationID = Org1Id
-            };
-            var device2 = new DeviceClientDto()
-            {
-                ID = "Org1Device2",
-                DeviceName = "Org1Device2Name",
-                OrganizationID = Org1Id
-            };
-            Org1Device1 = (await dataService.AddOrUpdateDevice(device1)).Value;
-            Org1Device2 = (await dataService.AddOrUpdateDevice(device2)).Value;
-
-            dataService.AddDeviceGroup(Org1Admin1.OrganizationID, Org1Group1, out _, out _);
-            dataService.AddDeviceGroup(Org1Admin1.OrganizationID, Org1Group2, out _, out _);
-            var deviceGroups1 = dataService.GetDeviceGroups(Org1Admin1.UserName);
-            Org1Group1 = deviceGroups1.First(x => x.Name == Org1Group1.Name);
-            Org1Group2 = deviceGroups1.First(x => x.Name == Org1Group2.Name);
-
-
-            // Organization 2
-            await userManager.CreateAsync(Org2Admin1);
-
-            await dataService.CreateUser("org2admin2@test.com", true, Org2Admin1.OrganizationID);
-            Org2Admin2 = dataService.GetUserByNameWithOrg("org2admin2@test.com");
-
-            await dataService.CreateUser("org2testuser1@test.com", false, Org2Admin1.OrganizationID);
-            Org2User1 = dataService.GetUserByNameWithOrg("org2testuser1@test.com");
-
-            await dataService.CreateUser("org2testuser2@test.com", false, Org2Admin1.OrganizationID);
-            Org2User2 = dataService.GetUserByNameWithOrg("org2testuser2@test.com");
-
-            var device3 = new DeviceClientDto()
-            {
-                ID = "Org2Device1",
-                DeviceName = "Org2Device1Name",
-                OrganizationID = Org2Id
-            };
-            var device4 = new DeviceClientDto()
-            {
-                ID = "Org2Device2",
-                DeviceName = "Org2Device2Name",
-                OrganizationID = Org2Id
-            };
-            Org2Device1 = (await dataService.AddOrUpdateDevice(device3)).Value;
-            Org2Device2 = (await dataService.AddOrUpdateDevice(device4)).Value;
-
-            dataService.AddDeviceGroup(Org2Admin1.OrganizationID, Org2Group1, out _, out _);
-            dataService.AddDeviceGroup(Org2Admin1.OrganizationID, Org2Group2, out _, out _);
-            var deviceGroups2 = dataService.GetDeviceGroups(Org2Admin1.UserName);
-            Org2Group1 = deviceGroups2.First(x => x.Name == Org2Group1.Name);
-            Org2Group2 = deviceGroups2.First(x => x.Name == Org2Group2.Name);
-        }
+        dataService.AddDeviceGroup(Org2Admin1.OrganizationID, Org2Group1, out _, out _);
+        dataService.AddDeviceGroup(Org2Admin1.OrganizationID, Org2Group2, out _, out _);
+        var deviceGroups2 = dataService.GetDeviceGroups(Org2Admin1.UserName);
+        Org2Group1 = deviceGroups2.First(x => x.Name == Org2Group1.Name);
+        Org2Group2 = deviceGroups2.First(x => x.Name == Org2Group2.Name);
     }
 }

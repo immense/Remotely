@@ -1,10 +1,9 @@
-﻿namespace Remotely.Shared.Enums
+﻿namespace Remotely.Shared.Enums;
+
+public enum Platform
 {
-    public enum Platform
-    {
-        Windows,
-        Linux,
-        MacOS,
-        Unknown
-    }
+    Windows,
+    Linux,
+    MacOS,
+    Unknown
 }

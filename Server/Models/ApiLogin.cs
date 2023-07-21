@@ -1,8 +1,7 @@
-﻿namespace Remotely.Server.Models
+﻿namespace Remotely.Server.Models;
+
+public class ApiLogin
 {
-    public class ApiLogin
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
-    }
+    public string Email { get; set; }
+    public string Password { get; set; }
 }

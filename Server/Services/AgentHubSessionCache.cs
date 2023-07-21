@@ -4,84 +4,83 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Remotely.Server.Services
-{
-    public interface IAgentHubSessionCache
-    {
-        void AddOrUpdateByConnectionId(string connectionId, Device device);
-        IEnumerable<string> FilterDevicesByOnlineStatus(IEnumerable<string> deviceIds, bool isOnline);
+namespace Remotely.Server.Services;
 
-        ICollection<Device> GetAllDevices();
-        IEnumerable<string> GetConnectionIdsByDeviceIds(IEnumerable<string> deviceIds);
-        bool TryGetByDeviceId(string deviceId, out Device device);
-        bool TryGetConnectionId(string deviceId, out string serviceConnectionId);
-        bool TryRemoveByConnectionId(string connectionId, out Device device);
+public interface IAgentHubSessionCache
+{
+    void AddOrUpdateByConnectionId(string connectionId, Device device);
+    IEnumerable<string> FilterDevicesByOnlineStatus(IEnumerable<string> deviceIds, bool isOnline);
+
+    ICollection<Device> GetAllDevices();
+    IEnumerable<string> GetConnectionIdsByDeviceIds(IEnumerable<string> deviceIds);
+    bool TryGetByDeviceId(string deviceId, out Device device);
+    bool TryGetConnectionId(string deviceId, out string serviceConnectionId);
+    bool TryRemoveByConnectionId(string connectionId, out Device device);
+}
+
+public class AgentHubSessionCache : IAgentHubSessionCache
+{
+
+    private readonly ConcurrentDictionary<string, Device> _connectionIdToDeviceLookup = new();
+    private readonly ConcurrentDictionary<string, string> _deviceIdToConnectionIdLookup = new();
+
+    public void AddOrUpdateByConnectionId(string connectionId, Device device)
+    {
+        _connectionIdToDeviceLookup.AddOrUpdate(connectionId, device, (k, v) => device);
+        _deviceIdToConnectionIdLookup.AddOrUpdate(device.ID, connectionId, (k, v) => connectionId);
     }
 
-    public class AgentHubSessionCache : IAgentHubSessionCache
+    public IEnumerable<string> FilterDevicesByOnlineStatus(IEnumerable<string> deviceIds, bool isOnline)
     {
-
-        private readonly ConcurrentDictionary<string, Device> _connectionIdToDeviceLookup = new();
-        private readonly ConcurrentDictionary<string, string> _deviceIdToConnectionIdLookup = new();
-
-        public void AddOrUpdateByConnectionId(string connectionId, Device device)
+        foreach (var deviceId in deviceIds)
         {
-            _connectionIdToDeviceLookup.AddOrUpdate(connectionId, device, (k, v) => device);
-            _deviceIdToConnectionIdLookup.AddOrUpdate(device.ID, connectionId, (k, v) => connectionId);
-        }
-
-        public IEnumerable<string> FilterDevicesByOnlineStatus(IEnumerable<string> deviceIds, bool isOnline)
-        {
-            foreach (var deviceId in deviceIds)
+            var result = TryGetConnectionId(deviceId, out _);
+            if (result == isOnline)
             {
-                var result = TryGetConnectionId(deviceId, out _);
-                if (result == isOnline)
-                {
-                    yield return deviceId;
-                }
+                yield return deviceId;
             }
         }
+    }
 
-        public ICollection<Device> GetAllDevices() => _connectionIdToDeviceLookup.Values;
+    public ICollection<Device> GetAllDevices() => _connectionIdToDeviceLookup.Values;
 
-        public IEnumerable<string> GetConnectionIdsByDeviceIds(IEnumerable<string> deviceIds)
+    public IEnumerable<string> GetConnectionIdsByDeviceIds(IEnumerable<string> deviceIds)
+    {
+        foreach (var deviceId in deviceIds)
         {
-            foreach (var deviceId in deviceIds)
+            if (TryGetConnectionId(deviceId, out var connectionId))
             {
-                if (TryGetConnectionId(deviceId, out var connectionId))
-                {
-                    yield return connectionId;
-                }
+                yield return connectionId;
             }
         }
+    }
 
-        public bool TryGetByDeviceId(string deviceId, out Device device)
+    public bool TryGetByDeviceId(string deviceId, out Device device)
+    {
+        if (_deviceIdToConnectionIdLookup.TryGetValue(deviceId, out var connectionId) &&
+            _connectionIdToDeviceLookup.TryGetValue(connectionId, out device))
         {
-            if (_deviceIdToConnectionIdLookup.TryGetValue(deviceId, out var connectionId) &&
-                _connectionIdToDeviceLookup.TryGetValue(connectionId, out device))
-            {
-                return true;
-            }
-            device = Device.Empty;
-            return false;
+            return true;
+        }
+        device = Device.Empty;
+        return false;
+    }
+
+    public bool TryGetConnectionId(string deviceId, out string serviceConnectionId)
+    {
+        return _deviceIdToConnectionIdLookup.TryGetValue(deviceId, out serviceConnectionId);
+    }
+
+    public bool TryRemoveByConnectionId(string connectionId, out Device device)
+    {
+        if (_connectionIdToDeviceLookup.TryRemove(connectionId, out var lookupResult))
+        {
+            device = lookupResult;
+            _ = _deviceIdToConnectionIdLookup.TryRemove(lookupResult.ID, out _);
+            return true;
         }
 
-        public bool TryGetConnectionId(string deviceId, out string serviceConnectionId)
-        {
-            return _deviceIdToConnectionIdLookup.TryGetValue(deviceId, out serviceConnectionId);
-        }
-
-        public bool TryRemoveByConnectionId(string connectionId, out Device device)
-        {
-            if (_connectionIdToDeviceLookup.TryRemove(connectionId, out var lookupResult))
-            {
-                device = lookupResult;
-                _ = _deviceIdToConnectionIdLookup.TryRemove(lookupResult.ID, out _);
-                return true;
-            }
-
-            device = Device.Empty;
-            return false;
-        }
+        device = Device.Empty;
+        return false;
     }
 }

@@ -7,54 +7,53 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely.Shared.Utilities
+namespace Remotely.Shared.Utilities;
+
+public static class AppVersionHelper
 {
-    public static class AppVersionHelper
+    public static string GetAppVersion(string defaultVersion = "1.0.0")
     {
-        public static string GetAppVersion(string defaultVersion = "1.0.0")
+        try
         {
-            try
+            var filePath = Assembly.GetEntryAssembly()?.Location;
+            if (TryGetFileVersion(filePath, out var asmVersion))
             {
-                var filePath = Assembly.GetEntryAssembly()?.Location;
-                if (TryGetFileVersion(filePath, out var asmVersion))
-                {
-                    return asmVersion;
-                }
-
-                if (TryGetFileVersion(Environment.ProcessPath, out var exeVersion))
-                {
-                    return exeVersion;
-                }
-
-                return defaultVersion;
+                return asmVersion;
             }
-            catch
+
+            if (TryGetFileVersion(Environment.ProcessPath, out var exeVersion))
             {
-                return defaultVersion;
+                return exeVersion;
+            }
+
+            return defaultVersion;
+        }
+        catch
+        {
+            return defaultVersion;
+        }
+    }
+
+    private static bool TryGetFileVersion(string filePath, out string version)
+    {
+        try
+        {
+            if (File.Exists(filePath))
+            {
+                var versionInfo = FileVersionInfo.GetVersionInfo(filePath);
+                if (Version.TryParse(versionInfo.FileVersion, out _))
+                {
+                    version = versionInfo.FileVersion;
+                    return true;
+                }
             }
         }
-
-        private static bool TryGetFileVersion(string filePath, out string version)
+        catch
         {
-            try
-            {
-                if (File.Exists(filePath))
-                {
-                    var versionInfo = FileVersionInfo.GetVersionInfo(filePath);
-                    if (Version.TryParse(versionInfo.FileVersion, out _))
-                    {
-                        version = versionInfo.FileVersion;
-                        return true;
-                    }
-                }
-            }
-            catch
-            {
-                // Ignored.
-            }
-
-            version = string.Empty;
-            return false;
+            // Ignored.
         }
+
+        version = string.Empty;
+        return false;
     }
 }

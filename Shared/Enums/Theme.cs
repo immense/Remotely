@@ -1,8 +1,7 @@
-﻿namespace Remotely.Shared.Enums
+﻿namespace Remotely.Shared.Enums;
+
+public enum Theme
 {
-    public enum Theme
-    {
-        Dark,
-        Light
-    }
+    Dark,
+    Light
 }

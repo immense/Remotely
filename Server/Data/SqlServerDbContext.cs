@@ -7,21 +7,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Remotely.Server.Data
+namespace Remotely.Server.Data;
+
+public class SqlServerDbContext : AppDb
 {
-    public class SqlServerDbContext : AppDb
+    private readonly IConfiguration _configuration;
+
+    public SqlServerDbContext(IConfiguration configuration)
     {
-        private readonly IConfiguration _configuration;
+        _configuration = configuration;
+    }
 
-        public SqlServerDbContext(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-        {
-            options.UseSqlServer(_configuration.GetConnectionString("SQLServer"));
-            base.OnConfiguring(options);
-        }
+    protected override void OnConfiguring(DbContextOptionsBuilder options)
+    {
+        options.UseSqlServer(_configuration.GetConnectionString("SQLServer"));
+        base.OnConfiguring(options);
     }
 }

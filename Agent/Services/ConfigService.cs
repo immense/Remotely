@@ -7,104 +7,103 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 
-namespace Remotely.Agent.Services
+namespace Remotely.Agent.Services;
+
+public interface IConfigService
 {
-    public interface IConfigService
+    ConnectionInfo GetConnectionInfo();
+    void SaveConnectionInfo(ConnectionInfo connectionInfo);
+}
+
+public class ConfigService : IConfigService
+{
+    private static readonly object _fileLock = new();
+    private ConnectionInfo _connectionInfo;
+    private readonly string _debugGuid = "f2b0a595-5ea8-471b-975f-12e70e0f3497";
+    private readonly ILogger<ConfigService> _logger;
+
+    public ConfigService(ILogger<ConfigService> logger)
     {
-        ConnectionInfo GetConnectionInfo();
-        void SaveConnectionInfo(ConnectionInfo connectionInfo);
+        _logger = logger;
     }
 
-    public class ConfigService : IConfigService
+    private Dictionary<string, string> _commandLineArgs;
+    private Dictionary<string, string> CommandLineArgs
     {
-        private static readonly object _fileLock = new();
-        private ConnectionInfo _connectionInfo;
-        private readonly string _debugGuid = "f2b0a595-5ea8-471b-975f-12e70e0f3497";
-        private readonly ILogger<ConfigService> _logger;
-
-        public ConfigService(ILogger<ConfigService> logger)
+        get
         {
-            _logger = logger;
-        }
-
-        private Dictionary<string, string> _commandLineArgs;
-        private Dictionary<string, string> CommandLineArgs
-        {
-            get
+            if (_commandLineArgs is null)
             {
-                if (_commandLineArgs is null)
+                _commandLineArgs = new Dictionary<string, string>();
+                var args = Environment.GetCommandLineArgs();
+                for (var i = 1; i < args.Length; i += 2)
                 {
-                    _commandLineArgs = new Dictionary<string, string>();
-                    var args = Environment.GetCommandLineArgs();
-                    for (var i = 1; i < args.Length; i += 2)
+                    var key = args?[i];
+                    if (key != null)
                     {
-                        var key = args?[i];
-                        if (key != null)
+                        key = key.Trim().Replace("-", "").ToLower();
+                        var value = args?[i + 1];
+                        if (value != null)
                         {
-                            key = key.Trim().Replace("-", "").ToLower();
-                            var value = args?[i + 1];
-                            if (value != null)
-                            {
-                                _commandLineArgs[key] = args[i + 1].Trim();
-                            }
+                            _commandLineArgs[key] = args[i + 1].Trim();
                         }
-
                     }
-                }
-                return _commandLineArgs;
-            }
-        }
 
-        public ConnectionInfo GetConnectionInfo()
+                }
+            }
+            return _commandLineArgs;
+        }
+    }
+
+    public ConnectionInfo GetConnectionInfo()
+    {
+        // For debugging purposes (i.e. launch of a bunch of instances).
+        if (CommandLineArgs.TryGetValue("organization", out var orgID) &&
+            CommandLineArgs.TryGetValue("host", out var hostName) &&
+            CommandLineArgs.TryGetValue("device", out var deviceID))
         {
-            // For debugging purposes (i.e. launch of a bunch of instances).
-            if (CommandLineArgs.TryGetValue("organization", out var orgID) &&
-                CommandLineArgs.TryGetValue("host", out var hostName) &&
-                CommandLineArgs.TryGetValue("device", out var deviceID))
+            return new ConnectionInfo()
             {
-                return new ConnectionInfo()
-                {
-                    DeviceID = deviceID,
-                    Host = hostName,
-                    OrganizationID = orgID
-                };
-            }
+                DeviceID = deviceID,
+                Host = hostName,
+                OrganizationID = orgID
+            };
+        }
 
-            if (Environment.UserInteractive && Debugger.IsAttached)
+        if (Environment.UserInteractive && Debugger.IsAttached)
+        {
+            return new ConnectionInfo()
             {
-                return new ConnectionInfo()
-                {
-                    DeviceID = _debugGuid,
-                    Host = "http://localhost:5000",
-                    OrganizationID = orgID
-                };
-            }
-
-
-            if (_connectionInfo == null)
-            {
-                lock (_fileLock)
-                {
-                    if (!File.Exists("ConnectionInfo.json"))
-                    {
-                        _logger.LogError("No connection info available.  Please create ConnectionInfo.json file with appropriate values.");
-                        return null;
-                    }
-                    _connectionInfo = JsonSerializer.Deserialize<ConnectionInfo>(File.ReadAllText("ConnectionInfo.json"));
-                }
-            }
-
-            return _connectionInfo;
+                DeviceID = _debugGuid,
+                Host = "http://localhost:5000",
+                OrganizationID = orgID
+            };
         }
 
 
-        public void SaveConnectionInfo(ConnectionInfo connectionInfo)
+        if (_connectionInfo == null)
         {
             lock (_fileLock)
             {
-                _connectionInfo = connectionInfo;
-                File.WriteAllText("ConnectionInfo.json", JsonSerializer.Serialize(connectionInfo));
+                if (!File.Exists("ConnectionInfo.json"))
+                {
+                    _logger.LogError("No connection info available.  Please create ConnectionInfo.json file with appropriate values.");
+                    return null;
+                }
+                _connectionInfo = JsonSerializer.Deserialize<ConnectionInfo>(File.ReadAllText("ConnectionInfo.json"));
             }
+        }
+
+        return _connectionInfo;
+    }
+
+
+    public void SaveConnectionInfo(ConnectionInfo connectionInfo)
+    {
+        lock (_fileLock)
+        {
+            _connectionInfo = connectionInfo;
+            File.WriteAllText("ConnectionInfo.json", JsonSerializer.Serialize(connectionInfo));
         }
     }
 }

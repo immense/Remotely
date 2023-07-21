@@ -7,54 +7,53 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Remotely.Server.Services.RcImplementations
+namespace Remotely.Server.Services.RcImplementations;
+
+public class SessionRecordingSink : ISessionRecordingSink
 {
-    public class SessionRecordingSink : ISessionRecordingSink
+    private readonly ILogger<SessionRecordingSink> _logger;
+
+    public SessionRecordingSink(ILogger<SessionRecordingSink> logger)
     {
-        private readonly ILogger<SessionRecordingSink> _logger;
+        _logger = logger;
+    }
 
-        public SessionRecordingSink(ILogger<SessionRecordingSink> logger)
+    public static string RecordingsDirectory
+    {
+        get
         {
-            _logger = logger;
-        }
-
-        public static string RecordingsDirectory
-        {
-            get
+            var logsDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "recordings");
+            if (Directory.Exists("/remotely-data"))
             {
-                var logsDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "recordings");
-                if (Directory.Exists("/remotely-data"))
-                {
-                    logsDir = "/remotely-data/recordings";
-                }
-                return logsDir;
+                logsDir = "/remotely-data/recordings";
             }
+            return logsDir;
         }
+    }
 
-        public async Task SinkWebmStream(IAsyncEnumerable<byte[]> webmStream, RemoteControlSession session)
+    public async Task SinkWebmStream(IAsyncEnumerable<byte[]> webmStream, RemoteControlSession session)
+    {
+        try
         {
-            try
+            var targetDir = Path.Combine(RecordingsDirectory, $"{DateTime.Now:yyyy-MM-dd}");
+            _ = Directory.CreateDirectory(targetDir);
+
+            var viewerName = !string.IsNullOrWhiteSpace(session.RequesterName) ?
+                session.RequesterName : 
+                "AnonymousUser";
+
+            var fileName = $"{viewerName}_{DateTime.Now:yyyyMMdd_HHmmssfff}.webm";
+
+            using var fs = new FileStream(Path.Combine(targetDir, fileName), FileMode.Create);
+
+            await foreach (var chunk in webmStream)
             {
-                var targetDir = Path.Combine(RecordingsDirectory, $"{DateTime.Now:yyyy-MM-dd}");
-                _ = Directory.CreateDirectory(targetDir);
-
-                var viewerName = !string.IsNullOrWhiteSpace(session.RequesterName) ?
-                    session.RequesterName : 
-                    "AnonymousUser";
-
-                var fileName = $"{viewerName}_{DateTime.Now:yyyyMMdd_HHmmssfff}.webm";
-
-                using var fs = new FileStream(Path.Combine(targetDir, fileName), FileMode.Create);
-
-                await foreach (var chunk in webmStream)
-                {
-                    await fs.WriteAsync(chunk);
-                }
-            }   
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while sinking webm stream.");
+                await fs.WriteAsync(chunk);
             }
+        }   
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while sinking webm stream.");
         }
     }
 }

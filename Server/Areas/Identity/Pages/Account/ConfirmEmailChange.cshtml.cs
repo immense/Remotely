@@ -10,56 +10,55 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Remotely.Shared.Models;
 
-namespace Remotely.Server.Areas.Identity.Pages.Account
-{
-    [AllowAnonymous]
-    public class ConfirmEmailChangeModel : PageModel
-    {
-        private readonly UserManager<RemotelyUser> _userManager;
-        private readonly SignInManager<RemotelyUser> _signInManager;
+namespace Remotely.Server.Areas.Identity.Pages.Account;
 
-        public ConfirmEmailChangeModel(UserManager<RemotelyUser> userManager, SignInManager<RemotelyUser> signInManager)
+[AllowAnonymous]
+public class ConfirmEmailChangeModel : PageModel
+{
+    private readonly UserManager<RemotelyUser> _userManager;
+    private readonly SignInManager<RemotelyUser> _signInManager;
+
+    public ConfirmEmailChangeModel(UserManager<RemotelyUser> userManager, SignInManager<RemotelyUser> signInManager)
+    {
+        _userManager = userManager;
+        _signInManager = signInManager;
+    }
+
+    [TempData]
+    public string StatusMessage { get; set; }
+
+    public async Task<IActionResult> OnGetAsync(string userId, string email, string code)
+    {
+        if (userId == null || email == null || code == null)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            return RedirectToPage("/Index");
         }
 
-        [TempData]
-        public string StatusMessage { get; set; }
-
-        public async Task<IActionResult> OnGetAsync(string userId, string email, string code)
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
         {
-            if (userId == null || email == null || code == null)
-            {
-                return RedirectToPage("/Index");
-            }
+            return NotFound($"Unable to load user with ID '{userId}'.");
+        }
 
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return NotFound($"Unable to load user with ID '{userId}'.");
-            }
-
-            code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
-            var result = await _userManager.ChangeEmailAsync(user, email, code);
-            if (!result.Succeeded)
-            {
-                StatusMessage = "Error changing email.";
-                return Page();
-            }
-
-            // In our UI email and user name are one and the same, so when we update the email
-            // we need to update the user name.
-            var setUserNameResult = await _userManager.SetUserNameAsync(user, email);
-            if (!setUserNameResult.Succeeded)
-            {
-                StatusMessage = "Error changing user name.";
-                return Page();
-            }
-
-            await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Thank you for confirming your email change.";
+        code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+        var result = await _userManager.ChangeEmailAsync(user, email, code);
+        if (!result.Succeeded)
+        {
+            StatusMessage = "Error changing email.";
             return Page();
         }
+
+        // In our UI email and user name are one and the same, so when we update the email
+        // we need to update the user name.
+        var setUserNameResult = await _userManager.SetUserNameAsync(user, email);
+        if (!setUserNameResult.Succeeded)
+        {
+            StatusMessage = "Error changing user name.";
+            return Page();
+        }
+
+        await _signInManager.RefreshSignInAsync(user);
+        StatusMessage = "Thank you for confirming your email change.";
+        return Page();
     }
 }

@@ -8,114 +8,113 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Remotely.Server.Services
+namespace Remotely.Server.Services;
+
+public interface IClientAppState : INotifyPropertyChanged, IInvokePropertyChanged
 {
-    public interface IClientAppState : INotifyPropertyChanged, IInvokePropertyChanged
+    ConcurrentList<ChatSession> DevicesFrameChatSessions { get; }
+    DeviceCardState DevicesFrameFocusedCardState { get; set; }
+    string DevicesFrameFocusedDevice { get; set; }
+    ConcurrentList<string> DevicesFrameSelectedDevices { get; }
+    ConcurrentQueue<TerminalLineItem> TerminalLines { get; }
+
+    void AddTerminalHistory(string content);
+
+    void AddTerminalLine(string content, string className = "", string title = "");
+
+    Task<Theme> GetEffectiveTheme();
+    string GetTerminalHistory(bool forward);
+}
+
+public class ClientAppState : ViewModelBase, IClientAppState
+{
+    private readonly IApplicationConfig _appConfig;
+    private readonly IAuthService _authService;
+    private readonly ConcurrentQueue<string> _terminalHistory = new();
+    private int _terminalHistoryIndex = 0;
+
+    public ClientAppState(
+        IAuthService authService,
+        IApplicationConfig appConfig)
     {
-        ConcurrentList<ChatSession> DevicesFrameChatSessions { get; }
-        DeviceCardState DevicesFrameFocusedCardState { get; set; }
-        string DevicesFrameFocusedDevice { get; set; }
-        ConcurrentList<string> DevicesFrameSelectedDevices { get; }
-        ConcurrentQueue<TerminalLineItem> TerminalLines { get; }
-
-        void AddTerminalHistory(string content);
-
-        void AddTerminalLine(string content, string className = "", string title = "");
-
-        Task<Theme> GetEffectiveTheme();
-        string GetTerminalHistory(bool forward);
+        _authService = authService;
+        _appConfig = appConfig;
     }
 
-    public class ClientAppState : ViewModelBase, IClientAppState
+    public ConcurrentList<ChatSession> DevicesFrameChatSessions { get; } = new();
+
+    public DeviceCardState DevicesFrameFocusedCardState
     {
-        private readonly IApplicationConfig _appConfig;
-        private readonly IAuthService _authService;
-        private readonly ConcurrentQueue<string> _terminalHistory = new();
-        private int _terminalHistoryIndex = 0;
+        get => Get<DeviceCardState>();
+        set => Set(value);
+    }
 
-        public ClientAppState(
-            IAuthService authService,
-            IApplicationConfig appConfig)
+    public string DevicesFrameFocusedDevice
+    {
+        get => Get<string>();
+        set => Set(value);
+    }
+
+    public ConcurrentList<string> DevicesFrameSelectedDevices { get; } = new();
+
+    public ConcurrentQueue<TerminalLineItem> TerminalLines { get; } = new();
+
+    public void AddTerminalHistory(string content)
+    {
+        while (_terminalHistory.Count > 500)
         {
-            _authService = authService;
-            _appConfig = appConfig;
+            _terminalHistory.TryDequeue(out _);
         }
 
-        public ConcurrentList<ChatSession> DevicesFrameChatSessions { get; } = new();
+        _terminalHistory.Enqueue(content);
+        _terminalHistoryIndex = _terminalHistory.Count;
+    }
 
-        public DeviceCardState DevicesFrameFocusedCardState
+    public void AddTerminalLine(string content, string className = "", string title = "")
+    {
+        while (TerminalLines.Count > 500)
         {
-            get => Get<DeviceCardState>();
-            set => Set(value);
+            TerminalLines.TryDequeue(out _);
         }
 
-        public string DevicesFrameFocusedDevice
+        TerminalLines.Enqueue(new TerminalLineItem()
         {
-            get => Get<string>();
-            set => Set(value);
+            Text = content,
+            ClassName = className,
+            Title = title
+        });
+    }
+
+    public async Task<Theme> GetEffectiveTheme()
+    {
+        if (await _authService.IsAuthenticated())
+        {
+            var user = await _authService.GetUser();
+            return user?.UserOptions?.Theme ?? _appConfig.Theme;
+        }
+        return _appConfig.Theme;
+    }
+
+    public string GetTerminalHistory(bool forward)
+    {
+        if (!_terminalHistory.Any())
+        {
+            return "";
         }
 
-        public ConcurrentList<string> DevicesFrameSelectedDevices { get; } = new();
-
-        public ConcurrentQueue<TerminalLineItem> TerminalLines { get; } = new();
-
-        public void AddTerminalHistory(string content)
+        if (forward && _terminalHistoryIndex < _terminalHistory.Count)
         {
-            while (_terminalHistory.Count > 500)
-            {
-                _terminalHistory.TryDequeue(out _);
-            }
-
-            _terminalHistory.Enqueue(content);
-            _terminalHistoryIndex = _terminalHistory.Count;
+            _terminalHistoryIndex++;
+        }
+        else if (!forward && _terminalHistoryIndex > 0)
+        {
+            _terminalHistoryIndex--;
         }
 
-        public void AddTerminalLine(string content, string className = "", string title = "")
+        if (_terminalHistoryIndex < 0 || _terminalHistoryIndex >= _terminalHistory.Count)
         {
-            while (TerminalLines.Count > 500)
-            {
-                TerminalLines.TryDequeue(out _);
-            }
-
-            TerminalLines.Enqueue(new TerminalLineItem()
-            {
-                Text = content,
-                ClassName = className,
-                Title = title
-            });
+            return "";
         }
-
-        public async Task<Theme> GetEffectiveTheme()
-        {
-            if (await _authService.IsAuthenticated())
-            {
-                var user = await _authService.GetUser();
-                return user?.UserOptions?.Theme ?? _appConfig.Theme;
-            }
-            return _appConfig.Theme;
-        }
-
-        public string GetTerminalHistory(bool forward)
-        {
-            if (!_terminalHistory.Any())
-            {
-                return "";
-            }
-
-            if (forward && _terminalHistoryIndex < _terminalHistory.Count)
-            {
-                _terminalHistoryIndex++;
-            }
-            else if (!forward && _terminalHistoryIndex > 0)
-            {
-                _terminalHistoryIndex--;
-            }
-
-            if (_terminalHistoryIndex < 0 || _terminalHistoryIndex >= _terminalHistory.Count)
-            {
-                return "";
-            }
-            return _terminalHistory.ElementAt(_terminalHistoryIndex);
-        }
+        return _terminalHistory.ElementAt(_terminalHistoryIndex);
     }
 }

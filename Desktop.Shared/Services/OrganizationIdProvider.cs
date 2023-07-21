@@ -1,12 +1,11 @@
 ﻿
-namespace Remotely.Desktop.Shared.Services
+namespace Remotely.Desktop.Shared.Services;
+
+public interface IOrganizationIdProvider
 {
-    public interface IOrganizationIdProvider
-    {
-        string OrganizationId { get; set; }
-    }
-    public class OrganizationIdProvider : IOrganizationIdProvider
-    {
-        public string OrganizationId { get; set; } = string.Empty;
-    }
+    string OrganizationId { get; set; }
+}
+public class OrganizationIdProvider : IOrganizationIdProvider
+{
+    public string OrganizationId { get; set; } = string.Empty;
 }

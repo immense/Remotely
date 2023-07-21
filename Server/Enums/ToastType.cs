@@ -1,12 +1,11 @@
-﻿namespace Remotely.Server.Enums
+﻿namespace Remotely.Server.Enums;
+
+public enum ToastType
 {
-    public enum ToastType
-    {
-        Primary,
-        Secondary,
-        Success,
-        Info,
-        Warning,
-        Error
-    }
+    Primary,
+    Secondary,
+    Success,
+    Info,
+    Warning,
+    Error
 }

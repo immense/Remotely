@@ -7,14 +7,13 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely.Shared.Services
+namespace Remotely.Shared.Services;
+
+[SupportedOSPlatform("windows")]
+public class ElevationDetectorWin : IElevationDetector
 {
-    [SupportedOSPlatform("windows")]
-    public class ElevationDetectorWin : IElevationDetector
+    public bool IsElevated()
     {
-        public bool IsElevated()
-        {
-           return new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
-        }
+       return new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
     }
 }
