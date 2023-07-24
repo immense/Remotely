@@ -36,7 +36,8 @@ public class ScriptScheduleDispatcherTests
 
         _savedScript = new SavedScript()
         {
-            Id = Guid.NewGuid()
+            Id = Guid.NewGuid(),
+            Name = "Test Script",
         };
 
         _schedule1 = new()
@@ -51,6 +52,7 @@ public class ScriptScheduleDispatcherTests
             {
                 new DeviceGroup()
                 {
+                    Name = "Group1",
                     Devices = new List<Device>()
                     {
                         _testData.Org1Device2

@@ -23,7 +23,7 @@ namespace Remotely.Agent;
 public class Program
 {
     [Obsolete("Remove this when all services are in DI behind interfaces.")]
-    public static IServiceProvider Services { get; set; }
+    public static IServiceProvider? Services { get; set; }
 
     public static async Task Main(string[] args)
     {
@@ -151,7 +151,7 @@ public class Program
     private static void SetWorkingDirectory()
     {
         var exePath = Environment.ProcessPath ?? Environment.GetCommandLineArgs().First();
-        var exeDir = Path.GetDirectoryName(exePath);
+        var exeDir = Path.GetDirectoryName(exePath) ?? AppDomain.CurrentDomain.BaseDirectory;
         Directory.SetCurrentDirectory(exeDir);
     }
 }

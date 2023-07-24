@@ -3,6 +3,7 @@ using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -24,6 +25,7 @@ public static class DeviceExtensions
     public static DeviceClientDto ToDto(this Device device)
     {
         var json = JsonSerializer.Serialize(device, _serializerOptions);
-        return JsonSerializer.Deserialize<DeviceClientDto>(json, _serializerOptions);
+        var dto = JsonSerializer.Deserialize<DeviceClientDto>(json, _serializerOptions);
+        return dto ?? throw new SerializationException("Failed to create DTO.");
     }
 }

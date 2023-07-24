@@ -24,7 +24,7 @@ public class TestData
         UserName = "org1admin1@test.com",
         IsAdministrator = true,
         IsServerAdmin = true,
-        Organization = new Organization(),
+        Organization = new Organization() { OrganizationName = "Org1" },
         UserOptions = new RemotelyUserOptions()
     };
 
@@ -59,7 +59,7 @@ public class TestData
         UserName = "org2admin1@test.com",
         IsAdministrator = true,
         IsServerAdmin = false,
-        Organization = new Organization(),
+        Organization = new Organization() { OrganizationName = "Org2" },
         UserOptions = new RemotelyUserOptions()
     };
 
@@ -129,8 +129,8 @@ public class TestData
         Org1Device1 = (await dataService.AddOrUpdateDevice(device1)).Value;
         Org1Device2 = (await dataService.AddOrUpdateDevice(device2)).Value;
 
-        dataService.AddDeviceGroup(Org1Admin1.OrganizationID, Org1Group1, out _, out _);
-        dataService.AddDeviceGroup(Org1Admin1.OrganizationID, Org1Group2, out _, out _);
+        await dataService.AddDeviceGroup(Org1Admin1.OrganizationID, Org1Group1);
+        await dataService.AddDeviceGroup(Org1Admin1.OrganizationID, Org1Group2);
         var deviceGroups1 = dataService.GetDeviceGroups(Org1Admin1.UserName);
         Org1Group1 = deviceGroups1.First(x => x.Name == Org1Group1.Name);
         Org1Group2 = deviceGroups1.First(x => x.Name == Org1Group2.Name);
@@ -163,8 +163,8 @@ public class TestData
         Org2Device1 = (await dataService.AddOrUpdateDevice(device3)).Value;
         Org2Device2 = (await dataService.AddOrUpdateDevice(device4)).Value;
 
-        dataService.AddDeviceGroup(Org2Admin1.OrganizationID, Org2Group1, out _, out _);
-        dataService.AddDeviceGroup(Org2Admin1.OrganizationID, Org2Group2, out _, out _);
+        await dataService.AddDeviceGroup(Org2Admin1.OrganizationID, Org2Group1);
+        await dataService.AddDeviceGroup(Org2Admin1.OrganizationID, Org2Group2);
         var deviceGroups2 = dataService.GetDeviceGroups(Org2Admin1.UserName);
         Org2Group1 = deviceGroups2.First(x => x.Name == Org2Group1.Name);
         Org2Group2 = deviceGroups2.First(x => x.Name == Org2Group2.Name);

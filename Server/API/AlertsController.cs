@@ -8,6 +8,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -39,7 +40,7 @@ public class AlertsController : ControllerBase
     [HttpPost("Create")]
     public async Task<IActionResult> Create(AlertOptions alertOptions)
     {
-        Request.Headers.TryGetValue("OrganizationID", out var orgID);
+        _ = Request.Headers.TryGetValue("OrganizationID", out var orgId);
 
         _logger.LogInformation("Alert created.  Alert Options: {options}", JsonSerializer.Serialize(alertOptions));
 
@@ -47,7 +48,7 @@ public class AlertsController : ControllerBase
         {
             try
             {
-                await _dataService.AddAlert(alertOptions.AlertDeviceID, orgID, alertOptions.AlertMessage);
+                await _dataService.AddAlert(alertOptions.AlertDeviceID, orgId.ToString(), alertOptions.AlertMessage);
             }
             catch (Exception ex)
             {
@@ -62,7 +63,7 @@ public class AlertsController : ControllerBase
                 await _emailSender.SendEmailAsync(alertOptions.EmailTo,
                     alertOptions.EmailSubject,
                     alertOptions.EmailBody,
-                    orgID);
+                    orgId.ToString());
             }
             catch (Exception ex)
             {
@@ -81,7 +82,7 @@ public class AlertsController : ControllerBase
                     alertOptions.ApiRequestUrl);
 
                 request.Content = new StringContent(alertOptions.ApiRequestBody);
-                request.Content.Headers.ContentType.MediaType = "application/json";
+                request.Content.Headers.ContentType = new("application/json");
                 
                 foreach (var header in alertOptions.ApiRequestHeaders)
                 {
@@ -121,15 +122,15 @@ public class AlertsController : ControllerBase
     [HttpDelete("DeleteAll")]
     public async Task<IActionResult> DeleteAll()
     {
-        Request.Headers.TryGetValue("OrganizationID", out var orgID);
+        Request.Headers.TryGetValue("OrganizationID", out var orgId);
 
-        if (User.Identity.IsAuthenticated)
+        if (User.Identity?.IsAuthenticated == true)
         {
-            await _dataService.DeleteAllAlerts(orgID, User.Identity.Name);
+            await _dataService.DeleteAllAlerts(orgId.ToString(), User?.Identity?.Name);
         }
         else
         {
-            await _dataService.DeleteAllAlerts(orgID);
+            await _dataService.DeleteAllAlerts(orgId.ToString());
         }
 
         return Ok();

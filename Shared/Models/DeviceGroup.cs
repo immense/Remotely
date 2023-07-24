@@ -9,23 +9,23 @@ namespace Remotely.Shared.Models;
 public class DeviceGroup
 {
     [StringLength(200)]
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public string ID { get; set; }
+    public string ID { get; set; } = null!;
 
     [JsonIgnore]
-    public List<Device> Devices { get; set; }
+    public List<Device>? Devices { get; set; }
 
     [JsonIgnore]
-    public Organization Organization { get; set; }
+    public Organization? Organization { get; set; }
 
-    public string OrganizationID { get; set; }
-
-    [JsonIgnore]
-    public List<RemotelyUser> Users { get; set; }
+    public string OrganizationID { get; set; } = null!;
 
     [JsonIgnore]
-    public List<ScriptSchedule> ScriptSchedules { get; set; }
+    public List<RemotelyUser>? Users { get; set; }
+
+    [JsonIgnore]
+    public List<ScriptSchedule>? ScriptSchedules { get; set; }
 }

@@ -122,7 +122,7 @@ public class OrganizationManagementController : ControllerBase
 
     [HttpPost("DeviceGroup")]
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
-    public IActionResult DeviceGroup([FromBody] DeviceGroup deviceGroup)
+    public async Task<IActionResult> DeviceGroup([FromBody] DeviceGroup deviceGroup)
     {
         if (User.Identity.IsAuthenticated &&
             !DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
@@ -135,13 +135,14 @@ public class OrganizationManagementController : ControllerBase
             return BadRequest();
         }
 
-        Request.Headers.TryGetValue("OrganizationID", out var orgID);
-        var result = DataService.AddDeviceGroup(orgID, deviceGroup, out var deviceGroupID, out var errorMessage);
-        if (!result)
+        Request.Headers.TryGetValue("OrganizationID", out var orgId);
+
+        var result = await DataService.AddDeviceGroup($"{orgId}", deviceGroup);
+        if (!result.IsSuccess)
         {
-            return BadRequest(errorMessage);
+            return BadRequest(result.Reason);
         }
-        return Ok(deviceGroupID);
+        return Ok(result.Value.ID);
     }
 
     [HttpDelete("DeviceGroup/{groupID}/Users/")]

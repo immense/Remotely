@@ -12,32 +12,32 @@ namespace Remotely.Shared.Models;
 public class ScriptResult
 {
     [JsonIgnore]
-    public Device Device { get; set; }
+    public Device? Device { get; set; }
 
-    public string DeviceID { get; set; }
+    public string DeviceID { get; set; } = null!;
 
-    public string[] ErrorOutput { get; set; }
+    public string[]? ErrorOutput { get; set; }
 
     public bool HadErrors { get; set; }
 
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public string ID { get; set; }
+    public string ID { get; set; } = null!;
 
 
     public ScriptInputType InputType { get; set; }
 
     [JsonIgnore]
     [IgnoreDataMember]
-    public Organization Organization { get; set; }
-    public string OrganizationID { get; set; }
+    public Organization? Organization { get; set; }
+    public string OrganizationID { get; set; } = null!;
     [JsonConverter(typeof(TimeSpanJsonConverter))]
     public TimeSpan RunTime { get; set; }
 
     [JsonIgnore]
-    public ScriptSchedule Schedule { get; set; }
+    public ScriptSchedule? Schedule { get; set; }
 
-    public string ScriptInput { get; set; }
+    public required string ScriptInput { get; set; }
 
     public int? ScheduleId { get; set; }
     public Guid? SavedScriptId { get; set; }
@@ -45,10 +45,10 @@ public class ScriptResult
     public int? ScriptRunId { get; set; }
 
 
-    public string SenderConnectionID { get; set; }
-    public string SenderUserName { get; set; }
+    public string? SenderConnectionID { get; set; }
+    public string? SenderUserName { get; set; } = null!;
     public ScriptingShell Shell { get; set; }
-    public string[] StandardOutput { get; set; }
+    public string[]? StandardOutput { get; set; }
    
     public DateTimeOffset TimeStamp { get; set; } = DateTimeOffset.Now;
 }

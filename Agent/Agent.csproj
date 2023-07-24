@@ -16,6 +16,7 @@
     <AssemblyName>Remotely_Agent</AssemblyName>
     <RootNamespace>Remotely.Agent</RootNamespace>
     <ApplicationIcon>Assets\favicon.ico</ApplicationIcon>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

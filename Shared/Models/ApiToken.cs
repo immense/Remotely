@@ -9,16 +9,16 @@ public class ApiToken
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public string ID { get; set; }
+    public string ID { get; set; } = null!;
 
     public DateTimeOffset? LastUsed { get; set; }
 
     [StringLength(200)]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     [JsonIgnore]
-    public Organization Organization { get; set; }
+    public Organization? Organization { get; set; }
 
-    public string OrganizationID { get; set; }
-    public string Secret { get; set; }
+    public string OrganizationID { get; set; } = null!;
+    public string? Secret { get; set; }
 }

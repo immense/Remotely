@@ -57,7 +57,7 @@ public partial class ManageOrganization : AuthComponentBase
         await RefreshData();
     }
 
-    private void CreateNewDeviceGroup()
+    private async Task CreateNewDeviceGroup()
     {
         if (!User.IsAdministrator)
         {
@@ -74,10 +74,10 @@ public partial class ManageOrganization : AuthComponentBase
             Name = _newDeviceGroupName
         };
 
-        var result = DataService.AddDeviceGroup(User.OrganizationID, deviceGroup, out _, out var errorMessage);
-        if (!result)
+        var result = await DataService.AddDeviceGroup(User.OrganizationID, deviceGroup);
+        if (!result.IsSuccess)
         {
-            ToastService.ShowToast(errorMessage, classString: "bg-danger");
+            ToastService.ShowToast(result.Reason, classString: "bg-danger");
             return;
         }
 
@@ -185,11 +185,11 @@ public partial class ManageOrganization : AuthComponentBase
         }
     }
 
-    private void EvaluateNewDeviceGroupKeyPress(KeyboardEventArgs args)
+    private async Task EvaluateNewDeviceGroupKeyPress(KeyboardEventArgs args)
     {
         if (args.Key.Equals("Enter", StringComparison.OrdinalIgnoreCase))
         {
-            CreateNewDeviceGroup();
+            await CreateNewDeviceGroup();
         }
     }
     private void OrganizationNameChanged(ChangeEventArgs args)
@@ -199,7 +199,11 @@ public partial class ManageOrganization : AuthComponentBase
             return;
         }
 
-        var newName = (string)args.Value;
+        if (args.Value is not string newName)
+        {
+            return;
+        }
+
         if (string.IsNullOrWhiteSpace(newName))
         {
             return;

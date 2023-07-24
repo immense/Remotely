@@ -65,7 +65,10 @@ public partial class ScriptSchedules : AuthComponentBase
 
     private void CreateNew()
     {
-        _selectedScript = new();
+        _selectedScript = new()
+        {
+            Name = "Test Script"
+        };
         _selectedSchedule = new() { StartAt = Time.Now };
         _selectedDeviceGroups.Clear();
         _selectedDevices.Clear();

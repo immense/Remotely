@@ -6,6 +6,7 @@
     <AssemblyName>Remotely_Shared</AssemblyName>
     <Platforms>AnyCPU;x64;x86</Platforms>
     <RootNamespace>Remotely.Shared</RootNamespace>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

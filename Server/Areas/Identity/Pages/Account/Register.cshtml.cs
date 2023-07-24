@@ -94,7 +94,7 @@ public class RegisterModel : PageModel
                 UserName = Input.Email,
                 Email = Input.Email,
                 IsServerAdmin = organizationCount == 0,
-                Organization = new Organization(),
+                Organization = new Organization() { OrganizationName = "Test Org" },
                 UserOptions = new RemotelyUserOptions(),
                 IsAdministrator = true,
                 LockoutEnabled = true

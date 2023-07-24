@@ -25,9 +25,9 @@ namespace Remotely.Server.Services;
 // TODO: Separate this into domain-specific services.
 public interface IDataService
 {
-    Task AddAlert(string deviceID, string organizationID, string alertMessage, string details = null);
+    Task AddAlert(string deviceID, string organizationID, string alertMessage, string? details = null);
 
-    bool AddDeviceGroup(string orgID, DeviceGroup deviceGroup, out string deviceGroupID, out string errorMessage);
+    Task<Result<DeviceGroup>> AddDeviceGroup(string orgID, DeviceGroup deviceGroup);
     Task<Result> AddDeviceToGroup(string deviceId, string groupId);
     InviteLink AddInvite(string orgID, InviteViewModel invite);
 
@@ -61,9 +61,9 @@ public interface IDataService
 
     Task DeleteAlert(Alert alert);
 
-    Task DeleteAllAlerts(string orgID, string userName = null);
+    Task DeleteAllAlerts(string orgID, string? userName = null);
 
-    Task DeleteApiToken(string userName, string tokenId);
+    Task<Result> DeleteApiToken(string userName, string tokenId);
 
     void DeleteDeviceGroup(string orgID, string deviceGroupID);
 
@@ -243,7 +243,7 @@ public class DataService : IDataService
         _logger = logger;
     }
 
-    public async Task AddAlert(string deviceId, string organizationID, string alertMessage, string details = null)
+    public async Task AddAlert(string deviceId, string organizationID, string alertMessage, string? details = null)
     {
         using var dbContext = _appDbFactory.GetContext();
 
@@ -277,23 +277,24 @@ public class DataService : IDataService
         await dbContext.SaveChangesAsync();
     }
 
-    public bool AddDeviceGroup(string orgID, DeviceGroup deviceGroup, out string deviceGroupID, out string errorMessage)
+    public async Task<Result<DeviceGroup>> AddDeviceGroup(string orgID, DeviceGroup deviceGroup)
     {
         using var dbContext = _appDbFactory.GetContext();
-
-        deviceGroupID = null;
-        errorMessage = null;
 
         var organization = dbContext.Organizations
             .Include(x => x.DeviceGroups)
             .FirstOrDefault(x => x.ID == orgID);
 
+        if (organization is null)
+        {
+            return Result.Fail<DeviceGroup>("Organization not found.");
+        }
+
         if (dbContext.DeviceGroups.Any(x =>
             x.OrganizationID == orgID &&
             x.Name.ToLower() == deviceGroup.Name.ToLower()))
         {
-            errorMessage = "Device group already exists.";
-            return false;
+            return Result.Fail<DeviceGroup>("Device group already exists.");
         }
 
         dbContext.Attach(deviceGroup);
@@ -301,9 +302,8 @@ public class DataService : IDataService
         deviceGroup.OrganizationID = orgID;
 
         organization.DeviceGroups.Add(deviceGroup);
-        dbContext.SaveChanges();
-        deviceGroupID = deviceGroup.ID;
-        return true;
+        await dbContext.SaveChangesAsync();
+        return Result.Ok(deviceGroup);
     }
 
     public async Task<Result> AddDeviceToGroup(string deviceId, string groupId)
@@ -762,7 +762,7 @@ public class DataService : IDataService
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteAllAlerts(string orgID, string userName = null)
+    public async Task DeleteAllAlerts(string orgID, string? userName = null)
     {
         using var dbContext = _appDbFactory.GetContext();
 
@@ -779,17 +779,29 @@ public class DataService : IDataService
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteApiToken(string userName, string tokenId)
+    public async Task<Result> DeleteApiToken(string userName, string tokenId)
     {
         using var dbContext = _appDbFactory.GetContext();
 
         var user = dbContext.Users.FirstOrDefault(x => x.UserName == userName);
+
+        if (user is null)
+        {
+            return Result.Fail("User not found.");
+        }
+
         var token = dbContext.ApiTokens.FirstOrDefault(x =>
             x.OrganizationID == user.OrganizationID &&
             x.ID == tokenId);
 
+        if (token is null)
+        {
+            return Result.Fail("Token not found.");
+        }
+
         dbContext.ApiTokens.Remove(token);
         await dbContext.SaveChangesAsync();
+        return Result.Ok();
     }
 
     public void DeleteDeviceGroup(string orgID, string deviceGroupID)

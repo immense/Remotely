@@ -11,6 +11,7 @@
 
   <PropertyGroup>
     <ServerGarbageCollection>false</ServerGarbageCollection>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
 

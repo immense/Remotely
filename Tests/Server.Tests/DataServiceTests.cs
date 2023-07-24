@@ -169,7 +169,8 @@ public class DataServiceTests
             OrganizationID = _testData.Org1Id,
             SavedScriptId = savedScript.Id,
             ScriptRunId = scriptRun.Id,
-            Shell = Shared.Enums.ScriptingShell.PSCore
+            Shell = Shared.Enums.ScriptingShell.PSCore,
+            ScriptInput = "echo test"
         };
 
         _dataService.AddOrUpdateScriptResult(scriptResult);
@@ -199,7 +200,7 @@ public class DataServiceTests
     [TestMethod]
     public void UpdateOrganizationName()
     {
-        Assert.IsTrue(string.IsNullOrWhiteSpace(_testData.Org1Admin1.Organization.OrganizationName));
+        Assert.AreEqual("Org1", _testData.Org1Admin1.Organization.OrganizationName);
         _dataService.UpdateOrganizationName(_testData.Org1Id, "Test Org");
         var updatedOrg = _dataService.GetOrganizationById(_testData.Org1Id);
         Assert.AreEqual("Test Org", updatedOrg.OrganizationName);

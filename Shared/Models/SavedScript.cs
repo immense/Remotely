@@ -13,15 +13,15 @@ namespace Remotely.Shared.Models;
 public class SavedScript
 {
     [Required]
-    public string Content { get; set; }
+    public string? Content { get; set; }
 
     [JsonIgnore]
-    public RemotelyUser Creator { get; set; }
+    public RemotelyUser? Creator { get; set; }
 
-    public string CreatorId { get; set; }
+    public string CreatorId { get; set; } = null!;
 
     [StringLength(200)]
-    public string FolderPath { get; set; }
+    public string? FolderPath { get; set; }
 
     public bool GenerateAlertOnError { get; set; }
 
@@ -34,17 +34,17 @@ public class SavedScript
 
     [StringLength(100)]
     [Required]
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
     [JsonIgnore]
-    public Organization Organization { get; set; }
+    public Organization? Organization { get; set; }
 
-    public string OrganizationID { get; set; }
+    public string OrganizationID { get; set; } = null!;
 
     public bool SendEmailOnError { get; set; }
 
     [EmailAddress]
-    public string SendErrorEmailTo { get; set; }
+    public string? SendErrorEmailTo { get; set; }
 
     public ScriptingShell Shell { get; set; }
 }

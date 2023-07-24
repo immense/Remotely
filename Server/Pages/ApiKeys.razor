@@ -1,4 +1,5 @@
 ﻿@page "/api-keys"
+@using Immense.RemoteControl.Shared.Helpers;
 @attribute [Authorize(Policy = PolicyNames.OrganizationAdminRequired)]
 @inherits AuthComponentBase
 
@@ -6,6 +7,7 @@
 @inject AuthenticationStateProvider AuthProvider
 @inject IJsInterop JsInterop
 @inject IModalService ModalService
+@inject IToastService ToastService
 
 
 <h3>API Keys</h3>
@@ -76,9 +78,9 @@ else
 
 @code {
     private readonly List<ApiToken> _apiTokens = new();
-    private string _alertMessage;
-    private string _createKeyName;
-    private string _newKeySecret;
+    private string _alertMessage = string.Empty;
+    private string _createKeyName = string.Empty;
+    private string _newKeySecret = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -88,8 +90,8 @@ else
 
     private async Task CreateNewKey()
     {
-        var secret = PasswordGenerator.GeneratePassword(36);
-        var secretHash = new PasswordHasher<RemotelyUser>().HashPassword(null, secret);
+        var secret = RandomGenerator.GenerateString(36);
+        var secretHash = new PasswordHasher<string>().HashPassword(string.Empty, secret);
 
         await DataService.CreateApiToken(Username, _createKeyName, secretHash);
         RefreshData();
@@ -100,12 +102,19 @@ else
     private async Task DeleteKey(string keyId)
     {
         var result = await JsInterop.Confirm("Are you sure you want to delete this key?");
-        if (result)
+        if (!result)
         {
-            await DataService.DeleteApiToken(Username, keyId);
-            RefreshData();
-            _alertMessage = "Key deleted.";
+            return;
         }
+
+        var deleteResult = await DataService.DeleteApiToken(Username, keyId);
+        if (!deleteResult.IsSuccess)
+        {
+            ToastService.ShowToast2(deleteResult.Reason, ToastType.Error);
+            return;
+        }
+        RefreshData();
+        _alertMessage = "Key deleted.";
     }
 
     private void RefreshData()

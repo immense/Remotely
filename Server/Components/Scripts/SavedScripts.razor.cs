@@ -19,7 +19,7 @@ public partial class SavedScripts : AuthComponentBase
     [CascadingParameter]
     private ScriptsPage ParentPage { get; set; }
 
-    private SavedScript _selectedScript = new();
+    private SavedScript _selectedScript = new() { Name = "Test Script" };
     private string _alertMessage;
     private string _alertOptionsShowClass;
     private string _environmentVarsShowClass;
@@ -72,7 +72,10 @@ public partial class SavedScripts : AuthComponentBase
 
     private void CreateNew()
     {
-        _selectedScript = new();
+        _selectedScript = new()
+        {
+            Name = "Test Script"
+        };
     }
 
     private async Task DeleteSelectedScript()
@@ -90,7 +93,10 @@ public partial class SavedScripts : AuthComponentBase
             ToastService.ShowToast("Script deleted.");
             _alertMessage = "Script deleted.";
             await ParentPage.RefreshScripts();
-            _selectedScript = new();
+            _selectedScript = new()
+            {
+                Name = "Test Script"
+            };
         }
     }
 
@@ -98,11 +104,17 @@ public partial class SavedScripts : AuthComponentBase
     {
         if (viewModel.Script is not null)
         {
-            _selectedScript = await DataService.GetSavedScript(User.Id, viewModel.Script.Id) ?? new();
+            _selectedScript = await DataService.GetSavedScript(User.Id, viewModel.Script.Id) ?? new()
+            {
+                Name = "Test Script"
+            };
         }
         else
         {
-            _selectedScript = new();
+            _selectedScript = new()
+            {
+                Name = "Test Script"
+            };
         }
     }
 
