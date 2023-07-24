@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Remotely.Server.Auth;
+using Remotely.Server.Extensions;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -26,28 +28,37 @@ public class DevicesController : ControllerBase
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
     public IEnumerable<Device> Get()
     {
-        Request.Headers.TryGetValue("OrganizationID", out var orgID);
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
+        {
+            return Array.Empty<Device>();
+        }
 
-        if (User.Identity.IsAuthenticated)
+        if (User.Identity?.IsAuthenticated == true &&
+            !string.IsNullOrWhiteSpace(User.Identity.Name))
         {
             return DataService.GetDevicesForUser(User.Identity.Name);
         }
 
-        return DataService.GetAllDevices(orgID);
+        // Authorized with API key.  Return all.
+        return DataService.GetAllDevices(orgId);
     }
 
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
     [HttpGet("{id}")]
-    public Device Get(string id)
+    public ActionResult<Device> Get(string id)
     {
-        Request.Headers.TryGetValue("OrganizationID", out var orgID);
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
+        {
+            return BadRequest("OrganizationID is required.");
+        }
 
-        var device = DataService.GetDevice(orgID, id);
+        var device = DataService.GetDevice(orgId, id);
 
-        if (User.Identity.IsAuthenticated &&
+        if (User.Identity?.IsAuthenticated == true &&
+            !string.IsNullOrWhiteSpace(User.Identity.Name) &&
             !DataService.DoesUserHaveAccessToDevice(id, DataService.GetUserByNameWithOrg(User.Identity.Name)))
         {
-            return null;
+            return Unauthorized();
         }
         return device;
     }
@@ -58,20 +69,31 @@ public class DevicesController : ControllerBase
         [FromBody] DeviceSetupOptions deviceOptions,
         [FromHeader] string organizationId)
     {
-        if (deviceOptions == null ||
+        if (string.IsNullOrWhiteSpace(deviceOptions?.DeviceID) ||
             string.IsNullOrWhiteSpace(organizationId))
         {
             return BadRequest("DeviceOptions and OrganizationId are required.");
         }
 
-        if (User.Identity.IsAuthenticated &&
-            !DataService.DoesUserHaveAccessToDevice(deviceOptions.DeviceID, DataService.GetUserByNameWithOrg(User.Identity.Name)))
+        if (string.IsNullOrWhiteSpace(User.Identity?.Name))
+        {
+            return Unauthorized();
+        }
+
+        var user = DataService.GetUserByNameWithOrg(User.Identity.Name);
+        if (user is null)
+        {
+            return Unauthorized();
+        }
+
+        if (User.Identity?.IsAuthenticated == true &&
+            !DataService.DoesUserHaveAccessToDevice(deviceOptions.DeviceID, user))
         {
             return Unauthorized();
         }
 
         var device = await DataService.UpdateDevice(deviceOptions, organizationId);
-        if (device == null)
+        if (device is null)
         {
             return BadRequest();
         }

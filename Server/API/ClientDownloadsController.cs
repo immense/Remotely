@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Build.Framework;
 using Microsoft.Extensions.Logging;
 using Remotely.Server.Auth;
+using Remotely.Server.Extensions;
 using Remotely.Server.Services;
 using Remotely.Shared;
 using Remotely.Shared.Models;
@@ -117,8 +118,11 @@ public class ClientDownloadsController : ControllerBase
     [HttpGet("{platformID}")]
     public async Task<IActionResult> GetInstaller(string platformID)
     {
-        Request.Headers.TryGetValue("OrganizationID", out var orgID);
-        return await GetInstallFile(orgID, platformID);
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
+        {
+            return BadRequest("OrganizationID is required.");
+        }
+        return await GetInstallFile(orgId, platformID);
     }
 
     [HttpGet("{organizationID}/{platformID}")]

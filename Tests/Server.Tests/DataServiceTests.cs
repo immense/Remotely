@@ -159,8 +159,8 @@ public class DataServiceTests
 
         var pendingRuns = await _dataService.GetPendingScriptRuns(_testData.Org1Device1.ID);
 
-        Assert.AreEqual(1, pendingRuns.Count);
-        Assert.AreEqual(2, pendingRuns[0].Id);
+        Assert.AreEqual(1, pendingRuns.Count());
+        Assert.AreEqual(2, pendingRuns.First().Id);
 
         var scriptResult = new ScriptResult()
         {
@@ -179,7 +179,7 @@ public class DataServiceTests
 
         pendingRuns = await _dataService.GetPendingScriptRuns(_testData.Org1Device1.ID);
 
-        Assert.AreEqual(0, pendingRuns.Count);
+        Assert.AreEqual(0, pendingRuns.Count());
     }
 
 

@@ -31,6 +31,7 @@ public class ScriptResult
     [IgnoreDataMember]
     public Organization? Organization { get; set; }
     public string OrganizationID { get; set; } = null!;
+
     [JsonConverter(typeof(TimeSpanJsonConverter))]
     public TimeSpan RunTime { get; set; }
 

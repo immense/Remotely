@@ -8,11 +8,11 @@ public class SharedFile
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public string ID { get; set; }
-    public string FileName { get; set; }
-    public string ContentType { get; set; }
-    public byte[] FileContents { get; set; }
+    public string ID { get; set; } = null!;
+    public string? FileName { get; set; }
+    public string? ContentType { get; set; }
+    public byte[] FileContents { get; set; } = Array.Empty<byte>();
     public DateTimeOffset Timestamp { get; set; } = DateTimeOffset.Now;
-    public Organization Organization { get; set; }
-    public string OrganizationID { get; set; }
+    public Organization? Organization { get; set; }
+    public string OrganizationID { get; set; } = null!;
 }

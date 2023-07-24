@@ -107,7 +107,30 @@ public class ScriptExecutor : IScriptExecutor
             var url = $"{connectionInfo.Host}/API/SavedScripts/{savedScriptId}";
             using var hc = new HttpClient();
             hc.DefaultRequestHeaders.Add("Authorization", authToken);
-            var savedScript = await hc.GetFromJsonAsync<SavedScript>(url);
+            var response = await hc.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+            {
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return;
+                }
+                _logger.LogWarning("Failed to get saved script.  Status Code: {responseStatusCode}", response.StatusCode);
+                return;
+            }
+
+            var savedScript = await response.Content.ReadFromJsonAsync<SavedScript>();
+
+            if (savedScript is null)
+            {
+                _logger.LogWarning("Failed to deserialize saved script.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(savedScript.Content))
+            {
+                _logger.LogWarning("Script content is empty.  Aborting script run.");
+                return;
+            }
 
             var result = await ExecuteScriptContent(savedScript.Shell,
                 Guid.NewGuid().ToString(),

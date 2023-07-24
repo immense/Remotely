@@ -18,7 +18,7 @@ namespace Remotely.Server.Data;
 public class AppDb : IdentityDbContext
 {
     private static readonly ValueComparer<string[]> _stringArrayComparer = new(
-                (a, b) => a.SequenceEqual(b),
+                (a, b) => (a ?? Array.Empty<string>()).SequenceEqual(b ?? Array.Empty<string>()),
                 c => c.Aggregate(0, (a, b) => HashCode.Combine(a, b.GetHashCode())),
                 c => c.ToArray());
 
@@ -132,9 +132,6 @@ public class AppDb : IdentityDbContext
             .HasMany(x => x.ScriptRuns)
             .WithMany(x => x.Devices);
         builder.Entity<Device>()
-            .HasMany(x => x.ScriptRunsCompleted)
-            .WithMany(x => x.DevicesCompleted);
-        builder.Entity<Device>()
             .HasMany(x => x.ScriptSchedules)
             .WithMany(x => x.Devices);
         builder.Entity<Device>()
@@ -153,9 +150,6 @@ public class AppDb : IdentityDbContext
         builder.Entity<ScriptRun>()
             .HasMany(x => x.Devices)
             .WithMany(x => x.ScriptRuns);
-        builder.Entity<ScriptRun>()
-            .HasMany(x => x.DevicesCompleted)
-            .WithMany(x => x.ScriptRunsCompleted);
 
         builder.Entity<ScriptResult>()
           .Property(x => x.ErrorOutput)

@@ -16,7 +16,7 @@ public class DeviceGroup
     public string ID { get; set; } = null!;
 
     [JsonIgnore]
-    public List<Device>? Devices { get; set; }
+    public List<Device> Devices { get; set; } = new();
 
     [JsonIgnore]
     public Organization? Organization { get; set; }
@@ -24,7 +24,7 @@ public class DeviceGroup
     public string OrganizationID { get; set; } = null!;
 
     [JsonIgnore]
-    public List<RemotelyUser>? Users { get; set; }
+    public List<RemotelyUser> Users { get; set; } = new();
 
     [JsonIgnore]
     public List<ScriptSchedule>? ScriptSchedules { get; set; }

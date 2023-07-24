@@ -29,7 +29,11 @@ public partial class ScriptSchedules : AuthComponentBase
 
     private SavedScript _selectedScript;
 
-    private ScriptSchedule _selectedSchedule = new() { StartAt = Time.Now };
+    private ScriptSchedule _selectedSchedule = new()
+    {
+        Name = string.Empty,
+        StartAt = Time.Now 
+    };
 
     [CascadingParameter]
     private ScriptsPage ParentPage { get; set; }
@@ -67,9 +71,13 @@ public partial class ScriptSchedules : AuthComponentBase
     {
         _selectedScript = new()
         {
-            Name = "Test Script"
+            Name = string.Empty
         };
-        _selectedSchedule = new() { StartAt = Time.Now };
+        _selectedSchedule = new()
+        { 
+            Name = string.Empty,
+            StartAt = Time.Now 
+        };
         _selectedDeviceGroups.Clear();
         _selectedDevices.Clear();
     }

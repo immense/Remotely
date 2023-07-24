@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Org.BouncyCastle.Crypto.Agreement;
 using Remotely.Server.Auth;
+using Remotely.Server.Extensions;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
 using Remotely.Shared.ViewModels;
@@ -37,7 +38,14 @@ public class OrganizationManagementController : ControllerBase
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
     public IActionResult ChangeIsAdmin(string userID, [FromBody] bool isAdmin)
     {
-        if (User.Identity.IsAuthenticated &&
+        if (User.Identity is null ||
+            User.Identity.IsAuthenticated == false ||
+            string.IsNullOrEmpty(User.Identity.Name))
+        {
+            return Unauthorized();
+        }
+
+        if (User.Identity.IsAuthenticated == true &&
             !DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
         {
             return Unauthorized();
@@ -49,25 +57,33 @@ public class OrganizationManagementController : ControllerBase
             return BadRequest("You can't remove administrator rights from yourself.");
         }
 
-        Request.Headers.TryGetValue("OrganizationID", out var orgID);
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
+        {
+            return BadRequest("OrganizationID is required.");
+        }
 
-        DataService.ChangeUserIsAdmin(orgID, userID, isAdmin);
-        return Ok("ok");
+        DataService.ChangeUserIsAdmin(orgId, userID, isAdmin);
+        return NoContent();
     }
 
     [HttpDelete("DeleteInvite/{inviteID}")]
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
     public IActionResult DeleteInvite(string inviteID)
     {
-        if (User.Identity.IsAuthenticated &&
-            !DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
+        if (User.Identity is null ||
+           User.Identity.IsAuthenticated == false ||
+           string.IsNullOrEmpty(User.Identity.Name))
         {
             return Unauthorized();
         }
 
-        Request.Headers.TryGetValue("OrganizationID", out var orgID);
-        DataService.DeleteInvite(orgID, inviteID);
-        return Ok("ok");
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
+        {
+            return BadRequest("OrganizationID is required.");
+        }
+
+        DataService.DeleteInvite(orgId, inviteID);
+        return NoContent();
     }
 
     [HttpDelete("DeleteUser/{userID}")]
@@ -88,7 +104,7 @@ public class OrganizationManagementController : ControllerBase
 
         Request.Headers.TryGetValue("OrganizationID", out var orgID);
         await DataService.DeleteUser(orgID, userID);
-        return Ok("ok");
+        return NoContent();
     }
 
     [HttpGet("DeviceGroup")]
@@ -117,7 +133,7 @@ public class OrganizationManagementController : ControllerBase
 
         Request.Headers.TryGetValue("OrganizationID", out var orgID);
         DataService.DeleteDeviceGroup(orgID, deviceGroupID.Trim());
-        return Ok("ok");
+        return NoContent();
     }
 
     [HttpPost("DeviceGroup")]
@@ -240,7 +256,7 @@ public class OrganizationManagementController : ControllerBase
 
         Request.Headers.TryGetValue("OrganizationID", out var orgID);
         DataService.UpdateOrganizationName(orgID, organizationName.Trim());
-        return Ok("ok");
+        return NoContent();
     }
 
     [HttpPut("SetDefault")]
@@ -255,7 +271,7 @@ public class OrganizationManagementController : ControllerBase
 
         Request.Headers.TryGetValue("OrganizationID", out var orgID);
         DataService.SetIsDefaultOrganization(orgID, isDefault);
-        return Ok("ok");
+        return NoContent();
     }
 
     [HttpPost("SendInvite")]
@@ -272,30 +288,41 @@ public class OrganizationManagementController : ControllerBase
             return BadRequest();
         }
 
-        Request.Headers.TryGetValue("OrganizationID", out var orgID);
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
+        {
+            return BadRequest("Organization ID is required.");
+        }
 
 
         if (!DataService.DoesUserExist(invite.InvitedUser))
         {
-            var result = await DataService.CreateUser(invite.InvitedUser, invite.IsAdmin, orgID);
-            if (result)
-            {
-                var user = await UserManager.FindByEmailAsync(invite.InvitedUser);
-
-                await UserManager.ConfirmEmailAsync(user, await UserManager.GenerateEmailConfirmationTokenAsync(user));
-
-                return Ok();
-            }
-            else
+            var result = await DataService.CreateUser(invite.InvitedUser, invite.IsAdmin, orgId);
+            if (!result.IsSuccess)
             {
                 return BadRequest("There was an issue creating the new account.");
             }
+
+            var user = await UserManager.FindByEmailAsync(invite.InvitedUser);
+
+            if (user is null)
+            {
+                return BadRequest("User not found.");
+            }
+
+            await UserManager.ConfirmEmailAsync(user, await UserManager.GenerateEmailConfirmationTokenAsync(user));
+
+            return Ok();
         }
         else
         {
-            var newInvite = DataService.AddInvite(orgID, invite);
+            var newInvite = await DataService.AddInvite(orgId, invite);
 
-            var inviteURL = $"{Request.Scheme}://{Request.Host}/Invite?id={newInvite.ID}";
+            if (!newInvite.IsSuccess)
+            {
+                return BadRequest(newInvite.Reason);
+            }
+
+            var inviteURL = $"{Request.Scheme}://{Request.Host}/Invite?id={newInvite.Value.ID}";
             var emailResult = await EmailSender.SendEmailAsync(invite.InvitedUser, "Invitation to Organization in Remotely",
                         $@"<img src='{Request.Scheme}://{Request.Host}/images/Remotely_Logo.png'/>
                             <br><br>
@@ -304,7 +331,7 @@ public class OrganizationManagementController : ControllerBase
                             You've been invited to join an organization in Remotely.
                             <br><br>
                             You can join the organization by <a href='{HtmlEncoder.Default.Encode(inviteURL)}'>clicking here</a>.",
-                        orgID);
+                        orgId);
 
             if (!emailResult)
             {

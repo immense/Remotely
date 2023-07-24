@@ -2,6 +2,7 @@
 using Microsoft.Build.Framework;
 using Microsoft.Extensions.Logging;
 using Remotely.Server.Auth;
+using Remotely.Server.Extensions;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
 using System;
@@ -40,7 +41,10 @@ public class AlertsController : ControllerBase
     [HttpPost("Create")]
     public async Task<IActionResult> Create(AlertOptions alertOptions)
     {
-        _ = Request.Headers.TryGetValue("OrganizationID", out var orgId);
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
+        {
+            return BadRequest("OrganizationID is required.");
+        }
 
         _logger.LogInformation("Alert created.  Alert Options: {options}", JsonSerializer.Serialize(alertOptions));
 
@@ -48,7 +52,7 @@ public class AlertsController : ControllerBase
         {
             try
             {
-                await _dataService.AddAlert(alertOptions.AlertDeviceID, orgId.ToString(), alertOptions.AlertMessage);
+                await _dataService.AddAlert(alertOptions.AlertDeviceID, orgId, alertOptions.AlertMessage);
             }
             catch (Exception ex)
             {
@@ -105,11 +109,14 @@ public class AlertsController : ControllerBase
     [HttpDelete("Delete/{alertID}")]
     public async Task<IActionResult> Delete(string alertID)
     {
-        Request.Headers.TryGetValue("OrganizationID", out var orgID);
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
+        {
+            return BadRequest("OrganizationID is required.");
+        }
 
         var alert = await _dataService.GetAlert(alertID);
 
-        if (alert?.OrganizationID == orgID)
+        if (alert?.OrganizationID == orgId)
         {
             await _dataService.DeleteAlert(alert);
 
@@ -122,7 +129,10 @@ public class AlertsController : ControllerBase
     [HttpDelete("DeleteAll")]
     public async Task<IActionResult> DeleteAll()
     {
-        Request.Headers.TryGetValue("OrganizationID", out var orgId);
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
+        {
+            return BadRequest("OrganizationID is required.");
+        }
 
         if (User.Identity?.IsAuthenticated == true)
         {

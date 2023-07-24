@@ -76,17 +76,15 @@ public class Device
     public int ProcessorCount { get; set; }
 
     public string? PublicIP { get; set; }
-    [JsonIgnore]
-    public List<ScriptResult>? ScriptResults { get; set; }
 
     [JsonIgnore]
-    public List<ScriptRun>? ScriptRuns { get; set; }
+    public List<ScriptResult> ScriptResults { get; set; } = new();
 
     [JsonIgnore]
-    public List<ScriptRun>? ScriptRunsCompleted { get; set; }
+    public List<ScriptRun> ScriptRuns { get; set; } = new();
 
     [JsonIgnore]
-    public List<ScriptSchedule>? ScriptSchedules { get; set; }
+    public List<ScriptSchedule> ScriptSchedules { get; set; } = new();
 
     public string? ServerVerificationToken { get; set; }
 

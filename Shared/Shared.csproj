@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
-    <AssemblyName>Remotely_Shared</AssemblyName>
+    <AssemblyName></AssemblyName>
     <Platforms>AnyCPU;x64;x86</Platforms>
     <RootNamespace>Remotely.Shared</RootNamespace>
     <Nullable>enable</Nullable>
