@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+﻿using Immense.RemoteControl.Shared;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Remotely.Shared.Models;
 using System;
@@ -13,7 +14,7 @@ namespace Remotely.Server.Services;
 public interface IAuthService
 {
     Task<bool> IsAuthenticated();
-    Task<RemotelyUser> GetUser();
+    Task<Result<RemotelyUser>> GetUser();
 }
 
 public class AuthService : IAuthService
@@ -35,15 +36,15 @@ public class AuthService : IAuthService
         return principal?.User?.Identity?.IsAuthenticated ?? false;
     }
 
-    public async Task<RemotelyUser> GetUser()
+    public async Task<Result<RemotelyUser>> GetUser()
     {
         var principal = await _authProvider.GetAuthenticationStateAsync();
 
         if (principal?.User?.Identity?.IsAuthenticated == true)
         {
-            return await _dataService.GetUserAsync(principal.User.Identity.Name);
+            return await _dataService.GetUserAsync($"{principal.User.Identity.Name}");
         }
 
-        return null;
+        return Result.Fail<RemotelyUser>("Not authenticated.");
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Remotely.Agent.Extensions;
 using Remotely.Agent.Interfaces;
+using Remotely.Shared;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Services;
@@ -449,7 +450,7 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
             }
         });
 
-        _hubConnection.On("TransferFileFromBrowserToAgent", async (string transferID, List<string> fileIDs, string requesterID, string authToken) =>
+        _hubConnection.On("TransferFileFromBrowserToAgent", async (string transferID, List<string> fileIDs, string requesterID, string expiringToken) =>
         {
             try
             {
@@ -467,7 +468,7 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
                 {
                     var url = $"{_connectionInfo.Host}/API/FileSharing/{fileID}";
                     using var client = _httpFactory.CreateClient();
-                    client.DefaultRequestHeaders.Add("Authorization", authToken);
+                    client.DefaultRequestHeaders.Add(AppConstants.ExpiringTokenHeaderName, expiringToken);
                     using var response = await client.GetAsync(url);
 
                     var filename = response.Content.Headers.ContentDisposition.FileName;

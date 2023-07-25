@@ -93,7 +93,7 @@ public class ScriptExecutor : IScriptExecutor
                 int scriptRunId,
                 string initiator,
                 ScriptInputType scriptInputType,
-                string authToken)
+                string expiringToken)
     {
         try
         {
@@ -106,7 +106,7 @@ public class ScriptExecutor : IScriptExecutor
             var connectionInfo = _configService.GetConnectionInfo();
             var url = $"{connectionInfo.Host}/API/SavedScripts/{savedScriptId}";
             using var hc = new HttpClient();
-            hc.DefaultRequestHeaders.Add("Authorization", authToken);
+            hc.DefaultRequestHeaders.Add(AppConstants.ExpiringTokenHeaderName, expiringToken);
             var response = await hc.GetAsync(url);
             if (!response.IsSuccessStatusCode)
             {
@@ -142,7 +142,7 @@ public class ScriptExecutor : IScriptExecutor
             result.InputType = scriptInputType;
             result.SavedScriptId = savedScriptId;
 
-            var responseResult = await SendResultsToApi(result, authToken);
+            var responseResult = await SendResultsToApi(result, expiringToken);
         }
         catch (Exception ex)
         {
@@ -195,12 +195,12 @@ public class ScriptExecutor : IScriptExecutor
         }
         return null;
     }
-    private async Task<ScriptResult> SendResultsToApi(object result, string authToken)
+    private async Task<ScriptResult> SendResultsToApi(object result, string expiringToken)
     {
         var targetURL = _configService.GetConnectionInfo().Host + $"/API/ScriptResults";
 
         using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Add("Authorization", authToken);
+        httpClient.DefaultRequestHeaders.Add(AppConstants.ExpiringTokenHeaderName, expiringToken);
 
         using var response = await httpClient.PostAsJsonAsync(targetURL, result);
 

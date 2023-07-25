@@ -131,29 +131,44 @@
     </ul>
 </div>
 
-@code {       
+@code {
     private bool collapseNavMenu = true;
 
-    private RemotelyUser _user;
-    private Organization _organization;
+    private RemotelyUser? _user;
+    private Organization? _organization;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
 
-        _user = await AuthService.GetUser();
+        var userResult = await AuthService.GetUser();
+
+        if (!userResult.IsSuccess)
+        {
+            return;
+        }
+
+        _user = userResult.Value;
 
         if (!string.IsNullOrWhiteSpace(_user?.OrganizationID))
         {
-            _organization = DataService.GetOrganizationById(_user.OrganizationID);
+            var orgResult = await DataService.GetOrganizationById(_user.OrganizationID);
+            if (orgResult.IsSuccess)
+            {
+                _organization = orgResult.Value;
+            }
         }
         else
         {
-            _organization = await DataService.GetDefaultOrganization();
+            var orgResult = await DataService.GetDefaultOrganization();
+            if (orgResult.IsSuccess)
+            {
+                _organization = orgResult.Value;
+            }
         }
     }
 
-    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : "";
 
 
     private void ToggleNavMenu()

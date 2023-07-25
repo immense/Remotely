@@ -116,7 +116,9 @@ public interface IDataService
 
     Task<Result<Organization>> GetDefaultOrganization();
 
-    Task<Result<Device>> GetDevice(string deviceId);
+    Task<Result<Device>> GetDevice(
+          string deviceId,
+          Action<IQueryable<Device>>? includesBuilder = null);
 
     Task<Result<Device>> GetDevice(string orgId, string deviceId);
 
@@ -1268,11 +1270,18 @@ public class DataService : IDataService
         return Result.Ok(device);
     }
 
-    public async Task<Result<Device>> GetDevice(string deviceId)
+    public async Task<Result<Device>> GetDevice(
+        string deviceId,
+        Action<IQueryable<Device>>? includesBuilder = null)
     {
         using var dbContext = _appDbFactory.GetContext();
-
-        var device = await dbContext.Devices.FirstOrDefaultAsync(x => x.ID == deviceId);
+        
+        var query = dbContext.Devices.AsQueryable();
+        if (includesBuilder is not null)
+        {
+            includesBuilder(query);
+        }
+        var device = await query.FirstOrDefaultAsync(x => x.ID == deviceId);
 
         if (device is null)
         {
@@ -1710,7 +1719,7 @@ public class DataService : IDataService
 
     public async Task<Result<RemotelyUser>> GetUserByNameWithOrg(string userName)
     {
-        if (userName == null)
+        if (string.IsNullOrWhiteSpace(userName))
         {
             return Result.Fail<RemotelyUser>("Username cannot be empty.");
         }

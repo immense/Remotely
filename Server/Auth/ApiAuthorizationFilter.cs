@@ -1,72 +1,90 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Immense.RemoteControl.Shared.Extensions;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Build.Framework;
+using Microsoft.Extensions.Logging;
 using Remotely.Server.Services;
+using Remotely.Shared;
 using System;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Remotely.Server.Auth;
 
-public class ApiAuthorizationFilter : IAuthorizationFilter
+public class ApiAuthorizationFilter : IAsyncAuthorizationFilter
 {
     private readonly IDataService _dataService;
+    private readonly ILogger<ApiAuthorizationFilter> _logger;
 
-    public ApiAuthorizationFilter(IDataService dataService)
+    public ApiAuthorizationFilter(
+        IDataService dataService, 
+        ILogger<ApiAuthorizationFilter> logger)
     {
         _dataService = dataService;
+        _logger = logger;
     }
 
-    public void OnAuthorization(AuthorizationFilterContext context)
+    public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
-
-        if (context.HttpContext.User.Identity.IsAuthenticated)
+        try
         {
-            var orgID = _dataService.GetUserByNameWithOrg(context.HttpContext.User.Identity.Name)?.OrganizationID;
-            context.HttpContext.Request.Headers["OrganizationID"] = orgID;
-            return;
+            await Authorize(context);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while authorizing API key.");
+        }
+    }
+
+    private async Task Authorize(AuthorizationFilterContext context)
+    {
+        var http = context.HttpContext;
+        http.Request.Headers["OrganizationID"] = string.Empty;
+
+        if (http.User.Identity?.IsAuthenticated == true)
+        {
+            var userResult = await _dataService.GetUserByNameWithOrg($"{http.User.Identity.Name}");
+            if (userResult.IsSuccess && userResult.Value.IsAdministrator)
+            {
+                http.Request.Headers["OrganizationID"] = userResult.Value.OrganizationID;
+                return;
+            }
         }
 
-        if (context.HttpContext.Request.Headers.TryGetValue("Authorization", out var result))
+        if (http.Request.Headers.TryGetValue(AppConstants.ApiKeyHeaderName, out var apiHeaderValue))
         {
-
-            var headerComponents = result.ToString().Split(" ");
+            var headerComponents = apiHeaderValue.ToString().Split(":");
             if (headerComponents.Length < 2)
             {
-                context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                http.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                 context.Result = new UnauthorizedResult();
                 return;
             };
 
-            var tokenType = headerComponents[0].Trim();
-            var encodedToken = headerComponents[1].Trim();
+            var keyId = headerComponents[0].Trim();
+            var secret = headerComponents[1].Trim();
 
-            switch (tokenType)
+            var isValid = await _dataService.ValidateApiKey(
+                       keyId,
+                       secret,
+                       http.Request.Path,
+                       $"{http.Connection.RemoteIpAddress}");
+
+            if (isValid)
             {
-                case "Basic":
-                    byte[] data = Convert.FromBase64String(encodedToken);
-                    string decodedString = Encoding.UTF8.GetString(data);
+                var keyResult = await _dataService.GetApiKey(keyId);
 
-                    var authComponents = decodedString.ToString().Split(":");
-                    if (authComponents.Length < 2)
-                    {
-                        context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                        context.Result = new UnauthorizedResult();
-                        return;
-                    };
-
-                    var keyId = authComponents[0]?.Trim();
-                    var apiSecret = authComponents[1]?.Trim();
-                    if (_dataService.ValidateApiKey(keyId, apiSecret, context.HttpContext.Request.Path, context.HttpContext.Connection.RemoteIpAddress.ToString()))
-                    {
-                        var orgID = _dataService.GetApiKey(keyId)?.OrganizationID;
-                        context.HttpContext.Request.Headers["OrganizationID"] = orgID;
-                        return;
-                    }
-                    break;
+                if (keyResult.IsSuccess)
+                {
+                    http.Request.Headers["OrganizationID"] = keyResult.Value.OrganizationID;
+                    return;
+                }
             }
-
         }
 
+        http.Response.StatusCode = (int)HttpStatusCode.Forbidden;
         context.Result = new UnauthorizedResult();
     }
 }

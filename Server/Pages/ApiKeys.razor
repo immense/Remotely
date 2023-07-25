@@ -93,7 +93,12 @@ else
         var secret = RandomGenerator.GenerateString(36);
         var secretHash = new PasswordHasher<string>().HashPassword(string.Empty, secret);
 
-        await DataService.CreateApiToken(Username, _createKeyName, secretHash);
+        var result = await DataService.CreateApiToken(Username, _createKeyName, secretHash);
+        if (!result.IsSuccess)
+        {
+            ToastService.ShowToast2(result.Reason, ToastType.Error);
+            return;
+        }
         RefreshData();
         _alertMessage = "Key created.";
         _newKeySecret = secret;
@@ -121,9 +126,9 @@ else
     {
         _apiTokens.Clear();
         _apiTokens.AddRange(DataService.GetAllApiTokens(User.Id));
-        _createKeyName = null;
-        _alertMessage = null;
-        _newKeySecret = null;
+        _createKeyName = string.Empty;
+        _alertMessage = string.Empty;
+        _newKeySecret = string.Empty;
     }
 
 
@@ -142,8 +147,8 @@ else
     {
         ModalService.ShowModal("Using API Keys", new[]
         {
-            "API keys should be added to the request header when making API calls.  The key should be \"Authorization\", and value should be \"{key-id}:{key-secret}\".  Note the colon in between.",
-            "Example: Authorization=e5da1c09-e851-4bd4-a8c1-532144b3f894:7uY6h5zBYm4+90pZVek4lD6ewbQ83nKcDpghBfG00hhZu6Ew"
+            "API keys should be added to the request header when making API calls.  The key should be \"X-Api-Key\", and value should be \"{key-id}:{key-secret}\".  Note the colon in between.",
+            "Example: X-Api-Key=e5da1c09-e851-4bd4-a8c1-532144b3f894:7uY6h5zBYm4+90pZVek4lD6ewbQ83nKcDpghBfG00hhZu6Ew"
         });
     }
 }

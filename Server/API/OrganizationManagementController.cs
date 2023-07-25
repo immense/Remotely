@@ -1,13 +1,19 @@
-﻿using MailKit;
+﻿using Immense.RemoteControl.Desktop.Native.Windows;
+using Immense.RemoteControl.Shared;
+using Immense.RemoteControl.Shared.Extensions;
+using MailKit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Build.Framework;
+using Microsoft.Extensions.Logging;
 using Org.BouncyCastle.Crypto.Agreement;
 using Remotely.Server.Auth;
 using Remotely.Server.Extensions;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
 using Remotely.Shared.ViewModels;
+using System;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -20,90 +26,91 @@ namespace Remotely.Server.API;
 [ApiController]
 public class OrganizationManagementController : ControllerBase
 {
-    public OrganizationManagementController(IDataService dataService,
+    private readonly IDataService _dataService;
+    private readonly IEmailSenderEx _emailSender;
+    private readonly ILogger<OrganizationManagementController> _logger;
+    private readonly UserManager<RemotelyUser> _userManager;
+
+    public OrganizationManagementController(
         UserManager<RemotelyUser> userManager,
-        IEmailSenderEx emailSender)
+        IDataService dataService,
+        IEmailSenderEx emailSender,
+        ILogger<OrganizationManagementController> logger)
     {
-        DataService = dataService;
-        UserManager = userManager;
-        EmailSender = emailSender;
+        _dataService = dataService;
+        _userManager = userManager;
+        _emailSender = emailSender;
+        _logger = logger;
     }
-
-    private IDataService DataService { get; }
-    private IEmailSenderEx EmailSender { get; }
-    private UserManager<RemotelyUser> UserManager { get; }
-
 
     [HttpPost("ChangeIsAdmin/{userID}")]
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
-    public IActionResult ChangeIsAdmin(string userID, [FromBody] bool isAdmin)
+    public async Task<IActionResult> ChangeIsAdmin(string userId, [FromBody] bool isAdmin)
     {
-        if (User.Identity is null ||
-            User.Identity.IsAuthenticated == false ||
-            string.IsNullOrEmpty(User.Identity.Name))
-        {
-            return Unauthorized();
-        }
-
-        if (User.Identity.IsAuthenticated == true &&
-            !DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
-        {
-            return Unauthorized();
-        }
-
-        if (User.Identity.IsAuthenticated &&
-            DataService.GetUserByNameWithOrg(User.Identity.Name).Id == userID)
-        {
-            return BadRequest("You can't remove administrator rights from yourself.");
-        }
-
         if (!Request.Headers.TryGetOrganizationId(out var orgId))
         {
-            return BadRequest("OrganizationID is required.");
+            return Unauthorized();
         }
 
-        DataService.ChangeUserIsAdmin(orgId, userID, isAdmin);
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            var userResult = await _dataService.GetUserByNameWithOrg($"{User.Identity.Name}");
+            if (userResult.IsSuccess && userResult.Value.Id == userId)
+            {
+                return BadRequest("You can't remove administrator rights from yourself.");
+            }
+        }
+
+        _dataService.ChangeUserIsAdmin(orgId, userId, isAdmin);
         return NoContent();
     }
 
     [HttpDelete("DeleteInvite/{inviteID}")]
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
-    public IActionResult DeleteInvite(string inviteID)
+    public async Task<IActionResult> DeleteInvite(string inviteID)
     {
-        if (User.Identity is null ||
-           User.Identity.IsAuthenticated == false ||
-           string.IsNullOrEmpty(User.Identity.Name))
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
         {
             return Unauthorized();
         }
 
-        if (!Request.Headers.TryGetOrganizationId(out var orgId))
+        var result = await _dataService.DeleteInvite(orgId, inviteID);
+        _logger.LogResult(result);
+
+        if (!result.IsSuccess)
         {
-            return BadRequest("OrganizationID is required.");
+            return BadRequest(result.Reason);
         }
 
-        DataService.DeleteInvite(orgId, inviteID);
         return NoContent();
     }
 
     [HttpDelete("DeleteUser/{userID}")]
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
-    public async Task<IActionResult> DeleteUser(string userID)
+    public async Task<IActionResult> DeleteUser(string userId)
     {
-        if (User.Identity.IsAuthenticated &&
-            !DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
         {
             return Unauthorized();
         }
 
-        if (User.Identity.IsAuthenticated &&
-          DataService.GetUserByNameWithOrg(User.Identity.Name).Id == userID)
+        if (User.Identity?.IsAuthenticated == true)
         {
-            return BadRequest("You can't delete yourself here.  You must go to the Personal Data page to delete your own account.");
+            var userResult = await _dataService.GetUserByNameWithOrg($"{User.Identity.Name}");
+            if (userResult.IsSuccess && userResult.Value.Id == userId)
+            {
+                return BadRequest("You can't delete yourself here.  You must go to the Personal Data page to delete your own account.");
+            }
         }
 
-        Request.Headers.TryGetValue("OrganizationID", out var orgID);
-        await DataService.DeleteUser(orgID, userID);
+
+        var result = await _dataService.DeleteUser(orgId, userId);
+        _logger.LogResult(result);
+        if (!result.IsSuccess)
+        {
+            return BadRequest(result.Reason);
+        }
+
         return NoContent();
     }
 
@@ -111,28 +118,29 @@ public class OrganizationManagementController : ControllerBase
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
     public IActionResult DeviceGroup()
     {
-        if (User.Identity.IsAuthenticated &&
-            DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
-        {
-            return Ok(DataService.GetDeviceGroups(User.Identity.Name));
-        }
-        if (Request.Headers.TryGetValue("OrganizationID", out var orgID))
-            return Ok(DataService.GetDeviceGroupsForOrganization(orgID));
-        return NotFound("Unable to find User or organizationID for device group");
-    }
-
-    [HttpDelete("DeviceGroup")]
-    [ServiceFilter(typeof(ApiAuthorizationFilter))]
-    public IActionResult DeviceGroup([FromBody] string deviceGroupID)
-    {
-        if (User.Identity.IsAuthenticated &&
-            !DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
         {
             return Unauthorized();
         }
 
-        Request.Headers.TryGetValue("OrganizationID", out var orgID);
-        DataService.DeleteDeviceGroup(orgID, deviceGroupID.Trim());
+        return Ok(_dataService.GetDeviceGroupsForOrganization(orgId));
+    }
+
+    [HttpDelete("DeviceGroup")]
+    [ServiceFilter(typeof(ApiAuthorizationFilter))]
+    public async Task<IActionResult> DeviceGroup([FromBody] string deviceGroupId)
+    {
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
+        {
+            return Unauthorized();
+        }
+
+        var result = await _dataService.DeleteDeviceGroup(orgId, deviceGroupId.Trim());
+        _logger.LogResult(result);
+        if (!result.IsSuccess)
+        {
+            return BadRequest(result.Reason);
+        }
         return NoContent();
     }
 
@@ -140,8 +148,7 @@ public class OrganizationManagementController : ControllerBase
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
     public async Task<IActionResult> DeviceGroup([FromBody] DeviceGroup deviceGroup)
     {
-        if (User.Identity.IsAuthenticated &&
-            !DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
         {
             return Unauthorized();
         }
@@ -151,9 +158,7 @@ public class OrganizationManagementController : ControllerBase
             return BadRequest();
         }
 
-        Request.Headers.TryGetValue("OrganizationID", out var orgId);
-
-        var result = await DataService.AddDeviceGroup($"{orgId}", deviceGroup);
+        var result = await _dataService.AddDeviceGroup(orgId, deviceGroup);
         if (!result.IsSuccess)
         {
             return BadRequest(result.Reason);
@@ -165,8 +170,7 @@ public class OrganizationManagementController : ControllerBase
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
     public async Task<IActionResult> DeviceGroupRemoveUser([FromBody] string userID, string groupID)
     {
-        if (User.Identity.IsAuthenticated &&
-            !DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
         {
             return Unauthorized();
         }
@@ -176,8 +180,7 @@ public class OrganizationManagementController : ControllerBase
             return BadRequest();
         }
 
-        Request.Headers.TryGetValue("OrganizationID", out var orgID);
-        if (!await DataService.RemoveUserFromDeviceGroup(orgID, groupID, userID))
+        if (!await _dataService.RemoveUserFromDeviceGroup(orgId, groupID, userID))
         {
             return BadRequest("Failed to remove user from group.");
         }
@@ -188,8 +191,7 @@ public class OrganizationManagementController : ControllerBase
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
     public IActionResult DeviceGroupAddUser([FromBody] string userID, string groupID)
     {
-        if (User.Identity.IsAuthenticated &&
-            !DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
         {
             return Unauthorized();
         }
@@ -199,8 +201,7 @@ public class OrganizationManagementController : ControllerBase
             return BadRequest();
         }
 
-        Request.Headers.TryGetValue("OrganizationID", out var orgID);
-        var result = DataService.AddUserToDeviceGroup(orgID, groupID, userID, out var resultMessage);
+        var result = _dataService.AddUserToDeviceGroup(orgId, groupID, userID, out var resultMessage);
         if (!result)
         {
             return BadRequest(resultMessage);
@@ -211,24 +212,26 @@ public class OrganizationManagementController : ControllerBase
 
     [HttpGet("GenerateResetUrl/{userID}")]
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
-    public async Task<IActionResult> GenerateResetUrl(string userID)
+    public async Task<IActionResult> GenerateResetUrl(string userId)
     {
-        if (User.Identity.IsAuthenticated &&
-          !DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
         {
             return Unauthorized();
         }
 
-        Request.Headers.TryGetValue("OrganizationID", out var orgID);
+        var user = await _userManager.FindByIdAsync(userId);
 
-        var user = await UserManager.FindByIdAsync(userID);
+        if (user is null)
+        {
+            return NotFound();
+        }
 
-        if (user.OrganizationID != orgID)
+        if (user.OrganizationID != orgId)
         {
             return Unauthorized();
         }
 
-        var code = await UserManager.GeneratePasswordResetTokenAsync(user);
+        var code = await _userManager.GeneratePasswordResetTokenAsync(user);
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
         var callbackUrl = Url.Page(
             "/Account/ResetPassword",
@@ -242,35 +245,37 @@ public class OrganizationManagementController : ControllerBase
 
     [HttpPut("Name")]
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
-    public IActionResult Name([FromBody] string organizationName)
+    public async Task<IActionResult> Name([FromBody] string organizationName)
     {
-        if (User.Identity.IsAuthenticated &&
-            !DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
         {
             return Unauthorized();
         }
+
         if (organizationName.Length > 25)
         {
             return BadRequest();
         }
 
-        Request.Headers.TryGetValue("OrganizationID", out var orgID);
-        DataService.UpdateOrganizationName(orgID, organizationName.Trim());
+        var result = await _dataService.UpdateOrganizationName(orgId, organizationName.Trim());
+        _logger.LogResult(result);
+        if (!result.IsSuccess)
+        {
+            return BadRequest(result.Reason);
+        }
         return NoContent();
     }
 
     [HttpPut("SetDefault")]
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
-    public IActionResult SetDefault([FromBody] bool isDefault)
+    public async Task<IActionResult> SetDefault([FromBody] bool isDefault)
     {
-        if (User.Identity.IsAuthenticated &&
-            !DataService.GetUserByNameWithOrg(User.Identity.Name).IsServerAdmin)
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
         {
             return Unauthorized();
         }
 
-        Request.Headers.TryGetValue("OrganizationID", out var orgID);
-        DataService.SetIsDefaultOrganization(orgID, isDefault);
+        await _dataService.SetIsDefaultOrganization(orgId, isDefault);
         return NoContent();
     }
 
@@ -278,44 +283,39 @@ public class OrganizationManagementController : ControllerBase
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
     public async Task<IActionResult> SendInvite([FromBody] InviteViewModel invite)
     {
-        if (User.Identity.IsAuthenticated &&
-            !DataService.GetUserByNameWithOrg(User.Identity.Name).IsAdministrator)
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
         {
             return Unauthorized();
         }
+
         if (!ModelState.IsValid)
         {
             return BadRequest();
         }
 
-        if (!Request.Headers.TryGetOrganizationId(out var orgId))
-        {
-            return BadRequest("Organization ID is required.");
-        }
 
-
-        if (!DataService.DoesUserExist(invite.InvitedUser))
+        if (!_dataService.DoesUserExist(invite.InvitedUser))
         {
-            var result = await DataService.CreateUser(invite.InvitedUser, invite.IsAdmin, orgId);
+            var result = await _dataService.CreateUser(invite.InvitedUser, invite.IsAdmin, orgId);
             if (!result.IsSuccess)
             {
                 return BadRequest("There was an issue creating the new account.");
             }
 
-            var user = await UserManager.FindByEmailAsync(invite.InvitedUser);
+            var user = await _userManager.FindByEmailAsync(invite.InvitedUser);
 
             if (user is null)
             {
                 return BadRequest("User not found.");
             }
 
-            await UserManager.ConfirmEmailAsync(user, await UserManager.GenerateEmailConfirmationTokenAsync(user));
+            await _userManager.ConfirmEmailAsync(user, await _userManager.GenerateEmailConfirmationTokenAsync(user));
 
             return Ok();
         }
         else
         {
-            var newInvite = await DataService.AddInvite(orgId, invite);
+            var newInvite = await _dataService.AddInvite(orgId, invite);
 
             if (!newInvite.IsSuccess)
             {
@@ -323,7 +323,7 @@ public class OrganizationManagementController : ControllerBase
             }
 
             var inviteURL = $"{Request.Scheme}://{Request.Host}/Invite?id={newInvite.Value.ID}";
-            var emailResult = await EmailSender.SendEmailAsync(invite.InvitedUser, "Invitation to Organization in Remotely",
+            var emailResult = await _emailSender.SendEmailAsync(invite.InvitedUser, "Invitation to Organization in Remotely",
                         $@"<img src='{Request.Scheme}://{Request.Host}/images/Remotely_Logo.png'/>
                             <br><br>
                             Hello!

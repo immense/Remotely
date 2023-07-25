@@ -120,7 +120,7 @@ public class ClientDownloadsController : ControllerBase
     {
         if (!Request.Headers.TryGetOrganizationId(out var orgId))
         {
-            return BadRequest("OrganizationID is required.");
+            return Unauthorized();
         }
         return await GetInstallFile(orgId, platformID);
     }

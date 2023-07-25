@@ -49,7 +49,7 @@ public class DevicesController : ControllerBase
     {
         if (!Request.Headers.TryGetOrganizationId(out var orgId))
         {
-            return BadRequest("OrganizationID is required.");
+            return Unauthorized();
         }
 
         var device = DataService.GetDevice(orgId, id);

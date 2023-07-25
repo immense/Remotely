@@ -17,6 +17,7 @@ using Immense.RemoteControl.Server.Abstractions;
 using Immense.RemoteControl.Shared.Helpers;
 using Microsoft.Build.Framework;
 using Microsoft.Extensions.Logging;
+using Remotely.Server.Extensions;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -62,8 +63,12 @@ public class RemoteControlController : ControllerBase
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
     public async Task<IActionResult> Get(string deviceID)
     {
-        Request.Headers.TryGetValue("OrganizationID", out var orgID);
-        return await InitiateRemoteControl(deviceID, orgID);
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
+        {
+            return Unauthorized();
+        }
+        
+        return await InitiateRemoteControl(deviceID, orgId);
     }
 
     [HttpPost]
@@ -74,11 +79,17 @@ public class RemoteControlController : ControllerBase
             return NotFound();
         }
 
-        var orgId = _dataService.GetUserByNameWithOrg(rcRequest.Email)?.OrganizationID;
+        var userResult = await _dataService.GetUserByNameWithOrg(rcRequest.Email);
+        if (!userResult.IsSuccess)
+        {
+            return NotFound();
+        }
+
+        var orgId = userResult.Value.OrganizationID;
 
         var result = await _signInManager.PasswordSignInAsync(rcRequest.Email, rcRequest.Password, false, true);
         if (result.Succeeded &&
-            _dataService.DoesUserHaveAccessToDevice(rcRequest.DeviceID, _dataService.GetUserByNameWithOrg(rcRequest.Email)))
+            _dataService.DoesUserHaveAccessToDevice(rcRequest.DeviceID, userResult.Value))
         {
             _logger.LogInformation("API login successful for {rcRequestEmail}.", rcRequest.Email);
             return await InitiateRemoteControl(rcRequest.DeviceID, orgId);
@@ -110,12 +121,20 @@ public class RemoteControlController : ControllerBase
             return Unauthorized();
         }
 
-        if (User.Identity.IsAuthenticated &&
-           !_dataService.DoesUserHaveAccessToDevice(targetDevice.ID, _dataService.GetUserByNameWithOrg(User.Identity.Name)))
+        if (User.Identity?.IsAuthenticated == true)
         {
-            return Unauthorized();
-        }
+            var userResult = await _dataService.GetUserByNameWithOrg($"{User.Identity.Name}");
 
+            if (!userResult.IsSuccess)
+            {
+                return Unauthorized();
+            }
+
+            if (!_dataService.DoesUserHaveAccessToDevice(targetDevice.ID, userResult.Value))
+            {
+                return Unauthorized();
+            }
+        }
 
         var sessionCount = _remoteControlSessionCache.Sessions
                .OfType<RemoteControlSessionEx>()

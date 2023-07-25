@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Remotely.Server.Auth;
+using Remotely.Server.Extensions;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
+using System;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,20 +31,26 @@ public class ScriptResultsController : ControllerBase
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
     public ActionResult DownloadAll()
     {
-        Request.Headers.TryGetValue("OrganizationID", out var orgID);
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
+        {
+            return Unauthorized();
+        }
 
-        var commandResults = _dataService.GetAllCommandResults(orgID);
+        var commandResults = _dataService.GetAllCommandResults(orgId);
         var content = System.Text.Json.JsonSerializer.Serialize(commandResults);
         return File(Encoding.UTF8.GetBytes(content), "application/octet-stream", "ScriptHistory.json");       
     }
 
     [HttpGet("{scriptId}")]
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
-    public FileResult DownloadResults(string scriptId)
+    public ActionResult<FileResult> DownloadResults(string scriptId)
     {
-        Request.Headers.TryGetValue("OrganizationID", out var orgID);
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
+        {
+            return Unauthorized();
+        }
 
-        var commandResult = _dataService.GetScriptResult(scriptId, orgID);
+        var commandResult = _dataService.GetScriptResult(scriptId, orgId);
         var content = System.Text.Json.JsonSerializer.Serialize(commandResult);
         return File(Encoding.UTF8.GetBytes(content), "application/octet-stream", "ScriptResults.json");
     }
@@ -49,40 +58,55 @@ public class ScriptResultsController : ControllerBase
 
     [HttpPost]
     [ServiceFilter(typeof(ExpiringTokenFilter))]
-    public async Task<ScriptResult> Post([FromBody] ScriptResult result)
+    public async Task<ActionResult<ScriptResult>> Post([FromBody] ScriptResult result)
     {
         _dataService.AddOrUpdateScriptResult(result);
 
+        var errorOut = result.ErrorOutput ?? Array.Empty<string>();
+
         if (result.HadErrors && result.SavedScriptId.HasValue)
         {
-            var savedScript = await _dataService.GetSavedScript(result.SavedScriptId.Value);
+            var savedScriptResult = await _dataService.GetSavedScript(result.SavedScriptId.Value);
+            if (!savedScriptResult.IsSuccess)
+            {
+                return NotFound();
+            }
+
+            var savedScript = savedScriptResult.Value;
             if (savedScript.GenerateAlertOnError)
             {
                 await _dataService.AddAlert(result.DeviceID,
                     result.OrganizationID,
                     $"Alert triggered while running script {savedScript.Name}.",
-                    string.Join("\n", result.ErrorOutput));
+                    string.Join("\n", errorOut));
             }
 
             if (savedScript.SendEmailOnError)
             {
-                var device = _dataService.GetDevice(result.DeviceID);
+                var deviceResult = await _dataService.GetDevice(
+                    result.DeviceID, 
+                    query => query.Include(x => x.DeviceGroup));
 
-                if (!string.IsNullOrWhiteSpace(device.DeviceGroupID))
+                if (!deviceResult.IsSuccess)
                 {
-                    device.DeviceGroup = await _dataService.GetDeviceGroup(device.DeviceGroupID);
+                    return NotFound();
                 }
 
-                await _emailSender.SendEmailAsync(savedScript.SendErrorEmailTo,
-                    "Script Run Alert",
-                    $"An alert was triggered while running script {savedScript.Name} on device {device.DeviceName}. <br /><br />" +
-                        $"Device ID: {device.ID} <br /> " +
-                        $"Device Name: {device.DeviceName} <br /> " +
-                        $"Device Alias: {device.Alias} <br /> " +
-                        $"Device Group (if any): {device.DeviceGroup?.Name} <br /> " +
+                var device = deviceResult.Value;
 
-                        $"Error Output: <br /> <br /> " +
-                        $"{string.Join("<br /> <br />", result.ErrorOutput)}");
+                if (!string.IsNullOrWhiteSpace(savedScript.SendErrorEmailTo))
+                {
+                    await _emailSender.SendEmailAsync(savedScript.SendErrorEmailTo,
+                        "Script Run Alert",
+                        $"An alert was triggered while running script {savedScript.Name} on device {device.DeviceName}. <br /><br />" +
+                            $"Device ID: {device.ID} <br /> " +
+                            $"Device Name: {device.DeviceName} <br /> " +
+                            $"Device Alias: {device.Alias} <br /> " +
+                            $"Device Group (if any): {device.DeviceGroup?.Name} <br /> " +
+
+                            $"Error Output: <br /> <br /> " +
+                            $"{string.Join("<br /> <br />", errorOut)}");
+                }
             }
         }
 

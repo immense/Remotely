@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Immense.RemoteControl.Shared.Extensions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Build.Framework;
 using Microsoft.Extensions.Logging;
 using Remotely.Server.Auth;
@@ -43,7 +44,7 @@ public class AlertsController : ControllerBase
     {
         if (!Request.Headers.TryGetOrganizationId(out var orgId))
         {
-            return BadRequest("OrganizationID is required.");
+            return Unauthorized();
         }
 
         _logger.LogInformation("Alert created.  Alert Options: {options}", JsonSerializer.Serialize(alertOptions));
@@ -111,19 +112,23 @@ public class AlertsController : ControllerBase
     {
         if (!Request.Headers.TryGetOrganizationId(out var orgId))
         {
-            return BadRequest("OrganizationID is required.");
+            return Unauthorized();
         }
 
-        var alert = await _dataService.GetAlert(alertID);
-
-        if (alert?.OrganizationID == orgId)
+        var alertResult = await _dataService.GetAlert(alertID);
+        _logger.LogResult(alertResult);
+        if (!alertResult.IsSuccess)
         {
-            await _dataService.DeleteAlert(alert);
-
-            return Ok();
+            return BadRequest(alertResult.Reason);
         }
 
-        return Unauthorized();
+        if (alertResult.Value.OrganizationID != orgId)
+        {
+            return Unauthorized();
+        }
+
+        await _dataService.DeleteAlert(alertResult.Value);
+        return Ok();
     }
 
     [HttpDelete("DeleteAll")]
@@ -131,7 +136,7 @@ public class AlertsController : ControllerBase
     {
         if (!Request.Headers.TryGetOrganizationId(out var orgId))
         {
-            return BadRequest("OrganizationID is required.");
+            return Unauthorized();
         }
 
         if (User.Identity?.IsAuthenticated == true)
