@@ -45,7 +45,7 @@ public class ApiAuthorizationFilter : IAsyncAuthorizationFilter
 
         if (http.User.Identity?.IsAuthenticated == true)
         {
-            var userResult = await _dataService.GetUserByNameWithOrg($"{http.User.Identity.Name}");
+            var userResult = await _dataService.GetUserByName($"{http.User.Identity.Name}");
             if (userResult.IsSuccess && userResult.Value.IsAdministrator)
             {
                 http.Request.Headers["OrganizationID"] = userResult.Value.OrganizationID;

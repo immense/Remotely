@@ -91,7 +91,7 @@ public class Device
     [StringLength(200)]
     [Sortable]
     [Display(Name = "Tags")]
-    public string Tags { get; set; } = "";
+    public string? Tags { get; set; }
 
     [Sortable]
     [Display(Name = "Memory Total")]

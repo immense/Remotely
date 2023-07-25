@@ -27,8 +27,8 @@ namespace Remotely.Server.Hubs;
 
 public interface ICircuitConnection
 {
-    event EventHandler<CircuitEvent> MessageReceived;
-    RemotelyUser User { get; }
+    event EventHandler<CircuitEvent>? MessageReceived;
+    RemotelyUser? User { get; }
 
     Task DeleteRemoteLogs(string deviceId);
 
@@ -85,6 +85,8 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
     private readonly ILogger<CircuitConnection> _logger;
     private readonly IAgentHubSessionCache _agentSessionCache;
     private readonly IToastService _toastService;
+    private RemotelyUser? _user;
+
     public CircuitConnection(
         IAuthService authService,
         IDataService dataService,
@@ -112,10 +114,15 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
     }
 
 
-    public event EventHandler<CircuitEvent> MessageReceived;
+    public event EventHandler<CircuitEvent>? MessageReceived;
 
-    public string ConnectionId { get; set; }
-    public RemotelyUser User { get; internal set; }
+    public string ConnectionId { get; } = Guid.NewGuid().ToString();
+
+    public RemotelyUser User
+    {
+        get => _user ?? throw new InvalidOperationException("User has not been resolved yet.");
+        internal set => _user = value;
+    }
 
 
     public Task DeleteRemoteLogs(string deviceId)
@@ -129,14 +136,14 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
 
         _logger.LogInformation("Delete logs command sent.  Device: {deviceId}.  User: {username}",
             deviceId,
-            User.UserName);
+            User?.UserName);
 
         return _agentHubContext.Clients.Client(key).SendAsync("DeleteLogs");
     }
 
     public Task ExecuteCommandOnAgent(ScriptingShell shell, string command, string[] deviceIDs)
     {
-        deviceIDs = _dataService.FilterDeviceIDsByUserPermission(deviceIDs, User);
+        deviceIDs = _dataService.FilterDeviceIdsByUserPermission(deviceIDs, User);
         var connections = GetActiveConnectionsForUserOrg(deviceIDs);
 
         _logger.LogInformation("Command executed by {username}.  Shell: {shell}.  Command: {command}.  Devices: {deviceIds}",
@@ -162,7 +169,13 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
 
     public Task GetPowerShellCompletions(string inputText, int currentIndex, CompletionIntent intent, bool? forward)
     {
-        var (canAccess, key) = CanAccessDevice(_appState.DevicesFrameSelectedDevices.FirstOrDefault());
+        var device = _appState.DevicesFrameSelectedDevices.FirstOrDefault();
+        if (device is null)
+        {
+            return Task.CompletedTask;
+        }
+
+        var (canAccess, key) = CanAccessDevice(device);
         if (!canAccess)
         {
             return Task.CompletedTask;
@@ -202,8 +215,13 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
     {
         if (await _authService.IsAuthenticated())
         {
-            User = await _authService.GetUser();
-            ConnectionId = Guid.NewGuid().ToString();
+            var userResult = await _authService.GetUser();
+            if (!userResult.IsSuccess)
+            {
+                _toastService.ShowToast2("Authorization failure.", Enums.ToastType.Error);
+                return;
+            }
+            _user = userResult.Value;
             _circuitManager.TryAddConnection(ConnectionId, this);
         }
         await base.OnCircuitOpenedAsync(circuit, cancellationToken);
@@ -211,7 +229,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
 
     public Task ReinstallAgents(string[] deviceIDs)
     {
-        deviceIDs = _dataService.FilterDeviceIDsByUserPermission(deviceIDs, User);
+        deviceIDs = _dataService.FilterDeviceIdsByUserPermission(deviceIDs, User);
         var connections = GetActiveConnectionsForUserOrg(deviceIDs);
         foreach (var connection in connections)
         {
@@ -283,12 +301,20 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
 
         _remoteControlSessionCache.AddOrUpdate($"{sessionId}", session);
 
-        var organization = _dataService.GetOrganizationNameByUserName(User.UserName);
+        var orgResult = await _dataService.GetOrganizationNameByUserName($"{User.UserName}");
+
+        if (!orgResult.IsSuccess)
+        {
+            _toastService.ShowToast2(orgResult.Reason, Enums.ToastType.Warning);
+            return Result.Fail<RemoteControlSessionEx>(orgResult.Reason);
+        }
+
+        var organization = _dataService.GetOrganizationNameByUserName($"{User.UserName}");
         await _agentHubContext.Clients.Client(serviceConnectionId).SendAsync("RemoteControl",
             sessionId,
             accessKey,
             ConnectionId,
-            User.UserOptions.DisplayName,
+            User.UserOptions?.DisplayName,
             organization,
             User.OrganizationID);
 
@@ -297,22 +323,31 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
 
     public Task RemoveDevices(string[] deviceIDs)
     {
-        var filterDevices = _dataService.FilterDeviceIDsByUserPermission(deviceIDs, User);
-        _dataService.RemoveDevices(filterDevices);
+        if (User is not null)
+        {
+            var filterDevices = _dataService.FilterDeviceIdsByUserPermission(deviceIDs, User);
+            _dataService.RemoveDevices(filterDevices);
+        }
+
         return Task.CompletedTask;
     }
 
-    public async Task RunScript(IEnumerable<string> deviceIds, Guid savedScriptId, int scriptRunId, ScriptInputType scriptInputType, bool runAsHostedService)
+    public async Task RunScript(
+        IEnumerable<string> deviceIds, 
+        Guid savedScriptId, 
+        int scriptRunId, 
+        ScriptInputType scriptInputType, 
+        bool runAsHostedService)
     {
-        string username;
+        var username = string.Empty;
         if (runAsHostedService)
         {
             username = "Remotely Server";
         }
-        else
+        else if (User is not null)
         {
             username = User.UserName;
-            deviceIds = _dataService.FilterDeviceIDsByUserPermission(deviceIds.ToArray(), User);
+            deviceIds = _dataService.FilterDeviceIdsByUserPermission(deviceIds.ToArray(), User);
         }
        
         var authToken = _expiringTokenService.GetToken(Time.Now.AddMinutes(AppConstants.ScriptRunExpirationMinutes));
@@ -326,32 +361,37 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
 
     }
 
-    public Task SendChat(string message, string deviceId)
+    public async Task SendChat(string message, string deviceId)
     {
         if (!_dataService.DoesUserHaveAccessToDevice(deviceId, User))
         {
-            return Task.CompletedTask;
+            return;
         }
 
         if (!_agentSessionCache.TryGetByDeviceId(deviceId, out var device) ||
             !_agentSessionCache.TryGetConnectionId(deviceId, out var connectionId))
         {
             _toastService.ShowToast("Device not found.");
-            return Task.CompletedTask;
+            return;
         }
 
         if (device.OrganizationID != User.OrganizationID)
         {
             _toastService.ShowToast("Unauthorized.");
-            return Task.CompletedTask;
+            return;
         }
 
-        var organizationName = _dataService.GetOrganizationNameByUserName(User.UserName);
+        var orgResult = await _dataService.GetOrganizationNameByUserName($"{User.UserName}");
+        if (!orgResult.IsSuccess)
+        {
+            _toastService.ShowToast2("Organization not found.", Enums.ToastType.Warning);
+            return;
+        }
 
-        return _agentHubContext.Clients.Client(connectionId).SendAsync("Chat",
-            User.UserOptions.DisplayName ?? User.UserName,
+        await _agentHubContext.Clients.Client(connectionId).SendAsync("Chat",
+            User.UserOptions?.DisplayName ?? User.UserName,
             message,
-            organizationName,
+            orgResult.Value,
             User.OrganizationID,
             false,
             ConnectionId);
@@ -397,16 +437,15 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
         await _agentHubContext.Clients.Client(connectionId).SendAsync("TriggerHeartbeat");
     }
 
-    public Task UninstallAgents(string[] deviceIDs)
+    public async Task UninstallAgents(string[] deviceIDs)
     {
-        deviceIDs = _dataService.FilterDeviceIDsByUserPermission(deviceIDs, User);
+        deviceIDs = _dataService.FilterDeviceIdsByUserPermission(deviceIDs, User);
         var connections = GetActiveConnectionsForUserOrg(deviceIDs);
         foreach (var connection in connections)
         {
-            _agentHubContext.Clients.Client(connection).SendAsync("UninstallAgent");
+            await _agentHubContext.Clients.Client(connection).SendAsync("UninstallAgent");
         }
         _dataService.RemoveDevices(deviceIDs);
-        return Task.CompletedTask;
     }
 
     public Task UpdateTags(string deviceID, string tags)
@@ -436,7 +475,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
             User.UserName,
             string.Join(", ", fileIDs));
 
-        deviceIDs = _dataService.FilterDeviceIDsByUserPermission(deviceIDs, User);
+        deviceIDs = _dataService.FilterDeviceIdsByUserPermission(deviceIDs, User);
         var connections = GetActiveConnectionsForUserOrg(deviceIDs);
         foreach (var connection in connections)
         {
@@ -477,7 +516,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
         try
         {
             var deviceIds = devices.Select(x => x.ID).ToArray();
-            var filteredIds = _dataService.FilterDeviceIDsByUserPermission(deviceIds, User);
+            var filteredIds = _dataService.FilterDeviceIdsByUserPermission(deviceIds, User);
             var filteredDevices = devices.Where(x => filteredIds.Contains(x.ID)).ToArray();
 
             var availableDevices = _agentSessionCache

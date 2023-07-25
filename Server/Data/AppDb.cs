@@ -136,6 +136,10 @@ public class AppDb : IdentityDbContext
             .HasMany(x => x.ScriptSchedules)
             .WithMany(x => x.Devices);
         builder.Entity<Device>()
+            .HasOne(x => x.DeviceGroup)
+            .WithMany(x => x.Devices)
+            .IsRequired(false);
+        builder.Entity<Device>()
             .Property(x => x.MacAddresses)
             .HasConversion(
                 x => JsonSerializer.Serialize(x, jsonOptions),
@@ -143,7 +147,9 @@ public class AppDb : IdentityDbContext
                 valueComparer: _stringArrayComparer);
 
         builder.Entity<DeviceGroup>()
-            .HasMany(x => x.Devices);
+            .HasMany(x => x.Devices)
+            .WithOne(x => x.DeviceGroup)
+            .IsRequired(false);
         builder.Entity<DeviceGroup>()
             .HasMany(x => x.ScriptSchedules)
             .WithMany(x => x.DeviceGroups);

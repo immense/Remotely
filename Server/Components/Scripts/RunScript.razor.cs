@@ -31,25 +31,25 @@ public partial class RunScript : AuthComponentBase
 
     private bool _runOnNextConnect = true;
 
-    private SavedScript _selectedScript;
+    private SavedScript? _selectedScript;
 
     [Inject]
-    private IDataService DataService { get; set; }
+    private IDataService DataService { get; init; } = null!;
 
     [Inject]
-    private IJsInterop JsInterop { get; set; }
+    private IJsInterop JsInterop { get; init; } = null!;
 
     [Inject]
-    private IToastService ToastService { get; set; }
+    private IToastService ToastService { get; init; } = null!;
 
     [Inject]
-    private IAgentHubSessionCache ServiceSessionCache { get; init; }
+    private IAgentHubSessionCache ServiceSessionCache { get; init; } = null!;
 
     [Inject]
-    private ICircuitConnection CircuitConnection { get; set; }
+    private ICircuitConnection CircuitConnection { get; init; } = null!;
 
     [CascadingParameter]
-    private ScriptsPage ParentPage { get; set; }
+    private ScriptsPage ParentPage { get; init; } = null!;
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -64,16 +64,20 @@ public partial class RunScript : AuthComponentBase
     {
         await base.OnInitializedAsync();
 
-        _deviceGroups = DataService.GetDeviceGroups(User.UserName);
+        _deviceGroups = DataService.GetDeviceGroups(UserName);
         _devices = DataService
-            .GetDevicesForUser(User.UserName)
+            .GetDevicesForUser(UserName)
             .OrderBy(x => x.DeviceName)
             .ToArray();
     }
 
     private void DeviceGroupSelectedChanged(ChangeEventArgs args, DeviceGroup deviceGroup)
     {
-        var isSelected = (bool)args.Value;
+        if (args.Value is not bool isSelected)
+        {
+            return;
+        }
+        
         if (isSelected)
         {
             _selectedDeviceGroups.Add(deviceGroup.ID);
@@ -86,7 +90,11 @@ public partial class RunScript : AuthComponentBase
 
     private void DeviceSelectedChanged(ChangeEventArgs args, Device device)
     {
-        var isSelected = (bool)args.Value;
+        if (args.Value is not bool isSelected)
+        {
+            return;
+        }
+
         if (isSelected)
         {
             _selectedDevices.Add(device.ID);
@@ -113,7 +121,7 @@ public partial class RunScript : AuthComponentBase
         }
 
         var deviceIdsFromDeviceGroups = _devices
-            .Where(x => _selectedDeviceGroups.Contains(x.DeviceGroupID))
+            .Where(x => _selectedDeviceGroups.Contains(x.DeviceGroupID!))
             .Select(x => x.ID);
 
         var deviceIds = _selectedDevices
@@ -121,7 +129,7 @@ public partial class RunScript : AuthComponentBase
             .Distinct()
             .ToArray();
 
-        var filteredDevices = DataService.FilterDeviceIDsByUserPermission(deviceIds.ToArray(), User);
+        var filteredDevices = DataService.FilterDeviceIdsByUserPermission(deviceIds.ToArray(), User);
 
         var onlineDevices = ServiceSessionCache.FilterDevicesByOnlineStatus(filteredDevices, true);
 
@@ -157,7 +165,11 @@ public partial class RunScript : AuthComponentBase
     {
         if (viewModel.Script is not null)
         {
-            _selectedScript = await DataService.GetSavedScript(User.Id, viewModel.Script.Id);
+            var scriptResult = await DataService.GetSavedScript(User.Id, viewModel.Script.Id);
+            if (scriptResult.IsSuccess)
+            {
+                _selectedScript = scriptResult.Value;
+            }
         }
         else
         {

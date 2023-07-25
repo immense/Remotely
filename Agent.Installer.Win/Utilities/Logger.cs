@@ -52,7 +52,7 @@ public class Logger
 
                 while (exception != null)
                 {
-                    File.AppendAllText(LogsPath, $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}\t[Error]\t{exception?.Message}\t{exception?.StackTrace}\t{exception?.Source}{Environment.NewLine}");
+                    File.AppendAllText(LogsPath, $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}\t[Error]\t{exception.Message}\t{exception.StackTrace}\t{exception.Source}{Environment.NewLine}");
                     Console.WriteLine(exception.Message);
                     exception = exception.InnerException;
                 }

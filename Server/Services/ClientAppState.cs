@@ -89,9 +89,13 @@ public class ClientAppState : ViewModelBase, IClientAppState
     {
         if (await _authService.IsAuthenticated())
         {
-            var user = await _authService.GetUser();
-            return user?.UserOptions?.Theme ?? _appConfig.Theme;
+            var userResult = await _authService.GetUser();
+            if (userResult.IsSuccess)
+            {
+                return userResult.Value.UserOptions?.Theme ?? _appConfig.Theme;
+            }
         }
+
         return _appConfig.Theme;
     }
 

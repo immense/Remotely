@@ -120,7 +120,7 @@ public partial class ManageOrganization : AuthComponentBase
             return;
         }
 
-        DataService.DeleteInvite(User.OrganizationID, invite.ID);
+        await DataService.DeleteInvite(User.OrganizationID, invite.ID);
         _invites.RemoveAll(x => x.ID == invite.ID);
         ToastService.ShowToast("Invitation deleted.");
     }
@@ -143,7 +143,7 @@ public partial class ManageOrganization : AuthComponentBase
             return;
         }
 
-        DataService.DeleteDeviceGroup(User.OrganizationID, _selectedDeviceGroupId);
+        await DataService.DeleteDeviceGroup(User.OrganizationID, _selectedDeviceGroupId);
         _deviceGroups.RemoveAll(x => x.ID == _selectedDeviceGroupId);
         _selectedDeviceGroupId = string.Empty;
     }
@@ -237,14 +237,20 @@ public partial class ManageOrganization : AuthComponentBase
 
     private async Task RefreshData()
     {
-        _organization = await DataService.GetOrganizationByUserName(Username);
+        var orgResult = await DataService.GetOrganizationByUserName(UserName);
+        if (!orgResult.IsSuccess)
+        {
+            ToastService.ShowToast2(orgResult.Reason, Enums.ToastType.Warning);
+            return;
+        }
 
+        _organization = orgResult.Value;
         _orgUsers.Clear();
         _invites.Clear();
         _deviceGroups.Clear();
 
         _invites.AddRange(DataService.GetAllInviteLinks(User.OrganizationID).OrderBy(x => x.InvitedUser));
-        _deviceGroups.AddRange(DataService.GetDeviceGroups(Username).OrderBy(x => x.Name));
+        _deviceGroups.AddRange(DataService.GetDeviceGroups(UserName).OrderBy(x => x.Name));
         var orgUsers = await DataService.GetAllUsersInOrganization(User.OrganizationID);
         _orgUsers.AddRange(orgUsers.OrderBy(x => x.UserName));
     }
@@ -277,9 +283,16 @@ public partial class ManageOrganization : AuthComponentBase
         if (!DataService.DoesUserExist(_inviteEmail))
         {
             var result = await DataService.CreateUser(_inviteEmail, _inviteAsAdmin, User.OrganizationID);
-            if (result)
+            if (result.IsSuccess)
             {
-                var user = await DataService.GetUserByName(_inviteEmail);
+                var userResult = await DataService.GetUserByName(_inviteEmail);
+                if (!userResult.IsSuccess)
+                {
+                    ToastService.ShowToast2(userResult.Reason, Enums.ToastType.Warning);
+                    return;
+                }
+
+                var user = userResult.Value;
 
                 await UserManager.ConfirmEmailAsync(user, await UserManager.GenerateEmailConfirmationTokenAsync(user));
 

@@ -17,24 +17,24 @@ namespace Remotely.Server.Components.Scripts;
 public partial class SavedScripts : AuthComponentBase
 {
     [CascadingParameter]
-    private ScriptsPage ParentPage { get; set; }
+    private ScriptsPage ParentPage { get; set; } = null!;
 
     private SavedScript _selectedScript = new() { Name = "Test Script" };
-    private string _alertMessage;
-    private string _alertOptionsShowClass;
-    private string _environmentVarsShowClass;
+    private string _alertMessage = string.Empty;
+    private string _alertOptionsShowClass = string.Empty;
+    private string _environmentVarsShowClass = string.Empty;
 
     [Inject]
-    public IDataService DataService { get; set; }
+    public IDataService DataService { get; set; } = null!;
 
     [Inject]
-    public IToastService ToastService { get; set; }
+    public IToastService ToastService { get; set; } = null!;
 
     [Inject]
-    public IJsInterop JsInterop { get; set; }
+    public IJsInterop JsInterop { get; set; } = null!;
 
     [Inject]
-    public IModalService ModalService { get; set; }
+    public IModalService ModalService { get; set; } = null!;
 
     private bool CanModifyScript => _selectedScript.Id == Guid.Empty || 
         _selectedScript.CreatorId == User.Id || User.IsAdministrator;
@@ -104,18 +104,18 @@ public partial class SavedScripts : AuthComponentBase
     {
         if (viewModel.Script is not null)
         {
-            _selectedScript = await DataService.GetSavedScript(User.Id, viewModel.Script.Id) ?? new()
+            var result = await DataService.GetSavedScript(User.Id, viewModel.Script.Id);
+            if (result.IsSuccess)
             {
-                Name = "Test Script"
-            };
+                _selectedScript = result.Value;
+                return;
+            }
         }
-        else
+
+        _selectedScript = new()
         {
-            _selectedScript = new()
-            {
-                Name = "Test Script"
-            };
-        }
+            Name = string.Empty
+        };
     }
 
     private void ToggleEnvironmentVarsShown()

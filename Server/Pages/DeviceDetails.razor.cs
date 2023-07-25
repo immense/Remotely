@@ -20,33 +20,34 @@ public partial class DeviceDetails : AuthComponentBase
     private readonly ConcurrentQueue<string> _logLines = new();
     private readonly ConcurrentQueue<ScriptResult> _scriptResults = new();
 
-    private string _alertMessage;
-    private string _inputDeviceId;
+    private string? _alertMessage;
+    private Device? _device;
+    private string? _inputDeviceId;
 
     [Parameter]
-    public string ActiveTab { get; set; }
+    public string ActiveTab { get; set; } = string.Empty;
 
     [Parameter]
-    public string DeviceId { get; set; }
-    [Inject]
-    private ICircuitConnection CircuitConnection { get; set; }
+    public string DeviceId { get; set; } = string.Empty;
 
     [Inject]
-    private IDataService DataService { get; set; }
-
-    private Device Device { get; set; }
+    private ICircuitConnection CircuitConnection { get; set; } = null!;
 
     [Inject]
-    private IJsInterop JsInterop { get; set; }
+    private IDataService DataService { get; set; } = null!;
+
 
     [Inject]
-    private IModalService ModalService { get; set; }
+    private IJsInterop JsInterop { get; set; } = null!;
 
     [Inject]
-    private NavigationManager NavManager { get; set; }
+    private IModalService ModalService { get; set; } = null!;
 
     [Inject]
-    private IToastService ToastService { get; set; }
+    private NavigationManager NavManager { get; set; } = null!;
+
+    [Inject]
+    private IToastService ToastService { get; set; } = null!;
 
 
     protected override async Task OnInitializedAsync()
@@ -55,13 +56,21 @@ public partial class DeviceDetails : AuthComponentBase
 
         if (!string.IsNullOrWhiteSpace(DeviceId))
         {
-            Device = DataService.GetDevice(DeviceId);
+            var deviceResult = await DataService.GetDevice(DeviceId);
+            if (deviceResult.IsSuccess)
+            {
+                _device = deviceResult.Value;
+            }
+            else
+            {
+                ToastService.ShowToast2(deviceResult.Reason, Enums.ToastType.Warning);
+            }
         }
 
         CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
     }
 
-    private void CircuitConnection_MessageReceived(object sender, Models.CircuitEvent e)
+    private void CircuitConnection_MessageReceived(object? sender, Models.CircuitEvent e)
     {
         if (e.EventName == Models.CircuitEventName.RemoteLogsReceived)
         {
@@ -73,10 +82,15 @@ public partial class DeviceDetails : AuthComponentBase
 
     private async Task DeleteLogs()
     {
+        if (_device is null)
+        {
+            return;
+        }
+
         var result = await JsInterop.Confirm("Are you sure you want to delete the remote logs?");
         if (result)
         {
-            await CircuitConnection.DeleteRemoteLogs(Device.ID);
+            await CircuitConnection.DeleteRemoteLogs(_device.ID);
             ToastService.ShowToast("Delete command sent.");
         }
     }
@@ -96,22 +110,32 @@ public partial class DeviceDetails : AuthComponentBase
 
     private void GetRemoteLogs()
     {
+        if (_device is null)
+        {
+            return;
+        }
+
         _logLines.Clear();
 
-        if (Device.IsOnline)
+        if (_device.IsOnline)
         {
-            CircuitConnection.GetRemoteLogs(Device.ID);
+            CircuitConnection.GetRemoteLogs(_device.ID);
         }
     }
 
     private void GetScriptHistory()
     {
+        if (_device is null)
+        {
+            return;
+        }
+
         _scriptResults.Clear();
 
         if (User.IsAdministrator)
         {
             var results = DataService
-                .GetAllScriptResults(User.OrganizationID, Device.ID)
+                .GetAllScriptResults(User.OrganizationID, _device.ID)
                 .OrderByDescending(x => x.TimeStamp);
 
             foreach (var result in results)
@@ -122,7 +146,7 @@ public partial class DeviceDetails : AuthComponentBase
         else
         {
             var results = DataService
-                .GetAllCommandResultsForUser(User.OrganizationID, User.UserName, Device.ID)
+                .GetAllCommandResultsForUser(User.OrganizationID, UserName, _device.ID)
                 .OrderByDescending(x => x.TimeStamp);
 
             foreach (var result in results)
@@ -154,11 +178,17 @@ public partial class DeviceDetails : AuthComponentBase
 
     private Task HandleValidSubmit()
     {
-        DataService.UpdateDevice(Device.ID,
-              Device.Tags,
-              Device.Alias,
-              Device.DeviceGroupID,
-              Device.Notes);
+        if (_device is null)
+        {
+            return Task.CompletedTask;
+        }
+
+        DataService.UpdateDevice(
+            _device.ID,
+            _device.Tags,
+            _device.Alias,
+            _device.DeviceGroupID,
+            _device.Notes);
 
         _alertMessage = "Device details saved.";
         ToastService.ShowToast("Device details saved.");
@@ -173,20 +203,25 @@ public partial class DeviceDetails : AuthComponentBase
 
     private void ShowAllDisks()
     {
-        var disksString = JsonSerializer.Serialize(Device.Drives, JsonSerializerHelper.IndentedOptions);
+        if (_device is null)
+        {
+            return;
+        }
+
+        var disksString = JsonSerializer.Serialize(_device.Drives, JsonSerializerHelper.IndentedOptions);
         void modalBody(RenderTreeBuilder builder)
         {
             builder.AddMarkupContent(0, $"<div style='white-space: pre'>{disksString}</div>");
         }
-        ModalService.ShowModal($"All Disks for {Device.DeviceName}", modalBody);
+        ModalService.ShowModal($"All Disks for {_device.DeviceName}", modalBody);
     }
 
     private void ShowFullScriptOutput(ScriptResult result)
     {
         void outputModal(RenderTreeBuilder builder)
         {
-            var output = string.Join("\r\n", result.StandardOutput);
-            var error = string.Join("\r\n", result.ErrorOutput);
+            var output = string.Join("\r\n", $"{result.StandardOutput}");
+            var error = string.Join("\r\n", $"{result.ErrorOutput}");
             var textareaStyle = "width: 100%; height: 200px; white-space: pre;";
 
             builder.AddMarkupContent(0, "<h5>Input</h5>");

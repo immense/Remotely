@@ -80,7 +80,7 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
         await base.OnInitializedAsync();
         _theme = await AppState.GetEffectiveTheme();
         _currentVersion = UpgradeService.GetCurrentVersion();
-        _deviceGroups = DataService.GetDeviceGroups(Username);
+        _deviceGroups = DataService.GetDeviceGroups(UserName);
         AppState.PropertyChanged += AppState_PropertyChanged;
         CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
     }

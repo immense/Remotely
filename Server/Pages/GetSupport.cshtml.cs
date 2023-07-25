@@ -18,7 +18,7 @@ public class GetSupportModel : PageModel
     }
 
     [TempData]
-    public string StatusMessage { get; set; }
+    public string? StatusMessage { get; set; }
 
     [BindProperty]
     public InputModel Input { get; set; }
@@ -35,8 +35,15 @@ public class GetSupportModel : PageModel
             return Page();
         }
 
-        var orgID = _dataService.GetDevice(deviceId)?.OrganizationID;
+        var deviceResult = await _dataService.GetDevice(deviceId);
+        if (!deviceResult.IsSuccess)
+        {
+            StatusMessage = "Device not found.";
+            return Page();
+        }
 
+        var orgId = deviceResult.Value.OrganizationID;
+        
         var alertParts = new string[]
         {
             $"{Input.Name} is requesting support.",
@@ -47,12 +54,16 @@ public class GetSupportModel : PageModel
         };
 
         var alertMessage = string.Join("  ", alertParts);
-        await _dataService.AddAlert(deviceId, orgID, alertMessage);
+        await _dataService.AddAlert(deviceId, orgId, alertMessage);
 
-        var orgUsers = await _dataService.GetAllUsersInOrganization(orgID);
+        var orgUsers = await _dataService.GetAllUsersInOrganization(orgId);
         var emailMessage = string.Join("<br />", alertParts);
         foreach (var user in orgUsers)
         {
+            if (string.IsNullOrWhiteSpace(user.Email))
+            {
+                continue;
+            }
             await _emailSender.SendEmailAsync(user.Email, "Support Request", emailMessage);
         }
 
@@ -65,9 +76,9 @@ public class GetSupportModel : PageModel
     {
         [StringLength(150)]
         [Required]
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string Phone { get; set; }
+        public required string Name { get; set; }
+        public string? Email { get; set; }
+        public string? Phone { get; set; }
         public bool ChatResponseOk { get; set; }
     }
 }

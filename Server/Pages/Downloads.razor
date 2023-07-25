@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Hosting
 @using Microsoft.Extensions.Logging 
 
-@inject AuthenticationStateProvider AuthProvider
+@inject IAuthService Auth
 @inject IDataService DataService
 @inject UserManager<RemotelyUser> UserManager
 @inject IWebHostEnvironment HostEnv
@@ -174,24 +174,30 @@
 </div>
 
 @code {
-    private string _organizationId;
+    private string? _organizationId;
     private bool _isAuthenticated;
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
-
-        var authState = await AuthProvider.GetAuthenticationStateAsync();
-        _isAuthenticated = authState.User.Identity.IsAuthenticated;
+        _isAuthenticated = await Auth.IsAuthenticated();
 
         if (_isAuthenticated)
         {
-            var currentUser = await DataService.GetUserByName(authState.User.Identity.Name);
-            _organizationId = currentUser.OrganizationID;
+            var userResult = await Auth.GetUser();
+            if (userResult.IsSuccess)
+            {
+                _organizationId = userResult.Value.OrganizationID;
+            }
         }
         else
         {
-            _organizationId = (await DataService.GetDefaultOrganization())?.ID;
+            var orgResult = await DataService.GetDefaultOrganization();
+            if (orgResult.IsSuccess)
+            {
+                _organizationId = orgResult.Value.ID;
+            }
         }
+
+        await base.OnInitializedAsync();
     }
 }

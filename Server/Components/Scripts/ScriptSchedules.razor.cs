@@ -21,13 +21,13 @@ public partial class ScriptSchedules : AuthComponentBase
 
     private readonly List<ScriptSchedule> _schedules = new();
 
-    private string _alertMessage;
+    private string _alertMessage = string.Empty;
 
     private DeviceGroup[] _deviceGroups = Array.Empty<DeviceGroup>();
 
     private Device[] _devices = Array.Empty<Device>();
 
-    private SavedScript _selectedScript;
+    private SavedScript? _selectedScript;
 
     private ScriptSchedule _selectedSchedule = new()
     {
@@ -36,33 +36,37 @@ public partial class ScriptSchedules : AuthComponentBase
     };
 
     [CascadingParameter]
-    private ScriptsPage ParentPage { get; set; }
+    private ScriptsPage ParentPage { get; set; } = null!;
 
     [Inject]
-    private IDataService DataService { get; set; }
+    private IDataService DataService { get; set; } = null!;
 
     [Inject]
 
-    private IJsInterop JsInterop { get; set; }
+    private IJsInterop JsInterop { get; set; } = null!;
 
     [Inject]
-    private IToastService ToastService { get; set; }
+    private IToastService ToastService { get; set; } = null!;
 
-    private bool CanModifyScript => string.IsNullOrWhiteSpace(_selectedSchedule.CreatorId) ||
-        _selectedSchedule.CreatorId == User.Id ||
-        User.IsAdministrator;
+    private bool CanModifySchedule => 
+        _selectedSchedule.CreatorId == User?.Id ||
+        User?.IsAdministrator == true;
 
-    private bool CanDeleteScript => !string.IsNullOrWhiteSpace(_selectedSchedule.CreatorId) &&
-        (_selectedSchedule.CreatorId == User.Id || User.IsAdministrator);
+    private bool CanDeleteSchedule =>
+        _selectedSchedule.CreatorId == User?.Id || 
+        User?.IsAdministrator == true;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        _deviceGroups = DataService.GetDeviceGroups(User.UserName);
-        _devices = DataService
-            .GetDevicesForUser(User.UserName)
-            .OrderBy(x => x.DeviceName)
-            .ToArray();
+        if (IsAuthenticated)
+        {
+            _deviceGroups = DataService.GetDeviceGroups(UserName);
+            _devices = DataService
+                .GetDevicesForUser(UserName)
+                .OrderBy(x => x.DeviceName)
+                .ToArray();
+        }
 
         await RefreshSchedules();
     }
@@ -84,7 +88,7 @@ public partial class ScriptSchedules : AuthComponentBase
 
     private async Task DeleteSelectedSchedule()
     {
-        if (User.Id != _selectedSchedule.CreatorId)
+        if (User?.Id != _selectedSchedule.CreatorId)
         {
             ToastService.ShowToast("You can't delete other people's script schedules.", classString: "bg-warning");
             return;
@@ -104,7 +108,10 @@ public partial class ScriptSchedules : AuthComponentBase
 
     private void DeviceGroupSelectedChanged(ChangeEventArgs args, DeviceGroup deviceGroup)
     {
-        var isSelected = (bool)args.Value;
+        if (args.Value is not bool isSelected)
+        {
+            return;
+        }
         if (isSelected)
         {
             _selectedDeviceGroups.Add(deviceGroup.ID);
@@ -117,7 +124,10 @@ public partial class ScriptSchedules : AuthComponentBase
 
     private void DeviceSelectedChanged(ChangeEventArgs args, Device device)
     {
-        var isSelected = (bool)args.Value;
+        if (args.Value is not bool isSelected)
+        {
+            return;
+        }
         if (isSelected)
         {
             _selectedDevices.Add(device.ID);
@@ -141,7 +151,7 @@ public partial class ScriptSchedules : AuthComponentBase
             return;
         }
 
-        if (!CanModifyScript)
+        if (!CanModifySchedule)
         {
             ToastService.ShowToast("You can't modify other people's schedules.", classString: "bg-warning");
             return;
@@ -177,7 +187,10 @@ public partial class ScriptSchedules : AuthComponentBase
     private async Task RefreshSchedules()
     {
         _schedules.Clear();
-        _schedules.AddRange(await DataService.GetScriptSchedules(User.OrganizationID));
+        if (User is not null)
+        {
+            _schedules.AddRange(await DataService.GetScriptSchedules(User.OrganizationID));
+        }
     }
 
     private string GetTableRowClass(ScriptSchedule schedule)
@@ -203,14 +216,23 @@ public partial class ScriptSchedules : AuthComponentBase
         {
             _selectedDeviceGroups.AddRange(schedule.DeviceGroups.Select(x => x.ID));
         }
-        _selectedScript = await DataService.GetSavedScript(_selectedSchedule.SavedScriptId);
+
+        var result = await DataService.GetSavedScript(_selectedSchedule.SavedScriptId);
+        if (result.IsSuccess)
+        {
+            _selectedScript = result.Value;
+        }
     }
 
     private async Task ScriptSelected(ScriptTreeNode viewModel)
     {
         if (viewModel.Script is not null)
         {
-            _selectedScript = await DataService.GetSavedScript(User.Id, viewModel.Script.Id);
+            var result = await DataService.GetSavedScript(User.Id, viewModel.Script.Id);
+            if (result.IsSuccess)
+            {
+                _selectedScript = result.Value;
+            }
 
         }
         else

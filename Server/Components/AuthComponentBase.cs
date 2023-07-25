@@ -3,26 +3,43 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
+using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace Remotely.Server.Components;
 
 public class AuthComponentBase : ComponentBase
 {
+    private RemotelyUser? _user;
+    private string? _userName;
+
     protected override async Task OnInitializedAsync()
     {
         IsAuthenticated = await AuthService.IsAuthenticated();
-        User = await AuthService.GetUser();
-        Username = User?.UserName;
+        var userResult = await AuthService.GetUser();
+        if (userResult.IsSuccess)
+        {
+            _user = userResult.Value;
+            _userName = userResult.Value.UserName ?? string.Empty;
+        }
         await base.OnInitializedAsync();
     }
 
     public bool IsAuthenticated { get; private set; }
 
-    public RemotelyUser User { get; private set; }
+    public RemotelyUser User
+    {
+        get => _user ?? throw new InvalidOperationException("User has not been resolved yet.");
+        private set => _user = value;
+    }
 
-    public string Username { get; private set; }
+    public string UserName
+    {
+        get => _userName ?? throw new InvalidOperationException("User has not been resolved yet.");
+        private set => _userName = value;
+    }
 
     [Inject]
-    protected IAuthService AuthService { get; set; }
+    protected IAuthService AuthService { get; set; } = null!;
 }

@@ -93,7 +93,7 @@ else
         var secret = RandomGenerator.GenerateString(36);
         var secretHash = new PasswordHasher<string>().HashPassword(string.Empty, secret);
 
-        var result = await DataService.CreateApiToken(Username, _createKeyName, secretHash);
+        var result = await DataService.CreateApiToken(UserName, _createKeyName, secretHash);
         if (!result.IsSuccess)
         {
             ToastService.ShowToast2(result.Reason, ToastType.Error);
@@ -112,7 +112,7 @@ else
             return;
         }
 
-        var deleteResult = await DataService.DeleteApiToken(Username, keyId);
+        var deleteResult = await DataService.DeleteApiToken(UserName, keyId);
         if (!deleteResult.IsSuccess)
         {
             ToastService.ShowToast2(deleteResult.Reason, ToastType.Error);
@@ -137,7 +137,7 @@ else
         var newName = await JsInterop.Prompt("New key name");
         if (!string.IsNullOrWhiteSpace(newName))
         {
-            await DataService.RenameApiToken(Username, keyId, newName);
+            await DataService.RenameApiToken(UserName, keyId, newName);
             RefreshData();
             _alertMessage = "Key renamed.";
         }

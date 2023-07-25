@@ -214,7 +214,7 @@ public interface IDataService
 
     Task<Result<Device>> UpdateDevice(DeviceSetupOptions deviceOptions, string organizationId);
 
-    Task UpdateDevice(string deviceId, string tag, string alias, string deviceGroupId, string notes);
+    Task UpdateDevice(string deviceId, string? tag, string? alias, string? deviceGroupId, string? notes);
 
     Task<Result> UpdateOrganizationName(string orgId, string newName);
 
@@ -1448,6 +1448,11 @@ public class DataService : IDataService
 
     public async Task<Result<Organization>> GetOrganizationByUserName(string userName)
     {
+        if (string.IsNullOrWhiteSpace(userName))
+        {
+            return Result.Fail<Organization>("User name is required.");
+        }
+
         using var dbContext = _appDbFactory.GetContext();
 
         var user = await dbContext
@@ -1493,6 +1498,11 @@ public class DataService : IDataService
 
     public async Task<Result<string>> GetOrganizationNameByUserName(string userName)
     {
+        if (string.IsNullOrWhiteSpace(userName))
+        {
+            return Result.Fail<string>("Username cannot be empty.");
+        }
+
         using var dbContext = _appDbFactory.GetContext();
 
         var user = await dbContext.Users
@@ -1737,6 +1747,15 @@ public class DataService : IDataService
 
     public async Task<Result> JoinViaInvitation(string userName, string inviteId)
     {
+        if (string.IsNullOrWhiteSpace(userName))
+        {
+            return Result.Fail("Username cannot be empty.");
+        }
+        if (string.IsNullOrWhiteSpace(inviteId))
+        {
+            return Result.Fail("Invite ID cannot be empty.");
+        }
+
         using var dbContext = _appDbFactory.GetContext();
 
         var invite = await dbContext.InviteLinks.FirstOrDefaultAsync(x =>
@@ -2014,7 +2033,7 @@ public class DataService : IDataService
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateDevice(string deviceId, string tag, string alias, string deviceGroupId, string notes)
+    public async Task UpdateDevice(string deviceId, string? tag, string? alias, string? deviceGroupId, string? notes)
     {
         using var dbContext = _appDbFactory.GetContext();
 

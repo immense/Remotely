@@ -255,10 +255,15 @@ public class AgentHub : Hub
         return _circuitManager.InvokeOnConnection(senderConnectionId, CircuitEventName.PowerShellCompletions, completion, intent);
     }
 
-    public Task ScriptResult(string scriptResultId)
+    public async Task ScriptResult(string scriptResultId)
     {
-        var result = _dataService.GetScriptResult(scriptResultId);
-        return _circuitManager.InvokeOnConnection(result.SenderConnectionID,
+        var result = await _dataService.GetScriptResult(scriptResultId);
+        if (!result.IsSuccess)
+        {
+            return;
+        }
+
+        _ = await _circuitManager.InvokeOnConnection($"{result.Value.SenderConnectionID}",
             CircuitEventName.ScriptResult,
             result);
     }

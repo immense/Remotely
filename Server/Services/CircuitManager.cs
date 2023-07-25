@@ -4,6 +4,7 @@ using Remotely.Server.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,9 +14,9 @@ public interface ICircuitManager
 {
     ICollection<ICircuitConnection> Connections { get; }
     bool TryAddConnection(string id, ICircuitConnection connection);
-    bool TryRemoveConnection(string id, out ICircuitConnection connection);
-    Task<bool> InvokeOnConnection(string browserConnectionId, CircuitEventName eventName, params object[] args);
-    bool TryGetConnection(string browserConnectionId, out ICircuitConnection connection);
+    bool TryRemoveConnection(string id, [NotNullWhen(true)] out ICircuitConnection? connection);
+    Task<bool> InvokeOnConnection(string id, CircuitEventName eventName, params object[] args);
+    bool TryGetConnection(string id, [NotNullWhen(true)] out ICircuitConnection? connection);
 }
 public class CircuitManager : ICircuitManager
 {
@@ -52,12 +53,12 @@ public class CircuitManager : ICircuitManager
         return _connections.TryAdd(id, connection);
     }
 
-    public bool TryGetConnection(string connectionId, out ICircuitConnection connection)
+    public bool TryGetConnection(string id, [NotNullWhen(true)] out ICircuitConnection? connection)
     {
-        return _connections.TryGetValue(connectionId, out connection);
+        return _connections.TryGetValue(id, out connection);
     }
 
-    public bool TryRemoveConnection(string id, out ICircuitConnection connection)
+    public bool TryRemoveConnection(string id, [NotNullWhen(true)] out ICircuitConnection? connection)
     {
         return _connections.TryRemove(id, out connection);
     }

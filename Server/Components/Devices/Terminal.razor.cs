@@ -160,12 +160,25 @@ public partial class Terminal : AuthComponentBase, IDisposable
             AppState.InvokePropertyChanged(nameof(AppState.TerminalLines));
         }
     }
-    private void DisplayCompletions(List<PwshCompletionResult> completionMatches)
+    private async Task DisplayCompletions(List<PwshCompletionResult> completionMatches)
     {
         var deviceId = AppState.DevicesFrameSelectedDevices.FirstOrDefault();
-        var device = DataService.GetDevice(deviceId);
+        if (string.IsNullOrWhiteSpace(deviceId)) 
+        { 
+            return; 
+        }
 
-        AppState.AddTerminalLine($"Completions for {device?.DeviceName}", className: "font-weight-bold");
+        var deviceResult = await DataService.GetDevice(deviceId);
+
+        if (!deviceResult.IsSuccess)
+        {
+            ToastService.ShowToast2(deviceResult.Reason, Enums.ToastType.Warning);
+            return;
+        }
+
+        AppState.AddTerminalLine(
+            $"Completions for {deviceResult.Value.DeviceName}", 
+            className: "font-weight-bold");
 
         foreach (var match in completionMatches)
         {
