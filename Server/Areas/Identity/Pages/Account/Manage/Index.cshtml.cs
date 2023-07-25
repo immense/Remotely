@@ -8,89 +8,88 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Remotely.Shared.Models;
 
-namespace Remotely.Server.Areas.Identity.Pages.Account.Manage
+namespace Remotely.Server.Areas.Identity.Pages.Account.Manage;
+
+public partial class IndexModel : PageModel
 {
-    public partial class IndexModel : PageModel
+    private readonly UserManager<RemotelyUser> _userManager;
+    private readonly SignInManager<RemotelyUser> _signInManager;
+
+    public IndexModel(
+        UserManager<RemotelyUser> userManager,
+        SignInManager<RemotelyUser> signInManager)
     {
-        private readonly UserManager<RemotelyUser> _userManager;
-        private readonly SignInManager<RemotelyUser> _signInManager;
+        _userManager = userManager;
+        _signInManager = signInManager;
+    }
 
-        public IndexModel(
-            UserManager<RemotelyUser> userManager,
-            SignInManager<RemotelyUser> signInManager)
+    public string Username { get; set; }
+
+    [TempData]
+    public string StatusMessage { get; set; }
+
+    [BindProperty]
+    public InputModel Input { get; set; }
+
+    public class InputModel
+    {
+        [Phone]
+        [Display(Name = "Phone number")]
+        public string PhoneNumber { get; set; }
+    }
+
+    private async Task LoadAsync(RemotelyUser user)
+    {
+        var userName = await _userManager.GetUserNameAsync(user);
+        var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+
+        Username = userName;
+
+        Input = new InputModel
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            PhoneNumber = phoneNumber
+        };
+    }
+
+    public async Task<IActionResult> OnGetAsync()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
-        public string Username { get; set; }
+        await LoadAsync(user);
+        return Page();
+    }
 
-        [TempData]
-        public string StatusMessage { get; set; }
-
-        [BindProperty]
-        public InputModel Input { get; set; }
-
-        public class InputModel
+    public async Task<IActionResult> OnPostAsync()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
         {
-            [Phone]
-            [Display(Name = "Phone number")]
-            public string PhoneNumber { get; set; }
+            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
-        private async Task LoadAsync(RemotelyUser user)
+        if (!ModelState.IsValid)
         {
-            var userName = await _userManager.GetUserNameAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-
-            Username = userName;
-
-            Input = new InputModel
-            {
-                PhoneNumber = phoneNumber
-            };
-        }
-
-        public async Task<IActionResult> OnGetAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
             await LoadAsync(user);
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+        if (Input.PhoneNumber != phoneNumber)
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
+            if (!setPhoneResult.Succeeded)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                StatusMessage = "Unexpected error when trying to set phone number.";
+                return RedirectToPage();
             }
-
-            if (!ModelState.IsValid)
-            {
-                await LoadAsync(user);
-                return Page();
-            }
-
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            if (Input.PhoneNumber != phoneNumber)
-            {
-                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-                if (!setPhoneResult.Succeeded)
-                {
-                    StatusMessage = "Unexpected error when trying to set phone number.";
-                    return RedirectToPage();
-                }
-            }
-
-            await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated";
-            return RedirectToPage();
         }
+
+        await _signInManager.RefreshSignInAsync(user);
+        StatusMessage = "Your profile has been updated";
+        return RedirectToPage();
     }
 }

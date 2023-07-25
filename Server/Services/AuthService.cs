@@ -8,43 +8,42 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 
-namespace Remotely.Server.Services
+namespace Remotely.Server.Services;
+
+public interface IAuthService
 {
-    public interface IAuthService
+    Task<bool> IsAuthenticated();
+    Task<RemotelyUser> GetUser();
+}
+
+public class AuthService : IAuthService
+{
+    private readonly AuthenticationStateProvider _authProvider;
+    private readonly IDataService _dataService;
+
+    public AuthService(
+        AuthenticationStateProvider authProvider,
+        IDataService dataService)
     {
-        Task<bool> IsAuthenticated();
-        Task<RemotelyUser> GetUser();
+        _authProvider = authProvider;
+        _dataService = dataService;
     }
 
-    public class AuthService : IAuthService
+    public async Task<bool> IsAuthenticated()
     {
-        private readonly AuthenticationStateProvider _authProvider;
-        private readonly IDataService _dataService;
+        var principal = await _authProvider.GetAuthenticationStateAsync();
+        return principal?.User?.Identity?.IsAuthenticated ?? false;
+    }
 
-        public AuthService(
-            AuthenticationStateProvider authProvider,
-            IDataService dataService)
+    public async Task<RemotelyUser> GetUser()
+    {
+        var principal = await _authProvider.GetAuthenticationStateAsync();
+
+        if (principal?.User?.Identity?.IsAuthenticated == true)
         {
-            _authProvider = authProvider;
-            _dataService = dataService;
+            return await _dataService.GetUserAsync(principal.User.Identity.Name);
         }
 
-        public async Task<bool> IsAuthenticated()
-        {
-            var principal = await _authProvider.GetAuthenticationStateAsync();
-            return principal?.User?.Identity?.IsAuthenticated ?? false;
-        }
-
-        public async Task<RemotelyUser> GetUser()
-        {
-            var principal = await _authProvider.GetAuthenticationStateAsync();
-
-            if (principal?.User?.Identity?.IsAuthenticated == true)
-            {
-                return await _dataService.GetUserAsync(principal.User.Identity.Name);
-            }
-
-            return null;
-        }
+        return null;
     }
 }

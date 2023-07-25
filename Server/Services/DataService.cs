@@ -20,1965 +20,1964 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Remotely.Server.Services
+namespace Remotely.Server.Services;
+
+// TODO: Separate this into domain-specific services.
+public interface IDataService
 {
-    // TODO: Separate this into domain-specific services.
-    public interface IDataService
+    Task AddAlert(string deviceID, string organizationID, string alertMessage, string details = null);
+
+    bool AddDeviceGroup(string orgID, DeviceGroup deviceGroup, out string deviceGroupID, out string errorMessage);
+    Task<Result> AddDeviceToGroup(string deviceId, string groupId);
+    InviteLink AddInvite(string orgID, InviteViewModel invite);
+
+    Task<Result<Device>> AddOrUpdateDevice(DeviceClientDto device);
+
+    Task AddOrUpdateSavedScript(SavedScript script, string userId);
+
+    void AddOrUpdateScriptResult(ScriptResult scriptResult);
+
+    Task AddOrUpdateScriptSchedule(ScriptSchedule schedule);
+
+    Task AddScriptResultToScriptRun(string scriptResultId, int scriptRunId);
+
+    Task AddScriptRun(ScriptRun scriptRun);
+
+    Task<string> AddSharedFile(IBrowserFile file, string organizationID, Action<double, string> progressCallback);
+
+    Task<string> AddSharedFile(IFormFile file, string organizationID);
+
+    bool AddUserToDeviceGroup(string orgID, string groupID, string userName, out string resultMessage);
+
+    void ChangeUserIsAdmin(string organizationID, string targetUserID, bool isAdmin);
+
+    Task CleanupOldRecords();
+
+    Task<ApiToken> CreateApiToken(string userName, string tokenName, string secretHash);
+
+    Task<Device> CreateDevice(DeviceSetupOptions options);
+
+    Task<bool> CreateUser(string userEmail, bool isAdmin, string organizationID);
+
+    Task DeleteAlert(Alert alert);
+
+    Task DeleteAllAlerts(string orgID, string userName = null);
+
+    Task DeleteApiToken(string userName, string tokenId);
+
+    void DeleteDeviceGroup(string orgID, string deviceGroupID);
+
+    void DeleteInvite(string orgID, string inviteID);
+
+    Task DeleteSavedScript(Guid scriptId);
+
+    Task DeleteScriptSchedule(int scriptScheduleId);
+
+    Task DeleteUser(string orgID, string targetUserID);
+
+    void DetachEntity(object entity);
+
+    void DeviceDisconnected(string deviceID);
+
+    bool DoesUserExist(string userName);
+
+    bool DoesUserHaveAccessToDevice(string deviceID, RemotelyUser remotelyUser);
+
+    bool DoesUserHaveAccessToDevice(string deviceID, string remotelyUserID);
+
+    string[] FilterDeviceIDsByUserPermission(string[] deviceIDs, RemotelyUser remotelyUser);
+
+    string[] FilterUsersByDevicePermission(IEnumerable<string> userIDs, string deviceID);
+
+    Task<Alert> GetAlert(string alertID);
+
+    Alert[] GetAlerts(string userID);
+
+    ApiToken[] GetAllApiTokens(string userID);
+
+    ScriptResult[] GetAllCommandResults(string orgID);
+
+    ScriptResult[] GetAllCommandResultsForUser(string orgId, string userName, string deviceId);
+
+    Device[] GetAllDevices(string orgID);
+
+    InviteLink[] GetAllInviteLinks(string organizationId);
+
+    ScriptResult[] GetAllScriptResults(string orgId, string deviceId);
+
+    ScriptResult[] GetAllScriptResultsForUser(string orgId, string userName);
+
+    RemotelyUser[] GetAllUsersForServer();
+
+    Task<RemotelyUser[]> GetAllUsersInOrganization(string orgId);
+
+    ApiToken GetApiKey(string keyId);
+
+    Task<BrandingInfo> GetBrandingInfo(string organizationId);
+
+    Task<Organization> GetDefaultOrganization();
+
+    Device GetDevice(string deviceID);
+
+    Device GetDevice(string orgID, string deviceID);
+
+    int GetDeviceCount();
+
+    int GetDeviceCount(RemotelyUser user);
+
+    Task<DeviceGroup> GetDeviceGroup(
+         string deviceGroupID,
+         bool includeDevices = false,
+         bool includeUsers = false);
+
+    DeviceGroup[] GetDeviceGroups(string username);
+
+    DeviceGroup[] GetDeviceGroupsForOrganization(string organizationId);
+
+    List<Device> GetDevices(IEnumerable<string> deviceIds);
+
+    Device[] GetDevicesForUser(string userName);
+
+    Organization GetOrganizationById(string organizationID);
+
+    Task<Organization> GetOrganizationByUserName(string userName);
+
+    int GetOrganizationCount();
+    Task<int> GetOrganizationCountAsync();
+
+    string GetOrganizationNameById(string organizationID);
+
+    string GetOrganizationNameByUserName(string userName);
+
+    Task<List<ScriptRun>> GetPendingScriptRuns(string deviceId);
+
+    Task<List<SavedScript>> GetQuickScripts(string userId);
+
+    Task<SavedScript> GetSavedScript(Guid scriptId);
+
+    Task<SavedScript> GetSavedScript(string userId, Guid scriptId);
+
+    Task<List<SavedScript>> GetSavedScriptsWithoutContent(string userId, string organizationId);
+
+    ScriptResult GetScriptResult(string scriptResultId);
+
+    ScriptResult GetScriptResult(string scriptResultId, string orgID);
+
+    Task<List<ScriptSchedule>> GetScriptSchedules(string organizationID);
+
+    Task<List<ScriptSchedule>> GetScriptSchedulesDue();
+
+    List<string> GetServerAdmins();
+
+    SharedFile GetSharedFiled(string fileID);
+
+    int GetTotalDevices();
+
+    Task<RemotelyUser> GetUserAsync(string username);
+
+    RemotelyUser GetUserByID(string userID);
+
+    RemotelyUser GetUserByNameWithOrg(string userName);
+
+    RemotelyUserOptions GetUserOptions(string userName);
+
+    bool JoinViaInvitation(string userName, string inviteID);
+
+    void RemoveDevices(string[] deviceIDs);
+
+    Task<bool> RemoveUserFromDeviceGroup(string orgID, string groupID, string userID);
+
+    Task RenameApiToken(string userName, string tokenId, string tokenName);
+
+    Task ResetBranding(string organizationId);
+
+    Task SetAllDevicesNotOnline();
+
+    Task SetDisplayName(RemotelyUser user, string displayName);
+
+    Task SetIsDefaultOrganization(string orgID, bool isDefault);
+
+    Task SetIsServerAdmin(string targetUserId, bool isServerAdmin, string callerUserId);
+
+    void SetServerVerificationToken(string deviceID, string verificationToken);
+
+    Task<bool> TempPasswordSignIn(string email, string password);
+
+    Task UpdateBrandingInfo(
+                                                                                                                                                                                                                                                string organizationId,
+        string productName,
+        byte[] iconBytes,
+        ColorPickerModel titleForeground,
+        ColorPickerModel titleBackground,
+        ColorPickerModel titleButtonForeground);
+
+    Task<Device> UpdateDevice(DeviceSetupOptions deviceOptions, string organizationId);
+
+    void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes);
+
+    void UpdateOrganizationName(string orgID, string organizationName);
+
+    void UpdateTags(string deviceID, string tags);
+
+    void UpdateUserOptions(string userName, RemotelyUserOptions options);
+
+    bool ValidateApiKey(string keyId, string apiSecret, string requestPath, string remoteIP);
+}
+
+public class DataService : IDataService
+{
+    private readonly IApplicationConfig _appConfig;
+    private readonly IHostEnvironment _hostEnvironment;
+    private readonly IAppDbFactory _appDbFactory;
+    private readonly ILogger<DataService> _logger;
+
+    public DataService(
+        IApplicationConfig appConfig,
+        IHostEnvironment hostEnvironment,
+        IAppDbFactory appDbFactory,
+        ILogger<DataService> logger)
     {
-        Task AddAlert(string deviceID, string organizationID, string alertMessage, string details = null);
-
-        bool AddDeviceGroup(string orgID, DeviceGroup deviceGroup, out string deviceGroupID, out string errorMessage);
-        Task<Result> AddDeviceToGroup(string deviceId, string groupId);
-        InviteLink AddInvite(string orgID, InviteViewModel invite);
-
-        Task<Result<Device>> AddOrUpdateDevice(DeviceClientDto device);
-
-        Task AddOrUpdateSavedScript(SavedScript script, string userId);
-
-        void AddOrUpdateScriptResult(ScriptResult scriptResult);
-
-        Task AddOrUpdateScriptSchedule(ScriptSchedule schedule);
-
-        Task AddScriptResultToScriptRun(string scriptResultId, int scriptRunId);
-
-        Task AddScriptRun(ScriptRun scriptRun);
-
-        Task<string> AddSharedFile(IBrowserFile file, string organizationID, Action<double, string> progressCallback);
-
-        Task<string> AddSharedFile(IFormFile file, string organizationID);
-
-        bool AddUserToDeviceGroup(string orgID, string groupID, string userName, out string resultMessage);
-
-        void ChangeUserIsAdmin(string organizationID, string targetUserID, bool isAdmin);
-
-        Task CleanupOldRecords();
-
-        Task<ApiToken> CreateApiToken(string userName, string tokenName, string secretHash);
-
-        Task<Device> CreateDevice(DeviceSetupOptions options);
-
-        Task<bool> CreateUser(string userEmail, bool isAdmin, string organizationID);
-
-        Task DeleteAlert(Alert alert);
-
-        Task DeleteAllAlerts(string orgID, string userName = null);
-
-        Task DeleteApiToken(string userName, string tokenId);
-
-        void DeleteDeviceGroup(string orgID, string deviceGroupID);
-
-        void DeleteInvite(string orgID, string inviteID);
-
-        Task DeleteSavedScript(Guid scriptId);
-
-        Task DeleteScriptSchedule(int scriptScheduleId);
-
-        Task DeleteUser(string orgID, string targetUserID);
-
-        void DetachEntity(object entity);
-
-        void DeviceDisconnected(string deviceID);
-
-        bool DoesUserExist(string userName);
-
-        bool DoesUserHaveAccessToDevice(string deviceID, RemotelyUser remotelyUser);
-
-        bool DoesUserHaveAccessToDevice(string deviceID, string remotelyUserID);
-
-        string[] FilterDeviceIDsByUserPermission(string[] deviceIDs, RemotelyUser remotelyUser);
-
-        string[] FilterUsersByDevicePermission(IEnumerable<string> userIDs, string deviceID);
-
-        Task<Alert> GetAlert(string alertID);
-
-        Alert[] GetAlerts(string userID);
-
-        ApiToken[] GetAllApiTokens(string userID);
-
-        ScriptResult[] GetAllCommandResults(string orgID);
-
-        ScriptResult[] GetAllCommandResultsForUser(string orgId, string userName, string deviceId);
-
-        Device[] GetAllDevices(string orgID);
-
-        InviteLink[] GetAllInviteLinks(string organizationId);
-
-        ScriptResult[] GetAllScriptResults(string orgId, string deviceId);
-
-        ScriptResult[] GetAllScriptResultsForUser(string orgId, string userName);
-
-        RemotelyUser[] GetAllUsersForServer();
-
-        Task<RemotelyUser[]> GetAllUsersInOrganization(string orgId);
-
-        ApiToken GetApiKey(string keyId);
-
-        Task<BrandingInfo> GetBrandingInfo(string organizationId);
-
-        Task<Organization> GetDefaultOrganization();
-
-        Device GetDevice(string deviceID);
-
-        Device GetDevice(string orgID, string deviceID);
-
-        int GetDeviceCount();
-
-        int GetDeviceCount(RemotelyUser user);
-
-        Task<DeviceGroup> GetDeviceGroup(
-             string deviceGroupID,
-             bool includeDevices = false,
-             bool includeUsers = false);
-
-        DeviceGroup[] GetDeviceGroups(string username);
-
-        DeviceGroup[] GetDeviceGroupsForOrganization(string organizationId);
-
-        List<Device> GetDevices(IEnumerable<string> deviceIds);
-
-        Device[] GetDevicesForUser(string userName);
-
-        Organization GetOrganizationById(string organizationID);
-
-        Task<Organization> GetOrganizationByUserName(string userName);
-
-        int GetOrganizationCount();
-        Task<int> GetOrganizationCountAsync();
-
-        string GetOrganizationNameById(string organizationID);
-
-        string GetOrganizationNameByUserName(string userName);
-
-        Task<List<ScriptRun>> GetPendingScriptRuns(string deviceId);
-
-        Task<List<SavedScript>> GetQuickScripts(string userId);
-
-        Task<SavedScript> GetSavedScript(Guid scriptId);
-
-        Task<SavedScript> GetSavedScript(string userId, Guid scriptId);
-
-        Task<List<SavedScript>> GetSavedScriptsWithoutContent(string userId, string organizationId);
-
-        ScriptResult GetScriptResult(string scriptResultId);
-
-        ScriptResult GetScriptResult(string scriptResultId, string orgID);
-
-        Task<List<ScriptSchedule>> GetScriptSchedules(string organizationID);
-
-        Task<List<ScriptSchedule>> GetScriptSchedulesDue();
-
-        List<string> GetServerAdmins();
-
-        SharedFile GetSharedFiled(string fileID);
-
-        int GetTotalDevices();
-
-        Task<RemotelyUser> GetUserAsync(string username);
-
-        RemotelyUser GetUserByID(string userID);
-
-        RemotelyUser GetUserByNameWithOrg(string userName);
-
-        RemotelyUserOptions GetUserOptions(string userName);
-
-        bool JoinViaInvitation(string userName, string inviteID);
-
-        void RemoveDevices(string[] deviceIDs);
-
-        Task<bool> RemoveUserFromDeviceGroup(string orgID, string groupID, string userID);
-
-        Task RenameApiToken(string userName, string tokenId, string tokenName);
-
-        Task ResetBranding(string organizationId);
-
-        Task SetAllDevicesNotOnline();
-
-        Task SetDisplayName(RemotelyUser user, string displayName);
-
-        Task SetIsDefaultOrganization(string orgID, bool isDefault);
-
-        Task SetIsServerAdmin(string targetUserId, bool isServerAdmin, string callerUserId);
-
-        void SetServerVerificationToken(string deviceID, string verificationToken);
-
-        Task<bool> TempPasswordSignIn(string email, string password);
-
-        Task UpdateBrandingInfo(
-                                                                                                                                                                                                                                                    string organizationId,
-            string productName,
-            byte[] iconBytes,
-            ColorPickerModel titleForeground,
-            ColorPickerModel titleBackground,
-            ColorPickerModel titleButtonForeground);
-
-        Task<Device> UpdateDevice(DeviceSetupOptions deviceOptions, string organizationId);
-
-        void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes);
-
-        void UpdateOrganizationName(string orgID, string organizationName);
-
-        void UpdateTags(string deviceID, string tags);
-
-        void UpdateUserOptions(string userName, RemotelyUserOptions options);
-
-        bool ValidateApiKey(string keyId, string apiSecret, string requestPath, string remoteIP);
+        _appConfig = appConfig;
+        _hostEnvironment = hostEnvironment;
+        _appDbFactory = appDbFactory;
+        _logger = logger;
     }
 
-    public class DataService : IDataService
+    public async Task AddAlert(string deviceId, string organizationID, string alertMessage, string details = null)
     {
-        private readonly IApplicationConfig _appConfig;
-        private readonly IHostEnvironment _hostEnvironment;
-        private readonly IAppDbFactory _appDbFactory;
-        private readonly ILogger<DataService> _logger;
+        using var dbContext = _appDbFactory.GetContext();
 
-        public DataService(
-            IApplicationConfig appConfig,
-            IHostEnvironment hostEnvironment,
-            IAppDbFactory appDbFactory,
-            ILogger<DataService> logger)
+        var users = dbContext.Users
+           .Include(x => x.Alerts)
+           .Where(x => x.OrganizationID == organizationID);
+
+        if (!string.IsNullOrWhiteSpace(deviceId))
         {
-            _appConfig = appConfig;
-            _hostEnvironment = hostEnvironment;
-            _appDbFactory = appDbFactory;
-            _logger = logger;
+            var filteredUserIDs = FilterUsersByDevicePermissionInternal(
+                dbContext,
+                users.Select(x => x.Id),
+                deviceId);
+
+            users = users.Where(x => filteredUserIDs.Contains(x.Id));
         }
 
-        public async Task AddAlert(string deviceId, string organizationID, string alertMessage, string details = null)
+        await users.ForEachAsync(x =>
         {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var users = dbContext.Users
-               .Include(x => x.Alerts)
-               .Where(x => x.OrganizationID == organizationID);
-
-            if (!string.IsNullOrWhiteSpace(deviceId))
+            var alert = new Alert()
             {
-                var filteredUserIDs = FilterUsersByDevicePermissionInternal(
-                    dbContext,
-                    users.Select(x => x.Id),
-                    deviceId);
-
-                users = users.Where(x => filteredUserIDs.Contains(x.Id));
-            }
-
-            await users.ForEachAsync(x =>
-            {
-                var alert = new Alert()
-                {
-                    CreatedOn = DateTimeOffset.Now,
-                    DeviceID = deviceId,
-                    Message = alertMessage,
-                    OrganizationID = organizationID,
-                    Details = details
-                };
-                x.Alerts.Add(alert);
-            });
-
-            await dbContext.SaveChangesAsync();
-        }
-
-        public bool AddDeviceGroup(string orgID, DeviceGroup deviceGroup, out string deviceGroupID, out string errorMessage)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            deviceGroupID = null;
-            errorMessage = null;
-
-            var organization = dbContext.Organizations
-                .Include(x => x.DeviceGroups)
-                .FirstOrDefault(x => x.ID == orgID);
-
-            if (dbContext.DeviceGroups.Any(x =>
-                x.OrganizationID == orgID &&
-                x.Name.ToLower() == deviceGroup.Name.ToLower()))
-            {
-                errorMessage = "Device group already exists.";
-                return false;
-            }
-
-            dbContext.Attach(deviceGroup);
-            deviceGroup.Organization = organization;
-            deviceGroup.OrganizationID = orgID;
-
-            organization.DeviceGroups.Add(deviceGroup);
-            dbContext.SaveChanges();
-            deviceGroupID = deviceGroup.ID;
-            return true;
-        }
-
-        public async Task<Result> AddDeviceToGroup(string deviceId, string groupId)
-        {
-            using var context = _appDbFactory.GetContext();
-            var device = await context.Devices.FirstOrDefaultAsync(x => x.ID == deviceId);
-
-            if (device is null)
-            {
-                return Result.Fail("Device not found.");
-            }
-
-            var group = await context.DeviceGroups.FirstOrDefaultAsync(x => 
-                x.OrganizationID == device.OrganizationID &&
-                x.ID == groupId);
-
-            if (group is null)
-            {
-                return Result.Fail("Group not found.");
-            }
-
-            group.Devices ??= new();
-            group.Devices.Add(device);
-            device.DeviceGroup = group;
-            device.DeviceGroupID = group.ID;
-            await context.SaveChangesAsync();
-
-            return Result.Ok();
-        }
-
-        public InviteLink AddInvite(string orgID, InviteViewModel invite)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var organization = dbContext.Organizations
-                .Include(x => x.InviteLinks)
-                .FirstOrDefault(x => x.ID == orgID);
-
-            var inviteLink = new InviteLink()
-            {
-                InvitedUser = invite.InvitedUser.ToLower(),
-                DateSent = DateTimeOffset.Now,
-                IsAdmin = invite.IsAdmin,
-                Organization = organization,
-                OrganizationID = organization.ID,
+                CreatedOn = DateTimeOffset.Now,
+                DeviceID = deviceId,
+                Message = alertMessage,
+                OrganizationID = organizationID,
+                Details = details
             };
+            x.Alerts.Add(alert);
+        });
 
-            organization.InviteLinks.Add(inviteLink);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public bool AddDeviceGroup(string orgID, DeviceGroup deviceGroup, out string deviceGroupID, out string errorMessage)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        deviceGroupID = null;
+        errorMessage = null;
+
+        var organization = dbContext.Organizations
+            .Include(x => x.DeviceGroups)
+            .FirstOrDefault(x => x.ID == orgID);
+
+        if (dbContext.DeviceGroups.Any(x =>
+            x.OrganizationID == orgID &&
+            x.Name.ToLower() == deviceGroup.Name.ToLower()))
+        {
+            errorMessage = "Device group already exists.";
+            return false;
+        }
+
+        dbContext.Attach(deviceGroup);
+        deviceGroup.Organization = organization;
+        deviceGroup.OrganizationID = orgID;
+
+        organization.DeviceGroups.Add(deviceGroup);
+        dbContext.SaveChanges();
+        deviceGroupID = deviceGroup.ID;
+        return true;
+    }
+
+    public async Task<Result> AddDeviceToGroup(string deviceId, string groupId)
+    {
+        using var context = _appDbFactory.GetContext();
+        var device = await context.Devices.FirstOrDefaultAsync(x => x.ID == deviceId);
+
+        if (device is null)
+        {
+            return Result.Fail("Device not found.");
+        }
+
+        var group = await context.DeviceGroups.FirstOrDefaultAsync(x => 
+            x.OrganizationID == device.OrganizationID &&
+            x.ID == groupId);
+
+        if (group is null)
+        {
+            return Result.Fail("Group not found.");
+        }
+
+        group.Devices ??= new();
+        group.Devices.Add(device);
+        device.DeviceGroup = group;
+        device.DeviceGroupID = group.ID;
+        await context.SaveChangesAsync();
+
+        return Result.Ok();
+    }
+
+    public InviteLink AddInvite(string orgID, InviteViewModel invite)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var organization = dbContext.Organizations
+            .Include(x => x.InviteLinks)
+            .FirstOrDefault(x => x.ID == orgID);
+
+        var inviteLink = new InviteLink()
+        {
+            InvitedUser = invite.InvitedUser.ToLower(),
+            DateSent = DateTimeOffset.Now,
+            IsAdmin = invite.IsAdmin,
+            Organization = organization,
+            OrganizationID = organization.ID,
+        };
+
+        organization.InviteLinks.Add(inviteLink);
+        dbContext.SaveChanges();
+        return inviteLink;
+    }
+
+    public async Task<Result<Device>> AddOrUpdateDevice(DeviceClientDto deviceDto)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var device = await dbContext.Devices.FindAsync(deviceDto.ID);
+
+        if (device is null)
+        {
+            device = new Device
+            {
+                OrganizationID = deviceDto.OrganizationID,
+                ID = deviceDto.ID,
+            };
+            await dbContext.Devices.AddAsync(device);
+        }
+
+        device.CurrentUser = deviceDto.CurrentUser;
+        device.DeviceName = deviceDto.DeviceName;
+        device.Drives = deviceDto.Drives;
+        device.CpuUtilization = deviceDto.CpuUtilization;
+        device.UsedMemory = deviceDto.UsedMemory;
+        device.UsedStorage = deviceDto.UsedStorage;
+        device.Is64Bit = deviceDto.Is64Bit;
+        device.IsOnline = true;
+        device.OSArchitecture = deviceDto.OSArchitecture;
+        device.OSDescription = deviceDto.OSDescription;
+        device.Platform = deviceDto.Platform;
+        device.ProcessorCount = deviceDto.ProcessorCount;
+        device.PublicIP = deviceDto.PublicIP;
+        device.TotalMemory = deviceDto.TotalMemory;
+        device.TotalStorage = deviceDto.TotalStorage;
+        device.AgentVersion = deviceDto.AgentVersion;
+        device.MacAddresses = deviceDto.MacAddresses ?? Array.Empty<string>();
+        device.LastOnline = DateTimeOffset.Now;
+
+        if (_hostEnvironment.IsDevelopment() && dbContext.Organizations.Any())
+        {
+            var org = await dbContext.Organizations.FirstOrDefaultAsync();
+            device.Organization = org;
+            device.OrganizationID = org?.ID;
+        }
+
+        if (!await dbContext.Organizations.AnyAsync(x => x.ID == device.OrganizationID))
+        {
+            _logger.LogInformation(
+                "Unable to add device {deviceName} because organization {organizationID}" +
+                "does not exist.  Device ID: {ID}.",
+                device.DeviceName,
+                device.OrganizationID,
+                device.ID);
+
+            return Result.Fail<Device>("Organization does not exist.");
+        }
+
+        await dbContext.SaveChangesAsync();
+        return Result.Ok(device);
+    }
+
+    public async Task AddOrUpdateSavedScript(SavedScript script, string userId)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        dbContext.SavedScripts.Update(script);
+        script.CreatorId = userId;
+        script.Creator = dbContext.Users.Find(userId);
+        script.OrganizationID = script.Creator.OrganizationID;
+        await dbContext.SaveChangesAsync();
+    }
+
+    public void AddOrUpdateScriptResult(ScriptResult result)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var device = dbContext.Devices.Find(result.DeviceID);
+
+        if (device is null)
+        {
+            return;
+        }
+
+        result.OrganizationID = device.OrganizationID;
+
+        var existingResult = dbContext.ScriptResults.Find(result.ID);
+        if (existingResult is not null)
+        {
+            var entry = dbContext.Entry(existingResult);
+            entry.CurrentValues.SetValues(result);
+            entry.State = EntityState.Modified;
+        }
+        else
+        {
+            dbContext.ScriptResults.Add(result);
+        }
+        dbContext.SaveChanges();
+    }
+
+    public async Task AddOrUpdateScriptSchedule(ScriptSchedule schedule)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var existingSchedule = await dbContext.ScriptSchedules
+            .Include(x => x.Creator)
+            .Include(x => x.Devices)
+            .Include(x => x.DeviceGroups)
+            .FirstOrDefaultAsync(x => x.Id == schedule.Id);
+
+        if (existingSchedule is null)
+        {
+            dbContext.Update(schedule);
+        }
+        else
+        {
+            var entry = dbContext.Entry(existingSchedule);
+            entry.CurrentValues.SetValues(schedule);
+
+            existingSchedule.Devices.Clear();
+            if (schedule.Devices?.Any() == true)
+            {
+                var deviceIds = schedule.Devices.Select(x => x.ID);
+                var newDevices = await dbContext.Devices
+                    .Where(x => deviceIds.Contains(x.ID))
+                    .ToListAsync();
+                existingSchedule.Devices.AddRange(newDevices);
+            }
+
+            existingSchedule.DeviceGroups.Clear();
+            if (schedule.DeviceGroups?.Any() == true)
+            {
+                var deviceGroupIds = schedule.DeviceGroups.Select(x => x.ID);
+                var newDeviceGroups = await dbContext.DeviceGroups
+                    .Where(x => deviceGroupIds.Contains(x.ID))
+                    .ToListAsync();
+                existingSchedule.DeviceGroups.AddRange(newDeviceGroups);
+            }
+        }
+
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task AddScriptResultToScriptRun(string scriptResultId, int scriptRunId)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var run = await dbContext.ScriptRuns
+            .Include(x => x.Results)
+            .Include(x => x.DevicesCompleted)
+            .FirstOrDefaultAsync(x => x.Id == scriptRunId);
+
+        var result = await dbContext.ScriptResults.FindAsync(scriptResultId);
+
+        if (run is not null && result is not null)
+        {
+            run.Results.Add(result);
+
+            var device = await dbContext.Devices
+                .Include(x => x.ScriptRunsCompleted)
+                .FirstOrDefaultAsync(x => x.ID == result.DeviceID);
+
+            if (device is not null)
+            {
+                run.DevicesCompleted.Add(device);
+                device.ScriptRunsCompleted.Add(run);
+            }
+
+            await dbContext.SaveChangesAsync();
+        }
+    }
+
+    public async Task AddScriptRun(ScriptRun scriptRun)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        dbContext.Attach(scriptRun);
+        dbContext.ScriptRuns.Add(scriptRun);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task<string> AddSharedFile(IBrowserFile file, string organizationID, Action<double, string> progressCallback)
+    {
+        var fileContents = new byte[file.Size];
+        using var stream = file.OpenReadStream(AppConstants.MaxUploadFileSize);
+
+        for (var i = 0; i < file.Size; i += 5_000)
+        {
+            var readSize = (int)Math.Min(5_000, file.Size - i);
+            await stream.ReadAsync(fileContents.AsMemory(i, readSize));
+
+            progressCallback.Invoke((double)stream.Position / stream.Length, file.Name);
+        }
+
+        progressCallback.Invoke(1, file.Name);
+
+        return await AddSharedFileInternal(file.Name, fileContents, file.ContentType, organizationID);
+    }
+
+    public async Task<string> AddSharedFile(IFormFile file, string organizationID)
+    {
+        var fileContents = new byte[file.Length];
+        using var stream = file.OpenReadStream();
+        await stream.ReadAsync(fileContents.AsMemory(0, (int)file.Length));
+
+        return await AddSharedFileInternal(file.Name, fileContents, file.ContentType, organizationID);
+    }
+
+    public bool AddUserToDeviceGroup(string orgID, string groupID, string userName, out string resultMessage)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        resultMessage = string.Empty;
+
+        var deviceGroup = dbContext.DeviceGroups
+            .Include(x => x.Users)
+            .FirstOrDefault(x =>
+                x.ID == groupID &&
+                x.OrganizationID == orgID);
+
+        if (deviceGroup == null)
+        {
+            resultMessage = "Device group not found.";
+            return false;
+        }
+
+        userName = userName.Trim().ToLower();
+
+        var user = dbContext.Users
+            .Include(x => x.DeviceGroups)
+            .FirstOrDefault(x =>
+                x.UserName.ToLower() == userName &&
+                x.OrganizationID == orgID);
+
+        if (user == null)
+        {
+            resultMessage = "User not found.";
+            return false;
+        }
+
+        deviceGroup.Devices ??= new List<Device>();
+        user.DeviceGroups ??= new List<DeviceGroup>();
+
+        if (deviceGroup.Users.Any(x => x.Id == user.Id))
+        {
+            resultMessage = "User already in group.";
+            return false;
+        }
+
+        deviceGroup.Users.Add(user);
+        user.DeviceGroups.Add(deviceGroup);
+        dbContext.SaveChanges();
+        resultMessage = user.Id;
+        return true;
+    }
+
+    public void ChangeUserIsAdmin(string organizationID, string targetUserID, bool isAdmin)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var targetUser = dbContext.Users.FirstOrDefault(x =>
+                            x.OrganizationID == organizationID &&
+                            x.Id == targetUserID);
+
+        if (targetUser != null)
+        {
+            targetUser.IsAdministrator = isAdmin;
             dbContext.SaveChanges();
-            return inviteLink;
         }
+    }
 
-        public async Task<Result<Device>> AddOrUpdateDevice(DeviceClientDto deviceDto)
+    public async Task CleanupOldRecords()
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        if (_appConfig.DataRetentionInDays > -1)
         {
-            using var dbContext = _appDbFactory.GetContext();
+            var expirationDate = DateTimeOffset.Now - TimeSpan.FromDays(_appConfig.DataRetentionInDays);
 
-            var device = await dbContext.Devices.FindAsync(deviceDto.ID);
-
-            if (device is null)
-            {
-                device = new Device
-                {
-                    OrganizationID = deviceDto.OrganizationID,
-                    ID = deviceDto.ID,
-                };
-                await dbContext.Devices.AddAsync(device);
-            }
-
-            device.CurrentUser = deviceDto.CurrentUser;
-            device.DeviceName = deviceDto.DeviceName;
-            device.Drives = deviceDto.Drives;
-            device.CpuUtilization = deviceDto.CpuUtilization;
-            device.UsedMemory = deviceDto.UsedMemory;
-            device.UsedStorage = deviceDto.UsedStorage;
-            device.Is64Bit = deviceDto.Is64Bit;
-            device.IsOnline = true;
-            device.OSArchitecture = deviceDto.OSArchitecture;
-            device.OSDescription = deviceDto.OSDescription;
-            device.Platform = deviceDto.Platform;
-            device.ProcessorCount = deviceDto.ProcessorCount;
-            device.PublicIP = deviceDto.PublicIP;
-            device.TotalMemory = deviceDto.TotalMemory;
-            device.TotalStorage = deviceDto.TotalStorage;
-            device.AgentVersion = deviceDto.AgentVersion;
-            device.MacAddresses = deviceDto.MacAddresses ?? Array.Empty<string>();
-            device.LastOnline = DateTimeOffset.Now;
-
-            if (_hostEnvironment.IsDevelopment() && dbContext.Organizations.Any())
-            {
-                var org = await dbContext.Organizations.FirstOrDefaultAsync();
-                device.Organization = org;
-                device.OrganizationID = org?.ID;
-            }
-
-            if (!await dbContext.Organizations.AnyAsync(x => x.ID == device.OrganizationID))
-            {
-                _logger.LogInformation(
-                    "Unable to add device {deviceName} because organization {organizationID}" +
-                    "does not exist.  Device ID: {ID}.",
-                    device.DeviceName,
-                    device.OrganizationID,
-                    device.ID);
-
-                return Result.Fail<Device>("Organization does not exist.");
-            }
-
-            await dbContext.SaveChangesAsync();
-            return Result.Ok(device);
-        }
-
-        public async Task AddOrUpdateSavedScript(SavedScript script, string userId)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            dbContext.SavedScripts.Update(script);
-            script.CreatorId = userId;
-            script.Creator = dbContext.Users.Find(userId);
-            script.OrganizationID = script.Creator.OrganizationID;
-            await dbContext.SaveChangesAsync();
-        }
-
-        public void AddOrUpdateScriptResult(ScriptResult result)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var device = dbContext.Devices.Find(result.DeviceID);
-
-            if (device is null)
-            {
-                return;
-            }
-
-            result.OrganizationID = device.OrganizationID;
-
-            var existingResult = dbContext.ScriptResults.Find(result.ID);
-            if (existingResult is not null)
-            {
-                var entry = dbContext.Entry(existingResult);
-                entry.CurrentValues.SetValues(result);
-                entry.State = EntityState.Modified;
-            }
-            else
-            {
-                dbContext.ScriptResults.Add(result);
-            }
-            dbContext.SaveChanges();
-        }
-
-        public async Task AddOrUpdateScriptSchedule(ScriptSchedule schedule)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var existingSchedule = await dbContext.ScriptSchedules
-                .Include(x => x.Creator)
-                .Include(x => x.Devices)
-                .Include(x => x.DeviceGroups)
-                .FirstOrDefaultAsync(x => x.Id == schedule.Id);
-
-            if (existingSchedule is null)
-            {
-                dbContext.Update(schedule);
-            }
-            else
-            {
-                var entry = dbContext.Entry(existingSchedule);
-                entry.CurrentValues.SetValues(schedule);
-
-                existingSchedule.Devices.Clear();
-                if (schedule.Devices?.Any() == true)
-                {
-                    var deviceIds = schedule.Devices.Select(x => x.ID);
-                    var newDevices = await dbContext.Devices
-                        .Where(x => deviceIds.Contains(x.ID))
-                        .ToListAsync();
-                    existingSchedule.Devices.AddRange(newDevices);
-                }
-
-                existingSchedule.DeviceGroups.Clear();
-                if (schedule.DeviceGroups?.Any() == true)
-                {
-                    var deviceGroupIds = schedule.DeviceGroups.Select(x => x.ID);
-                    var newDeviceGroups = await dbContext.DeviceGroups
-                        .Where(x => deviceGroupIds.Contains(x.ID))
-                        .ToListAsync();
-                    existingSchedule.DeviceGroups.AddRange(newDeviceGroups);
-                }
-            }
-
-            await dbContext.SaveChangesAsync();
-        }
-
-        public async Task AddScriptResultToScriptRun(string scriptResultId, int scriptRunId)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var run = await dbContext.ScriptRuns
+            var scriptRuns = await dbContext.ScriptRuns
                 .Include(x => x.Results)
+                .Include(x => x.Devices)
                 .Include(x => x.DevicesCompleted)
-                .FirstOrDefaultAsync(x => x.Id == scriptRunId);
+                .Where(x => x.RunAt < expirationDate)
+                .ToArrayAsync();
 
-            var result = await dbContext.ScriptResults.FindAsync(scriptResultId);
-
-            if (run is not null && result is not null)
+            foreach (var run in scriptRuns)
             {
-                run.Results.Add(result);
-
-                var device = await dbContext.Devices
-                    .Include(x => x.ScriptRunsCompleted)
-                    .FirstOrDefaultAsync(x => x.ID == result.DeviceID);
-
-                if (device is not null)
-                {
-                    run.DevicesCompleted.Add(device);
-                    device.ScriptRunsCompleted.Add(run);
-                }
-
-                await dbContext.SaveChangesAsync();
+                run.Devices?.Clear();
+                run.DevicesCompleted?.Clear();
+                run.Results?.Clear();
             }
-        }
 
-        public async Task AddScriptRun(ScriptRun scriptRun)
-        {
-            using var dbContext = _appDbFactory.GetContext();
+            dbContext.RemoveRange(scriptRuns);
 
-            dbContext.Attach(scriptRun);
-            dbContext.ScriptRuns.Add(scriptRun);
+            var commandResults = dbContext.ScriptResults
+                                    .Where(x => x.TimeStamp < expirationDate);
+
+            dbContext.RemoveRange(commandResults);
+
+            var sharedFiles = dbContext.SharedFiles
+                                    .Where(x => x.Timestamp < expirationDate);
+
+            dbContext.RemoveRange(sharedFiles);
+
             await dbContext.SaveChangesAsync();
         }
+    }
 
-        public async Task<string> AddSharedFile(IBrowserFile file, string organizationID, Action<double, string> progressCallback)
+    public async Task<ApiToken> CreateApiToken(string userName, string tokenName, string secretHash)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var user = dbContext.Users.FirstOrDefault(x => x.UserName == userName);
+
+        var newToken = new ApiToken()
         {
-            var fileContents = new byte[file.Size];
-            using var stream = file.OpenReadStream(AppConstants.MaxUploadFileSize);
+            Name = tokenName,
+            OrganizationID = user.OrganizationID,
+            Secret = secretHash
+        };
+        dbContext.ApiTokens.Add(newToken);
+        await dbContext.SaveChangesAsync();
+        return newToken;
+    }
 
-            for (var i = 0; i < file.Size; i += 5_000)
+    public async Task<Device> CreateDevice(DeviceSetupOptions options)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        try
+        {
+            if (options is null ||
+                string.IsNullOrWhiteSpace(options.DeviceID) ||
+                string.IsNullOrWhiteSpace(options.OrganizationID) ||
+                dbContext.Devices.Any(x => x.ID == options.DeviceID))
             {
-                var readSize = (int)Math.Min(5_000, file.Size - i);
-                await stream.ReadAsync(fileContents.AsMemory(i, readSize));
-
-                progressCallback.Invoke((double)stream.Position / stream.Length, file.Name);
+                return null;
             }
 
-            progressCallback.Invoke(1, file.Name);
+            var device = new Device()
+            {
+                ID = options.DeviceID,
+                OrganizationID = options.OrganizationID
+            };
 
-            return await AddSharedFileInternal(file.Name, fileContents, file.ContentType, organizationID);
+            if (!string.IsNullOrWhiteSpace(options.DeviceAlias))
+            {
+                device.Alias = options.DeviceAlias;
+            }
+
+            if (!string.IsNullOrWhiteSpace(options.DeviceGroupName))
+            {
+                var group = dbContext.DeviceGroups.FirstOrDefault(x =>
+                    x.Name.ToLower() == options.DeviceGroupName.ToLower() &&
+                    x.OrganizationID == device.OrganizationID);
+                device.DeviceGroup = group;
+            }
+
+            dbContext.Devices.Add(device);
+
+            await dbContext.SaveChangesAsync();
+
+            return device;
         }
-
-        public async Task<string> AddSharedFile(IFormFile file, string organizationID)
+        catch (Exception ex)
         {
-            var fileContents = new byte[file.Length];
-            using var stream = file.OpenReadStream();
-            await stream.ReadAsync(fileContents.AsMemory(0, (int)file.Length));
-
-            return await AddSharedFileInternal(file.Name, fileContents, file.ContentType, organizationID);
+            _logger.LogError(ex, "error while creating device for organization {id}.", options.OrganizationID);
+            return null;
         }
+    }
 
-        public bool AddUserToDeviceGroup(string orgID, string groupID, string userName, out string resultMessage)
+    public async Task<bool> CreateUser(string userEmail, bool isAdmin, string organizationID)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        try
         {
-            using var dbContext = _appDbFactory.GetContext();
-
-            resultMessage = string.Empty;
-
-            var deviceGroup = dbContext.DeviceGroups
-                .Include(x => x.Users)
-                .FirstOrDefault(x =>
-                    x.ID == groupID &&
-                    x.OrganizationID == orgID);
-
-            if (deviceGroup == null)
+            var user = new RemotelyUser()
             {
-                resultMessage = "Device group not found.";
-                return false;
-            }
-
-            userName = userName.Trim().ToLower();
-
-            var user = dbContext.Users
-                .Include(x => x.DeviceGroups)
-                .FirstOrDefault(x =>
-                    x.UserName.ToLower() == userName &&
-                    x.OrganizationID == orgID);
-
-            if (user == null)
-            {
-                resultMessage = "User not found.";
-                return false;
-            }
-
-            deviceGroup.Devices ??= new List<Device>();
-            user.DeviceGroups ??= new List<DeviceGroup>();
-
-            if (deviceGroup.Users.Any(x => x.Id == user.Id))
-            {
-                resultMessage = "User already in group.";
-                return false;
-            }
-
-            deviceGroup.Users.Add(user);
-            user.DeviceGroups.Add(deviceGroup);
-            dbContext.SaveChanges();
-            resultMessage = user.Id;
+                UserName = userEmail.Trim().ToLower(),
+                Email = userEmail.Trim().ToLower(),
+                IsAdministrator = isAdmin,
+                OrganizationID = organizationID,
+                UserOptions = new RemotelyUserOptions(),
+                LockoutEnabled = true
+            };
+            var org = dbContext.Organizations
+                .Include(x => x.RemotelyUsers)
+                .FirstOrDefault(x => x.ID == organizationID);
+            dbContext.Users.Add(user);
+            org.RemotelyUsers.Add(user);
+            await dbContext.SaveChangesAsync();
             return true;
         }
-
-        public void ChangeUserIsAdmin(string organizationID, string targetUserID, bool isAdmin)
+        catch (Exception ex)
         {
-            using var dbContext = _appDbFactory.GetContext();
+            _logger.LogError(ex, "Error while creating user for organization {id}.", organizationID);
+            return false;
+        }
+    }
 
-            var targetUser = dbContext.Users.FirstOrDefault(x =>
-                                x.OrganizationID == organizationID &&
-                                x.Id == targetUserID);
+    public async Task DeleteAlert(Alert alert)
+    {
+        using var dbContext = _appDbFactory.GetContext();
 
-            if (targetUser != null)
-            {
-                targetUser.IsAdministrator = isAdmin;
-                dbContext.SaveChanges();
-            }
+        dbContext.Alerts.Remove(alert);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteAllAlerts(string orgID, string userName = null)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var alerts = dbContext.Alerts.Where(x => x.OrganizationID == orgID);
+
+        if (!string.IsNullOrWhiteSpace(userName))
+        {
+            var userId = GetUserByNameWithOrg(userName)?.Id;
+
+            alerts = alerts.Where(x => x.UserID == userId);
         }
 
-        public async Task CleanupOldRecords()
+        dbContext.Alerts.RemoveRange(alerts);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteApiToken(string userName, string tokenId)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var user = dbContext.Users.FirstOrDefault(x => x.UserName == userName);
+        var token = dbContext.ApiTokens.FirstOrDefault(x =>
+            x.OrganizationID == user.OrganizationID &&
+            x.ID == tokenId);
+
+        dbContext.ApiTokens.Remove(token);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public void DeleteDeviceGroup(string orgID, string deviceGroupID)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var deviceGroup = dbContext.DeviceGroups
+            .Include(x => x.Devices)
+            .Include(x => x.Users)
+            .ThenInclude(x => x.DeviceGroups)
+            .FirstOrDefault(x =>
+                x.ID == deviceGroupID &&
+                x.OrganizationID == orgID);
+
+        deviceGroup.Devices?.ForEach(x =>
         {
-            using var dbContext = _appDbFactory.GetContext();
+            x.DeviceGroup = null;
+        });
 
-            if (_appConfig.DataRetentionInDays > -1)
-            {
-                var expirationDate = DateTimeOffset.Now - TimeSpan.FromDays(_appConfig.DataRetentionInDays);
+        deviceGroup.Users?.ForEach(x =>
+        {
+            x.DeviceGroups.Remove(deviceGroup);
+        });
 
-                var scriptRuns = await dbContext.ScriptRuns
-                    .Include(x => x.Results)
-                    .Include(x => x.Devices)
-                    .Include(x => x.DevicesCompleted)
-                    .Where(x => x.RunAt < expirationDate)
-                    .ToArrayAsync();
+        deviceGroup.Devices.Clear();
+        deviceGroup.Users.Clear();
 
-                foreach (var run in scriptRuns)
-                {
-                    run.Devices?.Clear();
-                    run.DevicesCompleted?.Clear();
-                    run.Results?.Clear();
-                }
+        dbContext.DeviceGroups.Remove(deviceGroup);
 
-                dbContext.RemoveRange(scriptRuns);
+        dbContext.SaveChanges();
+    }
 
-                var commandResults = dbContext.ScriptResults
-                                        .Where(x => x.TimeStamp < expirationDate);
+    public void DeleteInvite(string orgID, string inviteID)
+    {
+        using var dbContext = _appDbFactory.GetContext();
 
-                dbContext.RemoveRange(commandResults);
+        var invite = dbContext.InviteLinks.FirstOrDefault(x =>
+            x.OrganizationID == orgID &&
+            x.ID == inviteID);
 
-                var sharedFiles = dbContext.SharedFiles
-                                        .Where(x => x.Timestamp < expirationDate);
+        var user = dbContext.Users.FirstOrDefault(x => x.UserName == invite.InvitedUser);
 
-                dbContext.RemoveRange(sharedFiles);
-
-                await dbContext.SaveChangesAsync();
-            }
+        if (user != null && string.IsNullOrWhiteSpace(user.PasswordHash))
+        {
+            dbContext.Remove(user);
         }
+        dbContext.Remove(invite);
+        dbContext.SaveChanges();
+    }
 
-        public async Task<ApiToken> CreateApiToken(string userName, string tokenName, string secretHash)
+    public async Task DeleteSavedScript(Guid scriptId)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var script = dbContext.SavedScripts.Find(scriptId);
+        if (script is not null)
         {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var user = dbContext.Users.FirstOrDefault(x => x.UserName == userName);
-
-            var newToken = new ApiToken()
-            {
-                Name = tokenName,
-                OrganizationID = user.OrganizationID,
-                Secret = secretHash
-            };
-            dbContext.ApiTokens.Add(newToken);
+            dbContext.SavedScripts.Remove(script);
             await dbContext.SaveChangesAsync();
-            return newToken;
+        }
+    }
+
+    public async Task DeleteScriptSchedule(int scriptScheduleId)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var schedule = dbContext.ScriptSchedules.Find(scriptScheduleId);
+        if (schedule is not null)
+        {
+            dbContext.ScriptSchedules.Remove(schedule);
+            await dbContext.SaveChangesAsync();
+        }
+    }
+
+    public async Task DeleteUser(string orgID, string targetUserID)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var target = dbContext.Users
+            .Include(x => x.DeviceGroups)
+            .ThenInclude(x => x.Devices)
+            .Include(x => x.Organization)
+            .Include(x => x.Alerts)
+            .Include(x => x.SavedScripts)
+            .Include(x => x.ScriptSchedules)
+            .FirstOrDefault(x =>
+                x.Id == targetUserID &&
+                x.OrganizationID == orgID);
+
+        if (target is null)
+        {
+            return;
         }
 
-        public async Task<Device> CreateDevice(DeviceSetupOptions options)
+        if (target.DeviceGroups?.Any() == true)
         {
-            using var dbContext = _appDbFactory.GetContext();
-
-            try
+            foreach (var deviceGroup in target.DeviceGroups.ToList())
             {
-                if (options is null ||
-                    string.IsNullOrWhiteSpace(options.DeviceID) ||
-                    string.IsNullOrWhiteSpace(options.OrganizationID) ||
-                    dbContext.Devices.Any(x => x.ID == options.DeviceID))
-                {
-                    return null;
-                }
-
-                var device = new Device()
-                {
-                    ID = options.DeviceID,
-                    OrganizationID = options.OrganizationID
-                };
-
-                if (!string.IsNullOrWhiteSpace(options.DeviceAlias))
-                {
-                    device.Alias = options.DeviceAlias;
-                }
-
-                if (!string.IsNullOrWhiteSpace(options.DeviceGroupName))
-                {
-                    var group = dbContext.DeviceGroups.FirstOrDefault(x =>
-                        x.Name.ToLower() == options.DeviceGroupName.ToLower() &&
-                        x.OrganizationID == device.OrganizationID);
-                    device.DeviceGroup = group;
-                }
-
-                dbContext.Devices.Add(device);
-
-                await dbContext.SaveChangesAsync();
-
-                return device;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "error while creating device for organization {id}.", options.OrganizationID);
-                return null;
+                deviceGroup.Users.Remove(target);
             }
         }
 
-        public async Task<bool> CreateUser(string userEmail, bool isAdmin, string organizationID)
+        foreach (var alert in target.Alerts)
         {
-            using var dbContext = _appDbFactory.GetContext();
-
-            try
-            {
-                var user = new RemotelyUser()
-                {
-                    UserName = userEmail.Trim().ToLower(),
-                    Email = userEmail.Trim().ToLower(),
-                    IsAdministrator = isAdmin,
-                    OrganizationID = organizationID,
-                    UserOptions = new RemotelyUserOptions(),
-                    LockoutEnabled = true
-                };
-                var org = dbContext.Organizations
-                    .Include(x => x.RemotelyUsers)
-                    .FirstOrDefault(x => x.ID == organizationID);
-                dbContext.Users.Add(user);
-                org.RemotelyUsers.Add(user);
-                await dbContext.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while creating user for organization {id}.", organizationID);
-                return false;
-            }
-        }
-
-        public async Task DeleteAlert(Alert alert)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
             dbContext.Alerts.Remove(alert);
-            await dbContext.SaveChangesAsync();
         }
 
-        public async Task DeleteAllAlerts(string orgID, string userName = null)
+        target.OrganizationID = null;
+        target.Organization = null;
+
+        dbContext
+            .Organizations
+            .Include(x => x.RemotelyUsers)
+            .FirstOrDefault(x => x.ID == orgID)
+            .RemotelyUsers.Remove(target);
+
+        dbContext.Users.Remove(target);
+
+        await dbContext.SaveChangesAsync();
+    }
+
+    public void DetachEntity(object entity)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        dbContext.Entry(entity).State = EntityState.Detached;
+    }
+
+    public void DeviceDisconnected(string deviceID)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var device = dbContext.Devices.Find(deviceID);
+        if (device != null)
         {
-            using var dbContext = _appDbFactory.GetContext();
+            device.LastOnline = DateTimeOffset.Now;
+            device.IsOnline = false;
+            dbContext.SaveChanges();
+        }
+    }
 
-            var alerts = dbContext.Alerts.Where(x => x.OrganizationID == orgID);
+    public bool DoesUserExist(string userName)
+    {
+        using var dbContext = _appDbFactory.GetContext();
 
-            if (!string.IsNullOrWhiteSpace(userName))
+        if (string.IsNullOrWhiteSpace(userName))
+        {
+            return false;
+        }
+        return dbContext.Users.Any(x => x.UserName.Trim().ToLower() == userName.Trim().ToLower());
+    }
+
+    public bool DoesUserHaveAccessToDevice(string deviceID, RemotelyUser remotelyUser)
+    {
+        if (remotelyUser is null)
+        {
+            return false;
+        }
+
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.Devices
+            .Include(x => x.DeviceGroup)
+            .ThenInclude(x => x.Users)
+            .Any(device => device.OrganizationID == remotelyUser.OrganizationID &&
+                device.ID == deviceID &&
+                (
+                    remotelyUser.IsAdministrator ||
+                    device.DeviceGroup.Users.Any(user => user.Id == remotelyUser.Id
+                )));
+    }
+
+    public bool DoesUserHaveAccessToDevice(string deviceID, string remotelyUserID)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var remotelyUser = dbContext.Users.Find(remotelyUserID);
+
+        return DoesUserHaveAccessToDevice(deviceID, remotelyUser);
+    }
+
+    public string[] FilterDeviceIDsByUserPermission(string[] deviceIDs, RemotelyUser remotelyUser)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.Devices
+            .Include(x => x.DeviceGroup)
+            .ThenInclude(x => x.Users)
+            .Where(device =>
+                device.OrganizationID == remotelyUser.OrganizationID &&
+                deviceIDs.Contains(device.ID) &&
+                (
+                    remotelyUser.IsAdministrator ||
+                    device.DeviceGroup.Users.Any(user => user.Id == remotelyUser.Id
+                )))
+            .Select(x => x.ID)
+            .ToArray();
+    }
+
+    public string[] FilterUsersByDevicePermission(IEnumerable<string> userIDs, string deviceID)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return FilterUsersByDevicePermissionInternal(dbContext, userIDs, deviceID);
+    }
+
+    public async Task<Alert> GetAlert(string alertID)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return await dbContext.Alerts
+            .Include(x => x.Device)
+            .Include(x => x.User)
+            .FirstOrDefaultAsync(x => x.ID == alertID);
+    }
+
+    public Alert[] GetAlerts(string userID)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.Alerts
+            .Include(x => x.Device)
+            .Include(x => x.User)
+            .Where(x => x.UserID == userID)
+            .OrderByDescending(x => x.CreatedOn)
+            .ToArray();
+    }
+
+    public ApiToken[] GetAllApiTokens(string userID)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var user = dbContext.Users.FirstOrDefault(x => x.Id == userID);
+
+        return dbContext.ApiTokens
+            .Where(x => x.OrganizationID == user.OrganizationID)
+            .OrderByDescending(x => x.LastUsed)
+            .ToArray();
+    }
+
+    public ScriptResult[] GetAllCommandResults(string orgID)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.ScriptResults
+            .Where(x => x.OrganizationID == orgID)
+            .OrderByDescending(x => x.TimeStamp)
+            .ToArray();
+    }
+
+    public ScriptResult[] GetAllCommandResultsForUser(string orgId, string userName, string deviceId)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.ScriptResults
+            .Where(x => x.OrganizationID == orgId &&
+                x.SenderUserName == userName &&
+                x.DeviceID == deviceId)
+            .OrderByDescending(x => x.TimeStamp)
+            .ToArray();
+    }
+
+    public Device[] GetAllDevices(string orgID)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.Devices.Where(x => x.OrganizationID == orgID).ToArray();
+    }
+
+    public InviteLink[] GetAllInviteLinks(string organizationId)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.InviteLinks
+            .Where(x => x.OrganizationID == organizationId)
+            .ToArray();
+    }
+
+    public ScriptResult[] GetAllScriptResults(string orgId, string deviceId)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.ScriptResults
+            .Where(x => x.OrganizationID == orgId && x.DeviceID == deviceId)
+            .OrderByDescending(x => x.TimeStamp)
+            .ToArray();
+    }
+
+    public ScriptResult[] GetAllScriptResultsForUser(string orgId, string userName)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.ScriptResults
+            .Where(x => x.OrganizationID == orgId && x.SenderUserName == userName)
+            .OrderByDescending(x => x.TimeStamp)
+            .ToArray();
+    }
+
+    public RemotelyUser[] GetAllUsersForServer()
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.Users.ToArray();
+    }
+
+    public async Task<RemotelyUser[]> GetAllUsersInOrganization(string orgId)
+    {
+        if (string.IsNullOrWhiteSpace(orgId))
+        {
+            return Array.Empty<RemotelyUser>();
+        }
+
+        using var dbContext = _appDbFactory.GetContext();
+
+        var organization = await dbContext.Organizations
+            .Include(x => x.RemotelyUsers)
+            .FirstOrDefaultAsync(x => x.ID == orgId);
+
+        return organization.RemotelyUsers.ToArray();
+    }
+
+    public ApiToken GetApiKey(string keyId)
+    {
+        if (string.IsNullOrWhiteSpace(keyId))
+        {
+            return null;
+        }
+
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.ApiTokens.FirstOrDefault(x => x.ID == keyId);
+    }
+
+    public async Task<BrandingInfo> GetBrandingInfo(string organizationId)
+    {
+        if (string.IsNullOrWhiteSpace(organizationId))
+        {
+            return null;
+        }
+
+        using var dbContext = _appDbFactory.GetContext();
+
+        var organization = await dbContext.Organizations
+          .Include(x => x.BrandingInfo)
+          .FirstOrDefaultAsync(x => x.ID == organizationId);
+
+        if (organization is null)
+        {
+            return null;
+        }
+
+        if (organization.BrandingInfo is null)
+        {
+            var brandingInfo = new BrandingInfo()
             {
-                var userId = GetUserByNameWithOrg(userName)?.Id;
+                OrganizationId = organizationId
+            };
 
-                alerts = alerts.Where(x => x.UserID == userId);
-            }
+            dbContext.BrandingInfos.Add(brandingInfo);
+            organization.BrandingInfo = brandingInfo;
 
-            dbContext.Alerts.RemoveRange(alerts);
             await dbContext.SaveChangesAsync();
         }
+        return organization.BrandingInfo;
+    }
 
-        public async Task DeleteApiToken(string userName, string tokenId)
+    public async Task<Organization> GetDefaultOrganization()
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return await dbContext.Organizations.FirstOrDefaultAsync(x => x.IsDefaultOrganization);
+    }
+
+    public Device GetDevice(string orgID, string deviceID)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.Devices.FirstOrDefault(x =>
+                        x.OrganizationID == orgID &&
+                        x.ID == deviceID);
+    }
+
+    public Device GetDevice(string deviceID)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.Devices.FirstOrDefault(x => x.ID == deviceID);
+    }
+
+    public int GetDeviceCount()
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.Devices.Count();
+    }
+
+    public int GetDeviceCount(RemotelyUser user)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        if (user.IsAdministrator)
         {
-            using var dbContext = _appDbFactory.GetContext();
+            return GetDeviceCount();
+        }
 
-            var user = dbContext.Users.FirstOrDefault(x => x.UserName == userName);
-            var token = dbContext.ApiTokens.FirstOrDefault(x =>
+        return dbContext.Users
+            .Include(x => x.DeviceGroups)
+            .ThenInclude(x => x.Devices)
+            .Where(x => x.Id == user.Id)
+            .SelectMany(x => x.DeviceGroups)
+            .SelectMany(x => x.Devices)
+            .Count();
+    }
+
+    public async Task<DeviceGroup> GetDeviceGroup(
+        string deviceGroupID,
+        bool includeDevices = false,
+        bool includeUsers = false)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var query = dbContext.DeviceGroups.AsQueryable();
+
+        if (includeDevices)
+        {
+            query = query.Include(x => x.Devices);
+        }
+        if (includeUsers)
+        {
+            query = query.Include(x => x.Users);
+        }
+
+        return await query.FirstOrDefaultAsync(x => x.ID == deviceGroupID);
+    }
+
+    public DeviceGroup[] GetDeviceGroups(string username)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var user = dbContext.Users.FirstOrDefault(x => x.UserName == username);
+
+        if (user is null)
+        {
+            return null;
+        }
+        var userId = user.Id;
+
+        var groupIds = dbContext.DeviceGroups
+            .Include(x => x.Users)
+            .ThenInclude(x => x.DeviceGroups)
+            .Where(x =>
                 x.OrganizationID == user.OrganizationID &&
-                x.ID == tokenId);
-
-            dbContext.ApiTokens.Remove(token);
-            await dbContext.SaveChangesAsync();
-        }
-
-        public void DeleteDeviceGroup(string orgID, string deviceGroupID)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var deviceGroup = dbContext.DeviceGroups
-                .Include(x => x.Devices)
-                .Include(x => x.Users)
-                .ThenInclude(x => x.DeviceGroups)
-                .FirstOrDefault(x =>
-                    x.ID == deviceGroupID &&
-                    x.OrganizationID == orgID);
-
-            deviceGroup.Devices?.ForEach(x =>
-            {
-                x.DeviceGroup = null;
-            });
-
-            deviceGroup.Users?.ForEach(x =>
-            {
-                x.DeviceGroups.Remove(deviceGroup);
-            });
-
-            deviceGroup.Devices.Clear();
-            deviceGroup.Users.Clear();
-
-            dbContext.DeviceGroups.Remove(deviceGroup);
-
-            dbContext.SaveChanges();
-        }
-
-        public void DeleteInvite(string orgID, string inviteID)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var invite = dbContext.InviteLinks.FirstOrDefault(x =>
-                x.OrganizationID == orgID &&
-                x.ID == inviteID);
-
-            var user = dbContext.Users.FirstOrDefault(x => x.UserName == invite.InvitedUser);
-
-            if (user != null && string.IsNullOrWhiteSpace(user.PasswordHash))
-            {
-                dbContext.Remove(user);
-            }
-            dbContext.Remove(invite);
-            dbContext.SaveChanges();
-        }
-
-        public async Task DeleteSavedScript(Guid scriptId)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var script = dbContext.SavedScripts.Find(scriptId);
-            if (script is not null)
-            {
-                dbContext.SavedScripts.Remove(script);
-                await dbContext.SaveChangesAsync();
-            }
-        }
-
-        public async Task DeleteScriptSchedule(int scriptScheduleId)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var schedule = dbContext.ScriptSchedules.Find(scriptScheduleId);
-            if (schedule is not null)
-            {
-                dbContext.ScriptSchedules.Remove(schedule);
-                await dbContext.SaveChangesAsync();
-            }
-        }
-
-        public async Task DeleteUser(string orgID, string targetUserID)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var target = dbContext.Users
-                .Include(x => x.DeviceGroups)
-                .ThenInclude(x => x.Devices)
-                .Include(x => x.Organization)
-                .Include(x => x.Alerts)
-                .Include(x => x.SavedScripts)
-                .Include(x => x.ScriptSchedules)
-                .FirstOrDefault(x =>
-                    x.Id == targetUserID &&
-                    x.OrganizationID == orgID);
-
-            if (target is null)
-            {
-                return;
-            }
-
-            if (target.DeviceGroups?.Any() == true)
-            {
-                foreach (var deviceGroup in target.DeviceGroups.ToList())
-                {
-                    deviceGroup.Users.Remove(target);
-                }
-            }
-
-            foreach (var alert in target.Alerts)
-            {
-                dbContext.Alerts.Remove(alert);
-            }
-
-            target.OrganizationID = null;
-            target.Organization = null;
-
-            dbContext
-                .Organizations
-                .Include(x => x.RemotelyUsers)
-                .FirstOrDefault(x => x.ID == orgID)
-                .RemotelyUsers.Remove(target);
-
-            dbContext.Users.Remove(target);
-
-            await dbContext.SaveChangesAsync();
-        }
-
-        public void DetachEntity(object entity)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            dbContext.Entry(entity).State = EntityState.Detached;
-        }
-
-        public void DeviceDisconnected(string deviceID)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var device = dbContext.Devices.Find(deviceID);
-            if (device != null)
-            {
-                device.LastOnline = DateTimeOffset.Now;
-                device.IsOnline = false;
-                dbContext.SaveChanges();
-            }
-        }
-
-        public bool DoesUserExist(string userName)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            if (string.IsNullOrWhiteSpace(userName))
-            {
-                return false;
-            }
-            return dbContext.Users.Any(x => x.UserName.Trim().ToLower() == userName.Trim().ToLower());
-        }
-
-        public bool DoesUserHaveAccessToDevice(string deviceID, RemotelyUser remotelyUser)
-        {
-            if (remotelyUser is null)
-            {
-                return false;
-            }
-
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.Devices
-                .Include(x => x.DeviceGroup)
-                .ThenInclude(x => x.Users)
-                .Any(device => device.OrganizationID == remotelyUser.OrganizationID &&
-                    device.ID == deviceID &&
-                    (
-                        remotelyUser.IsAdministrator ||
-                        device.DeviceGroup.Users.Any(user => user.Id == remotelyUser.Id
-                    )));
-        }
-
-        public bool DoesUserHaveAccessToDevice(string deviceID, string remotelyUserID)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var remotelyUser = dbContext.Users.Find(remotelyUserID);
-
-            return DoesUserHaveAccessToDevice(deviceID, remotelyUser);
-        }
-
-        public string[] FilterDeviceIDsByUserPermission(string[] deviceIDs, RemotelyUser remotelyUser)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.Devices
-                .Include(x => x.DeviceGroup)
-                .ThenInclude(x => x.Users)
-                .Where(device =>
-                    device.OrganizationID == remotelyUser.OrganizationID &&
-                    deviceIDs.Contains(device.ID) &&
-                    (
-                        remotelyUser.IsAdministrator ||
-                        device.DeviceGroup.Users.Any(user => user.Id == remotelyUser.Id
-                    )))
-                .Select(x => x.ID)
-                .ToArray();
-        }
-
-        public string[] FilterUsersByDevicePermission(IEnumerable<string> userIDs, string deviceID)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return FilterUsersByDevicePermissionInternal(dbContext, userIDs, deviceID);
-        }
-
-        public async Task<Alert> GetAlert(string alertID)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return await dbContext.Alerts
-                .Include(x => x.Device)
-                .Include(x => x.User)
-                .FirstOrDefaultAsync(x => x.ID == alertID);
-        }
-
-        public Alert[] GetAlerts(string userID)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.Alerts
-                .Include(x => x.Device)
-                .Include(x => x.User)
-                .Where(x => x.UserID == userID)
-                .OrderByDescending(x => x.CreatedOn)
-                .ToArray();
-        }
-
-        public ApiToken[] GetAllApiTokens(string userID)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var user = dbContext.Users.FirstOrDefault(x => x.Id == userID);
-
-            return dbContext.ApiTokens
-                .Where(x => x.OrganizationID == user.OrganizationID)
-                .OrderByDescending(x => x.LastUsed)
-                .ToArray();
-        }
-
-        public ScriptResult[] GetAllCommandResults(string orgID)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.ScriptResults
-                .Where(x => x.OrganizationID == orgID)
-                .OrderByDescending(x => x.TimeStamp)
-                .ToArray();
-        }
-
-        public ScriptResult[] GetAllCommandResultsForUser(string orgId, string userName, string deviceId)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.ScriptResults
-                .Where(x => x.OrganizationID == orgId &&
-                    x.SenderUserName == userName &&
-                    x.DeviceID == deviceId)
-                .OrderByDescending(x => x.TimeStamp)
-                .ToArray();
-        }
-
-        public Device[] GetAllDevices(string orgID)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.Devices.Where(x => x.OrganizationID == orgID).ToArray();
-        }
-
-        public InviteLink[] GetAllInviteLinks(string organizationId)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.InviteLinks
-                .Where(x => x.OrganizationID == organizationId)
-                .ToArray();
-        }
-
-        public ScriptResult[] GetAllScriptResults(string orgId, string deviceId)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.ScriptResults
-                .Where(x => x.OrganizationID == orgId && x.DeviceID == deviceId)
-                .OrderByDescending(x => x.TimeStamp)
-                .ToArray();
-        }
-
-        public ScriptResult[] GetAllScriptResultsForUser(string orgId, string userName)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.ScriptResults
-                .Where(x => x.OrganizationID == orgId && x.SenderUserName == userName)
-                .OrderByDescending(x => x.TimeStamp)
-                .ToArray();
-        }
-
-        public RemotelyUser[] GetAllUsersForServer()
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.Users.ToArray();
-        }
-
-        public async Task<RemotelyUser[]> GetAllUsersInOrganization(string orgId)
-        {
-            if (string.IsNullOrWhiteSpace(orgId))
-            {
-                return Array.Empty<RemotelyUser>();
-            }
-
-            using var dbContext = _appDbFactory.GetContext();
-
-            var organization = await dbContext.Organizations
-                .Include(x => x.RemotelyUsers)
-                .FirstOrDefaultAsync(x => x.ID == orgId);
-
-            return organization.RemotelyUsers.ToArray();
-        }
-
-        public ApiToken GetApiKey(string keyId)
-        {
-            if (string.IsNullOrWhiteSpace(keyId))
-            {
-                return null;
-            }
-
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.ApiTokens.FirstOrDefault(x => x.ID == keyId);
-        }
-
-        public async Task<BrandingInfo> GetBrandingInfo(string organizationId)
-        {
-            if (string.IsNullOrWhiteSpace(organizationId))
-            {
-                return null;
-            }
-
-            using var dbContext = _appDbFactory.GetContext();
-
-            var organization = await dbContext.Organizations
-              .Include(x => x.BrandingInfo)
-              .FirstOrDefaultAsync(x => x.ID == organizationId);
-
-            if (organization is null)
-            {
-                return null;
-            }
-
-            if (organization.BrandingInfo is null)
-            {
-                var brandingInfo = new BrandingInfo()
-                {
-                    OrganizationId = organizationId
-                };
-
-                dbContext.BrandingInfos.Add(brandingInfo);
-                organization.BrandingInfo = brandingInfo;
-
-                await dbContext.SaveChangesAsync();
-            }
-            return organization.BrandingInfo;
-        }
-
-        public async Task<Organization> GetDefaultOrganization()
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return await dbContext.Organizations.FirstOrDefaultAsync(x => x.IsDefaultOrganization);
-        }
-
-        public Device GetDevice(string orgID, string deviceID)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.Devices.FirstOrDefault(x =>
-                            x.OrganizationID == orgID &&
-                            x.ID == deviceID);
-        }
-
-        public Device GetDevice(string deviceID)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.Devices.FirstOrDefault(x => x.ID == deviceID);
-        }
-
-        public int GetDeviceCount()
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.Devices.Count();
-        }
-
-        public int GetDeviceCount(RemotelyUser user)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            if (user.IsAdministrator)
-            {
-                return GetDeviceCount();
-            }
-
-            return dbContext.Users
-                .Include(x => x.DeviceGroups)
-                .ThenInclude(x => x.Devices)
-                .Where(x => x.Id == user.Id)
-                .SelectMany(x => x.DeviceGroups)
-                .SelectMany(x => x.Devices)
-                .Count();
-        }
-
-        public async Task<DeviceGroup> GetDeviceGroup(
-            string deviceGroupID,
-            bool includeDevices = false,
-            bool includeUsers = false)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var query = dbContext.DeviceGroups.AsQueryable();
-
-            if (includeDevices)
-            {
-                query = query.Include(x => x.Devices);
-            }
-            if (includeUsers)
-            {
-                query = query.Include(x => x.Users);
-            }
-
-            return await query.FirstOrDefaultAsync(x => x.ID == deviceGroupID);
-        }
-
-        public DeviceGroup[] GetDeviceGroups(string username)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var user = dbContext.Users.FirstOrDefault(x => x.UserName == username);
-
-            if (user is null)
-            {
-                return null;
-            }
-            var userId = user.Id;
-
-            var groupIds = dbContext.DeviceGroups
-                .Include(x => x.Users)
-                .ThenInclude(x => x.DeviceGroups)
-                .Where(x =>
-                    x.OrganizationID == user.OrganizationID &&
-                    (
-                        user.IsAdministrator ||
-                        x.Users.Any(x => x.Id == userId)
-                    )
+                (
+                    user.IsAdministrator ||
+                    x.Users.Any(x => x.Id == userId)
                 )
-                .Select(x => x.ID);
+            )
+            .Select(x => x.ID);
 
-            if (groupIds.Any())
-            {
-                return dbContext.DeviceGroups
-                    .Where(x => groupIds.Contains(x.ID))
-                    .OrderBy(x => x.Name)
-                    .ToArray();
-            }
-
-            return Array.Empty<DeviceGroup>();
-        }
-
-        public DeviceGroup[] GetDeviceGroupsForOrganization(string organizationId)
+        if (groupIds.Any())
         {
-            using var dbContext = _appDbFactory.GetContext();
-
             return dbContext.DeviceGroups
-                .Include(x => x.Users)
-                .ThenInclude(x => x.DeviceGroups)
-                .Where(x => x.OrganizationID == organizationId)
+                .Where(x => groupIds.Contains(x.ID))
                 .OrderBy(x => x.Name)
                 .ToArray();
         }
 
-        public List<Device> GetDevices(IEnumerable<string> deviceIds)
-        {
-            using var dbContext = _appDbFactory.GetContext();
+        return Array.Empty<DeviceGroup>();
+    }
 
-            return dbContext.Devices
-                .Where(x => deviceIds.Contains(x.ID))
-                .ToList();
+    public DeviceGroup[] GetDeviceGroupsForOrganization(string organizationId)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.DeviceGroups
+            .Include(x => x.Users)
+            .ThenInclude(x => x.DeviceGroups)
+            .Where(x => x.OrganizationID == organizationId)
+            .OrderBy(x => x.Name)
+            .ToArray();
+    }
+
+    public List<Device> GetDevices(IEnumerable<string> deviceIds)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.Devices
+            .Where(x => deviceIds.Contains(x.ID))
+            .ToList();
+    }
+
+    public Device[] GetDevicesForUser(string userName)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        if (string.IsNullOrWhiteSpace(userName))
+        {
+            return Array.Empty<Device>();
         }
 
-        public Device[] GetDevicesForUser(string userName)
+        var user = dbContext.Users
+            .AsNoTracking()
+            .FirstOrDefault(x => x.UserName == userName);
+
+        if (user is null)
         {
-            using var dbContext = _appDbFactory.GetContext();
+            return Array.Empty<Device>();
+        }
 
-            if (string.IsNullOrWhiteSpace(userName))
-            {
-                return Array.Empty<Device>();
-            }
-
-            var user = dbContext.Users
+        if (user.IsAdministrator)
+        {
+            return dbContext.Devices
                 .AsNoTracking()
-                .FirstOrDefault(x => x.UserName == userName);
-
-            if (user is null)
-            {
-                return Array.Empty<Device>();
-            }
-
-            if (user.IsAdministrator)
-            {
-                return dbContext.Devices
-                    .AsNoTracking()
-                    .Where(x => x.OrganizationID == user.OrganizationID)
-                    .ToArray();
-            }
-
-            return dbContext.Users
-                .AsNoTracking()
-                .Include(x => x.DeviceGroups)
-                .ThenInclude(x => x.Devices)
-                .Where(x => x.UserName == userName)
-                .SelectMany(x => x.DeviceGroups)
-                .SelectMany(x => x.Devices)
+                .Where(x => x.OrganizationID == user.OrganizationID)
                 .ToArray();
         }
 
-        public Organization GetOrganizationById(string organizationID)
+        return dbContext.Users
+            .AsNoTracking()
+            .Include(x => x.DeviceGroups)
+            .ThenInclude(x => x.Devices)
+            .Where(x => x.UserName == userName)
+            .SelectMany(x => x.DeviceGroups)
+            .SelectMany(x => x.Devices)
+            .ToArray();
+    }
+
+    public Organization GetOrganizationById(string organizationID)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.Organizations.Find(organizationID);
+    }
+
+
+    public async Task<Organization> GetOrganizationByUserName(string userName)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var user = await dbContext
+            .Users
+            .Include(x => x.Organization)
+            .FirstOrDefaultAsync(x => x.UserName.ToLower() == userName.ToLower());
+
+        return user.Organization;
+    }
+
+    public int GetOrganizationCount()
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.Organizations.Count();
+    }
+
+    public async Task<int> GetOrganizationCountAsync()
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return await dbContext.Organizations.CountAsync();
+    }
+
+    public string GetOrganizationNameById(string organizationID)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.Organizations.FirstOrDefault(x => x.ID == organizationID)?.OrganizationName;
+    }
+
+    public string GetOrganizationNameByUserName(string userName)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.Users
+               .Include(x => x.Organization)
+               .FirstOrDefault(x => x.UserName == userName)
+               .Organization
+               .OrganizationName;
+    }
+
+    public async Task<List<ScriptRun>> GetPendingScriptRuns(string deviceId)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var pendingRuns = new List<ScriptRun>();
+
+        var now = Time.Now;
+
+        var scriptRunGroups = dbContext.ScriptRuns
+            .Include(x => x.Devices)
+            .Include(x => x.DevicesCompleted)
+            .Where(scriptRun =>
+                scriptRun.RunOnNextConnect &&
+                dbContext.SavedScripts.Any(savedScript => savedScript.Id == scriptRun.SavedScriptId) &&
+                scriptRun.Devices.Any(device => device.ID == deviceId) &&
+                scriptRun.RunAt < now)
+            .AsEnumerable()
+            .GroupBy(x => x.SavedScriptId);
+
+        foreach (var group in scriptRunGroups)
         {
-            using var dbContext = _appDbFactory.GetContext();
+            var latestRun = group
+                .OrderByDescending(x => x.RunAt)
+                .FirstOrDefault();
 
-            return dbContext.Organizations.Find(organizationID);
-        }
-
-
-        public async Task<Organization> GetOrganizationByUserName(string userName)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var user = await dbContext
-                .Users
-                .Include(x => x.Organization)
-                .FirstOrDefaultAsync(x => x.UserName.ToLower() == userName.ToLower());
-
-            return user.Organization;
-        }
-
-        public int GetOrganizationCount()
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.Organizations.Count();
-        }
-
-        public async Task<int> GetOrganizationCountAsync()
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return await dbContext.Organizations.CountAsync();
-        }
-
-        public string GetOrganizationNameById(string organizationID)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.Organizations.FirstOrDefault(x => x.ID == organizationID)?.OrganizationName;
-        }
-
-        public string GetOrganizationNameByUserName(string userName)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.Users
-                   .Include(x => x.Organization)
-                   .FirstOrDefault(x => x.UserName == userName)
-                   .Organization
-                   .OrganizationName;
-        }
-
-        public async Task<List<ScriptRun>> GetPendingScriptRuns(string deviceId)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var pendingRuns = new List<ScriptRun>();
-
-            var now = Time.Now;
-
-            var scriptRunGroups = dbContext.ScriptRuns
-                .Include(x => x.Devices)
-                .Include(x => x.DevicesCompleted)
-                .Where(scriptRun =>
-                    scriptRun.RunOnNextConnect &&
-                    dbContext.SavedScripts.Any(savedScript => savedScript.Id == scriptRun.SavedScriptId) &&
-                    scriptRun.Devices.Any(device => device.ID == deviceId) &&
-                    scriptRun.RunAt < now)
-                .AsEnumerable()
-                .GroupBy(x => x.SavedScriptId);
-
-            foreach (var group in scriptRunGroups)
+            if (!latestRun.DevicesCompleted.Any(x => x.ID == deviceId))
             {
-                var latestRun = group
-                    .OrderByDescending(x => x.RunAt)
-                    .FirstOrDefault();
-
-                if (!latestRun.DevicesCompleted.Any(x => x.ID == deviceId))
-                {
-                    pendingRuns.Add(latestRun);
-                }
+                pendingRuns.Add(latestRun);
             }
+        }
+
+        await dbContext.SaveChangesAsync();
+
+        return pendingRuns;
+    }
+
+    public async Task<List<SavedScript>> GetQuickScripts(string userId)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return await dbContext.SavedScripts
+            .Where(x => x.CreatorId == userId && x.IsQuickScript)
+            .ToListAsync();
+    }
+
+    public async Task<SavedScript> GetSavedScript(string userId, Guid scriptId)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return await dbContext.SavedScripts
+            .Include(x => x.Creator)
+            .FirstOrDefaultAsync(x =>
+                x.Id == scriptId &&
+                (x.IsPublic || x.CreatorId == userId));
+    }
+
+    public async Task<SavedScript> GetSavedScript(Guid scriptId)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+        return await dbContext.SavedScripts.FirstOrDefaultAsync(x => x.Id == scriptId);
+    }
+
+    public async Task<List<SavedScript>> GetSavedScriptsWithoutContent(string userId, string organizationId)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var query = dbContext.SavedScripts
+            .Include(x => x.Creator)
+            .Where(x => x.Creator.OrganizationID == organizationId &&
+                (x.IsPublic || x.CreatorId == userId));
+
+        return await query.Select(x => new SavedScript()
+        {
+            Creator = x.Creator,
+            CreatorId = x.CreatorId,
+            FolderPath = x.FolderPath,
+            Id = x.Id,
+            IsPublic = x.IsPublic,
+            IsQuickScript = x.IsQuickScript,
+            Name = x.Name,
+            OrganizationID = x.OrganizationID
+        }).ToListAsync();
+    }
+
+    public ScriptResult GetScriptResult(string commandResultID, string orgID)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.ScriptResults
+            .FirstOrDefault(x =>
+                x.OrganizationID == orgID &&
+                x.ID == commandResultID);
+    }
+
+    public ScriptResult GetScriptResult(string commandResultID)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.ScriptResults.Find(commandResultID);
+    }
+
+    public async Task<List<ScriptSchedule>> GetScriptSchedules(string organizationId)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+        return await dbContext.ScriptSchedules
+            .Include(x => x.Creator)
+            .Include(x => x.Devices)
+            .Include(x => x.DeviceGroups)
+            .Where(x => x.OrganizationID == organizationId)
+            .ToListAsync();
+    }
+
+    public async Task<List<ScriptSchedule>> GetScriptSchedulesDue()
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var now = Time.Now;
+
+        return await dbContext.ScriptSchedules
+            .Include(x => x.Devices)
+            .Include(x => x.DeviceGroups)
+            .ThenInclude(x => x.Devices)
+            .Where(x => x.NextRun < now)
+            .ToListAsync();
+    }
+
+    public List<string> GetServerAdmins()
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.Users
+            .Where(x => x.IsServerAdmin)
+            .Select(x => x.UserName)
+            .ToList();
+    }
+
+    public SharedFile GetSharedFiled(string fileID)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.SharedFiles.Find(fileID);
+    }
+
+    public int GetTotalDevices()
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.Devices.Count();
+    }
+
+    public async Task<RemotelyUser> GetUserAsync(string username)
+    {
+        if (string.IsNullOrWhiteSpace(username))
+        {
+            return null;
+        }
+        using var dbContext = _appDbFactory.GetContext();
+
+        return await dbContext.Users.FirstOrDefaultAsync(x => x.UserName == username);
+    }
+
+    public RemotelyUser GetUserByID(string userID)
+    {
+        if (string.IsNullOrWhiteSpace(userID))
+        {
+            return null;
+        }
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.Users.FirstOrDefault(x => x.Id == userID);
+    }
+
+    public RemotelyUser GetUserByNameWithOrg(string userName)
+    {
+        if (userName == null)
+        {
+            return null;
+        }
+
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.Users
+            .Include(x => x.Organization)
+            .FirstOrDefault(x => x.UserName.ToLower().Trim() == userName.ToLower().Trim());
+    }
+
+    public RemotelyUserOptions GetUserOptions(string userName)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        return dbContext.Users
+                .FirstOrDefault(x => x.UserName == userName)
+                .UserOptions;
+    }
+
+    public bool JoinViaInvitation(string userName, string inviteID)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var invite = dbContext.InviteLinks.FirstOrDefault(x =>
+                        x.InvitedUser.ToLower() == userName.ToLower() &&
+                        x.ID == inviteID);
+
+        if (invite == null)
+        {
+            return false;
+        }
+
+        var user = dbContext.Users.FirstOrDefault(x => x.UserName == userName);
+        var organization = dbContext.Organizations
+                            .Include(x => x.RemotelyUsers)
+                            .FirstOrDefault(x => x.ID == invite.OrganizationID);
+
+        user.Organization = organization;
+        user.OrganizationID = organization.ID;
+        user.IsAdministrator = invite.IsAdmin;
+        organization.RemotelyUsers.Add(user);
+
+        dbContext.SaveChanges();
+
+        dbContext.InviteLinks.Remove(invite);
+        dbContext.SaveChanges();
+        return true;
+    }
+
+    public void RemoveDevices(string[] deviceIDs)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var devices = dbContext.Devices
+            .Include(x => x.ScriptResults)
+            .Include(x => x.ScriptRuns)
+            .Include(x => x.ScriptSchedules)
+            .Include(x => x.ScriptRunsCompleted)
+            .Include(x => x.DeviceGroup)
+            .Include(x => x.Alerts)
+            .Where(x => deviceIDs.Contains(x.ID));
+
+        dbContext.Devices.RemoveRange(devices);
+        dbContext.SaveChanges();
+    }
+
+    public async Task<bool> RemoveUserFromDeviceGroup(string orgID, string groupID, string userID)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var deviceGroup = dbContext.DeviceGroups
+            .Include(x => x.Users)
+            .ThenInclude(x => x.DeviceGroups)
+            .FirstOrDefault(x =>
+                x.ID == groupID &&
+                x.OrganizationID == orgID);
+
+        if (deviceGroup?.Users?.Any(x => x.Id == userID) == true)
+        {
+            var user = deviceGroup.Users.FirstOrDefault(x => x.Id == userID);
+
+            user.DeviceGroups.Remove(deviceGroup);
+            deviceGroup.Users.Remove(user);
 
             await dbContext.SaveChangesAsync();
+            return true;
+        }
+        return false;
+    }
 
-            return pendingRuns;
+    public async Task RenameApiToken(string userName, string tokenId, string tokenName)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var user = dbContext.Users.FirstOrDefault(x => x.UserName == userName);
+        var token = dbContext.ApiTokens.FirstOrDefault(x =>
+            x.OrganizationID == user.OrganizationID &&
+            x.ID == tokenId);
+
+        token.Name = tokenName;
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task ResetBranding(string organizationId)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var organization = await dbContext.Organizations
+           .Include(x => x.BrandingInfo)
+           .FirstOrDefaultAsync(x => x.ID == organizationId);
+
+        if (organization?.BrandingInfo is null)
+        {
+            return;
         }
 
-        public async Task<List<SavedScript>> GetQuickScripts(string userId)
-        {
-            using var dbContext = _appDbFactory.GetContext();
+        var entry = dbContext.Entry(organization.BrandingInfo);
+        entry.CurrentValues.SetValues(BrandingInfoBase.Default);
+        
+        await dbContext.SaveChangesAsync();
+    }
 
-            return await dbContext.SavedScripts
-                .Where(x => x.CreatorId == userId && x.IsQuickScript)
-                .ToListAsync();
+    public async Task SetAllDevicesNotOnline()
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        await dbContext.Devices.ForEachAsync(x =>
+        {
+            x.IsOnline = false;
+        });
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task SetDisplayName(RemotelyUser user, string displayName)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        dbContext.Attach(user);
+        user.UserOptions.DisplayName = displayName;
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task SetIsDefaultOrganization(string orgID, bool isDefault)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var organization = await dbContext.Organizations.FindAsync(orgID);
+        if (organization is null)
+        {
+            return;
         }
 
-        public async Task<SavedScript> GetSavedScript(string userId, Guid scriptId)
+        if (isDefault)
         {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return await dbContext.SavedScripts
-                .Include(x => x.Creator)
-                .FirstOrDefaultAsync(x =>
-                    x.Id == scriptId &&
-                    (x.IsPublic || x.CreatorId == userId));
+            await dbContext.Organizations.ForEachAsync(x => x.IsDefaultOrganization = false);
         }
 
-        public async Task<SavedScript> GetSavedScript(Guid scriptId)
+        organization.IsDefaultOrganization = isDefault;
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task SetIsServerAdmin(string targetUserId, bool isServerAdmin, string callerUserId)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var caller = await dbContext.Users.FindAsync(callerUserId);
+        if (caller?.IsServerAdmin != true)
         {
-            using var dbContext = _appDbFactory.GetContext();
-            return await dbContext.SavedScripts.FirstOrDefaultAsync(x => x.Id == scriptId);
+            return;
         }
 
-        public async Task<List<SavedScript>> GetSavedScriptsWithoutContent(string userId, string organizationId)
+        var targetUser = await dbContext.Users.FindAsync(targetUserId);
+
+        if (targetUser is null)
         {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var query = dbContext.SavedScripts
-                .Include(x => x.Creator)
-                .Where(x => x.Creator.OrganizationID == organizationId &&
-                    (x.IsPublic || x.CreatorId == userId));
-
-            return await query.Select(x => new SavedScript()
-            {
-                Creator = x.Creator,
-                CreatorId = x.CreatorId,
-                FolderPath = x.FolderPath,
-                Id = x.Id,
-                IsPublic = x.IsPublic,
-                IsQuickScript = x.IsQuickScript,
-                Name = x.Name,
-                OrganizationID = x.OrganizationID
-            }).ToListAsync();
+            return;
         }
 
-        public ScriptResult GetScriptResult(string commandResultID, string orgID)
+        if (caller.Id == targetUser.Id)
         {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.ScriptResults
-                .FirstOrDefault(x =>
-                    x.OrganizationID == orgID &&
-                    x.ID == commandResultID);
+            // A server admin can't change themselves.
+            return;
         }
 
-        public ScriptResult GetScriptResult(string commandResultID)
+        targetUser.IsServerAdmin = isServerAdmin;
+        await dbContext.SaveChangesAsync();
+    }
+
+    public void SetServerVerificationToken(string deviceID, string verificationToken)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var device = dbContext.Devices.Find(deviceID);
+        if (device != null)
         {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.ScriptResults.Find(commandResultID);
-        }
-
-        public async Task<List<ScriptSchedule>> GetScriptSchedules(string organizationId)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-            return await dbContext.ScriptSchedules
-                .Include(x => x.Creator)
-                .Include(x => x.Devices)
-                .Include(x => x.DeviceGroups)
-                .Where(x => x.OrganizationID == organizationId)
-                .ToListAsync();
-        }
-
-        public async Task<List<ScriptSchedule>> GetScriptSchedulesDue()
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var now = Time.Now;
-
-            return await dbContext.ScriptSchedules
-                .Include(x => x.Devices)
-                .Include(x => x.DeviceGroups)
-                .ThenInclude(x => x.Devices)
-                .Where(x => x.NextRun < now)
-                .ToListAsync();
-        }
-
-        public List<string> GetServerAdmins()
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.Users
-                .Where(x => x.IsServerAdmin)
-                .Select(x => x.UserName)
-                .ToList();
-        }
-
-        public SharedFile GetSharedFiled(string fileID)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.SharedFiles.Find(fileID);
-        }
-
-        public int GetTotalDevices()
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.Devices.Count();
-        }
-
-        public async Task<RemotelyUser> GetUserAsync(string username)
-        {
-            if (string.IsNullOrWhiteSpace(username))
-            {
-                return null;
-            }
-            using var dbContext = _appDbFactory.GetContext();
-
-            return await dbContext.Users.FirstOrDefaultAsync(x => x.UserName == username);
-        }
-
-        public RemotelyUser GetUserByID(string userID)
-        {
-            if (string.IsNullOrWhiteSpace(userID))
-            {
-                return null;
-            }
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.Users.FirstOrDefault(x => x.Id == userID);
-        }
-
-        public RemotelyUser GetUserByNameWithOrg(string userName)
-        {
-            if (userName == null)
-            {
-                return null;
-            }
-
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.Users
-                .Include(x => x.Organization)
-                .FirstOrDefault(x => x.UserName.ToLower().Trim() == userName.ToLower().Trim());
-        }
-
-        public RemotelyUserOptions GetUserOptions(string userName)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            return dbContext.Users
-                    .FirstOrDefault(x => x.UserName == userName)
-                    .UserOptions;
-        }
-
-        public bool JoinViaInvitation(string userName, string inviteID)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var invite = dbContext.InviteLinks.FirstOrDefault(x =>
-                            x.InvitedUser.ToLower() == userName.ToLower() &&
-                            x.ID == inviteID);
-
-            if (invite == null)
-            {
-                return false;
-            }
-
-            var user = dbContext.Users.FirstOrDefault(x => x.UserName == userName);
-            var organization = dbContext.Organizations
-                                .Include(x => x.RemotelyUsers)
-                                .FirstOrDefault(x => x.ID == invite.OrganizationID);
-
-            user.Organization = organization;
-            user.OrganizationID = organization.ID;
-            user.IsAdministrator = invite.IsAdmin;
-            organization.RemotelyUsers.Add(user);
-
+            device.ServerVerificationToken = verificationToken;
             dbContext.SaveChanges();
+        }
+    }
 
-            dbContext.InviteLinks.Remove(invite);
-            dbContext.SaveChanges();
+    public async Task<bool> TempPasswordSignIn(string email, string password)
+    {
+        if (string.IsNullOrWhiteSpace(password))
+        {
+            return false;
+        }
+
+        var user = GetUserByNameWithOrg(email);
+
+        if (user is null)
+        {
+            return false;
+        }
+        using var dbContext = _appDbFactory.GetContext();
+
+        if (user.TempPassword == password)
+        {
+            user.TempPassword = string.Empty;
+            await dbContext.SaveChangesAsync();
             return true;
         }
 
-        public void RemoveDevices(string[] deviceIDs)
+        return false;
+    }
+
+    public async Task UpdateBrandingInfo(
+        string organizationId,
+        string productName,
+        byte[] iconBytes,
+        ColorPickerModel titleForeground,
+        ColorPickerModel titleBackground,
+        ColorPickerModel titleButtonForeground)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var organization = await dbContext.Organizations
+            .Include(x => x.BrandingInfo)
+            .FirstOrDefaultAsync(x => x.ID == organizationId);
+
+        if (organization is null)
         {
-            using var dbContext = _appDbFactory.GetContext();
+            return;
+        }
 
-            var devices = dbContext.Devices
-                .Include(x => x.ScriptResults)
-                .Include(x => x.ScriptRuns)
-                .Include(x => x.ScriptSchedules)
-                .Include(x => x.ScriptRunsCompleted)
-                .Include(x => x.DeviceGroup)
-                .Include(x => x.Alerts)
-                .Where(x => deviceIDs.Contains(x.ID));
+        organization.BrandingInfo ??= new BrandingInfo();
 
-            dbContext.Devices.RemoveRange(devices);
+        organization.BrandingInfo.Product = productName;
+
+        if (iconBytes?.Any() == true)
+        {
+            organization.BrandingInfo.Icon = iconBytes;
+        }
+
+        organization.BrandingInfo.TitleBackgroundRed = titleBackground.Red;
+        organization.BrandingInfo.TitleBackgroundGreen = titleBackground.Green;
+        organization.BrandingInfo.TitleBackgroundBlue = titleBackground.Blue;
+
+        organization.BrandingInfo.TitleForegroundRed = titleForeground.Red;
+        organization.BrandingInfo.TitleForegroundGreen = titleForeground.Green;
+        organization.BrandingInfo.TitleForegroundBlue = titleForeground.Blue;
+
+        organization.BrandingInfo.ButtonForegroundRed = titleButtonForeground.Red;
+        organization.BrandingInfo.ButtonForegroundGreen = titleButtonForeground.Green;
+        organization.BrandingInfo.ButtonForegroundBlue = titleButtonForeground.Blue;
+
+        await dbContext.SaveChangesAsync();
+    }
+
+    public void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var device = dbContext.Devices
+            .Include(x => x.DeviceGroup)
+            .FirstOrDefault(x => x.ID == deviceID);
+        if (device == null)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(deviceGroupID))
+        {
+            device.DeviceGroup?.Devices?.RemoveAll(x => x.ID == deviceID);
+            device.DeviceGroup = null;
+            device.DeviceGroupID = null;
+        }
+        else
+        {
+            device.DeviceGroupID = deviceGroupID;
+        }
+
+        device.Tags = tag;
+        device.Alias = alias;
+        device.Notes = notes;
+        dbContext.SaveChanges();
+    }
+
+    public async Task<Device> UpdateDevice(DeviceSetupOptions deviceOptions, string organizationId)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var device = dbContext.Devices.Find(deviceOptions.DeviceID);
+        if (device == null || device.OrganizationID != organizationId)
+        {
+            return null;
+        }
+
+        var group = await dbContext.DeviceGroups.FirstOrDefaultAsync(x =>
+          x.Name.ToLower() == deviceOptions.DeviceGroupName.ToLower() &&
+          x.OrganizationID == device.OrganizationID);
+        device.DeviceGroup = group;
+
+        device.Alias = deviceOptions.DeviceAlias;
+        await dbContext.SaveChangesAsync();
+        return device;
+    }
+
+    public void UpdateOrganizationName(string orgID, string organizationName)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        dbContext.Organizations
+            .FirstOrDefault(x => x.ID == orgID)
+            .OrganizationName = organizationName;
+        dbContext.SaveChanges();
+    }
+
+    public void UpdateTags(string deviceID, string tags)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var device = dbContext.Devices.Find(deviceID);
+        if (device == null)
+        {
+            return;
+        }
+
+        device.Tags = tags;
+        dbContext.SaveChanges();
+    }
+
+    public void UpdateUserOptions(string userName, RemotelyUserOptions options)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        dbContext.Users.FirstOrDefault(x => x.UserName == userName).UserOptions = options;
+        dbContext.SaveChanges();
+    }
+
+    public bool ValidateApiKey(string keyId, string apiSecret, string requestPath, string remoteIP)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var hasher = new PasswordHasher<RemotelyUser>();
+        var token = dbContext.ApiTokens.FirstOrDefault(x => x.ID == keyId);
+
+        var isValid = token is not null &&
+            hasher.VerifyHashedPassword(null, token.Secret, apiSecret) == PasswordVerificationResult.Success;
+
+        if (token is not null)
+        {
+            token.LastUsed = DateTimeOffset.Now;
             dbContext.SaveChanges();
         }
 
-        public async Task<bool> RemoveUserFromDeviceGroup(string orgID, string groupID, string userID)
+        _logger.LogInformation(
+            "API token used.  Token: {keyId}.  Path: {requestPath}.  Validated: {isValid}.  Remote IP: {remoteIP}", 
+            keyId,
+            requestPath,
+            isValid,
+            remoteIP);
+
+        return isValid;
+    }
+
+    private async Task<string> AddSharedFileInternal(
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        string fileName,
+        byte[] fileContents,
+        string contentType,
+        string organizationId)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var expirationDate = DateTimeOffset.Now.AddDays(-_appConfig.DataRetentionInDays);
+        var expiredFiles = dbContext.SharedFiles.Where(x => x.Timestamp < expirationDate);
+        dbContext.RemoveRange(expiredFiles);
+
+        var sharedFile = new SharedFile()
         {
-            using var dbContext = _appDbFactory.GetContext();
+            FileContents = fileContents,
+            FileName = fileName,
+            ContentType = contentType,
+            OrganizationID = organizationId
+        };
 
-            var deviceGroup = dbContext.DeviceGroups
-                .Include(x => x.Users)
-                .ThenInclude(x => x.DeviceGroups)
-                .FirstOrDefault(x =>
-                    x.ID == groupID &&
-                    x.OrganizationID == orgID);
+        dbContext.SharedFiles.Add(sharedFile);
 
-            if (deviceGroup?.Users?.Any(x => x.Id == userID) == true)
-            {
-                var user = deviceGroup.Users.FirstOrDefault(x => x.Id == userID);
+        await dbContext.SaveChangesAsync();
+        return sharedFile.ID;
+    }
 
-                user.DeviceGroups.Remove(deviceGroup);
-                deviceGroup.Users.Remove(user);
+    private string[] FilterUsersByDevicePermissionInternal(AppDb dbContext, IEnumerable<string> userIDs, string deviceID)
+    {
+        var device = dbContext.Devices
+             .Include(x => x.DeviceGroup)
+             .ThenInclude(x => x.Users)
+             .FirstOrDefault(x => x.ID == deviceID);
 
-                await dbContext.SaveChangesAsync();
-                return true;
-            }
-            return false;
+        if (device is null)
+        {
+            return Array.Empty<string>();
         }
 
-        public async Task RenameApiToken(string userName, string tokenId, string tokenName)
+        var orgUsers = dbContext.Users
+            .Where(user =>
+                user.OrganizationID == device.OrganizationID &&
+                userIDs.Contains(user.Id));
+
+        if (string.IsNullOrWhiteSpace(device.DeviceGroupID))
         {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var user = dbContext.Users.FirstOrDefault(x => x.UserName == userName);
-            var token = dbContext.ApiTokens.FirstOrDefault(x =>
-                x.OrganizationID == user.OrganizationID &&
-                x.ID == tokenId);
-
-            token.Name = tokenName;
-            await dbContext.SaveChangesAsync();
-        }
-
-        public async Task ResetBranding(string organizationId)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var organization = await dbContext.Organizations
-               .Include(x => x.BrandingInfo)
-               .FirstOrDefaultAsync(x => x.ID == organizationId);
-
-            if (organization?.BrandingInfo is null)
-            {
-                return;
-            }
-
-            var entry = dbContext.Entry(organization.BrandingInfo);
-            entry.CurrentValues.SetValues(BrandingInfoBase.Default);
-            
-            await dbContext.SaveChangesAsync();
-        }
-
-        public async Task SetAllDevicesNotOnline()
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            await dbContext.Devices.ForEachAsync(x =>
-            {
-                x.IsOnline = false;
-            });
-            await dbContext.SaveChangesAsync();
-        }
-
-        public async Task SetDisplayName(RemotelyUser user, string displayName)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            dbContext.Attach(user);
-            user.UserOptions.DisplayName = displayName;
-            await dbContext.SaveChangesAsync();
-        }
-
-        public async Task SetIsDefaultOrganization(string orgID, bool isDefault)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var organization = await dbContext.Organizations.FindAsync(orgID);
-            if (organization is null)
-            {
-                return;
-            }
-
-            if (isDefault)
-            {
-                await dbContext.Organizations.ForEachAsync(x => x.IsDefaultOrganization = false);
-            }
-
-            organization.IsDefaultOrganization = isDefault;
-            await dbContext.SaveChangesAsync();
-        }
-
-        public async Task SetIsServerAdmin(string targetUserId, bool isServerAdmin, string callerUserId)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var caller = await dbContext.Users.FindAsync(callerUserId);
-            if (caller?.IsServerAdmin != true)
-            {
-                return;
-            }
-
-            var targetUser = await dbContext.Users.FindAsync(targetUserId);
-
-            if (targetUser is null)
-            {
-                return;
-            }
-
-            if (caller.Id == targetUser.Id)
-            {
-                // A server admin can't change themselves.
-                return;
-            }
-
-            targetUser.IsServerAdmin = isServerAdmin;
-            await dbContext.SaveChangesAsync();
-        }
-
-        public void SetServerVerificationToken(string deviceID, string verificationToken)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var device = dbContext.Devices.Find(deviceID);
-            if (device != null)
-            {
-                device.ServerVerificationToken = verificationToken;
-                dbContext.SaveChanges();
-            }
-        }
-
-        public async Task<bool> TempPasswordSignIn(string email, string password)
-        {
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                return false;
-            }
-
-            var user = GetUserByNameWithOrg(email);
-
-            if (user is null)
-            {
-                return false;
-            }
-            using var dbContext = _appDbFactory.GetContext();
-
-            if (user.TempPassword == password)
-            {
-                user.TempPassword = string.Empty;
-                await dbContext.SaveChangesAsync();
-                return true;
-            }
-
-            return false;
-        }
-
-        public async Task UpdateBrandingInfo(
-            string organizationId,
-            string productName,
-            byte[] iconBytes,
-            ColorPickerModel titleForeground,
-            ColorPickerModel titleBackground,
-            ColorPickerModel titleButtonForeground)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var organization = await dbContext.Organizations
-                .Include(x => x.BrandingInfo)
-                .FirstOrDefaultAsync(x => x.ID == organizationId);
-
-            if (organization is null)
-            {
-                return;
-            }
-
-            organization.BrandingInfo ??= new BrandingInfo();
-
-            organization.BrandingInfo.Product = productName;
-
-            if (iconBytes?.Any() == true)
-            {
-                organization.BrandingInfo.Icon = iconBytes;
-            }
-
-            organization.BrandingInfo.TitleBackgroundRed = titleBackground.Red;
-            organization.BrandingInfo.TitleBackgroundGreen = titleBackground.Green;
-            organization.BrandingInfo.TitleBackgroundBlue = titleBackground.Blue;
-
-            organization.BrandingInfo.TitleForegroundRed = titleForeground.Red;
-            organization.BrandingInfo.TitleForegroundGreen = titleForeground.Green;
-            organization.BrandingInfo.TitleForegroundBlue = titleForeground.Blue;
-
-            organization.BrandingInfo.ButtonForegroundRed = titleButtonForeground.Red;
-            organization.BrandingInfo.ButtonForegroundGreen = titleButtonForeground.Green;
-            organization.BrandingInfo.ButtonForegroundBlue = titleButtonForeground.Blue;
-
-            await dbContext.SaveChangesAsync();
-        }
-
-        public void UpdateDevice(string deviceID, string tag, string alias, string deviceGroupID, string notes)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var device = dbContext.Devices
-                .Include(x => x.DeviceGroup)
-                .FirstOrDefault(x => x.ID == deviceID);
-            if (device == null)
-            {
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(deviceGroupID))
-            {
-                device.DeviceGroup?.Devices?.RemoveAll(x => x.ID == deviceID);
-                device.DeviceGroup = null;
-                device.DeviceGroupID = null;
-            }
-            else
-            {
-                device.DeviceGroupID = deviceGroupID;
-            }
-
-            device.Tags = tag;
-            device.Alias = alias;
-            device.Notes = notes;
-            dbContext.SaveChanges();
-        }
-
-        public async Task<Device> UpdateDevice(DeviceSetupOptions deviceOptions, string organizationId)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var device = dbContext.Devices.Find(deviceOptions.DeviceID);
-            if (device == null || device.OrganizationID != organizationId)
-            {
-                return null;
-            }
-
-            var group = await dbContext.DeviceGroups.FirstOrDefaultAsync(x =>
-              x.Name.ToLower() == deviceOptions.DeviceGroupName.ToLower() &&
-              x.OrganizationID == device.OrganizationID);
-            device.DeviceGroup = group;
-
-            device.Alias = deviceOptions.DeviceAlias;
-            await dbContext.SaveChangesAsync();
-            return device;
-        }
-
-        public void UpdateOrganizationName(string orgID, string organizationName)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            dbContext.Organizations
-                .FirstOrDefault(x => x.ID == orgID)
-                .OrganizationName = organizationName;
-            dbContext.SaveChanges();
-        }
-
-        public void UpdateTags(string deviceID, string tags)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var device = dbContext.Devices.Find(deviceID);
-            if (device == null)
-            {
-                return;
-            }
-
-            device.Tags = tags;
-            dbContext.SaveChanges();
-        }
-
-        public void UpdateUserOptions(string userName, RemotelyUserOptions options)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            dbContext.Users.FirstOrDefault(x => x.UserName == userName).UserOptions = options;
-            dbContext.SaveChanges();
-        }
-
-        public bool ValidateApiKey(string keyId, string apiSecret, string requestPath, string remoteIP)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var hasher = new PasswordHasher<RemotelyUser>();
-            var token = dbContext.ApiTokens.FirstOrDefault(x => x.ID == keyId);
-
-            var isValid = token is not null &&
-                hasher.VerifyHashedPassword(null, token.Secret, apiSecret) == PasswordVerificationResult.Success;
-
-            if (token is not null)
-            {
-                token.LastUsed = DateTimeOffset.Now;
-                dbContext.SaveChanges();
-            }
-
-            _logger.LogInformation(
-                "API token used.  Token: {keyId}.  Path: {requestPath}.  Validated: {isValid}.  Remote IP: {remoteIP}", 
-                keyId,
-                requestPath,
-                isValid,
-                remoteIP);
-
-            return isValid;
-        }
-
-        private async Task<string> AddSharedFileInternal(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            string fileName,
-            byte[] fileContents,
-            string contentType,
-            string organizationId)
-        {
-            using var dbContext = _appDbFactory.GetContext();
-
-            var expirationDate = DateTimeOffset.Now.AddDays(-_appConfig.DataRetentionInDays);
-            var expiredFiles = dbContext.SharedFiles.Where(x => x.Timestamp < expirationDate);
-            dbContext.RemoveRange(expiredFiles);
-
-            var sharedFile = new SharedFile()
-            {
-                FileContents = fileContents,
-                FileName = fileName,
-                ContentType = contentType,
-                OrganizationID = organizationId
-            };
-
-            dbContext.SharedFiles.Add(sharedFile);
-
-            await dbContext.SaveChangesAsync();
-            return sharedFile.ID;
-        }
-
-        private string[] FilterUsersByDevicePermissionInternal(AppDb dbContext, IEnumerable<string> userIDs, string deviceID)
-        {
-            var device = dbContext.Devices
-                 .Include(x => x.DeviceGroup)
-                 .ThenInclude(x => x.Users)
-                 .FirstOrDefault(x => x.ID == deviceID);
-
-            if (device is null)
-            {
-                return Array.Empty<string>();
-            }
-
-            var orgUsers = dbContext.Users
-                .Where(user =>
-                    user.OrganizationID == device.OrganizationID &&
-                    userIDs.Contains(user.Id));
-
-            if (string.IsNullOrWhiteSpace(device.DeviceGroupID))
-            {
-                return orgUsers
-                    .Select(x => x.Id)
-                    .ToArray();
-            }
-
-            var allowedUsers = device?.DeviceGroup?.Users?.Select(x => x.Id) ?? Array.Empty<string>();
-
             return orgUsers
-                .Where(user =>
-                    user.IsAdministrator ||
-                    allowedUsers.Contains(user.Id)
-                )
                 .Select(x => x.Id)
                 .ToArray();
         }
+
+        var allowedUsers = device?.DeviceGroup?.Users?.Select(x => x.Id) ?? Array.Empty<string>();
+
+        return orgUsers
+            .Where(user =>
+                user.IsAdministrator ||
+                allowedUsers.Contains(user.Id)
+            )
+            .Select(x => x.Id)
+            .ToArray();
     }
 }

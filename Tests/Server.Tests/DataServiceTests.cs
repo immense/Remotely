@@ -10,277 +10,276 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Remotely.Tests
+namespace Remotely.Tests;
+
+[TestClass]
+public class DataServiceTests
 {
-    [TestClass]
-    public class DataServiceTests
+    private readonly string _newDeviceID = "NewDeviceName";
+    private IDataService _dataService;
+    private TestData _testData;
+
+    [TestMethod]
+    public async Task AddAlert()
     {
-        private readonly string _newDeviceID = "NewDeviceName";
-        private IDataService _dataService;
-        private TestData _testData;
+        await _dataService.AddAlert(_testData.Org1Device1.ID, _testData.Org1Id, "Test Message");
 
-        [TestMethod]
-        public async Task AddAlert()
+        var alerts = _dataService.GetAlerts(_testData.Org1Admin1.Id);
+
+        Assert.AreEqual("Test Message", alerts.First().Message);
+    }
+
+    [TestMethod]
+    public async Task AddOrUpdateDevice()
+    {
+        var storedDevice = _dataService.GetDevice(_newDeviceID);
+
+        Assert.IsNull(storedDevice);
+
+        var newDevice = new DeviceClientDto()
         {
-            await _dataService.AddAlert(_testData.Org1Device1.ID, _testData.Org1Id, "Test Message");
+            ID = _newDeviceID,
+            OrganizationID = _testData.Org1Id,
+            DeviceName = Environment.MachineName,
+            Is64Bit = Environment.Is64BitOperatingSystem
+        };
 
-            var alerts = _dataService.GetAlerts(_testData.Org1Admin1.Id);
+        var result = await _dataService.AddOrUpdateDevice(newDevice);
+        Assert.IsTrue(result.IsSuccess);
 
-            Assert.AreEqual("Test Message", alerts.First().Message);
-        }
+        storedDevice = _dataService.GetDevice(_newDeviceID);
 
-        [TestMethod]
-        public async Task AddOrUpdateDevice()
+        Assert.AreEqual(_newDeviceID, storedDevice.ID);
+        Assert.AreEqual(Environment.MachineName, storedDevice.DeviceName);
+        Assert.AreEqual(Environment.Is64BitOperatingSystem, storedDevice.Is64Bit);
+    }
+
+    [TestMethod]
+    public async Task CreateDevice()
+    {
+        var deviceOptions = new DeviceSetupOptions()
         {
-            var storedDevice = _dataService.GetDevice(_newDeviceID);
+            DeviceID = Guid.NewGuid().ToString(),
+            DeviceAlias = "Spare Laptop",
+            OrganizationID = _testData.Org1Id
+        };
 
-            Assert.IsNull(storedDevice);
+        // First call should create and return device.
+        var savedDevice = await _dataService.CreateDevice(deviceOptions);
+        Assert.IsInstanceOfType(savedDevice, typeof(Device));
 
-            var newDevice = new DeviceClientDto()
-            {
-                ID = _newDeviceID,
-                OrganizationID = _testData.Org1Id,
-                DeviceName = Environment.MachineName,
-                Is64Bit = Environment.Is64BitOperatingSystem
-            };
+        // Second call with same DeviceUuid should return null;
+        var secondSave = await _dataService.CreateDevice(deviceOptions);
+        Assert.IsNull(secondSave);
+    }
 
-            var result = await _dataService.AddOrUpdateDevice(newDevice);
-            Assert.IsTrue(result.IsSuccess);
+    [TestMethod]
+    public void DeviceGroupPermissions()
+    {
+        Assert.AreEqual(2, _dataService.GetDevicesForUser(_testData.Org1Admin1.UserName).Length);
+        Assert.AreEqual(2, _dataService.GetDevicesForUser(_testData.Org1Admin2.UserName).Length);
+        Assert.AreEqual(0, _dataService.GetDevicesForUser(_testData.Org1User1.UserName).Length);
+        Assert.AreEqual(0, _dataService.GetDevicesForUser(_testData.Org1User2.UserName).Length);
+        Assert.AreEqual(0, _dataService.GetDevicesForUser(_testData.Org2User1.UserName).Length);
+        Assert.AreEqual(0, _dataService.GetDevicesForUser(_testData.Org2User2.UserName).Length);
 
-            storedDevice = _dataService.GetDevice(_newDeviceID);
+        Assert.IsTrue(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org1Admin1));
+        Assert.IsTrue(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org1Admin2));
+        Assert.IsFalse(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org1User1));
+        Assert.IsFalse(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org1User2));
+        Assert.IsFalse(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org2User1));
+        Assert.IsFalse(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org2User2));
 
-            Assert.AreEqual(_newDeviceID, storedDevice.ID);
-            Assert.AreEqual(Environment.MachineName, storedDevice.DeviceName);
-            Assert.AreEqual(Environment.Is64BitOperatingSystem, storedDevice.Is64Bit);
-        }
+        var groupID = _testData.Org1Group1.ID;
+        _dataService.AddUserToDeviceGroup(_testData.Org1Id, groupID, _testData.Org1User1.UserName, out _);
+        _testData.Org1Device1.DeviceGroupID = groupID;
+        _dataService.UpdateDevice(_testData.Org1Device1.ID, "", "", groupID, "");
 
-        [TestMethod]
-        public async Task CreateDevice()
+        Assert.AreEqual(2, _dataService.GetDevicesForUser(_testData.Org1Admin1.UserName).Length);
+        Assert.AreEqual(2, _dataService.GetDevicesForUser(_testData.Org1Admin2.UserName).Length);
+        Assert.AreEqual(1, _dataService.GetDevicesForUser(_testData.Org1User1.UserName).Length);
+        Assert.AreEqual(0, _dataService.GetDevicesForUser(_testData.Org1User2.UserName).Length);
+        Assert.AreEqual(0, _dataService.GetDevicesForUser(_testData.Org2User1.UserName).Length);
+        Assert.AreEqual(0, _dataService.GetDevicesForUser(_testData.Org2User2.UserName).Length);
+
+        Assert.IsTrue(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org1Admin1));
+        Assert.IsTrue(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org1Admin2));
+        Assert.IsTrue(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org1User1));
+        Assert.IsFalse(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org1User2));
+        Assert.IsFalse(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org2User1));
+        Assert.IsFalse(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org2User2));
+
+        var allDevices = _dataService.GetAllDevices(_testData.Org1Id).Select(x => x.ID).ToArray();
+        Assert.AreEqual(2, _dataService.FilterDeviceIDsByUserPermission(allDevices, _testData.Org1Admin1).Length);
+        Assert.AreEqual(2, _dataService.FilterDeviceIDsByUserPermission(allDevices, _testData.Org1Admin2).Length);
+        Assert.AreEqual(1, _dataService.FilterDeviceIDsByUserPermission(allDevices, _testData.Org1User1).Length);
+        Assert.AreEqual(0, _dataService.FilterDeviceIDsByUserPermission(allDevices, _testData.Org1User2).Length);
+        Assert.AreEqual(0, _dataService.FilterDeviceIDsByUserPermission(allDevices, _testData.Org2User1).Length);
+        Assert.AreEqual(0, _dataService.FilterDeviceIDsByUserPermission(allDevices, _testData.Org2User2).Length);
+    }
+
+    [TestMethod]
+    public async Task GetPendingScriptRuns_GivenMultipleRunsQueued_ReturnsOnlyLatest()
+    {
+        var now = Time.Now;
+
+        var savedScript = new SavedScript()
         {
-            var deviceOptions = new DeviceSetupOptions()
-            {
-                DeviceID = Guid.NewGuid().ToString(),
-                DeviceAlias = "Spare Laptop",
-                OrganizationID = _testData.Org1Id
-            };
+            Content = "Get-ChildItem",
+            Creator = _testData.Org1Admin1,
+            CreatorId = _testData.Org1Admin1.Id,
+            Name = "GCI",
+            Organization = _testData.Org1Admin1.Organization,
+            OrganizationID = _testData.Org1Id,
+            Shell = Shared.Enums.ScriptingShell.PSCore
+        };
 
-            // First call should create and return device.
-            var savedDevice = await _dataService.CreateDevice(deviceOptions);
-            Assert.IsInstanceOfType(savedDevice, typeof(Device));
+        await _dataService.AddOrUpdateSavedScript(savedScript, _testData.Org1Admin1.Id);
 
-            // Second call with same DeviceUuid should return null;
-            var secondSave = await _dataService.CreateDevice(deviceOptions);
-            Assert.IsNull(secondSave);
-        }
-
-        [TestMethod]
-        public void DeviceGroupPermissions()
+        var scriptRun = new ScriptRun()
         {
-            Assert.AreEqual(2, _dataService.GetDevicesForUser(_testData.Org1Admin1.UserName).Length);
-            Assert.AreEqual(2, _dataService.GetDevicesForUser(_testData.Org1Admin2.UserName).Length);
-            Assert.AreEqual(0, _dataService.GetDevicesForUser(_testData.Org1User1.UserName).Length);
-            Assert.AreEqual(0, _dataService.GetDevicesForUser(_testData.Org1User2.UserName).Length);
-            Assert.AreEqual(0, _dataService.GetDevicesForUser(_testData.Org2User1.UserName).Length);
-            Assert.AreEqual(0, _dataService.GetDevicesForUser(_testData.Org2User2.UserName).Length);
+            Devices = new() { _testData.Org1Device1 },
+            InputType = Shared.Enums.ScriptInputType.ScheduledScript,
+            SavedScriptId = savedScript.Id,
+            Initiator = _testData.Org1Admin1.UserName,
+            RunAt = now,
+            OrganizationID = _testData.Org1Id,
+            Organization = _testData.Org1Admin1.Organization,
+            RunOnNextConnect = true
+        };
 
-            Assert.IsTrue(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org1Admin1));
-            Assert.IsTrue(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org1Admin2));
-            Assert.IsFalse(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org1User1));
-            Assert.IsFalse(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org1User2));
-            Assert.IsFalse(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org2User1));
-            Assert.IsFalse(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org2User2));
+        await _dataService.AddScriptRun(scriptRun);
 
-            var groupID = _testData.Org1Group1.ID;
-            _dataService.AddUserToDeviceGroup(_testData.Org1Id, groupID, _testData.Org1User1.UserName, out _);
-            _testData.Org1Device1.DeviceGroupID = groupID;
-            _dataService.UpdateDevice(_testData.Org1Device1.ID, "", "", groupID, "");
+        scriptRun.Id = 0;
+        scriptRun.RunAt = now.AddMinutes(1);
 
-            Assert.AreEqual(2, _dataService.GetDevicesForUser(_testData.Org1Admin1.UserName).Length);
-            Assert.AreEqual(2, _dataService.GetDevicesForUser(_testData.Org1Admin2.UserName).Length);
-            Assert.AreEqual(1, _dataService.GetDevicesForUser(_testData.Org1User1.UserName).Length);
-            Assert.AreEqual(0, _dataService.GetDevicesForUser(_testData.Org1User2.UserName).Length);
-            Assert.AreEqual(0, _dataService.GetDevicesForUser(_testData.Org2User1.UserName).Length);
-            Assert.AreEqual(0, _dataService.GetDevicesForUser(_testData.Org2User2.UserName).Length);
+        await _dataService.AddScriptRun(scriptRun);
 
-            Assert.IsTrue(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org1Admin1));
-            Assert.IsTrue(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org1Admin2));
-            Assert.IsTrue(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org1User1));
-            Assert.IsFalse(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org1User2));
-            Assert.IsFalse(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org2User1));
-            Assert.IsFalse(_dataService.DoesUserHaveAccessToDevice(_testData.Org1Device1.ID, _testData.Org2User2));
+        Time.Adjust(TimeSpan.FromMinutes(2));
 
-            var allDevices = _dataService.GetAllDevices(_testData.Org1Id).Select(x => x.ID).ToArray();
-            Assert.AreEqual(2, _dataService.FilterDeviceIDsByUserPermission(allDevices, _testData.Org1Admin1).Length);
-            Assert.AreEqual(2, _dataService.FilterDeviceIDsByUserPermission(allDevices, _testData.Org1Admin2).Length);
-            Assert.AreEqual(1, _dataService.FilterDeviceIDsByUserPermission(allDevices, _testData.Org1User1).Length);
-            Assert.AreEqual(0, _dataService.FilterDeviceIDsByUserPermission(allDevices, _testData.Org1User2).Length);
-            Assert.AreEqual(0, _dataService.FilterDeviceIDsByUserPermission(allDevices, _testData.Org2User1).Length);
-            Assert.AreEqual(0, _dataService.FilterDeviceIDsByUserPermission(allDevices, _testData.Org2User2).Length);
-        }
+        var pendingRuns = await _dataService.GetPendingScriptRuns(_testData.Org1Device1.ID);
 
-        [TestMethod]
-        public async Task GetPendingScriptRuns_GivenMultipleRunsQueued_ReturnsOnlyLatest()
+        Assert.AreEqual(1, pendingRuns.Count);
+        Assert.AreEqual(2, pendingRuns[0].Id);
+
+        var scriptResult = new ScriptResult()
         {
-            var now = Time.Now;
+            DeviceID = _testData.Org1Device1.ID,
+            InputType = Shared.Enums.ScriptInputType.ScheduledScript,
+            OrganizationID = _testData.Org1Id,
+            SavedScriptId = savedScript.Id,
+            ScriptRunId = scriptRun.Id,
+            Shell = Shared.Enums.ScriptingShell.PSCore
+        };
 
-            var savedScript = new SavedScript()
-            {
-                Content = "Get-ChildItem",
-                Creator = _testData.Org1Admin1,
-                CreatorId = _testData.Org1Admin1.Id,
-                Name = "GCI",
-                Organization = _testData.Org1Admin1.Organization,
-                OrganizationID = _testData.Org1Id,
-                Shell = Shared.Enums.ScriptingShell.PSCore
-            };
+        _dataService.AddOrUpdateScriptResult(scriptResult);
 
-            await _dataService.AddOrUpdateSavedScript(savedScript, _testData.Org1Admin1.Id);
+        await _dataService.AddScriptResultToScriptRun(scriptResult.ID, scriptRun.Id);
 
-            var scriptRun = new ScriptRun()
-            {
-                Devices = new() { _testData.Org1Device1 },
-                InputType = Shared.Enums.ScriptInputType.ScheduledScript,
-                SavedScriptId = savedScript.Id,
-                Initiator = _testData.Org1Admin1.UserName,
-                RunAt = now,
-                OrganizationID = _testData.Org1Id,
-                Organization = _testData.Org1Admin1.Organization,
-                RunOnNextConnect = true
-            };
+        pendingRuns = await _dataService.GetPendingScriptRuns(_testData.Org1Device1.ID);
 
-            await _dataService.AddScriptRun(scriptRun);
-
-            scriptRun.Id = 0;
-            scriptRun.RunAt = now.AddMinutes(1);
-
-            await _dataService.AddScriptRun(scriptRun);
-
-            Time.Adjust(TimeSpan.FromMinutes(2));
-
-            var pendingRuns = await _dataService.GetPendingScriptRuns(_testData.Org1Device1.ID);
-
-            Assert.AreEqual(1, pendingRuns.Count);
-            Assert.AreEqual(2, pendingRuns[0].Id);
-
-            var scriptResult = new ScriptResult()
-            {
-                DeviceID = _testData.Org1Device1.ID,
-                InputType = Shared.Enums.ScriptInputType.ScheduledScript,
-                OrganizationID = _testData.Org1Id,
-                SavedScriptId = savedScript.Id,
-                ScriptRunId = scriptRun.Id,
-                Shell = Shared.Enums.ScriptingShell.PSCore
-            };
-
-            _dataService.AddOrUpdateScriptResult(scriptResult);
-
-            await _dataService.AddScriptResultToScriptRun(scriptResult.ID, scriptRun.Id);
-
-            pendingRuns = await _dataService.GetPendingScriptRuns(_testData.Org1Device1.ID);
-
-            Assert.AreEqual(0, pendingRuns.Count);
-        }
+        Assert.AreEqual(0, pendingRuns.Count);
+    }
 
 
-        [TestCleanup]
-        public void TestCleanup()
+    [TestCleanup]
+    public void TestCleanup()
+    {
+        _testData.ClearData();
+    }
+
+    [TestInitialize]
+    public async Task TestInit()
+    {
+        _testData = new TestData();
+        await _testData.Init();
+        _dataService = IoCActivator.ServiceProvider.GetRequiredService<IDataService>();
+    }
+
+    [TestMethod]
+    public void UpdateOrganizationName()
+    {
+        Assert.IsTrue(string.IsNullOrWhiteSpace(_testData.Org1Admin1.Organization.OrganizationName));
+        _dataService.UpdateOrganizationName(_testData.Org1Id, "Test Org");
+        var updatedOrg = _dataService.GetOrganizationById(_testData.Org1Id);
+        Assert.AreEqual("Test Org", updatedOrg.OrganizationName);
+    }
+
+    [TestMethod]
+    public async Task UpdateServerAdmins()
+    {
+        var currentAdmins = _dataService.GetServerAdmins();
+
+        Assert.AreEqual(1, currentAdmins.Count);
+
+        await _dataService.SetIsServerAdmin(_testData.Org1Admin2.Id, true, _testData.Org1Admin1.Id);
+
+        currentAdmins = _dataService.GetServerAdmins();
+        Assert.AreEqual(2, currentAdmins.Count);
+        Assert.IsTrue(currentAdmins.Contains(_testData.Org1Admin1.UserName));
+        Assert.IsTrue(currentAdmins.Contains(_testData.Org1Admin2.UserName));
+
+        // Shouldn't be able to change themselves.
+        await _dataService.SetIsServerAdmin(_testData.Org1Admin2.Id, false, _testData.Org1Admin2.Id);
+        currentAdmins = _dataService.GetServerAdmins();
+        Assert.AreEqual(2, currentAdmins.Count);
+
+        // Non-admins shouldn't be able to change admins.
+        await _dataService.SetIsServerAdmin(_testData.Org1User1.Id, false, _testData.Org1Admin2.Id);
+        currentAdmins = _dataService.GetServerAdmins();
+        Assert.AreEqual(2, currentAdmins.Count);
+
+        await _dataService.SetIsServerAdmin(_testData.Org1Admin2.Id, false, _testData.Org1Admin1.Id);
+        currentAdmins = _dataService.GetServerAdmins();
+        Assert.AreEqual(1, currentAdmins.Count);
+        Assert.AreEqual(_testData.Org1Admin1.UserName, currentAdmins[0]);
+    }
+
+    [TestMethod]
+    public void VerifyInitialData()
+    {
+        Assert.IsNotNull(_dataService.GetUserByNameWithOrg(_testData.Org1Admin1.UserName));
+        Assert.IsNotNull(_dataService.GetUserByNameWithOrg(_testData.Org1Admin2.UserName));
+        Assert.IsNotNull(_dataService.GetUserByNameWithOrg(_testData.Org1User1.UserName));
+        Assert.IsNotNull(_dataService.GetUserByNameWithOrg(_testData.Org1User2.UserName));
+        Assert.AreEqual(2, _dataService.GetOrganizationCount());
+
+        var devices1 = _dataService.GetAllDevices(_testData.Org1Id);
+        Assert.AreEqual(2, devices1.Length);
+        Assert.IsTrue(devices1.Any(x => x.ID == "Org1Device1"));
+        Assert.IsTrue(devices1.Any(x => x.ID == "Org1Device2"));
+
+        var devices2 = _dataService.GetAllDevices(_testData.Org2Id);
+        Assert.AreEqual(2, devices2.Length);
+        Assert.IsTrue(devices2.Any(x => x.ID == "Org2Device1"));
+        Assert.IsTrue(devices2.Any(x => x.ID == "Org2Device2"));
+
+        var org1Ids = new string[]
         {
-            _testData.ClearData();
-        }
+            _testData.Org1Group1.OrganizationID,
+            _testData.Org1Group2.OrganizationID,
+            _testData.Org1Admin1.OrganizationID,
+            _testData.Org1Admin2.OrganizationID,
+            _testData.Org1User1.OrganizationID,
+            _testData.Org1User2.OrganizationID,
+            _testData.Org1Device1.OrganizationID,
+            _testData.Org1Device2.OrganizationID
+        };
 
-        [TestInitialize]
-        public async Task TestInit()
-        {
-            _testData = new TestData();
-            await _testData.Init();
-            _dataService = IoCActivator.ServiceProvider.GetRequiredService<IDataService>();
-        }
+        Assert.IsTrue(org1Ids.All(x => x == _testData.Org1Id));
 
-        [TestMethod]
-        public void UpdateOrganizationName()
-        {
-            Assert.IsTrue(string.IsNullOrWhiteSpace(_testData.Org1Admin1.Organization.OrganizationName));
-            _dataService.UpdateOrganizationName(_testData.Org1Id, "Test Org");
-            var updatedOrg = _dataService.GetOrganizationById(_testData.Org1Id);
-            Assert.AreEqual("Test Org", updatedOrg.OrganizationName);
-        }
-
-        [TestMethod]
-        public async Task UpdateServerAdmins()
-        {
-            var currentAdmins = _dataService.GetServerAdmins();
-
-            Assert.AreEqual(1, currentAdmins.Count);
-
-            await _dataService.SetIsServerAdmin(_testData.Org1Admin2.Id, true, _testData.Org1Admin1.Id);
-
-            currentAdmins = _dataService.GetServerAdmins();
-            Assert.AreEqual(2, currentAdmins.Count);
-            Assert.IsTrue(currentAdmins.Contains(_testData.Org1Admin1.UserName));
-            Assert.IsTrue(currentAdmins.Contains(_testData.Org1Admin2.UserName));
-
-            // Shouldn't be able to change themselves.
-            await _dataService.SetIsServerAdmin(_testData.Org1Admin2.Id, false, _testData.Org1Admin2.Id);
-            currentAdmins = _dataService.GetServerAdmins();
-            Assert.AreEqual(2, currentAdmins.Count);
-
-            // Non-admins shouldn't be able to change admins.
-            await _dataService.SetIsServerAdmin(_testData.Org1User1.Id, false, _testData.Org1Admin2.Id);
-            currentAdmins = _dataService.GetServerAdmins();
-            Assert.AreEqual(2, currentAdmins.Count);
-
-            await _dataService.SetIsServerAdmin(_testData.Org1Admin2.Id, false, _testData.Org1Admin1.Id);
-            currentAdmins = _dataService.GetServerAdmins();
-            Assert.AreEqual(1, currentAdmins.Count);
-            Assert.AreEqual(_testData.Org1Admin1.UserName, currentAdmins[0]);
-        }
-
-        [TestMethod]
-        public void VerifyInitialData()
-        {
-            Assert.IsNotNull(_dataService.GetUserByNameWithOrg(_testData.Org1Admin1.UserName));
-            Assert.IsNotNull(_dataService.GetUserByNameWithOrg(_testData.Org1Admin2.UserName));
-            Assert.IsNotNull(_dataService.GetUserByNameWithOrg(_testData.Org1User1.UserName));
-            Assert.IsNotNull(_dataService.GetUserByNameWithOrg(_testData.Org1User2.UserName));
-            Assert.AreEqual(2, _dataService.GetOrganizationCount());
-
-            var devices1 = _dataService.GetAllDevices(_testData.Org1Id);
-            Assert.AreEqual(2, devices1.Length);
-            Assert.IsTrue(devices1.Any(x => x.ID == "Org1Device1"));
-            Assert.IsTrue(devices1.Any(x => x.ID == "Org1Device2"));
-
-            var devices2 = _dataService.GetAllDevices(_testData.Org2Id);
-            Assert.AreEqual(2, devices2.Length);
-            Assert.IsTrue(devices2.Any(x => x.ID == "Org2Device1"));
-            Assert.IsTrue(devices2.Any(x => x.ID == "Org2Device2"));
-
-            var org1Ids = new string[]
-            {
-                _testData.Org1Group1.OrganizationID,
-                _testData.Org1Group2.OrganizationID,
-                _testData.Org1Admin1.OrganizationID,
-                _testData.Org1Admin2.OrganizationID,
-                _testData.Org1User1.OrganizationID,
-                _testData.Org1User2.OrganizationID,
-                _testData.Org1Device1.OrganizationID,
-                _testData.Org1Device2.OrganizationID
-            };
-
-            Assert.IsTrue(org1Ids.All(x => x == _testData.Org1Id));
-
-            var org2Ids = new string[]
+        var org2Ids = new string[]
 {
-                _testData.Org2Group1.OrganizationID,
-                _testData.Org2Group2.OrganizationID,
-                _testData.Org2Admin1.OrganizationID,
-                _testData.Org2Admin2.OrganizationID,
-                _testData.Org2User1.OrganizationID,
-                _testData.Org2User2.OrganizationID,
-                _testData.Org2Device1.OrganizationID,
-                _testData.Org2Device2.OrganizationID
+            _testData.Org2Group1.OrganizationID,
+            _testData.Org2Group2.OrganizationID,
+            _testData.Org2Admin1.OrganizationID,
+            _testData.Org2Admin2.OrganizationID,
+            _testData.Org2User1.OrganizationID,
+            _testData.Org2User2.OrganizationID,
+            _testData.Org2Device1.OrganizationID,
+            _testData.Org2Device2.OrganizationID
 };
 
-            Assert.IsTrue(org2Ids.All(x => x == _testData.Org2Id));
-        }
+        Assert.IsTrue(org2Ids.All(x => x == _testData.Org2Id));
     }
 }

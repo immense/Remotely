@@ -2,18 +2,17 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net;
 
-namespace Remotely.Server.Auth
+namespace Remotely.Server.Auth;
+
+public class LocalOnlyFilter : IAuthorizationFilter
 {
-    public class LocalOnlyFilter : IAuthorizationFilter
+    public void OnAuthorization(AuthorizationFilterContext context)
     {
-        public void OnAuthorization(AuthorizationFilterContext context)
+        var remoteIp = context.HttpContext.Connection.RemoteIpAddress;
+        if (!IPAddress.IsLoopback(remoteIp))
         {
-            var remoteIp = context.HttpContext.Connection.RemoteIpAddress;
-            if (!IPAddress.IsLoopback(remoteIp))
-            {
-                context.Result = new UnauthorizedResult();
-                return;
-            }
+            context.Result = new UnauthorizedResult();
+            return;
         }
     }
 }

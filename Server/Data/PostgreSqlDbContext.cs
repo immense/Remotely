@@ -8,34 +8,33 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Remotely.Server.Data
+namespace Remotely.Server.Data;
+
+public class PostgreSqlDbContext : AppDb
 {
-    public class PostgreSqlDbContext : AppDb
+    private readonly IConfiguration _configuration;
+
+    public PostgreSqlDbContext(IConfiguration configuration)
     {
-        private readonly IConfiguration _configuration;
+        _configuration = configuration;
+    }
 
-        public PostgreSqlDbContext(IConfiguration configuration)
+    protected override void OnConfiguring(DbContextOptionsBuilder options)
+    {
+        // Password should be set in User Secrets in dev environment.
+        // See https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-3.1
+        if (!string.IsNullOrWhiteSpace(_configuration.GetValue<string>("PostgresPassword")))
         {
-            _configuration = configuration;
+            var connectionBuilder = new NpgsqlConnectionStringBuilder(_configuration.GetConnectionString("PostgreSQL"))
+            {
+                Password = _configuration["PostgresPassword"]
+            };
+            options.UseNpgsql(connectionBuilder.ConnectionString);
         }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        else
         {
-            // Password should be set in User Secrets in dev environment.
-            // See https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-3.1
-            if (!string.IsNullOrWhiteSpace(_configuration.GetValue<string>("PostgresPassword")))
-            {
-                var connectionBuilder = new NpgsqlConnectionStringBuilder(_configuration.GetConnectionString("PostgreSQL"))
-                {
-                    Password = _configuration["PostgresPassword"]
-                };
-                options.UseNpgsql(connectionBuilder.ConnectionString);
-            }
-            else
-            {
-                options.UseNpgsql(_configuration.GetConnectionString("PostgreSQL"));
-            }
-            base.OnConfiguring(options);
+            options.UseNpgsql(_configuration.GetConnectionString("PostgreSQL"));
         }
+        base.OnConfiguring(options);
     }
 }

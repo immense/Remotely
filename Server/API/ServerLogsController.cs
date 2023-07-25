@@ -8,39 +8,38 @@ using Remotely.Server.Services;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Remotely.Server.API
+namespace Remotely.Server.API;
+
+[Route("api/[controller]")]
+[ApiController]
+public class ServerLogsController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ServerLogsController : ControllerBase
+    private readonly ILogsManager _logsManager;
+    private readonly ILogger<ServerLogsController> _logger;
+
+    public ServerLogsController(
+        ILogsManager logsManager,
+        ILogger<ServerLogsController> logger)
     {
-        private readonly ILogsManager _logsManager;
-        private readonly ILogger<ServerLogsController> _logger;
+        _logsManager = logsManager;
+        _logger = logger;
+    }
 
-        public ServerLogsController(
-            ILogsManager logsManager,
-            ILogger<ServerLogsController> logger)
+    [ServiceFilter(typeof(ApiAuthorizationFilter))]
+    [HttpGet("Download")]
+    public async Task<IActionResult> Download()
+    {
+        _logger.LogInformation(
+            "Downloading server logs. Remote IP: {ip}",
+            HttpContext.Connection.RemoteIpAddress);
+
+        var zipFile = await _logsManager.ZipAllLogs();
+        Response.OnCompleted(() =>
         {
-            _logsManager = logsManager;
-            _logger = logger;
-        }
+            Directory.Delete(zipFile.DirectoryName, true);
+            return Task.CompletedTask;
+        });
 
-        [ServiceFilter(typeof(ApiAuthorizationFilter))]
-        [HttpGet("Download")]
-        public async Task<IActionResult> Download()
-        {
-            _logger.LogInformation(
-                "Downloading server logs. Remote IP: {ip}",
-                HttpContext.Connection.RemoteIpAddress);
-
-            var zipFile = await _logsManager.ZipAllLogs();
-            Response.OnCompleted(() =>
-            {
-                Directory.Delete(zipFile.DirectoryName, true);
-                return Task.CompletedTask;
-            });
-
-            return File(zipFile.OpenRead(), "application/octet-stream", zipFile.Name);
-        }
+        return File(zipFile.OpenRead(), "application/octet-stream", zipFile.Name);
     }
 }

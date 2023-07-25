@@ -7,65 +7,64 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Remotely.Agent.Services.Windows
+namespace Remotely.Agent.Services.Windows;
+
+public class DeviceInfoGeneratorWin : DeviceInfoGeneratorBase, IDeviceInformationService
 {
-    public class DeviceInfoGeneratorWin : DeviceInfoGeneratorBase, IDeviceInformationService
+    private readonly ICpuUtilizationSampler _cpuUtilSampler;
+
+    public DeviceInfoGeneratorWin(
+        ICpuUtilizationSampler cpuUtilSampler, 
+        ILogger<DeviceInfoGeneratorWin> logger)
+        : base(logger)
+    { 
+        _cpuUtilSampler = cpuUtilSampler;
+    }
+
+    public Task<DeviceClientDto> CreateDevice(string deviceId, string orgId)
     {
-        private readonly ICpuUtilizationSampler _cpuUtilSampler;
+        var device = GetDeviceBase(deviceId, orgId);
 
-        public DeviceInfoGeneratorWin(
-            ICpuUtilizationSampler cpuUtilSampler, 
-            ILogger<DeviceInfoGeneratorWin> logger)
-            : base(logger)
-        { 
-            _cpuUtilSampler = cpuUtilSampler;
+        try
+        {
+            var (usedStorage, totalStorage) = GetSystemDriveInfo();
+            var (usedMemory, totalMemory) = GetMemoryInGB();
+
+            device.CurrentUser = Win32Interop.GetActiveSessions().LastOrDefault()?.Username;
+            device.Drives = GetAllDrives();
+            device.UsedStorage = usedStorage;
+            device.TotalStorage = totalStorage;
+            device.UsedMemory = usedMemory;
+            device.TotalMemory = totalMemory;
+            device.CpuUtilization = _cpuUtilSampler.CurrentUtilization;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting device info.");
         }
 
-        public Task<DeviceClientDto> CreateDevice(string deviceId, string orgId)
+        return Task.FromResult(device);
+    }
+
+    public (double usedGB, double totalGB) GetMemoryInGB()
+    {
+        try
         {
-            var device = GetDeviceBase(deviceId, orgId);
+            var memoryStatus = new Kernel32.MEMORYSTATUSEX();
+            double totalGB = 0;
+            double freeGB = 0;
 
-            try
+            if (Kernel32.GlobalMemoryStatusEx(memoryStatus))
             {
-                var (usedStorage, totalStorage) = GetSystemDriveInfo();
-                var (usedMemory, totalMemory) = GetMemoryInGB();
-
-                device.CurrentUser = Win32Interop.GetActiveSessions().LastOrDefault()?.Username;
-                device.Drives = GetAllDrives();
-                device.UsedStorage = usedStorage;
-                device.TotalStorage = totalStorage;
-                device.UsedMemory = usedMemory;
-                device.TotalMemory = totalMemory;
-                device.CpuUtilization = _cpuUtilSampler.CurrentUtilization;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting device info.");
+                freeGB = Math.Round((double)memoryStatus.ullAvailPhys / 1024 / 1024 / 1024, 2);
+                totalGB = Math.Round((double)memoryStatus.ullTotalPhys / 1024 / 1024 / 1024, 2);
             }
 
-            return Task.FromResult(device);
+            return (totalGB - freeGB, totalGB);
         }
-
-        public (double usedGB, double totalGB) GetMemoryInGB()
+        catch
         {
-            try
-            {
-                var memoryStatus = new Kernel32.MEMORYSTATUSEX();
-                double totalGB = 0;
-                double freeGB = 0;
-
-                if (Kernel32.GlobalMemoryStatusEx(memoryStatus))
-                {
-                    freeGB = Math.Round((double)memoryStatus.ullAvailPhys / 1024 / 1024 / 1024, 2);
-                    totalGB = Math.Round((double)memoryStatus.ullTotalPhys / 1024 / 1024 / 1024, 2);
-                }
-
-                return (totalGB - freeGB, totalGB);
-            }
-            catch
-            {
-                return (0, 0);
-            }
+            return (0, 0);
         }
     }
 }

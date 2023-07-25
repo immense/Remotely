@@ -9,44 +9,43 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Remotely.Shared.Models
+namespace Remotely.Shared.Models;
+
+public class ScriptSchedule
 {
-    public class ScriptSchedule
-    {
-        public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
 
-        [JsonIgnore]
-        public RemotelyUser Creator { get; set; }
+    [JsonIgnore]
+    public RemotelyUser Creator { get; set; }
 
-        public string CreatorId { get; set; }
+    public string CreatorId { get; set; }
 
-        [JsonIgnore]
-        public List<DeviceGroup> DeviceGroups { get; set; }
+    [JsonIgnore]
+    public List<DeviceGroup> DeviceGroups { get; set; }
 
-        [JsonIgnore]
-        public List<Device> Devices { get; set; }
+    [JsonIgnore]
+    public List<Device> Devices { get; set; }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
 
-        public RepeatInterval Interval { get; set; }
+    public RepeatInterval Interval { get; set; }
 
-        public DateTimeOffset? LastRun { get; set; }
+    public DateTimeOffset? LastRun { get; set; }
 
-        public string Name { get; set; }
+    public string Name { get; set; }
 
-        public DateTimeOffset NextRun { get; set; }
+    public DateTimeOffset NextRun { get; set; }
 
-        public DateTimeOffset StartAt { get; set; }
+    public DateTimeOffset StartAt { get; set; }
 
-        [JsonIgnore]
-        public Organization Organization { get; set; }
-        public string OrganizationID { get; set; }
+    [JsonIgnore]
+    public Organization Organization { get; set; }
+    public string OrganizationID { get; set; }
 
-        public bool RunOnNextConnect { get; set; } = true;
-        public Guid SavedScriptId { get; set; }
+    public bool RunOnNextConnect { get; set; } = true;
+    public Guid SavedScriptId { get; set; }
 
-        [JsonIgnore]
-        public List<ScriptRun> ScriptRuns { get; set; }
-    }
+    [JsonIgnore]
+    public List<ScriptRun> ScriptRuns { get; set; }
 }

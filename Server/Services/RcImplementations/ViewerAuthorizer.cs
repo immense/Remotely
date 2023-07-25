@@ -6,40 +6,39 @@ using Remotely.Shared.Utilities;
 using System;
 using System.Threading.Tasks;
 
-namespace Remotely.Server.Services.RcImplementations
+namespace Remotely.Server.Services.RcImplementations;
+
+public class ViewerAuthorizer : IViewerAuthorizer
 {
-    public class ViewerAuthorizer : IViewerAuthorizer
+    private readonly IApplicationConfig _appConfig;
+    private readonly IOtpProvider _otpProvider;
+
+    public ViewerAuthorizer(IApplicationConfig appConfig, IOtpProvider otpProvider)
     {
-        private readonly IApplicationConfig _appConfig;
-        private readonly IOtpProvider _otpProvider;
+        _appConfig = appConfig;
+        _otpProvider = otpProvider;
+    }
 
-        public ViewerAuthorizer(IApplicationConfig appConfig, IOtpProvider otpProvider)
+    public string UnauthorizedRedirectUrl { get; } = "/Identity/Account/Login";
+
+    public Task<bool> IsAuthorized(AuthorizationFilterContext context)
+    {
+        if (!_appConfig.RemoteControlRequiresAuthentication)
         {
-            _appConfig = appConfig;
-            _otpProvider = otpProvider;
+            return Task.FromResult(true);
         }
 
-        public string UnauthorizedRedirectUrl { get; } = "/Identity/Account/Login";
-
-        public Task<bool> IsAuthorized(AuthorizationFilterContext context)
+        if (context.HttpContext.User.Identity?.IsAuthenticated == true)
         {
-            if (!_appConfig.RemoteControlRequiresAuthentication)
-            {
-                return Task.FromResult(true);
-            }
-
-            if (context.HttpContext.User.Identity?.IsAuthenticated == true)
-            {
-                return Task.FromResult(true);
-            }
-
-            if (context.HttpContext.Request.Query.TryGetValue("otp", out var otp) &&
-                _otpProvider.Exists($"{otp}"))
-            {
-                return Task.FromResult(true);
-            }
-
-            return Task.FromResult(false);
+            return Task.FromResult(true);
         }
+
+        if (context.HttpContext.Request.Query.TryGetValue("otp", out var otp) &&
+            _otpProvider.Exists($"{otp}"))
+        {
+            return Task.FromResult(true);
+        }
+
+        return Task.FromResult(false);
     }
 }

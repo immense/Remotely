@@ -7,14 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely.Server.Data
+namespace Remotely.Server.Data;
+
+public class TestingDbContext : AppDb
 {
-    public class TestingDbContext : AppDb
+    protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-        {
-            options.UseInMemoryDatabase("Remotely");
-            base.OnConfiguring(options);
-        }
+        options.UseInMemoryDatabase("Remotely");
+        base.OnConfiguring(options);
     }
 }

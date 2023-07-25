@@ -9,14 +9,13 @@ using Remotely.Server.Data;
 using Remotely.Shared.Models;
 
 [assembly: HostingStartup(typeof(Remotely.Server.Areas.Identity.IdentityHostingStartup))]
-namespace Remotely.Server.Areas.Identity
+namespace Remotely.Server.Areas.Identity;
+
+public class IdentityHostingStartup : IHostingStartup
 {
-    public class IdentityHostingStartup : IHostingStartup
+    public void Configure(IWebHostBuilder builder)
     {
-        public void Configure(IWebHostBuilder builder)
-        {
-            builder.ConfigureServices((context, services) => {
-            });
-        }
+        builder.ConfigureServices((context, services) => {
+        });
     }
 }

@@ -4,13 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely.Shared.Enums
-{
+namespace Remotely.Shared.Enums;
 
-    public enum DbProvider
-    {
-        PostgreSQL,
-        SQLite,
-        SQLServer
-    }
+
+public enum DbProvider
+{
+    PostgreSQL,
+    SQLite,
+    SQLServer
 }

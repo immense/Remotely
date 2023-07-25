@@ -2,106 +2,105 @@
 using Microsoft.JSInterop;
 using System.Threading.Tasks;
 
-namespace Remotely.Server.Services
+namespace Remotely.Server.Services;
+
+public interface IJsInterop
 {
-    public interface IJsInterop
+    void AddClassName(ElementReference element, string className);
+    ValueTask Alert(string message);
+
+    void AutoHeight();
+
+    ValueTask<bool> Confirm(string message);
+
+    void InvokeClick(string elementId);
+
+    ValueTask<string> Prompt(string message);
+    void SetStyleProperty(ElementReference element, string propertyName, string value);
+    void StartDraggingY(ElementReference element, double clientY);
+
+    void ScrollToEnd(ElementReference element);
+
+    void AddBeforeUnloadHandler();
+    void OpenWindow(string url, string target);
+    void ScrollToElement(ElementReference element);
+    ValueTask<int> GetCursorIndex(ElementReference terminalInput);
+    void PreventTabOut(ElementReference terminalInput);
+}
+public class JsInterop : IJsInterop
+{
+    private readonly IJSRuntime _jsRuntime;
+
+    public JsInterop(IJSRuntime jSRuntime)
     {
-        void AddClassName(ElementReference element, string className);
-        ValueTask Alert(string message);
-
-        void AutoHeight();
-
-        ValueTask<bool> Confirm(string message);
-
-        void InvokeClick(string elementId);
-
-        ValueTask<string> Prompt(string message);
-        void SetStyleProperty(ElementReference element, string propertyName, string value);
-        void StartDraggingY(ElementReference element, double clientY);
-
-        void ScrollToEnd(ElementReference element);
-
-        void AddBeforeUnloadHandler();
-        void OpenWindow(string url, string target);
-        void ScrollToElement(ElementReference element);
-        ValueTask<int> GetCursorIndex(ElementReference terminalInput);
-        void PreventTabOut(ElementReference terminalInput);
+        _jsRuntime = jSRuntime;
     }
-    public class JsInterop : IJsInterop
+
+    public void AddBeforeUnloadHandler()
     {
-        private readonly IJSRuntime _jsRuntime;
+        _jsRuntime.InvokeVoidAsync("addBeforeUnloadHandler");
+    }
 
-        public JsInterop(IJSRuntime jSRuntime)
-        {
-            _jsRuntime = jSRuntime;
-        }
+    public void AddClassName(ElementReference element, string className)
+    {
+        _jsRuntime.InvokeVoidAsync("addClassName", element, className);
+    }
 
-        public void AddBeforeUnloadHandler()
-        {
-            _jsRuntime.InvokeVoidAsync("addBeforeUnloadHandler");
-        }
+    public ValueTask Alert(string message)
+    {
+        return _jsRuntime.InvokeVoidAsync("invokeAlert", message);
+    }
 
-        public void AddClassName(ElementReference element, string className)
-        {
-            _jsRuntime.InvokeVoidAsync("addClassName", element, className);
-        }
+    public void AutoHeight()
+    {
+        _jsRuntime.InvokeVoidAsync("autoHeight");
+    }
 
-        public ValueTask Alert(string message)
-        {
-            return _jsRuntime.InvokeVoidAsync("invokeAlert", message);
-        }
+    public ValueTask<bool> Confirm(string message)
+    {
+        return _jsRuntime.InvokeAsync<bool>("invokeConfirm", message);
+    }
 
-        public void AutoHeight()
-        {
-            _jsRuntime.InvokeVoidAsync("autoHeight");
-        }
+    public ValueTask<int> GetCursorIndex(ElementReference inputElement)
+    {
+        return _jsRuntime.InvokeAsync<int>("getSelectionStart", inputElement); 
+    }
 
-        public ValueTask<bool> Confirm(string message)
-        {
-            return _jsRuntime.InvokeAsync<bool>("invokeConfirm", message);
-        }
+    public void InvokeClick(string elementId)
+    {
+        _jsRuntime.InvokeVoidAsync("invokeClick", elementId);
+    }
 
-        public ValueTask<int> GetCursorIndex(ElementReference inputElement)
-        {
-            return _jsRuntime.InvokeAsync<int>("getSelectionStart", inputElement); 
-        }
+    public void OpenWindow(string url, string target)
+    {
+        _jsRuntime.InvokeVoidAsync("openWindow", url, target);
+    }
 
-        public void InvokeClick(string elementId)
-        {
-            _jsRuntime.InvokeVoidAsync("invokeClick", elementId);
-        }
+    public void PreventTabOut(ElementReference terminalInput)
+    {
+        _jsRuntime.InvokeVoidAsync("preventTabOut", terminalInput);
+    }
 
-        public void OpenWindow(string url, string target)
-        {
-            _jsRuntime.InvokeVoidAsync("openWindow", url, target);
-        }
+    public ValueTask<string> Prompt(string message)
+    {
+        return _jsRuntime.InvokeAsync<string>("invokePrompt", message);
+    }
 
-        public void PreventTabOut(ElementReference terminalInput)
-        {
-            _jsRuntime.InvokeVoidAsync("preventTabOut", terminalInput);
-        }
+    public void ScrollToElement(ElementReference element)
+    {
+        _jsRuntime.InvokeVoidAsync("scrollToElement", element);
+    }
 
-        public ValueTask<string> Prompt(string message)
-        {
-            return _jsRuntime.InvokeAsync<string>("invokePrompt", message);
-        }
-
-        public void ScrollToElement(ElementReference element)
-        {
-            _jsRuntime.InvokeVoidAsync("scrollToElement", element);
-        }
-
-        public void ScrollToEnd(ElementReference element)
-        {
-            _jsRuntime.InvokeVoidAsync("scrollToEnd", element);
-        }
-        public void SetStyleProperty(ElementReference element, string propertyName, string value)
-        {
-            _jsRuntime.InvokeVoidAsync("setStyleProperty", element, propertyName, value);
-        }
-        public void StartDraggingY(ElementReference element, double clientY)
-        {
-            _jsRuntime.InvokeVoidAsync("startDraggingY", element, clientY);
-        }
+    public void ScrollToEnd(ElementReference element)
+    {
+        _jsRuntime.InvokeVoidAsync("scrollToEnd", element);
+    }
+    public void SetStyleProperty(ElementReference element, string propertyName, string value)
+    {
+        _jsRuntime.InvokeVoidAsync("setStyleProperty", element, propertyName, value);
+    }
+    public void StartDraggingY(ElementReference element, double clientY)
+    {
+        _jsRuntime.InvokeVoidAsync("startDraggingY", element, clientY);
     }
 }

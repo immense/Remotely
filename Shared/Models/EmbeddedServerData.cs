@@ -7,23 +7,22 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Remotely.Shared.Models
+namespace Remotely.Shared.Models;
+
+[DataContract]
+public class EmbeddedServerData
 {
-    [DataContract]
-    public class EmbeddedServerData
+    [SerializationConstructor]
+    [JsonConstructor]
+    public EmbeddedServerData(Uri serverUrl, string organizationId)
     {
-        [SerializationConstructor]
-        [JsonConstructor]
-        public EmbeddedServerData(Uri serverUrl, string organizationId)
-        {
-            ServerUrl = serverUrl;
-            OrganizationId = organizationId ?? string.Empty;
-        }
-
-        [DataMember]
-        public string OrganizationId { get; }
-
-        [DataMember]
-        public Uri ServerUrl { get; }
+        ServerUrl = serverUrl;
+        OrganizationId = organizationId ?? string.Empty;
     }
+
+    [DataMember]
+    public string OrganizationId { get; }
+
+    [DataMember]
+    public Uri ServerUrl { get; }
 }

@@ -14,114 +14,113 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely.Tests
+namespace Remotely.Tests;
+
+[TestClass]
+public class ScriptScheduleDispatcherTests
 {
-    [TestClass]
-    public class ScriptScheduleDispatcherTests
+    private ScriptSchedule _schedule1;
+    private Mock<IDataService> _dataService;
+    private Mock<ICircuitConnection> _circuitConnection;
+    private Mock<IAgentHubSessionCache> _serviceSessionCache;
+    private Mock<ILogger<ScriptScheduleDispatcher>> _logger;
+    private ScriptScheduleDispatcher _dispatcher;
+    private TestData _testData;
+    private SavedScript _savedScript;
+
+    [TestInitialize]
+    public async Task Init()
     {
-        private ScriptSchedule _schedule1;
-        private Mock<IDataService> _dataService;
-        private Mock<ICircuitConnection> _circuitConnection;
-        private Mock<IAgentHubSessionCache> _serviceSessionCache;
-        private Mock<ILogger<ScriptScheduleDispatcher>> _logger;
-        private ScriptScheduleDispatcher _dispatcher;
-        private TestData _testData;
-        private SavedScript _savedScript;
+        _testData = new TestData();
+        await _testData.Init();
 
-        [TestInitialize]
-        public async Task Init()
+        _savedScript = new SavedScript()
         {
-            _testData = new TestData();
-            await _testData.Init();
+            Id = Guid.NewGuid()
+        };
 
-            _savedScript = new SavedScript()
-            {
-                Id = Guid.NewGuid()
-            };
-
-            _schedule1 = new()
-            {
-                CreatedAt = Time.Now,
-                CreatorId = _testData.Org1User1.Id,
-                Devices = new List<Device>()
-                    {
-                        _testData.Org1Device1
-                    },
-                DeviceGroups = new List<DeviceGroup>()
+        _schedule1 = new()
+        {
+            CreatedAt = Time.Now,
+            CreatorId = _testData.Org1User1.Id,
+            Devices = new List<Device>()
                 {
-                    new DeviceGroup()
-                    {
-                        Devices = new List<Device>()
-                        {
-                            _testData.Org1Device2
-                        }
-                    }
+                    _testData.Org1Device1
                 },
-                Interval = RepeatInterval.Hourly,
-                Name = "_scheduleName",
-                Id = 5,
-                NextRun = Time.Now.AddMinutes(1),
-                OrganizationID = _testData.Org1User1.OrganizationID,
-                SavedScriptId = _savedScript.Id
-            };
+            DeviceGroups = new List<DeviceGroup>()
+            {
+                new DeviceGroup()
+                {
+                    Devices = new List<Device>()
+                    {
+                        _testData.Org1Device2
+                    }
+                }
+            },
+            Interval = RepeatInterval.Hourly,
+            Name = "_scheduleName",
+            Id = 5,
+            NextRun = Time.Now.AddMinutes(1),
+            OrganizationID = _testData.Org1User1.OrganizationID,
+            SavedScriptId = _savedScript.Id
+        };
 
-            var scriptSchedules = new List<ScriptSchedule>()
-            { 
-                _schedule1
-            };
+        var scriptSchedules = new List<ScriptSchedule>()
+        { 
+            _schedule1
+        };
 
-            _dataService = new Mock<IDataService>();
-            _dataService.Setup(x => x.GetScriptSchedulesDue()).Returns(Task.FromResult(scriptSchedules));
-            _dataService.Setup(x => x.GetDevices(It.Is<IEnumerable<string>>(x =>
-                x.Contains(_testData.Org1Device1.ID) &&
-                x.Contains(_testData.Org1Device2.ID)
-            ))).Returns(new List<Device>() { _testData.Org1Device1, _testData.Org1Device2 });
+        _dataService = new Mock<IDataService>();
+        _dataService.Setup(x => x.GetScriptSchedulesDue()).Returns(Task.FromResult(scriptSchedules));
+        _dataService.Setup(x => x.GetDevices(It.Is<IEnumerable<string>>(x =>
+            x.Contains(_testData.Org1Device1.ID) &&
+            x.Contains(_testData.Org1Device2.ID)
+        ))).Returns(new List<Device>() { _testData.Org1Device1, _testData.Org1Device2 });
 
-            _circuitConnection = new Mock<ICircuitConnection>();
-            _serviceSessionCache = new Mock<IAgentHubSessionCache>();
-            _logger = new Mock<ILogger<ScriptScheduleDispatcher>>();
-            _dispatcher = new ScriptScheduleDispatcher(_dataService.Object, _serviceSessionCache.Object, _circuitConnection.Object, _logger.Object);
-        }
+        _circuitConnection = new Mock<ICircuitConnection>();
+        _serviceSessionCache = new Mock<IAgentHubSessionCache>();
+        _logger = new Mock<ILogger<ScriptScheduleDispatcher>>();
+        _dispatcher = new ScriptScheduleDispatcher(_dataService.Object, _serviceSessionCache.Object, _circuitConnection.Object, _logger.Object);
+    }
 
-        [TestMethod]
-        public async Task DispatchPendingScriptRuns_GivenNoSchedulesDue_DoesNothing()
-        {
-            await _dispatcher.DispatchPendingScriptRuns();
+    [TestMethod]
+    public async Task DispatchPendingScriptRuns_GivenNoSchedulesDue_DoesNothing()
+    {
+        await _dispatcher.DispatchPendingScriptRuns();
 
-            _dataService.Verify(x => x.GetScriptSchedulesDue(), Times.Once);
-            _dataService.VerifyNoOtherCalls();
-            _circuitConnection.VerifyNoOtherCalls();
-        }
+        _dataService.Verify(x => x.GetScriptSchedulesDue(), Times.Once);
+        _dataService.VerifyNoOtherCalls();
+        _circuitConnection.VerifyNoOtherCalls();
+    }
 
-        [TestMethod]
-        public async Task DispatchPendingScriptRuns_GivenSchedulesDue_CreatesScriptRuns()
-        {
-            Assert.IsFalse(_schedule1.LastRun.HasValue);
+    [TestMethod]
+    public async Task DispatchPendingScriptRuns_GivenSchedulesDue_CreatesScriptRuns()
+    {
+        Assert.IsFalse(_schedule1.LastRun.HasValue);
 
-            Time.Adjust(TimeSpan.FromMinutes(5));
+        Time.Adjust(TimeSpan.FromMinutes(5));
 
-            await _dispatcher.DispatchPendingScriptRuns();
+        await _dispatcher.DispatchPendingScriptRuns();
 
-            Assert.IsTrue(_schedule1.LastRun.HasValue);
+        Assert.IsTrue(_schedule1.LastRun.HasValue);
 
-            _dataService.Verify(x => x.GetScriptSchedulesDue(), Times.Once);
-            _dataService.Verify(x => x.AddOrUpdateScriptSchedule(_schedule1), Times.Once);
-            _dataService.Verify(x => x.GetDevices(It.Is<IEnumerable<string>>(x => 
-                x.Contains(_schedule1.Devices.First().ID))));
-            _dataService.Verify(x => x.AddScriptRun(It.Is<ScriptRun>(x => 
-                x.ScheduleId == _schedule1.Id &&
-                x.Devices.Exists(d => d.ID == _testData.Org1Device1.ID) &&
-                x.Devices.Exists(d => d.ID == _testData.Org1Device2.ID))));
-            _dataService.VerifyNoOtherCalls();
+        _dataService.Verify(x => x.GetScriptSchedulesDue(), Times.Once);
+        _dataService.Verify(x => x.AddOrUpdateScriptSchedule(_schedule1), Times.Once);
+        _dataService.Verify(x => x.GetDevices(It.Is<IEnumerable<string>>(x => 
+            x.Contains(_schedule1.Devices.First().ID))));
+        _dataService.Verify(x => x.AddScriptRun(It.Is<ScriptRun>(x => 
+            x.ScheduleId == _schedule1.Id &&
+            x.Devices.Exists(d => d.ID == _testData.Org1Device1.ID) &&
+            x.Devices.Exists(d => d.ID == _testData.Org1Device2.ID))));
+        _dataService.VerifyNoOtherCalls();
 
-            _circuitConnection.Verify(x => x.RunScript(
-                It.IsAny<IEnumerable<string>>(),
-                _savedScript.Id,
-                It.IsAny<int>(),
-                ScriptInputType.ScheduledScript,
-                true
-            ), Times.Once);
-            _circuitConnection.VerifyNoOtherCalls();
-        }
+        _circuitConnection.Verify(x => x.RunScript(
+            It.IsAny<IEnumerable<string>>(),
+            _savedScript.Id,
+            It.IsAny<int>(),
+            ScriptInputType.ScheduledScript,
+            true
+        ), Times.Once);
+        _circuitConnection.VerifyNoOtherCalls();
     }
 }

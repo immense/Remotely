@@ -20,418 +20,417 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Remotely.Server.Pages
+namespace Remotely.Server.Pages;
+
+public class AppSettingsModel
 {
-    public class AppSettingsModel
+    [Display(Name = "Allow API Login")]
+    public bool AllowApiLogin { get; set; }
+
+    [Display(Name = "Banned Devices")]
+    public List<string> BannedDevices { get; set; } = new();
+
+    [Display(Name = "Data Retention (days)")]
+    public double DataRetentionInDays { get; set; }
+
+    [Display(Name = "Database Provider")]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public DbProvider DBProvider { get; set; }
+
+    [Display(Name = "Enable Remote Control Recording")]
+    public bool EnableRemoteControlRecording { get; set; }
+
+    [Display(Name = "Enable Windows Event Log")]
+    public bool EnableWindowsEventLog { get; set; }
+
+    [Display(Name = "Enforce Attended Access")]
+    public bool EnforceAttendedAccess { get; set; }
+
+    [Display(Name = "Force Client HTTPS")]
+    public bool ForceClientHttps { get; set; }
+
+    [Display(Name = "Known Proxies")]
+    public List<string> KnownProxies { get; set; } = new();
+
+    [Display(Name = "Max Concurrent Updates")]
+    public int MaxConcurrentUpdates { get; set; }
+
+    [Display(Name = "Max Organizations")]
+    public int MaxOrganizationCount { get; set; }
+    [Display(Name = "Message of the Day")]
+    public string MessageOfTheDay { get; set; }
+
+    [Display(Name = "Redirect To HTTPS")]
+    public bool RedirectToHttps { get; set; }
+
+    [Display(Name = "Remote Control Notify User")]
+    public bool RemoteControlNotifyUser { get; set; }
+
+    [Display(Name = "Remote Control Requires Authentication")]
+    public bool RemoteControlRequiresAuthentication { get; set; }
+
+    [Display(Name = "Remote Control Session Limit")]
+    public double RemoteControlSessionLimit { get; set; }
+
+    [Display(Name = "Require 2FA")]
+    public bool Require2FA { get; set; }
+
+    [Display(Name = "SMTP Display Name")]
+    public string SmtpDisplayName { get; set; }
+
+    [Display(Name = "SMTP Email")]
+    [EmailAddress]
+    public string SmtpEmail { get; set; }
+
+    [Display(Name = "SMTP Host")]
+    public string SmtpHost { get; set; }
+    [Display(Name = "SMTP Local Domain")]
+    public string SmtpLocalDomain { get; set; }
+
+    [Display(Name = "SMTP Check Certificate Revocation")]
+    public bool SmtpCheckCertificateRevocation { get; set; }
+
+    [Display(Name = "SMTP Password")]
+    public string SmtpPassword { get; set; }
+
+    [Display(Name = "SMTP Port")]
+    public int SmtpPort { get; set; }
+
+    [Display(Name = "SMTP Username")]
+    public string SmtpUserName { get; set; }
+
+    [Display(Name = "Theme")]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public Theme Theme { get; set; }
+
+    [Display(Name = "Trusted CORS Origins")]
+    public List<string> TrustedCorsOrigins { get; set; } = new();
+
+    [Display(Name = "Use HSTS")]
+    public bool UseHsts { get; set; }
+
+    [Display(Name = "Use HTTP Logging")]
+    public bool UseHttpLogging { get; set; }
+}
+
+public class ConnectionStringsModel
+{
+    [Display(Name = "PostgreSQL")]
+    public string PostgreSQL { get; set; }
+
+    [Display(Name = "SQLite")]
+    public string SQLite { get; set; }
+
+    [Display(Name = "SQL Server")]
+    public string SQLServer { get; set; }
+}
+
+public partial class ServerConfig : AuthComponentBase
+{
+    private string _alertMessage;
+    private string _bannedDeviceSelected;
+    private string _bannedDeviceToAdd;
+
+    private string _knownProxySelected;
+    private string _knownProxyToAdd;
+
+    private bool _showMyOrgAdminsOnly = true;
+    private bool _showAdminsOnly;
+
+    private string _trustedCorsOriginSelected;
+    private string _trustedCorsOriginToAdd;
+
+    private readonly List<RemotelyUser> _userList = new();
+
+
+    [Inject]
+    private IHubContext<AgentHub> AgentHubContext { get; set; }
+
+    [Inject]
+    private IConfiguration Configuration { get; set; }
+
+    private ConnectionStringsModel ConnectionStrings { get; } = new();
+
+    [Inject]
+    private IDataService DataService { get; set; }
+
+    [Inject]
+    private IEmailSenderEx EmailSender { get; set; }
+
+    [Inject]
+    private IWebHostEnvironment HostEnv { get; set; }
+
+    [Inject]
+    private ILogger<ServerConfig> Logger { get; set; }
+
+    [Inject]
+    private IAgentHubSessionCache ServiceSessionCache { get; init; }
+
+    private AppSettingsModel Input { get; } = new();
+
+    [Inject]
+    private IModalService ModalService { get; set; }
+
+    [Inject]
+    private IUpgradeService UpgradeService { get; init; }
+
+    [Inject]
+    private ICircuitManager CircuitManager { get; set; }
+
+    private IEnumerable<string> OutdatedDevices => GetOutdatedDevices();
+
+    [Inject]
+    private IToastService ToastService { get; set; }
+    private int TotalDevices => DataService.GetTotalDevices();
+    private IEnumerable<RemotelyUser> UserList
     {
-        [Display(Name = "Allow API Login")]
-        public bool AllowApiLogin { get; set; }
-
-        [Display(Name = "Banned Devices")]
-        public List<string> BannedDevices { get; set; } = new();
-
-        [Display(Name = "Data Retention (days)")]
-        public double DataRetentionInDays { get; set; }
-
-        [Display(Name = "Database Provider")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public DbProvider DBProvider { get; set; }
-
-        [Display(Name = "Enable Remote Control Recording")]
-        public bool EnableRemoteControlRecording { get; set; }
-
-        [Display(Name = "Enable Windows Event Log")]
-        public bool EnableWindowsEventLog { get; set; }
-
-        [Display(Name = "Enforce Attended Access")]
-        public bool EnforceAttendedAccess { get; set; }
-
-        [Display(Name = "Force Client HTTPS")]
-        public bool ForceClientHttps { get; set; }
-
-        [Display(Name = "Known Proxies")]
-        public List<string> KnownProxies { get; set; } = new();
-
-        [Display(Name = "Max Concurrent Updates")]
-        public int MaxConcurrentUpdates { get; set; }
-
-        [Display(Name = "Max Organizations")]
-        public int MaxOrganizationCount { get; set; }
-        [Display(Name = "Message of the Day")]
-        public string MessageOfTheDay { get; set; }
-
-        [Display(Name = "Redirect To HTTPS")]
-        public bool RedirectToHttps { get; set; }
-
-        [Display(Name = "Remote Control Notify User")]
-        public bool RemoteControlNotifyUser { get; set; }
-
-        [Display(Name = "Remote Control Requires Authentication")]
-        public bool RemoteControlRequiresAuthentication { get; set; }
-
-        [Display(Name = "Remote Control Session Limit")]
-        public double RemoteControlSessionLimit { get; set; }
-
-        [Display(Name = "Require 2FA")]
-        public bool Require2FA { get; set; }
-
-        [Display(Name = "SMTP Display Name")]
-        public string SmtpDisplayName { get; set; }
-
-        [Display(Name = "SMTP Email")]
-        [EmailAddress]
-        public string SmtpEmail { get; set; }
-
-        [Display(Name = "SMTP Host")]
-        public string SmtpHost { get; set; }
-        [Display(Name = "SMTP Local Domain")]
-        public string SmtpLocalDomain { get; set; }
-
-        [Display(Name = "SMTP Check Certificate Revocation")]
-        public bool SmtpCheckCertificateRevocation { get; set; }
-
-        [Display(Name = "SMTP Password")]
-        public string SmtpPassword { get; set; }
-
-        [Display(Name = "SMTP Port")]
-        public int SmtpPort { get; set; }
-
-        [Display(Name = "SMTP Username")]
-        public string SmtpUserName { get; set; }
-
-        [Display(Name = "Theme")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public Theme Theme { get; set; }
-
-        [Display(Name = "Trusted CORS Origins")]
-        public List<string> TrustedCorsOrigins { get; set; } = new();
-
-        [Display(Name = "Use HSTS")]
-        public bool UseHsts { get; set; }
-
-        [Display(Name = "Use HTTP Logging")]
-        public bool UseHttpLogging { get; set; }
+        get
+        {
+            return _userList.Where(x =>
+                (!_showAdminsOnly || x.IsServerAdmin) &&
+                (!_showMyOrgAdminsOnly || x.OrganizationID == User.OrganizationID));
+        }
     }
 
-    public class ConnectionStringsModel
+    protected override async Task OnInitializedAsync()
     {
-        [Display(Name = "PostgreSQL")]
-        public string PostgreSQL { get; set; }
+        await base.OnInitializedAsync();
 
-        [Display(Name = "SQLite")]
-        public string SQLite { get; set; }
+        if (!User.IsServerAdmin)
+        {
+            return;
+        }
 
-        [Display(Name = "SQL Server")]
-        public string SQLServer { get; set; }
+        Configuration.Bind("ApplicationOptions", Input);
+        Configuration.Bind("ConnectionStrings", ConnectionStrings);
+        _userList.AddRange(DataService.GetAllUsersForServer().OrderBy(x => x.UserName));
     }
 
-    public partial class ServerConfig : AuthComponentBase
+    private void AddBannedDevice()
     {
-        private string _alertMessage;
-        private string _bannedDeviceSelected;
-        private string _bannedDeviceToAdd;
-
-        private string _knownProxySelected;
-        private string _knownProxyToAdd;
-
-        private bool _showMyOrgAdminsOnly = true;
-        private bool _showAdminsOnly;
-
-        private string _trustedCorsOriginSelected;
-        private string _trustedCorsOriginToAdd;
-
-        private readonly List<RemotelyUser> _userList = new();
-
-
-        [Inject]
-        private IHubContext<AgentHub> AgentHubContext { get; set; }
-
-        [Inject]
-        private IConfiguration Configuration { get; set; }
-
-        private ConnectionStringsModel ConnectionStrings { get; } = new();
-
-        [Inject]
-        private IDataService DataService { get; set; }
-
-        [Inject]
-        private IEmailSenderEx EmailSender { get; set; }
-
-        [Inject]
-        private IWebHostEnvironment HostEnv { get; set; }
-
-        [Inject]
-        private ILogger<ServerConfig> Logger { get; set; }
-
-        [Inject]
-        private IAgentHubSessionCache ServiceSessionCache { get; init; }
-
-        private AppSettingsModel Input { get; } = new();
-
-        [Inject]
-        private IModalService ModalService { get; set; }
-
-        [Inject]
-        private IUpgradeService UpgradeService { get; init; }
-
-        [Inject]
-        private ICircuitManager CircuitManager { get; set; }
-
-        private IEnumerable<string> OutdatedDevices => GetOutdatedDevices();
-
-        [Inject]
-        private IToastService ToastService { get; set; }
-        private int TotalDevices => DataService.GetTotalDevices();
-        private IEnumerable<RemotelyUser> UserList
+        if (string.IsNullOrWhiteSpace(_bannedDeviceToAdd))
         {
-            get
-            {
-                return _userList.Where(x =>
-                    (!_showAdminsOnly || x.IsServerAdmin) &&
-                    (!_showMyOrgAdminsOnly || x.OrganizationID == User.OrganizationID));
-            }
+            return;
         }
 
-        protected override async Task OnInitializedAsync()
+        Input.BannedDevices.Add(_bannedDeviceToAdd);
+        _bannedDeviceToAdd = string.Empty;
+    }
+
+    private void AddKnownProxy()
+    {
+        if (string.IsNullOrWhiteSpace(_knownProxyToAdd))
         {
-            await base.OnInitializedAsync();
-
-            if (!User.IsServerAdmin)
-            {
-                return;
-            }
-
-            Configuration.Bind("ApplicationOptions", Input);
-            Configuration.Bind("ConnectionStrings", ConnectionStrings);
-            _userList.AddRange(DataService.GetAllUsersForServer().OrderBy(x => x.UserName));
+            return;
         }
 
-        private void AddBannedDevice()
-        {
-            if (string.IsNullOrWhiteSpace(_bannedDeviceToAdd))
-            {
-                return;
-            }
+        Input.KnownProxies.Add(_knownProxyToAdd);
+        _knownProxyToAdd = string.Empty;
+    }
 
-            Input.BannedDevices.Add(_bannedDeviceToAdd);
-            _bannedDeviceToAdd = string.Empty;
+    private void AddTrustedCorsOrigin()
+    {
+        if (string.IsNullOrWhiteSpace(_trustedCorsOriginToAdd))
+        {
+            return;
         }
 
-        private void AddKnownProxy()
-        {
-            if (string.IsNullOrWhiteSpace(_knownProxyToAdd))
-            {
-                return;
-            }
+        Input.TrustedCorsOrigins.Add(_trustedCorsOriginToAdd);
+        _trustedCorsOriginToAdd = null;
+    }
 
-            Input.KnownProxies.Add(_knownProxyToAdd);
-            _knownProxyToAdd = string.Empty;
+    private IEnumerable<string> GetOutdatedDevices()
+    {
+        try
+        {
+            var currentVersion = UpgradeService.GetCurrentVersion();
+
+            return ServiceSessionCache.GetAllDevices()
+                .Where(x => Version.TryParse(x.AgentVersion, out var result) && result < currentVersion)
+                .Select(x => x.ID);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while getting outdated devices.");
         }
 
-        private void AddTrustedCorsOrigin()
-        {
-            if (string.IsNullOrWhiteSpace(_trustedCorsOriginToAdd))
-            {
-                return;
-            }
+        return Enumerable.Empty<string>();
+    }
 
-            Input.TrustedCorsOrigins.Add(_trustedCorsOriginToAdd);
-            _trustedCorsOriginToAdd = null;
+    private void HandleBannedDeviceKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key.Equals("Enter", StringComparison.OrdinalIgnoreCase))
+        {
+            AddBannedDevice();
+        }
+    }
+
+    private void HandleKnownProxyKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key.Equals("Enter", StringComparison.OrdinalIgnoreCase))
+        {
+            AddKnownProxy();
+        }
+    }
+
+    private void HandleTrustedCorsKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key.Equals("Enter", StringComparison.OrdinalIgnoreCase))
+        {
+            AddTrustedCorsOrigin();
+        }
+    }
+    private async Task HandleValidSubmit(EditContext context)
+    {
+        await Save();
+    }
+
+    private void RemoveBannedDevice()
+    {
+        if (string.IsNullOrWhiteSpace(_bannedDeviceSelected))
+        {
+            return;
         }
 
-        private IEnumerable<string> GetOutdatedDevices()
+        Input.BannedDevices.Remove(_bannedDeviceSelected);
+        _bannedDeviceSelected = null;
+    }
+
+    private void RemoveKnownProxy()
+    {
+        if (string.IsNullOrWhiteSpace(_knownProxySelected))
         {
-            try
-            {
-                var currentVersion = UpgradeService.GetCurrentVersion();
+            return;
+        }
+        Input.KnownProxies.Remove(_knownProxySelected);
+        _knownProxySelected = null;
+    }
 
-                return ServiceSessionCache.GetAllDevices()
-                    .Where(x => Version.TryParse(x.AgentVersion, out var result) && result < currentVersion)
-                    .Select(x => x.ID);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Error while getting outdated devices.");
-            }
-
-            return Enumerable.Empty<string>();
+    private void RemoveTrustedCorsOrigin()
+    {
+        if (string.IsNullOrWhiteSpace(_trustedCorsOriginSelected))
+        {
+            return;
         }
 
-        private void HandleBannedDeviceKeyDown(KeyboardEventArgs args)
+        Input.TrustedCorsOrigins.Remove(_trustedCorsOriginSelected);
+        _trustedCorsOriginSelected = null;
+    }
+
+    private async Task Save()
+    {
+        var resetEvent = new ManualResetEventSlim();
+
+        Configuration.GetReloadToken().RegisterChangeCallback((e) =>
         {
-            if (args.Key.Equals("Enter", StringComparison.OrdinalIgnoreCase))
-            {
-                AddBannedDevice();
-            }
+            resetEvent.Set();
+        }, null);
+
+        await SaveInputToAppSettings();
+
+        resetEvent.Wait(5_000);
+
+        ToastService.ShowToast("Configuration saved.");
+        _alertMessage = "Configuration saved.";
+    }
+
+    private async Task SaveAndTestSmtpSettings()
+    {
+        await SaveInputToAppSettings();
+
+        var success = await EmailSender.SendEmailAsync(User.Email, "Remotely Test Email", "Congratulations! Your SMTP settings are working!", User.OrganizationID);
+        if (success)
+        {
+            ToastService.ShowToast($"Test email sent to {User.Email}.  Check your inbox (or spam folder).");
+            _alertMessage = $"Test email sent to {User.Email}.  Check your inbox (or spam folder).";
+        }
+        else
+        {
+            ToastService.ShowToast("Error sending email.  Check the server logs for details.", classString: "bg-danger");
+            _alertMessage = "Error sending email.  Check the server logs for details.";
+        }
+    }
+
+    private async Task SaveInputToAppSettings()
+    {
+        string savePath;
+        var prodSettings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.Production.json");
+        var stagingSettings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.Staging.json");
+        var devSettings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.Development.json");
+        var settings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.json");
+
+        if (HostEnv.IsProduction() && prodSettings.Exists)
+        {
+            savePath = prodSettings.PhysicalPath;
+        }
+        else if (HostEnv.IsStaging() && stagingSettings.Exists)
+        {
+            savePath = stagingSettings.PhysicalPath;
+        }
+        else if (HostEnv.IsDevelopment() && devSettings.Exists)
+        {
+            savePath = devSettings.PhysicalPath;
+        }
+        else if (settings.Exists)
+        {
+            savePath = settings.PhysicalPath;
+        }
+        else
+        {
+            return;
         }
 
-        private void HandleKnownProxyKeyDown(KeyboardEventArgs args)
+        var settingsJson = JsonSerializer.Deserialize<IDictionary<string, object>>(await System.IO.File.ReadAllTextAsync(savePath));
+        settingsJson["ApplicationOptions"] = Input;
+        settingsJson["ConnectionStrings"] = ConnectionStrings;
+
+        await System.IO.File.WriteAllTextAsync(savePath, JsonSerializer.Serialize(settingsJson, new JsonSerializerOptions() { WriteIndented = true }));
+
+        if (Configuration is IConfigurationRoot root)
         {
-            if (args.Key.Equals("Enter", StringComparison.OrdinalIgnoreCase))
-            {
-                AddKnownProxy();
-            }
+            root.Reload();
+        }
+    }
+    private void SetIsServerAdmin(ChangeEventArgs ev, RemotelyUser user)
+    {
+        var isAdmin = (bool)ev.Value;
+        DataService.SetIsServerAdmin(user.Id, isAdmin, User.Id);
+        ToastService.ShowToast("Server admins updated.");
+    }
+
+    private void ShowOutdatedDevices()
+    {
+        if (OutdatedDevices.Any())
+        {
+            var outdatedDeviceNames = DataService
+                .GetDevices(OutdatedDevices)
+                .Select(x => x.DeviceName);
+
+            ModalService.ShowModal("Outdated Devices",
+                (new[] { "Outdated Devices:" }).Concat(outdatedDeviceNames).ToArray());
+        }
+        else
+        {
+            ModalService.ShowModal("Outdated Devices", new[] { "There are no outdated devices currently online." });
+        }
+    }
+
+    private async Task UpdateAllDevices()
+    {
+        if (!User.IsServerAdmin)
+        {
+            return;
         }
 
-        private void HandleTrustedCorsKeyDown(KeyboardEventArgs args)
+        if (!OutdatedDevices.Any())
         {
-            if (args.Key.Equals("Enter", StringComparison.OrdinalIgnoreCase))
-            {
-                AddTrustedCorsOrigin();
-            }
-        }
-        private async Task HandleValidSubmit(EditContext context)
-        {
-            await Save();
+            ToastService.ShowToast("No agents need updating.");
+            return;
         }
 
-        private void RemoveBannedDevice()
-        {
-            if (string.IsNullOrWhiteSpace(_bannedDeviceSelected))
-            {
-                return;
-            }
+        var agentConnections = ServiceSessionCache.GetConnectionIdsByDeviceIds(OutdatedDevices);
 
-            Input.BannedDevices.Remove(_bannedDeviceSelected);
-            _bannedDeviceSelected = null;
-        }
-
-        private void RemoveKnownProxy()
-        {
-            if (string.IsNullOrWhiteSpace(_knownProxySelected))
-            {
-                return;
-            }
-            Input.KnownProxies.Remove(_knownProxySelected);
-            _knownProxySelected = null;
-        }
-
-        private void RemoveTrustedCorsOrigin()
-        {
-            if (string.IsNullOrWhiteSpace(_trustedCorsOriginSelected))
-            {
-                return;
-            }
-
-            Input.TrustedCorsOrigins.Remove(_trustedCorsOriginSelected);
-            _trustedCorsOriginSelected = null;
-        }
-
-        private async Task Save()
-        {
-            var resetEvent = new ManualResetEventSlim();
-
-            Configuration.GetReloadToken().RegisterChangeCallback((e) =>
-            {
-                resetEvent.Set();
-            }, null);
-
-            await SaveInputToAppSettings();
-
-            resetEvent.Wait(5_000);
-
-            ToastService.ShowToast("Configuration saved.");
-            _alertMessage = "Configuration saved.";
-        }
-
-        private async Task SaveAndTestSmtpSettings()
-        {
-            await SaveInputToAppSettings();
-
-            var success = await EmailSender.SendEmailAsync(User.Email, "Remotely Test Email", "Congratulations! Your SMTP settings are working!", User.OrganizationID);
-            if (success)
-            {
-                ToastService.ShowToast($"Test email sent to {User.Email}.  Check your inbox (or spam folder).");
-                _alertMessage = $"Test email sent to {User.Email}.  Check your inbox (or spam folder).";
-            }
-            else
-            {
-                ToastService.ShowToast("Error sending email.  Check the server logs for details.", classString: "bg-danger");
-                _alertMessage = "Error sending email.  Check the server logs for details.";
-            }
-        }
-
-        private async Task SaveInputToAppSettings()
-        {
-            string savePath;
-            var prodSettings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.Production.json");
-            var stagingSettings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.Staging.json");
-            var devSettings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.Development.json");
-            var settings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.json");
-
-            if (HostEnv.IsProduction() && prodSettings.Exists)
-            {
-                savePath = prodSettings.PhysicalPath;
-            }
-            else if (HostEnv.IsStaging() && stagingSettings.Exists)
-            {
-                savePath = stagingSettings.PhysicalPath;
-            }
-            else if (HostEnv.IsDevelopment() && devSettings.Exists)
-            {
-                savePath = devSettings.PhysicalPath;
-            }
-            else if (settings.Exists)
-            {
-                savePath = settings.PhysicalPath;
-            }
-            else
-            {
-                return;
-            }
-
-            var settingsJson = JsonSerializer.Deserialize<IDictionary<string, object>>(await System.IO.File.ReadAllTextAsync(savePath));
-            settingsJson["ApplicationOptions"] = Input;
-            settingsJson["ConnectionStrings"] = ConnectionStrings;
-
-            await System.IO.File.WriteAllTextAsync(savePath, JsonSerializer.Serialize(settingsJson, new JsonSerializerOptions() { WriteIndented = true }));
-
-            if (Configuration is IConfigurationRoot root)
-            {
-                root.Reload();
-            }
-        }
-        private void SetIsServerAdmin(ChangeEventArgs ev, RemotelyUser user)
-        {
-            var isAdmin = (bool)ev.Value;
-            DataService.SetIsServerAdmin(user.Id, isAdmin, User.Id);
-            ToastService.ShowToast("Server admins updated.");
-        }
-
-        private void ShowOutdatedDevices()
-        {
-            if (OutdatedDevices.Any())
-            {
-                var outdatedDeviceNames = DataService
-                    .GetDevices(OutdatedDevices)
-                    .Select(x => x.DeviceName);
-
-                ModalService.ShowModal("Outdated Devices",
-                    (new[] { "Outdated Devices:" }).Concat(outdatedDeviceNames).ToArray());
-            }
-            else
-            {
-                ModalService.ShowModal("Outdated Devices", new[] { "There are no outdated devices currently online." });
-            }
-        }
-
-        private async Task UpdateAllDevices()
-        {
-            if (!User.IsServerAdmin)
-            {
-                return;
-            }
-
-            if (!OutdatedDevices.Any())
-            {
-                ToastService.ShowToast("No agents need updating.");
-                return;
-            }
-
-            var agentConnections = ServiceSessionCache.GetConnectionIdsByDeviceIds(OutdatedDevices);
-
-            await AgentHubContext.Clients.Clients(agentConnections).SendAsync("ReinstallAgent");
-            ToastService.ShowToast("Update command sent.");
-        }
+        await AgentHubContext.Clients.Clients(agentConnections).SendAsync("ReinstallAgent");
+        ToastService.ShowToast("Update command sent.");
     }
 }

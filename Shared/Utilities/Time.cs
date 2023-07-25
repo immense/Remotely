@@ -6,53 +6,52 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely.Shared.Utilities
+namespace Remotely.Shared.Utilities;
+
+// TODO: Replace with ISystemTime.
+public static class Time
 {
-    // TODO: Replace with ISystemTime.
-    public static class Time
+    private static TimeSpan? _adjustBy;
+    private static DateTimeOffset? _time;
+
+    public static DateTimeOffset Now
     {
-        private static TimeSpan? _adjustBy;
-        private static DateTimeOffset? _time;
-
-        public static DateTimeOffset Now
+        get
         {
-            get
-            {
-                var baseTime = _time ?? DateTimeOffset.Now;
-                if (_adjustBy.HasValue)
-                {
-                    return baseTime.Add(_adjustBy.Value);
-                }
-                return baseTime;
-            }
-        }
-
-        public static DateTimeOffset UtcNow => _time ?? DateTimeOffset.UtcNow;
-
-        public static DateTimeOffset Adjust(TimeSpan by)
-        {
+            var baseTime = _time ?? DateTimeOffset.Now;
             if (_adjustBy.HasValue)
             {
-                _adjustBy = _adjustBy.Value.Add(by);
+                return baseTime.Add(_adjustBy.Value);
             }
-            else
-            {
-                _adjustBy = by;
-            }
-
-            return Now;
+            return baseTime;
         }
+    }
 
-        public static void Reset()
+    public static DateTimeOffset UtcNow => _time ?? DateTimeOffset.UtcNow;
+
+    public static DateTimeOffset Adjust(TimeSpan by)
+    {
+        if (_adjustBy.HasValue)
         {
-            _adjustBy = null;
-            _time = null;
+            _adjustBy = _adjustBy.Value.Add(by);
+        }
+        else
+        {
+            _adjustBy = by;
         }
 
-        public static void Set(DateTimeOffset time)
-        {
-            _adjustBy = null;
-            _time = time;
-        }
+        return Now;
+    }
+
+    public static void Reset()
+    {
+        _adjustBy = null;
+        _time = null;
+    }
+
+    public static void Set(DateTimeOffset time)
+    {
+        _adjustBy = null;
+        _time = time;
     }
 }

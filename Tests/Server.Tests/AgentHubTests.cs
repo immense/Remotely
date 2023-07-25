@@ -19,119 +19,118 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Remotely.Tests
+namespace Remotely.Tests;
+
+[TestClass]
+public class AgentHubTests
 {
-    [TestClass]
-    public class AgentHubTests
+    private TestData _testData;
+
+    public IDataService DataService { get; private set; }
+
+    [TestMethod]
+    [DoNotParallelize]
+    public async Task DeviceCameOnline_BannedByName()
     {
-        private TestData _testData;
+        var circuitManager = new Mock<ICircuitManager>();
+        var circuitConnection = new Mock<ICircuitConnection>();
+        circuitManager.Setup(x => x.Connections).Returns(new[] { circuitConnection.Object });
+        circuitConnection.Setup(x => x.User).Returns(_testData.Org1Admin1);
+        var appConfig = new Mock<IApplicationConfig>();
+        var viewerHub = new Mock<IHubContext<ViewerHub>>();
+        var expiringTokenService = new Mock<IExpiringTokenService>();
+        var serviceSessionCache = new Mock<IAgentHubSessionCache>();
+        var logger = new Mock<ILogger<AgentHub>>();
 
-        public IDataService DataService { get; private set; }
+        appConfig.Setup(x => x.BannedDevices).Returns(new string[] { _testData.Org1Device1.DeviceName });
 
-        [TestMethod]
-        [DoNotParallelize]
-        public async Task DeviceCameOnline_BannedByName()
+        var hub = new AgentHub(
+            DataService, 
+            appConfig.Object, 
+            serviceSessionCache.Object, 
+            viewerHub.Object, 
+            circuitManager.Object, 
+            expiringTokenService.Object,
+            logger.Object);
+
+        var hubClients = new Mock<IHubCallerClients>();
+        var caller = new Mock<ISingleClientProxy>();
+        hubClients.Setup(x => x.Caller).Returns(caller.Object);
+        hub.Clients = hubClients.Object;
+
+        Assert.IsFalse(await hub.DeviceCameOnline(_testData.Org1Device1.ToDto()));
+        hubClients.Verify(x => x.Caller, Times.Once);
+        caller.Verify(x => x.SendCoreAsync("UninstallAgent", It.IsAny<object[]>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    // TODO: Checking of device ban should be pulled out into
+    // a separate service that's better testable.
+    [TestMethod]
+    [DoNotParallelize]
+    public async Task DeviceCameOnline_BannedById()
+    {
+        var circuitManager = new Mock<ICircuitManager>();
+        var circuitConnection = new Mock<ICircuitConnection>();
+        circuitManager.Setup(x => x.Connections).Returns(new[] { circuitConnection.Object });
+        circuitConnection.Setup(x => x.User).Returns(_testData.Org1Admin1);
+        var appConfig = new Mock<IApplicationConfig>();
+        var viewerHub = new Mock<IHubContext<ViewerHub>>();
+        var expiringTokenService = new Mock<IExpiringTokenService>();
+        var serviceSessionCache = new Mock<IAgentHubSessionCache>();
+        var logger = new Mock<ILogger<AgentHub>>();
+
+        appConfig.Setup(x => x.BannedDevices).Returns(new string[] { _testData.Org1Device1.ID });
+
+        var hub = new AgentHub(
+            DataService,
+            appConfig.Object,
+            serviceSessionCache.Object,
+            viewerHub.Object,
+            circuitManager.Object,
+            expiringTokenService.Object,
+            logger.Object);
+
+        var hubClients = new Mock<IHubCallerClients>();
+        var caller = new Mock<ISingleClientProxy>();
+        hubClients.Setup(x => x.Caller).Returns(caller.Object);
+        hub.Clients = hubClients.Object;
+
+        Assert.IsFalse(await hub.DeviceCameOnline(_testData.Org1Device1.ToDto()));
+        hubClients.Verify(x => x.Caller, Times.Once);
+        caller.Verify(x => x.SendCoreAsync("UninstallAgent", It.IsAny<object[]>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [TestCleanup]
+    public void TestCleanup()
+    {
+        _testData.ClearData();
+    }
+
+    [TestInitialize]
+    public async Task TestInit()
+    {
+        _testData = new TestData();
+        await _testData.Init();
+        DataService = IoCActivator.ServiceProvider.GetRequiredService<IDataService>();
+    }
+
+    private class CallerContext : HubCallerContext
+    {
+        public override string ConnectionId => "test-id";
+
+        public override string UserIdentifier => null;
+
+        public override ClaimsPrincipal User => null;
+
+        public override IDictionary<object, object> Items { get; } = new Dictionary<object, object>();
+
+        public override IFeatureCollection Features { get; } = new FeatureCollection();
+
+        public override CancellationToken ConnectionAborted => CancellationToken.None;
+
+        public override void Abort()
         {
-            var circuitManager = new Mock<ICircuitManager>();
-            var circuitConnection = new Mock<ICircuitConnection>();
-            circuitManager.Setup(x => x.Connections).Returns(new[] { circuitConnection.Object });
-            circuitConnection.Setup(x => x.User).Returns(_testData.Org1Admin1);
-            var appConfig = new Mock<IApplicationConfig>();
-            var viewerHub = new Mock<IHubContext<ViewerHub>>();
-            var expiringTokenService = new Mock<IExpiringTokenService>();
-            var serviceSessionCache = new Mock<IAgentHubSessionCache>();
-            var logger = new Mock<ILogger<AgentHub>>();
-
-            appConfig.Setup(x => x.BannedDevices).Returns(new string[] { _testData.Org1Device1.DeviceName });
-
-            var hub = new AgentHub(
-                DataService, 
-                appConfig.Object, 
-                serviceSessionCache.Object, 
-                viewerHub.Object, 
-                circuitManager.Object, 
-                expiringTokenService.Object,
-                logger.Object);
-
-            var hubClients = new Mock<IHubCallerClients>();
-            var caller = new Mock<ISingleClientProxy>();
-            hubClients.Setup(x => x.Caller).Returns(caller.Object);
-            hub.Clients = hubClients.Object;
-
-            Assert.IsFalse(await hub.DeviceCameOnline(_testData.Org1Device1.ToDto()));
-            hubClients.Verify(x => x.Caller, Times.Once);
-            caller.Verify(x => x.SendCoreAsync("UninstallAgent", It.IsAny<object[]>(), It.IsAny<CancellationToken>()), Times.Once);
-        }
-
-        // TODO: Checking of device ban should be pulled out into
-        // a separate service that's better testable.
-        [TestMethod]
-        [DoNotParallelize]
-        public async Task DeviceCameOnline_BannedById()
-        {
-            var circuitManager = new Mock<ICircuitManager>();
-            var circuitConnection = new Mock<ICircuitConnection>();
-            circuitManager.Setup(x => x.Connections).Returns(new[] { circuitConnection.Object });
-            circuitConnection.Setup(x => x.User).Returns(_testData.Org1Admin1);
-            var appConfig = new Mock<IApplicationConfig>();
-            var viewerHub = new Mock<IHubContext<ViewerHub>>();
-            var expiringTokenService = new Mock<IExpiringTokenService>();
-            var serviceSessionCache = new Mock<IAgentHubSessionCache>();
-            var logger = new Mock<ILogger<AgentHub>>();
-
-            appConfig.Setup(x => x.BannedDevices).Returns(new string[] { _testData.Org1Device1.ID });
-
-            var hub = new AgentHub(
-                DataService,
-                appConfig.Object,
-                serviceSessionCache.Object,
-                viewerHub.Object,
-                circuitManager.Object,
-                expiringTokenService.Object,
-                logger.Object);
-
-            var hubClients = new Mock<IHubCallerClients>();
-            var caller = new Mock<ISingleClientProxy>();
-            hubClients.Setup(x => x.Caller).Returns(caller.Object);
-            hub.Clients = hubClients.Object;
-
-            Assert.IsFalse(await hub.DeviceCameOnline(_testData.Org1Device1.ToDto()));
-            hubClients.Verify(x => x.Caller, Times.Once);
-            caller.Verify(x => x.SendCoreAsync("UninstallAgent", It.IsAny<object[]>(), It.IsAny<CancellationToken>()), Times.Once);
-        }
-
-        [TestCleanup]
-        public void TestCleanup()
-        {
-            _testData.ClearData();
-        }
-
-        [TestInitialize]
-        public async Task TestInit()
-        {
-            _testData = new TestData();
-            await _testData.Init();
-            DataService = IoCActivator.ServiceProvider.GetRequiredService<IDataService>();
-        }
-
-        private class CallerContext : HubCallerContext
-        {
-            public override string ConnectionId => "test-id";
-
-            public override string UserIdentifier => null;
-
-            public override ClaimsPrincipal User => null;
-
-            public override IDictionary<object, object> Items { get; } = new Dictionary<object, object>();
-
-            public override IFeatureCollection Features { get; } = new FeatureCollection();
-
-            public override CancellationToken ConnectionAborted => CancellationToken.None;
-
-            public override void Abort()
-            {
-                
-            }
+            
         }
     }
 }

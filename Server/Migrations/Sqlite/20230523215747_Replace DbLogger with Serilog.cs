@@ -2,47 +2,46 @@
 
 #nullable disable
 
-namespace Remotely.Server.Migrations.Sqlite
+namespace Remotely.Server.Migrations.Sqlite;
+
+/// <inheritdoc />
+public partial class ReplaceDbLoggerwithSerilog : Migration
 {
     /// <inheritdoc />
-    public partial class ReplaceDbLoggerwithSerilog : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropTable(
-                name: "EventLogs");
-        }
+        migrationBuilder.DropTable(
+            name: "EventLogs");
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.CreateTable(
-                name: "EventLogs",
-                columns: table => new
-                {
-                    ID = table.Column<string>(type: "TEXT", nullable: false),
-                    OrganizationID = table.Column<string>(type: "TEXT", nullable: true),
-                    EventType = table.Column<int>(type: "INTEGER", nullable: false),
-                    Message = table.Column<string>(type: "TEXT", nullable: true),
-                    Source = table.Column<string>(type: "TEXT", nullable: true),
-                    StackTrace = table.Column<string>(type: "TEXT", nullable: true),
-                    TimeStamp = table.Column<string>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EventLogs", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_EventLogs_Organizations_OrganizationID",
-                        column: x => x.OrganizationID,
-                        principalTable: "Organizations",
-                        principalColumn: "ID");
-                });
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.CreateTable(
+            name: "EventLogs",
+            columns: table => new
+            {
+                ID = table.Column<string>(type: "TEXT", nullable: false),
+                OrganizationID = table.Column<string>(type: "TEXT", nullable: true),
+                EventType = table.Column<int>(type: "INTEGER", nullable: false),
+                Message = table.Column<string>(type: "TEXT", nullable: true),
+                Source = table.Column<string>(type: "TEXT", nullable: true),
+                StackTrace = table.Column<string>(type: "TEXT", nullable: true),
+                TimeStamp = table.Column<string>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_EventLogs", x => x.ID);
+                table.ForeignKey(
+                    name: "FK_EventLogs_Organizations_OrganizationID",
+                    column: x => x.OrganizationID,
+                    principalTable: "Organizations",
+                    principalColumn: "ID");
+            });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_EventLogs_OrganizationID",
-                table: "EventLogs",
-                column: "OrganizationID");
-        }
+        migrationBuilder.CreateIndex(
+            name: "IX_EventLogs_OrganizationID",
+            table: "EventLogs",
+            column: "OrganizationID");
     }
 }

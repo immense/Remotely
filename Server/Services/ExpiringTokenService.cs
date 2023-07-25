@@ -6,28 +6,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Remotely.Server.Services
+namespace Remotely.Server.Services;
+
+public interface IExpiringTokenService
 {
-    public interface IExpiringTokenService
+    string GetToken(DateTimeOffset expiration);
+    bool TryGetExpiration(string secret, out DateTimeOffset tokenExpiration);
+}
+
+public class ExpiringTokenService : IExpiringTokenService
+{
+    private static readonly MemoryCache _tokenCache = new(new MemoryCacheOptions());
+
+    public string GetToken(DateTimeOffset expiration)
     {
-        string GetToken(DateTimeOffset expiration);
-        bool TryGetExpiration(string secret, out DateTimeOffset tokenExpiration);
+        var secret = RandomGenerator.GenerateString(36);
+        _tokenCache.Set(secret, expiration, expiration);
+        return secret;
     }
 
-    public class ExpiringTokenService : IExpiringTokenService
+    public bool TryGetExpiration(string secret, out DateTimeOffset tokenExpiration)
     {
-        private static readonly MemoryCache _tokenCache = new(new MemoryCacheOptions());
-
-        public string GetToken(DateTimeOffset expiration)
-        {
-            var secret = RandomGenerator.GenerateString(36);
-            _tokenCache.Set(secret, expiration, expiration);
-            return secret;
-        }
-
-        public bool TryGetExpiration(string secret, out DateTimeOffset tokenExpiration)
-        {
-            return _tokenCache.TryGetValue(secret, out tokenExpiration);
-        }
+        return _tokenCache.TryGetValue(secret, out tokenExpiration);
     }
 }
