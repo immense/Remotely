@@ -37,6 +37,8 @@ using System;
 using Immense.RemoteControl.Server.Services;
 using Serilog;
 using Nihs.SimpleMessenger;
+using Microsoft.AspNetCore.RateLimiting;
+using RatePolicyNames = Remotely.Server.RateLimiting.PolicyNames;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -53,7 +55,12 @@ if (OperatingSystem.IsWindows() &&
     builder.Logging.AddEventLog();
 }
 
-var dbProvider = configuration["ApplicationOptions:DBProvider"].ToLower();
+var dbProvider = configuration["ApplicationOptions:DBProvider"]?.ToLower();
+if (string.IsNullOrWhiteSpace(dbProvider))
+{
+    throw new InvalidOperationException("DBProvider is missing from appsettings.json.");
+}
+
 if (dbProvider == "sqlite")
 {
     services.AddDbContext<AppDb, SqliteDbContext>(options =>
@@ -191,7 +198,21 @@ services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Remotely API", Version = "v1" });
 });
 
+services.AddRateLimiter(options =>
+{
+    options.AddConcurrencyLimiter(RatePolicyNames.AgentUpdateDownloads, clOptions =>
+    {
+        clOptions.QueueLimit = int.MaxValue;
 
+        var concurrentPermits = configuration.GetSection("ApplicationOptions:MaxConcurrentUpdates").Get<int>();
+        if (concurrentPermits <= 0)
+        {
+            concurrentPermits = 10;
+        }
+
+        clOptions.PermitLimit = concurrentPermits;
+    });
+});
 services.AddHttpClient();
 services.AddLogging();
 services.AddScoped<IEmailSenderEx, EmailSenderEx>();
@@ -233,6 +254,9 @@ services.AddRemoteControlServer(config =>
 services.AddSingleton<IAgentHubSessionCache, AgentHubSessionCache>();
 
 var app = builder.Build();
+
+app.UseRateLimiter();
+
 var appConfig = app.Services.GetRequiredService<IApplicationConfig>();
 
 if (appConfig.UseHttpLogging)
@@ -250,11 +274,11 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Error");
-    if (bool.Parse(app.Configuration["ApplicationOptions:UseHsts"]))
+    if (bool.TryParse(app.Configuration["ApplicationOptions:UseHsts"], out var hsts) && hsts)
     {
         app.UseHsts();
     }
-    if (bool.Parse(app.Configuration["ApplicationOptions:RedirectToHttps"]))
+    if (bool.TryParse(app.Configuration["ApplicationOptions:RedirectToHttps"], out var redirect) && redirect)
     {
         app.UseHttpsRedirection();
     }

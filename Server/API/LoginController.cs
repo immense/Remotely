@@ -49,11 +49,15 @@ public class LoginController : ControllerBase
     [HttpGet("Logout")]
     public async Task<IActionResult> Logout()
     {
-        string orgId = null;
-
         if (HttpContext?.User?.Identity?.IsAuthenticated == true)
         {
-            orgId = _dataService.GetUserByNameWithOrg(HttpContext.User.Identity.Name)?.OrganizationID;
+            var userResult = await _dataService.GetUserByName($"{HttpContext.User.Identity.Name}");
+
+            if (!userResult.IsSuccess)
+            {
+                return NotFound();
+            }
+
             var activeSessions = _remoteControlSessionCache
                 .Sessions
                 .Where(x => x.RequesterUserName == HttpContext.User.Identity.Name);
@@ -76,8 +80,6 @@ public class LoginController : ControllerBase
         {
             return NotFound();
         }
-
-        var orgId = _dataService.GetUserByNameWithOrg(login.Email)?.OrganizationID;
 
         var result = await _signInManager.PasswordSignInAsync(login.Email, login.Password, false, true);
         if (result.Succeeded)

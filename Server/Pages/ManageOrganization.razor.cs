@@ -279,7 +279,7 @@ public partial class ManageOrganization : AuthComponentBase
             var result = await DataService.CreateUser(_inviteEmail, _inviteAsAdmin, User.OrganizationID);
             if (result)
             {
-                var user = await DataService.GetUserAsync(_inviteEmail);
+                var user = await DataService.GetUserByName(_inviteEmail);
 
                 await UserManager.ConfirmEmailAsync(user, await UserManager.GenerateEmailConfirmationTokenAsync(user));
 
@@ -337,7 +337,7 @@ public partial class ManageOrganization : AuthComponentBase
         }
     }
 
-    private void SetUserIsAdmin(ChangeEventArgs args, RemotelyUser orgUser)
+    private async Task SetUserIsAdmin(ChangeEventArgs args, RemotelyUser orgUser)
     {
         if (!User.IsAdministrator)
         {
@@ -349,7 +349,7 @@ public partial class ManageOrganization : AuthComponentBase
             return;
         }
 
-        DataService.ChangeUserIsAdmin(User.OrganizationID, orgUser.Id, isAdmin);
+        await DataService.ChangeUserIsAdmin(User.OrganizationID, orgUser.Id, isAdmin);
         ToastService.ShowToast("Administrator value set.");
     }
 

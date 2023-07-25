@@ -41,9 +41,19 @@ public class ExpiringTokenFilter : ActionFilterAttribute, IAsyncAuthorizationFil
     private async Task Authorize(AuthorizationFilterContext context)
     {
         var http = context.HttpContext;
+        http.Request.Headers["OrganizationID"] = string.Empty;
 
         if (http.User.Identity?.IsAuthenticated == true)
         {
+            var userResult = await _dataService.GetUserByName($"{http.User.Identity.Name}");
+            if (!userResult.IsSuccess)
+            {
+                http.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                context.Result = new UnauthorizedResult();
+                return;
+            }
+
+            http.Request.Headers["OrganizationID"] = userResult.Value.OrganizationID;
             return;
         }
 

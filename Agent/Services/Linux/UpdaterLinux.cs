@@ -131,7 +131,6 @@ public class UpdaterLinux : IUpdater
 
             _logger.LogInformation("Service Updater: Downloading install package.");
 
-            var downloadId = Guid.NewGuid().ToString();
             var zipPath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.zip");
 
             var installerPath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.sh");
@@ -156,11 +155,8 @@ public class UpdaterLinux : IUpdater
                    installerPath);
 
             await _updateDownloader.DownloadFile(
-               $"{serverUrl}/API/AgentUpdate/DownloadPackage/linux/{downloadId}",
+               $"{serverUrl}/API/AgentUpdate/DownloadPackage/linux",
                zipPath);
-
-            using var httpClient = _httpClientFactory.CreateClient();
-            using var response = httpClient.GetAsync($"{serverUrl}/api/AgentUpdate/ClearDownload/{downloadId}");
 
             _logger.LogInformation("Launching installer to perform update.");
 

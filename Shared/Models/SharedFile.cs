@@ -14,5 +14,5 @@ public class SharedFile
     public byte[] FileContents { get; set; } = Array.Empty<byte>();
     public DateTimeOffset Timestamp { get; set; } = DateTimeOffset.Now;
     public Organization? Organization { get; set; }
-    public string OrganizationID { get; set; } = null!;
+    public string? OrganizationID { get; set; }
 }

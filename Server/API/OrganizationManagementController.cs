@@ -54,14 +54,14 @@ public class OrganizationManagementController : ControllerBase
 
         if (User.Identity?.IsAuthenticated == true)
         {
-            var userResult = await _dataService.GetUserByNameWithOrg($"{User.Identity.Name}");
+            var userResult = await _dataService.GetUserByName($"{User.Identity.Name}");
             if (userResult.IsSuccess && userResult.Value.Id == userId)
             {
                 return BadRequest("You can't remove administrator rights from yourself.");
             }
         }
 
-        _dataService.ChangeUserIsAdmin(orgId, userId, isAdmin);
+        await _dataService.ChangeUserIsAdmin(orgId, userId, isAdmin);
         return NoContent();
     }
 
@@ -96,7 +96,7 @@ public class OrganizationManagementController : ControllerBase
 
         if (User.Identity?.IsAuthenticated == true)
         {
-            var userResult = await _dataService.GetUserByNameWithOrg($"{User.Identity.Name}");
+            var userResult = await _dataService.GetUserByName($"{User.Identity.Name}");
             if (userResult.IsSuccess && userResult.Value.Id == userId)
             {
                 return BadRequest("You can't delete yourself here.  You must go to the Personal Data page to delete your own account.");

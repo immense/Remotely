@@ -42,7 +42,7 @@ public class AuthService : IAuthService
 
         if (principal?.User?.Identity?.IsAuthenticated == true)
         {
-            return await _dataService.GetUserAsync($"{principal.User.Identity.Name}");
+            return await _dataService.GetUserByName($"{principal.User.Identity.Name}");
         }
 
         return Result.Fail<RemotelyUser>("Not authenticated.");

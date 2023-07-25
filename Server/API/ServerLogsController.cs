@@ -34,9 +34,15 @@ public class ServerLogsController : ControllerBase
             HttpContext.Connection.RemoteIpAddress);
 
         var zipFile = await _logsManager.ZipAllLogs();
+
         Response.OnCompleted(() =>
         {
-            Directory.Delete(zipFile.DirectoryName, true);
+            if (zipFile.Directory is null)
+            {
+                return Task.CompletedTask;
+            }
+
+            zipFile.Directory.Delete(true);
             return Task.CompletedTask;
         });
 

@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http.Extensions;
+﻿using Immense.RemoteControl.Shared.Extensions;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Remotely.Server.Auth;
 using Remotely.Server.Extensions;
 using Remotely.Server.Services;
@@ -8,20 +10,22 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace Remotely.Server.API;
 
 [ApiController]
 [Route("api/[controller]")]
 public class DevicesController : ControllerBase
 {
+    private readonly IDataService _dataService;
+    private readonly ILogger<DevicesController> _logger;
 
-    public DevicesController(IDataService dataService)
+    public DevicesController(
+        IDataService dataService,
+        ILogger<DevicesController> logger)
     {
-        DataService = dataService;
+        _dataService = dataService;
+        _logger = logger;
     }
-    private IDataService DataService { get; set; }
 
 
     [HttpGet]
@@ -33,81 +37,103 @@ public class DevicesController : ControllerBase
             return Array.Empty<Device>();
         }
 
-        if (User.Identity?.IsAuthenticated == true &&
-            !string.IsNullOrWhiteSpace(User.Identity.Name))
+        if (User.Identity?.IsAuthenticated == true)
         {
-            return DataService.GetDevicesForUser(User.Identity.Name);
+            return _dataService.GetDevicesForUser($"{User.Identity.Name}");
         }
 
         // Authorized with API key.  Return all.
-        return DataService.GetAllDevices(orgId);
+        return _dataService.GetAllDevices(orgId);
     }
 
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
     [HttpGet("{id}")]
-    public ActionResult<Device> Get(string id)
+    public async Task<ActionResult<Device>> Get(string id)
     {
         if (!Request.Headers.TryGetOrganizationId(out var orgId))
         {
             return Unauthorized();
         }
 
-        var device = DataService.GetDevice(orgId, id);
-
-        if (User.Identity?.IsAuthenticated == true &&
-            !string.IsNullOrWhiteSpace(User.Identity.Name) &&
-            !DataService.DoesUserHaveAccessToDevice(id, DataService.GetUserByNameWithOrg(User.Identity.Name)))
+        if (User.Identity?.IsAuthenticated == true)
         {
-            return Unauthorized();
+            var userResult = await _dataService.GetUserByName($"{User.Identity.Name}");
+            _logger.LogResult(userResult);
+
+            if (!userResult.IsSuccess)
+            {
+                return Unauthorized();
+            }
+
+            if (!_dataService.DoesUserHaveAccessToDevice(id, userResult.Value))
+            {
+                return Unauthorized();
+            }
         }
-        return device;
+
+        var deviceResult = await _dataService.GetDevice(orgId, id);
+        _logger.LogResult(deviceResult);
+
+        if (!deviceResult.IsSuccess)
+        {
+            return NotFound();
+        }
+
+        return deviceResult.Value;
     }
 
     [HttpPut]
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
-    public async Task<IActionResult> Update(
-        [FromBody] DeviceSetupOptions deviceOptions,
-        [FromHeader] string organizationId)
+    public async Task<IActionResult> Update([FromBody] DeviceSetupOptions deviceOptions)
     {
-        if (string.IsNullOrWhiteSpace(deviceOptions?.DeviceID) ||
-            string.IsNullOrWhiteSpace(organizationId))
-        {
-            return BadRequest("DeviceOptions and OrganizationId are required.");
-        }
-
-        if (string.IsNullOrWhiteSpace(User.Identity?.Name))
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
         {
             return Unauthorized();
         }
-
-        var user = DataService.GetUserByNameWithOrg(User.Identity.Name);
-        if (user is null)
+        
+        if (string.IsNullOrWhiteSpace(deviceOptions?.DeviceID))
         {
-            return Unauthorized();
+            return BadRequest("DeviceId is required.");
         }
 
-        if (User.Identity?.IsAuthenticated == true &&
-            !DataService.DoesUserHaveAccessToDevice(deviceOptions.DeviceID, user))
+
+        if (User.Identity?.IsAuthenticated == true)
         {
-            return Unauthorized();
+            var userResult = await _dataService.GetUserByName($"{User.Identity.Name}");
+            _logger.LogResult(userResult);
+
+            if (!userResult.IsSuccess)
+            {
+                return Unauthorized();
+            }
+
+            if (!_dataService.DoesUserHaveAccessToDevice(deviceOptions.DeviceID, userResult.Value))
+            {
+                return Unauthorized();
+            }
+
         }
 
-        var device = await DataService.UpdateDevice(deviceOptions, organizationId);
-        if (device is null)
+        var deviceResult = await _dataService.UpdateDevice(deviceOptions, orgId);
+        _logger.LogResult(deviceResult);
+
+        if (!deviceResult.IsSuccess)
         {
             return BadRequest();
         }
-        return Created(Request.GetDisplayUrl(), device);
+        return Created(Request.GetDisplayUrl(), deviceResult.Value);
     }
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] DeviceSetupOptions deviceOptions)
     {
-        var device = await DataService.CreateDevice(deviceOptions);
-        if (device is null)
+        var result = await _dataService.CreateDevice(deviceOptions);
+        _logger.LogResult(result);
+
+        if (!result.IsSuccess)
         {
             return BadRequest("Device already exists.  Use Put with authorization to update the device.");
         }
-        return Created(Request.GetDisplayUrl(), device);
+        return Created(Request.GetDisplayUrl(), result.Value);
     }
 }

@@ -102,7 +102,7 @@ public class UpdaterWin : IUpdater
             await InstallLatestVersion();
 
         }
-        catch (WebException ex) when ((ex.Response as HttpWebResponse).StatusCode == HttpStatusCode.NotModified)
+        catch (WebException ex) when (ex.Response is HttpWebResponse response && response.StatusCode == HttpStatusCode.NotModified)
         {
             _logger.LogInformation("Service Updater: Version is current.");
             return;
@@ -128,7 +128,6 @@ public class UpdaterWin : IUpdater
 
             _logger.LogInformation("Service Updater: Downloading install package.");
 
-            var downloadId = Guid.NewGuid().ToString();
             var zipPath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.zip");
 
             var installerPath = Path.Combine(Path.GetTempPath(), "Remotely_Installer.exe");
@@ -139,11 +138,8 @@ public class UpdaterWin : IUpdater
                  installerPath);
 
             await _updateDownloader.DownloadFile(
-               $"{serverUrl}/api/AgentUpdate/DownloadPackage/win-{platform}/{downloadId}",
+               $"{serverUrl}/api/AgentUpdate/DownloadPackage/win-{platform}",
                zipPath);
-
-            using var httpClient = _httpClientFactory.CreateClient();
-            using var response = httpClient.GetAsync($"{serverUrl}/api/AgentUpdate/ClearDownload/{downloadId}");
 
             foreach (var proc in Process.GetProcessesByName("Remotely_Installer"))
             {
@@ -170,7 +166,7 @@ public class UpdaterWin : IUpdater
         }
     }
 
-    private async void UpdateTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+    private async void UpdateTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
         await CheckForUpdates();
     }

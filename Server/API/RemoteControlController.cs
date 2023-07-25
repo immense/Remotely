@@ -1,21 +1,17 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Remotely.Server.Attributes;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
-using Remotely.Shared.Utilities;
 using Remotely.Shared.Models;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Remotely.Server.Auth;
 using Immense.RemoteControl.Server.Services;
-using Remotely.Server.Services.RcImplementations;
 using Immense.RemoteControl.Server.Abstractions;
 using Immense.RemoteControl.Shared.Helpers;
-using Microsoft.Build.Framework;
 using Microsoft.Extensions.Logging;
 using Remotely.Server.Extensions;
 
@@ -79,7 +75,7 @@ public class RemoteControlController : ControllerBase
             return NotFound();
         }
 
-        var userResult = await _dataService.GetUserByNameWithOrg(rcRequest.Email);
+        var userResult = await _dataService.GetUserByName(rcRequest.Email);
         if (!userResult.IsSuccess)
         {
             return NotFound();
@@ -123,7 +119,7 @@ public class RemoteControlController : ControllerBase
 
         if (User.Identity?.IsAuthenticated == true)
         {
-            var userResult = await _dataService.GetUserByNameWithOrg($"{User.Identity.Name}");
+            var userResult = await _dataService.GetUserByName($"{User.Identity.Name}");
 
             if (!userResult.IsSuccess)
             {

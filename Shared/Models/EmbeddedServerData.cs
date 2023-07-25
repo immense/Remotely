@@ -14,7 +14,7 @@ public class EmbeddedServerData
 {
     [SerializationConstructor]
     [JsonConstructor]
-    public EmbeddedServerData(Uri serverUrl, string organizationId)
+    public EmbeddedServerData(Uri serverUrl, string? organizationId)
     {
         ServerUrl = serverUrl;
         OrganizationId = organizationId ?? string.Empty;

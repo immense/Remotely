@@ -66,7 +66,8 @@ public class AppDb : IdentityDbContext
           .WithOne(x => x.Organization);
         builder.Entity<Organization>()
           .HasMany(x => x.SharedFiles)
-          .WithOne(x => x.Organization);
+          .WithOne(x => x.Organization)
+          .IsRequired(false);
         builder.Entity<Organization>()
           .HasMany(x => x.ApiTokens)
           .WithOne(x => x.Organization);

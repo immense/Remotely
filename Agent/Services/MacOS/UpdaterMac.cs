@@ -132,7 +132,6 @@ public class UpdaterMac : IUpdater
 
             _logger.LogInformation("Service Updater: Downloading install package.");
 
-            var downloadId = Guid.NewGuid().ToString();
             var zipPath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.zip");
 
             var installerPath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.sh");
@@ -142,11 +141,8 @@ public class UpdaterMac : IUpdater
                    installerPath);
 
             await _updateDownloader.DownloadFile(
-               $"{serverUrl}/API/AgentUpdate/DownloadPackage/macos-{_achitecture}/{downloadId}",
+               $"{serverUrl}/API/AgentUpdate/DownloadPackage/macos-{_achitecture}",
                zipPath);
-
-            using var httpClient = _httpClientFactory.CreateClient();
-            using var response = httpClient.GetAsync($"{serverUrl}/api/AgentUpdate/ClearDownload/{downloadId}");
 
             _logger.LogInformation("Launching installer to perform update.");
 

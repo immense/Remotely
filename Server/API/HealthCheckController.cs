@@ -26,7 +26,7 @@ public class HealthCheckController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var orgCount = await _dataService.GetOrganizationCountAsync();
-        return Ok($"Organization Count: {orgCount}");
+         _ = await _dataService.GetOrganizationCountAsync();
+        return NoContent();
     }
 }

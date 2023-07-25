@@ -50,7 +50,7 @@ public interface IDataService
 
     bool AddUserToDeviceGroup(string orgId, string groupId, string userName, out string resultMessage);
 
-    void ChangeUserIsAdmin(string organizationId, string targetUserId, bool isAdmin);
+    Task ChangeUserIsAdmin(string organizationId, string targetUserId, bool isAdmin);
 
     Task CleanupOldRecords();
 
@@ -174,11 +174,11 @@ public interface IDataService
 
     int GetTotalDevices();
 
-    Task<Result<RemotelyUser>> GetUserAsync(string username);
-
     Task<Result<RemotelyUser>> GetUserById(string userId);
 
-    Task<Result<RemotelyUser>> GetUserByNameWithOrg(string userName);
+    Task<Result<RemotelyUser>> GetUserByName(
+        string userName, 
+        Action<IQueryable<RemotelyUser>>? includesBuilder = null);
 
     Task<Result<RemotelyUserOptions>> GetUserOptions(string userName);
 
@@ -562,7 +562,7 @@ public class DataService : IDataService
 
         progressCallback.Invoke(1, file.Name);
 
-        return await AddSharedFileInternal(file.Name, fileContents, file.ContentType, organizationId);
+        return await AddSharedFileImpl(file.Name, fileContents, file.ContentType, organizationId);
     }
 
     public async Task<string> AddSharedFile(IFormFile file, string organizationId)
@@ -571,7 +571,7 @@ public class DataService : IDataService
         using var stream = file.OpenReadStream();
         await stream.ReadAsync(fileContents.AsMemory(0, (int)file.Length));
 
-        return await AddSharedFileInternal(file.Name, fileContents, file.ContentType, organizationId);
+        return await AddSharedFileImpl(file.Name, fileContents, file.ContentType, organizationId);
     }
 
     public bool AddUserToDeviceGroup(string orgId, string groupId, string userName, out string resultMessage)
@@ -622,11 +622,11 @@ public class DataService : IDataService
         return true;
     }
 
-    public void ChangeUserIsAdmin(string organizationId, string targetUserId, bool isAdmin)
+    public async Task ChangeUserIsAdmin(string organizationId, string targetUserId, bool isAdmin)
     {
         using var dbContext = _appDbFactory.GetContext();
 
-        var targetUser = dbContext.Users.FirstOrDefault(x =>
+        var targetUser = await dbContext.Users.FirstOrDefaultAsync(x =>
                             x.OrganizationID == organizationId &&
                             x.Id == targetUserId);
 
@@ -795,7 +795,7 @@ public class DataService : IDataService
 
         if (!string.IsNullOrWhiteSpace(userName))
         {
-            var userResult = await GetUserByNameWithOrg(userName);
+            var userResult = await GetUserByName(userName);
 
             if (userResult.IsSuccess)
             {
@@ -1277,10 +1277,7 @@ public class DataService : IDataService
         using var dbContext = _appDbFactory.GetContext();
         
         var query = dbContext.Devices.AsQueryable();
-        if (includesBuilder is not null)
-        {
-            includesBuilder(query);
-        }
+        includesBuilder?.Invoke(query);
         var device = await query.FirstOrDefaultAsync(x => x.ID == deviceId);
 
         if (device is null)
@@ -1683,23 +1680,6 @@ public class DataService : IDataService
         return dbContext.Devices.Count();
     }
 
-    public async Task<Result<RemotelyUser>> GetUserAsync(string username)
-    {
-        if (string.IsNullOrWhiteSpace(username))
-        {
-            return Result.Fail<RemotelyUser>("Username cannot be empty.");
-        }
-        using var dbContext = _appDbFactory.GetContext();
-
-        var user = await dbContext.Users.FirstOrDefaultAsync(x => x.UserName == username);
-
-        if (user is null)
-        {
-            return Result.Fail<RemotelyUser>("User not found.");
-        }
-        return Result.Ok(user);
-    }
-
     public async Task<Result<RemotelyUser>> GetUserById(string userId)
     {
         if (string.IsNullOrWhiteSpace(userId))
@@ -1717,7 +1697,9 @@ public class DataService : IDataService
         return Result.Ok(user);
     }
 
-    public async Task<Result<RemotelyUser>> GetUserByNameWithOrg(string userName)
+    public async Task<Result<RemotelyUser>> GetUserByName(
+        string userName,
+        Action<IQueryable<RemotelyUser>>? includesBuilder = null)
     {
         if (string.IsNullOrWhiteSpace(userName))
         {
@@ -1726,9 +1708,11 @@ public class DataService : IDataService
 
         using var dbContext = _appDbFactory.GetContext();
 
-        var user = await dbContext.Users
-            .Include(x => x.Organization)
-            .FirstOrDefaultAsync(x => x.UserName!.ToLower().Trim() == userName.ToLower().Trim());
+        var query = dbContext.Users.AsQueryable();
+        includesBuilder?.Invoke(query);
+
+        var user = await query.FirstOrDefaultAsync(x => 
+            x.UserName!.ToLower().Trim() == userName.ToLower().Trim());
 
         if (user is null)
         {
@@ -1966,7 +1950,7 @@ public class DataService : IDataService
             return false;
         }
 
-        var userResult = await GetUserByNameWithOrg(email);
+        var userResult = await GetUserByName(email);
 
         if (!userResult.IsSuccess)
         {
@@ -2152,7 +2136,7 @@ public class DataService : IDataService
         return isValid;
     }
 
-    private async Task<string> AddSharedFileInternal(
+    private async Task<string> AddSharedFileImpl(
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         string fileName,
         byte[] fileContents,
         string contentType,

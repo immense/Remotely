@@ -186,7 +186,7 @@
 
         if (_isAuthenticated)
         {
-            var currentUser = await DataService.GetUserAsync(authState.User.Identity.Name);
+            var currentUser = await DataService.GetUserByName(authState.User.Identity.Name);
             _organizationId = currentUser.OrganizationID;
         }
         else

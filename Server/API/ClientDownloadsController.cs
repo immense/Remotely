@@ -1,22 +1,16 @@
-﻿using MailKit.Search;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Build.Framework;
 using Microsoft.Extensions.Logging;
 using Remotely.Server.Auth;
 using Remotely.Server.Extensions;
 using Remotely.Server.Services;
-using Remotely.Shared;
 using Remotely.Shared.Models;
 using Remotely.Shared.Services;
-using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -147,7 +141,7 @@ public class ClientDownloadsController : ControllerBase
         return File(fileBytes, "application/octet-stream", fileName);
     }
 
-    private async Task<IActionResult> GetDesktopFile(string filePath, string organizationId = null)
+    private async Task<IActionResult> GetDesktopFile(string filePath, string? organizationId = null)
     {
         LogRequest(nameof(GetDesktopFile));
 
@@ -158,7 +152,7 @@ public class ClientDownloadsController : ControllerBase
 
         if (!result.IsSuccess)
         {
-            throw result.Exception;
+            throw result.Exception ?? new Exception(result.Reason);
         }
 
         return File(result.Value, "application/octet-stream", Path.GetFileName(filePath));
@@ -187,7 +181,7 @@ public class ClientDownloadsController : ControllerBase
 
                         if (!result.IsSuccess)
                         {
-                            throw result.Exception;
+                            throw result.Exception ?? new Exception(result.Reason);
                         }
 
                         return File(result.Value, "application/octet-stream", "Remotely_Installer.exe");
