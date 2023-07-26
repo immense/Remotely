@@ -427,16 +427,21 @@ public class DataService : IDataService
     {
         using var dbContext = _appDbFactory.GetContext();
 
-        var user = await dbContext.Users.FindAsync(userId);
-        if (user is null)
+        dbContext.SavedScripts.Update(script);
+
+        if (script.Creator is null)
         {
-            return Result.Fail("User not found.");
+            var user = await dbContext.Users.FindAsync(userId);
+            if (user is null)
+            {
+                return Result.Fail("User not found.");
+            }
+
+            script.CreatorId = user.Id;
+            script.Creator = user;
+            script.OrganizationID = user.OrganizationID;
         }
 
-        dbContext.SavedScripts.Update(script);
-        script.CreatorId = user.Id;
-        script.Creator = user;
-        script.OrganizationID = user.OrganizationID;
         await dbContext.SaveChangesAsync();
         return Result.Ok();
     }
