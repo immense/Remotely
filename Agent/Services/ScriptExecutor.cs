@@ -48,7 +48,7 @@ public class ScriptExecutor : IScriptExecutor
             result.InputType = ScriptInputType.Api;
             result.SenderUserName = senderUsername;
 
-            await SendResultsToApi(result, authToken);
+            _ = await SendResultsToApi(result, authToken);
             await hubConnection.SendAsync("ScriptResultViaApi", requestID);
         }
         catch (Exception ex)
@@ -78,7 +78,7 @@ public class ScriptExecutor : IScriptExecutor
             {
                 return;
             }
-            await hubConnection.SendAsync("ScriptResult", responseResult.ID);
+            await hubConnection.SendAsync("ScriptResult", responseResult.Id);
         }
         catch (Exception ex)
         {
@@ -143,7 +143,7 @@ public class ScriptExecutor : IScriptExecutor
             result.InputType = scriptInputType;
             result.SavedScriptId = savedScriptId;
 
-            var responseResult = await SendResultsToApi(result, expiringToken);
+            _ = await SendResultsToApi(result, expiringToken);
         }
         catch (Exception ex)
         {
@@ -196,7 +196,7 @@ public class ScriptExecutor : IScriptExecutor
         }
         throw new InvalidOperationException($"Unknown shell type: {shell}");
     }
-    private async Task<ScriptResult?> SendResultsToApi(object result, string expiringToken)
+    private async Task<ScriptResultResponse?> SendResultsToApi(object result, string expiringToken)
     {
         var targetURL = _configService.GetConnectionInfo().Host + $"/API/ScriptResults";
 
@@ -212,6 +212,6 @@ public class ScriptExecutor : IScriptExecutor
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<ScriptResult>(content, JsonSerializerHelper.CaseInsensitiveOptions);
+        return JsonSerializer.Deserialize<ScriptResultResponse>(content, JsonSerializerHelper.CaseInsensitiveOptions);
     }
 }

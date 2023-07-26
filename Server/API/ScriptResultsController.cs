@@ -54,7 +54,7 @@ public class ScriptResultsController : ControllerBase
 
     [HttpPost]
     [ServiceFilter(typeof(ExpiringTokenFilter))]
-    public async Task<ActionResult<ScriptResult>> Post([FromBody] ScriptResult result)
+    public async Task<ActionResult<ScriptResultResponse>> Post([FromBody] ScriptResult result)
     {
         _dataService.AddOrUpdateScriptResult(result);
 
@@ -111,6 +111,9 @@ public class ScriptResultsController : ControllerBase
             await _dataService.AddScriptResultToScriptRun(result.ID, result.ScriptRunId.Value);
         }
 
-        return result;
+        return new ScriptResultResponse()
+        {
+            Id = result.ID
+        };
     }
 }
