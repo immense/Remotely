@@ -162,18 +162,17 @@ public class DataServiceTests
         Assert.AreEqual(1, pendingRuns.Count());
         Assert.AreEqual(2, pendingRuns.First().Id);
 
-        var scriptResult = new ScriptResult()
+        var dto = new ScriptResultDto()
         {
             DeviceID = _testData.Org1Device1.ID,
             InputType = Shared.Enums.ScriptInputType.ScheduledScript,
-            OrganizationID = _testData.Org1Id,
             SavedScriptId = savedScript.Id,
             ScriptRunId = scriptRun.Id,
             Shell = Shared.Enums.ScriptingShell.PSCore,
             ScriptInput = "echo test"
         };
 
-        _dataService.AddOrUpdateScriptResult(scriptResult);
+        var scriptResult = (await _dataService.AddScriptResult(dto)).Value!;
 
         await _dataService.AddScriptResultToScriptRun(scriptResult.ID, scriptRun.Id);
 

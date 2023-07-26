@@ -32,6 +32,12 @@ public class ScriptRun
 
     public DateTimeOffset RunAt { get; set; }
     public bool RunOnNextConnect { get; set; }
+
+    [JsonIgnore]
+    public SavedScript? SavedScript { get; set; }
     public Guid? SavedScriptId { get; set; }
+
+    [JsonIgnore]
+    public ScriptSchedule? Schedule { get; set; }
     public int? ScheduleId { get; set; }
 }

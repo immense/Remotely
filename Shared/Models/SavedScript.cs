@@ -47,4 +47,10 @@ public class SavedScript
     public string? SendErrorEmailTo { get; set; }
 
     public ScriptingShell Shell { get; set; }
+
+    [JsonIgnore]
+    public List<ScriptRun>? ScriptRuns { get; set; }
+
+    [JsonIgnore]
+    public List<ScriptResult>? ScriptResults { get; set; }
 }

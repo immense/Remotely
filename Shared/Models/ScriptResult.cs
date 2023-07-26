@@ -25,6 +25,9 @@ public class ScriptResult : ScriptResultBase
     public string OrganizationID { get; set; } = string.Empty;
 
     [JsonIgnore]
+    public SavedScript? SavedScript { get; set; }
+
+    [JsonIgnore]
     public ScriptSchedule? Schedule { get; set; }
 
     [JsonIgnore]

@@ -161,6 +161,10 @@ public class AppDb : IdentityDbContext
             .HasMany(x => x.Results)
             .WithOne(x => x.ScriptRun)
             .IsRequired(false);
+        builder.Entity<ScriptRun>()
+            .HasOne(x => x.SavedScript)
+            .WithMany(x => x.ScriptRuns)
+            .IsRequired(false);
 
         builder.Entity<ScriptResult>()
           .Property(x => x.ErrorOutput)
@@ -181,6 +185,10 @@ public class AppDb : IdentityDbContext
             .HasOne(x => x.ScriptRun)
             .WithMany(x => x.Results)
             .IsRequired(false);
+        builder.Entity<ScriptResult>()
+           .HasOne(x => x.SavedScript)
+           .WithMany(x => x.ScriptResults)
+           .IsRequired(false);
 
         builder.Entity<Alert>()
             .HasOne(x => x.User)
