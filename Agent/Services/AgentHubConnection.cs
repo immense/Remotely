@@ -81,13 +81,12 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
     public async Task Connect()
     {
         using var throttle = new SemaphoreSlim(1, 1);
-        var count = 1;
 
-        while (true)
+        for (var i = 1; true; i++)
         {
             try
             {
-                var waitSeconds = Math.Min(60, Math.Pow(count, 2));
+                var waitSeconds = Math.Min(60, Math.Pow(i, 2));
                 // This will allow the first attempt to go through immediately, but
                 // subsequent attempts will have an exponential delay.
                 _ = await throttle.WaitAsync(TimeSpan.FromSeconds(waitSeconds));

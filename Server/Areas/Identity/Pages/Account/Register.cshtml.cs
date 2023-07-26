@@ -7,13 +7,16 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Remotely.Server.Services;
+using Remotely.Shared;
 using Remotely.Shared.Models;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account;
@@ -26,6 +29,7 @@ public class RegisterModel : PageModel
     private readonly ILogger<RegisterModel> _logger;
     private readonly IEmailSenderEx _emailSender;
     private readonly IDataService _dataService;
+    private readonly IWebHostEnvironment _hostEnvironment;
     private readonly IApplicationConfig _appConfig;
 
     public RegisterModel(
@@ -34,6 +38,7 @@ public class RegisterModel : PageModel
         ILogger<RegisterModel> logger,
         IEmailSenderEx emailSender,
         IDataService dataService,
+        IWebHostEnvironment hostEnvironment,
         IApplicationConfig appConfig)
     {
         _userManager = userManager;
@@ -41,6 +46,7 @@ public class RegisterModel : PageModel
         _logger = logger;
         _emailSender = emailSender;
         _dataService = dataService;
+        _hostEnvironment = hostEnvironment;
         _appConfig = appConfig;
     }
 
@@ -95,11 +101,20 @@ public class RegisterModel : PageModel
                 UserName = Input.Email,
                 Email = Input.Email,
                 IsServerAdmin = organizationCount == 0,
-                Organization = new Organization() { OrganizationName = "Test Org" },
+                Organization = new Organization()
+                { 
+                    OrganizationName = string.Empty,
+                    IsDefaultOrganization = organizationCount == 0
+                },
                 UserOptions = new RemotelyUserOptions(),
                 IsAdministrator = true,
                 LockoutEnabled = true
             };
+
+            if (organizationCount == 0 && _hostEnvironment.IsDevelopment())
+            {
+                user.Organization.ID = AppConstants.DebugOrgId;
+            }
 
             var result = await _userManager.CreateAsync(user, Input.Password);
             if (result.Succeeded)

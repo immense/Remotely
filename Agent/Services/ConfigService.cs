@@ -1,5 +1,6 @@
 ﻿using Immense.RemoteControl.Shared;
 using Microsoft.Extensions.Logging;
+using Remotely.Shared;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
@@ -81,7 +82,7 @@ public class ConfigService : IConfigService
                 {
                     DeviceID = _debugGuid,
                     Host = "http://localhost:5000",
-                    OrganizationID = orgID
+                    OrganizationID = AppConstants.DebugOrgId
                 };
             }
 
