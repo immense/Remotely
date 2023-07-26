@@ -19,7 +19,7 @@ public partial class SavedScripts : AuthComponentBase
     [CascadingParameter]
     private ScriptsPage ParentPage { get; set; } = null!;
 
-    private SavedScript _selectedScript = new() { Name = "Test Script" };
+    private SavedScript _selectedScript = new() { Name = string.Empty };
     private string _alertMessage = string.Empty;
     private string _alertOptionsShowClass = string.Empty;
     private string _environmentVarsShowClass = string.Empty;
@@ -74,7 +74,7 @@ public partial class SavedScripts : AuthComponentBase
     {
         _selectedScript = new()
         {
-            Name = "Test Script"
+            Name = string.Empty
         };
     }
 
@@ -95,7 +95,7 @@ public partial class SavedScripts : AuthComponentBase
             await ParentPage.RefreshScripts();
             _selectedScript = new()
             {
-                Name = "Test Script"
+                Name = string.Empty
             };
         }
     }
