@@ -14,7 +14,7 @@ public interface IClientAppState : INotifyPropertyChanged, IInvokePropertyChange
 {
     ConcurrentList<ChatSession> DevicesFrameChatSessions { get; }
     DeviceCardState DevicesFrameFocusedCardState { get; set; }
-    string DevicesFrameFocusedDevice { get; set; }
+    string? DevicesFrameFocusedDevice { get; set; }
     ConcurrentList<string> DevicesFrameSelectedDevices { get; }
     ConcurrentQueue<TerminalLineItem> TerminalLines { get; }
 
@@ -49,7 +49,7 @@ public class ClientAppState : ViewModelBase, IClientAppState
         set => Set(value);
     }
 
-    public string DevicesFrameFocusedDevice
+    public string? DevicesFrameFocusedDevice
     {
         get => Get<string>();
         set => Set(value);

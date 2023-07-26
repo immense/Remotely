@@ -21,8 +21,8 @@ public class ScriptScheduler : IHostedService, IDisposable
         TimeSpan.FromSeconds(30) :
         TimeSpan.FromMinutes(10);
 
-    private IServiceProvider _serviceProvider;
-    private System.Timers.Timer _schedulerTimer;
+    private readonly IServiceProvider _serviceProvider;
+    private System.Timers.Timer? _schedulerTimer;
 
 
     public ScriptScheduler(IServiceProvider serviceProvider)
@@ -40,7 +40,7 @@ public class ScriptScheduler : IHostedService, IDisposable
     public Task StartAsync(CancellationToken cancellationToken)
     {
         _schedulerTimer?.Dispose();
-        _schedulerTimer = new System.Timers.Timer(_timerInterval.TotalMilliseconds);
+        _schedulerTimer = new System.Timers.Timer(_timerInterval);
         _schedulerTimer.Elapsed += SchedulerTimer_Elapsed;
         _schedulerTimer.Start();
         return Task.CompletedTask;
@@ -52,7 +52,7 @@ public class ScriptScheduler : IHostedService, IDisposable
         return Task.CompletedTask;
     }
 
-    private void SchedulerTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+    private void SchedulerTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
         _ = DispatchScriptRuns();
     }
@@ -63,13 +63,14 @@ public class ScriptScheduler : IHostedService, IDisposable
         var scriptScheduleDispatcher = scope.ServiceProvider.GetRequiredService<IScriptScheduleDispatcher>();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<ScriptScheduler>>();
 
+        if (!await _dispatchLock.WaitAsync(0))
+        {
+            logger.LogWarning("Script schedule dispatcher is already running.  Returning.");
+            return;
+        }
+
         try
         {
-            if (!await _dispatchLock.WaitAsync(0))
-            {
-                logger.LogWarning("Script schedule dispatcher is already running.  Returning.");
-                return;
-            }
 
             await scriptScheduleDispatcher.DispatchPendingScriptRuns();
         }

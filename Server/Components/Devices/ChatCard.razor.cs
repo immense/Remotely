@@ -15,18 +15,21 @@ public partial class ChatCard : AuthComponentBase, IDisposable
 {
     private ElementReference _chatMessagesWindow;
 
-    private string _inputText;
+    private string? _inputText;
 
     [Parameter]
-    public ChatSession Session { get; set; }
-    [Inject]
-    private IClientAppState AppState { get; set; }
+    [EditorRequired]
+    public required ChatSession Session { get; set; }
 
     [Inject]
-    private ICircuitConnection CircuitConnection { get; set; }
+    private IClientAppState AppState { get; init; } = null!;
 
     [Inject]
-    private IJsInterop JsInterop { get; set; }
+    private ICircuitConnection CircuitConnection { get; init; } = null!;
+
+    [Inject]
+    private IJsInterop JsInterop { get; init; } = null!;
+
     public void Dispose()
     {
         AppState.PropertyChanged -= AppState_PropertyChanged;
@@ -46,15 +49,15 @@ public partial class ChatCard : AuthComponentBase, IDisposable
         CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
     }
 
-    private void AppState_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private async void AppState_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         if (e.PropertyName == Session.SessionId)
         {
-            InvokeAsync(StateHasChanged);
+            await InvokeAsync(StateHasChanged);
         }
     }
 
-    private void CircuitConnection_MessageReceived(object sender, Models.CircuitEvent e)
+    private async void CircuitConnection_MessageReceived(object? sender, Models.CircuitEvent e)
     {
         if (e.EventName == Models.CircuitEventName.ChatReceived)
         {
@@ -90,7 +93,7 @@ public partial class ChatCard : AuthComponentBase, IDisposable
                     session.MissedChats++;
                 }
 
-                InvokeAsync(StateHasChanged);
+                await InvokeAsync(StateHasChanged);
 
                 JsInterop.ScrollToEnd(_chatMessagesWindow);
             }
@@ -110,7 +113,7 @@ public partial class ChatCard : AuthComponentBase, IDisposable
                 return;
             }
 
-            await CircuitConnection.SendChat(_inputText, Session.DeviceId);
+            await CircuitConnection.SendChat(_inputText, $"{Session.DeviceId}");
 
             Session.ChatHistory.Add(new ChatHistoryItem()
             {

@@ -10,7 +10,7 @@ namespace Remotely.Shared.ViewModels;
 public class ChatHistoryItem
 {
     public ChatHistoryItemOrigin Origin { get; init; }
-    public string Message { get; init; }
+    public string? Message { get; init; }
 
     public DateTimeOffset Timestamp { get; init; } = DateTime.Now;
 

@@ -92,7 +92,7 @@
 
 @code {
     private RemotelyUserOptions _options = new();
-    private string _alertMessage;
+    private string? _alertMessage;
 
     protected override async Task OnInitializedAsync()
     {
@@ -119,7 +119,7 @@
             _options.CommandModeShortcutWinPS = "/" + _options.CommandModeShortcutWinPS;
         }
 
-        DataService.UpdateUserOptions(User.UserName, _options);
+        DataService.UpdateUserOptions(UserName, _options);
 
         _alertMessage = "Options saved";
 

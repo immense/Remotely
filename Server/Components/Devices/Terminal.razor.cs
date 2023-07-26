@@ -18,28 +18,28 @@ namespace Remotely.Server.Components.Devices;
 
 public partial class Terminal : AuthComponentBase, IDisposable
 {
-    private string _inputText;
+    private string? _inputText;
 
-    private string _lastCompletionInput;
+    private string? _lastCompletionInput;
     private int _lastCursorIndex;
     private ScriptingShell _shell;
 
     private ElementReference _terminalInput;
-    private string _terminalOpenClass;
+    private string? _terminalOpenClass;
     private ElementReference _terminalWindow;
 
     [Inject]
-    private IClientAppState AppState { get; set; }
+    private IClientAppState AppState { get; init; } = null!;
 
     [Inject]
-    private ICircuitConnection CircuitConnection { get; set; }
+    private ICircuitConnection CircuitConnection { get; init; } = null!;
 
     [Inject]
-    private IDataService DataService { get; set; }
+    private IDataService DataService { get; init; } = null!;
 
     private string InputText
     {
-        get => _inputText;
+        get => _inputText ?? string.Empty;
         set
         {
             _inputText = value;
@@ -51,28 +51,28 @@ public partial class Terminal : AuthComponentBase, IDisposable
     }
 
     [Inject]
-    private IJsInterop JsInterop { get; set; }
+    private IJsInterop JsInterop { get; init; } = null!;
 
     [Inject]
-    private ILogger<Terminal> Logger { get; set; }
+    private ILogger<Terminal> Logger { get; init; } = null!;
 
 
     [Inject]
-    private IModalService ModalService { get; set; }
+    private IModalService ModalService { get; init; } = null!;
+
     private EventCallback<SavedScript> RunQuickScript =>
         EventCallback.Factory.Create<SavedScript>(this, async script =>
         {
-            var scriptRun = new ScriptRun()
+            var scriptRun = new ScriptRun
             {
                 OrganizationID = User.OrganizationID,
                 RunAt = Time.Now,
                 SavedScriptId = script.Id,
                 RunOnNextConnect = false,
                 Initiator = User.UserName,
-                InputType = ScriptInputType.OneTimeScript
+                InputType = ScriptInputType.OneTimeScript,
+                Devices = DataService.GetDevices(AppState.DevicesFrameSelectedDevices)
             };
-
-            scriptRun.Devices = DataService.GetDevices(AppState.DevicesFrameSelectedDevices);
 
             await DataService.AddScriptRun(scriptRun);
 
@@ -82,7 +82,7 @@ public partial class Terminal : AuthComponentBase, IDisposable
         });
 
     [Inject]
-    private IToastService ToastService { get; set; }
+    private IToastService ToastService { get; init; } = null!;
 
     public void Dispose()
     {
@@ -130,7 +130,7 @@ public partial class Terminal : AuthComponentBase, IDisposable
         }
     }
 
-    private void AppState_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void AppState_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(AppState.TerminalLines))
         {
@@ -139,7 +139,7 @@ public partial class Terminal : AuthComponentBase, IDisposable
         }
     }
 
-    private void CircuitConnection_MessageReceived(object sender, Models.CircuitEvent e)
+    private async void CircuitConnection_MessageReceived(object? sender, Models.CircuitEvent e)
     {
         if (e.EventName == Models.CircuitEventName.PowerShellCompletions)
         {
@@ -149,7 +149,7 @@ public partial class Terminal : AuthComponentBase, IDisposable
             switch (intent)
             {
                 case CompletionIntent.ShowAll:
-                    DisplayCompletions(completion.CompletionMatches);
+                    await DisplayCompletions(completion.CompletionMatches);
                     break;
                 case CompletionIntent.NextResult:
                     ApplyCompletion(completion);
@@ -346,6 +346,11 @@ public partial class Terminal : AuthComponentBase, IDisposable
         var currentText = InputText?.Trim()?.ToLower();
 
         if (string.IsNullOrWhiteSpace(currentText))
+        {
+            return false;
+        }
+
+        if (User.UserOptions is null)
         {
             return false;
         }

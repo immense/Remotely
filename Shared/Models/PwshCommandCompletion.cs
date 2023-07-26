@@ -11,7 +11,7 @@ public class PwshCommandCompletion
     public int CurrentMatchIndex { get; set; }
     public int ReplacementIndex { get; set; }
     public int ReplacementLength { get; set; }
-    public List<PwshCompletionResult> CompletionMatches { get; set; }
+    public List<PwshCompletionResult> CompletionMatches { get; set; } = new();
 }
 
 
@@ -26,13 +26,13 @@ public class PwshCompletionResult
         ToolTip = toolTip;
     }
 
-    public string CompletionText { get; set; }
+    public string CompletionText { get; set; } = string.Empty;
 
-    public string ListItemText { get; set; }
+    public string ListItemText { get; set; } = string.Empty;
 
     public PwshCompletionResultType ResultType { get; set; }
 
-    public string ToolTip { get; set; }
+    public string ToolTip { get; set; } = string.Empty;
 }
 
 public enum PwshCompletionResultType

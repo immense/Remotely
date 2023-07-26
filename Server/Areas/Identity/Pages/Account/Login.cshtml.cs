@@ -38,30 +38,30 @@ public class LoginModel : PageModel
     }
 
     [BindProperty]
-    public InputModel Input { get; set; }
+    public InputModel Input { get; set; } = null!;
 
-    public IList<AuthenticationScheme> ExternalLogins { get; set; }
+    public IList<AuthenticationScheme>? ExternalLogins { get; set; }
 
-    public string ReturnUrl { get; set; }
+    public string? ReturnUrl { get; set; }
 
     [TempData]
-    public string ErrorMessage { get; set; }
+    public string? ErrorMessage { get; set; }
 
     public class InputModel
     {
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        public required string Email { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
-        public string Password { get; set; }
+        public required string Password { get; set; }
 
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
     }
 
-    public async Task OnGetAsync(string returnUrl = null)
+    public async Task OnGetAsync(string? returnUrl = null)
     {
         if (!string.IsNullOrEmpty(ErrorMessage))
         {
@@ -78,7 +78,7 @@ public class LoginModel : PageModel
         ReturnUrl = returnUrl;
     }
 
-    public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+    public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
     {
         returnUrl ??= Url.Content("~/");
 
@@ -96,7 +96,7 @@ public class LoginModel : PageModel
             }
             if (result.RequiresTwoFactor)
             {
-                return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+                return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, Input.RememberMe });
             }
             if (result.IsLockedOut)
             {
@@ -108,6 +108,11 @@ public class LoginModel : PageModel
                 if (await _dataService.TempPasswordSignIn(Input.Email, Input.Password))
                 {
                     var user = await _userManager.FindByNameAsync(Input.Email);
+                    if (user is null)
+                    {
+                        ModelState.AddModelError(string.Empty, "Account not found.");
+                        return Page();
+                    }
                     var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(
@@ -116,7 +121,7 @@ public class LoginModel : PageModel
                         values: new { area = "Identity", code },
                         protocol: Request.Scheme);
 
-                    return Redirect(callbackUrl);
+                    return Redirect(callbackUrl!);
                 }
 
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");

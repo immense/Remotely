@@ -21,7 +21,7 @@ public class GetSupportModel : PageModel
     public string? StatusMessage { get; set; }
 
     [BindProperty]
-    public InputModel Input { get; set; }
+    public InputModel Input { get; set; } = new();
 
     public IActionResult OnGet()
     {
@@ -76,7 +76,7 @@ public class GetSupportModel : PageModel
     {
         [StringLength(150)]
         [Required]
-        public required string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public string? Email { get; set; }
         public string? Phone { get; set; }
         public bool ChatResponseOk { get; set; }

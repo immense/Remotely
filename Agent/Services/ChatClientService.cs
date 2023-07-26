@@ -39,7 +39,7 @@ public class ChatClientService : IChatClientService
                 {
                     return;
                 }
-                chatSession.PipeStream.Dispose();
+                chatSession.PipeStream?.Dispose();
                 var chatProcess = Process.GetProcessById(chatSession.ProcessID);
                 if (chatProcess?.HasExited == false)
                 {
@@ -111,7 +111,7 @@ public class ChatClientService : IChatClientService
 
             chatSession = (ChatSession)_chatClients.Get(senderConnectionID);
 
-            if (!chatSession.PipeStream.IsConnected)
+            if (chatSession.PipeStream?.IsConnected != true)
             {
                 _chatClients.Remove(senderConnectionID);
                 await hubConnection.SendAsync("DisplayMessage", "Chat disconnected.  Please try again.", "Chat disconnected.", "bg-warning", senderConnectionID);
@@ -142,7 +142,7 @@ public class ChatClientService : IChatClientService
             if (!string.IsNullOrWhiteSpace(messageJson))
             {
                 var chatMessage = JsonSerializer.Deserialize<ChatMessage>(messageJson);
-                await hubConnection.SendAsync("Chat", chatMessage.Message, false, senderConnectionID);
+                await hubConnection.SendAsync("Chat", $"{chatMessage?.Message}", false, senderConnectionID);
             }
         }
         await hubConnection.SendAsync("Chat", string.Empty, true, senderConnectionID);

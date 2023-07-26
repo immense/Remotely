@@ -21,10 +21,10 @@
     public static string DeviceGroupsPropName => nameof(DeviceGroups);
 
     [Parameter]
-    public RemotelyUser EditUser { get; set; }
+    public required RemotelyUser EditUser { get; set; }
 
     [Parameter]
-    public DeviceGroup[] DeviceGroups { get; set; }
+    public required DeviceGroup[] DeviceGroups { get; set; }
 
 
     private bool DoesGroupContainUser(DeviceGroup group)
@@ -34,7 +34,9 @@
 
     private async Task GroupCheckChanged(ChangeEventArgs args, DeviceGroup group)
     {
-        if ((bool)args.Value)
+        if (!string.IsNullOrWhiteSpace(EditUser.UserName) &&
+            args.Value is bool boolValue && 
+            boolValue)
         {
             if (!DataService.AddUserToDeviceGroup(EditUser.OrganizationID, group.ID, EditUser.UserName, out var result))
             {

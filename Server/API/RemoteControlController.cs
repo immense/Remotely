@@ -75,6 +75,13 @@ public class RemoteControlController : ControllerBase
             return NotFound();
         }
 
+        if (string.IsNullOrWhiteSpace(rcRequest.Email) ||
+            string.IsNullOrWhiteSpace(rcRequest.Password) ||
+            string.IsNullOrWhiteSpace(rcRequest.DeviceID))
+        {
+            return BadRequest("Request body is missing required values.");
+        }
+
         var userResult = await _dataService.GetUserByName(rcRequest.Email);
         if (!userResult.IsSuccess)
         {

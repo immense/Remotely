@@ -17,12 +17,12 @@ internal class Program
 {
     private static readonly double _heartbeatMs = TimeSpan.FromMinutes(1).TotalMilliseconds;
     private static int _agentCount;
-    private static string _organizationId;
-    private static string _serverurl;
-    private static Mock<ICpuUtilizationSampler> _cpuSampler;
-    private static Mock<ILogger<DeviceInfoGeneratorWin>> _logger;
-    private static DeviceInfoGeneratorWin _deviceInfo;
-    private static Stopwatch _stopwatch;
+    private static string? _organizationId;
+    private static string? _serverurl;
+    private static Mock<ICpuUtilizationSampler>? _cpuSampler;
+    private static Mock<ILogger<DeviceInfoGeneratorWin>>? _logger;
+    private static DeviceInfoGeneratorWin? _deviceInfo;
+    private static Stopwatch? _stopwatch;
     private static int _connectedCount;
 
     private static void Main(string[] args)
@@ -96,7 +96,7 @@ internal class Program
                 Console.WriteLine($"Connecting device number {i}");
                 await hubConnection.StartAsync();
 
-                var device = await _deviceInfo.CreateDevice(deviceId, _organizationId);
+                var device = await _deviceInfo!.CreateDevice(deviceId, _organizationId!);
                 device.DeviceName = "TestDevice-" + Guid.NewGuid();
 
                 var result = await hubConnection.InvokeAsync<bool>("DeviceCameOnline", device);
@@ -116,7 +116,7 @@ internal class Program
                     {
                         try
                         {
-                            var currentInfo = await _deviceInfo.CreateDevice(device.ID, _organizationId);
+                            var currentInfo = await _deviceInfo.CreateDevice(device.ID, _organizationId!);
                             currentInfo.DeviceName = device.DeviceName;
                             await hubConnection.SendAsync("DeviceHeartbeat", currentInfo);
                         }
@@ -130,7 +130,7 @@ internal class Program
                 Interlocked.Increment(ref _connectedCount);
                 if (_connectedCount == _agentCount)
                 {
-                    Console.WriteLine($"Finished connecting all devices.  Elapsed: {_stopwatch.Elapsed}");
+                    Console.WriteLine($"Finished connecting all devices.  Elapsed: {_stopwatch!.Elapsed}");
                 }
 
                 break;

@@ -8,13 +8,14 @@
 
 @code {
     [CascadingParameter]
-    public TabControl Parent { get; set; }
+    public required TabControl Parent { get; init; }
 
     [Parameter]
-    public RenderFragment ChildContent { get; set; }
+    public RenderFragment? ChildContent { get; set; }
 
     [Parameter]
-    public string Name { get; set; }
+    [EditorRequired]
+    public required string Name { get; set; }
 
     private bool IsActive => Parent.ActiveTab == Name;
 

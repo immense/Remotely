@@ -16,7 +16,7 @@ public class ConnectionInfo
         }
         set
         {
-            _host = value?.Trim()?.TrimEnd('/') ?? string.Empty;
+            _host = value?.Trim()?.TrimEnd('/');
         }
     }
     public string? OrganizationID { get; set; }

@@ -45,14 +45,15 @@ public abstract class DeviceInfoGeneratorBase
     {
         try
         {
-            DriveInfo systemDrive;
+            DriveInfo? systemDrive;
             var allDrives = DriveInfo.GetDrives();
 
             if (EnvironmentHelper.IsWindows)
             {
+                var rootPath = Path.GetPathRoot(Environment.SystemDirectory) ?? "C:\\";
                 systemDrive = allDrives.FirstOrDefault(x =>
                      x.IsReady &&
-                     x.RootDirectory.FullName.Contains(Path.GetPathRoot(Environment.SystemDirectory ?? Environment.CurrentDirectory)));
+                     x.RootDirectory.FullName.Contains(rootPath));
             }
             else
             {
@@ -97,7 +98,7 @@ public abstract class DeviceInfoGeneratorBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting drive info.");
-            return null;
+            return new();
         }
     }
 

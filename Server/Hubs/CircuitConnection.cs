@@ -28,7 +28,7 @@ namespace Remotely.Server.Hubs;
 public interface ICircuitConnection
 {
     event EventHandler<CircuitEvent>? MessageReceived;
-    RemotelyUser? User { get; }
+    RemotelyUser User { get; }
 
     Task DeleteRemoteLogs(string deviceId);
 

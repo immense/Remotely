@@ -465,7 +465,13 @@ public class MainWindowViewModel : ViewModelBase
 
             HeaderMessage = "Installing Remotely...";
 
-            if (await _installer.Install(ServerUrl, OrganizationID, DeviceGroup, DeviceAlias, DeviceUuid, CreateSupportShortcut))
+            if (await _installer.Install(
+                ServerUrl, 
+                OrganizationID!, 
+                DeviceGroup, 
+                DeviceAlias, 
+                DeviceUuid, 
+                CreateSupportShortcut))
             {
                 IsServiceInstalled = true;
                 Progress = 0;

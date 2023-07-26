@@ -11,24 +11,25 @@ public interface IModalService
 {
     event EventHandler ModalShown;
     List<ModalButton> Buttons { get; }
-    string[] Body { get; }
-    RenderFragment RenderBody { get; }
+    string[]? Body { get; }
+    RenderFragment? RenderBody { get; }
     string Title { get; }
-    Task ShowModal(string title, string[] body, ModalButton[] buttons = null);
-    Task ShowModal(string title, RenderFragment body, ModalButton[] buttons = null);
+    Task ShowModal(string title, string[] body, ModalButton[]? buttons = null);
+    Task ShowModal(string title, RenderFragment body, ModalButton[]? buttons = null);
 }
 
 public class ModalService : IModalService
 {
     private readonly SemaphoreSlim _modalLock = new(1, 1);
 
-    public event EventHandler ModalShown;
+    public event EventHandler? ModalShown;
+
     public List<ModalButton> Buttons { get; } = new List<ModalButton>();
-    public string[] Body { get; private set; }
-    public RenderFragment RenderBody { get; private set; }
+    public string[]? Body { get; private set; }
+    public RenderFragment? RenderBody { get; private set; }
     public bool ShowInput { get; private set; }
-    public string Title { get; private set; }
-    public async Task ShowModal(string title, string[] body, ModalButton[] buttons = null)
+    public string Title { get; private set; } = string.Empty;
+    public async Task ShowModal(string title, string[] body, ModalButton[]? buttons = null)
     {
         try
         {
@@ -41,7 +42,7 @@ public class ModalService : IModalService
             {
                 Buttons.AddRange(buttons);
             }
-            ModalShown?.Invoke(this, null);
+            ModalShown?.Invoke(this, EventArgs.Empty);
         }
         finally
         {
@@ -49,7 +50,7 @@ public class ModalService : IModalService
         }
     }
 
-    public async Task ShowModal(string title, RenderFragment body, ModalButton[] buttons = null)
+    public async Task ShowModal(string title, RenderFragment body, ModalButton[]? buttons = null)
     {
         try
         {
@@ -62,7 +63,7 @@ public class ModalService : IModalService
             {
                 Buttons.AddRange(buttons);
             }
-            ModalShown?.Invoke(this, null);
+            ModalShown?.Invoke(this, EventArgs.Empty);
         }
         finally
         {

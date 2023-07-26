@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Immense.RemoteControl.Shared.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
@@ -8,12 +9,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace Remotely.Agent.Services;
 
 public interface IExternalScriptingShell
 {
-    Process ShellProcess { get; }
+    Process? ShellProcess { get; }
     Task Init(ScriptingShell shell, string shellProcessName, string lineEnding, string connectionId);
     Task<ScriptResult> WriteInput(string input, TimeSpan timeout);
 }
@@ -27,13 +29,13 @@ public class ExternalScriptingShell : IExternalScriptingShell
     private readonly SemaphoreSlim _writeLock = new(1, 1);
     private string _errorOut = string.Empty;
     private string _lastInputID = string.Empty;
-    private string _lineEnding;
+    private string _lineEnding = Environment.NewLine;
     private System.Timers.Timer _processIdleTimeout = new(TimeSpan.FromMinutes(10))
     {
         AutoReset = false
     };
 
-    private string _senderConnectionId;
+    private string? _senderConnectionId;
     private ScriptingShell _shell;
     private string _standardOut = string.Empty;
 
@@ -44,7 +46,8 @@ public class ExternalScriptingShell : IExternalScriptingShell
         _configService = configService;
         _logger = logger;
     }
-    public Process ShellProcess { get; set; }
+
+    public Process? ShellProcess { get; private set; }
 
 
     // TODO: Turn into cache and factory.
@@ -94,9 +97,9 @@ public class ExternalScriptingShell : IExternalScriptingShell
             RedirectStandardOutput = true
         };
 
-        var connectionInfo = _configService.GetConnectionInfo();
-        psi.Environment.Add("DeviceId", connectionInfo.DeviceID);
-        psi.Environment.Add("ServerUrl", connectionInfo.Host);
+        var configInfo = _configService.GetConnectionInfo();
+        psi.Environment.Add("DeviceId", configInfo.DeviceID);
+        psi.Environment.Add("ServerUrl", configInfo.Host);
 
         ShellProcess = new Process
         {
@@ -133,6 +136,11 @@ public class ExternalScriptingShell : IExternalScriptingShell
 
         try
         {
+            if (ShellProcess?.HasExited != false)
+            {
+                throw new InvalidOperationException("Shell process is not running.");
+            }
+
             _processIdleTimeout.Stop();
             _processIdleTimeout.Start();
             _outputDone.Reset();
@@ -190,7 +198,7 @@ public class ExternalScriptingShell : IExternalScriptingShell
             StandardOutput = _standardOut.Split(Environment.NewLine),
             ErrorOutput = _errorOut.Split(Environment.NewLine),
             HadErrors = !string.IsNullOrWhiteSpace(_errorOut) ||
-                (ShellProcess.HasExited && ShellProcess.ExitCode != 0)
+                (ShellProcess?.HasExited == true && ShellProcess.ExitCode != 0)
         };
     }
 
@@ -210,12 +218,12 @@ public class ExternalScriptingShell : IExternalScriptingShell
                 .Concat(_errorOut.Split(Environment.NewLine))
                 .ToArray(),
             HadErrors = !string.IsNullOrWhiteSpace(_errorOut) ||
-                (ShellProcess.HasExited && ShellProcess.ExitCode != 0)
+                (ShellProcess?.HasExited == true && ShellProcess.ExitCode != 0)
         };
-        ProcessIdleTimeout_Elapsed(this, null);
+        RemoveSession();
         return partialResult;
     }
-    private void ProcessIdleTimeout_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+    private void ProcessIdleTimeout_Elapsed(object? sender, ElapsedEventArgs e)
     {
         RemoveSession();
     }
@@ -223,6 +231,10 @@ public class ExternalScriptingShell : IExternalScriptingShell
     private void RemoveSession()
     {
         ShellProcess?.Kill();
+        if (_senderConnectionId is null)
+        {
+            return;
+        }
         _sessions.TryRemove(_senderConnectionId, out _);
     }
 
@@ -236,7 +248,7 @@ public class ExternalScriptingShell : IExternalScriptingShell
 
     private void ShellProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
     {
-        if (e?.Data?.Contains(_lastInputID) == true)
+        if (e.Data?.Contains(_lastInputID) == true)
         {
             _outputDone.Set();
         }

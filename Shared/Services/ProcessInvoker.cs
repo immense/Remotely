@@ -32,9 +32,9 @@ public class ProcessInvoker : IProcessInvoker
             };
 
             var proc = Process.Start(psi);
-            proc.WaitForExit();
+            proc?.WaitForExit();
 
-            return proc.StandardOutput.ReadToEnd();
+            return proc?.StandardOutput.ReadToEnd() ?? string.Empty;
         }
         catch (Exception ex)
         {

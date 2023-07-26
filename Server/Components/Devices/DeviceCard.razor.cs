@@ -31,20 +31,20 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
     private DeviceGroup[] _deviceGroups = Array.Empty<DeviceGroup>();
 
     [Parameter]
-    public Device Device { get; set; }
+    public Device Device { get; set; } = null!;
 
     [CascadingParameter]
-    public DevicesFrame ParentFrame { get; set; }
+    public DevicesFrame ParentFrame { get; init; } = null!;
 
 
     [Inject]
-    private IClientAppState AppState { get; set; }
+    private IClientAppState AppState { get; init; } = null!;
 
     [Inject]
-    private ICircuitConnection CircuitConnection { get; set; }
+    private ICircuitConnection CircuitConnection { get; init; } = null!;
 
     [Inject]
-    private IDataService DataService { get; set; }
+    private IDataService DataService { get; init; } = null!;
 
     private bool IsExpanded => GetCardState() == DeviceCardState.Expanded;
 
@@ -55,19 +55,20 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
     private bool IsSelected => AppState.DevicesFrameSelectedDevices.Contains(Device.ID);
 
     [Inject]
-    private IJsInterop JsInterop { get; set; }
+    private IJsInterop JsInterop { get; init; } = null!;
 
     [Inject]
-    private IModalService ModalService { get; set; }
+    private IModalService ModalService { get; init; } = null!;
 
     [Inject]
-    private IAgentHubSessionCache ServiceSessionCache { get; init; }
+    private IAgentHubSessionCache ServiceSessionCache { get; init; } = null!;
 
     [Inject]
-    private IToastService ToastService { get; set; }
+    private IToastService ToastService { get; init; } = null!;
 
     [Inject]
-    private IUpgradeService UpgradeService { get; init; }
+    private IUpgradeService UpgradeService { get; init; } = null!;
+
     public void Dispose()
     {
         AppState.PropertyChanged -= AppState_PropertyChanged;
@@ -85,7 +86,7 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
         CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
     }
 
-    private void AppState_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void AppState_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(AppState.DevicesFrameFocusedCardState) ||
             e.PropertyName == nameof(AppState.DevicesFrameFocusedDevice) ||
@@ -95,7 +96,7 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
         }
     }
 
-    private void CircuitConnection_MessageReceived(object sender, CircuitEvent e)
+    private async void CircuitConnection_MessageReceived(object? sender, CircuitEvent e)
     {
        switch (e.EventName)
         {
@@ -106,7 +107,7 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
                         device.ID == Device?.ID)
                     {
                         Device = device;
-                        InvokeAsync(StateHasChanged);
+                        await InvokeAsync(StateHasChanged);
                     }
                     break;
                 }
@@ -185,7 +186,7 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
             return;
         }
        
-        DataService.UpdateDevice(Device.ID,
+        await DataService.UpdateDevice(Device.ID,
               Device.Tags,
               Device.Alias,
               Device.DeviceGroupID,
@@ -302,7 +303,11 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
 
     private void ToggleIsSelected(ChangeEventArgs args)
     {
-        var isSelected = (bool)args.Value;
+        if (args.Value is not bool isSelected)
+        {
+            return;
+        }
+
         if (isSelected)
         {
             AppState.DevicesFrameSelectedDevices.Add(Device.ID);

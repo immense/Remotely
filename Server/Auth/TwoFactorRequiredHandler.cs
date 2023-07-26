@@ -22,10 +22,10 @@ public class TwoFactorRequiredHandler : AuthorizationHandler<TwoFactorRequiredRe
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, TwoFactorRequiredRequirement requirement)
     {
-        if (context.User.Identity.IsAuthenticated && _appConfig.Require2FA)
+        if (context.User.Identity?.IsAuthenticated == true && _appConfig.Require2FA)
         {
             var user = await _userManager.GetUserAsync(context.User);
-            if (!user.TwoFactorEnabled)
+            if (user?.TwoFactorEnabled != true)
             {
                 context.Fail();
                 return;

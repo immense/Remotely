@@ -16,7 +16,7 @@
     {
         if (SignInManager.IsSignedIn(User))
         {
-            var activeSessions = RemoteControlSessionCache.Sessions.Where(x => x.RequesterUserName == HttpContext.User.Identity.Name);
+            var activeSessions = RemoteControlSessionCache.Sessions.Where(x => x.RequesterUserName == HttpContext.User.Identity?.Name);
             foreach (var session in activeSessions)
             {
                 await DesktopHubContext.Clients.Client(session.DesktopConnectionId).SendAsync("Disconnect", "User logged out.");

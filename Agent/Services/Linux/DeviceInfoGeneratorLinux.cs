@@ -56,7 +56,7 @@ public class DeviceInfoGeneratorLinux : DeviceInfoGeneratorBase, IDeviceInformat
     private string GetCurrentUser()
     {
         var users = _processInvoker.InvokeProcessOutput("users", "");
-        return users?.Split()?.FirstOrDefault()?.Trim();
+        return users?.Split()?.FirstOrDefault()?.Trim() ?? string.Empty;
     }
 
     public (double usedGB, double totalGB) GetMemoryInGB()
@@ -67,21 +67,23 @@ public class DeviceInfoGeneratorLinux : DeviceInfoGeneratorBase, IDeviceInformat
             var resultsArr = results.Split("\n".ToCharArray());
             var freeKB = resultsArr
                         .FirstOrDefault(x => x.Trim().StartsWith("MemAvailable"))
-                        .Trim()
-                        .Split(" ".ToCharArray(), 2)
-                        .Last() // 9168236 kB
-                        .Trim()
-                        .Split(' ')
-                        .First(); // 9168236
+                        ?.Trim()
+                        ?.Split(" ".ToCharArray(), 2)
+                        ?.Last() // 9168236 kB
+                        ?.Trim()
+                        ?.Split(' ')
+                        ?.First() // 9168236
+                        ?? "0";
 
             var totalKB = resultsArr
                         .FirstOrDefault(x => x.Trim().StartsWith("MemTotal"))
-                        .Trim()
-                        .Split(" ".ToCharArray(), 2)
-                        .Last() // 16637468 kB
-                        .Trim()
-                        .Split(' ')
-                        .First(); // 16637468
+                        ?.Trim()
+                        ?.Split(" ".ToCharArray(), 2)
+                        ?.Last() // 16637468 kB
+                        ?.Trim()
+                        ?.Split(' ')
+                        ?.First() // 16637468
+                        ?? "0"; 
 
             var freeGB = Math.Round(double.Parse(freeKB) / 1024 / 1024, 2);
             var totalGB = Math.Round(double.Parse(totalKB) / 1024 / 1024, 2);

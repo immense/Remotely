@@ -1,4 +1,5 @@
-﻿using IWshRuntimeLibrary;
+﻿#nullable enable
+using IWshRuntimeLibrary;
 using Microsoft.VisualBasic.FileIO;
 using Microsoft.Win32;
 using Remotely.Agent.Installer.Win.Utilities;
@@ -26,14 +27,14 @@ public class InstallerService
     private readonly string _platform = Environment.Is64BitOperatingSystem ? "x64" : "x86";
     private readonly JavaScriptSerializer _serializer = new JavaScriptSerializer();
 
-    public event EventHandler<string> ProgressMessageChanged;
-    public event EventHandler<int> ProgressValueChanged;
+    public event EventHandler<string>? ProgressMessageChanged;
+    public event EventHandler<int>? ProgressValueChanged;
 
     public async Task<bool> Install(string serverUrl,
         string organizationId,
-        string deviceGroup,
-        string deviceAlias,
-        string deviceUuid,
+        string? deviceGroup,
+        string? deviceAlias,
+        string? deviceUuid,
         bool createSupportShortcut)
     {
         try
@@ -174,8 +175,8 @@ public class InstallerService
 
     private async Task CreateDeviceOnServer(string deviceUuid,
         string serverUrl,
-        string deviceGroup,
-        string deviceAlias,
+        string? deviceGroup,
+        string? deviceAlias,
         string organizationId)
     {
         try
@@ -199,9 +200,10 @@ public class InstallerService
                 {
                     await sw.WriteAsync(_serializer.Serialize(setupOptions));
                 }
-                using (var response = await wr.GetResponseAsync() as HttpWebResponse)
-                { 
-                    Logger.Write($"Create device response: {response.StatusCode}");
+                using var response = await wr.GetResponseAsync();
+                if (response is HttpWebResponse httpResponse)
+                {
+                    Logger.Write($"Create device response: {httpResponse.StatusCode}");
                 }
             }
         }
@@ -261,7 +263,7 @@ public class InstallerService
         }
         else
         {
-            ProgressMessageChanged.Invoke(this, "Downloading Remotely agent.");
+            ProgressMessageChanged?.Invoke(this, "Downloading Remotely agent.");
             using (var client = new WebClient())
             {
                 client.DownloadProgressChanged += (sender, args) =>
@@ -273,7 +275,7 @@ public class InstallerService
             }
         }
 
-        ProgressMessageChanged.Invoke(this, "Extracting Remotely files.");
+        ProgressMessageChanged?.Invoke(this, "Extracting Remotely files.");
         ProgressValueChanged?.Invoke(this, 0);
 
         var tempDir = Path.Combine(Path.GetTempPath(), "RemotelyUpdate");
@@ -321,7 +323,7 @@ public class InstallerService
         ProgressValueChanged?.Invoke(this, 0);
     }
 
-    private ConnectionInfo GetConnectionInfo(string organizationId, string serverUrl, string deviceUuid)
+    private ConnectionInfo GetConnectionInfo(string organizationId, string serverUrl, string? deviceUuid)
     {
         ConnectionInfo connectionInfo;
         var connectionInfoPath = Path.Combine(_installPath, "ConnectionInfo.json");
@@ -345,7 +347,7 @@ public class InstallerService
             {
                 connectionInfo.ServerVerificationToken = null;
             }
-            connectionInfo.DeviceID = deviceUuid;
+            connectionInfo.DeviceID = deviceUuid!;
         }
         connectionInfo.OrganizationID = organizationId;
         connectionInfo.Host = serverUrl;

@@ -81,7 +81,7 @@ public class LoginController : ControllerBase
             return NotFound();
         }
 
-        var result = await _signInManager.PasswordSignInAsync(login.Email, login.Password, false, true);
+        var result = await _signInManager.PasswordSignInAsync($"{login.Email}", $"{login.Password}", false, true);
         if (result.Succeeded)
         {
             _logger.LogInformation("API login successful for {loginEmail}.", login.Email);

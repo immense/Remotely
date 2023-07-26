@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using Immense.RemoteControl.Shared.Extensions;
+using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared;
 using Remotely.Shared.Enums;
@@ -103,8 +105,7 @@ public class ScriptExecutor : IScriptExecutor
                 scriptRunId,
                 initiator);
 
-            var connectionInfo = _configService.GetConnectionInfo();
-            var url = $"{connectionInfo.Host}/API/SavedScripts/{savedScriptId}";
+            var url = $"{_configService.GetConnectionInfo().Host}/API/SavedScripts/{savedScriptId}";
             using var hc = new HttpClient();
             hc.DefaultRequestHeaders.Add(AppConstants.ExpiringTokenHeaderName, expiringToken);
             var response = await hc.GetAsync(url);
@@ -193,9 +194,9 @@ public class ScriptExecutor : IScriptExecutor
             default:
                 break;
         }
-        return null;
+        throw new InvalidOperationException($"Unknown shell type: {shell}");
     }
-    private async Task<ScriptResult> SendResultsToApi(object result, string expiringToken)
+    private async Task<ScriptResult?> SendResultsToApi(object result, string expiringToken)
     {
         var targetURL = _configService.GetConnectionInfo().Host + $"/API/ScriptResults";
 

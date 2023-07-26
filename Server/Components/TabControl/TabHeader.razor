@@ -8,21 +8,21 @@
 
 @code {
     [CascadingParameter]
-    public TabControl Parent { get; set; }
+    public TabControl? Parent { get; set; }
 
     [Parameter]
-    public RenderFragment ChildContent { get; set; }
+    public RenderFragment? ChildContent { get; set; }
 
     [Parameter]
-    public Action OnActivated { get; set; }
+    public Action? OnActivated { get; set; }
 
     [Parameter]
-    public string NavigationUri { get; set; }
+    public string? NavigationUri { get; set; }
 
     [Parameter]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
-    private string ActiveClass => Parent.ActiveTab == Name ? "active" : "";
+    private string ActiveClass => Parent?.ActiveTab == Name ? "active" : "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -46,7 +46,7 @@
         }
         else
         {
-            Parent.SetActiveTab(this);
+            Parent?.SetActiveTab(this);
             StateHasChanged();
             OnActivated?.Invoke();
         }

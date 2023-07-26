@@ -288,7 +288,7 @@ public class OrganizationManagementController : ControllerBase
             return Unauthorized();
         }
 
-        if (!ModelState.IsValid)
+        if (!ModelState.IsValid || string.IsNullOrWhiteSpace(invite.InvitedUser))
         {
             return BadRequest();
         }

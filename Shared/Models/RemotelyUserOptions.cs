@@ -7,7 +7,7 @@ public class RemotelyUserOptions
 {
     [Display(Name = "Display Name")]
     [StringLength(100)]
-    public string DisplayName { get; set; }
+    public string? DisplayName { get; set; }
 
     [Display(Name = "PS Core Shortcut")]
     [StringLength(10)]

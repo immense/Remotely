@@ -58,7 +58,7 @@ public class AppSettingsModel
     [Display(Name = "Max Organizations")]
     public int MaxOrganizationCount { get; set; }
     [Display(Name = "Message of the Day")]
-    public string MessageOfTheDay { get; set; }
+    public string? MessageOfTheDay { get; set; }
 
     [Display(Name = "Redirect To HTTPS")]
     public bool RedirectToHttps { get; set; }
@@ -76,28 +76,28 @@ public class AppSettingsModel
     public bool Require2FA { get; set; }
 
     [Display(Name = "SMTP Display Name")]
-    public string SmtpDisplayName { get; set; }
+    public string? SmtpDisplayName { get; set; }
 
     [Display(Name = "SMTP Email")]
     [EmailAddress]
-    public string SmtpEmail { get; set; }
+    public string? SmtpEmail { get; set; }
 
     [Display(Name = "SMTP Host")]
-    public string SmtpHost { get; set; }
+    public string? SmtpHost { get; set; }
     [Display(Name = "SMTP Local Domain")]
-    public string SmtpLocalDomain { get; set; }
+    public string? SmtpLocalDomain { get; set; }
 
     [Display(Name = "SMTP Check Certificate Revocation")]
     public bool SmtpCheckCertificateRevocation { get; set; }
 
     [Display(Name = "SMTP Password")]
-    public string SmtpPassword { get; set; }
+    public string? SmtpPassword { get; set; }
 
     [Display(Name = "SMTP Port")]
     public int SmtpPort { get; set; }
 
     [Display(Name = "SMTP Username")]
-    public string SmtpUserName { get; set; }
+    public string? SmtpUserName { get; set; }
 
     [Display(Name = "Theme")]
     [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -116,72 +116,74 @@ public class AppSettingsModel
 public class ConnectionStringsModel
 {
     [Display(Name = "PostgreSQL")]
-    public string PostgreSQL { get; set; }
+    public string? PostgreSQL { get; set; }
 
     [Display(Name = "SQLite")]
-    public string SQLite { get; set; }
+    public string? SQLite { get; set; }
 
     [Display(Name = "SQL Server")]
-    public string SQLServer { get; set; }
+    public string? SQLServer { get; set; }
 }
 
 public partial class ServerConfig : AuthComponentBase
 {
-    private string _alertMessage;
-    private string _bannedDeviceSelected;
-    private string _bannedDeviceToAdd;
+    private string? _alertMessage;
+    private string? _bannedDeviceSelected;
+    private string? _bannedDeviceToAdd;
 
-    private string _knownProxySelected;
-    private string _knownProxyToAdd;
+    private string? _knownProxySelected;
+    private string? _knownProxyToAdd;
 
     private bool _showMyOrgAdminsOnly = true;
     private bool _showAdminsOnly;
 
-    private string _trustedCorsOriginSelected;
-    private string _trustedCorsOriginToAdd;
+    private string? _trustedCorsOriginSelected;
+    private string? _trustedCorsOriginToAdd;
 
     private readonly List<RemotelyUser> _userList = new();
 
 
     [Inject]
-    private IHubContext<AgentHub> AgentHubContext { get; set; }
+    private IHubContext<AgentHub> AgentHubContext { get; init; } = null!;
 
     [Inject]
-    private IConfiguration Configuration { get; set; }
+    private IConfiguration Configuration { get; init; } = null!;
 
     private ConnectionStringsModel ConnectionStrings { get; } = new();
 
     [Inject]
-    private IDataService DataService { get; set; }
+    private IDataService DataService { get; init; } = null!;
 
     [Inject]
-    private IEmailSenderEx EmailSender { get; set; }
+    private IEmailSenderEx EmailSender { get; init; } = null!;
 
     [Inject]
-    private IWebHostEnvironment HostEnv { get; set; }
+    private IWebHostEnvironment HostEnv { get; init; } = null!;
 
     [Inject]
-    private ILogger<ServerConfig> Logger { get; set; }
+    private ILogger<ServerConfig> Logger { get; init; } = null!;
 
     [Inject]
-    private IAgentHubSessionCache ServiceSessionCache { get; init; }
+    private IAgentHubSessionCache ServiceSessionCache { get; init; } = null!;
 
     private AppSettingsModel Input { get; } = new();
 
     [Inject]
-    private IModalService ModalService { get; set; }
+    private IModalService ModalService { get; init; } = null!;
 
     [Inject]
-    private IUpgradeService UpgradeService { get; init; }
+    private IUpgradeService UpgradeService { get; init; } = null!;
 
     [Inject]
-    private ICircuitManager CircuitManager { get; set; }
+    private ICircuitManager CircuitManager { get; init; } = null!;
 
     private IEnumerable<string> OutdatedDevices => GetOutdatedDevices();
 
     [Inject]
-    private IToastService ToastService { get; set; }
+    private IToastService ToastService { get; init; } = null!;
+
     private int TotalDevices => DataService.GetTotalDevices();
+
     private IEnumerable<RemotelyUser> UserList
     {
         get
@@ -338,6 +340,12 @@ public partial class ServerConfig : AuthComponentBase
     {
         await SaveInputToAppSettings();
 
+        if (string.IsNullOrWhiteSpace(User.Email))
+        {
+            ToastService.ShowToast2("User email is not set.", Enums.ToastType.Warning);
+            return;
+        }
+
         var success = await EmailSender.SendEmailAsync(User.Email, "Remotely Test Email", "Congratulations! Your SMTP settings are working!", User.OrganizationID);
         if (success)
         {
@@ -359,19 +367,27 @@ public partial class ServerConfig : AuthComponentBase
         var devSettings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.Development.json");
         var settings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.json");
 
-        if (HostEnv.IsProduction() && prodSettings.Exists)
+        if (HostEnv.IsProduction() 
+            && prodSettings.Exists && 
+            !string.IsNullOrWhiteSpace(prodSettings.PhysicalPath))
         {
             savePath = prodSettings.PhysicalPath;
         }
-        else if (HostEnv.IsStaging() && stagingSettings.Exists)
+        else if (
+            HostEnv.IsStaging() && 
+            stagingSettings.Exists && 
+            !string.IsNullOrWhiteSpace(stagingSettings.PhysicalPath))
         {
             savePath = stagingSettings.PhysicalPath;
         }
-        else if (HostEnv.IsDevelopment() && devSettings.Exists)
+        else if (
+            HostEnv.IsDevelopment() && 
+            devSettings.Exists && 
+            !string.IsNullOrWhiteSpace(devSettings.PhysicalPath))
         {
             savePath = devSettings.PhysicalPath;
         }
-        else if (settings.Exists)
+        else if (settings.Exists && !string.IsNullOrWhiteSpace(settings.PhysicalPath))
         {
             savePath = settings.PhysicalPath;
         }
@@ -381,6 +397,10 @@ public partial class ServerConfig : AuthComponentBase
         }
 
         var settingsJson = JsonSerializer.Deserialize<IDictionary<string, object>>(await System.IO.File.ReadAllTextAsync(savePath));
+        if (settingsJson is null)
+        {
+            return;
+        }
         settingsJson["ApplicationOptions"] = Input;
         settingsJson["ConnectionStrings"] = ConnectionStrings;
 
@@ -393,7 +413,10 @@ public partial class ServerConfig : AuthComponentBase
     }
     private void SetIsServerAdmin(ChangeEventArgs ev, RemotelyUser user)
     {
-        var isAdmin = (bool)ev.Value;
+        if (ev.Value is not bool isAdmin)
+        {
+            return;
+        }
         DataService.SetIsServerAdmin(user.Id, isAdmin, User.Id);
         ToastService.ShowToast("Server admins updated.");
     }
@@ -404,10 +427,13 @@ public partial class ServerConfig : AuthComponentBase
         {
             var outdatedDeviceNames = DataService
                 .GetDevices(OutdatedDevices)
-                .Select(x => x.DeviceName);
+                .Select(x => $"{x.DeviceName}");
 
-            ModalService.ShowModal("Outdated Devices",
-                (new[] { "Outdated Devices:" }).Concat(outdatedDeviceNames).ToArray());
+            var body = (new[] { "Outdated Devices:" })
+                .Concat(outdatedDeviceNames)
+                .ToArray();
+
+            ModalService.ShowModal("Outdated Devices", body);
         }
         else
         {

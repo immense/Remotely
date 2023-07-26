@@ -2,6 +2,7 @@
 using Remotely.Shared.Models;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Remotely.Server.Services;
@@ -13,9 +14,9 @@ public interface IAgentHubSessionCache
 
     ICollection<Device> GetAllDevices();
     IEnumerable<string> GetConnectionIdsByDeviceIds(IEnumerable<string> deviceIds);
-    bool TryGetByDeviceId(string deviceId, out Device device);
-    bool TryGetConnectionId(string deviceId, out string serviceConnectionId);
-    bool TryRemoveByConnectionId(string connectionId, out Device device);
+    bool TryGetByDeviceId(string deviceId, [NotNullWhen(true)] out Device? device);
+    bool TryGetConnectionId(string deviceId, [NotNullWhen(true)] out string? serviceConnectionId);
+    bool TryRemoveByConnectionId(string connectionId, [NotNullWhen(true)] out Device? device);
 }
 
 public class AgentHubSessionCache : IAgentHubSessionCache
@@ -55,23 +56,23 @@ public class AgentHubSessionCache : IAgentHubSessionCache
         }
     }
 
-    public bool TryGetByDeviceId(string deviceId, out Device device)
+    public bool TryGetByDeviceId(string deviceId, [NotNullWhen(true)] out Device? device)
     {
         if (_deviceIdToConnectionIdLookup.TryGetValue(deviceId, out var connectionId) &&
             _connectionIdToDeviceLookup.TryGetValue(connectionId, out device))
         {
             return true;
         }
-        device = Device.Empty;
+        device = default;
         return false;
     }
 
-    public bool TryGetConnectionId(string deviceId, out string serviceConnectionId)
+    public bool TryGetConnectionId(string deviceId, [NotNullWhen(true)] out string? serviceConnectionId)
     {
         return _deviceIdToConnectionIdLookup.TryGetValue(deviceId, out serviceConnectionId);
     }
 
-    public bool TryRemoveByConnectionId(string connectionId, out Device device)
+    public bool TryRemoveByConnectionId(string connectionId, [NotNullWhen(true)] out Device? device)
     {
         if (_connectionIdToDeviceLookup.TryRemove(connectionId, out var lookupResult))
         {
@@ -80,7 +81,7 @@ public class AgentHubSessionCache : IAgentHubSessionCache
             return true;
         }
 
-        device = Device.Empty;
+        device = null;
         return false;
     }
 }

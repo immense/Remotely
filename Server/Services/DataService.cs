@@ -352,7 +352,7 @@ public class DataService : IDataService
 
         var inviteLink = new InviteLink()
         {
-            InvitedUser = invite.InvitedUser.ToLower(),
+            InvitedUser = invite.InvitedUser?.ToLower(),
             DateSent = DateTimeOffset.Now,
             IsAdmin = invite.IsAdmin,
             Organization = organization,

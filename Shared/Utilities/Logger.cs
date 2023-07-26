@@ -15,7 +15,7 @@ namespace Remotely.Shared.Utilities;
 [Obsolete("Please use ILogger<T> via dependency injection.")]
 public static class Logger
 {
-    private static string _logDir;
+    private static string? _logDir;
 
     private static string LogDir
     {
@@ -130,7 +130,7 @@ public static class Logger
 
             while (exception != null)
             {
-                File.AppendAllText(LogPath, $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}\t[{eventType}]\t[{callerName}]\t{exception?.Message}\t{exception?.StackTrace}\t{exception?.Source}{Environment.NewLine}");
+                File.AppendAllText(LogPath, $"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff}\t[{eventType}]\t[{callerName}]\t{exception.Message}\t{exception.StackTrace}\t{exception.Source}{Environment.NewLine}");
                 Console.WriteLine(exception.Message);
                 exception = exception.InnerException;
             }

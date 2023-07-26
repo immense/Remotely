@@ -11,13 +11,13 @@
                 </button>
             </div>
             <div class="modal-body" >
-                @if (ModalService?.RenderBody is not null)
+                @if (ModalService.RenderBody is not null)
                 {
                     @ModalService.RenderBody
                 }
                 else
                 {
-                    @foreach (var line in ModalService?.Body ?? Array.Empty<string>())
+                    @foreach (var line in ModalService.Body ?? Array.Empty<string>())
                     {
                         <p>
                             @line
@@ -38,8 +38,8 @@
 </div>
 
 @code {
-    private string _showClass;
-    private string _displayStyle;
+    private string? _showClass;
+    private string? _displayStyle;
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {

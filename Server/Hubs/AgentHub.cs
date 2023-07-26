@@ -10,9 +10,7 @@ using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -52,7 +50,14 @@ public class AgentHub : Hub
     {
         get
         {
-            return Context.Items["Device"] as Device;
+            if (Context.Items["Device"] is Device device) 
+            {
+                return device;
+            }
+            else
+            {
+                throw new InvalidOperationException("Device not set.");
+            }
         }
         set
         {
@@ -64,7 +69,7 @@ public class AgentHub : Hub
     {
         if (_circuitManager.TryGetConnection(browserConnectionId, out var connection))
         {
-            return connection.InvokeCircuitEvent(CircuitEventName.ChatReceived, Device.ID, Device.DeviceName, message, disconnected);
+            return connection.InvokeCircuitEvent(CircuitEventName.ChatReceived, Device.ID, $"{Device.DeviceName}", message, disconnected);
         }
         else
         {
@@ -102,7 +107,7 @@ public class AgentHub : Hub
             {
                 ip = ip.MapToIPv4();
             }
-            device.PublicIP = ip?.ToString();
+            device.PublicIP = $"{ip}";
 
             if (CheckForDeviceBan(device.PublicIP))
             {
@@ -157,7 +162,7 @@ public class AgentHub : Hub
         {
             ip = ip.MapToIPv4();
         }
-        device.PublicIP = ip?.ToString();
+        device.PublicIP = $"{ip}";
 
         if (CheckForDeviceBan(device.PublicIP))
         {
@@ -216,10 +221,10 @@ public class AgentHub : Hub
 
     public string GetServerVerificationToken()
     {
-        return Device.ServerVerificationToken;
+        return $"{Device.ServerVerificationToken}";
     }
 
-    public override Task OnDisconnectedAsync(Exception exception)
+    public override Task OnDisconnectedAsync(Exception? exception)
     {
         try
         {

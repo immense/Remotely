@@ -1,10 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Immense.RemoteControl.Shared;
+using Microsoft.Extensions.Logging;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 
 namespace Remotely.Agent.Services;
@@ -18,16 +20,17 @@ public interface IConfigService
 public class ConfigService : IConfigService
 {
     private static readonly object _fileLock = new();
-    private ConnectionInfo _connectionInfo;
     private readonly string _debugGuid = "f2b0a595-5ea8-471b-975f-12e70e0f3497";
     private readonly ILogger<ConfigService> _logger;
+    private ConnectionInfo? _connectionInfo;
 
     public ConfigService(ILogger<ConfigService> logger)
     {
         _logger = logger;
     }
 
-    private Dictionary<string, string> _commandLineArgs;
+    private Dictionary<string, string>? _commandLineArgs;
+
     private Dictionary<string, string> CommandLineArgs
     {
         get
@@ -36,13 +39,14 @@ public class ConfigService : IConfigService
             {
                 _commandLineArgs = new Dictionary<string, string>();
                 var args = Environment.GetCommandLineArgs();
+
                 for (var i = 1; i < args.Length; i += 2)
                 {
-                    var key = args?[i];
+                    var key = args[i];
                     if (key != null)
                     {
                         key = key.Trim().Replace("-", "").ToLower();
-                        var value = args?[i + 1];
+                        var value = args[i + 1];
                         if (value != null)
                         {
                             _commandLineArgs[key] = args[i + 1].Trim();
@@ -57,41 +61,52 @@ public class ConfigService : IConfigService
 
     public ConnectionInfo GetConnectionInfo()
     {
-        // For debugging purposes (i.e. launch of a bunch of instances).
-        if (CommandLineArgs.TryGetValue("organization", out var orgID) &&
-            CommandLineArgs.TryGetValue("host", out var hostName) &&
-            CommandLineArgs.TryGetValue("device", out var deviceID))
-        {
-            return new ConnectionInfo()
+        try
+        { // For debugging purposes (i.e. launch of a bunch of instances).
+            if (CommandLineArgs.TryGetValue("organization", out var orgID) &&
+                CommandLineArgs.TryGetValue("host", out var hostName) &&
+                CommandLineArgs.TryGetValue("device", out var deviceID))
             {
-                DeviceID = deviceID,
-                Host = hostName,
-                OrganizationID = orgID
-            };
-        }
-
-        if (Environment.UserInteractive && Debugger.IsAttached)
-        {
-            return new ConnectionInfo()
-            {
-                DeviceID = _debugGuid,
-                Host = "http://localhost:5000",
-                OrganizationID = orgID
-            };
-        }
-
-
-        if (_connectionInfo == null)
-        {
-            lock (_fileLock)
-            {
-                if (!File.Exists("ConnectionInfo.json"))
+                return new ConnectionInfo()
                 {
-                    _logger.LogError("No connection info available.  Please create ConnectionInfo.json file with appropriate values.");
-                    return null;
-                }
-                _connectionInfo = JsonSerializer.Deserialize<ConnectionInfo>(File.ReadAllText("ConnectionInfo.json"));
+                    DeviceID = deviceID,
+                    Host = hostName,
+                    OrganizationID = orgID
+                };
             }
+
+            if (Environment.UserInteractive && Debugger.IsAttached)
+            {
+                return new ConnectionInfo()
+                {
+                    DeviceID = _debugGuid,
+                    Host = "http://localhost:5000",
+                    OrganizationID = orgID
+                };
+            }
+
+
+            if (_connectionInfo == null)
+            {
+                lock (_fileLock)
+                {
+                    if (!File.Exists("ConnectionInfo.json"))
+                    {
+                        _logger.LogError("No connection info available.  Please create ConnectionInfo.json file with appropriate values.");
+                        throw new InvalidOperationException("Config file does not exist.");
+                    }
+                    _connectionInfo = JsonSerializer.Deserialize<ConnectionInfo>(File.ReadAllText("ConnectionInfo.json"));
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve connection info.");
+        }
+
+        if (_connectionInfo is null)
+        {
+            throw new InvalidOperationException("Unable to load config data.");
         }
 
         return _connectionInfo;

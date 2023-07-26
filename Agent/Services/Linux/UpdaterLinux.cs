@@ -105,7 +105,7 @@ public class UpdaterLinux : IUpdater
             await InstallLatestVersion();
 
         }
-        catch (WebException ex) when ((ex.Response as HttpWebResponse).StatusCode == HttpStatusCode.NotModified)
+        catch (WebException ex) when (ex.Response is HttpWebResponse http && http.StatusCode == HttpStatusCode.NotModified)
         {
             _logger.LogInformation("Service Updater: Version is current.");
             return;
@@ -180,7 +180,7 @@ public class UpdaterLinux : IUpdater
         }
     }
 
-    private async void UpdateTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+    private async void UpdateTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
         await CheckForUpdates();
     }

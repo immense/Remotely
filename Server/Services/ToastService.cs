@@ -14,25 +14,25 @@ public interface IToastService
     void ShowToast(
         string message, 
         int expirationMillisecond = 3000, 
-        string classString = null, 
-        string styleOverrides = null);
+        string classString = "", 
+        string styleOverrides = "");
 
     void ShowToast2(
         string message,
          ToastType toastType = ToastType.Info,
         int expirationMillisecond = 3000,
-        string styleOverrides = null);
+        string styleOverrides = "");
 }
 
 public class ToastService : IToastService
 {
-    public event EventHandler OnToastsChanged;
+    public event EventHandler? OnToastsChanged;
     public ConcurrentList<Toast> Toasts { get; } = new();
 
     public void ShowToast(string message,
         int expirationMillisecond = 3000,
-        string classString = null,
-        string styleOverrides = null)
+        string classString = "",
+        string styleOverrides = "")
     {
 
         if (string.IsNullOrWhiteSpace(classString))
@@ -57,7 +57,7 @@ public class ToastService : IToastService
         removeToastTimer.Elapsed += (s, e) =>
         {
             Toasts.Remove(toastModel);
-            OnToastsChanged?.Invoke(this, null);
+            OnToastsChanged?.Invoke(this, EventArgs.Empty);
             removeToastTimer.Dispose();
         };
         removeToastTimer.Start();
@@ -67,7 +67,7 @@ public class ToastService : IToastService
         string message, 
         ToastType toastType,
         int expirationMillisecond = 3000, 
-        string styleOverrides = null)
+        string styleOverrides = "")
     {
         var classString = toastType switch
         {

@@ -13,8 +13,8 @@ namespace Remotely.Server.Services;
 
 public interface IEmailSenderEx
 {
-    Task<bool> SendEmailAsync(string email, string replyTo, string subject, string htmlMessage, string organizationID = null);
-    Task<bool> SendEmailAsync(string email, string subject, string htmlMessage, string organizationID = null);
+    Task<bool> SendEmailAsync(string email, string replyTo, string subject, string htmlMessage, string? organizationID = null);
+    Task<bool> SendEmailAsync(string email, string subject, string htmlMessage, string? organizationID = null);
 }
 
 public class EmailSender : IEmailSender
@@ -44,7 +44,12 @@ public class EmailSenderEx : IEmailSenderEx
         _appConfig = appConfig;
         _logger = logger;
     }
-    public async Task<bool> SendEmailAsync(string toEmail, string replyTo, string subject, string htmlMessage, string organizationID = null)
+    public async Task<bool> SendEmailAsync(
+        string toEmail, 
+        string replyTo, 
+        string subject, 
+        string htmlMessage, 
+        string? organizationID = null)
     {
         try
         {
@@ -89,7 +94,7 @@ public class EmailSenderEx : IEmailSenderEx
         }
     }
 
-    public Task<bool> SendEmailAsync(string email, string subject, string htmlMessage, string organizationID = null)
+    public Task<bool> SendEmailAsync(string email, string subject, string htmlMessage, string? organizationID = null)
     {
         return SendEmailAsync(email, _appConfig.SmtpEmail, subject, htmlMessage, organizationID);
     }
