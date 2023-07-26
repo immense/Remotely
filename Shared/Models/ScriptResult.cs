@@ -43,6 +43,7 @@ public class ScriptResult
     public int? ScheduleId { get; set; }
     public Guid? SavedScriptId { get; set; }
 
+    public ScriptRun? ScriptRun { get; set; }
     public int? ScriptRunId { get; set; }
 
 

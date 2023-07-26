@@ -41,7 +41,7 @@ public class AppDb : IdentityDbContext
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
         options.ConfigureWarnings(x => x.Ignore(RelationalEventId.MultipleCollectionIncludeWarning));
-        //options.LogTo((message) => System.Diagnostics.Debug.Write(message));
+        options.LogTo((message) => System.Diagnostics.Debug.Write(message));
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -157,6 +157,10 @@ public class AppDb : IdentityDbContext
         builder.Entity<ScriptRun>()
             .HasMany(x => x.Devices)
             .WithMany(x => x.ScriptRuns);
+        builder.Entity<ScriptRun>()
+            .HasMany(x => x.Results)
+            .WithOne(x => x.ScriptRun)
+            .IsRequired(false);
 
         builder.Entity<ScriptResult>()
           .Property(x => x.ErrorOutput)
@@ -173,6 +177,10 @@ public class AppDb : IdentityDbContext
               x => DeserializeStringArray(x, jsonOptions))
           .Metadata
           .SetValueComparer(_stringArrayComparer);
+        builder.Entity<ScriptResult>()
+            .HasOne(x => x.ScriptRun)
+            .WithMany(x => x.Results)
+            .IsRequired(false);
 
         builder.Entity<Alert>()
             .HasOne(x => x.User)
