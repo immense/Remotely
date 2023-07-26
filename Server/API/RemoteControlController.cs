@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.SignalR;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
-using Remotely.Shared.Models;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +13,7 @@ using Immense.RemoteControl.Server.Abstractions;
 using Immense.RemoteControl.Shared.Helpers;
 using Microsoft.Extensions.Logging;
 using Remotely.Server.Extensions;
+using Remotely.Shared.Entities;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

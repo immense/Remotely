@@ -23,7 +23,6 @@ using Remotely.Server.Auth;
 using Remotely.Server.Data;
 using Remotely.Server.Hubs;
 using Remotely.Server.Services;
-using Remotely.Shared.Models;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -39,6 +38,7 @@ using Serilog;
 using Nihs.SimpleMessenger;
 using Microsoft.AspNetCore.RateLimiting;
 using RatePolicyNames = Remotely.Server.RateLimiting.PolicyNames;
+using Remotely.Shared.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;

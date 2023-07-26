@@ -9,15 +9,15 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Remotely.Shared.Models;
+namespace Remotely.Shared.Entities;
 
 public class BrandingInfo : BrandingInfoBase
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public string Id { get; set; } = string.Empty;
+    public string Id { get; set; } = null!;
 
-    public string? OrganizationId { get; set; }
+    public string OrganizationId { get; set; } = null!;
 
     [JsonIgnore]
     public Organization? Organization { get; set; }

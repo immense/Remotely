@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.CodeAnalysis.Scripting;
 using Remotely.Server.Pages;
 using Remotely.Server.Services;
-using Remotely.Shared.Models;
+using Remotely.Shared.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

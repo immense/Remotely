@@ -7,6 +7,7 @@ using Remotely.Server.Hubs;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
 using Remotely.Shared.Attributes;
+using Remotely.Shared.Entities;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;

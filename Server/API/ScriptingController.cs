@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.SignalR;
 using Remotely.Server.Hubs;
 using Remotely.Server.Services;
 using Remotely.Shared.Utilities;
-using Remotely.Shared.Models;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -13,6 +12,7 @@ using Remotely.Server.Auth;
 using Immense.RemoteControl.Shared.Helpers;
 using Remotely.Shared;
 using Remotely.Server.Extensions;
+using Remotely.Shared.Entities;
 
 namespace Remotely.Server.API;
 

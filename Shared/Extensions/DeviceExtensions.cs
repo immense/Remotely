@@ -1,5 +1,5 @@
 ﻿using Remotely.Shared.Dtos;
-using Remotely.Shared.Models;
+using Remotely.Shared.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,5 +1,6 @@
 ﻿using Remotely.Shared.Attributes;
 using Remotely.Shared.Enums;
+using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 
-namespace Remotely.Shared.Models;
+namespace Remotely.Shared.Entities;
 
 public class Device
 {
@@ -40,7 +41,7 @@ public class Device
     public List<Drive>? Drives { get; set; }
 
     [Key]
-    public string ID { get; set; } = null!;
+    public string ID { get; set; } = Guid.NewGuid().ToString();
 
     public bool Is64Bit { get; set; }
     public bool IsOnline { get; set; }
@@ -54,7 +55,7 @@ public class Device
     public string[] MacAddresses { get; set; } = Array.Empty<string>();
 
     [StringLength(5000)]
-    public string? Notes { get; set; }       
+    public string? Notes { get; set; }
 
     [JsonIgnore]
     public Organization? Organization { get; set; }

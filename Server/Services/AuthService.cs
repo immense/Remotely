@@ -1,7 +1,7 @@
 ﻿using Immense.RemoteControl.Shared;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Remotely.Shared.Models;
+using Remotely.Shared.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

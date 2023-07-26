@@ -12,6 +12,7 @@ using Remotely.Server.Data;
 using Remotely.Server.Models;
 using Remotely.Shared;
 using Remotely.Shared.Dtos;
+using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;

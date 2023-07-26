@@ -17,6 +17,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Remotely.Server.Services;
 using Remotely.Shared;
+using Remotely.Shared.Entities;
 using Remotely.Shared.Models;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account;

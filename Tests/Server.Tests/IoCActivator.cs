@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Remotely.Server.API;
 using Remotely.Server.Data;
 using Remotely.Server.Services;
-using Remotely.Shared.Models;
+using Remotely.Shared.Entities;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;

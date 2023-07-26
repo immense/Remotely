@@ -6,6 +6,7 @@ using Remotely.Server.Areas.Identity.Pages.Account.Manage;
 using Remotely.Server.Data;
 using Remotely.Server.Services;
 using Remotely.Shared.Dtos;
+using Remotely.Shared.Entities;
 using Remotely.Shared.Models;
 using System;
 using System.Linq;

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Remotely.Server.Services;
-using Remotely.Shared.Models;
+using Remotely.Shared.Entities;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;

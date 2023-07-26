@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Remotely.Server.Auth;
 using Remotely.Server.Services;
-using Remotely.Shared.Models;
+using Remotely.Shared.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -2,7 +2,7 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Remotely.Shared.Models;
+using Remotely.Shared.Entities;
 using System.Threading.Tasks;
 
 namespace Remotely.Server.Auth;

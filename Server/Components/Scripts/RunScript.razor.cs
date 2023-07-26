@@ -8,6 +8,7 @@ using Remotely.Server.Migrations.Sqlite;
 using Remotely.Server.Migrations.SqlServer;
 using Remotely.Server.Pages;
 using Remotely.Server.Services;
+using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;

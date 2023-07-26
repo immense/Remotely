@@ -6,6 +6,7 @@ using Remotely.Server.Models;
 using Remotely.Server.Services;
 using Remotely.Shared;
 using Remotely.Shared.Dtos;
+using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
@@ -278,7 +279,7 @@ public class AgentHub : Hub
 
         _ = await _circuitManager.InvokeOnConnection($"{result.Value.SenderConnectionID}",
             CircuitEventName.ScriptResult,
-            result);
+            result.Value);
     }
 
     public void ScriptResultViaApi(string commandID, string requestID)

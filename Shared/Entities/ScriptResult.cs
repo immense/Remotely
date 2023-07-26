@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
-namespace Remotely.Shared.Models;
+namespace Remotely.Shared.Entities;
 
 public class ScriptResult : ScriptResultBase
 {
@@ -17,12 +17,12 @@ public class ScriptResult : ScriptResultBase
 
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public string ID { get; set; } = string.Empty;
+    public string ID { get; set; } = null!;
 
     [JsonIgnore]
     [IgnoreDataMember]
     public Organization? Organization { get; set; }
-    public string OrganizationID { get; set; } = string.Empty;
+    public required string OrganizationID { get; set; }
 
     [JsonIgnore]
     public SavedScript? SavedScript { get; set; }

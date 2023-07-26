@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Remotely.Server.Auth;
 using Remotely.Server.Extensions;
 using Remotely.Server.Services;
+using Remotely.Shared.Entities;
 using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;

@@ -11,6 +11,7 @@ using Org.BouncyCastle.Crypto.Agreement;
 using Remotely.Server.Auth;
 using Remotely.Server.Extensions;
 using Remotely.Server.Services;
+using Remotely.Shared.Entities;
 using Remotely.Shared.Models;
 using Remotely.Shared.ViewModels;
 using System;

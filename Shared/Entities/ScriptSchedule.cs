@@ -1,4 +1,5 @@
 ﻿using Remotely.Shared.Enums;
+using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Remotely.Shared.Models;
+namespace Remotely.Shared.Entities;
 
 public class ScriptSchedule
 {

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
-using Remotely.Shared.Models;
+using Remotely.Shared.Entities;
 using System;
 using System.Linq;
 using System.Threading.Tasks;

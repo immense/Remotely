@@ -1,11 +1,12 @@
 ﻿using Immense.RemoteControl.Shared.Models;
 using Remotely.Shared.Enums;
+using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Remotely.Shared.Models;
+namespace Remotely.Shared.Entities;
 
 public class Organization
 {

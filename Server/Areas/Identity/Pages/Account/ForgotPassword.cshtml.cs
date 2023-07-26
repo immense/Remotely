@@ -10,9 +10,9 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using Remotely.Shared.Models;
 using Remotely.Server.Services;
 using Microsoft.Extensions.Logging;
+using Remotely.Shared.Entities;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account;
 

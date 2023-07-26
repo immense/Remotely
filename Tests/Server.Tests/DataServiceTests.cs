@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Remotely.Server.Services;
 using Remotely.Shared.Dtos;
+using Remotely.Shared.Entities;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;

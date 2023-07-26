@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Remotely.Shared.Models;
+using Remotely.Shared.Entities;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account.Manage;
 

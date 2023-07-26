@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Remotely.Shared.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Remotely.Shared.Models;
+namespace Remotely.Shared.Entities;
 
 public class RemotelyUser : IdentityUser
 {
