@@ -434,9 +434,9 @@ public class DataService : IDataService
         }
 
         dbContext.SavedScripts.Update(script);
-        script.CreatorId = userId;
+        script.CreatorId = user.Id;
         script.Creator = user;
-        script.OrganizationID = user.Id;
+        script.OrganizationID = user.OrganizationID;
         await dbContext.SaveChangesAsync();
         return Result.Ok();
     }
@@ -1062,6 +1062,7 @@ public class DataService : IDataService
         using var dbContext = _appDbFactory.GetContext();
 
         var alert = await dbContext.Alerts
+            .AsNoTracking()
             .Include(x => x.Device)
             .Include(x => x.User)
             .FirstOrDefaultAsync(x => x.ID == alertId);
@@ -1079,6 +1080,7 @@ public class DataService : IDataService
         using var dbContext = _appDbFactory.GetContext();
 
         return dbContext.Alerts
+            .AsNoTracking()
             .Include(x => x.Device)
             .Include(x => x.User)
             .Where(x => x.UserID == userId)
@@ -1098,6 +1100,7 @@ public class DataService : IDataService
         }
 
         return dbContext.ApiTokens
+            .AsNoTracking()
             .Where(x => x.OrganizationID == user.OrganizationID)
             .OrderByDescending(x => x.LastUsed)
             .ToArray();
@@ -1108,6 +1111,7 @@ public class DataService : IDataService
         using var dbContext = _appDbFactory.GetContext();
 
         return dbContext.ScriptResults
+            .AsNoTracking()
             .Where(x => x.OrganizationID == orgId)
             .OrderByDescending(x => x.TimeStamp)
             .ToArray();
@@ -1118,6 +1122,7 @@ public class DataService : IDataService
         using var dbContext = _appDbFactory.GetContext();
 
         return dbContext.ScriptResults
+            .AsNoTracking()
             .Where(x => x.OrganizationID == orgId &&
                 x.SenderUserName == userName &&
                 x.DeviceID == deviceId)
@@ -1129,7 +1134,10 @@ public class DataService : IDataService
     {
         using var dbContext = _appDbFactory.GetContext();
 
-        return dbContext.Devices.Where(x => x.OrganizationID == orgId).ToArray();
+        return dbContext.Devices
+            .AsNoTracking()
+            .Where(x => x.OrganizationID == orgId)
+            .ToArray();
     }
 
     public InviteLink[] GetAllInviteLinks(string organizationId)
@@ -1137,6 +1145,7 @@ public class DataService : IDataService
         using var dbContext = _appDbFactory.GetContext();
 
         return dbContext.InviteLinks
+            .AsNoTracking()
             .Where(x => x.OrganizationID == organizationId)
             .ToArray();
     }
@@ -1146,6 +1155,7 @@ public class DataService : IDataService
         using var dbContext = _appDbFactory.GetContext();
 
         return dbContext.ScriptResults
+            .AsNoTracking()
             .Where(x => x.OrganizationID == orgId && x.DeviceID == deviceId)
             .OrderByDescending(x => x.TimeStamp)
             .ToArray();
@@ -1156,6 +1166,7 @@ public class DataService : IDataService
         using var dbContext = _appDbFactory.GetContext();
 
         return dbContext.ScriptResults
+            .AsNoTracking()
             .Where(x => x.OrganizationID == orgId && x.SenderUserName == userName)
             .OrderByDescending(x => x.TimeStamp)
             .ToArray();
@@ -1165,7 +1176,9 @@ public class DataService : IDataService
     {
         using var dbContext = _appDbFactory.GetContext();
 
-        return dbContext.Users.ToArray();
+        return dbContext.Users
+            .AsNoTracking()
+            .ToArray();
     }
 
     public async Task<RemotelyUser[]> GetAllUsersInOrganization(string orgId)
@@ -1178,6 +1191,7 @@ public class DataService : IDataService
         using var dbContext = _appDbFactory.GetContext();
 
         var organization = await dbContext.Organizations
+            .AsNoTracking()
             .Include(x => x.RemotelyUsers)
             .FirstOrDefaultAsync(x => x.ID == orgId);
 
@@ -1198,7 +1212,9 @@ public class DataService : IDataService
 
         using var dbContext = _appDbFactory.GetContext();
 
-        var token = await dbContext.ApiTokens.FirstOrDefaultAsync(x => x.ID == keyId);
+        var token = await dbContext.ApiTokens
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.ID == keyId);
 
         if (token is null)
         {
@@ -1218,6 +1234,7 @@ public class DataService : IDataService
         using var dbContext = _appDbFactory.GetContext();
 
         var organization = await dbContext.Organizations
+          .AsNoTracking()
           .Include(x => x.BrandingInfo)
           .FirstOrDefaultAsync(x => x.ID == organizationId);
 
@@ -1245,7 +1262,9 @@ public class DataService : IDataService
     {
         using var dbContext = _appDbFactory.GetContext();
 
-        var org = await dbContext.Organizations.FirstOrDefaultAsync(x => x.IsDefaultOrganization);
+        var org = await dbContext.Organizations
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.IsDefaultOrganization);
         
         if (org is null)
         {
@@ -1259,9 +1278,11 @@ public class DataService : IDataService
     {
         using var dbContext = _appDbFactory.GetContext();
 
-        var device = await dbContext.Devices.FirstOrDefaultAsync(x =>
-                        x.OrganizationID == orgId &&
-                        x.ID == deviceId);
+        var device = await dbContext.Devices
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x =>
+                x.OrganizationID == orgId &&
+                x.ID == deviceId);
 
         if (device is null)
         {
@@ -1276,8 +1297,12 @@ public class DataService : IDataService
     {
         using var dbContext = _appDbFactory.GetContext();
         
-        var query = dbContext.Devices.AsQueryable();
+        var query = dbContext.Devices
+            .AsNoTracking()
+            .AsQueryable();
+
         includesBuilder?.Invoke(query);
+
         var device = await query.FirstOrDefaultAsync(x => x.ID == deviceId);
 
         if (device is null)
@@ -1304,6 +1329,7 @@ public class DataService : IDataService
         }
 
         return dbContext.Users
+            .AsNoTracking()
             .Include(x => x.DeviceGroups)
             .ThenInclude(x => x.Devices)
             .Where(x => x.Id == user.Id)
@@ -1319,7 +1345,9 @@ public class DataService : IDataService
     {
         using var dbContext = _appDbFactory.GetContext();
 
-        var query = dbContext.DeviceGroups.AsQueryable();
+        var query = dbContext.DeviceGroups
+            .AsNoTracking()
+            .AsQueryable();
 
         if (includeDevices)
         {
@@ -1343,7 +1371,9 @@ public class DataService : IDataService
     {
         using var dbContext = _appDbFactory.GetContext();
 
-        var user = dbContext.Users.FirstOrDefault(x => x.UserName == username);
+        var user = dbContext.Users
+            .AsNoTracking()
+            .FirstOrDefault(x => x.UserName == username);
 
         if (user is null)
         {
@@ -1352,6 +1382,7 @@ public class DataService : IDataService
         var userId = user.Id;
 
         var groupIds = dbContext.DeviceGroups
+            .AsNoTracking()
             .Include(x => x.Users)
             .ThenInclude(x => x.DeviceGroups)
             .Where(x =>
@@ -1367,6 +1398,7 @@ public class DataService : IDataService
         if (groupIds.Any())
         {
             return dbContext.DeviceGroups
+                .AsNoTracking()
                 .Where(x => groupIds.Contains(x.ID))
                 .OrderBy(x => x.Name)
                 .ToArray();
@@ -1380,6 +1412,7 @@ public class DataService : IDataService
         using var dbContext = _appDbFactory.GetContext();
 
         return dbContext.DeviceGroups
+            .AsNoTracking()
             .Include(x => x.Users)
             .ThenInclude(x => x.DeviceGroups)
             .Where(x => x.OrganizationID == organizationId)
@@ -1392,6 +1425,7 @@ public class DataService : IDataService
         using var dbContext = _appDbFactory.GetContext();
 
         return dbContext.Devices
+            .AsNoTracking()
             .Where(x => deviceIds.Contains(x.ID))
             .ToList();
     }
@@ -1455,8 +1489,8 @@ public class DataService : IDataService
 
         using var dbContext = _appDbFactory.GetContext();
 
-        var user = await dbContext
-            .Users
+        var user = await dbContext.Users
+            .AsNoTracking()
             .Include(x => x.Organization)
             .FirstOrDefaultAsync(x => x.UserName!.ToLower() == userName.ToLower());
 
@@ -1486,7 +1520,9 @@ public class DataService : IDataService
     {
         using var dbContext = _appDbFactory.GetContext();
 
-        var org = await dbContext.Organizations.FirstOrDefaultAsync(x => x.ID == organizationId);
+        var org = await dbContext.Organizations
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.ID == organizationId);
 
         if (org is null)
         {
@@ -1506,8 +1542,9 @@ public class DataService : IDataService
         using var dbContext = _appDbFactory.GetContext();
 
         var user = await dbContext.Users
-               .Include(x => x.Organization)
-               .FirstOrDefaultAsync(x => x.UserName == userName);
+            .AsNoTracking()
+            .Include(x => x.Organization)
+            .FirstOrDefaultAsync(x => x.UserName == userName);
 
         if (user is null)
         {
@@ -1523,6 +1560,7 @@ public class DataService : IDataService
         using var dbContext = _appDbFactory.GetContext();
 
         var device = await dbContext.Devices
+            .AsNoTracking()
             .Include(x => x.ScriptRuns)
             .ThenInclude(x => x.Results)
             .FirstOrDefaultAsync(x => x.ID == deviceId);
@@ -1559,6 +1597,7 @@ public class DataService : IDataService
         using var dbContext = _appDbFactory.GetContext();
 
         var script = await dbContext.SavedScripts
+            .AsNoTracking()
             .Include(x => x.Creator)
             .FirstOrDefaultAsync(x =>
                 x.Id == scriptId &&
@@ -1574,7 +1613,9 @@ public class DataService : IDataService
     public async Task<Result<SavedScript>> GetSavedScript(Guid scriptId)
     {
         using var dbContext = _appDbFactory.GetContext();
-        var script = await dbContext.SavedScripts.FirstOrDefaultAsync(x => x.Id == scriptId);
+        var script = await dbContext.SavedScripts
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == scriptId);
 
         if (script is null)
         {
@@ -1588,6 +1629,7 @@ public class DataService : IDataService
         using var dbContext = _appDbFactory.GetContext();
 
         return await dbContext.SavedScripts
+            .AsNoTracking()
             .Include(x => x.Creator)
             .Where(x => 
                 x.Creator!.OrganizationID == organizationId &&
@@ -1611,6 +1653,7 @@ public class DataService : IDataService
         using var dbContext = _appDbFactory.GetContext();
 
         var result = await dbContext.ScriptResults
+            .AsNoTracking()
             .FirstOrDefaultAsync(x =>
                 x.OrganizationID == orgId &&
                 x.ID == resultId);
@@ -1639,6 +1682,7 @@ public class DataService : IDataService
     {
         using var dbContext = _appDbFactory.GetContext();
         return await dbContext.ScriptSchedules
+            .AsNoTracking()
             .Include(x => x.Creator)
             .Include(x => x.Devices)
             .Include(x => x.DeviceGroups)
@@ -1653,6 +1697,7 @@ public class DataService : IDataService
         var now = Time.Now;
 
         return await dbContext.ScriptSchedules
+            .AsNoTracking()
             .Include(x => x.Devices)
             .Include(x => x.DeviceGroups)
             .ThenInclude(x => x.Devices)
@@ -1665,6 +1710,7 @@ public class DataService : IDataService
         using var dbContext = _appDbFactory.GetContext();
 
         return dbContext.Users
+            .AsNoTracking()
             .Where(x => x.IsServerAdmin)
             .Select(x => $"{x.UserName}")
             .ToList();
@@ -1698,7 +1744,9 @@ public class DataService : IDataService
         }
         using var dbContext = _appDbFactory.GetContext();
 
-        var user = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == userId);
+        var user = await dbContext.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == userId);
 
         if (user is null)
         {
@@ -1718,7 +1766,10 @@ public class DataService : IDataService
 
         using var dbContext = _appDbFactory.GetContext();
 
-        var query = dbContext.Users.AsQueryable();
+        var query = dbContext.Users
+            .AsNoTracking()
+            .AsQueryable();
+
         includesBuilder?.Invoke(query);
 
         var user = await query.FirstOrDefaultAsync(x => 
@@ -1736,7 +1787,8 @@ public class DataService : IDataService
         using var dbContext = _appDbFactory.GetContext();
 
         var user = await dbContext.Users
-                .FirstOrDefaultAsync(x => x.UserName == userName);
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.UserName == userName);
 
         if (user is null)
         {
@@ -1758,24 +1810,27 @@ public class DataService : IDataService
 
         using var dbContext = _appDbFactory.GetContext();
 
-        var invite = await dbContext.InviteLinks.FirstOrDefaultAsync(x =>
-                        x.InvitedUser!.ToLower() == userName.ToLower() &&
-                        x.ID == inviteId);
+        var invite = await dbContext.InviteLinks
+            .FirstOrDefaultAsync(x =>
+                x.InvitedUser!.ToLower() == userName.ToLower() &&
+                x.ID == inviteId);
 
         if (invite is null)
         {
             return Result.Fail("Invite not found.");
         }
 
-        var user = await dbContext.Users.FirstOrDefaultAsync(x => x.UserName == userName);
+        var user = await dbContext.Users
+            .FirstOrDefaultAsync(x => x.UserName == userName);
+
         if (user is null)
         {
             return Result.Fail("User not found.");
         }
 
         var organization = await dbContext.Organizations
-                            .Include(x => x.RemotelyUsers)
-                            .FirstOrDefaultAsync(x => x.ID == invite.OrganizationID);
+            .Include(x => x.RemotelyUsers)
+            .FirstOrDefaultAsync(x => x.ID == invite.OrganizationID);
 
         if (organization is null)
         {
