@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely.Shared.Models;
+namespace Remotely.Shared.Dtos;
 public class ScriptResultResponse
 {
     public required string Id { get; init; }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Remotely.Shared.Dtos;
 using Remotely.Shared.Models;
 using System;
 using System.Collections.Concurrent;
@@ -15,7 +16,7 @@ public interface IPsCoreShell
     string? SenderConnectionId { get; set; }
 
     CommandCompletion GetCompletions(string inputText, int currentIndex, bool? forward);
-    Task<ScriptResult> WriteInput(string input);
+    Task<ScriptResultDto> WriteInput(string input);
 }
 
 public class PsCoreShell : IPsCoreShell
@@ -83,7 +84,7 @@ public class PsCoreShell : IPsCoreShell
         return _lastCompletion;
     }
 
-    public async Task<ScriptResult> WriteInput(string input)
+    public async Task<ScriptResultDto> WriteInput(string input)
     {
         var deviceId = _configService.GetConnectionInfo().DeviceID;
         var sw = Stopwatch.StartNew();
@@ -121,7 +122,7 @@ public class PsCoreShell : IPsCoreShell
             var errorAndWarningOut = errorOut.Concat(warningOut).ToArray();
 
 
-            return new ScriptResult()
+            return new ScriptResultDto()
             {
                 DeviceID = _configService.GetConnectionInfo().DeviceID,
                 SenderConnectionID = SenderConnectionId,
@@ -136,7 +137,7 @@ public class PsCoreShell : IPsCoreShell
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while writing input to PSCore.");
-            return new ScriptResult()
+            return new ScriptResultDto()
             {
                 DeviceID = deviceId,
                 SenderConnectionID = SenderConnectionId,

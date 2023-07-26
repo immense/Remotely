@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Immense.RemoteControl.Shared.Extensions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Remotely.Server.Auth;
 using Remotely.Server.Extensions;
 using Remotely.Server.Services;
+using Remotely.Shared.Dtos;
 using Remotely.Shared.Models;
 using System;
 using System.Text;
@@ -16,11 +20,16 @@ public class ScriptResultsController : ControllerBase
 {
     private readonly IDataService _dataService;
     private readonly IEmailSenderEx _emailSender;
+    private readonly ILogger<ScriptResultsController> _logger;
 
-    public ScriptResultsController(IDataService dataService, IEmailSenderEx emailSenderEx)
+    public ScriptResultsController(
+        IDataService dataService, 
+        IEmailSenderEx emailSenderEx,
+        ILogger<ScriptResultsController> logger)
     {
         _dataService = dataService;
         _emailSender = emailSenderEx;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -54,9 +63,15 @@ public class ScriptResultsController : ControllerBase
 
     [HttpPost]
     [ServiceFilter(typeof(ExpiringTokenFilter))]
-    public async Task<ActionResult<ScriptResultResponse>> Post([FromBody] ScriptResult result)
+    public async Task<ActionResult<ScriptResultResponse>> Post([FromBody] ScriptResultDto result)
     {
-        _dataService.AddOrUpdateScriptResult(result);
+        var scriptResult = await _dataService.AddScriptResult(result);
+
+        if (!scriptResult.IsSuccess)
+        {
+            _logger.LogResult(scriptResult);
+            return BadRequest();
+        }
 
         var errorOut = result.ErrorOutput ?? Array.Empty<string>();
 
@@ -72,7 +87,7 @@ public class ScriptResultsController : ControllerBase
             if (savedScript.GenerateAlertOnError)
             {
                 await _dataService.AddAlert(result.DeviceID,
-                    result.OrganizationID,
+                    savedScript.OrganizationID,
                     $"Alert triggered while running script {savedScript.Name}.",
                     string.Join("\n", errorOut));
             }
@@ -108,12 +123,12 @@ public class ScriptResultsController : ControllerBase
 
         if (result.ScriptRunId.HasValue)
         {
-            await _dataService.AddScriptResultToScriptRun(result.ID, result.ScriptRunId.Value);
+            await _dataService.AddScriptResultToScriptRun(scriptResult.Value.ID, result.ScriptRunId.Value);
         }
 
         return new ScriptResultResponse()
         {
-            Id = result.ID
+            Id = scriptResult.Value.ID
         };
     }
 }

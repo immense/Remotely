@@ -36,10 +36,9 @@ public interface IDataService
 
     Task<Result> AddOrUpdateSavedScript(SavedScript script, string userId);
 
-    void AddOrUpdateScriptResult(ScriptResult scriptResult);
-
     Task AddOrUpdateScriptSchedule(ScriptSchedule schedule);
 
+    Task<Result<ScriptResult>> AddScriptResult(ScriptResultDto dto);
     Task<Result> AddScriptResultToScriptRun(string scriptResultId, int scriptRunId);
 
     Task AddScriptRun(ScriptRun scriptRun);
@@ -228,8 +227,8 @@ public interface IDataService
 public class DataService : IDataService
 {
     private readonly IApplicationConfig _appConfig;
-    private readonly IHostEnvironment _hostEnvironment;
     private readonly IAppDbFactory _appDbFactory;
+    private readonly IHostEnvironment _hostEnvironment;
     private readonly ILogger<DataService> _logger;
 
     public DataService(
@@ -446,33 +445,6 @@ public class DataService : IDataService
         return Result.Ok();
     }
 
-    public void AddOrUpdateScriptResult(ScriptResult result)
-    {
-        using var dbContext = _appDbFactory.GetContext();
-
-        var device = dbContext.Devices.Find(result.DeviceID);
-
-        if (device is null)
-        {
-            return;
-        }
-
-        result.OrganizationID = device.OrganizationID;
-
-        var existingResult = dbContext.ScriptResults.Find(result.ID);
-        if (existingResult is not null)
-        {
-            var entry = dbContext.Entry(existingResult);
-            entry.CurrentValues.SetValues(result);
-            entry.State = EntityState.Modified;
-        }
-        else
-        {
-            dbContext.ScriptResults.Add(result);
-        }
-        dbContext.SaveChanges();
-    }
-
     public async Task AddOrUpdateScriptSchedule(ScriptSchedule schedule)
     {
         using var dbContext = _appDbFactory.GetContext();
@@ -514,6 +486,31 @@ public class DataService : IDataService
         }
 
         await dbContext.SaveChangesAsync();
+    }
+
+    public async Task<Result<ScriptResult>> AddScriptResult(ScriptResultDto dto)
+    {
+        using var dbContext = _appDbFactory.GetContext();
+
+        var device = dbContext.Devices.Find(dto.DeviceID);
+
+        if (device is null)
+        {
+            return Result.Fail<ScriptResult>("Device not found.");
+        }
+
+        var scriptResult = new ScriptResult
+        {
+            DeviceID = dto.DeviceID,
+            OrganizationID = device.OrganizationID
+        };
+
+        var entry = dbContext.Attach(scriptResult);
+        entry.CurrentValues.SetValues(dto);
+        entry.State = EntityState.Added;
+        await dbContext.ScriptResults.AddAsync(scriptResult);
+        await dbContext.SaveChangesAsync();
+        return Result.Ok(scriptResult);
     }
 
     public async Task<Result> AddScriptResultToScriptRun(string scriptResultId, int scriptRunId)

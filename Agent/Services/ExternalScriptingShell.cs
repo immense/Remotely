@@ -1,6 +1,7 @@
 ﻿using Immense.RemoteControl.Shared.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Remotely.Shared.Dtos;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using System;
@@ -17,7 +18,7 @@ public interface IExternalScriptingShell
 {
     Process? ShellProcess { get; }
     Task Init(ScriptingShell shell, string shellProcessName, string lineEnding, string connectionId);
-    Task<ScriptResult> WriteInput(string input, TimeSpan timeout);
+    Task<ScriptResultDto> WriteInput(string input, TimeSpan timeout);
 }
 
 public class ExternalScriptingShell : IExternalScriptingShell
@@ -129,7 +130,7 @@ public class ExternalScriptingShell : IExternalScriptingShell
         }
     }
 
-    public async Task<ScriptResult> WriteInput(string input, TimeSpan timeout)
+    public async Task<ScriptResultDto> WriteInput(string input, TimeSpan timeout)
     {
         await _writeLock.WaitAsync();
         var sw = Stopwatch.StartNew();
@@ -186,9 +187,9 @@ public class ExternalScriptingShell : IExternalScriptingShell
         return GeneratePartialResult(input, sw.Elapsed);
     }
 
-    private ScriptResult GenerateCompletedResult(string input, TimeSpan runtime)
+    private ScriptResultDto GenerateCompletedResult(string input, TimeSpan runtime)
     {
-        return new ScriptResult()
+        return new ScriptResultDto()
         {
             Shell = _shell,
             RunTime = runtime,
@@ -202,9 +203,9 @@ public class ExternalScriptingShell : IExternalScriptingShell
         };
     }
 
-    private ScriptResult GeneratePartialResult(string input, TimeSpan runtime)
+    private ScriptResultDto GeneratePartialResult(string input, TimeSpan runtime)
     {
-        var partialResult = new ScriptResult()
+        var partialResult = new ScriptResultDto()
         {
             Shell = _shell,
             RunTime = runtime,

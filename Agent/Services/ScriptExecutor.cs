@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared;
+using Remotely.Shared.Dtos;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
@@ -151,7 +152,7 @@ public class ScriptExecutor : IScriptExecutor
         }
     }
 
-    private async Task<ScriptResult> ExecuteScriptContent(
+    private async Task<ScriptResultDto> ExecuteScriptContent(
         ScriptingShell shell,
         string terminalSessionId,
         string command,
@@ -196,7 +197,7 @@ public class ScriptExecutor : IScriptExecutor
         }
         throw new InvalidOperationException($"Unknown shell type: {shell}");
     }
-    private async Task<ScriptResultResponse?> SendResultsToApi(ScriptResult result, string expiringToken)
+    private async Task<ScriptResultResponse?> SendResultsToApi(ScriptResultDto result, string expiringToken)
     {
         var targetURL = _configService.GetConnectionInfo().Host + $"/API/ScriptResults";
 

@@ -16,11 +16,11 @@
 <DevicesFrame />
 <ChatFrame />
 
-@code { 
+@code {
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (AppConfig.Require2FA && !User.TwoFactorEnabled)
+        if (AppConfig.Require2FA && IsUserSet && !User.TwoFactorEnabled)
         {
             NavManager.NavigateTo("/TwoFactorRequired");
         }
@@ -31,7 +31,7 @@
     {
         await base.OnInitializedAsync();
 
-        if (IsAuthenticated == true && User is null)
+        if (IsAuthenticated == true && !IsUserSet)
         {
             await SignInManager.SignOutAsync();
             NavManager.NavigateTo("/");

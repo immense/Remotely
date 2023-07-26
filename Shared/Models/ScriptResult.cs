@@ -1,4 +1,5 @@
-﻿using Remotely.Shared.Enums;
+﻿using Remotely.Shared.DtoEntityBases;
+using Remotely.Shared.Enums;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
@@ -9,48 +10,23 @@ using System.Text.Json.Serialization;
 
 namespace Remotely.Shared.Models;
 
-public class ScriptResult
+public class ScriptResult : ScriptResultBase
 {
     [JsonIgnore]
     public Device? Device { get; set; }
 
-    public string DeviceID { get; set; } = null!;
-
-    public string[]? ErrorOutput { get; set; }
-
-    public bool HadErrors { get; set; }
-
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public string ID { get; set; } = null!;
-
-
-    public ScriptInputType InputType { get; set; }
+    public string ID { get; set; } = string.Empty;
 
     [JsonIgnore]
     [IgnoreDataMember]
     public Organization? Organization { get; set; }
-    public string OrganizationID { get; set; } = null!;
-
-    [JsonConverter(typeof(TimeSpanJsonConverter))]
-    public TimeSpan RunTime { get; set; }
+    public string OrganizationID { get; set; } = string.Empty;
 
     [JsonIgnore]
     public ScriptSchedule? Schedule { get; set; }
 
-    public required string ScriptInput { get; set; }
-
-    public int? ScheduleId { get; set; }
-    public Guid? SavedScriptId { get; set; }
-
+    [JsonIgnore]
     public ScriptRun? ScriptRun { get; set; }
-    public int? ScriptRunId { get; set; }
-
-
-    public string? SenderConnectionID { get; set; }
-    public string? SenderUserName { get; set; } = null!;
-    public ScriptingShell Shell { get; set; }
-    public string[]? StandardOutput { get; set; }
-   
-    public DateTimeOffset TimeStamp { get; set; } = DateTimeOffset.Now;
 }

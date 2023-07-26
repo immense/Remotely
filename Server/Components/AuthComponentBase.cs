@@ -28,6 +28,8 @@ public class AuthComponentBase : ComponentBase
 
     public bool IsAuthenticated { get; private set; }
 
+    public bool IsUserSet => _user is not null;
+
     public RemotelyUser User
     {
         get => _user ?? throw new InvalidOperationException("User has not been resolved yet.");
