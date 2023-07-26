@@ -196,7 +196,7 @@ public class ScriptExecutor : IScriptExecutor
         }
         throw new InvalidOperationException($"Unknown shell type: {shell}");
     }
-    private async Task<ScriptResultResponse?> SendResultsToApi(object result, string expiringToken)
+    private async Task<ScriptResultResponse?> SendResultsToApi(ScriptResult result, string expiringToken)
     {
         var targetURL = _configService.GetConnectionInfo().Host + $"/API/ScriptResults";
 
