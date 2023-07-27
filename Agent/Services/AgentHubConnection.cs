@@ -39,7 +39,7 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
     private readonly IHttpClientFactory _httpFactory;
     private readonly IWakeOnLanService _wakeOnLanService;
     private readonly ILogger<AgentHubConnection> _logger;
-    private readonly IEnumerable<ILoggerProvider> _loggerProviders;
+    private readonly IFileLogsManager _fileLogsManager;
     private readonly IScriptExecutor _scriptExecutor;
     private readonly IUninstaller _uninstaller;
     private readonly IUpdater _updater;
@@ -48,7 +48,6 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
     private HubConnection? _hubConnection;
     private Timer? _heartbeatTimer;
     private bool _isServerVerified;
-    private FileLogger? _fileLogger;
 
     public AgentHubConnection(
         IConfigService configService,
@@ -60,7 +59,7 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
         IDeviceInformationService deviceInfoService,
         IHttpClientFactory httpFactory,
         IWakeOnLanService wakeOnLanService,
-        IEnumerable<ILoggerProvider> loggerProviders,
+        IFileLogsManager fileLogsManager,
         ILogger<AgentHubConnection> logger)
     {
         _configService = configService;
@@ -73,7 +72,7 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
         _httpFactory = httpFactory;
         _wakeOnLanService = wakeOnLanService;
         _logger = logger;
-        _loggerProviders = loggerProviders;
+        _fileLogsManager = fileLogsManager;
     }
 
     public bool IsConnected => _hubConnection?.State == HubConnectionState.Connected;
@@ -303,14 +302,7 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
 
         _hubConnection.On("DeleteLogs", () =>
        {
-           if (TryGetFileLogger(out var fileLogger))
-           {
-               fileLogger.DeleteLogs();
-           }
-           if (_fileLogger is FileLogger logger)
-           {
-               logger.DeleteLogs();
-           }
+           _fileLogsManager.DeleteLogs();
        });
 
 
@@ -373,26 +365,24 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
 
         _hubConnection.On("GetLogs", async (string senderConnectionId) =>
         {
-            if (_fileLogger is not FileLogger logger)
+            try
             {
-                await _hubConnection.InvokeAsync("SendLogs", "Logger is not of expected type.", senderConnectionId).ConfigureAwait(false);
-                return;
+                if (!await _fileLogsManager.AnyLogsExist())
+                {
+                    var message = "There are no log entries written.";
+                    await _hubConnection.InvokeAsync("SendLogs", message, senderConnectionId).ConfigureAwait(false);
+                    return;
+                }
+
+                await foreach (var chunk in _fileLogsManager.ReadAllBytes())
+                {
+                    var lines = Encoding.UTF8.GetString(chunk);
+                    await _hubConnection.InvokeAsync("SendLogs", lines, senderConnectionId).ConfigureAwait(false);
+                }
             }
-
-            var logBytes = await logger.ReadAllBytes();
-
-            if (!logBytes.Any())
+            catch (Exception ex)
             {
-                var message = "There are no log entries written.";
-
-                await _hubConnection.InvokeAsync("SendLogs", message, senderConnectionId).ConfigureAwait(false);
-                return;
-            }
-
-            for (var i = 0; i < logBytes.Length; i += 50_000)
-            {
-                var chunk = Encoding.UTF8.GetString(logBytes.Skip(i).Take(50_000).ToArray());
-                await _hubConnection.InvokeAsync("SendLogs", chunk, senderConnectionId).ConfigureAwait(false);
+                _logger.LogError(ex, "Error while retrieving logs.");
             }
         });
 
@@ -542,25 +532,6 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
                 macAddress);
             await _wakeOnLanService.WakeDevice(macAddress);
         });
-    }
-
-    private bool TryGetFileLogger([NotNullWhen(true)] out FileLogger? fileLogger)
-    {
-        if (_fileLogger is null)
-        {
-            var logger = _loggerProviders
-                .OfType<FileLoggerProvider>()
-                .FirstOrDefault()
-                ?.CreateLogger(nameof(AgentHubConnection));
-
-            if (logger is FileLogger loggerImpl)
-            {
-                _fileLogger = loggerImpl;
-            }
-        }
-
-        fileLogger = _fileLogger;
-        return fileLogger is not null;
     }
 
     private async Task<bool> VerifyServer()

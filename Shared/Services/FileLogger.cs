@@ -14,7 +14,6 @@ namespace Remotely.Shared.Services;
 public class FileLogger : ILogger
 {
     private static readonly ConcurrentStack<string> _scopeStack = new();
-    private static readonly SemaphoreSlim _writeLock = new(1, 1);
     private readonly string _categoryName;
     private readonly string _componentName;
     private readonly string _componentVersion;
@@ -27,62 +26,15 @@ public class FileLogger : ILogger
         _categoryName = categoryName;
     }
 
-    private static string LogsFolderPath
-    {
-        get
-        {
-            if (OperatingSystem.IsWindows())
-            {
-                var logsPath = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-                    "Remotely",
-                    "Logs");
+    private string LogPath => FileLoggerDefaults.GetLogPath(_componentName);
 
-                if (EnvironmentHelper.IsDebug)
-                {
-                    logsPath += "_Debug";
-                }
-                return logsPath;
-            }
-
-            if (OperatingSystem.IsLinux())
-            {
-                if (EnvironmentHelper.IsDebug)
-                {
-                    return "/var/log/remotely_debug";
-                }
-                return "/var/log/remotely";
-            }
-
-            throw new PlatformNotSupportedException();
-        }
-    }
-    private string LogPath => Path.Combine(LogsFolderPath, _componentName, $"LogFile_{DateTime.Now:yyyy-MM-dd}.log");
-
-    public IDisposable? BeginScope<TState>(TState state) 
-        where TState : notnull
+    public IDisposable? BeginScope<TState>(TState state)
+            where TState : notnull
     {
         _scopeStack.Push($"{state}");
         return new NoopDisposable();
     }
 
-    public void DeleteLogs()
-    {
-        try
-        {
-            _writeLock.Wait();
-
-            if (File.Exists(LogPath))
-            {
-                File.Delete(LogPath);
-            }
-        }
-        catch { }
-        finally
-        {
-            _writeLock.Release();
-        }
-    }
 
     public bool IsEnabled(LogLevel logLevel)
     {
@@ -93,10 +45,9 @@ public class FileLogger : ILogger
             _ => false,
         };
     }
-
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+    public async void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
-        _writeLock.Wait();
+        using var logLock = await FileLoggerDefaults.AcquireLock();
 
         try
         {
@@ -110,32 +61,9 @@ public class FileLogger : ILogger
         {
             Console.WriteLine($"Error writing log entry: {ex.Message}");
         }
-        finally
-        {
-            _writeLock.Release();
-        }
     }
 
-    public async Task<byte[]> ReadAllBytes()
-    {
-        try
-        {
-            _writeLock.Wait();
 
-            CheckLogFileExists();
-
-            return await File.ReadAllBytesAsync(LogPath);
-        }
-        catch (Exception ex)
-        {
-            this.LogError(ex, "Error while reading all bytes from logs.");
-            return Array.Empty<byte>();
-        }
-        finally
-        {
-            _writeLock.Release();
-        }
-    }
 
     private void CheckLogFileExists()
     {

@@ -17,6 +17,7 @@ using Remotely.Agent.Services.Windows;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
 using Microsoft.Win32;
+using System.Reflection;
 
 namespace Remotely.Agent;
 
@@ -47,7 +48,8 @@ public class Program
         catch (Exception ex)
         {
             var version = AppVersionHelper.GetAppVersion();
-            var logger = new FileLogger("Remotely_Agent", version, "Main");
+            var componentName = Assembly.GetExecutingAssembly().GetName().Name;
+            var logger = new FileLogger($"{componentName}", version, "Main");
             logger.LogError(ex, "Error during agent startup.");
             throw;
         }
@@ -86,10 +88,10 @@ public class Program
         {
             builder.AddConsole().AddDebug();
             var version = AppVersionHelper.GetAppVersion();
-            builder.AddProvider(new FileLoggerProvider("Remotely_Agent", version));
+            var componentName = Assembly.GetExecutingAssembly().GetName().Name;
+            builder.AddProvider(new FileLoggerProvider($"{componentName}", version));
         });
 
-        // TODO: All these should be registered as interfaces.
         services.AddSingleton<IAgentHubConnection, AgentHubConnection>();
         services.AddSingleton<ICpuUtilizationSampler, CpuUtilizationSampler>();
         services.AddSingleton<IWakeOnLanService, WakeOnLanService>();
@@ -102,6 +104,7 @@ public class Program
         services.AddScoped<IScriptExecutor, ScriptExecutor>();
         services.AddScoped<IProcessInvoker, ProcessInvoker>();
         services.AddScoped<IUpdateDownloader, UpdateDownloader>();
+        services.AddSingleton<IFileLogsManager, FileLogsManager>();
 
         if (OperatingSystem.IsWindows())
         {
