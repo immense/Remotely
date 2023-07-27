@@ -326,13 +326,12 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
             return Result.Fail<RemoteControlSessionEx>(orgResult.Reason);
         }
 
-        var organization = _dataService.GetOrganizationNameByUserName($"{User.UserName}");
         await _agentHubContext.Clients.Client(serviceConnectionId).SendAsync("RemoteControl",
             sessionId,
             accessKey,
             ConnectionId,
             User.UserOptions?.DisplayName,
-            organization,
+            orgResult.Value,
             User.OrganizationID);
 
         return Result.Ok(session);
