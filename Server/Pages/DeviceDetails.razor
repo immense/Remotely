@@ -255,9 +255,9 @@ else
                                 <td>@scriptResult.TimeStamp</td>
                                 <td>@scriptResult.SenderUserName</td>
                                 <td>@scriptResult.RunTime</td>
-                                <td>@GetTrimmedText($"{scriptResult.ScriptInput}", 25)</td>
-                                <td>@GetTrimmedText($"{scriptResult.StandardOutput}", 25)</td>
-                                <td>@GetTrimmedText($"{scriptResult.ErrorOutput}", 25)</td>
+                                <td>@GetTrimmedText(scriptResult.ScriptInput, 25)</td>
+                                <td>@GetTrimmedText(scriptResult.StandardOutput, 25)</td>
+                                <td>@GetTrimmedText(scriptResult.ErrorOutput, 25)</td>
                                 <td>
                                     <button class="btn btn-sm btn-primary" @onclick="() => ShowFullScriptOutput(scriptResult)">Show Full</button>
                                 </td>

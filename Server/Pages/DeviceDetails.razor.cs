@@ -156,7 +156,7 @@ public partial class DeviceDetails : AuthComponentBase
         }
     }
 
-    private string GetTrimmedText(string source, int stringLength)
+    private string GetTrimmedText(string? source, int stringLength)
     {
         if (string.IsNullOrWhiteSpace(source))
         {
@@ -169,6 +169,12 @@ public partial class DeviceDetails : AuthComponentBase
         }
 
         return source[0..25] + "...";
+    }
+
+    private string GetTrimmedText(string[]? source, int stringLength)
+    {
+        source ??= Array.Empty<string>();
+        return GetTrimmedText(string.Join("", source), stringLength);
     }
 
     private Task HandleValidSubmit()
@@ -215,8 +221,8 @@ public partial class DeviceDetails : AuthComponentBase
     {
         void outputModal(RenderTreeBuilder builder)
         {
-            var output = string.Join("\r\n", $"{result.StandardOutput}");
-            var error = string.Join("\r\n", $"{result.ErrorOutput}");
+            var output = string.Join("\r\n", result.StandardOutput ?? Array.Empty<string>());
+            var error = string.Join("\r\n", result.ErrorOutput ?? Array.Empty<string>());
             var textareaStyle = "width: 100%; height: 200px; white-space: pre;";
 
             builder.AddMarkupContent(0, "<h5>Input</h5>");
