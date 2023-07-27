@@ -171,11 +171,6 @@ public partial class DeviceDetails : AuthComponentBase
         return source[0..25] + "...";
     }
 
-    private string GetTrimmedText(string[] source, int stringLength)
-    {
-        return GetTrimmedText(string.Join("", source), stringLength);
-    }
-
     private Task HandleValidSubmit()
     {
         if (_device is null)

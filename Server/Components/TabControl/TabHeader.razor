@@ -32,13 +32,13 @@
             throw new Exception("TabHeader must be contained in a TabControl.");
         }
 
-        if (!string.IsNullOrWhiteSpace(NavigationUri))
+        if (Parent.ActiveTab == Name)
         {
             OnActivated?.Invoke();
         }
     }
-    
-    private void SetActiveTab()
+
+    private async Task SetActiveTab()
     {
         if (!string.IsNullOrWhiteSpace(NavigationUri))
         {
@@ -47,7 +47,7 @@
         else
         {
             Parent?.SetActiveTab(this);
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
             OnActivated?.Invoke();
         }
     }

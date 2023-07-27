@@ -20,7 +20,7 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (AppConfig.Require2FA && IsUserSet && !User.TwoFactorEnabled)
+        if (AppConfig.Require2FA && !User.TwoFactorEnabled)
         {
             NavManager.NavigateTo("/TwoFactorRequired");
         }
@@ -31,6 +31,9 @@
     {
         await base.OnInitializedAsync();
 
+        // This handles a weird edge case when the user has been
+        // deleted but still has an authentication cookie in their
+        // browser.
         if (IsAuthenticated == true && !IsUserSet)
         {
             await SignInManager.SignOutAsync();

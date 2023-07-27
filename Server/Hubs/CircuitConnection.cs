@@ -85,6 +85,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
     private readonly ILogger<CircuitConnection> _logger;
     private readonly IAgentHubSessionCache _agentSessionCache;
     private readonly IToastService _toastService;
+    private readonly ManualResetEventSlim _initSignal = new();
     private RemotelyUser? _user;
 
     public CircuitConnection(
@@ -120,8 +121,23 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
 
     public RemotelyUser User
     {
-        get => _user ?? throw new InvalidOperationException("User has not been resolved yet.");
-        internal set => _user = value;
+        get
+        {
+            if (_initSignal.Wait(TimeSpan.FromSeconds(5)) && _user is not null)
+            {
+                return _user;
+            }
+            _logger.LogError("Failed to resolve user.");
+            throw new InvalidOperationException("Failed to resolve user.");
+        }
+        internal set
+        {
+            _user = value;
+            if (_user is not null)
+            {
+                _initSignal.Set();
+            }
+        }
     }
 
 
@@ -223,6 +239,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
             }
             _user = userResult.Value;
             _circuitManager.TryAddConnection(ConnectionId, this);
+            _initSignal.Set();
         }
         await base.OnCircuitOpenedAsync(circuit, cancellationToken);
     }

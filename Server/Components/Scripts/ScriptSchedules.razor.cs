@@ -50,12 +50,12 @@ public partial class ScriptSchedules : AuthComponentBase
     private IToastService ToastService { get; set; } = null!;
 
     private bool CanModifySchedule => 
-        _selectedSchedule.CreatorId == User?.Id ||
-        User?.IsAdministrator == true;
+        _selectedSchedule.CreatorId == User.Id ||
+        User.IsAdministrator;
 
     private bool CanDeleteSchedule =>
-        _selectedSchedule.CreatorId == User?.Id || 
-        User?.IsAdministrator == true;
+        _selectedSchedule.CreatorId == User.Id || 
+        User.IsAdministrator;
 
     protected override async Task OnInitializedAsync()
     {

@@ -66,12 +66,12 @@ public class DataServiceTests
         };
 
         // First call should create and return device.
-        var savedDevice = await _dataService.CreateDevice(deviceOptions);
+        var savedDevice = (await _dataService.CreateDevice(deviceOptions)).Value!;
         Assert.IsInstanceOfType(savedDevice, typeof(Device));
 
-        // Second call with same DeviceUuid should return null;
+        // Second call with same DeviceUuid should fail.
         var secondSave = await _dataService.CreateDevice(deviceOptions);
-        Assert.IsNull(secondSave);
+        Assert.IsFalse(secondSave.IsSuccess);
     }
 
     [TestMethod]

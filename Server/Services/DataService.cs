@@ -1566,6 +1566,7 @@ public class DataService : IDataService
             .AsNoTracking()
             .Include(x => x.ScriptRuns)
             .ThenInclude(x => x.Results)
+            .Include(x => x.ScriptResults)
             .FirstOrDefaultAsync(x => x.ID == deviceId);
 
         if (device is null)
