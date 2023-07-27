@@ -600,7 +600,7 @@ public class DataService : IDataService
         var user = dbContext.Users
             .Include(x => x.DeviceGroups)
             .FirstOrDefault(x =>
-                $"{x.UserName}".ToLower() == userName &&
+                x.UserName!.ToLower() == userName &&
                 x.OrganizationID == orgId);
 
         if (user == null)
@@ -997,7 +997,9 @@ public class DataService : IDataService
             return false;
         }
 
-        return dbContext.Users.Any(x => $"{x.UserName}".Trim().ToLower() == userName.Trim().ToLower());
+        return dbContext.Users
+            .Where(x => x.UserName != null)
+            .Any(x => x.UserName!.Trim().ToLower() == userName.Trim().ToLower());
     }
 
     public bool DoesUserHaveAccessToDevice(string deviceId, RemotelyUser remotelyUser)
@@ -1417,7 +1419,6 @@ public class DataService : IDataService
         return dbContext.DeviceGroups
             .AsNoTracking()
             .Include(x => x.Users)
-            .ThenInclude(x => x.DeviceGroups)
             .Where(x => x.OrganizationID == organizationId)
             .OrderBy(x => x.Name)
             .ToArray();
@@ -1715,8 +1716,8 @@ public class DataService : IDataService
 
         return dbContext.Users
             .AsNoTracking()
-            .Where(x => x.IsServerAdmin)
-            .Select(x => $"{x.UserName}")
+            .Where(x => x.IsServerAdmin && x.UserName != null)
+            .Select(x => x.UserName!)
             .ToList();
     }
 
