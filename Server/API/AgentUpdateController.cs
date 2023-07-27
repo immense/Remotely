@@ -37,7 +37,6 @@ public class AgentUpdateController : ControllerBase
         _logger = logger;
     }
 
-
     [HttpGet("[action]/{platform}")]
     [EnableRateLimiting(PolicyNames.AgentUpdateDownloads)]
     public async Task<ActionResult> DownloadPackage(string platform)
@@ -87,6 +86,15 @@ public class AgentUpdateController : ControllerBase
             _logger.LogError(ex, "Error while downloading package.");
             return StatusCode((int)HttpStatusCode.InternalServerError);
         }
+    }
+
+
+    [HttpGet("[action]/{platform}/{downloadId}")]
+    [EnableRateLimiting(PolicyNames.AgentUpdateDownloads)]
+    [Obsolete("This method is only for backwards compatibility.  Remove after a few releases.")]
+    public async Task<ActionResult> DownloadPackage(string platform, string downloadId)
+    {
+        return await DownloadPackage(platform);
     }
 
     private async Task<bool> CheckForDeviceBan(string deviceIp)
