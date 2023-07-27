@@ -91,7 +91,7 @@ else
 
     private async Task CreateNewKey()
     {
-        var secret = RandomGenerator.GenerateString(36);
+        var secret = RandomGenerator.GenerateString(48);
         var secretHash = new PasswordHasher<string>().HashPassword(string.Empty, secret);
 
         var result = await DataService.CreateApiToken(UserName, _createKeyName, secretHash);

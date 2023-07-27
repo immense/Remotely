@@ -65,7 +65,20 @@ public class AlertsController : ControllerBase
         {
             try
             {
-                await _emailSender.SendEmailAsync(alertOptions.EmailTo,
+                if (string.IsNullOrWhiteSpace(alertOptions.EmailTo))
+                {
+                    return BadRequest("Email address is required to send email.");
+                }
+                if (string.IsNullOrWhiteSpace(alertOptions.EmailSubject))
+                {
+                    return BadRequest("Email subject is required to send email.");
+                }
+                if (string.IsNullOrWhiteSpace(alertOptions.EmailBody))
+                {
+                    return BadRequest("Email body is required to send email.");
+                }
+                await _emailSender.SendEmailAsync(
+                    alertOptions.EmailTo,
                     alertOptions.EmailSubject,
                     alertOptions.EmailBody,
                     orgId.ToString());
@@ -81,6 +94,19 @@ public class AlertsController : ControllerBase
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(alertOptions.ApiRequestUrl))
+                {
+                    return BadRequest("API request URL is required to send API request.");
+                }
+                if (string.IsNullOrWhiteSpace(alertOptions.ApiRequestMethod))
+                {
+                    return BadRequest("API request method is required to send API request.");
+                }
+                if (string.IsNullOrWhiteSpace(alertOptions.ApiRequestBody))
+                {
+                    return BadRequest("API request body is required to send API request.");
+                }
+
                 using var httpClient = _httpClientFactory.CreateClient();
                 using var request = new HttpRequestMessage(
                     new HttpMethod(alertOptions.ApiRequestMethod),

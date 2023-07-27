@@ -68,6 +68,7 @@ public class RemoteControlController : ControllerBase
     }
 
     [HttpPost]
+    [Obsolete("This method is deprecated. Use the GET method along with API keys instead.")]
     public async Task<IActionResult> Post([FromBody] RemoteControlRequest rcRequest)
     {
         if (!_appConfig.AllowApiLogin)
@@ -111,7 +112,7 @@ public class RemoteControlController : ControllerBase
         return BadRequest();
     }
 
-    private async Task<IActionResult> InitiateRemoteControl(string deviceID, string orgID)
+    private async Task<IActionResult> InitiateRemoteControl(string deviceID, string orgId)
     {
         if (!_serviceSessionCache.TryGetByDeviceId(deviceID, out var targetDevice) ||
             !_serviceSessionCache.TryGetConnectionId(deviceID, out var serviceConnectionId))
@@ -119,7 +120,7 @@ public class RemoteControlController : ControllerBase
             return NotFound("The target device couldn't be found.");
         }
 
-        if (targetDevice.OrganizationID != orgID)
+        if (targetDevice.OrganizationID != orgId)
         {
             return Unauthorized();
         }
@@ -141,7 +142,7 @@ public class RemoteControlController : ControllerBase
 
         var sessionCount = _remoteControlSessionCache.Sessions
                .OfType<RemoteControlSessionEx>()
-               .Count(x => x.OrganizationId == orgID);
+               .Count(x => x.OrganizationId == orgId);
 
         if (sessionCount > _appConfig.RemoteControlSessionLimit)
         {
@@ -157,7 +158,7 @@ public class RemoteControlController : ControllerBase
             UserConnectionId = HttpContext.Connection.Id,
             AgentConnectionId = serviceConnectionId,
             DeviceId = deviceID,
-            OrganizationId = orgID
+            OrganizationId = orgId
         };
 
         _remoteControlSessionCache.AddOrUpdate($"{sessionId}", session, (k, v) =>
@@ -171,15 +172,20 @@ public class RemoteControlController : ControllerBase
             return session;
         });
 
-        var orgName = _dataService.GetOrganizationNameById(orgID);
+        var orgNameResult = await _dataService.GetOrganizationNameById(orgId);
+
+        if (!orgNameResult.IsSuccess)
+        {
+            return BadRequest("Failed to resolve organization name.");
+        }
 
         await _serviceHub.Clients.Client(serviceConnectionId).SendAsync("RemoteControl", 
             sessionId,
             accessKey,
             HttpContext.Connection.Id,
             string.Empty,
-            orgName,
-            orgID);
+            orgNameResult.Value,
+            orgId);
 
         var waitResult = await session.WaitForSessionReady(TimeSpan.FromSeconds(30));
         if (!waitResult)
